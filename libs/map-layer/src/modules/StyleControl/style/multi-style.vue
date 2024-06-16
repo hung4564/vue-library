@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { useShow } from '@hungpvq/vue-map-core';
+import { useShow, InputSelect, BaseButton } from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import SingleStyle from './single-style.vue';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { Layer } from 'mapbox-gl';
 import { computed, nextTick, ref, watch } from 'vue';

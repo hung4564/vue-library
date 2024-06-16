@@ -2,6 +2,9 @@
 import { Layer } from 'mapbox-gl';
 import { computed, onMounted, ref } from 'vue';
 import { Tab, TabConfig } from '../../../types/style';
+import TabItem from '../component/tab-item.vue';
+import TabContent from '../component/tab-content.vue';
+import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
 import { DEFAULT_VALUE, TABS, convertTabWithDefaultConfig } from './type';
 const props = defineProps({
   trans: {
