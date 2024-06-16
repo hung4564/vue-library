@@ -9,6 +9,8 @@ export default defineConfig({
   title: 'Doc @hungpvq',
   description: 'Doc @hungpvq',
   srcDir: '../',
+  base: '/docs/',
+  outDir: '../deploy/docs',
   lastUpdated: true,
   themeConfig: {
     search: {

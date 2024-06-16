@@ -58,11 +58,11 @@ body {
 
 ## Components
 
-- [draggable-container](/draggable/draggable-container)
-- [draggable-bottom](/draggable/draggable-item-bottom)
-- [draggable-popup](/draggable/draggable-item-popup)
-- [draggable-sidebar](/draggable/draggable-item-sidebar)
-- [draggable-float](/draggable/draggable-item-float)
+- [draggable-container]
+- [draggable-bottom]
+- [draggable-popup]
+- [draggable-sidebar]
+- [draggable-float]
 
 ## Contributing
 
