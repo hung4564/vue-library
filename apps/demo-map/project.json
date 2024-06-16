@@ -8,7 +8,7 @@
     "publish": {
       "executor": "@nx/vite:build",
       "options": {
-        "outputPath": "deploy/demo/map"
+        "outputPath": "deploy/demo-map"
       }
     }
   }
