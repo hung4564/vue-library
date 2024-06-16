@@ -1,0 +1,58 @@
+import { MapFCOnUseMap, MapSimple } from '@hungpv97/shared-map';
+import { MapStore } from '../types';
+import { addMapIdToQueue, removeMapIdFromQueue } from './queue';
+let store = {
+  state: {} as Record<string, MapStore>,
+  getters: {},
+  actions: {
+    getMapStore(id: string) {
+      const map = store.state[id];
+      if (!map) {
+        throw 'Not found map for id ' + id;
+      }
+      return map;
+    },
+    initMap(id: string, map: MapSimple) {
+      store.state[id] = {
+        map,
+      };
+      addMapIdToQueue(id);
+    },
+    removeMap(id: string) {
+      delete store.state[id];
+      removeMapIdFromQueue(id);
+    },
+    getMap(id: string, cb?: MapFCOnUseMap) {
+      const map = store.state[id]?.map;
+      if (!map) {
+        throw 'Not found map for id ' + id;
+      }
+      if (cb) {
+        return cb(map);
+      }
+      return map;
+    },
+  },
+};
+if (window.$_hungpv_drag) {
+  store = window.$_hungpv_drag;
+} else {
+  window.$_hungpv_drag = store;
+}
+export const { state, getters, actions } = store;
+export function addStore<T = any>(
+  mapId: string,
+  key: string,
+  defaultValue?: T
+) {
+  const store = actions.getMapStore(mapId);
+  if (!store[key]) store[key] = defaultValue || {};
+  return store[key];
+}
+export function getStore<T = any>(mapId: string, key: string) {
+  const store = actions.getMapStore(mapId);
+  return store[key] as T;
+}
+export const getMap = store.actions.getMap;
+
+export { store };

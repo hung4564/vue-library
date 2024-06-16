@@ -1,0 +1,16 @@
+{
+  "name": "@hungpv97/shared-file",
+  "version": 0.0.1,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "peerDependencies": {
+    "@hungpv97/shared": ">=0.0.1",
+    "@hungpv97/shared-core": ">=0.0.1"
+  }
+}

@@ -1,0 +1,55 @@
+import { PackageIndexes } from './types';
+
+export * from './types';
+
+export function getFunctionsSideBar(
+  metadata: PackageIndexes,
+  props_package: string,
+  overwrite: Record<string, any> = {}
+) {
+  const links: { text: string; items: any[] }[] = [];
+  const cache: Record<string, { text: string; items: any[] }> = {};
+  const cache_category: Record<string, { text: string; items: any[] }> = {};
+  metadata.functions.forEach((temp) => {
+    if (!temp.package.includes(props_package)) {
+      return;
+    }
+    let group = cache[temp.package];
+    if (!group) {
+      group = {
+        text: temp.package,
+        items: [],
+        ...overwrite[temp.package],
+      };
+      cache[temp.package] = group;
+      links.push(group);
+    }
+    let category = cache_category[`${temp.package}-${temp.category}`];
+    if (!category) {
+      category = {
+        text: temp.category,
+        items: [],
+        ...overwrite[`${temp.package}-${temp.category}`],
+      };
+      cache_category[`${temp.package}-${temp.category}`] = category;
+      group.items.push(category);
+    }
+    category.items.push({ text: temp.name, link: temp.docs });
+  });
+  for (const key in cache) {
+    if (Object.prototype.hasOwnProperty.call(cache, key)) {
+      const element = cache[key];
+      element.items.sort((a, b) => (a.text > b.text ? 1 : -1));
+      if (element.items.length === 1) {
+        element.items = element.items[0].items;
+      }
+    }
+  }
+  for (const key in cache_category) {
+    if (Object.prototype.hasOwnProperty.call(cache_category, key)) {
+      const element = cache_category[key];
+      element.items.sort((a, b) => (a.text > b.text ? 1 : -1));
+    }
+  }
+  return links;
+}

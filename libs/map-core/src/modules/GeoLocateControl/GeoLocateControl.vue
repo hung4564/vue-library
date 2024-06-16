@@ -1,0 +1,196 @@
+<script setup lang="ts">
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
+import { LngLatLike, Marker } from 'mapbox-gl';
+import { computed, nextTick, ref, watch } from 'vue';
+import MapControlButton from '../../components/MapControlButton.vue';
+import { useMap, withMapProps } from '../../hooks';
+import { useLang } from '../../extra';
+import type { MapSimple } from '@hungpv97/shared-map';
+import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+import { useGeolocation } from '@hungpv97/shared-core';
+import { tryOnMounted, tryOnUnmounted, toValue } from '@hungpv97/shared';
+const { coords, error, resume, pause } = useGeolocation({
+  immediate: false,
+});
+const props = defineProps({
+  ...withMapProps,
+});
+const { mapId, callMap, moduleContainerProps } = useMap(props);
+const { trans, setLocale } = useLang(mapId.value);
+setLocale({
+  map: {
+    action: {
+      'geolocate-control-find-my-location': 'Find my location',
+      'geolocate-control-location-not-available': 'Location not available',
+    },
+  },
+});
+const active = ref(false);
+const center = ref<LngLatLike>();
+const p_accuracy = ref(0);
+let p_dotElement: HTMLElement,
+  p_circleElement: HTMLElement,
+  p_userLocationDotMarker = ref<Marker | undefined>(undefined),
+  _accuracyCircleMarker = ref<Marker | undefined>(undefined);
+const iconGeolocate = computed(() => {
+  if (error.value) return mdiCrosshairsOff;
+  return mdiCrosshairsGps;
+});
+const tooltipGeolocate = computed(() => {
+  const str = error.value
+    ? error.value.message ||
+      trans.value('map.action.geolocate-control-location-not-available')
+    : trans.value('map.action.geolocate-control-find-my-location');
+  return str;
+});
+watch(coords, (value) => {
+  if (
+    value.longitude == Number.POSITIVE_INFINITY ||
+    value.latitude == Number.POSITIVE_INFINITY
+  ) {
+    return;
+  }
+  center.value = [value.longitude, value.latitude];
+  onAddUi();
+  p_accuracy.value = value.accuracy;
+});
+async function onClick() {
+  callMap((map) => {
+    if (!active.value) {
+      active.value = true;
+      resume();
+      nextTick(() => {
+        if (center.value)
+          map.flyTo({
+            center: toValue(center),
+            zoom: 14,
+          });
+      });
+      return;
+    }
+    if (isOutOfMapMaxBounds(map, toValue(coords))) {
+      map.flyTo({
+        center: center.value,
+        zoom: 14,
+      });
+      return;
+    }
+    pause();
+    active.value = false;
+    center.value = undefined;
+    onDestroy();
+  });
+}
+tryOnUnmounted(() => {
+  onDestroy();
+});
+function onDestroy() {
+  callMap((map) => {
+    map.off('zoom', onZoom);
+  });
+  if (p_userLocationDotMarker.value) {
+    p_userLocationDotMarker.value.remove();
+  }
+  if (_accuracyCircleMarker.value) {
+    _accuracyCircleMarker.value.remove();
+  }
+}
+tryOnMounted(() => {
+  if (!p_dotElement) {
+    p_dotElement = DOMcreate('div', 'mapboxgl-user-location');
+
+    p_dotElement.classList.add('mapboxgl-user-location');
+    p_dotElement.appendChild(DOMcreate('div', 'mapboxgl-user-location-dot'));
+    p_dotElement.appendChild(
+      DOMcreate('div', 'mapboxgl-user-location-heading')
+    );
+  }
+  if (!p_circleElement) {
+    p_circleElement = DOMcreate(
+      'div',
+      'mapboxgl-user-location-accuracy-circle'
+    );
+  }
+});
+function onAddUi() {
+  p_userLocationDotMarker.value = new Marker({
+    element: p_dotElement,
+    rotationAlignment: 'map',
+    pitchAlignment: 'map',
+  });
+  _accuracyCircleMarker.value = new Marker({
+    element: p_circleElement,
+    pitchAlignment: 'map',
+  });
+  callMap((map) => {
+    map.on('zoom', onZoom);
+    if (center.value) {
+      p_userLocationDotMarker.value &&
+        p_userLocationDotMarker.value.setLngLat(center.value).addTo(map);
+      _accuracyCircleMarker.value &&
+        _accuracyCircleMarker.value.setLngLat(center.value).addTo(map);
+    }
+    updateCircleRadius(map);
+  });
+}
+function updateCircleRadius(map: MapSimple) {
+  const y = map.getContainer().getBoundingClientRect().height / 2;
+  const a = map.unproject([0, y]);
+  const b = map.unproject([100, y]);
+  const metersPerPixel = a.distanceTo(b) / 100;
+  const circleDiameter = Math.ceil((2.0 * p_accuracy.value) / metersPerPixel);
+  p_circleElement.style.width = `${circleDiameter}px`;
+  p_circleElement.style.height = `${circleDiameter}px`;
+}
+function onZoom(map: any) {
+  updateCircleRadius(map.target);
+}
+const DOMcreate = function (
+  tagName: string,
+  className: string,
+  container?: HTMLElement
+) {
+  const el = window.document.createElement(tagName);
+  if (className !== undefined) el.className = className;
+  if (container) container.appendChild(el);
+  return el;
+};
+function isOutOfMapMaxBounds(
+  map: MapSimple,
+  coordinates: GeolocationCoordinates
+) {
+  const bounds = map.getBounds();
+  return (
+    bounds &&
+    (coordinates.longitude < bounds.getWest() ||
+      coordinates.longitude > bounds.getEast() ||
+      coordinates.latitude < bounds.getSouth() ||
+      coordinates.latitude > bounds.getNorth())
+  );
+}
+</script>
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapControlButton
+        :disabled="!!error"
+        :icon="iconGeolocate"
+        :tooltip="tooltipGeolocate"
+        :active="active"
+        @click.stop="onClick"
+      >
+        <SvgIcon :size="18" type="mdi" :path="iconGeolocate" />
+      </MapControlButton>
+    </template>
+    <slot />
+  </ModuleContainer>
+</template>
+<style>
+.mapboxgl-user-location-accuracy-circle {
+  background-color: #1da1f233;
+  border-radius: 100%;
+  height: 1px;
+  width: 1px;
+}
+</style>

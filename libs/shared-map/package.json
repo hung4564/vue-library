@@ -1,0 +1,12 @@
+{
+  "name": "@hungpv97/shared-map",
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "mapbox-gl": "^1.13.0",
+    "@turf/turf": "^6.5.0"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

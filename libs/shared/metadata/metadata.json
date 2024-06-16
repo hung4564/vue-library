@@ -1,0 +1,221 @@
+{
+  "functions": [
+    {
+      "name": "tryOnMounted",
+      "package": "Share",
+      "docs": "/shared/tryOnMounted/",
+      "category": "Component",
+      "description": "safe `onMounted`"
+    },
+    {
+      "name": "tryOnUnmounted",
+      "package": "Share",
+      "docs": "/shared/tryOnUnmounted/",
+      "category": "Component",
+      "description": "safe `onUnmounted`"
+    },
+    {
+      "name": "tryOnBeforeUnmount",
+      "package": "Share",
+      "docs": "/shared/tryOnBeforeUnmount/",
+      "category": "Component",
+      "description": "safe `onBeforeUnmount`"
+    },
+    {
+      "name": "tryOnScopeDispose",
+      "package": "Share",
+      "docs": "/shared/tryOnScopeDispose/",
+      "category": "Component",
+      "description": "safe `onScopeDispose`"
+    },
+    {
+      "name": "unrefElement",
+      "package": "Share",
+      "docs": "/shared/unrefElement/",
+      "category": "Component",
+      "description": "retrieves the underlying DOM element from a Vue ref or component instance"
+    },
+    {
+      "name": "onClickOutside",
+      "package": "Share - Core",
+      "docs": "/shared-core/onClickOutside/",
+      "category": "Sensors",
+      "description": "listen for clicks outside of an element"
+    },
+    {
+      "name": "useDropZone",
+      "package": "Share - Core",
+      "docs": "/shared-core/useDropZone/",
+      "category": "Elements",
+      "description": "create a zone where files can be dropped"
+    },
+    {
+      "name": "useEventListener",
+      "package": "Share - Core",
+      "docs": "/shared-core/useEventListener/",
+      "category": "Browser",
+      "description": "use EventListener with ease"
+    },
+    {
+      "name": "useFullscreen",
+      "package": "Share - Core",
+      "docs": "/shared-core/useFullscreen/",
+      "category": "Browser",
+      "description": "reactive [Fullscreen API](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API)"
+    },
+    {
+      "name": "useGeolocation",
+      "package": "Share - Core",
+      "docs": "/shared-core/useGeolocation/",
+      "category": "Sensors",
+      "description": "reactive [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)"
+    },
+    {
+      "name": "useMounted",
+      "package": "Share - Core",
+      "docs": "/shared-core/useMounted/",
+      "category": "Component",
+      "description": "mounted state in ref"
+    },
+    {
+      "name": "useSupported",
+      "package": "Share - Core",
+      "docs": "/shared-core/useSupported/",
+      "category": "Utilities",
+      "description": "sSR compatibility `isSupported`"
+    },
+    {
+      "name": "useClipboard",
+      "package": "Share - Core",
+      "docs": "/shared-core/useClipboard/",
+      "category": "Browser",
+      "description": "reactive [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API)"
+    },
+    {
+      "name": "useTimeout",
+      "package": "Share",
+      "docs": "/shared/useTimeout/",
+      "category": "Animation",
+      "description": "update value after a given time with controls"
+    },
+    {
+      "name": "useTimeoutFn",
+      "package": "Share",
+      "docs": "/shared/useTimeoutFn/",
+      "category": "Animation",
+      "description": "wrapper for `setTimeout` with controls"
+    },
+    {
+      "name": "useFileDialog",
+      "package": "Share - File",
+      "docs": "/shared-file/useFileDialog/",
+      "category": "Browser",
+      "description": "open file dialog with ease"
+    },
+    {
+      "name": "useFileSystemAccess",
+      "package": "Share - File",
+      "docs": "/shared-file/useFileSystemAccess/",
+      "category": "Browser",
+      "description": "create and read and write local files with [FileSystemAccessAPI](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API)"
+    },
+    {
+      "name": "useFileReader",
+      "package": "Share - File",
+      "docs": "/shared-file/useFileReader/",
+      "category": "Browser",
+      "description": "read file"
+    },
+    {
+      "name": "useIntersectionObserver",
+      "package": "Share - Core",
+      "docs": "/shared-core/useIntersectionObserver/",
+      "category": "Elements",
+      "description": "detects that a target element's visibility"
+    },
+    {
+      "name": "useNetwork",
+      "package": "Share - Core",
+      "docs": "/shared-core/useNetwork/",
+      "category": "Sensors",
+      "description": "reactive [Network status](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API)"
+    },
+    {
+      "name": "useIdle",
+      "package": "Share - Core",
+      "docs": "/shared-core/useIdle/",
+      "category": "Sensors",
+      "description": "tracks whether the user is being inactive"
+    },
+    {
+      "name": "onStartTyping",
+      "package": "Share - Core",
+      "docs": "/shared-core/onStartTyping/",
+      "category": "Sensors",
+      "description": "fires when users start typing on non-editable elements"
+    },
+    {
+      "name": "useOnline",
+      "package": "Share - Core",
+      "docs": "/shared-core/useOnline/",
+      "category": "Sensors",
+      "description": "reactive online state"
+    },
+    {
+      "name": "useElementVisibility",
+      "package": "Share - Core",
+      "docs": "/shared-core/useElementVisibility/",
+      "category": "Elements",
+      "description": "tracks the visibility of an element within the viewport"
+    },
+    {
+      "name": "useWindowSize",
+      "package": "Share - Core",
+      "docs": "/shared-core/useWindowSize/",
+      "category": "Elements",
+      "description": "reactive window size"
+    },
+    {
+      "name": "useBreakpoints",
+      "package": "Share - Core",
+      "docs": "/shared-core/useBreakpoints/",
+      "category": "Browser",
+      "description": "reactive viewport breakpoints"
+    },
+    {
+      "name": "useMediaQuery",
+      "package": "Share - Core",
+      "docs": "/shared-core/useMediaQuery/",
+      "category": "Browser",
+      "description": "reactive [Media Query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Testing_media_queries)"
+    },
+    {
+      "name": "useTimestamp",
+      "package": "Share - Core",
+      "docs": "/shared-core/useTimestamp/",
+      "category": "Animation",
+      "description": "reactive current timestamp"
+    },
+    {
+      "name": "useInterval",
+      "package": "Share",
+      "docs": "/shared/useInterval/",
+      "category": "Animation",
+      "description": "reactive counter increases on every interval"
+    },
+    {
+      "name": "useIntervalFn",
+      "package": "Share",
+      "docs": "/shared/useIntervalFn/",
+      "category": "Animation",
+      "description": "wrapper for `setInterval` with controls"
+    },
+    {
+      "name": "useRafFn",
+      "package": "Share - Core",
+      "docs": "/shared-core/useRafFn/",
+      "category": "Animation",
+      "description": "call function on every `requestAnimationFrame`"
+    }
+  ]
+}

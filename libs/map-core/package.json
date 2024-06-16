@@ -1,0 +1,29 @@
+{
+  "name": "@hungpv97/vue-map-core",
+  "version": 0.0.1,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
+  "peerDependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@hungpv97/vue-draggable": ">=0.0.1",
+    "@hungpv97/shared": ">=0.0.1",
+    "@hungpv97/shared-core": ">=0.0.1",
+    "@hungpv97/shared-map": ">=0.0.1",
+    "@ckpack/vue-color": "^1.5.0",
+    "@mdi/js": "^7.4.47",
+    "@turf/turf": "^6.5.0",
+    "proj4": "^2.11.0",
+    "lodash": "^4.17.21",
+    "mapbox-gl": ">=1.13.0"
+  }
+}

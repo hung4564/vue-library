@@ -1,0 +1,135 @@
+{
+  "functions": [
+    {
+      "name": "Map",
+      "package": "Map - Core",
+      "docs": "/map/modules/",
+      "category": "Container",
+      "description": "Map Container"
+    },
+    {
+      "name": "ModuleContainer",
+      "package": "Map - Core",
+      "docs": "/map/modules/ModuleContainer/",
+      "category": "Container",
+      "description": "Module Container"
+    },
+    {
+      "name": "HomeControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/HomeControl/",
+      "category": "Component",
+      "description": "HomeControl"
+    },
+    {
+      "name": "CrsControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/CrsControl/",
+      "category": "Component",
+      "description": "CrsControl"
+    },
+    {
+      "name": "FullScreenControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/FullScreenControl/",
+      "category": "Component",
+      "description": "FullScreenControl"
+    },
+    {
+      "name": "GeoLocateControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/GeoLocateControl/",
+      "category": "Component",
+      "description": "GeoLocateControl"
+    },
+    {
+      "name": "GotoControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/GotoControl/",
+      "category": "Component",
+      "description": "GotoControl"
+    },
+    {
+      "name": "MouseCoordinatesControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/MouseCoordinatesControl/",
+      "category": "Component",
+      "description": "MouseCoordinatesControl"
+    },
+    {
+      "name": "SettingControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/SettingControl/",
+      "category": "Component",
+      "description": "SettingControl"
+    },
+    {
+      "name": "ZoomControl",
+      "package": "Map - Core",
+      "docs": "/map/modules/ZoomControl/",
+      "category": "Component",
+      "description": "ZoomControl"
+    },
+    {
+      "name": "Store",
+      "package": "Map - Core",
+      "docs": "/map/store/",
+      "category": "Store",
+      "description": "Map Store"
+    },
+    {
+      "name": "Extra Lang",
+      "package": "Map - Core",
+      "docs": "/map/extra/lang",
+      "description": "Map Extra Lang"
+    },
+    {
+      "name": "Extra Image",
+      "package": "Map - Core",
+      "docs": "/map/extra/image",
+      "description": "Map Extra Image"
+    },
+    {
+      "name": "Extra Crs",
+      "package": "Map - Core",
+      "docs": "/map/extra/crs",
+      "description": "Map Extra Crs"
+    },
+    {
+      "name": "Extra Event",
+      "package": "Map - Core",
+      "docs": "/map/extra/event",
+      "description": "Map Extra Event"
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Measurement",
+      "docs": "/map/measurement",
+      "description": "Map Measurement"
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Print",
+      "docs": "/map/print",
+      "description": "Map Print"
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - BaseMap",
+      "docs": "/map/basemap",
+      "description": "Map Basemap"
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Draw",
+      "docs": "/map/draw",
+      "description": "Map Draw"
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Layer",
+      "docs": "/map/layer",
+      "description": "Map Layer"
+    }
+  ]
+}

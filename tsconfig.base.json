@@ -1,0 +1,37 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@hungpv97/content-menu": ["libs/content-menu/src/index.ts"],
+      "@hungpv97/shared": ["libs/shared/src/index.ts"],
+      "@hungpv97/shared-core": ["libs/shared-core/src/index.ts"],
+      "@hungpv97/shared-file": ["libs/shared-file/src/index.ts"],
+      "@hungpv97/shared-integrations": [
+        "libs/shared-integrations/src/index.ts"
+      ],
+      "@hungpv97/shared-map": ["libs/shared-map/src/index.ts"],
+      "@hungpv97/vue-draggable": ["libs/draggable/src/index.ts"],
+      "@hungpv97/vue-map-basemap": ["libs/map-basemap/src/index.ts"],
+      "@hungpv97/vue-map-core": ["libs/map-core/src/index.ts"],
+      "@hungpv97/vue-map-draw": ["libs/map-draw/src/index.ts"],
+      "@hungpv97/vue-map-layer": ["libs/map-layer/src/index.ts"],
+      "@hungpv97/vue-map-measurement": ["libs/map-measurement/src/index.ts"],
+      "@hungpv97/vue-map-print": ["libs/map-print/src/index.ts"],
+      "@libs/*": ["libs/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
