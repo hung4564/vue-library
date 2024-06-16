@@ -1,6 +1,3 @@
-[submodule "deploy/demo/map"]
-	path = deploy/demo/map
-	url = https://github.com/hung4564/demo-map.git
 [submodule "deploy/docs"]
 	path = deploy/docs
 	url = https://github.com/hung4564/docs.git
