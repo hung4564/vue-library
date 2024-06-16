@@ -1,6 +1,19 @@
 {
-  "name": "@hungpv97/shared-map",
+  "name": "@hungpvq/shared-map",
   "version": "0.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
   "dependencies": {
     "tslib": "^2.3.0",
     "mapbox-gl": "^1.13.0",

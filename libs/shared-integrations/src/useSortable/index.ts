@@ -4,8 +4,8 @@ import {
   tryOnMounted,
   tryOnScopeDispose,
   unrefElement,
-} from '@hungpv97/shared';
-import { ConfigurableDocument, defaultDocument } from '@hungpv97/shared-core';
+} from '@hungpvq/shared';
+import { ConfigurableDocument, defaultDocument } from '@hungpvq/shared-core';
 import Sortable, { type Options } from 'sortablejs';
 import { isRef, nextTick } from 'vue';
 

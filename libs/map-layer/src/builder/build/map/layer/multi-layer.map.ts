@@ -1,5 +1,5 @@
-import { copyByJson } from '@hungpv97/shared';
-import type { MapSimple } from '@hungpv97/shared-map';
+import { copyByJson } from '@hungpvq/shared';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { updateLayer } from '../../../../helper';
 import MultiStyle from '../../../../modules/StyleControl/style/multi-style.vue';
 import { ISource } from '../source/ASource';

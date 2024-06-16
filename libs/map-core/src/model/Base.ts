@@ -1,4 +1,4 @@
-import { getUUIDv4 } from '@hungpv97/shared';
+import { getUUIDv4 } from '@hungpvq/shared';
 import { ILayer, IView, LayerBuildFunction } from '../types';
 
 export class Base {

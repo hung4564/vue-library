@@ -11,8 +11,8 @@
   </tr>
 </template>
 <script setup>
-import { BaseButton } from '@hungpv97/vue-map-core';
-import { useClipboard } from '@hungpv97/shared-core';
+import { BaseButton } from '@hungpvq/vue-map-core';
+import { useClipboard } from '@hungpvq/shared-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 const { copy } = useClipboard({});
 import { mdiContentCopy } from '@mdi/js';

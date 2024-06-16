@@ -1,4 +1,4 @@
-import type { Color, MapSimple } from '@hungpv97/shared-map';
+import type { Color, MapSimple } from '@hungpvq/shared-map';
 import { BBox } from '@turf/turf';
 import { VueElement } from 'vue';
 export type TYPE_VIEW = {

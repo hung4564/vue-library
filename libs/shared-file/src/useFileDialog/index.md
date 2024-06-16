@@ -20,7 +20,7 @@ Open file dialog with ease.
 ## Usage
 
 ```ts
-import { useFileDialog } from '@hungpv97@shared-core';
+import { useFileDialog } from '@hungpvq@shared-core';
 
 const { files, open, reset, onChange } = useFileDialog({
   accept: 'image/*', // Set to accept only image files

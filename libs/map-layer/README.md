@@ -3,21 +3,21 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map-layer
+npm i @hungpvq/vue-map-layer
 ```
 
 ```
-yarn add @hungpv97/vue-map-layer
+yarn add @hungpvq/vue-map-layer
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
-import { LayerControl } from '@hungpv97/vue-map-layer';
-import '@hungpv97/vue-map-layer/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
+import { LayerControl } from '@hungpvq/vue-map-layer';
+import '@hungpvq/vue-map-layer/style.css';
 </script>
 
 <template>

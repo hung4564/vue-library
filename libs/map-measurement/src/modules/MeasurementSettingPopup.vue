@@ -27,14 +27,14 @@
 </template>
 
 <script setup>
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
   fitBounds,
   useLang,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
 const emit = defineEmits(['update:modelValue']);

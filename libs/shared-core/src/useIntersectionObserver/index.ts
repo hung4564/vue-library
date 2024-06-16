@@ -1,4 +1,4 @@
-import type { MaybeRefOrGetter, Pausable } from '@hungpv97/shared';
+import type { MaybeRefOrGetter, Pausable } from '@hungpvq/shared';
 import {
   MaybeComputedElementRef,
   MaybeElement,
@@ -7,7 +7,7 @@ import {
   toValue,
   tryOnScopeDispose,
   unrefElement,
-} from '@hungpv97/shared';
+} from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';

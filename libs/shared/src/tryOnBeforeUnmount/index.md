@@ -11,7 +11,7 @@ Safe `onBeforeUnmount`. Call `onBeforeUnmount()` if it's inside a component life
 ## Usage
 
 ```js
-import { tryOnBeforeUnmount } from '@hungpv97/shared';
+import { tryOnBeforeUnmount } from '@hungpvq/shared';
 
 tryOnBeforeUnmount(() => {});
 ```

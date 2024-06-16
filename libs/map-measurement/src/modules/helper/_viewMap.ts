@@ -1,5 +1,5 @@
-import { getUUIDv4 } from '@hungpv97/shared';
-import type { MapSimple } from '@hungpv97/shared-map';
+import { getUUIDv4 } from '@hungpvq/shared';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { GeoJSONSource } from 'mapbox-gl';
 import { View } from './_view';
 

@@ -23,7 +23,7 @@ Tracks the visibility of an element within the viewport.
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { useElementVisibility } from '@hungpv97/shared-core';
+import { useElementVisibility } from '@hungpvq/shared-core';
 
 const target = ref(null);
 const targetIsVisible = useElementVisibility(target);
@@ -41,7 +41,7 @@ const targetIsVisible = useElementVisibility(target);
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { vElementVisibility } from '@hungpv97/shared-core';
+import { vElementVisibility } from '@hungpvq/shared-core';
 
 const target = ref(null);
 const isVisible = ref(false);

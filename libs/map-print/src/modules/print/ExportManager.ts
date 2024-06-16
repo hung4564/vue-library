@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import maplibregl from 'mapbox-gl';
 
 export function exportMapbox(map: MapSimple): Promise<string> {

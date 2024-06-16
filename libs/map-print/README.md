@@ -3,21 +3,21 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map-print
+npm i @hungpvq/vue-map-print
 ```
 
 ```
-yarn add @hungpv97/vue-map-print
+yarn add @hungpvq/vue-map-print
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
-import { PrintAdvancedControl, PrintControl } from '@hungpv97/vue-map-print';
-import '@hungpv97/vue-map-print/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
+import '@hungpvq/vue-map-print/style.css';
 </script>
 
 <template>

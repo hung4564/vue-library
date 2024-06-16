@@ -21,7 +21,7 @@ Reactive [Network status](https://developer.mozilla.org/en-US/docs/Web/API/Netwo
 ## Usage
 
 ```js
-import { useNetwork } from '@hungpv97/shared-core';
+import { useNetwork } from '@hungpvq/shared-core';
 
 const { isOnline, offlineAt, downlink, downlinkMax, effectiveType, saveData, type } = useNetwork();
 

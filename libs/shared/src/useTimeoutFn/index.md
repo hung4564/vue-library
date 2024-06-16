@@ -20,7 +20,7 @@ Wrapper for `setTimeout` with controls.
 ## Usage
 
 ```js
-import { useTimeoutFn } from '@hungpv97/shared-core';
+import { useTimeoutFn } from '@hungpvq/shared-core';
 
 const { isPending, start, stop } = useTimeoutFn(() => {
   /* ... */

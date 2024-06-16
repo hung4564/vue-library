@@ -10,7 +10,7 @@ Get the value of value/ref/getter.
 ## Usage
 
 ```ts
-import { toValue } from '@hungpv97/shared';
+import { toValue } from '@hungpvq/shared';
 
 const foo = ref('hi');
 

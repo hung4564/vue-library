@@ -21,7 +21,7 @@ Reactive [Fullscreen API](https://developer.mozilla.org/en-US/docs/Web/API/Fulls
 ## Usage
 
 ```js
-import { useFullscreen } from '@hungpv97/shared-core';
+import { useFullscreen } from '@hungpvq/shared-core';
 
 const { isFullscreen, enter, exit, toggle } = useFullscreen();
 ```

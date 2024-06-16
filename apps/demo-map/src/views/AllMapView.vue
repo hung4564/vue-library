@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { BaseMapCard, BaseMapControl } from '@hungpv97/vue-map-basemap';
-import type { MapSimple } from '@hungpv97/shared-map';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import type { MapSimple } from '@hungpvq/shared-map';
 import {
   CrsControl,
   FullScreenControl,
@@ -11,12 +11,12 @@ import {
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import {
   DrawControl,
   DrawingType,
   LayerDrawBuild,
-} from '@hungpv97/vue-map-draw';
+} from '@hungpvq/vue-map-draw';
 import {
   IdentifyControl,
   LayerControl,
@@ -25,9 +25,9 @@ import {
   addLayer,
   createGeoJsonLayer,
   createRasterUrlLayer,
-} from '@hungpv97/vue-map-layer';
-import { MeasurementControl } from '@hungpv97/vue-map-measurement';
-import { PrintAdvancedControl, PrintControl } from '@hungpv97/vue-map-print';
+} from '@hungpvq/vue-map-layer';
+import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 function onMapLoaded(map: MapSimple) {
   addLayer(
     map.id,

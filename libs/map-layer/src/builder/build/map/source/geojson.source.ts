@@ -1,5 +1,5 @@
-import type { MapSimple } from '@hungpv97/shared-map';
-import { ABuild } from '@hungpv97/vue-map-core';
+import type { MapSimple } from '@hungpvq/shared-map';
+import { ABuild } from '@hungpvq/vue-map-core';
 import { bbox } from '@turf/turf';
 import type {
   BBox,

@@ -1,4 +1,4 @@
-import { type CoordinatesNumber } from '@hungpv97/shared-map';
+import { type CoordinatesNumber } from '@hungpvq/shared-map';
 import { IViewSetting, IViewSettingField } from '../types';
 
 /* eslint-disable no-unused-vars */

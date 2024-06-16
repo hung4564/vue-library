@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup>
-import { InputText, useLang, useMap } from '@hungpv97/vue-map-core';
+import { InputText, useLang, useMap } from '@hungpvq/vue-map-core';
 const form = defineModel();
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);

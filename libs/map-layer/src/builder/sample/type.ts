@@ -1,5 +1,5 @@
-import { Color } from '@hungpv97/shared-map';
-import type { IBuild, LayerAction } from '@hungpv97/vue-map-core';
+import { Color } from '@hungpvq/shared-map';
+import type { IBuild, LayerAction } from '@hungpvq/vue-map-core';
 import type { BBox, GeoJSON } from 'geojson';
 
 export type OptionDefault = {

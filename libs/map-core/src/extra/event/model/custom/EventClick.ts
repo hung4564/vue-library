@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { EventClickOption } from '../../types';
 import { Event } from '../Event';
 

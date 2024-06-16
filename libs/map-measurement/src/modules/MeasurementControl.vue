@@ -95,7 +95,7 @@ import {
   useLang,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,
@@ -124,7 +124,7 @@ import { FormView } from './helper/_viewForm';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import { IViewSettingField } from './types';
-import { CoordinatesNumber, MapSimple } from '@hungpv97/shared-map';
+import { CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
 const { getCrsItems } = crsStore;
 const { addImage } = imageStore;
 let handler = MeasurementHandle();

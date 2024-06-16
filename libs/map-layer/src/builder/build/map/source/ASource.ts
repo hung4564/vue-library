@@ -1,7 +1,7 @@
 import type { BBox, FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
-import { MapSimple } from '@hungpv97/shared-map';
-import { AView, type IView } from '@hungpv97/vue-map-core';
+import { MapSimple } from '@hungpvq/shared-map';
+import { AView, type IView } from '@hungpvq/vue-map-core';
 import { AnySourceData } from 'mapbox-gl';
 
 export type ISource = IView & {

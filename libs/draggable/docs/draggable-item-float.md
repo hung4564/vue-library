@@ -47,7 +47,7 @@ category: Component
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableItemFloat } from '@hungpv97/vue-draggable';
+import { DraggableContainer, DraggableItemFloat } from '@hungpvq/vue-draggable';
 </script>
 
 <template>

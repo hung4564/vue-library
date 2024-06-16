@@ -43,7 +43,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['vue', '@hungpv97/shared', '@hungpv97/shared-core'],
+      external: ['vue', '@hungpvq/shared', '@hungpvq/shared-core'],
     },
   },
 });

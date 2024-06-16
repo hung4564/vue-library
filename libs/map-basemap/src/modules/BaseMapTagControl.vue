@@ -25,7 +25,7 @@ import {
   ModuleContainer,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';

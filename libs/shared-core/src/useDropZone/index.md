@@ -22,7 +22,7 @@ Create a zone where files can be dropped.
 
 ```vue
 <script setup lang="ts">
-import { useDropZone } from '@hungpv97/share-code';
+import { useDropZone } from '@hungpvq/share-code';
 
 const dropZoneRef = ref<HTMLDivElement>();
 

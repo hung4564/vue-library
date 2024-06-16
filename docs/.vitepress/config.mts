@@ -6,8 +6,8 @@ import { getMapSideBar } from '../../libs/map-core/metadata';
 import { SharedFunctionsSideBar } from '../../libs/shared/metadata';
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'Doc @hungpv97',
-  description: 'Doc @hungpv97',
+  title: 'Doc @hungpvq',
+  description: 'Doc @hungpvq',
   srcDir: '../',
   lastUpdated: true,
   themeConfig: {
@@ -57,7 +57,7 @@ export default defineConfig({
     plugins: [UnoCSS()] as any[],
     resolve: {
       alias: {
-        '@hungpv97/metadata': 'libs/metadata/src/index.ts',
+        '@hungpvq/metadata': 'libs/metadata/src/index.ts',
       },
     },
   },

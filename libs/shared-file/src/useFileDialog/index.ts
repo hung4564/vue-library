@@ -1,6 +1,6 @@
-import type { EventHookOn } from '@hungpv97/shared';
-import { createEventHook, hasOwn } from '@hungpv97/shared';
-import { ConfigurableDocument, defaultDocument } from '@hungpv97/shared-core';
+import type { EventHookOn } from '@hungpvq/shared';
+import { createEventHook, hasOwn } from '@hungpvq/shared';
+import { ConfigurableDocument, defaultDocument } from '@hungpvq/shared-core';
 import { readonly, ref, type Ref } from 'vue';
 
 export interface UseFileDialogOptions extends ConfigurableDocument {

@@ -1,4 +1,4 @@
-import { ABuild, AView, ILayer } from '@hungpv97/vue-map-core';
+import { ABuild, AView, ILayer } from '@hungpvq/vue-map-core';
 import { callDrawForLayer } from '../store';
 import { IDrawHandler, IDrawOption, ILayerDrawView } from '../types';
 import { GeojsonDataHandle } from './handler';

@@ -10,7 +10,7 @@ Safe `onMounted`. Call `onMounted()` if it's inside a component lifecycle, if no
 ## Usage
 
 ```js
-import { tryOnMounted } from '@hungpv97/shared';
+import { tryOnMounted } from '@hungpvq/shared';
 
 tryOnMounted(() => {});
 ```

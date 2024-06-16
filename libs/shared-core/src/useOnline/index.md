@@ -20,7 +20,7 @@ Reactive online state. A wrapper of `useNetwork`.
 ## Usage
 
 ```js
-import { useOnline } from '@hungpv97/shared-core';
+import { useOnline } from '@hungpvq/shared-core';
 
 const online = useOnline();
 ```

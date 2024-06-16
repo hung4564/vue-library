@@ -5,8 +5,8 @@ export default {
 </script>
 
 <script setup>
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
-import { ModuleContainer, useLang, useMap } from '@hungpv97/vue-map-core';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import { ModuleContainer, useLang, useMap } from '@hungpvq/vue-map-core';
 import TableTdLayer from './table-td-layer.vue';
 defineProps({
   item: {},

@@ -3,11 +3,11 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map-basemap
+npm i @hungpvq/vue-map-basemap
 ```
 
 ```
-yarn add @hungpv97/vue-map-basemap
+yarn add @hungpvq/vue-map-basemap
 ```
 
 ## Usage
@@ -15,10 +15,10 @@ yarn add @hungpv97/vue-map-basemap
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
-import { BaseMapCard, BaseMapControl } from '@hungpv97/vue-map-basemap';
-import '@hungpv97/vue-map-basemap/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import '@hungpvq/vue-map-basemap/style.css';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;

@@ -5,11 +5,11 @@ import type {
   IListView,
   IView,
   Menu,
-} from '@hungpv97/vue-map-core';
-import { ContextMenu } from '@hungpv97/content-menu';
+} from '@hungpvq/vue-map-core';
+import { ContextMenu } from '@hungpvq/content-menu';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { useMap, withMapProps } from '@hungpv97/vue-map-core';
+import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import {
   mdiCircleSmall,
   mdiDelete,

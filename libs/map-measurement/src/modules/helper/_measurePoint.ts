@@ -1,5 +1,5 @@
-import { CoordinatesNumber } from '@hungpv97/shared-map';
-import { CrsItem, formatCoordinate } from '@hungpv97/vue-map-core';
+import { CoordinatesNumber } from '@hungpvq/shared-map';
+import { CrsItem, formatCoordinate } from '@hungpvq/vue-map-core';
 import { point } from '@turf/turf';
 import { IViewSetting } from '../types';
 import { Measure } from './_measurement';

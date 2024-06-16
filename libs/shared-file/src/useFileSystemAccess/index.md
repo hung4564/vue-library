@@ -20,7 +20,7 @@ Create and read and write local files with [FileSystemAccessAPI](https://develop
 ## Usage
 
 ```ts
-import { useFileSystemAccess } from '@hungpv97/shared-core';
+import { useFileSystemAccess } from '@hungpvq/shared-core';
 
 const { isSupported, data, file, fileName, fileMIME, fileSize, fileLastModified, create, open, save, saveAs, updateData } = useFileSystemAccess();
 ```

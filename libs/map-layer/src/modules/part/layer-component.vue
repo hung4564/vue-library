@@ -8,7 +8,7 @@
   ></component>
 </template>
 <script setup lang="ts">
-import { ILayerEvent, IListView } from '@hungpv97/vue-map-core';
+import { ILayerEvent, IListView } from '@hungpvq/vue-map-core';
 import {
   getCurrentInstance,
   onBeforeUnmount,

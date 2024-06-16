@@ -21,7 +21,7 @@ Reactive current timestamp
 ## Usage
 
 ```js
-import { useTimestamp } from '@hungpv97/shared-core';
+import { useTimestamp } from '@hungpvq/shared-core';
 
 const timestamp = useTimestamp({ offset: 0 });
 ```

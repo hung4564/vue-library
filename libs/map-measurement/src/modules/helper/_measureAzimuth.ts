@@ -1,6 +1,6 @@
 import { bearing, bearingToAzimuth, lineString, point } from '@turf/turf';
 
-import { type CoordinatesNumber } from '@hungpv97/shared-map';
+import { type CoordinatesNumber } from '@hungpvq/shared-map';
 import { IViewSetting } from '../types';
 import { Measure } from './_measurement';
 

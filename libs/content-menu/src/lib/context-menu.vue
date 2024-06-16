@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { onClickOutside } from '@hungpv97/shared-core';
+import { onClickOutside } from '@hungpvq/shared-core';
 const props = defineProps({ zIndex: { type: [String, Number], default: '9' } });
 const target = ref<HTMLDivElement>();
 const isOpen = ref(false);

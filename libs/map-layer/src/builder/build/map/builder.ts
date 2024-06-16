@@ -7,8 +7,8 @@ import {
   SymbolLayer,
 } from 'mapbox-gl';
 
-import type { Color } from '@hungpv97/shared-map';
-import { ABuild, ILayer, getChartRandomColor } from '@hungpv97/vue-map-core';
+import type { Color } from '@hungpvq/shared-map';
+import { ABuild, ILayer, getChartRandomColor } from '@hungpvq/vue-map-core';
 import { mdiFormatLineStyle } from '@mdi/js';
 import StyleControl from '../../../modules/StyleControl/style-control.vue';
 import { MapMultiLayer } from './layer/multi-layer.map';

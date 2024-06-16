@@ -22,7 +22,7 @@ Detects that a target element's visibility.
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { useIntersectionObserver } from '@hungpv97/shared-core';
+import { useIntersectionObserver } from '@hungpvq/shared-core';
 
 const target = ref(null);
 const targetIsVisible = ref(false);
@@ -44,7 +44,7 @@ const { stop } = useIntersectionObserver(target, ([{ isIntersecting }], observer
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { vIntersectionObserver } from '@hungpv97/shared-core';
+import { vIntersectionObserver } from '@hungpvq/shared-core';
 
 const root = ref(null);
 

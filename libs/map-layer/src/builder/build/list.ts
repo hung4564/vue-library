@@ -1,12 +1,12 @@
-import { getUUIDv4 } from '@hungpv97/shared';
-import type { Color } from '@hungpv97/shared-map';
+import { getUUIDv4 } from '@hungpvq/shared';
+import type { Color } from '@hungpvq/shared-map';
 import {
   ABuild,
   IGroupListView,
   ILayer,
   IListView,
   ListOption,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 
 export class LayerListBuild extends ABuild<ListOption, IListView> {
   constructor(option: ListOption = {}) {

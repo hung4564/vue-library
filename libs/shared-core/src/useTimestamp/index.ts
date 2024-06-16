@@ -1,5 +1,5 @@
-import type { Pausable } from '@hungpv97/shared';
-import { timestamp, useIntervalFn } from '@hungpv97/shared';
+import type { Pausable } from '@hungpvq/shared';
+import { timestamp, useIntervalFn } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { useRafFn } from '../useRafFn';

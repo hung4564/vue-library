@@ -20,7 +20,7 @@ Reactive [Media Query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Qu
 ## Usage
 
 ```js
-import { useMediaQuery } from '@hungpv97/shared-core';
+import { useMediaQuery } from '@hungpvq/shared-core';
 
 const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 const isPreferredDark = useMediaQuery('(prefers-color-scheme: dark)');

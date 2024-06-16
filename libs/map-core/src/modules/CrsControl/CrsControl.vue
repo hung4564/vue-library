@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed } from 'vue';

@@ -14,7 +14,7 @@
   </TableTdCopy>
 </template>
 <script setup>
-import { InputTextArea } from '@hungpv97/vue-map-core';
+import { InputTextArea } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 import { getLayerFromView } from '../../..//helper';
 import TableTdCopy from './table-td-copy.vue';

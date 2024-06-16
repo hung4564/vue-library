@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import {
   ILayer,
   IView,
@@ -6,7 +6,7 @@ import {
   addToQueue,
   getStore,
   store as storeMap,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { ref, type Ref } from 'vue';
 
 export const KEY = 'layer';

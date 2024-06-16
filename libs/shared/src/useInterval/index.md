@@ -20,7 +20,7 @@ Reactive counter increases on every interval
 ## Usage
 
 ```js {4}
-import { useInterval } from '@hungpv97/shared';
+import { useInterval } from '@hungpvq/shared';
 
 // count will increase every 200ms
 const counter = useInterval(200);

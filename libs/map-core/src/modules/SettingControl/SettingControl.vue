@@ -1,5 +1,5 @@
 <script setup>
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
 import { ref } from 'vue';

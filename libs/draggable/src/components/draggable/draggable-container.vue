@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getUUIDv4 } from '@hungpv97/shared';
+import { getUUIDv4 } from '@hungpvq/shared';
 import { computed, nextTick, onMounted, onUnmounted, provide, ref } from 'vue';
 import { init, remove, setParentProps } from '../../store';
 import { store } from '../../store/store';

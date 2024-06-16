@@ -44,12 +44,12 @@ export default defineConfig({
       // External packages that should not be bundled into your library.
       external: [
         'vue',
-        '@hungpv97/shared',
-        '@hungpv97/shared-core',
-        '@hungpv97/shared-integrations',
-        '@hungpv97/shared-map',
-        '@hungpv97/vue-map-core',
-        '@hungpv97/vue-draggable',
+        '@hungpvq/shared',
+        '@hungpvq/shared-core',
+        '@hungpvq/shared-integrations',
+        '@hungpvq/shared-map',
+        '@hungpvq/vue-map-core',
+        '@hungpvq/vue-draggable',
       ],
       output: {
         // Provide global variables to use in the UMD build

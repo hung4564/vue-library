@@ -6,7 +6,7 @@ import { computed, nextTick, ref } from 'vue';
 import { useMap, withMapProps } from '../../hooks';
 
 import { CrsItem, crsStore, useCoordinate } from '../../extra/crs';
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const { getCrsItems, setCrs, getCrs, getCrsItem } = crsStore;
 const props = defineProps({

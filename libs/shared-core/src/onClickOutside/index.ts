@@ -4,7 +4,7 @@ import {
   isIOS,
   noop,
   unrefElement,
-} from '@hungpv97/shared';
+} from '@hungpvq/shared';
 import { ConfigurableWindow, defaultWindow } from '../_configurable';
 import { useEventListener } from '../useEventListener';
 

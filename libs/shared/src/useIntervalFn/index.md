@@ -20,7 +20,7 @@ Wrapper for `setInterval` with controls
 ## Usage
 
 ```js
-import { useIntervalFn } from '@hungpv97/shared-core';
+import { useIntervalFn } from '@hungpvq/shared-core';
 
 const { pause, resume, isActive } = useIntervalFn(() => {
   /* your function */

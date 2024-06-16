@@ -1,4 +1,4 @@
-import { MapFCOnUseMap } from '@hungpv97/shared-map';
+import { MapFCOnUseMap } from '@hungpvq/shared-map';
 import { computed, inject, onMounted, onUnmounted } from 'vue';
 import { actions } from '../store/store';
 

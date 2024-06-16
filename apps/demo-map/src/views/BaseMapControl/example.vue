@@ -3,9 +3,9 @@ import {
   BaseMapControl,
   BaseMapCard,
   BaseMapTagControl,
-} from '@hungpv97/vue-map-basemap';
-import { Map, MapCard } from '@hungpv97/vue-map-core';
-import type { MapSimple } from '@hungpv97/shared-map';
+} from '@hungpvq/vue-map-basemap';
+import { Map, MapCard } from '@hungpvq/vue-map-core';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { ref } from 'vue';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {

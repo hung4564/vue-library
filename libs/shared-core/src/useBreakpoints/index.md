@@ -20,7 +20,7 @@ Reactive viewport breakpoints.
 ## Usage
 
 ```js
-import { breakpointsTailwind, useBreakpoints } from '@hungpv97/shared-core';
+import { breakpointsTailwind, useBreakpoints } from '@hungpvq/shared-core';
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 
@@ -32,7 +32,7 @@ const smallerThanLg = breakpoints.smaller('lg'); // only smaller than lg
 
 ```vue
 <script setup lang="ts">
-import { useBreakpoints } from '@hungpv97/shared-core';
+import { useBreakpoints } from '@hungpvq/shared-core';
 
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
@@ -68,6 +68,6 @@ const laptop = breakpoints.between('laptop', 'desktop');
 _Breakpoint presets are deliberately not auto-imported. They have to be explicitly imported:_
 
 ```js
-import { breakpointsTailwind } from '@hungpv97/shared-core';
+import { breakpointsTailwind } from '@hungpvq/shared-core';
 // and so on
 ```

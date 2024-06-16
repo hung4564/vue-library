@@ -11,7 +11,7 @@ Utility for creating event hooks
 Creating a function that uses `createEventHook`
 
 ```ts
-import { createEventHook } from '@hungpv97/shared';
+import { createEventHook } from '@hungpvq/shared';
 
 export function useMyFetch(url) {
   const fetchResult = createEventHook<Response>();

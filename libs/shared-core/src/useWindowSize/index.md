@@ -20,7 +20,7 @@ Reactive window size
 ## Usage
 
 ```js
-import { useWindowSize } from '@hungpv97/shared-core';
+import { useWindowSize } from '@hungpvq/shared-core';
 
 const { width, height } = useWindowSize();
 ```

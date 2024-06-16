@@ -12,7 +12,7 @@ Retrieves the underlying DOM element from a Vue ref or component instance
 ```vue
 <script setup>
 import { onMounted, ref } from 'vue';
-import { unrefElement } from '@hungpv97/shared';
+import { unrefElement } from '@hungpvq/shared';
 
 const div = ref(); // will be bound to the <div> element
 const hello = ref(); // will be bound to the HelloWorld Component

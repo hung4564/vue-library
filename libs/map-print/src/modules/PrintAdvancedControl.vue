@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   InputSelect,
@@ -10,7 +10,7 @@ import {
   useLang,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,

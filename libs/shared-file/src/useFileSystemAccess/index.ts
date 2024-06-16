@@ -1,10 +1,10 @@
-import type { Awaitable, MaybeRefOrGetter } from '@hungpv97/shared';
-import { toValue } from '@hungpv97/shared';
+import type { Awaitable, MaybeRefOrGetter } from '@hungpvq/shared';
+import { toValue } from '@hungpvq/shared';
 import {
   ConfigurableWindow,
   defaultWindow,
   useSupported,
-} from '@hungpv97/shared-core';
+} from '@hungpvq/shared-core';
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 

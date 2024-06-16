@@ -1,9 +1,22 @@
 {
   "name": "vue-library-map",
   "version": "0.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
   "scripts": {
     "ts-check": "nx run-many --target ts-check --all",
+    "lint": "nx run-many --target lint --all",
     "build": "nx run-many --target build --all",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -17,9 +30,11 @@
     "@mdi/js": "^7.4.47",
     "@turf/turf": "^6.5.0",
     "@types/file-saver": "^2.0.7",
+    "@types/js-yaml": "^4.0.9",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
     "@types/mapbox-gl": "^3.1.0",
     "file-saver": "^2.0.5",
+    "js-yaml": "^4.1.0",
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "mapbox-gl": "^1.13.0",

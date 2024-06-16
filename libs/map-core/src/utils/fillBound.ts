@@ -1,6 +1,6 @@
 import { EaseToOptions, PaddingOptions } from 'mapbox-gl';
 
-import { CoordinatesNumber, MapSimple } from '@hungpv97/shared-map';
+import { CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
 import { bbox, lineString, point, polygon } from '@turf/turf';
 
 export function fitBounds(map: MapSimple, value: any, { zoom = 15 } = {}) {

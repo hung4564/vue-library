@@ -1,5 +1,5 @@
-import type { MapSimple } from '@hungpv97/shared-map';
-import { addStore, getStore, store } from '@hungpv97/vue-map-core';
+import type { MapSimple } from '@hungpvq/shared-map';
+import { addStore, getStore, store } from '@hungpvq/vue-map-core';
 import { computed, reactive } from 'vue';
 import { BaseMapItem, BaseMapStore } from '../types';
 import { BaseMapLayer } from './model';

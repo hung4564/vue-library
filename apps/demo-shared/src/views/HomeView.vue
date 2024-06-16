@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStoreSortable } from '@hungpv97/shared-integrations';
+import { useStoreSortable } from '@hungpvq/shared-integrations';
 import { ref } from 'vue';
 import Group from './GroupDrag.vue';
 const el1 = ref<HTMLElement | null>(null);

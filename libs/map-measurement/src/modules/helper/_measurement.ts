@@ -1,4 +1,4 @@
-import { type CoordinatesNumber } from '@hungpv97/shared-map';
+import { type CoordinatesNumber } from '@hungpvq/shared-map';
 import { IViewSetting } from '../types';
 
 export class Measure {

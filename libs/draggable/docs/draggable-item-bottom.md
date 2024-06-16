@@ -39,7 +39,7 @@ category: Component
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableItemBottom } from '@hungpv97/vue-draggable';
+import { DraggableContainer, DraggableItemBottom } from '@hungpvq/vue-draggable';
 </script>
 
 <template>

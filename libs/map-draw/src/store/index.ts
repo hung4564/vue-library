@@ -1,11 +1,11 @@
-import { getUUIDv4 } from '@hungpv97/shared';
+import { getUUIDv4 } from '@hungpvq/shared';
 import {
   ILayer,
   addStore,
   addToQueue,
   getStore,
   store as storeMap,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
 import { reactive } from 'vue';
 import {

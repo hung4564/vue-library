@@ -3,18 +3,18 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-draggable
+npm i @hungpvq/vue-draggable
 ```
 
 ```
-yarn add @hungpv97/vue-draggable
+yarn add @hungpvq/vue-draggable
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat } from '@hungpv97/vue-draggable';
+import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat } from '@hungpvq/vue-draggable';
 </script>
 
 <template>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { BaseMapControl } from '@hungpv97/vue-map-basemap';
-import { Map } from '@hungpv97/vue-map-core';
+import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { Map } from '@hungpvq/vue-map-core';
 import {
   DrawControl,
   DrawingType,
   type DrawOption,
-} from '@hungpv97/vue-map-draw';
+} from '@hungpvq/vue-map-draw';
 const drawOptions: DrawOption = {
   draw_support: [DrawingType.POINT],
   async save(geojson) {

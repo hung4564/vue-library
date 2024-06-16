@@ -1,9 +1,9 @@
-import type { ConfigurableEventFilter } from '@hungpv97/shared';
+import type { ConfigurableEventFilter } from '@hungpvq/shared';
 import {
   createFilterWrapper,
   throttleFilter,
   timestamp,
-} from '@hungpv97/shared';
+} from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';

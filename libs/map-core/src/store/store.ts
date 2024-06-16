@@ -1,4 +1,4 @@
-import { MapFCOnUseMap, MapSimple } from '@hungpv97/shared-map';
+import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
 import { MapStore } from '../types';
 import { addMapIdToQueue, removeMapIdFromQueue } from './queue';
 let store = {

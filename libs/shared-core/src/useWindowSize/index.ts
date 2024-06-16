@@ -1,4 +1,4 @@
-import { tryOnMounted } from '@hungpv97/shared';
+import { tryOnMounted } from '@hungpvq/shared';
 import { ref, watch } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';

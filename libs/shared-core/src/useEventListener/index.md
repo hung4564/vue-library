@@ -11,7 +11,7 @@ Use EventListener with ease. Register using [addEventListener](https://developer
 ## Usage
 
 ```js
-import { useEventListener } from '@hungpv97/shared-core';
+import { useEventListener } from '@hungpvq/shared-core';
 
 useEventListener(document, 'visibilitychange', (evt) => {
   console.log(evt);
@@ -21,7 +21,7 @@ useEventListener(document, 'visibilitychange', (evt) => {
 You can also pass a ref as the event target, `useEventListener` will unregister the previous event and register the new one when you change the target.
 
 ```ts
-import { useEventListener } from '@hungpv97/shared-core';
+import { useEventListener } from '@hungpvq/shared-core';
 
 const element = ref<HTMLDivElement>();
 useEventListener(element, 'keydown', (e) => {
@@ -39,7 +39,7 @@ useEventListener(element, 'keydown', (e) => {
 You can also call the returned to unregister the listener.
 
 ```ts
-import { useEventListener } from '@hungpv97/shared-core';
+import { useEventListener } from '@hungpvq/shared-core';
 
 const cleanup = useEventListener(document, 'keydown', (e) => {
   console.log(e.key);

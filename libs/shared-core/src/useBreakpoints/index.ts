@@ -1,5 +1,5 @@
-import type { MaybeRefOrGetter } from '@hungpv97/shared';
-import { increaseWithUnit, toValue } from '@hungpv97/shared';
+import type { MaybeRefOrGetter } from '@hungpvq/shared';
+import { increaseWithUnit, toValue } from '@hungpvq/shared';
 import type { ComputedRef, Ref } from 'vue';
 import { computed } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';

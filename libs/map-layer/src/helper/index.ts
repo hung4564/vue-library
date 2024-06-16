@@ -1,5 +1,5 @@
-import { MapSimple } from '@hungpv97/shared-map';
-import { ILayer, IView } from '@hungpv97/vue-map-core';
+import { MapSimple } from '@hungpvq/shared-map';
+import { ILayer, IView } from '@hungpvq/vue-map-core';
 
 export function getLayerFromView(view: IView): ILayer | undefined {
   return view.parent;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useShow } from '@hungpv97/vue-map-core';
+import { useShow } from '@hungpvq/vue-map-core';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { Layer } from 'mapbox-gl';
 import { computed, nextTick, ref, watch } from 'vue';

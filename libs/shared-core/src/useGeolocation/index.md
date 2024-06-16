@@ -21,7 +21,7 @@ Reactive [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geol
 ## Usage
 
 ```js
-import { useGeolocation } from '@hungpv97/shared-core';
+import { useGeolocation } from '@hungpvq/shared-core';
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 ```

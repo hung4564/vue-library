@@ -74,7 +74,7 @@ import {
   mdiUngroup,
 } from '@mdi/js';
 import { nextTick, ref } from 'vue';
-import { useStoreSortable } from '@hungpv97/shared-integrations';
+import { useStoreSortable } from '@hungpvq/shared-integrations';
 const props = defineProps({
   layerGroup: { type: Object, required: true },
   selected: { type: Array, default: () => [] },

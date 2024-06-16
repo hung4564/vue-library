@@ -9,7 +9,7 @@ Safe `onUnmounted`. Call `onUnmounted()` if it's inside a component lifecycle, i
 ## Usage
 
 ```js
-import { tryOnUnmounted } from '@hungpv97/shared';
+import { tryOnUnmounted } from '@hungpvq/shared';
 
 tryOnUnmounted(() => {});
 ```

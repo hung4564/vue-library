@@ -29,7 +29,7 @@ category: Component
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableItemPopup, DraggableItemSideBar } from '@hungpv97/vue-draggable';
+import { DraggableContainer, DraggableItemPopup, DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { ref } from 'vue';
 const containerId = ref('');
 function init(id) {

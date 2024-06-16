@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type CoordinatesNumber } from '@hungpv97/shared-map';
+import { type CoordinatesNumber } from '@hungpvq/shared-map';
 import { IView } from '../types';
 export const MeasurementHandle = function () {
   let _action: any = null;

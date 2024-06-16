@@ -12,10 +12,10 @@ import {
   useMap,
   useShow,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 
-import { DraggableItemSideBar } from '@hungpv97/vue-draggable';
-import { IListView } from '@hungpv97/vue-map-core';
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
+import { IListView } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,

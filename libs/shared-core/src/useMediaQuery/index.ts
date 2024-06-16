@@ -1,7 +1,7 @@
 /* this implementation is original ported from https://github.com/logaretm/vue-use-web by Abdelrahman Awad */
 
-import type { MaybeRefOrGetter } from '@hungpv97/shared';
-import { toValue, tryOnScopeDispose } from '@hungpv97/shared';
+import type { MaybeRefOrGetter } from '@hungpvq/shared';
+import { toValue, tryOnScopeDispose } from '@hungpvq/shared';
 import { ref, watchEffect } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';

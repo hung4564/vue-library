@@ -1,4 +1,4 @@
-import { Color } from '@hungpv97/shared-map';
+import { Color } from '@hungpvq/shared-map';
 
 export function getChartRandomColor(): Color {
   const random = Math.floor(Math.random() * colorChart.length);

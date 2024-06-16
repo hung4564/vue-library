@@ -3,21 +3,21 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map-measurement
+npm i @hungpvq/vue-map-measurement
 ```
 
 ```
-yarn add @hungpv97/vue-map-measurement
+yarn add @hungpvq/vue-map-measurement
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
-import { MeasurementControl } from '@hungpv97/vue-map-measurement';
-import '@hungpv97/vue-map-measurement/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
+import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import '@hungpvq/vue-map-measurement/style.css';
 </script>
 
 <template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getUUIDv4 } from '@hungpv97/shared';
-import { DraggableContainer } from '@hungpv97/vue-draggable';
+import { getUUIDv4 } from '@hungpvq/shared';
+import { DraggableContainer } from '@hungpvq/vue-draggable';
 import mapboxgl, { MapboxOptions } from 'mapbox-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
 import { actions, state as mapState } from '../store/store';
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');

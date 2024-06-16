@@ -11,7 +11,7 @@ Mounted state in ref.
 ## Usage
 
 ```js
-import { useMounted } from '@hungpv97/shared-core';
+import { useMounted } from '@hungpvq/shared-core';
 
 const isMounted = useMounted();
 ```

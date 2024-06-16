@@ -20,7 +20,7 @@ Update value after a given time with controls.
 ## Usage
 
 ```js
-import { promiseTimeout, useTimeout } from '@hungpv97/shared';
+import { promiseTimeout, useTimeout } from '@hungpvq/shared';
 
 const ready = useTimeout(1000);
 ```

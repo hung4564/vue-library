@@ -1,5 +1,5 @@
-import type { MapSimple } from '@hungpv97/shared-map';
-import { AView, type ILayerMapView } from '@hungpv97/vue-map-core';
+import type { MapSimple } from '@hungpvq/shared-map';
+import { AView, type ILayerMapView } from '@hungpvq/vue-map-core';
 
 export interface IMapOption {
   metadata: {

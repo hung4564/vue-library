@@ -1,4 +1,4 @@
-import { ILayer, IView } from '@hungpv97/vue-map-core';
+import { ILayer, IView } from '@hungpvq/vue-map-core';
 
 import type {
   Feature,

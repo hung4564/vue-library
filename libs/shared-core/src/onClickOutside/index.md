@@ -22,7 +22,7 @@ Listen for clicks outside of an element. Useful for modal or dropdown.
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { onClickOutside } from '@hungpv97/shared-core';
+import { onClickOutside } from '@hungpvq/shared-core';
 
 const target = ref(null);
 

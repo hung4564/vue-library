@@ -3,7 +3,7 @@ import {
   AView,
   IIdentifyOption,
   ILayerIdentifyView,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 
 const KEY = 'identify';
 

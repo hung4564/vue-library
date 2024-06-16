@@ -5,7 +5,7 @@ import {
   ILayerComponentItem,
   ILayerComponentView,
   LayerAction,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 
 const KEY = 'component';
 

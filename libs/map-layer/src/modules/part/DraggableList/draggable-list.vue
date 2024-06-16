@@ -47,7 +47,7 @@
 import DraggableListItem from './draggable-list-item.vue';
 import DraggableListGroupItem from './draggable-list-group.vue';
 
-import { useStoreSortable } from '@hungpv97/shared-integrations';
+import { useStoreSortable } from '@hungpvq/shared-integrations';
 import { computed, nextTick, onMounted, ref } from 'vue';
 const props = defineProps({
   items: { type: Array, required: true },

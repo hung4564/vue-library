@@ -31,8 +31,8 @@ category: Container
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
 </script>
 
 <template>

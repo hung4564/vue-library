@@ -21,7 +21,7 @@ Tracks whether the user is being inactive.
 ## Usage
 
 ```js
-import { useIdle } from '@hungpv97/shared-core';
+import { useIdle } from '@hungpvq/shared-core';
 
 const { idle, lastActive } = useIdle(5 * 60 * 1000); // 5 min
 
@@ -32,7 +32,7 @@ Programatically resetting:
 
 ```js
 import { watch } from 'vue';
-import { useCounter, useIdle } from '@hungpv97/shared-core';
+import { useCounter, useIdle } from '@hungpvq/shared-core';
 
 const { inc, count } = useCounter();
 

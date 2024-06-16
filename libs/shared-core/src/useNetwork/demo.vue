@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { stringify } from '@vueuse/docs-utils';
+import { stringify } from '@hungpvq/shared';
 import { reactive } from 'vue';
 import { useNetwork } from '.';
 

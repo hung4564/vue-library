@@ -1,4 +1,4 @@
-import { MapSimple } from '@hungpv97/shared-map';
+import { MapSimple } from '@hungpvq/shared-map';
 import { reactive } from 'vue';
 import { addToQueue } from '../../store/queue';
 import { actions, addStore, getStore } from '../../store/store';

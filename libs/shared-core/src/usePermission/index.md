@@ -9,7 +9,7 @@ Reactive [Permissions API](https://developer.mozilla.org/en-US/docs/Web/API/Perm
 ## Usage
 
 ```js
-import { usePermission } from '@hungpv97/shared-core';
+import { usePermission } from '@hungpvq/shared-core';
 
 const microphoneAccess = usePermission('microphone');
 ```

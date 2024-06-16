@@ -3,9 +3,9 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map
+npm i @hungpvq/vue-map
 ```
 
 ```
-yarn add @hungpv97/vue-map
+yarn add @hungpvq/vue-map
 ```

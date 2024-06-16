@@ -25,7 +25,7 @@ Fires when users start typing on non-editable elements.
 ```
 
 ```ts {7-10}
-import { onStartTyping } from '@hungpv97/shared-core';
+import { onStartTyping } from '@hungpvq/shared-core';
 
 export default {
   setup() {

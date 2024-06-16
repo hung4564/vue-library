@@ -10,7 +10,7 @@ SSR compatibility `isSupported`
 ## Usage
 
 ```ts
-import { useSupported } from '@hungpv97/shared-core';
+import { useSupported } from '@hungpvq/shared-core';
 
 const isSupported = useSupported(() => navigator && 'getBattery' in navigator);
 

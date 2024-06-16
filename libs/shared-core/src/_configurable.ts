@@ -1,4 +1,4 @@
-import { isClient } from '@hungpv97/shared';
+import { isClient } from '@hungpvq/shared';
 
 export interface ConfigurableWindow {
   /*

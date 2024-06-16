@@ -3,7 +3,7 @@ import {
   ILayer,
   LayerAction,
   getChartRandomColor,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { Layer } from '../../model';
 import {
   LayerListBuild,

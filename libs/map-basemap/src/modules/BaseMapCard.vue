@@ -22,7 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useLang, useMap, InputSelect, MapImage } from '@hungpv97/vue-map-core';
+import { useLang, useMap, InputSelect, MapImage } from '@hungpvq/vue-map-core';
 import { useBaseMap } from '../hooks';
 const props = defineProps({
   mapId: { type: String, required: true },

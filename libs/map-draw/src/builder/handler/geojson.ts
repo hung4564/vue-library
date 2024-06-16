@@ -1,5 +1,5 @@
-import { copyByJson } from '@hungpv97/shared';
-import { ILayer } from '@hungpv97/vue-map-core';
+import { copyByJson } from '@hungpvq/shared';
+import { ILayer } from '@hungpvq/vue-map-core';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature, FeatureCollection } from 'geojson';

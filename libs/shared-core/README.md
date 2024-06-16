@@ -3,5 +3,5 @@
 ## Installation
 
 ```bash
-npm i @hungpv97/shared-core
+npm i @hungpvq/shared-core
 ```

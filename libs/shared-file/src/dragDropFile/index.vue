@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useFileDialog } from '../useFileDialog';
-import { useDropZone } from '@hungpv97/shared-core';
+import { useDropZone } from '@hungpvq/shared-core';
 const props = defineProps({ multiple: Boolean, accept: String });
 const emits = defineEmits(['change']);
 const { onChange, open } = useFileDialog({

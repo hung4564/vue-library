@@ -1,4 +1,4 @@
-import { directiveHooks } from '@hungpv97/shared';
+import { directiveHooks } from '@hungpvq/shared';
 import type { DirectiveBinding, ObjectDirective } from 'vue';
 import type { UseIntersectionObserverOptions } from '.';
 import { useIntersectionObserver } from '.';

@@ -21,7 +21,7 @@ Call function on every `requestAnimationFrame`. With controls of pausing and res
 
 ```js
 import { ref } from 'vue';
-import { useRafFn } from '@hungpv97/shared-core';
+import { useRafFn } from '@hungpvq/shared-core';
 
 const count = ref(0);
 

@@ -9,14 +9,14 @@ category: Extra
 ## Usage
 
 ```ts
-import { langStore, useLang, type MapLocateStore } from '@hungpv97/vue-map-core';
+import { langStore, useLang, type MapLocateStore } from '@hungpvq/vue-map-core';
 const { trans, setLocale } = useLang(mapId.value);
 ```
 
 ## langStore
 
 ```ts
-import { langStore, type MapLocateStore } from '@hungpv97/vue-map-core';
+import { langStore, type MapLocateStore } from '@hungpvq/vue-map-core';
 langStore.getMapLang(mapId:string): MapLocateStore
 langStore.setMapLang(mapId: string, locale: Record<string, string>): void
 ```
@@ -24,7 +24,7 @@ langStore.setMapLang(mapId: string, locale: Record<string, string>): void
 ## useLang
 
 ```ts
-import { useLang } from '@hungpv97/vue-map-core';
+import { useLang } from '@hungpvq/vue-map-core';
 const { trans, setLocale } = useLang(mapId.value);
 setLocale({
   map: {

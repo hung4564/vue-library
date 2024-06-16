@@ -1,4 +1,4 @@
-import { IBuild, ILayer, LayerAction } from '@hungpv97/vue-map-core';
+import { IBuild, ILayer, LayerAction } from '@hungpvq/vue-map-core';
 import { Layer } from '../../model';
 import {
   LayerListBuild,

@@ -24,7 +24,7 @@ package: vue-map
 
 ```vue
 <script setup lang="ts">
-import { MapControlButton, ModuleContainer, withMapProps } from '@hungpv97/vue-map-core';
+import { MapControlButton, ModuleContainer, withMapProps } from '@hungpvq/vue-map-core';
 const props = defineProps({
   ...withMapProps,
 });

@@ -3,21 +3,21 @@
 ## Install
 
 ```
-npm i @hungpv97/vue-map-draw
+npm i @hungpvq/vue-map-draw
 ```
 
 ```
-yarn add @hungpv97/vue-map-draw
+yarn add @hungpvq/vue-map-draw
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
-import { DrawControl } from '@hungpv97/vue-map-draw';
-import '@hungpv97/vue-map-draw/style.css';
+import { Map } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
+import { DrawControl } from '@hungpvq/vue-map-draw';
+import '@hungpvq/vue-map-draw/style.css';
 </script>
 
 <template>

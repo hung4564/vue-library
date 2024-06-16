@@ -30,8 +30,8 @@ and
 
 ```vue
 <script setup lang="ts">
-import { Map, ZoomControl } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
+import { Map, ZoomControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Map } from '@hungpv97/vue-map-core';
-import { MeasurementControl } from '@hungpv97/vue-map-measurement';
-import { BaseMapControl } from '@hungpv97/vue-map-basemap';
+import { Map } from '@hungpvq/vue-map-core';
+import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { BaseMapControl } from '@hungpvq/vue-map-basemap';
 </script>
 <template>
   <Map>

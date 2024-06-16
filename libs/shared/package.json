@@ -1,6 +1,19 @@
 {
-  "name": "@hungpv97/shared",
-  "version": 0.0.1,
+  "name": "@hungpvq/shared",
+  "version": "0.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {

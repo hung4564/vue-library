@@ -8,7 +8,7 @@ import {
   LayerAction,
   LayerActionOption,
   Menu,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import ToggleShow from './toggle-show.vue';
 export class LayerActionBuild extends ABuild<LayerActionOption, IActionView> {
   constructor(options: LayerActionOption = { actions: [] }) {

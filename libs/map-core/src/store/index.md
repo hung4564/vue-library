@@ -9,13 +9,13 @@ category: Store
 ## Usage
 
 ```ts
-import { addStore, getMap, getStore, addToQueue } from '@hungpv97/vue-map-core';
+import { addStore, getMap, getStore, addToQueue } from '@hungpvq/vue-map-core';
 ```
 
 ## Create new store
 
 ```ts
-import { addStore, getStore, addToQueue } from '@hungpv97/vue-map-core';
+import { addStore, getStore, addToQueue } from '@hungpvq/vue-map-core';
 export const KEY = 'layer';
 export type MapLayerStore = {
   layers: Record<string, ILayer>;

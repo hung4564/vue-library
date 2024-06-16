@@ -1,5 +1,5 @@
-import type { Pausable } from '@hungpv97/shared';
-import { tryOnScopeDispose } from '@hungpv97/shared';
+import type { Pausable } from '@hungpvq/shared';
+import { tryOnScopeDispose } from '@hungpvq/shared';
 import { readonly, ref } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';

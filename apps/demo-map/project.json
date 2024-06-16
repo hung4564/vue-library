@@ -4,5 +4,12 @@
   "projectType": "application",
   "sourceRoot": "apps/demo-map/src",
   "// targets": "to see all targets run: nx show project demo-map --web",
-  "targets": {}
+  "targets": {
+    "publish": {
+      "executor": "@nx/vite:build",
+      "options": {
+        "outputPath": "deploy/demo/map"
+      }
+    }
+  }
 }

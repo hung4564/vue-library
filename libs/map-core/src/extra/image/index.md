@@ -9,13 +9,13 @@ category: Extra
 ## Usage
 
 ```ts
-import { imageStore, type MapImageStore } from '@hungpv97/vue-map-core';
+import { imageStore, type MapImageStore } from '@hungpvq/vue-map-core';
 ```
 
 ## imageStore
 
 ```ts
-import { imageStore, type MapImageStore } from '@hungpv97/vue-map-core';
+import { imageStore, type MapImageStore } from '@hungpvq/vue-map-core';
 imageStore.addImage(
   mapId: string,
   key: string,

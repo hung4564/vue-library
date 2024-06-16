@@ -4,7 +4,7 @@ import {
   InputColorPicker,
   InputSlider,
   InputText,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { ChoseTab, Tab } from '../../../../types/style';
 import { divColor, textAfter, textFormat } from '../label';
 

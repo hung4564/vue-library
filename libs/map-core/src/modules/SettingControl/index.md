@@ -23,8 +23,8 @@ package: vue-map
 
 ```vue
 <script setup lang="ts">
-import { Map, SettingControl } from '@hungpv97/vue-map-core';
-import '@hungpv97/vue-map/style.css';
+import { Map, SettingControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map/style.css';
 </script>
 
 <template>

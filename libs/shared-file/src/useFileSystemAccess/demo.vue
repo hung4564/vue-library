@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { stringify } from '@vueuse/docs-utils';
+import { stringify } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { reactive, ref } from 'vue';
 import { useFileSystemAccess } from '.';

@@ -1,4 +1,4 @@
-import { ABuild, ILayer } from '@hungpv97/vue-map-core';
+import { ABuild, ILayer } from '@hungpvq/vue-map-core';
 import { mdiInformationOutline } from '@mdi/js';
 import LayerInfo from '../../modules/part/detail/layer-info.vue';
 

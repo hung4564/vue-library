@@ -4,7 +4,7 @@ import {
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
-} from '@hungpv97/vue-draggable';
+} from '@hungpvq/vue-draggable';
 import { ref } from 'vue';
 const containerId = ref('');
 function init(id) {

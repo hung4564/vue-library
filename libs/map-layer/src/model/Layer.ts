@@ -1,4 +1,4 @@
-import { MapSimple } from '@hungpv97/shared-map';
+import { MapSimple } from '@hungpvq/shared-map';
 import {
   Base,
   ILayer,
@@ -8,7 +8,7 @@ import {
   LayerInfo,
   TYPE_VIEW,
   TYPE_VIEW_NAME,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import mitt from 'mitt';
 import { LayerViewContainer } from './part/view';
 

@@ -45,8 +45,8 @@ export default defineConfig({
       // External packages that should not be bundled into your library.
       external: [
         'vue',
-        '@hungpv97/shared',
-        '@hungpv97/shared-core',
+        '@hungpvq/shared',
+        '@hungpvq/shared-core',
         'sortablejs',
       ],
       output: {

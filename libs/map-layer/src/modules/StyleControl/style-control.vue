@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, shallowRef } from 'vue';
 
-import { DraggableItemSideBar } from '@hungpv97/vue-draggable';
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   MapSimple,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { getLayerFromView } from '../../helper';
 import { ILayerMapView } from '../../types';
 

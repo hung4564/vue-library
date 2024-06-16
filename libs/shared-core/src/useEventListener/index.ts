@@ -8,7 +8,7 @@ import {
   tryOnScopeDispose,
   unrefElement,
   type MaybeElementRef,
-} from '@hungpv97/shared';
+} from '@hungpvq/shared';
 import { watch } from 'vue';
 import { defaultWindow } from '../_configurable';
 

@@ -1,4 +1,4 @@
-import { addStore, addToQueue, getStore } from '@hungpv97/vue-map-core';
+import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
 
 export const KEY = 'print';
 export type PrintOption = {

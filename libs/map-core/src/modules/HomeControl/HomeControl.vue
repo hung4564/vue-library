@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = defineProps({
   ...withMapProps,

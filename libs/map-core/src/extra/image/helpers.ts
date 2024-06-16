@@ -1,4 +1,4 @@
-import { MapSimple } from '@hungpv97/shared-map';
+import { MapSimple } from '@hungpvq/shared-map';
 
 export function loadImage(url: string) {
   return loadImageViaTag(url);

@@ -75,7 +75,7 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   MapCard,
   MapControlButton,
@@ -85,7 +85,7 @@ import {
   useLang,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, ref, watch } from 'vue';

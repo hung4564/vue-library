@@ -1,4 +1,4 @@
-import { ABuild } from '@hungpv97/vue-map-core';
+import { ABuild } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import { RasterSource as MapBoxRasterSource } from 'mapbox-gl';
 import { ASource, ISource } from './ASource';

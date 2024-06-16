@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFullscreen } from '@hungpv97/shared-core';
+import { useFullscreen } from '@hungpvq/shared-core';
 
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';

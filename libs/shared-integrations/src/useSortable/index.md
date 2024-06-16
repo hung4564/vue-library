@@ -20,7 +20,7 @@ npm i sortablejs@^1
 
 ```vue
 <script setup lang="ts">
-import { useStoreSortable } from '@hungpv97/shared-integrations';
+import { useStoreSortable } from '@hungpvq/shared-integrations';
 import { ref } from 'vue';
 
 const el = ref<HTMLElement | null>(null);
@@ -46,7 +46,7 @@ useStoreSortable(el, list);
 
 ```vue
 <script setup lang="ts">
-import { useSortable } from '@hungpv97/shared-core';
+import { useSortable } from '@hungpvq/shared-core';
 import { ref } from 'vue';
 
 const el = ref<HTMLElement | null>(null);
@@ -83,7 +83,7 @@ option('animation', animation);
 
 ```vue
 <script setup lang="ts">
-import { useSortable } from '@hungpv97/shared-integrations';
+import { useSortable } from '@hungpvq/shared-integrations';
 import { ref } from 'vue';
 
 const list = ref([

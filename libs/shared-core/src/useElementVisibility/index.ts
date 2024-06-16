@@ -1,7 +1,7 @@
 import type {
   MaybeComputedElementRef,
   MaybeRefOrGetter,
-} from '@hungpv97/shared';
+} from '@hungpvq/shared';
 import { ref } from 'vue';
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';

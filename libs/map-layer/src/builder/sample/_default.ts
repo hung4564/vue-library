@@ -1,4 +1,4 @@
-import { ILayer } from '@hungpv97/vue-map-core';
+import { ILayer } from '@hungpvq/vue-map-core';
 import { LayerActionBuild } from '../build/action';
 import { LayerComponentBuild } from '../build/component';
 import { OptionDefault } from './type';

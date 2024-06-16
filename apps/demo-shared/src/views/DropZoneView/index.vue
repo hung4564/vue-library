@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDropZone, useEventListener } from '@hungpv97/shared-core';
+import { useDropZone, useEventListener } from '@hungpvq/shared-core';
 import { ref } from 'vue';
 import BooleanDisplay from './BooleanDisplay.vue';
 

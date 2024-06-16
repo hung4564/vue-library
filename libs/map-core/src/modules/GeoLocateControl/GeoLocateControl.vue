@@ -6,10 +6,10 @@ import { computed, nextTick, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
-import type { MapSimple } from '@hungpv97/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import { useGeolocation } from '@hungpv97/shared-core';
-import { tryOnMounted, tryOnUnmounted, toValue } from '@hungpv97/shared';
+import { useGeolocation } from '@hungpvq/shared-core';
+import { tryOnMounted, tryOnUnmounted, toValue } from '@hungpvq/shared';
 const { coords, error, resume, pause } = useGeolocation({
   immediate: false,
 });

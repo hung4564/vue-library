@@ -3,5 +3,5 @@
 ## Installation
 
 ```bash
-npm i @hungpv97/shared
+npm i @hungpvq/shared
 ```

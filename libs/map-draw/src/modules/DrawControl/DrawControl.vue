@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ContextMenu } from '@hungpv97/content-menu';
+import { ContextMenu } from '@hungpvq/content-menu';
 import {
   EventClick,
   MapControlButton,
@@ -9,7 +9,7 @@ import {
   useEventMap,
   useMap,
   withMapProps,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import MapboxDraw, {
   DrawCreateEvent,

@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup>
-import { DraggableItemPopup } from '@hungpv97/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   InputSelect,
@@ -13,7 +13,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-} from '@hungpv97/vue-map-core';
+} from '@hungpvq/vue-map-core';
 import { computed, onMounted, ref } from 'vue';
 import { addLayer } from '../../store';
 import { ConfigNo } from './config';

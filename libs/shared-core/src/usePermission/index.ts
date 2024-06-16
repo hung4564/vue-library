@@ -1,4 +1,4 @@
-import { createSingletonPromise } from '@hungpv97/shared';
+import { createSingletonPromise } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { ConfigurableNavigator } from '../_configurable';

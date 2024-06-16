@@ -1,4 +1,4 @@
-import { Coordinates, MapSimple } from '@hungpv97/shared-map';
+import { Coordinates, MapSimple } from '@hungpvq/shared-map';
 import { EventBboxRangerHandle, EventBboxRangerOption } from '../../types';
 import { Event } from '../Event';
 

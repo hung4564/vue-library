@@ -26,8 +26,8 @@ import {
   InputTextArea,
   useLang,
   useMap,
-} from '@hungpv97/vue-map-core';
-import { DragDropFile, useFileReader } from '@hungpv97/shared-file';
+} from '@hungpvq/vue-map-core';
+import { DragDropFile, useFileReader } from '@hungpvq/shared-file';
 import { ref } from 'vue';
 const { read } = useFileReader();
 const items_type = ['point', 'line', 'area'];
