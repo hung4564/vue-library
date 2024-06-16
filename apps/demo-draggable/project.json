@@ -4,5 +4,12 @@
   "projectType": "application",
   "sourceRoot": "apps/demo-draggable/src",
   "// targets": "to see all targets run: nx show project demo-draggable --web",
-  "targets": {}
+  "targets": {
+    "publish": {
+      "executor": "@nx/vite:build",
+      "options": {
+        "outputPath": "deploy/demo/draggable"
+      }
+    }
+  }
 }

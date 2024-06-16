@@ -1,9 +1,10 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/demo-draggable/',
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/vue-library-map',
 
