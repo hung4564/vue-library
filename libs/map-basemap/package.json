@@ -7,8 +7,7 @@
   "bugs": "https://github.com/hung4564/vue-library/issues",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   },
   "repository": {
     "type": "git",
