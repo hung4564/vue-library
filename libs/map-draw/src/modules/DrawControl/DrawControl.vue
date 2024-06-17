@@ -239,8 +239,8 @@ function onInitDraw() {
           </MapControlButton>
         </MapControlGroupButton>
       </div>
-      <div v-else class="d-flex button-custom-container">
-        <MapControlButton v-if="drawOptions">
+      <div class="d-flex button-custom-container" v-else-if="drawOptions">
+        <MapControlButton>
           <SvgIcon
             :size="18"
             type="mdi"

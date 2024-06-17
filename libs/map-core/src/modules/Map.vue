@@ -5,10 +5,17 @@ import mapboxgl, { MapboxOptions } from 'mapbox-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
 import { actions, state as mapState } from '../store/store';
 import type { MapSimple } from '@hungpvq/shared-map';
+import { useBreakpoints } from '@hungpvq/shared-core';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');
 }
+const breakpoints = useBreakpoints({
+  mobile: 0, // optional
+  tablet: 640,
+  laptop: 1024,
+  desktop: 1280,
+});
 const DEFAULTOPTION: Partial<MapboxOptions> = {
   center: [105.19084739818732, 15.827971829957548],
   zoom: 5.297175623863693,
@@ -90,6 +97,7 @@ const leftTopTo = computed(() => {
 });
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
+const isMobile = breakpoints.smallerOrEqual('tablet');
 </script>
 <template>
   <div v-if="!isSupport" class="">
@@ -100,7 +108,12 @@ provide<string>('$map.id', id.value);
       </p>
     </div>
   </div>
-  <div v-else class="map-container" :mapId="id">
+  <div
+    v-else
+    class="map-container"
+    :mapId="id"
+    :class="{ 'map-mobile-container': isMobile }"
+  >
     <div class="map-viewer">
       <div ref="mapContainer" class="map-content" :id="id"></div>
       <template v-if="!props.dragId">

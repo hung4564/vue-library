@@ -144,7 +144,7 @@ function getRoundNum(num: number) {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <div class="button-container mouse-coordinates-container">
-        <div class="mouse-coordinates">
+        <div class="mouse-coordinates-part zoom-part">
           <div class="mouse-coordinates-zoom">
             <span title="Current Zoom" class="icon">
               <SvgIcon :size="14" type="mdi" :path="path.zoom" />
@@ -152,7 +152,7 @@ function getRoundNum(num: number) {
             <div style="margin-left: 4px">{{ currentZoom }}</div>
           </div>
         </div>
-        <div class="mouse-coordinates">
+        <div class="mouse-coordinates-part coordinates-part">
           <div class="mouse-coordinates-point">
             <div
               style="margin-left: 4px"
@@ -175,7 +175,7 @@ function getRoundNum(num: number) {
             </i>
           </div>
         </div>
-        <div class="mouse-coordinates">
+        <div class="mouse-coordinates-part crs-part">
           <div class="mouse-coordinates-point">
             <select v-model="crs" class="crs-select" style="width: 70px">
               <option
@@ -188,12 +188,61 @@ function getRoundNum(num: number) {
             </select>
           </div>
         </div>
-        <div ref="scale" class="scale-custom"></div>
+        <div class="mouse-coordinates-part scale-part">
+          <div ref="scale" class="scale-custom"></div>
+        </div>
       </div>
     </template>
   </ModuleContainer>
 </template>
+<style lang="scss">
+.map-mobile-container {
+  .coordinates-part {
+    order: 1;
+  }
+  .mouse-coordinates-container {
+    flex-direction: column;
+    gap: 8px;
+    & > div {
+      flex-grow: 0 !important;
+      margin: 0 !important;
+    }
+  }
 
+  .mouse-coordinates-container {
+    flex-direction: column;
+    justify-content: right;
+    align-items: flex-end;
+
+    .mouse-coordinates,
+    .crs-coordinates {
+      flex-grow: 0;
+      margin-top: 8px;
+      margin-right: 0;
+
+      select {
+        text-align: center;
+      }
+    }
+
+    .mouse-coordinates-point {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    .scale-custom,
+    .zoom-coordinates {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .zoom-coordinates {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+</style>
 <style scoped lang="scss">
 .icon-clickable {
   cursor: pointer;
@@ -221,19 +270,12 @@ function getRoundNum(num: number) {
     align-items: center;
   }
 
-  .mouse-coordinates {
+  & > div {
     flex-grow: 1;
     display: flex;
     padding-right: 8px;
     padding-left: 8px;
     margin-right: 8px;
-  }
-
-  .zoom-coordinates {
-    display: flex;
-    padding-right: 8px;
-    padding-left: 8px;
-    margin-top: 8px;
   }
 
   .crs-coordinates {
@@ -275,11 +317,7 @@ function getRoundNum(num: number) {
     min-width: 75px;
   }
 }
-
-.mouse-coordinates,
-.scale-custom,
-.zoom-coordinates,
-.crs-coordinates {
+.mouse-coordinates-part {
   box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
     0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
   background-color: hsla(0, 0%, 100%, 0.7529411764705882);
@@ -287,38 +325,5 @@ function getRoundNum(num: number) {
   font-size: 14px;
   color: #333;
   padding: 4px;
-}
-
-.mouse-coordinates-container-mobile {
-  flex-direction: column-reverse;
-  justify-content: right;
-  align-items: flex-end;
-
-  .mouse-coordinates,
-  .crs-coordinates {
-    flex-grow: 0;
-    margin-top: 8px;
-    margin-right: 0;
-
-    select {
-      text-align: center;
-    }
-  }
-
-  .mouse-coordinates-point {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  .scale-custom,
-  .zoom-coordinates {
-    min-width: 80px;
-    text-align: center;
-  }
-
-  .zoom-coordinates {
-    display: flex;
-    justify-content: center;
-  }
 }
 </style>
