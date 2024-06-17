@@ -130,6 +130,46 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
   </div>
 </template>
 <style lang="scss">
+.btn-close {
+  overflow: hidden;
+  position: absolute;
+  border: none;
+  padding: 0;
+  width: 2em;
+  height: 2em;
+  right: 4px;
+  border-radius: 50%;
+  background: transparent;
+  font: inherit;
+  text-indent: 100%;
+  cursor: pointer;
+
+  &:focus {
+    outline: solid 0 transparent;
+    box-shadow: 0 0 0 2px #8ed0f9;
+  }
+
+  &:hover {
+    background: rgba(29, 161, 142, 0.1);
+  }
+
+  &:before,
+  &:after {
+    position: absolute;
+    top: 15%;
+    left: calc(50% - 0.0625em);
+    width: 0.125em;
+    height: 70%;
+    border-radius: 0.125em;
+    transform: rotate(45deg);
+    background: currentcolor;
+    content: '';
+  }
+
+  &:after {
+    transform: rotate(-45deg);
+  }
+}
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
 .draggable-container * {

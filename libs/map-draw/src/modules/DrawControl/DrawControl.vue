@@ -4,7 +4,6 @@ import {
   EventClick,
   MapControlButton,
   MapControlGroupButton,
-  MapSimple,
   ModuleContainer,
   useEventMap,
   useMap,
@@ -45,6 +44,7 @@ import {
   setFeature,
   getDrawControl,
 } from '../../store';
+import { MapSimple } from '@hungpvq/shared-map';
 const props = defineProps({
   ...withMapProps,
   drawOptions: Object,

@@ -335,6 +335,7 @@ $black: #333;
     padding: 5px 10px;
     align-items: center;
     min-width: 100px;
+    min-height: 50px;
 
     &:hover {
       background-color: $blue;
@@ -356,18 +357,6 @@ $black: #333;
     padding: 4px 0;
     background-clip: content-box;
     pointer-events: none;
-  }
-
-  // Have to use the element so we can make use of `first-of-type` and
-  // `last-of-type`
-  li {
-    &:first-of-type {
-      margin-top: 4px;
-    }
-
-    &:last-of-type {
-      margin-bottom: 4px;
-    }
   }
 }
 </style>
