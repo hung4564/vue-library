@@ -86,10 +86,11 @@
     },
     "changelog": {
       "projectChangelogs": true,
-      "automaticFromRef": true
+      "automaticFromRef": true,
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
     },
-    "projectsRelationship": "independent",
-    "releaseTagPattern": "release/{projectName}/{version}",
     "projects": ["libs/*"]
   }
 }
