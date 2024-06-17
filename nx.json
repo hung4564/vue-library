@@ -80,9 +80,16 @@
   "release": {
     "version": {
       "generatorOptions": {
-        "currentVersionResolver": "git-tag"
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk"
       }
     },
+    "changelog": {
+      "projectChangelogs": true,
+      "automaticFromRef": true
+    },
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "release/{projectName}/{version}",
     "projects": ["libs/*"]
   }
 }
