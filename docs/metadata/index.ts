@@ -7,7 +7,7 @@ export function getFunctionsSideBar(
   props_package: string,
   overwrite: Record<string, any> = {}
 ) {
-  const links: { text: string; items: any[] }[] = [];
+  const links: { text: string; items?: any[]; link?: string }[] = [];
   const cache: Record<string, { text: string; items: any[] }> = {};
   const cache_category: Record<string, { text: string; items: any[] }> = {};
   metadata.functions.forEach((temp) => {

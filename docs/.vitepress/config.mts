@@ -19,21 +19,27 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Shared', link: '/shared/' },
-      { text: 'Draggable', link: '/draggable/' },
-      { text: 'Map', link: '/map/' },
+      { text: 'Shared', link: '/shared/', activeMatch: '/^shared/' },
+      { text: 'Draggable', link: '/draggable/', activeMatch: '/draggable/' },
+      { text: 'Map', link: '/map/', activeMatch: '/map/' },
     ],
 
     sidebar: {
       '/shared': SharedFunctionsSideBar,
       '/shared-core': SharedFunctionsSideBar,
-      '/draggable': getDraggableSideBar(),
-      '/map': [...getMapSideBar()],
+      '/draggable': [
+        { text: 'Demo', link: 'https://hung4564.github.io/demo-draggable' },
+        ...getDraggableSideBar(),
+      ],
+      '/map': [
+        { text: 'Demo', link: 'https://hung4564.github.io/demo-map' },
+        ...getMapSideBar(),
+      ],
     },
 
-    // socialLinks: [
-    //   { icon: 'github', link: 'https://github.com/vuejs/vitepress' },
-    // ],
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/hung4564/vue-library' },
+    ],
   },
   rewrites: {
     'docs/pages/index.md': 'index.md',
