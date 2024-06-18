@@ -35,14 +35,6 @@
             /></template>
           </button>
         </template>
-        <!-- <button
-          class="layer-item__button"
-          @click.stop="toggleShow"
-          :disabled="loading"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.show" v-if="isShow" />
-          <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
-        </button> -->
         <button
           class="layer-item__button"
           v-if="!item.config.disable_delete"
@@ -97,16 +89,16 @@
     </div>
     <div v-if="legendShow && legendConfig">
       <component
-        :is="legendConfig.component"
+        :is="item.component"
         :value="item"
-        v-for="(item, i) of legendConfig.items"
+        v-for="(item, i) of legendConfig.fields"
         :key="i"
       ></component>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 import SvgIcon from '@jamescoyle/vue-icon';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerItemIcon from './layer-item-icon.vue';
@@ -123,7 +115,7 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { getLayerFromView } from '../../../helper';
-import type { IListView, Menu } from '../../../types/';
+import { IListView, Menu } from '@hungpvq/vue-map-core';
 const props = defineProps<{ item: IListView }>();
 const emit = defineEmits([
   'update:item',
@@ -134,10 +126,10 @@ const emit = defineEmits([
   'click:content-menu',
 ]);
 const isHasLegend = computed(
-  () => props.item && props.item.parent && props.item.parent.getView('legend')
+  () => props.item && getLayerFromView(props.item)?.getView('legend')
 );
 const legendShow = ref(false);
-const legendConfig = ref();
+const legendConfig = shallowRef();
 const path = {
   menu: mdiDotsVertical,
   loading: mdiLoading,
@@ -152,9 +144,6 @@ const path = {
 };
 const loading = computed(() => {
   return props.item.metadata && props.item.metadata.loading;
-});
-const isShow = computed(() => {
-  return props.item.show;
 });
 const opacity = computed({
   get() {
@@ -173,7 +162,7 @@ const onRemove = () => {
 function onToggleLegend() {
   legendShow.value = !legendShow.value;
   if (legendShow.value) {
-    // legendConfig.value = props.item.parent.getView(KEY_BUILD.LEGEND).config;
+    legendConfig.value = getLayerFromView(props.item)?.getView('legend').config;
   }
 }
 const button_menus = computed<Menu[]>(() => {
@@ -201,11 +190,6 @@ function handleContextClick(event: MouseEvent) {
 }
 function onLayerAction(action: Menu) {
   emit('click:action', { action, item: props.item });
-}
-function isFunction(functionToCheck: any) {
-  return (
-    functionToCheck && {}.toString.call(functionToCheck) === '[object Function]'
-  );
 }
 </script>
 

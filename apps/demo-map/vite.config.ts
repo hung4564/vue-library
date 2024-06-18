@@ -5,8 +5,6 @@ import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig((env) => {
   const envFile = loadEnv(env.mode, process.cwd());
-
-  console.log(env, envFile, envFile.VITE_BASE_URL, process.cwd());
   return {
     root: __dirname,
     cacheDir: '../../node_modules/.vite/apps/demo-map',

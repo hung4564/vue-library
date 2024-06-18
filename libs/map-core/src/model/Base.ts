@@ -20,7 +20,7 @@ export abstract class ABuild<T = any, IBuildReturn extends IView = IView>
     this.key = key;
     this.option = Object.assign({}, default_option, option);
   }
-  setBuild(build: any) {
+  protected setBuild(build: LayerBuildFunction<IBuildReturn>) {
     this.build = build;
     return this;
   }

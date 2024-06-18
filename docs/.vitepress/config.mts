@@ -60,6 +60,7 @@ export default defineConfig({
     'libs/map-print/README.md': 'map/print/index.md',
     'libs/map-draw/README.md': 'map/draw/index.md',
     'libs/map-layer/README.md': 'map/layer/index.md',
+    'libs/map-layer/docs/:pkg.md': 'map/layer/:pkg/index.md',
   },
   vite: {
     plugins: [UnoCSS()] as any[],

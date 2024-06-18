@@ -21,7 +21,7 @@ export class LayerViewContainer {
 
     let { source: viewSource, ...rest } = this.views;
     if (name_func === 'addToMap') {
-      promises.push((viewSource as any)[name_func](...params));
+      if (viewSource) promises.push((viewSource as any)[name_func](...params));
     } else if (name_func !== 'removeFromMap') {
       rest = this.views;
       viewSource = undefined as any;
@@ -36,7 +36,7 @@ export class LayerViewContainer {
       this
     );
     if (name_func === 'removeFromMap') {
-      promises.push((viewSource as any)[name_func](...params));
+      if (viewSource) promises.push((viewSource as any)[name_func](...params));
     }
     return Promise.all(promises);
   }

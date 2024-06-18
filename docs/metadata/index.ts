@@ -19,6 +19,7 @@ export function getFunctionsSideBar(
       group = {
         text: temp.package,
         items: [],
+        order: temp.order,
         ...overwrite[temp.package],
       };
       cache[temp.package] = group;
@@ -29,17 +30,27 @@ export function getFunctionsSideBar(
       category = {
         text: temp.category,
         items: [],
+        order: temp.order,
         ...overwrite[`${temp.package}-${temp.category}`],
       };
       cache_category[`${temp.package}-${temp.category}`] = category;
       group.items.push(category);
     }
-    category.items.push({ text: temp.name, link: temp.docs });
+    category.items.push({
+      text: temp.name,
+      link: temp.docs,
+      order: temp.order,
+    });
   });
   for (const key in cache) {
     if (Object.prototype.hasOwnProperty.call(cache, key)) {
       const element = cache[key];
-      element.items.sort((a, b) => (a.text > b.text ? 1 : -1));
+      element.items.sort((a, b) => {
+        if (a.order != null && b.order != null) {
+          return a.order > b.order ? 1 : -1;
+        }
+        return a.text > b.text ? 1 : -1;
+      });
       if (element.items.length === 1) {
         element.items = element.items[0].items;
       }
@@ -48,7 +59,12 @@ export function getFunctionsSideBar(
   for (const key in cache_category) {
     if (Object.prototype.hasOwnProperty.call(cache_category, key)) {
       const element = cache_category[key];
-      element.items.sort((a, b) => (a.text > b.text ? 1 : -1));
+      element.items.sort((a, b) => {
+        if (a.order != null && b.order != null) {
+          return a.order > b.order ? 1 : -1;
+        }
+        return a.text > b.text ? 1 : -1;
+      });
     }
   }
   return links;

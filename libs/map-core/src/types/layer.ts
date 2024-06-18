@@ -8,6 +8,7 @@ export type TYPE_VIEW = {
   list: IListView;
   identify: ILayerIdentifyView;
   map: ILayerMapView;
+  legend: ILayerLegendView;
   [key: string]: IView;
 };
 export type TYPE_VIEW_NAME = keyof TYPE_VIEW | string;
@@ -192,3 +193,22 @@ export interface IEventComponentItem {
   open?: () => void;
   close?: () => void;
 }
+
+// === legend ===
+export type LayerLegendField = {
+  trans?: string;
+  text?: string;
+  value?: string | undefined | ((layer: ILayer) => string | undefined);
+  inline?: boolean;
+  component?: any;
+  option?: any;
+};
+export type ILayerLegendView = IView & {
+  id: string;
+  config: ILegendOption;
+};
+export interface ILegendOption {
+  fields: LayerLegendField[];
+}
+
+// === Legend end ===

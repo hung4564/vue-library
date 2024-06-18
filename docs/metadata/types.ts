@@ -7,4 +7,5 @@ export interface VueUseFunction {
   category: string;
   description?: string;
   docs?: string;
+  order?: number;
 }
