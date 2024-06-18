@@ -3,7 +3,7 @@
     <div class="legend-text">{{ item.text }}:</div>
     <div
       :style="{
-        background: `${item.option?.color}`,
+        background: `${item.color}`,
       }"
       class="legend-item-color"
     ></div>

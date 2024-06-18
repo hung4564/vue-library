@@ -26,7 +26,7 @@ export default {
       return this.value;
     },
     items() {
-      return this.value.option?.items || [];
+      return this.value.items || [];
     },
     colors() {
       return this.items.map((x) => x.color);

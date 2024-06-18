@@ -196,10 +196,6 @@ export interface IEventComponentItem {
 
 // === legend ===
 export type LayerLegendField = {
-  trans?: string;
-  text?: string;
-  value?: string | undefined | ((layer: ILayer) => string | undefined);
-  inline?: boolean;
   component?: any;
   option?: any;
 };

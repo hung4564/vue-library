@@ -24,15 +24,19 @@ export function createCustomLayer(
   const builds: IBuild[] = [
     new LayerListBuild(),
     new LayerLegendBuild().setFields([
-      { text: 'legend text', value: 'test' },
       {
-        text: 'legend color',
-        option: { color: '#fff' },
+        option: { text: 'legend text', value: 'test' },
+      },
+      {
+        option: {
+          text: 'legend color',
+          color: '#fff',
+        },
         component: LayerLegendSingleColor,
       },
       {
-        text: 'legend linear',
         option: {
+          text: 'legend linear',
           items: [
             { value: 'test 1', color: '#fff' },
             { value: 'test 2', color: '#000' },

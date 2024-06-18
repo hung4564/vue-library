@@ -6,6 +6,7 @@ import {
   LayerLegendField,
 } from '@hungpvq/vue-map-core';
 
+import { markRaw } from 'vue';
 import LayerLegendLinearGradient from './linear-gradient.vue';
 import LayerLegendSingleColor from './single-color.vue';
 import LayerLegendSingleText from './single-value.vue';
@@ -20,14 +21,22 @@ export class LayerLegendBuild extends ABuild<ILegendOption> {
     if (!this.option.fields) {
       this.option.fields = [];
     }
-    this.option.fields.push(field);
+    this.option.fields.push(this.formatField(field));
     return this;
   }
+  private formatField(field: LayerLegendField) {
+    return {
+      component: markRaw(field.component || LayerLegendSingleText),
+      ...field,
+    };
+  }
   setFields(fields: LayerLegendField[] = []) {
-    this.option.fields = fields.map((x) => ({
-      component: LayerLegendSingleText,
-      ...x,
-    }));
+    this.option.fields = fields.map((x) =>
+      this.formatField({
+        component: LayerLegendSingleText,
+        ...x,
+      })
+    );
     return this;
   }
 }

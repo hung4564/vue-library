@@ -90,7 +90,7 @@
     <div v-if="legendShow && legendConfig">
       <component
         :is="item.component"
-        :value="item"
+        :value="item.option"
         v-for="(item, i) of legendConfig.fields"
         :key="i"
       ></component>
@@ -98,7 +98,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, shallowRef } from 'vue';
+import { computed, markRaw, ref, shallowRef } from 'vue';
 import SvgIcon from '@jamescoyle/vue-icon';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerItemIcon from './layer-item-icon.vue';
@@ -162,7 +162,15 @@ const onRemove = () => {
 function onToggleLegend() {
   legendShow.value = !legendShow.value;
   if (legendShow.value) {
-    legendConfig.value = getLayerFromView(props.item)?.getView('legend').config;
+    const config = getLayerFromView(props.item)?.getView('legend').config;
+    if (!config) {
+      return;
+    }
+    config.fields = config.fields.map((x) => ({
+      component: markRaw(x.component),
+      option: x.option,
+    }));
+    legendConfig.value = config;
   }
 }
 const button_menus = computed<Menu[]>(() => {

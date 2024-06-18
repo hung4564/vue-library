@@ -3,10 +3,9 @@
 ```ts
 import { LayerLegendBuild, LayerLegendSingleColor, LayerLegendLinearGradient } from '@hungpvq/vue-map-layer';
 new LayerLegendBuild().setFields([
-  { text: 'legend text', value: 'test' },
+  { option: { text: 'legend text', value: 'test' } },
   {
-    text: 'legend color',
-    option: { color: '#fff' },
+    option: { color: '#fff', text: 'legend color' },
     component: LayerLegendSingleColor,
   },
   {
