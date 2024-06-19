@@ -83,7 +83,7 @@ export type Menu = MenuDivider | MenuItem;
 
 export type LayerAction = {
   id: string;
-  component?: () => VueElement;
+  component?: () => any;
   menu: Menu;
   type?: string;
   option?: any;

@@ -1,4 +1,4 @@
-import { IBuild, ILayer, LayerAction } from '@hungpvq/vue-map-core';
+import { IBuild, LayerAction } from '@hungpvq/vue-map-core';
 import {
   Layer,
   LayerLegendBuild,
@@ -10,15 +10,11 @@ import {
   toBoundAction,
   toggleShowAction,
 } from '@hungpvq/vue-map-layer';
-import { BBox } from '@turf/turf';
+import { mdiInformation } from '@mdi/js';
+import CustomChangeIcon from './custom-change-icon.vue';
+import CustomShowComponent from './custom-show-component.vue';
 
-export function createCustomLayer(
-  options: {
-    name: string;
-    tiles: string[];
-    bounds?: BBox;
-  } & OptionDefault
-) {
+export function createCustomLegendLayer(options: OptionDefault) {
   const layer = new Layer();
   layer.setInfo({ name: 'Custom legend', metadata: {} });
   const builds: IBuild[] = [
@@ -49,4 +45,63 @@ export function createCustomLayer(
   ];
   const actions: LayerAction[] = [toBoundAction(), toggleShowAction()];
   return setupDefault(layer, { builds, actions }, options);
+}
+export function createCustomActionLayer() {
+  const layer = new Layer();
+  layer.setInfo({ name: 'Custom action', metadata: {} });
+  const builds: IBuild[] = [new LayerListBuild()];
+  const actions: LayerAction[] = [
+    {
+      id: 'call click',
+      menu: {
+        id: 'call click',
+        location: 'menu',
+        name: 'Call click on menu',
+        type: 'item',
+        click(layer, map_id) {
+          alert(`layer id: ${layer.id}\n map id: ${map_id}`);
+        },
+      },
+    },
+    {
+      id: 'call click on extra',
+      menu: {
+        id: 'call click on extra',
+        location: 'extra',
+        icon: mdiInformation,
+        name: 'Call click on extra',
+        type: 'item',
+        click(layer, map_id) {
+          alert(`layer id: ${layer.id}\nmap id: ${map_id}`);
+        },
+      },
+    },
+    {
+      id: 'edit icon on extra',
+      menu: {
+        id: 'edit icon on extra',
+        location: 'extra',
+        type: 'item',
+        name: 'edit icon on extra',
+        icon: () => {
+          return CustomChangeIcon;
+        },
+        click(layer) {
+          layer.getView('list').show = !layer.getView('list').show;
+        },
+      },
+    },
+    {
+      id: 'button show component',
+      component: () => CustomShowComponent,
+      option: { test: 'test-option' },
+      menu: {
+        id: 'button show component',
+        location: 'menu',
+        type: 'item',
+        name: 'button show component',
+      },
+    },
+  ];
+  return setupDefault(layer, { builds, actions });
 }

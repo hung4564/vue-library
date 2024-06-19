@@ -3,14 +3,13 @@ import { nextTick, onMounted, ref, shallowRef } from 'vue';
 
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
-  MapSimple,
+  ILayerMapView,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
 } from '@hungpvq/vue-map-core';
 import { getLayerFromView } from '../../helper';
-import { ILayerMapView } from '../../types';
 
 import enLang from './lang/style-control.json';
 import circleStyleLang from './lang/style/circle-style.json';
@@ -18,6 +17,7 @@ import fillStyleLang from './lang/style/fill-style.json';
 import lineStyleLang from './lang/style/line-style.json';
 import rasterStyleLang from './lang/style/raster-style.json';
 import symbolStyleLang from './lang/style/symbol-style.json';
+import { MapSimple } from '@hungpvq/shared-map';
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: ILayerMapView; option: any }>();
 const { mapId, callMap } = useMap();

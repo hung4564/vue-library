@@ -162,6 +162,14 @@
       "docs": "/map/layer/build-map",
       "description": "Build map layer",
       "order": 3
+    },
+    {
+      "name": "Action",
+      "category": "Build",
+      "package": "Map - Layer",
+      "docs": "/map/layer/build-action",
+      "description": "Build action layer",
+      "order": 4
     }
   ]
 }
