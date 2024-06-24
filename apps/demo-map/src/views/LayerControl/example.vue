@@ -4,14 +4,18 @@ import { Map } from '@hungpvq/vue-map-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { ref } from 'vue';
 import { LayerControl, addLayer } from '@hungpvq/vue-map-layer';
-import { createCustomActionLayer, createCustomLegendLayer } from './custom';
+import {
+  createCustomActionBottomLayer,
+  createCustomActionLayer,
+  createCustomLegendLayer,
+} from './custom';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
-  console.log('map', map);
   const layer = createCustomLegendLayer({});
   addLayer(map.id, layer);
   addLayer(map.id, createCustomActionLayer());
+  addLayer(map.id, createCustomActionBottomLayer());
 }
 </script>
 <template>

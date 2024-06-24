@@ -21,7 +21,6 @@ export class LayerDrawBuild extends ABuild<IDrawOption> {
     layer.getView('action').addAction({
       id: KEY,
       menu: {
-        id: KEY,
         location: 'menu',
         name: 'draw',
         type: 'item',

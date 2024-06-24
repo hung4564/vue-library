@@ -21,7 +21,6 @@ export class LayerInfoShowBuild extends ABuild<LayerInfoOption> {
       id: KEY,
       component: () => LayerInfo,
       menu: {
-        id: KEY,
         location: 'menu',
         name: 'info',
         type: 'item',

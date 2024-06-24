@@ -201,11 +201,11 @@ function onLayerAction({ action, item }: { action: Menu; item: IListView }) {
   let layer = getLayerFromView(item);
   if (!layer) return;
   const layer_action = layer.getView('action');
-  const menu_layer = layer_action.get(menu.id);
+  const menu_layer = layer_action.get(menu.id!);
   if (menu_layer.type && LAYER_ACTION[menu_layer.type]) {
     LAYER_ACTION[menu_layer.type](item, layer);
   } else {
-    layer_action.call(menu.id, mapId.value);
+    layer_action.call(menu.id!, mapId.value);
   }
 }
 </script>
@@ -249,6 +249,7 @@ function onLayerAction({ action, item }: { action: Menu; item: IListView }) {
               @click:remove="onRemoveLayer"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
+              :mapId="mapId"
             >
             </component>
           </slot>

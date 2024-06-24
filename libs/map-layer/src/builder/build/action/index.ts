@@ -104,31 +104,35 @@ export class LayerActionView extends AView implements IActionView {
   }
 }
 
-export function toBoundAction(): LayerAction {
+export function toBoundAction(
+  menu: Partial<LayerAction['menu']> = {}
+): LayerAction {
   return {
     id: 'to-bound',
     type: 'to-bound',
     menu: {
-      id: 'to-bound',
       location: 'extra',
       type: 'item',
       name: 'Fly to',
       icon: mdiCrosshairsGps,
+      ...menu,
     },
   };
 }
-export function toggleShowAction(): LayerAction {
+export function toggleShowAction(
+  menu: Partial<LayerAction['menu']> = {}
+): LayerAction {
   return {
     id: 'toggle-show',
     type: 'toggle-show',
     menu: {
-      id: 'toggle-show',
       location: 'extra',
       type: 'item',
       name: 'Fly to',
       icon: () => {
         return ToggleShow;
       },
+      ...menu,
     },
   };
 }

@@ -34,7 +34,6 @@ export class LayerMapBuild extends ABuild {
       id: 'editable',
       component: () => StyleControl,
       menu: {
-        id: 'editable',
         location: 'menu',
         name: 'edit style',
         type: 'item',

@@ -63,7 +63,7 @@ export type ILayerComponentView = IView & {
 
 // === action ===
 type MenuCommon = {
-  location: 'extra' | 'menu';
+  location: 'extra' | 'menu' | 'bottom';
   order?: number;
 };
 export type MenuDivider = MenuCommon & {
@@ -71,7 +71,7 @@ export type MenuDivider = MenuCommon & {
 };
 type componentFC = () => any;
 export type MenuItem = MenuCommon & {
-  id: string;
+  id?: string;
   type: 'item';
   class?: string;
   name: string | componentFC;

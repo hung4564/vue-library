@@ -17,23 +17,14 @@
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
         <template v-for="(menu, i) in extra_menus" :key="i">
-          <button
-            v-if="menu.type === 'item'"
+          <LayerMenu
             class="layer-item__button"
+            :item="menu"
+            :data="item"
             :disabled="loading"
-            :title="menu.name"
-            v-bind="menu.attr"
+            :mapId="mapId"
             @click="onLayerAction(menu)"
-          >
-            <template v-if="menu.icon">
-              <component
-                v-if="typeof menu.icon != 'string'"
-                :is="menu.icon()"
-                :item="item"
-              ></component>
-              <SvgIcon size="14" type="mdi" :path="menu.icon" v-else
-            /></template>
-          </button>
+          />
         </template>
         <button
           class="layer-item__button"
@@ -54,7 +45,7 @@
         </button>
         <button
           class="layer-item__button"
-          v-if="item.config.disabled_opacity && isHasLegend"
+          v-if="!showBottom && isHasLegend"
           @click.stop="onToggleLegend"
         >
           <SvgIcon
@@ -65,7 +56,7 @@
         </button>
       </div>
     </div>
-    <div class="layer-item__action" v-if="!item.config.disabled_opacity">
+    <div class="layer-item__action" v-if="showBottom">
       <div class="layer-item__opacity" v-if="!item.config.disabled_opacity">
         <LayerItemSlider
           v-model.number="opacity"
@@ -75,6 +66,16 @@
         />
       </div>
       <div class="v-spacer"></div>
+      <template v-for="(menu, i) in extra_bottoms" :key="i">
+        <LayerMenu
+          class="layer-item__button"
+          :item="menu"
+          :data="item"
+          :disabled="loading"
+          :mapId="mapId"
+          @click="onLayerAction(menu)"
+        />
+      </template>
       <button
         class="layer-item__button"
         @click.stop="onToggleLegend"
@@ -87,6 +88,8 @@
         />
       </button>
     </div>
+
+    <div :id="bottomLayerItem" />
     <div v-if="legendShow && legendConfig">
       <component
         :is="item.component"
@@ -102,6 +105,7 @@ import { computed, markRaw, ref, shallowRef } from 'vue';
 import SvgIcon from '@jamescoyle/vue-icon';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerItemIcon from './layer-item-icon.vue';
+import LayerMenu from './menu/index.vue';
 import {
   mdiCrosshairsGps,
   mdiDelete,
@@ -116,7 +120,7 @@ import {
 } from '@mdi/js';
 import { getLayerFromView } from '../../../helper';
 import { IListView, Menu } from '@hungpvq/vue-map-core';
-const props = defineProps<{ item: IListView }>();
+const props = defineProps<{ item: IListView; mapId: string }>();
 const emit = defineEmits([
   'update:item',
   'click',
@@ -189,6 +193,9 @@ const content_menus = computed(() => {
     .filter((x) => x.location == 'menu')
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
+const showBottom = computed(() => {
+  return !props.item.config.disabled_opacity || extra_bottoms.value.length > 0;
+});
 function handleContextClick(event: MouseEvent) {
   emit('click:content-menu', {
     event,
@@ -199,6 +206,14 @@ function handleContextClick(event: MouseEvent) {
 function onLayerAction(action: Menu) {
   emit('click:action', { action, item: props.item });
 }
+const extra_bottoms = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'bottom')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const bottomLayerItem = computed(() => {
+  return `layer-item-${props.item.id}-bottom`;
+});
 </script>
 
 <style scoped>
