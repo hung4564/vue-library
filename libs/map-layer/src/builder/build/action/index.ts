@@ -1,4 +1,4 @@
-import { mdiCrosshairsGps } from '@mdi/js';
+import { mdiCrosshairsGps, mdiFormatLineStyle } from '@mdi/js';
 
 import {
   ABuild,
@@ -9,20 +9,28 @@ import {
   LayerActionOption,
   Menu,
 } from '@hungpvq/vue-map-core';
+import StyleControl from '../../../modules/StyleControl/style-control.vue';
 import ToggleShow from './toggle-show.vue';
 export class LayerActionBuild extends ABuild<LayerActionOption, IActionView> {
+  key = 'action';
   constructor(options: LayerActionOption = { actions: [] }) {
-    super('action', options);
+    super(options);
     this.setBuild(
       (layer: ILayer, option: LayerActionOption) =>
         new LayerActionView(layer, option)
     );
   }
   addActions(actions: LayerAction[]): LayerActionBuild {
+    if (!this.option.actions) {
+      this.option.actions = [];
+    }
     this.option.actions.push(...actions);
     return this;
   }
   addAction(action: LayerAction): LayerActionBuild {
+    if (!this.option.actions) {
+      this.option.actions = [];
+    }
     const index = this.option.actions.findIndex((x) => x.id === action.id);
     if (index >= 0) {
       this.option.actions.splice(index, 1);
@@ -132,6 +140,22 @@ export function toggleShowAction(
       icon: () => {
         return ToggleShow;
       },
+      ...menu,
+    },
+  };
+}
+export function editStyle(
+  menu: Partial<LayerAction['menu']> = {}
+): LayerAction {
+  return {
+    id: 'editable',
+    component: () => StyleControl,
+    menu: {
+      location: 'menu',
+      name: 'edit style',
+      type: 'item',
+      icon: mdiFormatLineStyle,
+      order: 2,
       ...menu,
     },
   };

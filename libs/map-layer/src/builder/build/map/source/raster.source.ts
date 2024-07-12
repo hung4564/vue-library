@@ -1,11 +1,11 @@
-import { ABuild } from '@hungpvq/vue-map-core';
+import { ABuild, ISourceView } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import { RasterSource as MapBoxRasterSource } from 'mapbox-gl';
-import { ASource, ISource } from './ASource';
+import { ASource } from './ASource';
 
 export type SourceScheme = 'xyz' | 'tms';
 
-export class RasterSource extends ASource implements ISource {
+export class RasterSource extends ASource implements ISourceView {
   public option: Partial<MapBoxRasterSource>;
   constructor(option = {}) {
     super();
@@ -31,7 +31,7 @@ export class RasterSourceBuild extends ABuild<
   RasterSource
 > {
   constructor(option: Partial<MapBoxRasterSource> = {}) {
-    super('source', option);
+    super(option);
     this.setBuild(() => {
       return new RasterSource(this.option);
     });

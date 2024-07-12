@@ -25,7 +25,7 @@ import { useNetwork } from '@hungpvq/shared-core';
 
 const { isOnline, offlineAt, downlink, downlinkMax, effectiveType, saveData, type } = useNetwork();
 
-console.log(isOnline.value);
+console.info(isOnline.value);
 ```
 
 To use as an object, wrap it with `reactive()`
@@ -35,5 +35,5 @@ import { reactive } from 'vue';
 
 const network = reactive(useNetwork());
 
-console.log(network.isOnline);
+console.info(network.isOnline);
 ```

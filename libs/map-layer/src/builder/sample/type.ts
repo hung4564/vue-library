@@ -10,6 +10,8 @@ export type OptionRasterTile = {
   name: string;
   tiles: string[];
   bounds?: BBox;
+  maxZoom?: number;
+  minZoom?: number;
 } & OptionDefault;
 export type OptionRasterJson = {
   name: string;

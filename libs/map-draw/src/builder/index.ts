@@ -6,8 +6,9 @@ import { GeojsonDataHandle } from './handler';
 const KEY = 'draw';
 const handler = new GeojsonDataHandle();
 export class LayerDrawBuild extends ABuild<IDrawOption> {
+  key = KEY;
   constructor(option = { draw_support: [], handler }) {
-    super(KEY, option);
+    super(option);
     this.setBuild((_: any, option: IDrawOption) => new LayerDrawView(option));
   }
   setDrawSupport(draw_support: string[]) {

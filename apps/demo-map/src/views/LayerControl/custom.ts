@@ -1,10 +1,9 @@
 import { IBuild, LayerAction } from '@hungpvq/vue-map-core';
 import {
   Layer,
-  LayerLegendBuild,
+  LayerBuilder,
   LayerLegendLinearGradient,
   LayerLegendSingleColor,
-  LayerListBuild,
   OptionDefault,
   getLayerData,
   setupDefault,
@@ -19,8 +18,8 @@ export function createCustomLegendLayer(options: OptionDefault) {
   const layer = new Layer();
   layer.setInfo({ name: 'Custom legend', metadata: {} });
   const builds: IBuild[] = [
-    new LayerListBuild().disableOpacity(),
-    new LayerLegendBuild().setFields([
+    LayerBuilder.list().disableOpacity(),
+    LayerBuilder.legend().setFields([
       {
         option: { text: 'legend text', value: 'test' },
       },
@@ -50,7 +49,7 @@ export function createCustomLegendLayer(options: OptionDefault) {
 export function createCustomActionLayer() {
   const layer = new Layer();
   layer.setInfo({ name: 'Custom action', metadata: {} });
-  const builds: IBuild[] = [new LayerListBuild()];
+  const builds: IBuild[] = [LayerBuilder.list()];
   const actions: LayerAction[] = [
     toBoundAction(),
     toggleShowAction(),
@@ -124,7 +123,7 @@ export function createCustomActionLayer() {
 export function createCustomActionBottomLayer() {
   const layer = new Layer();
   layer.setInfo({ name: 'Custom bottom action', metadata: {} });
-  const builds: IBuild[] = [new LayerListBuild().disableOpacity()];
+  const builds: IBuild[] = [LayerBuilder.list().disableOpacity()];
   const actions: LayerAction[] = [
     toBoundAction({ location: 'bottom' }),
     {

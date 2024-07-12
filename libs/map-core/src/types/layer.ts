@@ -1,6 +1,5 @@
 import type { Color, MapSimple } from '@hungpvq/shared-map';
 import { BBox } from '@turf/turf';
-import { VueElement } from 'vue';
 export type TYPE_VIEW = {
   component: ILayerComponentView;
   action: IActionView;

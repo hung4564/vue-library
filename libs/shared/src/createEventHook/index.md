@@ -37,7 +37,7 @@ import { useMyFetch } from './my-fetch-function';
 const { onResult, onError } = useMyFetch('my api url');
 
 onResult((result) => {
-  console.log(result);
+  console.info(result);
 });
 
 onError((error) => {

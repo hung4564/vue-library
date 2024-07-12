@@ -10,11 +10,10 @@ import { markRaw } from 'vue';
 import LayerLegendLinearGradient from './linear-gradient.vue';
 import LayerLegendSingleColor from './single-color.vue';
 import LayerLegendSingleText from './single-value.vue';
-const KEY = 'legend';
 
 export class LayerLegendBuild extends ABuild<ILegendOption> {
   constructor({ fields }: ILegendOption = { fields: [] }) {
-    super(KEY, { fields });
+    super({ fields });
     this.setBuild((_layer, option) => new LayerIdentifyView(option));
   }
   addField(field: LayerLegendField) {

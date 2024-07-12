@@ -1,8 +1,8 @@
 # Legend
 
 ```ts
-import { LayerLegendBuild, LayerLegendSingleColor, LayerLegendLinearGradient } from '@hungpvq/vue-map-layer';
-new LayerLegendBuild().setFields([
+import { LayerBuilder, LayerLegendSingleColor, LayerLegendLinearGradient } from '@hungpvq/vue-map-layer';
+LayerBuilder.legend()setFields([
   { option: { text: 'legend text', value: 'test' } },
   {
     option: { color: '#fff', text: 'legend color' },

@@ -9,7 +9,7 @@ import {
 const drawOptions: DrawOption = {
   draw_support: [DrawingType.POINT],
   async save(geojson) {
-    console.log('save', geojson);
+    console.info('save', geojson);
   },
 };
 </script>

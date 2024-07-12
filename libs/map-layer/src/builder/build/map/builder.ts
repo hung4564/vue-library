@@ -8,42 +8,7 @@ import {
 } from 'mapbox-gl';
 
 import type { Color } from '@hungpvq/shared-map';
-import { ABuild, ILayer, getChartRandomColor } from '@hungpvq/vue-map-core';
-import { mdiFormatLineStyle } from '@mdi/js';
-import StyleControl from '../../../modules/StyleControl/style-control.vue';
-import { MapMultiLayer } from './layer/multi-layer.map';
-export class LayerMapBuild extends ABuild {
-  constructor(option = {}) {
-    super('map', option);
-    this.setBuild((_: any, option: any) => new MapMultiLayer(option));
-  }
-  setLayers(layers: Omit<LayerMapbox, 'id'>[]) {
-    this.option.layers = layers;
-    return this;
-  }
-  setLayer(layer: Omit<LayerMapbox, 'id'>) {
-    this.option.layers = [Object.assign({ layout: {}, paint: {} }, layer)];
-    return this;
-  }
-  setSource(source: any) {
-    this.option.source = source;
-    return this;
-  }
-  setForLayer(layer: ILayer) {
-    layer.getView('action').addAction({
-      id: 'editable',
-      component: () => StyleControl,
-      menu: {
-        location: 'menu',
-        name: 'edit style',
-        type: 'item',
-        icon: mdiFormatLineStyle,
-        order: 2,
-      },
-    });
-    return this;
-  }
-}
+import { getChartRandomColor } from '@hungpvq/vue-map-core';
 export interface ILayerMapboxBuild {
   build(): Omit<LayerMapbox, 'id'>;
 }

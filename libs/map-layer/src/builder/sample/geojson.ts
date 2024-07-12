@@ -6,14 +6,11 @@ import {
 } from '@hungpvq/vue-map-core';
 import { Layer } from '../../model';
 import {
-  LayerListBuild,
-  LayerMapBuild,
+  LayerBuilder,
   LayerSimpleMapboxBuild,
   toBoundAction,
   toggleShowAction,
 } from '../build';
-import { LayerIdentifyBuild } from '../build/identify';
-import { LayerInfoShowBuild } from '../build/info';
 import { GeoJsonSourceBuild, GeojsonSource } from '../build/map';
 import { setupDefault } from './_default';
 import { OptionGeojson } from './type';
@@ -25,42 +22,40 @@ export function createGeoJsonLayer(options: OptionGeojson) {
   layer.setInfo({ name, metadata: {} });
   color = color || getChartRandomColor();
   const builds: IBuild[] = [
-    new GeoJsonSourceBuild().setData(geojson),
-    new LayerListBuild().setColor(color!),
-    new LayerIdentifyBuild(),
-    new LayerInfoShowBuild({
-      fields: [
-        {
-          trans: 'map.layer-control.field.name',
-          value: 'name',
+    LayerBuilder.source(new GeoJsonSourceBuild()).setData(geojson),
+    LayerBuilder.list().setColor(color),
+    LayerBuilder.identify(),
+    LayerBuilder.info().setFields([
+      {
+        trans: 'map.layer-control.field.name',
+        value: 'name',
+      },
+      {
+        trans: 'map.layer-control.field.bound.title',
+        value: (layer: ILayer) => {
+          const bounds = layer.metadata.bounds;
+          return (
+            bounds && `${bounds[0]}, ${bounds[1]}, ${bounds[2]},${bounds[3]}`
+          );
         },
-        {
-          trans: 'map.layer-control.field.bound.title',
-          value: (layer: ILayer) => {
-            const bounds = layer.metadata.bounds;
-            return (
-              bounds && `${bounds[0]}, ${bounds[1]}, ${bounds[2]},${bounds[3]}`
-            );
-          },
+      },
+      {
+        trans: 'map.layer-control.field.geojson',
+        value: (layer: ILayer) => {
+          const geojson = (layer.getView('source') as GeojsonSource).geojson;
+          return JSON.stringify(geojson, undefined, 2);
         },
-        {
-          trans: 'map.layer-control.field.geojson',
-          value: (layer: ILayer) => {
-            const geojson = (layer.getView('source') as GeojsonSource).geojson;
-            return JSON.stringify(geojson, undefined, 2);
-          },
-          inline: true,
-        },
-      ],
-    }),
+        inline: true,
+      },
+    ]),
   ];
+  const mapBuild = LayerBuilder.map();
   if (type) {
-    builds.push(
-      new LayerMapBuild().setLayer(
-        new LayerSimpleMapboxBuild().setStyleType(type).setColor(color).build()
-      )
+    mapBuild.setLayer(
+      new LayerSimpleMapboxBuild().setStyleType(type).setColor(color).build()
     );
   }
+  builds.push(mapBuild);
   const actions: LayerAction[] = [toBoundAction(), toggleShowAction()];
   return setupDefault(layer, { builds, actions }, options);
 }

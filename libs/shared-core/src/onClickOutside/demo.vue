@@ -8,13 +8,13 @@ const modal = ref(false);
 const modalRef = ref(null);
 
 onClickOutside(modalRef, (event) => {
-  console.log(event);
+  console.info(event);
   modal.value = false;
 });
 
 const dropdown = ref(false);
 const dropdownHandler: OnClickOutsideHandler = (event) => {
-  console.log(event);
+  console.info(event);
   dropdown.value = false;
 };
 </script>

@@ -186,7 +186,7 @@ function closeContextMenu() {
 const LAYER_ACTION: { [key: string]: (item: IListView, layer: ILayer) => any } =
   {
     'to-bound': (item: IListView) => {
-      onToBounds(item.metadata.bounds);
+      onToBounds(getLayerFromView(item).getView('source').bounds);
     },
     'toggle-show': (item: IListView) => {
       item.show = !item.show;

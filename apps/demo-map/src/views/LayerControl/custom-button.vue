@@ -4,11 +4,15 @@
     type="mdi"
     :path="isShow ? path.legendClose : path.legendOpen"
   />
-  <Teleport :to="`#${bottomLayerItem}`" v-if="isShow"> test </Teleport>
+  <LayerItemBottom :item="item" v-if="isShow"> test </LayerItemBottom>
 </template>
 <script lang="ts" setup>
 import { IListView } from '@hungpvq/vue-map-core';
-import { getLayerData, getLayerFromView } from '@hungpvq/vue-map-layer';
+import {
+  getLayerData,
+  getLayerFromView,
+  LayerItemBottom,
+} from '@hungpvq/vue-map-layer';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed } from 'vue';
@@ -23,5 +27,4 @@ const path = {
 const isShow = computed(() => {
   return data.value.is_show;
 });
-const bottomLayerItem = `layer-item-${props.item.id}-bottom`;
 </script>

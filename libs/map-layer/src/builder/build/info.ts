@@ -2,7 +2,6 @@ import { ABuild, ILayer } from '@hungpvq/vue-map-core';
 import { mdiInformationOutline } from '@mdi/js';
 import LayerInfo from '../../modules/part/detail/layer-info.vue';
 
-const KEY = 'show_info';
 type LayerInfoOption = {
   fields: {
     trans?: string;
@@ -13,12 +12,16 @@ type LayerInfoOption = {
 };
 
 export class LayerInfoShowBuild extends ABuild<LayerInfoOption> {
-  constructor({ fields }: LayerInfoOption) {
-    super(KEY, { fields });
+  constructor(options: Partial<LayerInfoOption> = {}) {
+    super(options);
+  }
+  setFields(fields: LayerInfoOption['fields']) {
+    this.option.fields = fields;
+    return this;
   }
   setForLayer(layer: ILayer) {
     layer.getView('action').addAction({
-      id: KEY,
+      id: 'show_info',
       component: () => LayerInfo,
       menu: {
         location: 'menu',

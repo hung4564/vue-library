@@ -5,11 +5,9 @@ import {
   ILayerIdentifyView,
 } from '@hungpvq/vue-map-core';
 
-const KEY = 'identify';
-
 export class LayerIdentifyBuild extends ABuild<IIdentifyOption> {
   constructor(option = {}) {
-    super(KEY, option);
+    super(option);
     this.setBuild((_: any, option: any) => new LayerIdentifyView(option));
   }
   setFieldName(field_name = 'name') {
