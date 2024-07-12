@@ -13,14 +13,13 @@ export class Base {
 export abstract class ABuild<T = any, IBuildReturn extends IView = IView>
   implements IBuild
 {
-  key: string;
-  option: T;
-  build?: LayerBuildFunction<IBuildReturn>;
-  constructor(key: string, option?: T, default_option?: Partial<T>) {
-    this.key = key;
+  key = '';
+  option: Partial<T> = {};
+  build!: LayerBuildFunction<IBuildReturn>;
+  constructor(option: Partial<T> = {}, default_option?: Partial<T>) {
     this.option = Object.assign({}, default_option, option);
   }
-  setBuild(build: any) {
+  protected setBuild(build: LayerBuildFunction<IBuildReturn>) {
     this.build = build;
     return this;
   }
@@ -29,13 +28,9 @@ export abstract class ABuild<T = any, IBuildReturn extends IView = IView>
 export class AView extends Base implements IView {
   parent?: ILayer = undefined;
   data_id?: string;
-  runAfterSetParent?: CallableFunction;
   setParent(_parent: ILayer) {
     this.parent = _parent;
     this.data_id = _parent.id;
-    if (this.runAfterSetParent) {
-      this.runAfterSetParent();
-    }
   }
 }
 

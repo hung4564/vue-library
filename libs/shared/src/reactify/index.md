@@ -32,11 +32,11 @@ const a = ref(1);
 const b = ref(2);
 const sum = reactiveAdd(a, b);
 
-console.log(sum.value); // 3
+console.info(sum.value); // 3
 
 a.value = 5;
 
-console.log(sum.value); // 7
+console.info(sum.value); // 7
 ```
 
 An example of implementing a reactive [Pythagorean theorem](https://en.wikipedia.org/wiki/Pythagorean_theorem).
@@ -53,12 +53,12 @@ const add = reactify((a: number, b: number) => a + b);
 const a = ref(3);
 const b = ref(4);
 const c = sqrt(add(pow(a, 2), pow(b, 2)));
-console.log(c.value); // 5
+console.info(c.value); // 5
 
 // 5:12:13
 a.value = 5;
 b.value = 12;
-console.log(c.value); // 13
+console.info(c.value); // 13
 ```
 
 You can also do it this way:
@@ -74,7 +74,7 @@ const a = ref(3);
 const b = ref(4);
 
 const c = reactify(pythagorean)(a, b);
-console.log(c.value); // 5
+console.info(c.value); // 5
 ```
 
 Another example of making reactive `stringify`
@@ -87,9 +87,9 @@ const stringify = reactify(JSON.stringify);
 const obj = ref(42);
 const dumped = stringify(obj);
 
-console.log(dumped.value); // '42'
+console.info(dumped.value); // '42'
 
 obj.value = { foo: 'bar' };
 
-console.log(dumped.value); // '{"foo":"bar"}'
+console.info(dumped.value); // '{"foo":"bar"}'
 ```

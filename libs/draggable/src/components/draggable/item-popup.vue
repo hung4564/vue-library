@@ -119,6 +119,9 @@ function onToggleExpanded() {
   expand.value = !expand.value;
   p_height.value = expand.value ? old_height.value : 50;
 }
+function onDragging() {
+  window?.getSelection()?.removeAllRanges();
+}
 </script>
 
 <template>
@@ -137,6 +140,7 @@ function onToggleExpanded() {
     :active="isActive"
     @activated="activateEv()"
     @deactivated="deactivateEv()"
+    @dragging="onDragging"
   >
     <component :is="componentName" :width="p_width" :height="p_height">
       <div class="draggable-popup-desktop">

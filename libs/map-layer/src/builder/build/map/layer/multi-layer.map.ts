@@ -2,7 +2,6 @@ import { copyByJson } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { updateLayer } from '../../../../helper';
 import MultiStyle from '../../../../modules/StyleControl/style/multi-style.vue';
-import { ISource } from '../source/ASource';
 import { AMapLayer, IMapMultiLayerOption } from './ALayer';
 export class MapMultiLayer extends AMapLayer {
   protected layers: any[];
@@ -19,18 +18,6 @@ export class MapMultiLayer extends AMapLayer {
     if (this.source && !this.source.id) {
       this.source.id = this._id;
     }
-    this.runAfterSetParent = () => {
-      if (this.parent) {
-        const view_source = this.parent.getView('source') as ISource;
-        const source_id = view_source ? view_source.id : null;
-        if (!this.source || !this.source.data) {
-          this.source = {
-            id: source_id,
-            data: view_source.getMapboxSource(),
-          };
-        }
-      }
-    };
   }
   getBeforeId() {
     return this.layers[0].id;

@@ -1,2 +1,2 @@
-export * from './raster.source';
 export * from './geojson.source';
+export * from './raster.source';

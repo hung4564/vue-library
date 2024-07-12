@@ -129,7 +129,47 @@
       "name": "Getting start",
       "package": "Map - Layer",
       "docs": "/map/layer",
-      "description": "Map Layer"
+      "description": "Map Layer",
+      "order": 1
+    },
+    {
+      "name": "Create layer",
+      "package": "Map - Layer",
+      "docs": "/map/layer/create-layer",
+      "description": "Create layer",
+      "order": 2
+    },
+    {
+      "name": "Legend",
+      "package": "Map - Layer",
+      "category": "Build",
+      "docs": "/map/layer/build-legend",
+      "description": "Build legend layer",
+      "order": 3
+    },
+    {
+      "name": "List",
+      "package": "Map - Layer",
+      "category": "Build",
+      "docs": "/map/layer/build-list",
+      "description": "Build list layer",
+      "order": 3
+    },
+    {
+      "name": "Map",
+      "category": "Build",
+      "package": "Map - Layer",
+      "docs": "/map/layer/build-map",
+      "description": "Build map layer",
+      "order": 3
+    },
+    {
+      "name": "Action",
+      "category": "Build",
+      "package": "Map - Layer",
+      "docs": "/map/layer/build-action",
+      "description": "Build action layer",
+      "order": 4
     }
   ]
 }

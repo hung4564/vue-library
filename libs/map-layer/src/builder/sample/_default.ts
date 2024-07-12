@@ -1,6 +1,5 @@
 import { ILayer } from '@hungpvq/vue-map-core';
-import { LayerActionBuild } from '../build/action';
-import { LayerComponentBuild } from '../build/component';
+import { LayerBuilder } from '../build';
 import { OptionDefault } from './type';
 
 export function setupDefault(
@@ -13,8 +12,8 @@ export function setupDefault(
   if (default_builds) {
     builds = [...default_builds, ...builds];
   }
-  builds.unshift(new LayerActionBuild({ actions }));
-  builds.unshift(new LayerComponentBuild());
+  builds.unshift(LayerBuilder.action().addActions(actions));
+  builds.unshift(LayerBuilder.component());
   builds.forEach((build) => {
     if (build.setForLayer) build.setForLayer(layer);
     if (build.build) {

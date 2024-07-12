@@ -13,9 +13,14 @@ export const KEY = 'layer';
 export type MapLayerStore = {
   layers: Record<string, ILayer>;
   layerIds: Ref<string[]>;
+  data: Record<string, Ref>;
 };
 export function initMapLayer(mapId: string) {
-  addStore<MapLayerStore>(mapId, KEY, { layers: {}, layerIds: ref([]) });
+  addStore<MapLayerStore>(mapId, KEY, {
+    layers: {},
+    layerIds: ref([]),
+    data: {},
+  });
 }
 addToQueue(KEY, initMapLayer);
 
@@ -23,6 +28,7 @@ export async function addLayer(mapId: string, layer: ILayer) {
   const store = getStore<MapLayerStore>(mapId, KEY);
   store.layers[layer.id] = layer;
   store.layerIds.value.push(layer.id);
+  store.data[layer.id] = ref<any>({});
   const listView = layer.getView('list');
   if (listView) {
     listView.index = store.layerIds.value.length;
@@ -37,6 +43,7 @@ export function removeLayer(mapId: string, layer: ILayer) {
     layer.removeFromMap(map);
   });
   delete store.layers[layer.id];
+  delete store.data[layer.id];
   store.layerIds.value = store.layerIds.value.filter((x) => x != layer.id);
 }
 export function getStoreLayer(mapId: string) {
@@ -62,4 +69,9 @@ export function getAllLayersByView<T extends IView = IView>(
 export function getLayerIds(mapId: string) {
   const store = getStore<MapLayerStore>(mapId, KEY);
   return store.layerIds;
+}
+
+export function getLayerData<T = any>(mapId: string, layerId: string) {
+  const store = getStore<MapLayerStore>(mapId, KEY);
+  return store.data[layerId] as Ref<T>;
 }

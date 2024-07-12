@@ -9,7 +9,7 @@ const text = ref('');
 onChange((files) => {
   if (files && files[0])
     read(files[0]).then((res) => {
-      console.log(res);
+      console.info(res);
       if (typeof res == 'string') text.value = res;
     });
   /** do something with files */

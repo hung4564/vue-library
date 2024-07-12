@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import { ABuild } from '@hungpvq/vue-map-core';
+import { ABuild, ILayer, ISourceView } from '@hungpvq/vue-map-core';
 import { bbox } from '@turf/turf';
 import type {
   BBox,
@@ -10,7 +10,7 @@ import type {
   Geometry,
 } from 'geojson';
 import { GeoJSONSource, GeoJSONSourceRaw } from 'mapbox-gl';
-import { ASource, ISource } from './ASource';
+import { ASource } from './ASource';
 
 export interface IGeojsonOption {
   bounds?: BBox;
@@ -22,7 +22,7 @@ export class GeoJsonSourceBuild extends ABuild<
 > {
   protected geojson!: GeoJSON;
   constructor(option: Partial<IGeojsonOption> = {}) {
-    super('source', option);
+    super(option);
     this.setBuild(() => {
       return new GeojsonSource(this.geojson, this.option);
     });
@@ -35,7 +35,7 @@ export class GeoJsonSourceBuild extends ABuild<
 
 export class GeojsonSource<T extends GeoJsonProperties = GeoJsonProperties>
   extends ASource<T>
-  implements ISource
+  implements ISourceView
 {
   public geojson!: FeatureCollection<Geometry, T>;
   protected field_id = 'id';

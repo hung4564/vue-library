@@ -1,6 +1,5 @@
 import type { Color, MapSimple } from '@hungpvq/shared-map';
 import { BBox } from '@turf/turf';
-import { VueElement } from 'vue';
 export type TYPE_VIEW = {
   component: ILayerComponentView;
   action: IActionView;
@@ -8,6 +7,7 @@ export type TYPE_VIEW = {
   list: IListView;
   identify: ILayerIdentifyView;
   map: ILayerMapView;
+  legend: ILayerLegendView;
   [key: string]: IView;
 };
 export type TYPE_VIEW_NAME = keyof TYPE_VIEW | string;
@@ -62,7 +62,7 @@ export type ILayerComponentView = IView & {
 
 // === action ===
 type MenuCommon = {
-  location: 'extra' | 'menu';
+  location: 'extra' | 'menu' | 'bottom';
   order?: number;
 };
 export type MenuDivider = MenuCommon & {
@@ -70,7 +70,7 @@ export type MenuDivider = MenuCommon & {
 };
 type componentFC = () => any;
 export type MenuItem = MenuCommon & {
-  id: string;
+  id?: string;
   type: 'item';
   class?: string;
   name: string | componentFC;
@@ -82,7 +82,7 @@ export type Menu = MenuDivider | MenuItem;
 
 export type LayerAction = {
   id: string;
-  component?: () => VueElement;
+  component?: () => any;
   menu: Menu;
   type?: string;
   option?: any;
@@ -192,3 +192,18 @@ export interface IEventComponentItem {
   open?: () => void;
   close?: () => void;
 }
+
+// === legend ===
+export type LayerLegendField = {
+  component?: any;
+  option?: any;
+};
+export type ILayerLegendView = IView & {
+  id: string;
+  config: ILegendOption;
+};
+export interface ILegendOption {
+  fields: LayerLegendField[];
+}
+
+// === Legend end ===

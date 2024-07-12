@@ -26,7 +26,7 @@ import { onClickOutside } from '@hungpvq/shared-core';
 
 const target = ref(null);
 
-onClickOutside(target, (event) => console.log(event));
+onClickOutside(target, (event) => console.info(event));
 </script>
 
 <template>

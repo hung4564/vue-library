@@ -8,9 +8,9 @@ import {
   ListOption,
 } from '@hungpvq/vue-map-core';
 
-export class LayerListBuild extends ABuild<ListOption, IListView> {
+export class LayerListBuild extends ABuild<any, IListView> {
   constructor(option: ListOption = {}) {
-    super('list', option, { show: true, opacity: 1 });
+    super(option, { show: true, opacity: 1 });
     this.setBuild(createDefaultViewInList);
   }
   disableDelete() {

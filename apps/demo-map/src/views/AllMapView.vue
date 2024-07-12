@@ -20,7 +20,7 @@ import {
 import {
   IdentifyControl,
   LayerControl,
-  LayerMapBuild,
+  LayerBuilder,
   LayerSimpleMapboxBuild,
   addLayer,
   createGeoJsonLayer,
@@ -36,6 +36,7 @@ function onMapLoaded(map: MapSimple) {
       tiles: [
         'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
       ],
+      maxZoom: 6,
       bounds: [
         104.96327341667353, 18.461221184685627, 106.65936430823979,
         19.549518287564368,
@@ -74,7 +75,7 @@ function onMapLoaded(map: MapSimple) {
         ],
       },
       builds: [
-        new LayerMapBuild().setLayers([
+        LayerBuilder.map().setLayers([
           new LayerSimpleMapboxBuild()
             .setStyleType('area')
             .setColor('#0000FF')

@@ -11,23 +11,18 @@ const router = createRouter({
     },
     {
       path: '/draw/',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/Draw/example.vue'),
     },
     {
       path: '/basemap/',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
+      path: '/layer/',
+      component: () => import('../views/LayerControl/example.vue'),
+    },
+    {
       path: '/measurement/',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/Measurement/example.vue'),
     },
   ],

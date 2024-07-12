@@ -17,32 +17,15 @@
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
         <template v-for="(menu, i) in extra_menus" :key="i">
-          <button
-            v-if="menu.type === 'item'"
+          <LayerMenu
             class="layer-item__button"
+            :item="menu"
+            :data="item"
             :disabled="loading"
-            :title="menu.name"
-            v-bind="menu.attr"
+            :mapId="mapId"
             @click="onLayerAction(menu)"
-          >
-            <template v-if="menu.icon">
-              <component
-                v-if="typeof menu.icon != 'string'"
-                :is="menu.icon()"
-                :item="item"
-              ></component>
-              <SvgIcon size="14" type="mdi" :path="menu.icon" v-else
-            /></template>
-          </button>
+          />
         </template>
-        <!-- <button
-          class="layer-item__button"
-          @click.stop="toggleShow"
-          :disabled="loading"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.show" v-if="isShow" />
-          <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
-        </button> -->
         <button
           class="layer-item__button"
           v-if="!item.config.disable_delete"
@@ -62,7 +45,7 @@
         </button>
         <button
           class="layer-item__button"
-          v-if="item.config.disabled_opacity && isHasLegend"
+          v-if="!showBottom && isHasLegend"
           @click.stop="onToggleLegend"
         >
           <SvgIcon
@@ -73,7 +56,7 @@
         </button>
       </div>
     </div>
-    <div class="layer-item__action" v-if="!item.config.disabled_opacity">
+    <div class="layer-item__action" v-if="showBottom">
       <div class="layer-item__opacity" v-if="!item.config.disabled_opacity">
         <LayerItemSlider
           v-model.number="opacity"
@@ -83,6 +66,16 @@
         />
       </div>
       <div class="v-spacer"></div>
+      <template v-for="(menu, i) in extra_bottoms" :key="i">
+        <LayerMenu
+          class="layer-item__button"
+          :item="menu"
+          :data="item"
+          :disabled="loading"
+          :mapId="mapId"
+          @click="onLayerAction(menu)"
+        />
+      </template>
       <button
         class="layer-item__button"
         @click.stop="onToggleLegend"
@@ -95,21 +88,24 @@
         />
       </button>
     </div>
+
+    <div :id="bottomLayerItem" />
     <div v-if="legendShow && legendConfig">
       <component
-        :is="legendConfig.component"
-        :value="item"
-        v-for="(item, i) of legendConfig.items"
+        :is="item.component"
+        :value="item.option"
+        v-for="(item, i) of legendConfig.fields"
         :key="i"
       ></component>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, markRaw, ref, shallowRef } from 'vue';
 import SvgIcon from '@jamescoyle/vue-icon';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerItemIcon from './layer-item-icon.vue';
+import LayerMenu from './menu/index.vue';
 import {
   mdiCrosshairsGps,
   mdiDelete,
@@ -123,8 +119,8 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { getLayerFromView } from '../../../helper';
-import type { IListView, Menu } from '../../../types/';
-const props = defineProps<{ item: IListView }>();
+import { IListView, Menu } from '@hungpvq/vue-map-core';
+const props = defineProps<{ item: IListView; mapId: string }>();
 const emit = defineEmits([
   'update:item',
   'click',
@@ -134,10 +130,10 @@ const emit = defineEmits([
   'click:content-menu',
 ]);
 const isHasLegend = computed(
-  () => props.item && props.item.parent && props.item.parent.getView('legend')
+  () => props.item && getLayerFromView(props.item)?.getView('legend')
 );
 const legendShow = ref(false);
-const legendConfig = ref();
+const legendConfig = shallowRef();
 const path = {
   menu: mdiDotsVertical,
   loading: mdiLoading,
@@ -152,9 +148,6 @@ const path = {
 };
 const loading = computed(() => {
   return props.item.metadata && props.item.metadata.loading;
-});
-const isShow = computed(() => {
-  return props.item.show;
 });
 const opacity = computed({
   get() {
@@ -173,7 +166,15 @@ const onRemove = () => {
 function onToggleLegend() {
   legendShow.value = !legendShow.value;
   if (legendShow.value) {
-    // legendConfig.value = props.item.parent.getView(KEY_BUILD.LEGEND).config;
+    const config = getLayerFromView(props.item)?.getView('legend').config;
+    if (!config) {
+      return;
+    }
+    config.fields = config.fields.map((x) => ({
+      component: markRaw(x.component),
+      option: x.option,
+    }));
+    legendConfig.value = config;
   }
 }
 const button_menus = computed<Menu[]>(() => {
@@ -192,6 +193,9 @@ const content_menus = computed(() => {
     .filter((x) => x.location == 'menu')
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
+const showBottom = computed(() => {
+  return !props.item.config.disabled_opacity || extra_bottoms.value.length > 0;
+});
 function handleContextClick(event: MouseEvent) {
   emit('click:content-menu', {
     event,
@@ -202,11 +206,14 @@ function handleContextClick(event: MouseEvent) {
 function onLayerAction(action: Menu) {
   emit('click:action', { action, item: props.item });
 }
-function isFunction(functionToCheck: any) {
-  return (
-    functionToCheck && {}.toString.call(functionToCheck) === '[object Function]'
-  );
-}
+const extra_bottoms = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'bottom')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const bottomLayerItem = computed(() => {
+  return `layer-item-${props.item.id}-bottom`;
+});
 </script>
 
 <style scoped>

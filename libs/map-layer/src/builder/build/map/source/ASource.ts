@@ -1,26 +1,17 @@
 import type { BBox, FeatureCollection, GeoJSON, Geometry } from 'geojson';
 
 import { MapSimple } from '@hungpvq/shared-map';
-import { AView, type IView } from '@hungpvq/vue-map-core';
+import { AView, ISourceView } from '@hungpvq/vue-map-core';
 import { AnySourceData } from 'mapbox-gl';
 
-export type ISource = IView & {
-  getMapboxSource: () => object;
-  updateForMap: (map: MapSimple) => void;
-  addToMap: (map: MapSimple) => void;
-  removeFromMap: (map: MapSimple) => void;
-  bounds: BBox;
-};
-export abstract class ASource<IFeature = any> extends AView implements ISource {
+export abstract class ASource<IFeature = any>
+  extends AView
+  implements ISourceView
+{
   bounds: BBox;
   constructor() {
     super();
     this.bounds = [-180, -85.051129, 180, 85.051129];
-    this.runAfterSetParent = () => {
-      if (this.bounds && this.parent) {
-        this.parent.metadata.bounds = this.bounds;
-      }
-    };
   }
   getAll(): FeatureCollection<Geometry, IFeature> | undefined {
     return undefined;

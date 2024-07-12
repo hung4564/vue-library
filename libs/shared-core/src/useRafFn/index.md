@@ -27,6 +27,6 @@ const count = ref(0);
 
 const { pause, resume } = useRafFn(() => {
   count.value++;
-  console.log(count.value);
+  console.info(count.value);
 });
 ```

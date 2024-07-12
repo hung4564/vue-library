@@ -14,7 +14,7 @@ Use EventListener with ease. Register using [addEventListener](https://developer
 import { useEventListener } from '@hungpvq/shared-core';
 
 useEventListener(document, 'visibilitychange', (evt) => {
-  console.log(evt);
+  console.info(evt);
 });
 ```
 
@@ -25,7 +25,7 @@ import { useEventListener } from '@hungpvq/shared-core';
 
 const element = ref<HTMLDivElement>();
 useEventListener(element, 'keydown', (e) => {
-  console.log(e.key);
+  console.info(e.key);
 });
 ```
 
@@ -42,7 +42,7 @@ You can also call the returned to unregister the listener.
 import { useEventListener } from '@hungpvq/shared-core';
 
 const cleanup = useEventListener(document, 'keydown', (e) => {
-  console.log(e.key);
+  console.info(e.key);
 });
 
 cleanup(); // This will unregister the listener.
@@ -54,7 +54,7 @@ Note if your components also run in SSR (Server Side Rendering), you might get e
 // onMounted will only be called in the client side, so it guarantees the DOM APIs are available.
 onMounted(() => {
   useEventListener(document, 'keydown', (e) => {
-    console.log(e.key);
+    console.info(e.key);
   });
 });
 ```
