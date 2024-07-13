@@ -80,17 +80,19 @@
   "release": {
     "projectsRelationship": "independent",
     "version": {
-      "generatorOptions": {
-        "currentVersionResolver": "git-tag",
-        "fallbackCurrentVersionResolver": "disk"
-      }
+      "conventionalCommits": true
     },
     "changelog": {
-      "projectChangelogs": true,
-      "automaticFromRef": true,
-      "workspaceChangelog": {
-        "createRelease": "github"
-      }
+      "projectChangelogs": {
+        "createRelease": "github",
+        "renderOptions": {
+          "authors": true,
+          "mapAuthorsToGitHubUsernames": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
+      },
+      "automaticFromRef": true
     },
     "projects": ["libs/*"]
   }
