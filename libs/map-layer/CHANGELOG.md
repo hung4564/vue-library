@@ -1,6 +1,5 @@
 ## 0.0.3 (2024-07-13)
 
-
 ### 🚀 Features
 
 - **content-menu:** add handle mobile
@@ -11,24 +10,20 @@
 
 - **map-layer:** update new build
 
-
 ### 🩹 Fixes
 
 - **map-layer:** props reactive
 
-
-### ❤️  Thank You
+### ❤️ Thank You
 
 - hung.pv
 
 ## 0.0.2 (2024-06-17)
 
-
 ### 🚀 Features
 
 - **content-menu:** add handle mobile
 
-
-### ❤️  Thank You
+### ❤️ Thank You
 
 - hung.pv

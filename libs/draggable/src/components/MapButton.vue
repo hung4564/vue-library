@@ -19,9 +19,9 @@ export default {
       return { width: `${this.width}px`, height: `${this.height}px` };
     },
     bindClass() {
-      return { "map-control-button--disabled": this.disabled };
-    }
-  }
+      return { 'map-control-button--disabled': this.disabled };
+    },
+  },
 };
 </script>
 

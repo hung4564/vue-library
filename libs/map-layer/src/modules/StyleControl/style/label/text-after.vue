@@ -1,5 +1,5 @@
 <template>
-  <div>{{ value || default_value || "0" }} {{ tab.unit || "" }}</div>
+  <div>{{ value || default_value || '0' }} {{ tab.unit || '' }}</div>
 </template>
 
 <script>
@@ -8,12 +8,12 @@ export default {
     value: {},
     default_value: {},
     tab: {
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   data: () => ({}),
   computed: {},
-  methods: {}
+  methods: {},
 };
 </script>
 

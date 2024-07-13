@@ -16,15 +16,15 @@
 export default {
   props: {
     height: {},
-    width: {}
+    width: {},
   },
   data: () => ({}),
   computed: {
     cardStyle() {
       return { height: this.height, width: this.width };
-    }
+    },
   },
-  methods: {}
+  methods: {},
 };
 </script>
 

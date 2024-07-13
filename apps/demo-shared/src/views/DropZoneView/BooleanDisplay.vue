@@ -15,7 +15,7 @@ const props = defineProps({
   falseClass: {
     default: 'text-orange-400 dark:text-orange-300',
   },
-})
+});
 </script>
 
 <template>

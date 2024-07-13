@@ -7,18 +7,17 @@
       } ;
               border-radius: 5px `"
     :class="{ 'fill-canvas': !value && !default_value }"
-  >
-  </div>
+  ></div>
 </template>
 
 <script>
 export default {
   props: {
     value: { type: String },
-    default_value: { type: String }
+    default_value: { type: String },
   },
   data: () => ({}),
   computed: {},
-  methods: {}
+  methods: {},
 };
 </script>

@@ -2,24 +2,24 @@
   <div class="map-image">
     <div class="map-image__sizer" style="padding-bottom: 100%"></div>
     <div class="map-image__image" :style="styleImage"></div>
-    <div class="map-image__content"> <slot /> </div>
+    <div class="map-image__content"><slot /></div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    src: {}
+    src: {},
   },
   data: () => ({}),
   computed: {
     styleImage() {
       return {
-        "background-image": `url(${this.src})`
+        'background-image': `url(${this.src})`,
       };
-    }
+    },
   },
-  methods: {}
+  methods: {},
 };
 </script>
 

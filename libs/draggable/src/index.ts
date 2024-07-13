@@ -1,2 +1,2 @@
-export * from "./components";
-export * from "./hoc/mobile-handle"
+export * from './components';
+export * from './hoc/mobile-handle';

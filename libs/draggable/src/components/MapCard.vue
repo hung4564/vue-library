@@ -16,15 +16,15 @@
 export default {
   props: {
     height: {},
-    width: {}
+    width: {},
   },
   data: () => ({}),
   computed: {
     cardStyle() {
       return { height: this.height, width: this.width };
-    }
+    },
   },
-  methods: {}
+  methods: {},
 };
 </script>
 
@@ -41,7 +41,7 @@ export default {
 
   &:before,
   &:after {
-    content: "";
+    content: '';
     position: absolute;
   }
   &:not(.border-0):before {
@@ -66,7 +66,9 @@ export default {
   }
 
   &
-    > *:not(.card-arrow):not(.card-img-overlay):not(.card-img):not(.hljs-container) {
+    > *:not(.card-arrow):not(.card-img-overlay):not(.card-img):not(
+      .hljs-container
+    ) {
     position: relative;
     z-index: 10;
   }
@@ -86,7 +88,7 @@ export default {
     position: absolute;
 
     &:before {
-      content: "";
+      content: '';
       position: absolute;
       width: 2px;
       height: 8px;
@@ -94,7 +96,7 @@ export default {
       opacity: 0.75;
     }
     &:after {
-      content: "";
+      content: '';
       position: absolute;
       width: 10px;
       height: 2px;

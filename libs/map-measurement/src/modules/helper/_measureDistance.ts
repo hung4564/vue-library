@@ -1,14 +1,14 @@
-import { Measure, formatNumber } from "./_measurement";
-import { length, lineString, point } from "@turf/turf";
+import { Measure, formatNumber } from './_measurement';
+import { length, lineString, point } from '@turf/turf';
 
-import { IViewSetting } from "../types";
+import { IViewSetting } from '../types';
 
 export class MeasureDistance extends Measure {
   get name() {
-    return "Measure Distance";
+    return 'Measure Distance';
   }
   get type() {
-    return "line";
+    return 'line';
   }
   getResult() {
     const features: any[] = [];
@@ -18,7 +18,7 @@ export class MeasureDistance extends Measure {
       features,
       value,
       features_label,
-      fields: []
+      fields: [],
     };
     if (!this.coordinates || this.coordinates.length < 1) {
       return result;
@@ -33,21 +33,21 @@ export class MeasureDistance extends Measure {
     result.format = formatDistanceText(result.value);
     result.features_label = this.coordinates.map((x, i, array) => {
       return {
-        type: "Feature",
+        type: 'Feature',
         properties: {
           is_label: true,
           text: formatDistanceText(
             i < 1 ? 0 : length(lineString(array.slice(0, i + 1)))
-          )
+          ),
         },
-        geometry: { type: "Point", coordinates: x }
+        geometry: { type: 'Point', coordinates: x },
       };
     });
     result.fields = [
       {
-        trans: "map.measurement.setting.distance",
-        value: formatDistanceText(result.value)
-      }
+        trans: 'map.measurement.setting.distance',
+        value: formatDistanceText(result.value),
+      },
     ];
     return result;
   }

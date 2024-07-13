@@ -88,7 +88,7 @@ const bindDrag = computed(() => {
 }
 </style>
 <style>
-.module__container>*:not(.module__container) {
+.module__container > *:not(.module__container) {
   pointer-events: all;
 }
 </style>

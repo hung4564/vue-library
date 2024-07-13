@@ -7,18 +7,10 @@
     "../../.eslintrc.json",
     "../../.eslintrc.base.json"
   ],
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "*.jsx",
-        "*.vue"
-      ],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.vue"],
       "rules": {
         "@typescript-eslint/no-explicit-any": "off",
         "vue/multi-word-component-names": "off"

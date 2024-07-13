@@ -1,10 +1,7 @@
 {
-  "cSpell.words": [
-    "Buildable",
-    "hungpv"
-  ],
+  "cSpell.words": ["Buildable", "hungpv"],
   "notebook.codeActionsOnSave": {},
   "editor.codeActionsOnSave": {
-    "source.sortImports": "explicit",
-  },
+    "source.sortImports": "explicit"
+  }
 }

@@ -10,16 +10,16 @@
 <script>
 export default {
   props: {
-    icon: { type: String }
+    icon: { type: String },
   },
-  computed: {}
+  computed: {},
 };
 </script>
 <style scoped>
 .map-icon {
   align-items: center;
   display: inline-flex;
-  font-feature-settings: "liga";
+  font-feature-settings: 'liga';
   font-size: 24px;
   justify-content: center;
   letter-spacing: normal;
