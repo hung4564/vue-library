@@ -1,0 +1,18 @@
+{
+  "name": "shared",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/share/shared/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
+      }
+    }
+  }
+}

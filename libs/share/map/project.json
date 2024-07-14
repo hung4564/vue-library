@@ -1,0 +1,28 @@
+{
+  "name": "shared-map",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/share/map/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/share/map",
+        "main": "libs/share/map/src/index.ts",
+        "tsConfig": "libs/share/map/tsconfig.lib.json",
+        "assets": ["libs/share/map/*.md"]
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
+      }
+    }
+  }
+}
