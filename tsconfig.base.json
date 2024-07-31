@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@hungpvq/content-menu": ["libs/content-menu/src/index.ts"],
+      "@hungpvq/router": ["libs/router/src/index.ts"],
       "@hungpvq/shared": ["libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],
       "@hungpvq/shared-file": ["libs/share/file/src/index.ts"],

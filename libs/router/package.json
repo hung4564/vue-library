@@ -1,0 +1,17 @@
+{
+  "name": "@hungpvq/router",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "peerDependencies": {
+    "@hungpvq/shared": ">=0.0.1",
+    "vue-router": "^4.2.4",
+    "vue": "^3.3.4"
+  }
+}
