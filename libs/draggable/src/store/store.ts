@@ -1,7 +1,8 @@
+import { createStore } from '@hungpvq/shared';
 import { reactive } from 'vue';
 import { ContainerStore, ContainerStoreAction } from '../types';
 
-let store = {
+const store = createStore('drag', {
   state: reactive<{ container: Record<string, ContainerStore> }>({
     container: {},
   }),
@@ -106,8 +107,7 @@ let store = {
       }
     },
   },
-};
-
+});
 function setShowId(containerId: string, itemId: string, show: boolean) {
   const p_store = store.actions.getContainer(containerId);
   const item_ids_show = p_store.show;
@@ -141,9 +141,4 @@ function getStoreContainer(id: string) {
   return container;
 }
 
-if (window.$_hungpv_store) {
-  store = window.$_hungpv_store;
-} else {
-  window.$_hungpv_store = store;
-}
 export { store };

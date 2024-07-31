@@ -7,9 +7,3 @@ export type ContainerStore = {
   isMobile: boolean;
 };
 export type ContainerStoreAction = { setZIndex: (value: number) => void };
-
-declare global {
-  interface Window {
-    $_hungpv_store: any;
-  }
-}

@@ -1,7 +1,8 @@
+import { createStore } from '@hungpvq/shared';
 import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
 import { MapStore } from '../types';
 import { addMapIdToQueue, removeMapIdFromQueue } from './queue';
-let store = {
+const store = createStore('map.core', {
   state: {} as Record<string, MapStore>,
   getters: {},
   actions: {
@@ -33,12 +34,7 @@ let store = {
       return map;
     },
   },
-};
-if (window.$_hungpv_drag) {
-  store = window.$_hungpv_drag;
-} else {
-  window.$_hungpv_drag = store;
-}
+});
 export const { state, getters, actions } = store;
 export function addStore<T = any>(
   mapId: string,

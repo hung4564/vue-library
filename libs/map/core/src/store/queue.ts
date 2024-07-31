@@ -1,18 +1,18 @@
+import { createStore } from '@hungpvq/shared';
+
 export type PendingFunction = (mapId: string) => void;
-let pendingFunctions: Record<string, PendingFunction> = {};
-let pendingRemoveFunctions: Record<string, PendingFunction> = {};
-let mapIds: Record<string, Record<string, boolean>> = {};
-if (window.$_hungpv_map_queue) {
-  pendingFunctions = window.$_hungpv_map_queue.pendingFunctions;
-  pendingRemoveFunctions = window.$_hungpv_map_queue.pendingRemoveFunctions;
-  mapIds = window.$_hungpv_map_queue.mapIds;
-} else {
-  window.$_hungpv_map_queue = {
-    pendingFunctions,
-    pendingRemoveFunctions,
-    mapIds,
-  };
-}
+const store = createStore<{
+  pendingFunctions: Record<string, PendingFunction>;
+  pendingRemoveFunctions: Record<string, PendingFunction>;
+  mapIds: Record<string, Record<string, boolean>>;
+}>('map.queue', {
+  pendingFunctions: {},
+  pendingRemoveFunctions: {},
+  mapIds: {},
+});
+const pendingFunctions = store.pendingFunctions;
+const pendingRemoveFunctions = store.pendingRemoveFunctions;
+const mapIds = store.mapIds;
 export function addToQueue(
   key: string,
   func: PendingFunction,

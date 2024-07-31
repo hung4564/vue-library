@@ -1,4 +1,5 @@
 export * from './createEventHook';
+export * from './createStore';
 export * from './reactify';
 export * from './toValue';
 export * from './tryOnMounted';
