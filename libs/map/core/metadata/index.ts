@@ -2,7 +2,7 @@
 import {
   getFunctionsSideBar,
   type PackageIndexes,
-} from '../../../docs/metadata';
+} from '../../../../docs/metadata';
 import _metadata, { functions as _functions } from './metadata.json';
 export const metadata = _metadata as PackageIndexes;
 export const functions = _functions as PackageIndexes['functions'];
