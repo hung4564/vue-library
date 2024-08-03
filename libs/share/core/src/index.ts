@@ -8,6 +8,7 @@ export * from './useElementVisibility';
 export * from './useEventListener';
 export * from './useFullscreen';
 export * from './useGeolocation';
+export * from './useIntersectionObserver';
 export * from './useMediaQuery';
 export * from './useMounted';
 export * from './useRafFn';

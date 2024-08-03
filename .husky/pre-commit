@@ -1,5 +1,3 @@
 #!/bin/sh
 
-node ./scripts/commit/format.js
-
-npx nx affected -t=lint -t=ts-check
+npx lint-staged
