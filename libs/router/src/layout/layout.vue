@@ -4,10 +4,10 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { markRaw, shallowRef, watch } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
-import { shallowRef, watch, markRaw } from 'vue';
 import { getLayout } from '../store';
-const DefaultLayout = markRaw(getLayout('default'));
+const DefaultLayout = markRaw(getLayout('default')!);
 const route = useRoute();
 const layout = shallowRef(DefaultLayout);
 

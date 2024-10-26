@@ -21,7 +21,17 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/ban-types": [
+          "warn",
+          {
+            "extendDefaults": true,
+            "types": {
+              "{}": false
+            }
+          }
+        ]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

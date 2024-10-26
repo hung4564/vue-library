@@ -1,0 +1,21 @@
+@mixin variant() {
+  &--variant-plain,
+  &--variant-outlined {
+    background: transparent;
+    color: inherit;
+  }
+  &--variant-filled,
+  [data-variant='filled'] {
+    background: var(--v-background-color);
+    color: var(--v-text-color);
+  }
+  &--variant-outlined,
+  [data-variant='outlined'] {
+    border: 1px solid var(--v-background-color);
+    color: var(--v-background-color);
+  }
+  &--variant-plain,
+  [data-variant='plain'] {
+    color: var(--v-background-color);
+  }
+}

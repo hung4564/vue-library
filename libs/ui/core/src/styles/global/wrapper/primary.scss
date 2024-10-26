@@ -1,0 +1,20 @@
+@import '../../local/main-local.scss';
+[vBtn][data-appearance='primary'] {
+  --v-background-color: #006b68;
+  --v-text-color: #fff;
+
+  @include wrapper-hover() {
+    --v-background-color: #249d99;
+    --v-text-color: #fff;
+  }
+
+  @include wrapper-active() {
+    --v-background-color: #00514e;
+    --v-text-color: #fff;
+  }
+
+  @include wrapper-disabled() {
+    --v-background-color: rgba(000, 000, 000, 0.1);
+    --v-text-color: rgba(000, 000, 000, 0.3);
+  }
+}
