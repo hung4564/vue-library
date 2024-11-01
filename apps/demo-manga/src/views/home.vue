@@ -1,24 +1,24 @@
 <template lang="">
   <div style="display: flex; gap: 8px" class="p-4">
-    <VBtn @click="onClick" color="primary"> test </VBtn>
-    <VBtn @click="onClick" color="primary" variant="outlined"> test </VBtn>
-    <VBtn @click="onClick" color="primary" variant="plain"> test </VBtn>
+    <VBtn @click="onClick" color="primary"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" variant="outlined"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" variant="plain"> TEST </VBtn>
   </div>
   <div style="display: flex; gap: 8px" class="p-4">
-    <VBtn @click="onClick" color="primary" disabled> test </VBtn>
+    <VBtn @click="onClick" color="primary" disabled> TEST </VBtn>
     <VBtn @click="onClick" color="primary" variant="outlined" disabled>
-      test
+      TEST
     </VBtn>
     <VBtn @click="onClick" color="primary" variant="plain" disabled>
-      test
+      TEST
     </VBtn>
   </div>
   <div style="display: flex; gap: 8px" class="p-4">
-    <VBtn @click="onClick" color="primary" size="xs"> test </VBtn>
-    <VBtn @click="onClick" color="primary" size="s"> test </VBtn>
-    <VBtn @click="onClick" color="primary" size="m"> test </VBtn>
-    <VBtn @click="onClick" color="primary" size="l"> test </VBtn>
-    <VBtn @click="onClick" color="primary" size="xl"> test </VBtn>
+    <VBtn @click="onClick" color="primary" size="xs"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" size="s"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" size="m"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" size="l"> TEST </VBtn>
+    <VBtn @click="onClick" color="primary" size="xl"> TEST </VBtn>
   </div>
 </template>
 <script setup>

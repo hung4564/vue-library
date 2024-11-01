@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { BaseMapControl, BaseMapCard } from '@hungpvq/vue-map-basemap';
-import { Map } from '@hungpvq/vue-map-core';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { ref } from 'vue';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { Map } from '@hungpvq/vue-map-core';
 import { LayerControl, addLayer } from '@hungpvq/vue-map-layer';
+import { ref } from 'vue';
+import AsideControl from '../../layout/aside-control.vue';
 import {
   createCustomActionBottomLayer,
   createCustomActionLayer,
@@ -20,6 +21,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded">
+    <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <LayerControl position="top-left">
       <template #endList="{ mapId }">

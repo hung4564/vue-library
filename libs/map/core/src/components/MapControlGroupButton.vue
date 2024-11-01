@@ -45,7 +45,7 @@ export default {
       default: () => [],
     },
     row: Boolean,
-    size: { type: Number, default: 32 },
+    size: { type: [Number, String], default: 32 },
   },
   provide() {
     return {

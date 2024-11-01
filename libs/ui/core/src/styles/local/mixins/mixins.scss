@@ -1,29 +1,5 @@
 @use 'sass:map';
 @use 'sass:math';
-$spacer: 4px !default;
-$size-scale: $spacer * 2 !default;
-$button-height: 36px !default;
-$button-font-size: 0.875rem !default;
-$button-width-ratio: math.div(16, 9) !default;
-$button-padding-ratio: 4 !default;
-$size-scales: (
-  'xs': -0.75,
-  's': -0.5,
-  'm': 0,
-  'l': 0.5,
-  'xl': 0.75,
-) !default;
-$button-sizes: () !default;
-$button-sizes: map.merge(
-  (
-    'height': $button-height,
-    'font-size': $button-font-size,
-    'width-ratio': $button-width-ratio,
-    'padding-ratio': $button-padding-ratio,
-  ),
-  $button-sizes
-);
-
 @mixin button-clear() {
   appearance: none;
   padding: 0;

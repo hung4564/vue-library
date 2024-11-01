@@ -9,7 +9,8 @@ const store = createStore('map.core', {
     getMapStore(id: string) {
       const map = store.state[id];
       if (!map) {
-        throw 'Not found map for id ' + id;
+        return;
+        // throw 'Not found map for id ' + id;
       }
       return map;
     },
@@ -26,7 +27,8 @@ const store = createStore('map.core', {
     getMap(id: string, cb?: MapFCOnUseMap) {
       const map = store.state[id]?.map;
       if (!map) {
-        throw 'Not found map for id ' + id;
+        return;
+        // throw 'Not found map for id ' + id;
       }
       if (cb) {
         return cb(map);
@@ -42,11 +44,17 @@ export function addStore<T = any>(
   defaultValue?: T
 ) {
   const store = actions.getMapStore(mapId);
+  if (!store) {
+    return;
+  }
   if (!store[key]) store[key] = defaultValue || {};
   return store[key];
 }
 export function getStore<T = any>(mapId: string, key: string) {
   const store = actions.getMapStore(mapId);
+  if (!store) {
+    return;
+  }
   return store[key] as T;
 }
 export const getMap = store.actions.getMap;

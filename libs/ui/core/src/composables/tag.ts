@@ -1,6 +1,6 @@
 // Utilities
 
-import { propsFactory } from '../utils/propsFactory';
+import { propsFactory } from '@hungpvq/shared';
 
 // Types
 export interface TagProps {

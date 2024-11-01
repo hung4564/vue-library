@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import type { MapSimple } from '@hungpvq/shared-map';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
   FullScreenControl,
@@ -19,8 +19,8 @@ import {
 } from '@hungpvq/vue-map-draw';
 import {
   IdentifyControl,
-  LayerControl,
   LayerBuilder,
+  LayerControl,
   LayerSimpleMapboxBuild,
   addLayer,
   createGeoJsonLayer,
@@ -28,6 +28,7 @@ import {
 } from '@hungpvq/vue-map-layer';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
+import AsideControl from '../layout/aside-control.vue';
 function onMapLoaded(map: MapSimple) {
   addLayer(
     map.id,
@@ -97,6 +98,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded">
+    <AsideControl position="top-left" show />
     <MeasurementControl position="top-right" />
     <DrawControl position="top-right" />
     <IdentifyControl position="top-right" />

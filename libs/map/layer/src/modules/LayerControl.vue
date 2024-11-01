@@ -75,7 +75,7 @@ const path = {
   deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
-const [show, toggleShow] = useShow(true);
+const [show, toggleShow] = useShow(false);
 const views = computed<IListView[]>(() => {
   return getAllLayersByView<IListView>(mapId.value, 'list');
 });

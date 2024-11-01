@@ -1,6 +1,6 @@
+import { propsFactory } from '@hungpvq/shared';
 import { computed } from 'vue';
 import { getCurrentInstanceName } from '../utils/getCurrentInstance';
-import { propsFactory } from '../utils/propsFactory';
 
 export interface LoaderProps {
   loading?: boolean | string;

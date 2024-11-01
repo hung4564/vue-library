@@ -24,14 +24,14 @@
  * }
  */
 
-import { IfAny } from '@hungpvq/shared';
 import { ComponentObjectPropsOptions, Prop, PropType } from 'vue';
+import { IfAny } from '../utils';
 
 export function propsFactory<PropsOptions extends ComponentObjectPropsOptions>(
   props: PropsOptions,
   source: string
 ) {
-  return <Defaults extends PartialKeys<PropsOptions> = {}>(
+  return <Defaults extends PartialKeys<PropsOptions> = any>(
     defaults?: Defaults
   ): AppendDefault<PropsOptions, Defaults> => {
     return Object.keys(props).reduce<any>((obj, prop) => {

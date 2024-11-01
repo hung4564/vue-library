@@ -6,7 +6,7 @@
     :data-variant="variant"
     type="button"
     :class="classes"
-    :style="styleses"
+    :style="styles"
     :aria-busy="loading ? true : undefined"
     :disabled="isDisabled || undefined"
     :tabindex="loading || readonly ? -1 : undefined"
@@ -23,6 +23,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
+import { propsFactory } from '@hungpvq/shared';
 import { computed } from 'vue';
 import { makeComponentProps } from '../../composables/component';
 import { makeLoaderProps, useLoader } from '../../composables/loader';
@@ -30,7 +31,6 @@ import { makeRoundedProps, useRounded } from '../../composables/rounded';
 import { makeSizeProps, useSize } from '../../composables/size';
 import { makeTagProps } from '../../composables/tag';
 import { makeVariantProps, useVariant } from '../../composables/variant';
-import { propsFactory } from '../../utils/propsFactory';
 
 const props = defineProps(
   propsFactory(
@@ -74,7 +74,7 @@ const classes = computed(() => [
   roundedClasses.value,
   props.class,
 ]);
-const styleses = computed(() => [
+const styles = computed(() => [
   colorStyles.value,
   sizeStyles.value,
   props.style,
@@ -99,5 +99,6 @@ const styleses = computed(() => [
   text-decoration: none;
   user-select: none;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 </style>

@@ -1,8 +1,8 @@
 // Utilities
 
 // Types
+import { propsFactory } from '@hungpvq/shared';
 import type { PropType, StyleValue } from 'vue';
-import { propsFactory } from '../utils/propsFactory';
 
 export type ClassValue = any;
 

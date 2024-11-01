@@ -1,0 +1,38 @@
+@use 'sass:map';
+@import '../../styles/local/main-local';
+
+.v-list {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  @at-root {
+    @each $sizeName, $multiplier in $size-scales {
+      $height: map.get($list-sizes, 'height') + ($size-scale * $multiplier);
+      .v-list--size-#{$sizeName} {
+        .v-list-item {
+          min-height: $height;
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+      }
+    }
+  }
+  &-item {
+    padding: 1rem 0.5rem;
+    & * {
+      display: block;
+    }
+    @include wrapper-hover() {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    @include wrapper-active() {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    @include wrapper-disabled() {
+      opacity: 0.3;
+    }
+  }
+}

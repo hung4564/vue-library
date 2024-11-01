@@ -1,9 +1,7 @@
 @mixin wrapper-hover {
-  @media (hover: hover) {
-    &:hover:not(._no-hover),
-    &[data-state='hover'] {
-      @content;
-    }
+  &:hover:not(._no-hover),
+  &[data-state='hover'] {
+    @content;
   }
 }
 
@@ -33,9 +31,13 @@
 
 @mixin wrapper-disabled {
   // Specificity artificially increased to match `:hover:not()` level
-  &:disabled:disabled,
+  &:disabled,
   &[data-state='disabled'] {
     @content;
+    pointer-events: none;
+    * {
+      pointer-events: none;
+    }
   }
 }
 

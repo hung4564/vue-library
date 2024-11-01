@@ -6,6 +6,7 @@ import {
   DrawingType,
   type DrawOption,
 } from '@hungpvq/vue-map-draw';
+import AsideControl from '../../layout/aside-control.vue';
 const drawOptions: DrawOption = {
   draw_support: [DrawingType.POINT],
   async save(geojson) {
@@ -15,6 +16,7 @@ const drawOptions: DrawOption = {
 </script>
 <template>
   <Map>
+    <AsideControl position="top-left" />
     <DrawControl position="top-right" initShow :drawOptions="drawOptions" />
     <BaseMapControl position="bottom-left" />
   </Map>

@@ -1,7 +1,7 @@
+import { propsFactory } from '@hungpvq/shared';
 import { includes } from 'lodash';
 import { getCurrentInstanceName } from '../utils/getCurrentInstance';
 import { convertToUnit, destructComputed } from '../utils/helpers';
-import { propsFactory } from '../utils/propsFactory';
 
 // Types
 const predefinedSizes = ['xs', 's', 'm', 'l', 'xl'];

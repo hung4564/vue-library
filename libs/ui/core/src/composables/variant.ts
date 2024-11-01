@@ -1,6 +1,6 @@
+import { propsFactory } from '@hungpvq/shared';
 import { computed, MaybeRef, PropType, unref } from 'vue';
 import { getCurrentInstanceName } from '../utils/getCurrentInstance';
-import { propsFactory } from '../utils/propsFactory';
 import { useColor } from './color';
 
 export const allowedVariants = ['outlined', 'plain', 'filled'] as const;
@@ -17,7 +17,7 @@ export const makeVariantProps = propsFactory(
     variant: {
       type: String as PropType<Variant>,
       default: 'filled',
-      validator: (v: any) => allowedVariants.includes(v),
+      validator: (v: Variant) => allowedVariants.includes(v),
     },
   },
   'variant'
