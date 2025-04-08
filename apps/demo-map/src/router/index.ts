@@ -25,6 +25,10 @@ const router = createRouter({
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
     },
+    {
+      path: '/geojson/',
+      component: () => import('../views/GeojsonIo/index.vue'),
+    },
   ],
 });
 

@@ -216,6 +216,13 @@
       "docs": "/shared-core/useRafFn/",
       "category": "Animation",
       "description": "call function on every `requestAnimationFrame`"
+    },
+    {
+      "name": "propsFactory",
+      "package": "Share",
+      "docs": "/shared/propsFactory/",
+      "category": "Component",
+      "description": "propsFactory"
     }
   ]
 }
