@@ -44,7 +44,7 @@ export type IListView = IView & {
   index: number;
   group?: IGroupListView;
   multi: boolean;
-  show: any;
+  show?: boolean;
 };
 // === list end ===
 
