@@ -26,6 +26,7 @@
       "@hungpvq/vue-draggable": ["libs/draggable/src/index.ts"],
       "@hungpvq/vue-map-basemap": ["libs/map/basemap/src/index.ts"],
       "@hungpvq/vue-map-core": ["libs/map/core/src/index.ts"],
+      "@hungpvq/vue-map-dataset": ["libs/map/dataset/src/index.ts"],
       "@hungpvq/vue-map-draw": ["libs/map/draw/src/index.ts"],
       "@hungpvq/vue-map-layer": ["libs/map/layer/src/index.ts"],
       "@hungpvq/vue-map-measurement": ["libs/map/measurement/src/index.ts"],

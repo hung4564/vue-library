@@ -80,6 +80,7 @@
   "release": {
     "projectsRelationship": "independent",
     "version": {
+      "preVersionCommand": "npx nx run-many -t build",
       "conventionalCommits": true
     },
     "changelog": {
@@ -94,6 +95,6 @@
       },
       "automaticFromRef": true
     },
-    "projects": ["libs/*"]
+    "projects": ["libs/*", "dataset"]
   }
 }
