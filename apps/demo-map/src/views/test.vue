@@ -1,113 +1,153 @@
-<template lang="">
-  <div></div>
-</template>
-<script setup>
+<script setup lang="ts">
+import type { MapSimple } from '@hungpvq/shared-map';
+import { BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
-  CompositeDatasetHandler,
+  CrsControl,
+  FullScreenControl,
+  GeoLocateControl,
+  GotoControl,
+  HomeControl,
+  Map,
+  MouseCoordinatesControl,
+  SettingControl,
+  ZoomControl,
+} from '@hungpvq/vue-map-core';
+import {
+  addDataset,
   createDataset,
-  createDatasetHandlerChain,
-  DataCollectorVisitor,
-  DatasetFinderVisitor,
-  LeafDatasetHandler,
-  PathBuilderVisitor,
-  RootFinderVisitor,
-  runFromLeaf,
-  TransformDatasetHandler,
-  ValidationDatasetHandler,
+  DatasetComposite,
+  DatasetPartListViewUiComponent,
+  GeojsonSource,
+  LayerControl,
+  MultiMapboxLayerComponent,
+  RasterUrlSource,
 } from '@hungpvq/vue-map-dataset';
+import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-layer';
+import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 
-// Create some datasets
-const leafDataset = createDataset('LeafChid', { value: 42 });
-const child1 = createDataset('Child1', { value: 1 });
-const child2 = createDataset('Child2', { value: 2 });
-const compositeDataset = createDataset('MyCollection', null, true);
-const root = createDataset('MyCollection2', null, true);
-
-// Create handlers
-const validationHandler = new ValidationDatasetHandler();
-const leafHandler = new LeafDatasetHandler();
-const compositeHandler = new CompositeDatasetHandler();
-const transformHandler = new TransformDatasetHandler((dataset) => {
-  // Example transformation: add a timestamp to the dataset name
-  const name = dataset.getName();
-  const timestamp = new Date().toISOString();
-  return createDataset(
-    `${name}_${timestamp}`,
-    dataset.getData(),
-    'getChildren' in dataset
-  );
-});
-
-// Create a chain of handlers
-const handlerChain = createDatasetHandlerChain(
-  validationHandler,
-  leafHandler,
-  compositeHandler,
-  transformHandler
-);
-
-// Process datasets through the chain
-const processedLeaf = handlerChain.handle(leafDataset);
-const processedComposite = handlerChain.handle(compositeDataset);
-processedComposite.add(processedLeaf);
-root.add(processedComposite);
-root.add(child2);
-processedComposite.add(child1);
-
-// Get data from either
-console.log(leafDataset.getData());
-console.log(compositeDataset.getData());
-console.log(processedLeaf.getParent());
-
-// Find a dataset by name
-const finder = new DatasetFinderVisitor('Child1');
-root.accept(finder);
-const foundDataset = finder.getFoundDataset();
-console.log('Find', 'foundDataset', foundDataset);
-
-// Find the root dataset
-const rootFinder = new RootFinderVisitor();
-leafDataset.accept(rootFinder);
-const rootDataset = rootFinder.getRootDataset();
-console.log('Find', 'rootDataset', rootDataset);
-
-// Build a path from root to a target dataset
-const pathBuilder = new PathBuilderVisitor('Child2');
-root.accept(pathBuilder);
-const path = pathBuilder.getPath();
-console.log('Find', 'path', path);
-
-// Collect data from all datasets
-const collector = new DataCollectorVisitor();
-root.accept(collector);
-const allData = collector.getCollectedData();
-console.log('Find', 'allData', allData);
-// Suppose you have a leaf node called 'leafNode'
-const leafNode = leafDataset; // This is a leaf node you have access to
-
-// Define functions to apply to other leaves
-const updateFunction1 = (dataset) => {
-  // Update the dataset in some way
-  const data = dataset.getData();
-  data.someProperty = 'new value';
-  dataset.setData(data);
-  return ['Updated with function 1', data];
-};
-
-const updateFunction2 = (dataset) => {
-  // Another update function
-  const data = dataset.getData();
-  data.anotherProperty = 42;
-  dataset.setData(data);
-  return ['Updated with function 2', data];
-};
-
-// Run these functions from this leaf on all other leaves
-const results = runFromLeaf(leafNode, [updateFunction1, updateFunction2]);
-
-// Process the results
-results.forEach((leafResults, leafName) => {
-  console.log(`Results for leaf ${leafName}:`, leafResults);
-});
+function onMapLoaded(map: MapSimple) {
+  const dataset_raster = createDataset(
+    'Group test',
+    null,
+    true
+  ) as DatasetComposite;
+  const source_raster = new RasterUrlSource('source', {
+    name: 'raster 1',
+    type: 'raster',
+    tiles: [
+      'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
+    ],
+    maxZoom: 6,
+    bounds: [
+      104.96327341667353, 18.461221184685627, 106.65936430823979,
+      19.549518287564368,
+    ],
+  });
+  const layerraster = new MultiMapboxLayerComponent('layer raster', [
+    {
+      type: 'raster',
+    },
+  ]);
+  const list_raster = new DatasetPartListViewUiComponent('test raster');
+  list_raster.color = '#0000FF';
+  const groupLayer_raster = createDataset(
+    'Group layer 1',
+    null,
+    true
+  ) as DatasetComposite;
+  dataset_raster.add(source_raster);
+  groupLayer_raster.add(list_raster);
+  groupLayer_raster.add(layerraster);
+  dataset_raster.add(groupLayer_raster);
+  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const source = new GeojsonSource('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '1',
+          name: 'feature 2',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [104.96327341667353, 19.549518287564368],
+              [104.96327341667353, 18.461221184685627],
+              [106.65936430823979, 18.461221184685627],
+              [106.65936430823979, 19.549518287564368],
+              [104.96327341667353, 19.549518287564368],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true
+  ) as DatasetComposite;
+  const layer1 = new MultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor('#0000FF')
+      .build(),
+  ]);
+  const list1 = new DatasetPartListViewUiComponent('test area');
+  list1.color = '#0000FF';
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  const groupLayer2 = createDataset(
+    'Group layer 2',
+    null,
+    true
+  ) as DatasetComposite;
+  const list2 = new DatasetPartListViewUiComponent('test point');
+  list2.color = '#ff0000';
+  const layer2 = new MultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor('#ff0000')
+      .build(),
+  ]);
+  groupLayer2.add(layer2);
+  groupLayer2.add(list2);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  dataset.add(groupLayer2);
+  addDataset(map.id, dataset);
+  addDataset(map.id, dataset_raster);
+}
 </script>
-<style lang=""></style>
+<template>
+  <Map @map-loaded="onMapLoaded">
+    <MeasurementControl position="top-right" />
+    <LayerControl position="top-left" show />
+    <GotoControl position="top-right" />
+    <CrsControl />
+    <SettingControl />
+    <GeoLocateControl />
+    <FullScreenControl />
+    <ZoomControl />
+    <HomeControl />
+    <MouseCoordinatesControl />
+    <BaseMapControl position="bottom-left" />
+  </Map>
+</template>
+
+<style></style>
+
+<style>
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body,
+html,
+#root {
+  height: 100%;
+}
+</style>

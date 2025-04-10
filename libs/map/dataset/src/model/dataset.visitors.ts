@@ -2,212 +2,39 @@ import { IDataset } from '../interfaces/dataset.base';
 import { IDatasetVisitor } from '../interfaces/dataset.visitor';
 
 /**
- * Visitor that collects data from all datasets in the hierarchy
+ * Base visitor class that provides common functionality for all dataset visitors.
+ * This is an abstract class that all other visitors inherit from.
+ *
+ * Usage:
+ * To create a new visitor, extend this class and implement:
+ * - visitLeaf(dataset: IDataset): any
+ * - visitComposite(dataset: IDataset): any
+ * - visitRoot(dataset: IDataset): any
  */
-export class DataCollectorVisitor implements IDatasetVisitor {
-  private collectedData: any[] = [];
-
-  visitLeaf(dataset: IDataset): any {
-    this.collectedData.push({
-      name: dataset.getName(),
-      data: dataset.getData(),
-      type: 'leaf',
-    });
-    return this.collectedData;
-  }
-
-  visitComposite(dataset: IDataset): any {
-    this.collectedData.push({
-      name: dataset.getName(),
-      data: dataset.getData(),
-      type: 'composite',
-      childrenCount: dataset.getChildren?.()?.length || 0,
-    });
-
-    // Visit all children
+abstract class BaseDatasetVisitor implements IDatasetVisitor {
+  protected visitChildren(dataset: IDataset): void {
     if (dataset.getChildren) {
       dataset.getChildren().forEach((child) => child.accept(this));
     }
-
-    return this.collectedData;
   }
 
-  visitRoot(dataset: IDataset): any {
-    this.collectedData.push({
-      name: dataset.getName(),
-      data: dataset.getData(),
-      type: 'root',
-      childrenCount: dataset.getChildren?.()?.length || 0,
-    });
-
-    // Visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-
-    return this.collectedData;
-  }
-
-  getCollectedData(): any[] {
-    return this.collectedData;
-  }
-
-  reset(): void {
-    this.collectedData = [];
-  }
+  abstract visitLeaf(dataset: IDataset): any;
+  abstract visitComposite(dataset: IDataset): any;
+  abstract visitRoot(dataset: IDataset): any;
 }
 
 /**
- * Visitor that finds a dataset by name
+ * Visitor that finds the root dataset by traversing up the parent chain.
+ *
+ * Usage:
+ * const rootFinder = new RootFinderVisitor();
+ * anyDataset.accept(rootFinder);
+ * const root = rootFinder.getRootDataset();
+ *
+ * // Reset and find root of different dataset
+ * rootFinder.reset();
  */
-export class DatasetFinderVisitor implements IDatasetVisitor {
-  private targetName: string;
-  private foundDataset: IDataset | null = null;
-
-  constructor(targetName: string) {
-    this.targetName = targetName;
-  }
-
-  visitLeaf(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.foundDataset = dataset;
-    }
-    return this.foundDataset;
-  }
-
-  visitComposite(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.foundDataset = dataset;
-      return this.foundDataset;
-    }
-
-    // If not found yet, search in children
-    if (dataset.getChildren && !this.foundDataset) {
-      for (const child of dataset.getChildren()) {
-        child.accept(this);
-        if (this.foundDataset) {
-          return this.foundDataset;
-        }
-      }
-    }
-
-    return this.foundDataset;
-  }
-
-  visitRoot(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.foundDataset = dataset;
-      return this.foundDataset;
-    }
-
-    // If not found yet, search in children
-    if (dataset.getChildren && !this.foundDataset) {
-      for (const child of dataset.getChildren()) {
-        child.accept(this);
-        if (this.foundDataset) {
-          return this.foundDataset;
-        }
-      }
-    }
-
-    return this.foundDataset;
-  }
-
-  getFoundDataset(): IDataset | null {
-    return this.foundDataset;
-  }
-
-  reset(targetName?: string): void {
-    this.foundDataset = null;
-    if (targetName) {
-      this.targetName = targetName;
-    }
-  }
-}
-
-/**
- * Visitor that traverses the dataset hierarchy and builds a path from root to a target dataset
- */
-export class PathBuilderVisitor implements IDatasetVisitor {
-  private targetName: string;
-  private path: IDataset[] = [];
-  private found = false;
-
-  constructor(targetName: string) {
-    this.targetName = targetName;
-  }
-
-  visitLeaf(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.path.push(dataset);
-      this.found = true;
-    }
-    return this.path;
-  }
-
-  visitComposite(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.path.push(dataset);
-      this.found = true;
-      return this.path;
-    }
-
-    // If not found yet, search in children
-    if (dataset.getChildren && !this.found) {
-      for (const child of dataset.getChildren()) {
-        child.accept(this);
-        if (this.found) {
-          this.path.unshift(dataset);
-          return this.path;
-        }
-      }
-    }
-
-    return this.path;
-  }
-
-  visitRoot(dataset: IDataset): any {
-    if (dataset.getName() === this.targetName) {
-      this.path.push(dataset);
-      this.found = true;
-      return this.path;
-    }
-
-    // If not found yet, search in children
-    if (dataset.getChildren && !this.found) {
-      for (const child of dataset.getChildren()) {
-        child.accept(this);
-        if (this.found) {
-          this.path.unshift(dataset);
-          return this.path;
-        }
-      }
-    }
-
-    return this.path;
-  }
-
-  getPath(): IDataset[] {
-    return this.path;
-  }
-
-  isFound(): boolean {
-    return this.found;
-  }
-
-  reset(targetName?: string): void {
-    this.path = [];
-    this.found = false;
-    if (targetName) {
-      this.targetName = targetName;
-    }
-  }
-}
-
-/**
- * Visitor that finds the root dataset by traversing up the parent chain
- */
-export class RootFinderVisitor implements IDatasetVisitor {
+export class RootFinderVisitor extends BaseDatasetVisitor {
   private rootDataset: IDataset | null = null;
 
   visitLeaf(dataset: IDataset): any {
@@ -225,7 +52,6 @@ export class RootFinderVisitor implements IDatasetVisitor {
 
   private findRoot(dataset: IDataset): IDataset | null {
     let current: IDataset | undefined = dataset;
-
     while (current) {
       const parent = current.getParent();
       if (!parent) {
@@ -234,7 +60,6 @@ export class RootFinderVisitor implements IDatasetVisitor {
       }
       current = parent;
     }
-
     return this.rootDataset;
   }
 
@@ -248,240 +73,77 @@ export class RootFinderVisitor implements IDatasetVisitor {
 }
 
 /**
- * Visitor that applies a function to all leaf nodes in the hierarchy
- * This allows you to call one function on all leaf nodes with a single operation
+ * Visitor that finds the first leaf with specified type from a different leaf.
+ *
+ * Usage:
+ * const leafFinder = new TypeLeafFinderVisitor(sourceLeaf, 'targetType');
+ * rootDataset.accept(leafFinder);
+ * const foundLeaf = leafFinder.getFoundLeaf();
+ *
+ * // Reset and search for different type
+ * leafFinder.reset(sourceLeaf, 'newType');
  */
-export class LeafFunctionVisitor implements IDatasetVisitor {
-  private leafFunction: (dataset: IDataset) => any;
-  private results: any[] = [];
-
-  constructor(leafFunction: (dataset: IDataset) => any) {
-    this.leafFunction = leafFunction;
-  }
-
-  visitLeaf(dataset: IDataset): any {
-    // Apply the function to the leaf node and store the result
-    const result = this.leafFunction(dataset);
-    this.results.push(result);
-    return this.results;
-  }
-
-  visitComposite(dataset: IDataset): any {
-    // For composite nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-    return this.results;
-  }
-
-  visitRoot(dataset: IDataset): any {
-    // For root nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-    return this.results;
-  }
-
-  getResults(): any[] {
-    return this.results;
-  }
-
-  reset(leafFunction?: (dataset: IDataset) => any): void {
-    this.results = [];
-    if (leafFunction) {
-      this.leafFunction = leafFunction;
-    }
-  }
-}
-
-/**
- * Helper function to apply a function to all leaf nodes in a dataset hierarchy
- * @param rootDataset The root dataset to start from
- * @param leafFunction The function to apply to each leaf node
- * @returns An array of results from applying the function to each leaf node
- */
-export function applyToAllLeaves(
-  rootDataset: IDataset,
-  leafFunction: (dataset: IDataset) => any
-): any[] {
-  const visitor = new LeafFunctionVisitor(leafFunction);
-  rootDataset.accept(visitor);
-  return visitor.getResults();
-}
-
-/**
- * Visitor that runs functions from one leaf node on all other leaf nodes
- * This allows you to propagate operations from a single leaf to all other leaves
- */
-export class LeafFunctionPropagatorVisitor implements IDatasetVisitor {
+export class TypeLeafFinderVisitor extends BaseDatasetVisitor {
   private sourceLeaf: IDataset | null = null;
-  private leafFunctions: ((dataset: IDataset) => any)[] = [];
-  private results: Map<string, any[]> = new Map();
+  private targetType: string;
+  private foundLeaf: IDataset | null = null;
 
-  constructor(sourceLeafName: string) {
-    // Find the source leaf node
-    const finder = new DatasetFinderVisitor(sourceLeafName);
-    this.sourceLeaf = finder.getFoundDataset();
-  }
-
-  setSourceLeaf(sourceLeaf: IDataset): void {
+  constructor(sourceLeaf: IDataset, targetType: string) {
+    super();
     this.sourceLeaf = sourceLeaf;
-  }
-
-  addLeafFunction(leafFunction: (dataset: IDataset) => any): void {
-    this.leafFunctions.push(leafFunction);
+    this.targetType = targetType;
   }
 
   visitLeaf(dataset: IDataset): any {
-    // Skip the source leaf node
     if (this.sourceLeaf && dataset === this.sourceLeaf) {
-      return this.results;
+      return this.foundLeaf;
     }
 
-    // Apply all functions from the source leaf to this leaf
-    const leafResults: any[] = [];
-    for (const leafFunction of this.leafFunctions) {
-      const result = leafFunction(dataset);
-      leafResults.push(result);
+    if (dataset.type === this.targetType && !this.foundLeaf) {
+      this.foundLeaf = dataset;
     }
-
-    // Store the results for this leaf
-    this.results.set(dataset.getName(), leafResults);
-    return this.results;
+    return this.foundLeaf;
   }
 
   visitComposite(dataset: IDataset): any {
-    // For composite nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
+    if (!this.foundLeaf) {
+      this.visitChildren(dataset);
     }
-    return this.results;
+    return this.foundLeaf;
   }
 
   visitRoot(dataset: IDataset): any {
-    // For root nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-    return this.results;
+    return this.visitComposite(dataset);
   }
 
-  getResults(): Map<string, any[]> {
-    return this.results;
+  getFoundLeaf(): IDataset | null {
+    return this.foundLeaf;
   }
 
-  reset(sourceLeaf?: IDataset): void {
-    this.results = new Map();
+  reset(sourceLeaf?: IDataset, targetType?: string): void {
+    this.foundLeaf = null;
     if (sourceLeaf) {
       this.sourceLeaf = sourceLeaf;
     }
-  }
-}
-
-/**
- * Helper function to run functions from one leaf node on all other leaf nodes
- * @param rootDataset The root dataset to start from
- * @param sourceLeafName The name of the source leaf node
- * @param leafFunctions The functions to apply to each leaf node
- * @returns A map of leaf names to arrays of results from applying the functions
- */
-export function propagateFromLeaf(
-  rootDataset: IDataset,
-  sourceLeafName: string,
-  leafFunctions: ((dataset: IDataset) => any)[]
-): Map<string, any[]> {
-  const visitor = new LeafFunctionPropagatorVisitor(sourceLeafName);
-
-  // Add all functions to the visitor
-  for (const leafFunction of leafFunctions) {
-    visitor.addLeafFunction(leafFunction);
-  }
-
-  // Accept the visitor on the root dataset
-  rootDataset.accept(visitor);
-
-  return visitor.getResults();
-}
-
-/**
- * Visitor that runs functions from one leaf node on all other leaf nodes without needing to know the root
- * This allows you to propagate operations from a single leaf to all other leaves when you only have access to the leaf
- */
-export class LeafToLeafFunctionVisitor implements IDatasetVisitor {
-  private sourceLeaf: IDataset;
-  private leafFunctions: ((dataset: IDataset) => any)[] = [];
-  private results: Map<string, any[]> = new Map();
-  private visitedLeaves: Set<IDataset> = new Set();
-
-  constructor(sourceLeaf: IDataset) {
-    this.sourceLeaf = sourceLeaf;
-  }
-
-  addLeafFunction(leafFunction: (dataset: IDataset) => any): void {
-    this.leafFunctions.push(leafFunction);
-  }
-
-  visitLeaf(dataset: IDataset): any {
-    // Skip the source leaf node and already visited leaves
-    if (dataset === this.sourceLeaf || this.visitedLeaves.has(dataset)) {
-      return this.results;
-    }
-
-    // Mark this leaf as visited
-    this.visitedLeaves.add(dataset);
-
-    // Apply all functions from the source leaf to this leaf
-    const leafResults: any[] = [];
-    for (const leafFunction of this.leafFunctions) {
-      const result = leafFunction(dataset);
-      leafResults.push(result);
-    }
-
-    // Store the results for this leaf
-    this.results.set(dataset.getName(), leafResults);
-    return this.results;
-  }
-
-  visitComposite(dataset: IDataset): any {
-    // For composite nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-    return this.results;
-  }
-
-  visitRoot(dataset: IDataset): any {
-    // For root nodes, just visit all children
-    if (dataset.getChildren) {
-      dataset.getChildren().forEach((child) => child.accept(this));
-    }
-    return this.results;
-  }
-
-  getResults(): Map<string, any[]> {
-    return this.results;
-  }
-
-  reset(sourceLeaf?: IDataset): void {
-    this.results = new Map();
-    this.visitedLeaves = new Set();
-    if (sourceLeaf) {
-      this.sourceLeaf = sourceLeaf;
+    if (targetType) {
+      this.targetType = targetType;
     }
   }
 }
 
 /**
- * Helper function to run functions from one leaf node on all other leaf nodes without needing to know the root
- * @param sourceLeaf The source leaf node to start from
- * @param leafFunctions The functions to apply to each leaf node
- * @returns A map of leaf names to arrays of results from applying the functions
+ * Helper function to find the first leaf with specified type from a different leaf.
+ *
+ * Usage:
+ * const foundLeaf = findFirstLeafByType(sourceLeaf, 'targetType');
+ * if (foundLeaf) {
+ *   // Use the found leaf
+ * }
  */
-export function runFromLeaf(
+export function findFirstLeafByType(
   sourceLeaf: IDataset,
-  leafFunctions: ((dataset: IDataset) => any)[]
-): Map<string, any[]> {
-  // Find the root node by traversing up the parent chain
+  targetType: string
+): IDataset | null {
   const rootFinder = new RootFinderVisitor();
   sourceLeaf.accept(rootFinder);
   const rootDataset = rootFinder.getRootDataset();
@@ -490,16 +152,231 @@ export function runFromLeaf(
     throw new Error('Could not find root dataset');
   }
 
-  // Create a visitor to run functions on all other leaves
-  const visitor = new LeafToLeafFunctionVisitor(sourceLeaf);
-
-  // Add all functions to the visitor
-  for (const leafFunction of leafFunctions) {
-    visitor.addLeafFunction(leafFunction);
-  }
-
-  // Accept the visitor on the root dataset
+  const visitor = new TypeLeafFinderVisitor(sourceLeaf, targetType);
   rootDataset.accept(visitor);
 
+  return visitor.getFoundLeaf();
+}
+
+// ===== Type Collection and Function Application Visitors =====
+/**
+ * This section contains visitors for collecting datasets by type and applying functions to them.
+ *
+ * Usage examples:
+ *
+ * // Collect all components of a specific type
+ * const collector = new TypeFunctionVisitor((dataset) => dataset.type === 'targetType');
+ * rootDataset.accept(collector);
+ * const foundComponents = collector.getFoundComponents();
+ *
+ * // Apply functions to collected components
+ * collector.addFunction((dataset) => dataset.getData());
+ * collector.addFunction((dataset) => dataset.getName());
+ * const results = collector.getResults();
+ *
+ * // Reset and reuse with different type check and functions
+ * collector.reset(
+ *   (dataset) => dataset.type === 'newType',
+ *   [(dataset) => dataset.getData()]
+ * );
+ */
+
+/**
+ * Visitor that collects components by type and applies functions to them.
+ *
+ * Usage:
+ * // Basic type collection
+ * const visitor = new TypeFunctionVisitor((dataset) => dataset.type === 'targetType');
+ * rootDataset.accept(visitor);
+ * const components = visitor.getFoundComponents();
+ *
+ * // Add functions to apply
+ * visitor.addFunction((dataset) => dataset.getData());
+ * visitor.addFunction((dataset) => dataset.getName());
+ * const results = visitor.getResults();
+ * // results is a Map where key is component name and value is array of function results
+ *
+ * // Reset with new type check and functions
+ * visitor.reset(
+ *   (dataset) => dataset.type === 'newType',
+ *   [(dataset) => dataset.getData()]
+ * );
+ */
+export class TypeFunctionVisitor extends BaseDatasetVisitor {
+  private typeCheckFunction: (dataset: IDataset) => boolean;
+  private functions: ((dataset: IDataset) => any)[] = [];
+  private foundComponents: IDataset[] = [];
+  private results: Map<string, any[]> = new Map();
+
+  constructor(
+    typeCheckFunction: (dataset: IDataset) => boolean,
+    functions: ((dataset: IDataset) => any)[] = []
+  ) {
+    super();
+    this.typeCheckFunction = typeCheckFunction;
+    this.functions = functions;
+  }
+
+  addFunction(func: (dataset: IDataset) => any): void {
+    this.functions.push(func);
+  }
+
+  visitLeaf(dataset: IDataset): any {
+    if (this.typeCheckFunction(dataset)) {
+      this.foundComponents.push(dataset);
+      if (this.functions.length > 0) {
+        const functionResults = this.functions.map((fn) => fn(dataset));
+        this.results.set(dataset.getName(), functionResults);
+      }
+    }
+    return this.foundComponents;
+  }
+
+  visitComposite(dataset: IDataset): any {
+    if (this.typeCheckFunction(dataset)) {
+      this.foundComponents.push(dataset);
+      if (this.functions.length > 0) {
+        const functionResults = this.functions.map((fn) => fn(dataset));
+        this.results.set(dataset.getName(), functionResults);
+      }
+    }
+    this.visitChildren(dataset);
+    return this.foundComponents;
+  }
+
+  visitRoot(dataset: IDataset): any {
+    return this.visitComposite(dataset);
+  }
+
+  getFoundComponents(): IDataset[] {
+    return this.foundComponents;
+  }
+
+  getResults(): Map<string, any[]> {
+    return this.results;
+  }
+
+  reset(
+    typeCheckFunction?: (dataset: IDataset) => boolean,
+    functions?: ((dataset: IDataset) => any)[]
+  ): void {
+    this.foundComponents = [];
+    this.results = new Map();
+    if (typeCheckFunction) {
+      this.typeCheckFunction = typeCheckFunction;
+    }
+    if (functions) {
+      this.functions = functions;
+    }
+  }
+}
+
+export function findAllComponentsByCheck(
+  rootDataset: IDataset,
+  typeCheckFunction: (dataset: IDataset) => boolean,
+  functions: ((dataset: IDataset) => any)[] = []
+): Map<string, any[]> {
+  const visitor = new TypeFunctionVisitor(typeCheckFunction, functions);
+  rootDataset.accept(visitor);
   return visitor.getResults();
+}
+
+export function applyToAllLeaves(
+  rootDataset: IDataset,
+  functions: ((dataset: IDataset) => any)[] = []
+): Map<string, any[]> {
+  const visitor = new TypeFunctionVisitor(
+    (dataset) => !dataset.isComposite(),
+    functions
+  );
+  rootDataset.accept(visitor);
+  return visitor.getResults();
+}
+
+// ===== Type Collection Visitors =====
+/**
+ * This section contains visitors for collecting datasets by type.
+ *
+ * Usage examples:
+ *
+ * // Collect all components of a specific type
+ * const collector = new TypeCollectorVisitor((dataset) => dataset.type === 'targetType');
+ * rootDataset.accept(collector);
+ * const foundComponents = collector.getFoundComponents();
+ *
+ * // Or use the helper function
+ * const components = findAllComponentsByType(rootDataset, 'targetType');
+ *
+ * // Reset and reuse with different type check
+ * collector.reset((dataset) => dataset.type === 'newType');
+ */
+
+/**
+ * Visitor that collects all components of a specific type.
+ *
+ * Usage:
+ * const collector = new TypeCollectorVisitor((dataset) => dataset.type === 'targetType');
+ * rootDataset.accept(collector);
+ * const components = collector.getFoundComponents();
+ *
+ * // Reset and collect different type
+ * collector.reset((dataset) => dataset.type === 'newType');
+ */
+export class TypeCollectorVisitor extends BaseDatasetVisitor {
+  private typeCheckFunction: (dataset: IDataset) => boolean;
+  private foundComponents: IDataset[] = [];
+
+  constructor(typeCheckFunction: (dataset: IDataset) => boolean) {
+    super();
+    this.typeCheckFunction = typeCheckFunction;
+  }
+
+  visitLeaf(dataset: IDataset): any {
+    if (this.typeCheckFunction(dataset)) {
+      this.foundComponents.push(dataset);
+    }
+    return this.foundComponents;
+  }
+
+  visitComposite(dataset: IDataset): any {
+    if (this.typeCheckFunction(dataset)) {
+      this.foundComponents.push(dataset);
+    }
+    this.visitChildren(dataset);
+    return this.foundComponents;
+  }
+
+  visitRoot(dataset: IDataset): any {
+    return this.visitComposite(dataset);
+  }
+
+  getFoundComponents(): IDataset[] {
+    return this.foundComponents;
+  }
+
+  reset(typeCheckFunction?: (dataset: IDataset) => boolean): void {
+    this.foundComponents = [];
+    if (typeCheckFunction) {
+      this.typeCheckFunction = typeCheckFunction;
+    }
+  }
+}
+/**
+ * Helper function to find all components of a specific type.
+ *
+ * Usage:
+ * const components = findAllComponentsByType(rootDataset, 'targetType');
+ * components.forEach(component => {
+ *   console.log(component.getName());
+ * });
+ */
+export function findAllComponentsByType(
+  rootDataset: IDataset,
+  targetType: string
+): IDataset[] {
+  const visitor = new TypeCollectorVisitor(
+    (dataset) => dataset.type === targetType
+  );
+  rootDataset.accept(visitor);
+  return visitor.getFoundComponents();
 }

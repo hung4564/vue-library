@@ -6,13 +6,12 @@ import { Base } from './base';
  * The base DatasetComponent class declares common operations for both simple and
  * complex objects of a composition.
  */
-abstract class DatasetComponent extends Base implements IDataset {
+abstract class DatasetComponent<T = any> extends Base implements IDataset {
   protected parent?: DatasetComponent;
   protected name: string;
-  protected data: any;
-  protected executionOrders: Map<string, number> = new Map();
-
-  constructor(name: string, data?: any) {
+  protected data?: T;
+  abstract type: string;
+  constructor(name: string, data?: T) {
     super();
     this.name = name;
     this.data = data;
@@ -57,32 +56,17 @@ abstract class DatasetComponent extends Base implements IDataset {
   setData(data: any) {
     this.data = data;
   }
-
-  /**
-   * Get the execution order for a specific function
-   * Lower values are executed first
-   * @param functionName The name of the function
-   * @returns The execution order value
-   */
-  getExecutionOrder(functionName: string): number {
-    return this.executionOrders.get(functionName) ?? 5; // Default order is 5
-  }
-
-  /**
-   * Set the execution order for a specific function
-   * @param functionName The name of the function
-   * @param order The execution order value (lower values are executed first)
-   */
-  setExecutionOrder(functionName: string, order: number): void {
-    this.executionOrders.set(functionName, order);
-  }
 }
 /**
  * Leaf node in the Dataset Composite pattern
  * Represents a single dataset without children
  */
-export class DatasetLeaf extends DatasetComponent {
-  constructor(name: string, data: any) {
+export class DatasetLeaf<T = any> extends DatasetComponent {
+  get type(): string {
+    return 'leaf';
+  }
+
+  constructor(name: string, data?: T) {
     super(name, data);
   }
 
@@ -101,6 +85,9 @@ export class DatasetLeaf extends DatasetComponent {
  * Represents a dataset that can contain other datasets
  */
 export class DatasetComposite extends DatasetComponent {
+  get type(): string {
+    return 'composite';
+  }
   private children: IDataset[] = [];
 
   constructor(name: string) {

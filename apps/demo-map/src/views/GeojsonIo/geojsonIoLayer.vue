@@ -70,7 +70,6 @@ const layer = shallowRef(
     geojson: geojson.value,
   })
 );
-console.log(layer.value.getView('source'));
 const { callMap, moduleContainerProps } = useMap(
   props,
   (map: MapSimple) => {
@@ -81,7 +80,6 @@ const { callMap, moduleContainerProps } = useMap(
   }
 );
 function onChange(value: string) {
-  console.log(value);
   const source = layer.value.getView('source') as GeojsonSource;
   value = JSON.parse(value);
   if (!geojsonValidation.valid(value)) {

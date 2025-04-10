@@ -1,21 +1,25 @@
 import { Color } from '@hungpvq/shared-map';
-import {
-  IGroupListViewUI,
-  IListViewUI,
-} from '../interfaces/part-list-view-ui.interface';
+import { IGroupListViewUI, IListViewUI } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 
-export class DatasetPartListViewUiComponent extends DatasetLeaf {
+export class DatasetPartListViewUiComponent
+  extends DatasetLeaf
+  implements IListViewUI
+{
+  override get type(): string {
+    return 'list';
+  }
+
   opacity = 1;
   selected = false;
   metadata: any;
-  color: Color = '#fff';
+  color?: Color;
   config: {
     disable_delete?: boolean;
     disabled_opacity?: boolean;
     component?: any;
-  } = {};
+  } = { disable_delete: false, disabled_opacity: false };
   index = 0;
   group?: IGroupListViewUI<IListViewUI>;
-  show?: boolean;
+  show = true;
 }

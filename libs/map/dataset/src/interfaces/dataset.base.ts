@@ -5,6 +5,7 @@ import { IDatasetVisitor } from './dataset.visitor';
  * This interface defines the common operations for both leaf and composite nodes
  */
 export interface IDataset extends IDatasetVisit {
+  get type(): string;
   get id(): string;
   /**
    * Get the name of the dataset
