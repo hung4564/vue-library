@@ -12,7 +12,7 @@ import {
 } from '@mdi/js';
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import { IDataset } from '../../../interfaces/dataset.base';
-import { applyToAllLeaves, findAllComponentsByCheck } from '../../../model';
+import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
 import { getAllComponentsByType, removeComponent } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
@@ -75,7 +75,7 @@ function onRemoveGroupLayer(group: IGroupListView<IListView & IDataset>) {
 }
 function onUpdateLayer(view: IListView & IDataset) {
   callMap((map) => {
-    findAllComponentsByCheck(
+    runAllComponentsWithCheck(
       view.getParent() as IDataset,
       (dataset) => isMapboxLayerView(dataset),
       [
@@ -172,10 +172,10 @@ function onLayerAction({ action, item }: { action: Menu; item: IListView }) {
     <div class="layer-control__header">
       <div class="v-spacer"></div>
       <button class="layer-item__button" @click="addNewGroup()">
-        <SvgIcon size="14" type="mdi" :path="path.group.create" />
+        <SvgIcon size="16" type="mdi" :path="path.group.create" />
       </button>
       <button class="layer-item__button" @click="onRemoveAllLayer">
-        <SvgIcon size="14" type="mdi" :path="path.deleteAll" />
+        <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
       </button>
     </div>
     <div class="layer-control__list">
@@ -228,7 +228,7 @@ function onLayerAction({ action, item }: { action: Menu; item: IListView }) {
         >
           <div class="layer-context-menu__item-icon">
             <SvgIcon
-              size="14"
+              size="16"
               type="mdi"
               :path="option.icon || mdiCircleSmall"
             />

@@ -1,8 +1,8 @@
 import { Color, MapSimple } from '@hungpvq/shared-map';
-import { AnySourceData } from 'mapbox-gl';
+import { AnySourceData, PointLike } from 'mapbox-gl';
+import { IDataset } from './dataset.base';
 import { IDatasetMap } from './dataset.map';
 
-// === list ===
 export type IGroupListViewUI<T> =
   | string
   | {
@@ -10,8 +10,7 @@ export type IGroupListViewUI<T> =
       id: string;
       children?: T[];
     };
-export type IListViewUI = {
-  getName: () => string;
+export type IListViewUI = IDataset & {
   opacity: number;
   selected: boolean;
   metadata: any;
@@ -30,7 +29,37 @@ export type IMapboxSourceView = IDatasetMap & {
 };
 export type IMapboxLayerView = IDatasetMap & {
   getBeforeId(): string;
+  getAllLayerIds(): string[];
   setOpacity(map: MapSimple, opacity: number): void;
   toggleShow(map: MapSimple, show?: boolean): void;
   moveLayer(map: MapSimple, beforeId: string): void;
+};
+export type IIdentifyView<T = IDataset> = IDataset &
+  IActionForView<T> & {
+    config: { field_name?: string; field_id?: string };
+    getFeatures: (
+      mapId: string,
+      pointOrBox?: PointLike | [PointLike, PointLike]
+    ) => Promise<{ id: string; name: string; data: any }[]>;
+  };
+
+export type IActionForView<T = IDataset> = {
+  menus: MenuAction<T>[];
+};
+export type MenuAction<T> = MenuDivider | MenuItem<T>;
+// === action ===
+type MenuCommon = {
+  location: 'extra' | 'menu' | 'bottom';
+  order?: number;
+  id?: string;
+};
+type MenuDivider = MenuCommon & {
+  type: 'divider';
+};
+type MenuItem<T = IDataset> = MenuCommon & {
+  type: 'item';
+  class?: string;
+  click: (layer: T, map_id: string, value?: any) => any;
+  icon: string;
+  name?: string;
 };

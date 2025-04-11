@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/shared-map';
+import { fitBounds, type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
+  getMap,
   GotoControl,
   HomeControl,
   Map,
@@ -18,12 +19,15 @@ import {
   DatasetComposite,
   DatasetPartListViewUiComponent,
   GeojsonSource,
+  IdentifyControl,
+  IdentifyMapboxComponent,
   LayerControl,
   MultiMapboxLayerComponent,
   RasterUrlSource,
 } from '@hungpvq/vue-map-dataset';
 import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-layer';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { mdiCrosshairsGps } from '@mdi/js';
 
 function onMapLoaded(map: MapSimple) {
   const dataset_raster = createDataset(
@@ -67,7 +71,7 @@ function onMapLoaded(map: MapSimple) {
         type: 'Feature',
         properties: {
           id: '1',
-          name: 'feature 2',
+          name: 'feature 1',
         },
         geometry: {
           coordinates: [
@@ -77,6 +81,25 @@ function onMapLoaded(map: MapSimple) {
               [106.65936430823979, 18.461221184685627],
               [106.65936430823979, 19.549518287564368],
               [104.96327341667353, 19.549518287564368],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          id: '2',
+          name: 'feature 2',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.80782070639765, 20.18022781865689],
+              [105.80782070639765, 18.841791883714322],
+              [107.53334783357559, 18.841791883714322],
+              [107.53334783357559, 20.18022781865689],
+              [105.80782070639765, 20.18022781865689],
             ],
           ],
           type: 'Polygon',
@@ -112,11 +135,28 @@ function onMapLoaded(map: MapSimple) {
       .setColor('#ff0000')
       .build(),
   ]);
+  const identify = new IdentifyMapboxComponent('test identify');
+  identify.menus = [
+    {
+      location: 'extra',
+      type: 'item',
+      name: 'Fly to',
+      icon: mdiCrosshairsGps,
+      click: (layer, mapId, value) => {
+        console.log('test', layer, mapId, value);
+
+        getMap(mapId, (map) => {
+          fitBounds(map, value.geometry);
+        });
+      },
+    },
+  ];
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
   dataset.add(source);
   dataset.add(groupLayer1);
   dataset.add(groupLayer2);
+  dataset.add(identify);
   addDataset(map.id, dataset);
   addDataset(map.id, dataset_raster);
 }
@@ -125,6 +165,7 @@ function onMapLoaded(map: MapSimple) {
   <Map @map-loaded="onMapLoaded">
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show />
+    <IdentifyControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
     <SettingControl />

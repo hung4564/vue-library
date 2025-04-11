@@ -271,7 +271,7 @@ export class TypeFunctionVisitor extends BaseDatasetVisitor {
   }
 }
 
-export function findAllComponentsByCheck(
+export function runAllComponentsWithCheck(
   rootDataset: IDataset,
   typeCheckFunction: (dataset: IDataset) => boolean,
   functions: ((dataset: IDataset) => any)[] = []

@@ -5,8 +5,8 @@ import { debounce } from 'lodash';
 import { computed, nextTick, ref } from 'vue';
 import { useMap, withMapProps } from '../../hooks';
 
-import { CrsItem, crsStore, useCoordinate } from '../../extra/crs';
 import type { MapSimple } from '@hungpvq/shared-map';
+import { CrsItem, crsStore, useCoordinate } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const { getCrsItems, setCrs, getCrs, getCrsItem } = crsStore;
 const props = defineProps({
@@ -147,7 +147,7 @@ function getRoundNum(num: number) {
         <div class="mouse-coordinates-part zoom-part">
           <div class="mouse-coordinates-zoom">
             <span title="Current Zoom" class="icon">
-              <SvgIcon :size="14" type="mdi" :path="path.zoom" />
+              <SvgIcon :size="16" type="mdi" :path="path.zoom" />
             </span>
             <div style="margin-left: 4px">{{ currentZoom }}</div>
           </div>
@@ -171,7 +171,7 @@ function getRoundNum(num: number) {
               @click="changeDisplayTypePixelValue"
               class="icon icon-clickable"
             >
-              <SvgIcon :size="14" type="mdi" :path="path.change" />
+              <SvgIcon :size="16" type="mdi" :path="path.change" />
             </i>
           </div>
         </div>

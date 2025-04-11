@@ -1,6 +1,6 @@
 <template>
   <SvgIcon
-    size="14"
+    size="16"
     type="mdi"
     :path="isShow ? path.legendClose : path.legendOpen"
   />

@@ -4,11 +4,11 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
+import { CrsItem, crsStore } from '../../extra/crs';
+import { useLang } from '../../extra/lang';
 import { Collapse, InputSelect, InputText } from '../../field';
 import { useMap, useShow, withMapProps } from '../../hooks';
-import { CrsItem, crsStore } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import { useLang } from '../../extra/lang';
 const { getCrsItems, setCrsItems } = crsStore;
 const props = defineProps({
   ...withMapProps,
@@ -92,7 +92,7 @@ const onAdd = () => {
                       v-if="!crs_item.default"
                       @click.stop="onRemove(crs_item)"
                     >
-                      <SvgIcon size="14" type="mdi" :path="path.delete" />
+                      <SvgIcon size="16" type="mdi" :path="path.delete" />
                     </button>
                   </div>
                 </div>
@@ -130,7 +130,7 @@ const onAdd = () => {
           </div>
           <div class="crs-item__add">
             <button class="layer-item__button clickable" @click.stop="onAdd()">
-              <SvgIcon size="14" type="mdi" :path="path.plus" />
+              <SvgIcon size="16" type="mdi" :path="path.plus" />
             </button>
           </div>
         </div>

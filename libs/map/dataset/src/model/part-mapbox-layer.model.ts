@@ -16,6 +16,7 @@ export abstract class DatasetPartMapboxLayerComponent
   abstract setOpacity(map: MapSimple, opacity: number): void;
   abstract toggleShow(map: MapSimple, show: boolean): void;
   abstract moveLayer(map: MapSimple, beforeId: string): void;
+  abstract getAllLayerIds(): string[];
 }
 export class MultiMapboxLayerComponent
   extends DatasetLeaf
@@ -35,6 +36,9 @@ export class MultiMapboxLayerComponent
   }
   getBeforeId() {
     return this.layers[0].id;
+  }
+  getAllLayerIds() {
+    return this.layers.map((x) => x.id);
   }
   addToMap(map: MapSimple, beforeId: string): void {
     const source = findFirstLeafByType(this, 'source');

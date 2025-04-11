@@ -29,8 +29,6 @@ import LayerList from './part/LayerList.vue';
 const props = defineProps({
   ...withMapProps,
   ...makeShowProps({ show: false }),
-  disabledDrag: Boolean,
-  disabled: Boolean,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);

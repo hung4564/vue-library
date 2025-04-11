@@ -5,7 +5,7 @@
         @click.stop="toggleShow()"
         :tooltip="trans('map.aside-control.title')"
       >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
+        <SvgIcon size="16" type="mdi" :path="path.icon" />
       </MapControlButton>
     </template>
 

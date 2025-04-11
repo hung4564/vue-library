@@ -1,6 +1,6 @@
 <template>
-  <SvgIcon size="14" type="mdi" :path="path.show" v-if="isShow" />
-  <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
+  <SvgIcon size="16" type="mdi" :path="path.show" v-if="isShow" />
+  <SvgIcon size="16" type="mdi" :path="path.hide" v-else />
 </template>
 <script lang="ts" setup>
 import { IListView } from '@hungpvq/vue-map-core';
