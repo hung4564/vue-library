@@ -4,5 +4,18 @@
   "dependencies": {},
   "main": "./index.js",
   "module": "./index.mjs",
-  "typings": "./index.d.ts"
+  "typings": "./index.d.ts",
+  "peerDependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.4.47",
+    "@hungpvq/vue-draggable": ">=0.0.1",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-map": ">=0.0.1",
+    "@hungpvq/shared-core": ">=0.0.1",
+    "@hungpvq/vue-map-core": ">=0.0.1",
+    "@hungpvq/content-menu": ">=0.0.1",
+    "@turf/turf": "^6.5.0",
+    "mapbox-gl": ">=1.13.0",
+    "@hungpvq/shared-integrations": ">=0.0.1"
+  }
 }
