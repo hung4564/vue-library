@@ -98,3 +98,5 @@ export function getAllComponentsByType<T>(mapId: string, targetType: string) {
   });
   return views;
 }
+
+export * from './component';

@@ -1,7 +1,11 @@
 import { getMap } from '@hungpvq/vue-map-core';
 import { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
 import { IDataset } from '../interfaces/dataset.base';
-import { IIdentifyView, MenuAction } from '../interfaces/dataset.parts';
+import {
+  IIdentifyView,
+  IMapboxLayerView,
+  MenuAction,
+} from '../interfaces/dataset.parts';
 import { isMapboxLayerView } from '../utils/check';
 import { DatasetLeaf } from './dataset.base';
 import { runAllComponentsWithCheck } from './dataset.visitors';
@@ -31,13 +35,11 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
     return new Promise<{ id: string; name: string; data: any }[]>((resolve) => {
       const results = runAllComponentsWithCheck(
         this.getParent() as IDataset,
-        (dataset) => isMapboxLayerView(dataset),
+        (dataset): dataset is IDataset & IMapboxLayerView =>
+          isMapboxLayerView(dataset),
         [
           (dataset) => {
-            if (isMapboxLayerView(dataset)) {
-              return dataset.getAllLayerIds();
-            }
-            return [];
+            return dataset.getAllLayerIds();
           },
         ]
       );

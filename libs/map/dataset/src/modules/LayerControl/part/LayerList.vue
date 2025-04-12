@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import type { IGroupListView, IListView, Menu } from '@hungpvq/vue-map-core';
 import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -11,7 +10,13 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { nextTick, onMounted, reactive, ref } from 'vue';
-import { IDataset } from '../../../interfaces/dataset.base';
+import {
+  IDataset,
+  IGroupListViewUI,
+  IListViewUI,
+  IMapboxLayerView,
+  MenuAction,
+} from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
 import { getAllComponentsByType, removeComponent } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
@@ -31,7 +36,7 @@ const path = {
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
-const views = ref<Array<IListView & IDataset>>([]);
+const views = ref<Array<IListViewUI>>([]);
 onMounted(() => {
   updateList();
 });
@@ -42,7 +47,7 @@ const groupRef = ref<
     }
   | undefined
 >(undefined);
-const layers_select = ref<IListView[]>([]);
+const layers_select = ref<IListViewUI[]>([]);
 function updateLayers() {
   callMap((map) => {
     let beforeId: string = '';
@@ -59,7 +64,7 @@ function updateLayers() {
     });
   });
 }
-function onRemoveGroupLayer(group: IGroupListView<IListView & IDataset>) {
+function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
   if (!group) {
     return;
   }
@@ -69,23 +74,22 @@ function onRemoveGroupLayer(group: IGroupListView<IListView & IDataset>) {
   if (!group || !group.children || group.children.length === 0) {
     return;
   }
-  group.children.forEach((view: IListView & IDataset) => {
+  group.children.forEach((view: IListViewUI) => {
     removeComponent(mapId.value, view);
   });
 }
-function onUpdateLayer(view: IListView & IDataset) {
+function onUpdateLayer(view: IListViewUI) {
   callMap((map) => {
     runAllComponentsWithCheck(
       view.getParent() as IDataset,
-      (dataset) => isMapboxLayerView(dataset),
+      (dataset): dataset is IDataset & IMapboxLayerView =>
+        isMapboxLayerView(dataset),
       [
         (dataset) => {
-          if (isMapboxLayerView(dataset)) {
-            dataset.toggleShow(map, view.show);
-          }
+          dataset.toggleShow(map, view.show);
         },
         (dataset) => {
-          if (!view.config.disabled_opacity && isMapboxLayerView(dataset)) {
+          if (!view.config.disabled_opacity) {
             dataset.setOpacity(map, view.opacity);
           }
         },
@@ -93,7 +97,7 @@ function onUpdateLayer(view: IListView & IDataset) {
     );
   });
 }
-function onRemoveLayer(view: IListView & IDataset) {
+function onRemoveLayer(view: IListViewUI) {
   if (!view) return;
   removeComponent(mapId.value, view);
   updateList();
@@ -109,7 +113,7 @@ function updateTree() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IListView & IDataset>(mapId.value, 'list').sort(
+    getAllComponentsByType<IListViewUI>(mapId.value, 'list').sort(
       (a, b) => b.index - a.index
     ) || [];
 }
@@ -130,14 +134,14 @@ function onRemoveAllLayer() {
 }
 const contextMenuRef = ref<
   | {
-      open(event: MouseEvent, item: IListView): void;
+      open(event: MouseEvent, item: IListViewUI): void;
       close(): void;
     }
   | undefined
 >();
 const menu_context = reactive<{
-  items: Menu[];
-  view: IListView | undefined;
+  items: MenuAction<IListViewUI>[];
+  view: IListViewUI | undefined;
 }>({
   items: [],
   view: undefined,
@@ -148,8 +152,8 @@ function handleContextClick({
   actions,
 }: {
   event: MouseEvent;
-  item: IListView;
-  actions: Menu[];
+  item: IListViewUI;
+  actions: MenuAction<IListViewUI>[];
 }) {
   menu_context.items = actions ? [...actions] : [];
   menu_context.view = item;
@@ -160,11 +164,17 @@ function closeContextMenu() {
   menu_context.view = undefined;
   if (contextMenuRef.value) contextMenuRef.value.close();
 }
-function onLayerAction({ action, item }: { action: Menu; item: IListView }) {
-  const menu = action;
-  if (!menu) return;
-  if (menu.type !== 'item') return;
+function onLayerAction({
+  action,
+  item,
+}: {
+  action: MenuAction<IListViewUI>;
+  item: IListViewUI;
+}) {
+  if (!action) return;
+  if (action.type !== 'item') return;
   if (!item) return;
+  action.click(item, mapId.value, item);
 }
 </script>
 <template lang="">

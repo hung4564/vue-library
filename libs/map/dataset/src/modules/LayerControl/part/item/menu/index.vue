@@ -1,18 +1,15 @@
 <template lang="">
-  <component
-    :is="component"
-    :item="item"
-    :data="data"
-    v-bind="$attrs"
-    :mapId="mapId"
-  />
+  <component :is="component" :item="item" :data="data" v-bind="$attrs" />
 </template>
 <script setup lang="ts">
-import { IListView, type Menu } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
-import MenuItem from './menu-item.vue';
+import type { IListViewUI, MenuAction } from '../../../../../interfaces';
 import MenuDivider from './menu-divider.vue';
-const props = defineProps<{ item: Menu; data: IListView; mapId: string }>();
+import MenuItem from './menu-item.vue';
+const props = defineProps<{
+  item: MenuAction<IListViewUI>;
+  data: IListViewUI;
+}>();
 const component = computed(() => {
   switch (props.item.type) {
     case 'divider':

@@ -61,7 +61,7 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
  * Leaf node in the Dataset Composite pattern
  * Represents a single dataset without children
  */
-export class DatasetLeaf<T = any> extends DatasetComponent {
+export class DatasetLeaf<T = any> extends DatasetComponent<T> {
   get type(): string {
     return 'leaf';
   }

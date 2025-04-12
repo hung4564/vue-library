@@ -1,18 +1,22 @@
 import { Color } from '@hungpvq/shared-map';
-import { IGroupListViewUI, IListViewUI } from '../interfaces/dataset.parts';
+import {
+  IGroupListViewUI,
+  IListViewUI,
+  MenuAction,
+} from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 
 export class DatasetPartListViewUiComponent
   extends DatasetLeaf
-  implements IListViewUI
+  implements IListViewUI<DatasetPartListViewUiComponent>
 {
+  menus: MenuAction<DatasetPartListViewUiComponent>[] = [];
   override get type(): string {
     return 'list';
   }
 
   opacity = 1;
   selected = false;
-  metadata: any;
   color?: Color;
   config: {
     disable_delete?: boolean;

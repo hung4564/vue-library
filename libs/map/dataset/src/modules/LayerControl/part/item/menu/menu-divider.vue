@@ -2,8 +2,11 @@
   <div class="menu-divider"></div>
 </template>
 <script setup lang="ts">
-import { IListView, MenuItem } from '@hungpvq/vue-map-core';
-defineProps<{ item: MenuItem; data: IListView }>();
+import type { IListViewUI, MenuAction } from '../../../../../interfaces';
+defineProps<{
+  item: MenuAction<IListViewUI>;
+  data: IListViewUI;
+}>();
 </script>
 <style>
 .layer-control .layer-item__button.menu-divider {

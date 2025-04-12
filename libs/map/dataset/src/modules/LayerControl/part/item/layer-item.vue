@@ -8,14 +8,23 @@
       />
       <span
         class="layer-item__title"
-        :title="item.name"
+        :title="item.getName()"
         @click="emit('click', item)"
       >
-        <span>{{ item.name }}</span>
+        <span>{{ item.getName() }}</span>
       </span>
       <div class="v-spacer"></div>
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
+        <template v-for="(menu, i) in extra_menus" :key="i">
+          <LayerMenu
+            class="layer-item__button"
+            :item="menu"
+            :data="item"
+            :disabled="loading"
+            @click="onLayerAction(menu)"
+          />
+        </template>
         <button
           class="layer-item__button"
           :disabled="loading"
@@ -33,6 +42,14 @@
           <SvgIcon size="14" type="mdi" :path="path.delete" />
         </button>
         <slot name="extra-btn" :loading="loading" />
+        <button
+          v-if="content_menus.length > 0"
+          class="layer-item__button"
+          :disabled="loading"
+          @click.prevent.stop="handleContextClick"
+        >
+          <SvgIcon size="14" type="mdi" :path="path.menu" />
+        </button>
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
@@ -45,13 +62,22 @@
         />
       </div>
       <div class="v-spacer"></div>
+      <template v-for="(menu, i) in extra_bottoms" :key="i">
+        <LayerMenu
+          class="layer-item__button"
+          :item="menu"
+          :data="item"
+          :disabled="loading"
+          :mapId="mapId"
+          @click="onLayerAction(menu)"
+        />
+      </template>
     </div>
 
     <div :id="bottomLayerItem" />
   </div>
 </template>
 <script setup lang="ts">
-import { IListView, Menu } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -65,16 +91,17 @@ import {
   mdiMenuLeft,
   mdiPencilOutline,
 } from '@mdi/js';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { IListViewUI, MenuAction } from '../../../../interfaces';
 import LayerItemIcon from './layer-item-icon.vue';
 import LayerItemSlider from './layer-item-slider.vue';
-const props = defineProps<{ item: IListView; mapId: string }>();
+import LayerMenu from './menu/index.vue';
+const props = defineProps<{ item: IListViewUI; mapId: string }>();
 const emit = defineEmits([
   'update:item',
   'click',
   'click:remove',
   'click:action',
-  'click:edit',
   'click:content-menu',
 ]);
 const path = {
@@ -89,9 +116,7 @@ const path = {
   legendOpen: mdiMenuLeft,
   legendClose: mdiMenuDown,
 };
-const loading = computed(() => {
-  return props.item.metadata && props.item.metadata.loading;
-});
+const loading = ref(false);
 const opacity = computed({
   get() {
     return props.item.opacity;
@@ -110,12 +135,43 @@ const onToggleShow = () => {
   item.show = !item.show;
   emit('update:item', item);
 };
-const showBottom = computed(() => {
-  return !props.item.config.disabled_opacity;
-});
 const bottomLayerItem = computed(() => {
   return `layer-item-${props.item.id}-bottom`;
 });
+const button_menus = computed<MenuAction<IListViewUI>[]>(() => {
+  if (!props.item) {
+    return [];
+  }
+  return props.item.menus || [];
+});
+const extra_menus = computed(() => {
+  return button_menus.value
+    .filter((x) => !x.location || x.location == 'extra')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const extra_bottoms = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'bottom')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const content_menus = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'menu')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const showBottom = computed(() => {
+  return !props.item.config.disabled_opacity || extra_bottoms.value.length > 0;
+});
+function onLayerAction(action: MenuAction<IListViewUI>) {
+  emit('click:action', { action, item: props.item });
+}
+function handleContextClick(event: MouseEvent) {
+  emit('click:content-menu', {
+    event,
+    actions: content_menus.value,
+    item: props.item,
+  });
+}
 </script>
 
 <style scoped>

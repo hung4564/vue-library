@@ -85,13 +85,16 @@ export class RootFinderVisitor extends BaseDatasetVisitor {
  */
 export class TypeLeafFinderVisitor extends BaseDatasetVisitor {
   private sourceLeaf: IDataset | null = null;
-  private targetType: string;
+  private typePredicate: (dataset: IDataset) => boolean;
   private foundLeaf: IDataset | null = null;
 
-  constructor(sourceLeaf: IDataset, targetType: string) {
+  constructor(
+    sourceLeaf: IDataset,
+    typePredicate: (dataset: IDataset) => boolean
+  ) {
     super();
     this.sourceLeaf = sourceLeaf;
-    this.targetType = targetType;
+    this.typePredicate = typePredicate;
   }
 
   visitLeaf(dataset: IDataset): any {
@@ -99,7 +102,7 @@ export class TypeLeafFinderVisitor extends BaseDatasetVisitor {
       return this.foundLeaf;
     }
 
-    if (dataset.type === this.targetType && !this.foundLeaf) {
+    if (this.typePredicate(dataset) && !this.foundLeaf) {
       this.foundLeaf = dataset;
     }
     return this.foundLeaf;
@@ -120,13 +123,16 @@ export class TypeLeafFinderVisitor extends BaseDatasetVisitor {
     return this.foundLeaf;
   }
 
-  reset(sourceLeaf?: IDataset, targetType?: string): void {
+  reset(
+    sourceLeaf?: IDataset,
+    typePredicate?: (dataset: IDataset) => boolean
+  ): void {
     this.foundLeaf = null;
     if (sourceLeaf) {
       this.sourceLeaf = sourceLeaf;
     }
-    if (targetType) {
-      this.targetType = targetType;
+    if (typePredicate) {
+      this.typePredicate = typePredicate;
     }
   }
 }
@@ -152,10 +158,78 @@ export function findFirstLeafByType(
     throw new Error('Could not find root dataset');
   }
 
-  const visitor = new TypeLeafFinderVisitor(sourceLeaf, targetType);
+  const visitor = new TypeLeafFinderVisitor(
+    sourceLeaf,
+    (dataset) => dataset.type === targetType
+  );
   rootDataset.accept(visitor);
 
   return visitor.getFoundLeaf();
+}
+
+/**
+ * Helper function to find the first leaf satisfying a predicate function.
+ *
+ * Usage:
+ * const foundLeaf = findFirstLeaf(rootDataset, (dataset) => dataset.type === 'targetType');
+ * if (foundLeaf) {
+ *   // Use the found leaf
+ * }
+ */
+export function findFirstLeaf(
+  rootDataset: IDataset,
+  predicate: (dataset: IDataset) => boolean
+): IDataset | null {
+  const visitor = new TypeLeafFinderVisitor(
+    rootDataset,
+    (dataset) => !dataset.isComposite() && predicate(dataset)
+  );
+  rootDataset.accept(visitor);
+  return visitor.getFoundLeaf();
+}
+
+/**
+ * Helper function to find a leaf in the same parent group or the nearest leaf satisfying a predicate function.
+ * The search is done in the following order:
+ * 1. First try to find in the same parent group
+ * 2. If not found, search in the entire tree
+ *
+ * Usage:
+ * const foundLeaf = findSiblingOrNearestLeaf(sourceLeaf, (dataset) => dataset.type === 'targetType');
+ * if (foundLeaf) {
+ *   // Use the found leaf
+ * }
+ */
+export function findSiblingOrNearestLeaf(
+  sourceLeaf: IDataset,
+  predicate: (dataset: IDataset) => boolean
+): IDataset | null {
+  // First try to find in the same parent group
+  const parent = sourceLeaf.getParent();
+  if (parent && parent.isComposite() && parent.getChildren) {
+    const siblings = parent.getChildren();
+    if (siblings) {
+      // Search in the same group first
+      for (const sibling of siblings) {
+        if (
+          sibling !== sourceLeaf &&
+          !sibling.isComposite() &&
+          predicate(sibling)
+        ) {
+          return sibling;
+        }
+      }
+    }
+  }
+
+  // If not found in the same group, use BFS to search the entire tree
+  const rootFinder = new RootFinderVisitor();
+  sourceLeaf.accept(rootFinder);
+  const rootDataset = rootFinder.getRootDataset();
+  if (!rootDataset) {
+    return null;
+  }
+  return findFirstDatasetBFS(rootDataset, predicate);
 }
 
 // ===== Type Collection and Function Application Visitors =====
@@ -202,22 +276,24 @@ export function findFirstLeafByType(
  *   [(dataset) => dataset.getData()]
  * );
  */
-export class TypeFunctionVisitor extends BaseDatasetVisitor {
-  private typeCheckFunction: (dataset: IDataset) => boolean;
-  private functions: ((dataset: IDataset) => any)[] = [];
-  private foundComponents: IDataset[] = [];
+export class TypeFunctionVisitor<
+  T extends IDataset
+> extends BaseDatasetVisitor {
+  private typeCheckFunction: (dataset: IDataset) => dataset is T;
+  private functions: ((dataset: T) => any)[] = [];
+  private foundComponents: T[] = [];
   private results: Map<string, any[]> = new Map();
 
   constructor(
-    typeCheckFunction: (dataset: IDataset) => boolean,
-    functions: ((dataset: IDataset) => any)[] = []
+    typeCheckFunction: (dataset: IDataset) => dataset is T,
+    functions: ((dataset: T) => any)[] = []
   ) {
     super();
     this.typeCheckFunction = typeCheckFunction;
     this.functions = functions;
   }
 
-  addFunction(func: (dataset: IDataset) => any): void {
+  addFunction(func: (dataset: T) => any): void {
     this.functions.push(func);
   }
 
@@ -248,7 +324,7 @@ export class TypeFunctionVisitor extends BaseDatasetVisitor {
     return this.visitComposite(dataset);
   }
 
-  getFoundComponents(): IDataset[] {
+  getFoundComponents(): T[] {
     return this.foundComponents;
   }
 
@@ -257,8 +333,8 @@ export class TypeFunctionVisitor extends BaseDatasetVisitor {
   }
 
   reset(
-    typeCheckFunction?: (dataset: IDataset) => boolean,
-    functions?: ((dataset: IDataset) => any)[]
+    typeCheckFunction?: (dataset: IDataset) => dataset is T,
+    functions?: ((dataset: T) => any)[]
   ): void {
     this.foundComponents = [];
     this.results = new Map();
@@ -271,12 +347,12 @@ export class TypeFunctionVisitor extends BaseDatasetVisitor {
   }
 }
 
-export function runAllComponentsWithCheck(
+export function runAllComponentsWithCheck<T extends IDataset>(
   rootDataset: IDataset,
-  typeCheckFunction: (dataset: IDataset) => boolean,
-  functions: ((dataset: IDataset) => any)[] = []
+  typeCheckFunction: (dataset: IDataset) => dataset is T,
+  functions: ((dataset: T) => any)[] = []
 ): Map<string, any[]> {
-  const visitor = new TypeFunctionVisitor(typeCheckFunction, functions);
+  const visitor = new TypeFunctionVisitor<T>(typeCheckFunction, functions);
   rootDataset.accept(visitor);
   return visitor.getResults();
 }
@@ -285,8 +361,8 @@ export function applyToAllLeaves(
   rootDataset: IDataset,
   functions: ((dataset: IDataset) => any)[] = []
 ): Map<string, any[]> {
-  const visitor = new TypeFunctionVisitor(
-    (dataset) => !dataset.isComposite(),
+  const visitor = new TypeFunctionVisitor<IDataset>(
+    (dataset): dataset is IDataset => !dataset.isComposite(),
     functions
   );
   rootDataset.accept(visitor);
@@ -379,4 +455,119 @@ export function findAllComponentsByType(
   );
   rootDataset.accept(visitor);
   return visitor.getFoundComponents();
+}
+
+/**
+ * Visitor that implements Breadth First Search (BFS) traversal.
+ * This visitor uses a queue to process nodes level by level.
+ *
+ * Usage:
+ * const bfsVisitor = new BFSVisitor();
+ * rootDataset.accept(bfsVisitor);
+ * const result = bfsVisitor.getResult();
+ */
+export class BFSVisitor extends BaseDatasetVisitor {
+  private queue: IDataset[] = [];
+  private result: IDataset[] = [];
+
+  visitLeaf(dataset: IDataset): any {
+    this.result.push(dataset);
+    return this.result;
+  }
+
+  visitComposite(dataset: IDataset): any {
+    this.result.push(dataset);
+    if (dataset.getChildren) {
+      this.queue.push(...dataset.getChildren());
+    }
+    return this.result;
+  }
+
+  visitRoot(dataset: IDataset): any {
+    this.queue = [dataset];
+    this.result = [];
+
+    while (this.queue.length > 0) {
+      const current = this.queue.shift()!;
+      if (current.isComposite()) {
+        this.visitComposite(current);
+      } else {
+        this.visitLeaf(current);
+      }
+    }
+
+    return this.result;
+  }
+
+  getResult(): IDataset[] {
+    return this.result;
+  }
+}
+
+export class BFSWithCheckVisitor extends BaseDatasetVisitor {
+  private queue: IDataset[] = [];
+  private result: IDataset | null = null;
+  private checkFunction: (dataset: IDataset) => boolean;
+
+  constructor(checkFunction: (dataset: IDataset) => boolean) {
+    super();
+    this.checkFunction = checkFunction;
+  }
+
+  visitLeaf(dataset: IDataset): any {
+    if (this.checkFunction(dataset)) {
+      this.result = dataset;
+      return this.result;
+    }
+    return null;
+  }
+
+  visitComposite(dataset: IDataset): any {
+    if (this.checkFunction(dataset)) {
+      this.result = dataset;
+      return this.result;
+    }
+    if (dataset.getChildren) {
+      this.queue.push(...dataset.getChildren());
+    }
+    return null;
+  }
+
+  visitRoot(dataset: IDataset): any {
+    this.queue = [dataset];
+    this.result = null;
+
+    while (this.queue.length > 0 && !this.result) {
+      const current = this.queue.shift()!;
+      if (current.isComposite()) {
+        this.visitComposite(current);
+      } else {
+        this.visitLeaf(current);
+      }
+    }
+
+    return this.result;
+  }
+
+  getResult(): IDataset | null {
+    return this.result;
+  }
+}
+
+/**
+ * Helper function to find the first dataset using BFS traversal that satisfies a check function.
+ *
+ * Usage:
+ * const foundDataset = findFirstDatasetBFS(rootDataset, (dataset) => dataset.type === 'targetType');
+ * if (foundDataset) {
+ *   // Use the found dataset
+ * }
+ */
+export function findFirstDatasetBFS(
+  rootDataset: IDataset,
+  checkFunction: (dataset: IDataset) => boolean
+): IDataset | null {
+  const visitor = new BFSWithCheckVisitor(checkFunction);
+  rootDataset.accept(visitor);
+  return visitor.getResult();
 }

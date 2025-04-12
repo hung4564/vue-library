@@ -15,9 +15,13 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   addDataset,
+  ComponentManagementControl,
   createDataset,
+  DataManagementMapboxComponent,
   DatasetComposite,
   DatasetPartListViewUiComponent,
+  DatasetPartMetadataComponent,
+  findSiblingOrNearestLeaf,
   GeojsonSource,
   IdentifyControl,
   IdentifyMapboxComponent,
@@ -27,7 +31,10 @@ import {
 } from '@hungpvq/vue-map-dataset';
 import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-layer';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { mdiCrosshairsGps } from '@mdi/js';
+import { mdiCrosshairsGps, mdiInformation } from '@mdi/js';
+import { ref } from 'vue';
+
+const mapRef = ref();
 
 function onMapLoaded(map: MapSimple) {
   const dataset_raster = createDataset(
@@ -90,7 +97,7 @@ function onMapLoaded(map: MapSimple) {
         type: 'Feature',
         properties: {
           id: '2',
-          name: 'feature 2',
+          name: 'feature 2 rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai',
         },
         geometry: {
           coordinates: [
@@ -135,34 +142,114 @@ function onMapLoaded(map: MapSimple) {
       .setColor('#ff0000')
       .build(),
   ]);
-  const identify = new IdentifyMapboxComponent('test identify');
-  identify.menus = [
+  list1.menus = [
     {
       location: 'extra',
       type: 'item',
       name: 'Fly to',
       icon: mdiCrosshairsGps,
+      click: (layer, mapId) => {
+        const metadata = findSiblingOrNearestLeaf(
+          layer,
+          (dataset) => dataset.type == 'metadata'
+        ) as DatasetPartMetadataComponent;
+        getMap(mapId, (map) => {
+          fitBounds(map, metadata?.metadata?.bbox);
+        });
+      },
+    },
+  ];
+  list2.menus = [
+    {
+      location: 'extra',
+      type: 'item',
+      name: 'Fly to',
+      icon: mdiCrosshairsGps,
+      click: (layer, mapId) => {
+        const metadata = findSiblingOrNearestLeaf(
+          layer,
+          (dataset) => dataset.type == 'metadata'
+        ) as DatasetPartMetadataComponent;
+        getMap(mapId, (map) => {
+          fitBounds(map, metadata?.metadata?.bbox);
+        });
+      },
+    },
+  ];
+  const metadataForList2 = new DatasetPartMetadataComponent(
+    'metadata for list2',
+    {
+      bbox: [
+        105.88454157202995, 20.878811643339404, 106.16710803591963,
+        21.0854254401454,
+      ],
+    }
+  );
+  const metadata = new DatasetPartMetadataComponent('metadata', {
+    bbox: [
+      104.96327341667353, 18.461221184685627, 107.53334783357559,
+      20.18022781865689,
+    ],
+  });
+  const identify = new IdentifyMapboxComponent('test identify');
+  identify.menus = [
+    {
+      type: 'item',
+      name: 'Fly to',
+      icon: mdiCrosshairsGps,
       click: (layer, mapId, value) => {
-        console.log('test', layer, mapId, value);
-
         getMap(mapId, (map) => {
           fitBounds(map, value.geometry);
         });
       },
     },
+    {
+      type: 'item',
+      name: 'Detail',
+      icon: mdiInformation,
+      click: (layer, mapId, value) => {
+        console.log;
+        const dataManagement = findSiblingOrNearestLeaf(
+          layer,
+          (dataset) => dataset.type == 'dataManagement'
+        ) as DataManagementMapboxComponent;
+        console.log('test', mapId, value);
+        dataManagement?.showDetail(mapId, value);
+      },
+    },
   ];
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
+  groupLayer2.add(metadataForList2);
+  const dataManagement = new DataManagementMapboxComponent('data management', {
+    fields: [
+      { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+    ],
+  });
   dataset.add(source);
+  dataset.add(dataManagement);
   dataset.add(groupLayer1);
   dataset.add(groupLayer2);
   dataset.add(identify);
+  dataset.add(metadata);
   addDataset(map.id, dataset);
-  addDataset(map.id, dataset_raster);
+  // addDataset(map.id, dataset_raster);
+
+  // Example of adding a component through store
+  // store?.addComponent({
+  //   id: 'test-component',
+  //   component: () => import('./YourComponent.vue'),
+  //   attr: { /* component props */ }
+  // });
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <ComponentManagementControl />
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show />
     <IdentifyControl position="top-right" />

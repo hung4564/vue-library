@@ -2,7 +2,7 @@
   <div class="menu-divider"></div>
 </template>
 <script setup lang="ts">
-import { IIdentifyView, MenuAction } from '../../../interfaces/dataset.parts';
+import { IIdentifyView, MenuAction } from '../../../interfaces';
 
 defineProps<{ item: MenuAction<IIdentifyView>; data: IIdentifyView }>();
 </script>

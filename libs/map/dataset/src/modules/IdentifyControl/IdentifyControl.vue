@@ -28,7 +28,7 @@ const path = {
 const props = defineProps({
   ...withMapProps,
 });
-const { mapId, moduleContainerProps, callMap } = useMap(props);
+const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
 setLocale({
@@ -36,6 +36,9 @@ setLocale({
     identify: {
       title: 'Identify',
       point: 'Point',
+      no_selection: 'Please select a point on the map',
+      no_data: 'No data found',
+      loading: 'Loading...',
     },
   },
 });
@@ -60,7 +63,7 @@ const button_menus = computed<MenuAction<IIdentifyView & IDataset>[]>(() => {
 });
 const extra_menus = computed(() => {
   return button_menus.value
-    .filter((x) => x.location == 'extra')
+    .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 function getViewFromStore() {
@@ -96,13 +99,40 @@ function onBboxSelect(bbox: any) {
   if (!bbox) return;
   onGetFeatures(bbox);
 }
+const result = reactive<{ items: any[]; loading: boolean }>({
+  items: [],
+  loading: false,
+});
+const currentPoint = computed(() => {
+  if (!origin) {
+    return '';
+  }
+  const point = formatCoordinate(origin);
+  return point.longitude + ', &nbsp;' + point.latitude;
+});
+const hasSelectedPoint = computed(() => {
+  return origin.latitude !== 0 || origin.longitude !== 0;
+});
+function onSelectFeatures(features: any[]) {
+  result.items = features;
+}
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
   if (!currentIdentify.value) return;
-  const features = await currentIdentify.value.getFeatures(
-    mapId.value,
-    pointOrBox
-  );
-  onSelectFeatures(features);
+  result.loading = true;
+  try {
+    const startTime = Date.now();
+    const features = await currentIdentify.value.getFeatures(
+      mapId.value,
+      pointOrBox
+    );
+    const elapsedTime = Date.now() - startTime;
+    if (elapsedTime < 500) {
+      await new Promise((resolve) => setTimeout(resolve, 500 - elapsedTime));
+    }
+    onSelectFeatures(features);
+  } finally {
+    result.loading = false;
+  }
 }
 const show = ref(false);
 function toggleShow() {
@@ -150,20 +180,6 @@ function onRemoveBox() {
   removeEventBbox();
 }
 
-const result = reactive<{ items: any[]; loading: boolean }>({
-  items: [],
-  loading: false,
-});
-const currentPoint = computed(() => {
-  if (!origin) {
-    return '';
-  }
-  const point = formatCoordinate(origin);
-  return point.longitude + ', &nbsp;' + point.latitude;
-});
-function onSelectFeatures(features: any[]) {
-  result.items = features;
-}
 function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
   if (menu.type != 'item' || !currentIdentify.value || !menu.click) {
     return;
@@ -217,31 +233,58 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
           </div>
           <hr class="identify-control-separator" />
           <div class="identify-control-body">
-            <div
-              v-for="item in result.items"
-              :key="item.id"
-              class="identify-control-list-item"
-            >
-              <div class="identify-control-list-item__container">
-                <div class="identify-control-child-item" :title="item.name">
-                  <span>
-                    {{ item.name || '---' }}
-                  </span>
-                </div>
-                <div class="identify-control-child-item__spacer"></div>
-                <div class="identify-control-child-item__action">
-                  <template v-for="(menu, i) in extra_menus" :key="i">
-                    <MenuItem
-                      class="layer-item__button"
-                      :item="menu"
-                      :data="item"
-                      :mapId="mapId"
-                      @click="onMenuAction(menu, item.data)"
-                    />
-                  </template>
-                </div>
+            <!-- Loading state -->
+            <div v-if="result.loading" class="identify-control-state">
+              <div class="identify-control-state__content">
+                <div class="identify-control-state__loading"></div>
+                <span>{{ trans('map.identify.loading') }}</span>
               </div>
             </div>
+            <!-- No selection state -->
+            <div v-else-if="!hasSelectedPoint" class="identify-control-state">
+              <div class="identify-control-state__content">
+                <span>{{ trans('map.identify.no_selection') }}</span>
+              </div>
+            </div>
+
+            <!-- Empty result state -->
+            <div
+              v-else-if="result.items.length === 0"
+              class="identify-control-state"
+            >
+              <div class="identify-control-state__content">
+                <span>{{ trans('map.identify.no_data') }}</span>
+              </div>
+            </div>
+
+            <!-- Results list -->
+            <template v-else>
+              <div
+                v-for="item in result.items"
+                :key="item.id"
+                class="identify-control-list-item"
+              >
+                <div class="identify-control-list-item__container">
+                  <div class="identify-control-child-item" :title="item.name">
+                    <span>
+                      {{ item.name || '---' }}
+                    </span>
+                  </div>
+                  <div class="identify-control-child-item__spacer"></div>
+                  <div class="identify-control-child-item__action">
+                    <template v-for="(menu, i) in extra_menus" :key="i">
+                      <MenuItem
+                        class="layer-item__button"
+                        :item="menu"
+                        :data="item"
+                        :mapId="mapId"
+                        @click="onMenuAction(menu, item.data)"
+                      />
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </DraggableItemPopup>
@@ -267,6 +310,7 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
   &-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     b {
       color: var(--v-primary-base, #1a73e8);
@@ -348,6 +392,7 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
 
     &__action {
       flex-grow: 0;
+      flex-shrink: 0;
 
       .layer-item__button {
         display: inline-block;
@@ -360,6 +405,38 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
         min-width: 25px;
       }
     }
+  }
+}
+
+.identify-control-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__loading {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--v-primary-base, #1a73e8);
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
