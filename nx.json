@@ -95,6 +95,6 @@
       },
       "automaticFromRef": true
     },
-    "projects": ["libs/*", "dataset"]
+    "projects": ["libs/*"]
   }
 }
