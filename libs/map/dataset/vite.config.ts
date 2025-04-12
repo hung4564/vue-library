@@ -1,8 +1,8 @@
 /// <reference types='vitest' />
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import * as path from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import * as path from 'path';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   root: __dirname,
@@ -41,7 +41,16 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: [],
+      external: [
+        'vue',
+        '@hungpvq/shared-map',
+        '@hungpvq/vue-map-core',
+        '@hungpvq/shared',
+        '@hungpvq/shared-integrations',
+        '@hungpvq/shared-core',
+        '@hungpvq/vue-draggable',
+        '@hungpvq/content-menu',
+      ],
     },
   },
 });

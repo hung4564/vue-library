@@ -1,5 +1,5 @@
 {
-  "name": "dataset",
+  "name": "map-dataset",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/map/dataset/src",
   "projectType": "library",

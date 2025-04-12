@@ -27,11 +27,11 @@ import {
   IdentifyMapboxComponent,
   LayerControl,
   LayerHighlight,
+  LayerSimpleMapboxBuild,
   MultiMapboxLayerComponent,
   RasterUrlSource,
   setFeatureHighlight,
 } from '@hungpvq/vue-map-dataset';
-import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-layer';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { mdiCrosshairsGps, mdiInformation } from '@mdi/js';
 import { ref } from 'vue';
