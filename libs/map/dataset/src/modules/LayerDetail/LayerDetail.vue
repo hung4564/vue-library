@@ -7,6 +7,7 @@ export default {
 <script setup>
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { ModuleContainer, useLang, useMap } from '@hungpvq/vue-map-core';
+import { setFeatureHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 defineProps({
   item: {},
@@ -23,6 +24,9 @@ function onUpdateShow(val) {
     emit('close');
   }
 }
+function onClose() {
+  setFeatureHighlight(mapId.value, undefined, 'detail');
+}
 </script>
 <template>
   <ModuleContainer v-bind="$attrs">
@@ -30,6 +34,7 @@ function onUpdateShow(val) {
       <DraggableItemPopup
         v-bind="props"
         show
+        @close="onClose"
         @update:show="onUpdateShow"
         :width="400"
       >

@@ -21,6 +21,7 @@ export class LayerRasterMapboxBuild implements ILayerMapboxBuild {
 }
 export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
   public color?: Color;
+  public opacity?: number;
   public type = 'point';
   setColor(color: Color | undefined) {
     this.color = color;
@@ -30,14 +31,19 @@ export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
     this.type = type;
     return this;
   }
+  setOpacity(opacity: number) {
+    this.opacity = opacity;
+    return this;
+  }
   build(): Omit<LayerMapbox, 'id'> {
-    return getDefaultLayer(this.type, this.color);
+    return getDefaultLayer(this.type, this.color, this.opacity);
   }
 }
 
 export const getDefaultLayer = (
   type: string,
-  color?: Color
+  color?: Color,
+  opacity?: number
 ): Omit<LineLayer | FillLayer | CircleLayer | SymbolLayer, 'id'> => {
   switch (type) {
     case 'point':
@@ -47,6 +53,7 @@ export const getDefaultLayer = (
         paint: {
           'circle-color': color || getChartRandomColor(),
           'circle-radius': 6,
+          'circle-opacity': opacity || 1,
         },
       };
 
@@ -57,6 +64,7 @@ export const getDefaultLayer = (
         paint: {
           'line-color': color || getChartRandomColor(),
           'line-width': 4,
+          'line-opacity': opacity || 1,
         },
       };
     case 'area':
@@ -65,6 +73,7 @@ export const getDefaultLayer = (
         type: 'fill',
         paint: {
           'fill-color': color || getChartRandomColor(),
+          'fill-opacity': opacity || 1,
         },
       };
 

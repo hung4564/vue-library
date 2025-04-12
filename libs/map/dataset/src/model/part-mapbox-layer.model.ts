@@ -1,10 +1,11 @@
 import { MapSimple } from '@hungpvq/shared-map';
+import { type Layer } from 'mapbox-gl';
 import { IMapboxLayerView } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 import { findFirstLeafByType } from './dataset.visitors';
 
-export abstract class DatasetPartMapboxLayerComponent
-  extends DatasetLeaf
+export abstract class DatasetPartMapboxLayerComponent<T = any>
+  extends DatasetLeaf<T>
   implements IMapboxLayerView
 {
   override get type(): string {
@@ -19,13 +20,13 @@ export abstract class DatasetPartMapboxLayerComponent
   abstract getAllLayerIds(): string[];
 }
 export class MultiMapboxLayerComponent
-  extends DatasetLeaf
+  extends DatasetPartMapboxLayerComponent<Layer[]>
   implements IMapboxLayerView
 {
   constructor(name: string, data: any[]) {
     super(name, data);
 
-    this.data.forEach((layer: any, id: number) => {
+    (this.data || []).forEach((layer: any, id: number) => {
       if (!layer.id) {
         layer.id = `${this.id}-${id}`;
       }

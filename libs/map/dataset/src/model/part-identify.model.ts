@@ -8,7 +8,11 @@ import {
 } from '../interfaces/dataset.parts';
 import { isMapboxLayerView } from '../utils/check';
 import { DatasetLeaf } from './dataset.base';
-import { runAllComponentsWithCheck } from './dataset.visitors';
+import {
+  findSiblingOrNearestLeaf,
+  runAllComponentsWithCheck,
+} from './dataset.visitors';
+import { DatasetPartDataManagementComponent } from './part-data-management,model';
 
 export abstract class DatasetPartIdentifyComponent
   extends DatasetLeaf<IIdentifyView['config']>
@@ -52,25 +56,26 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
           }
         );
 
-        const unique: MapboxGeoJSONFeature[] = [];
-        const ids = new Set();
+        const ids = new Set<string>();
+        const dataManagement = findSiblingOrNearestLeaf(
+          this,
+          (dataset) => dataset.type == 'dataManagement'
+        ) as DatasetPartDataManagementComponent;
         features.forEach((x) => {
           const id = x.properties?.[this.config.field_id || 'id'] ?? x.id;
           if (!ids.has(id)) {
-            unique.push(x);
             ids.add(id);
           }
         });
-        resolve(
-          unique.map((x, i) => ({
-            id: x.properties?.[this.config.field_id || 'id'] ?? x.id ?? i,
-            name: x.properties?.[this.config.field_name || 'name'] ?? '',
-            data: {
-              ...x.properties,
-              geometry: x.geometry,
-            },
-          }))
-        );
+        dataManagement.getData([...ids]).then((unique) => {
+          resolve(
+            unique.map((x, i) => ({
+              id: x.id ?? i,
+              name: x[this.config.field_name || 'name'] ?? '',
+              data: x,
+            }))
+          );
+        });
       });
     });
   }

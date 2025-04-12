@@ -19,6 +19,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { getAllComponentsByType } from '../../store';
+import { setFeatureHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
 const path = {
   icon: mdiHandPointingUp,
@@ -141,6 +142,7 @@ function toggleShow() {
 }
 function close() {
   onRemoveIdentify();
+  setFeatureHighlight(mapId.value, undefined, 'identify');
 }
 function onRemoveIdentify() {
   onRemoveMapClick();
@@ -435,6 +437,7 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { fitBounds, type MapSimple } from '@hungpvq/shared-map';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
   FullScreenControl,
@@ -26,8 +26,10 @@ import {
   IdentifyControl,
   IdentifyMapboxComponent,
   LayerControl,
+  LayerHighlight,
   MultiMapboxLayerComponent,
   RasterUrlSource,
+  setFeatureHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-layer';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
@@ -73,60 +75,23 @@ function onMapLoaded(map: MapSimple) {
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
   const source = new GeojsonSource('source', {
     type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          id: '1',
-          name: 'feature 1',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [104.96327341667353, 19.549518287564368],
-              [104.96327341667353, 18.461221184685627],
-              [106.65936430823979, 18.461221184685627],
-              [106.65936430823979, 19.549518287564368],
-              [104.96327341667353, 19.549518287564368],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-      {
-        type: 'Feature',
-        properties: {
-          id: '2',
-          name: 'feature 2 rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai rat dai',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.80782070639765, 20.18022781865689],
-              [105.80782070639765, 18.841791883714322],
-              [107.53334783357559, 18.841791883714322],
-              [107.53334783357559, 20.18022781865689],
-              [105.80782070639765, 20.18022781865689],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-    ],
+    features: [],
   });
   const groupLayer1 = createDataset(
     'Group layer 1',
     null,
     true
   ) as DatasetComposite;
+  const list1 = new DatasetPartListViewUiComponent('test area');
+  list1.color = '#0000FF';
+  list1.opacity = 0.5;
   const layer1 = new MultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
       .setStyleType('area')
-      .setColor('#0000FF')
+      .setColor(list1.color)
+      .setOpacity(list1.opacity)
       .build(),
   ]);
-  const list1 = new DatasetPartListViewUiComponent('test area');
-  list1.color = '#0000FF';
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
   const groupLayer2 = createDataset(
@@ -136,10 +101,12 @@ function onMapLoaded(map: MapSimple) {
   ) as DatasetComposite;
   const list2 = new DatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
+  list2.opacity = 0.5;
   const layer2 = new MultiMapboxLayerComponent('layer point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
-      .setColor('#ff0000')
+      .setColor(list2.color)
+      .setOpacity(list2.opacity)
       .build(),
   ]);
   list1.menus = [
@@ -200,6 +167,16 @@ function onMapLoaded(map: MapSimple) {
       click: (layer, mapId, value) => {
         getMap(mapId, (map) => {
           fitBounds(map, value.geometry);
+          const { geometry, ...properties } = value;
+          setFeatureHighlight(
+            mapId,
+            {
+              type: 'Feature',
+              geometry: value.geometry,
+              properties,
+            },
+            'identify'
+          );
         });
       },
     },
@@ -208,12 +185,10 @@ function onMapLoaded(map: MapSimple) {
       name: 'Detail',
       icon: mdiInformation,
       click: (layer, mapId, value) => {
-        console.log;
         const dataManagement = findSiblingOrNearestLeaf(
           layer,
           (dataset) => dataset.type == 'dataManagement'
         ) as DataManagementMapboxComponent;
-        console.log('test', mapId, value);
         dataManagement?.showDetail(mapId, value);
       },
     },
@@ -230,6 +205,40 @@ function onMapLoaded(map: MapSimple) {
       { text: 'Name', value: 'name' },
     ],
   });
+  dataManagement.setItems([
+    {
+      id: '1',
+      name: 'feature 1',
+      geometry: {
+        coordinates: [
+          [
+            [104.96327341667353, 19.549518287564368],
+            [104.96327341667353, 18.461221184685627],
+            [106.65936430823979, 18.461221184685627],
+            [106.65936430823979, 19.549518287564368],
+            [104.96327341667353, 19.549518287564368],
+          ],
+        ],
+        type: 'Polygon',
+      },
+    },
+    {
+      id: '2',
+      name: 'feature 2',
+      geometry: {
+        coordinates: [
+          [
+            [105.80782070639765, 20.18022781865689],
+            [105.80782070639765, 18.841791883714322],
+            [107.53334783357559, 18.841791883714322],
+            [107.53334783357559, 20.18022781865689],
+            [105.80782070639765, 20.18022781865689],
+          ],
+        ],
+        type: 'Polygon',
+      },
+    },
+  ]);
   dataset.add(source);
   dataset.add(dataManagement);
   dataset.add(groupLayer1);
@@ -251,7 +260,11 @@ function onMapLoaded(map: MapSimple) {
   <Map ref="mapRef" @map-loaded="onMapLoaded">
     <ComponentManagementControl />
     <MeasurementControl position="top-right" />
-    <LayerControl position="top-left" show />
+    <LayerControl position="top-left" show>
+      <template #endList="{ mapId }">
+        <BaseMapCard :mapId="mapId" />
+      </template>
+    </LayerControl>
     <IdentifyControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -262,6 +275,7 @@ function onMapLoaded(map: MapSimple) {
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
+    <LayerHighlight />
   </Map>
 </template>
 

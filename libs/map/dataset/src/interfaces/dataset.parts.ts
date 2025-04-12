@@ -74,6 +74,7 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
 
 export type IMapboxSourceView = IDatasetMap & {
   getMapboxSource: () => AnySourceData;
+  updateData?(map: MapSimple, data: any): void;
 };
 
 export type IMapboxLayerView = IDatasetMap & {
@@ -108,4 +109,5 @@ export type IMetadataView = {
 
 export type IDataManagementView<D = any> = {
   showDetail(mapId: string, detail: D): void;
+  getData(ids?: string[]): Promise<D[]>;
 };

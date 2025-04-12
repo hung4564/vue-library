@@ -2,3 +2,4 @@ export { default as ComponentManagementControl } from './ComponentManagementCont
 export { default as IdentifyControl } from './IdentifyControl/IdentifyControl.vue';
 export { default as LayerControl } from './LayerControl/LayerControl.vue';
 export { default as LayerDetail } from './LayerDetail/LayerDetail.vue';
+export { default as LayerHighlight } from './LayerHighlight/LayerHighlight.vue';

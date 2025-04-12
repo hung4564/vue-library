@@ -1,10 +1,16 @@
 import { MapSimple } from '@hungpvq/shared-map';
-import { AnySourceData, GeoJSONSourceRaw, RasterSource } from 'mapbox-gl';
+import {
+  AnySourceData,
+  GeoJSONSource,
+  GeoJSONSourceOptions,
+  GeoJSONSourceRaw,
+  RasterSource,
+} from 'mapbox-gl';
 import { IMapboxSourceView } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 
-export abstract class DatasetPartMapboxSourceComponent
-  extends DatasetLeaf
+export abstract class DatasetPartMapboxSourceComponent<T = any>
+  extends DatasetLeaf<T>
   implements IMapboxSourceView
 {
   override get type(): string {
@@ -23,7 +29,9 @@ export abstract class DatasetPartMapboxSourceComponent
   }
 }
 
-export class GeojsonSource extends DatasetPartMapboxSourceComponent {
+export class GeojsonSource extends DatasetPartMapboxSourceComponent<
+  GeoJSONSourceRaw['data']
+> {
   override getMapboxSource(): GeoJSONSourceRaw {
     return {
       type: 'geojson',
@@ -32,6 +40,19 @@ export class GeojsonSource extends DatasetPartMapboxSourceComponent {
         features: [],
       },
     };
+  }
+
+  updateData(
+    map: MapSimple,
+    data:
+      | GeoJSON.Feature<GeoJSON.Geometry>
+      | GeoJSON.FeatureCollection<GeoJSON.Geometry>
+      | string
+  ): void {
+    const source = map.getSource(this.id) as GeoJSONSource;
+    if (source) {
+      source.setData(data);
+    }
   }
 }
 

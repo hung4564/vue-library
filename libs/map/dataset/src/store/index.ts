@@ -100,3 +100,4 @@ export function getAllComponentsByType<T>(mapId: string, targetType: string) {
 }
 
 export * from './component';
+export * from './highlight';

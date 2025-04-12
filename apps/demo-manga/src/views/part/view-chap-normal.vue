@@ -15,7 +15,6 @@ import { setPageIndex } from '../store';
 import viewImage from './view-image.vue';
 defineProps<{ data: MangaChapter }>();
 function setPageCurrenIndex(page: number) {
-  console.log(page);
   setPageIndex(page);
 }
 </script>
