@@ -1,3 +1,13 @@
+## 0.1.0 (2025-04-13)
+
+### 🚀 Features
+
+- list, aside control ([93a607f](https://github.com/hung4564/vue-library/commit/93a607f))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.0.3 (2024-07-13)
 
 ### 🚀 Features
