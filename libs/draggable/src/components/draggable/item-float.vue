@@ -6,6 +6,7 @@ export default {
 <script setup lang="ts">
 import { computed, inject, ref, Ref, StyleValue } from 'vue';
 import {
+  useComponent,
   useContainerOrder,
   useExpand,
   useIcon,
@@ -17,8 +18,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import MapButton from '../MapButton.vue';
-import MapCard from '../MapCard.vue';
+import MapButton from '../parts/MapButton.vue';
 const { CloseIcon, ToBackIcon, ToFrontIcon, ExpandedIcon, CloseExpandedIcon } =
   useIcon();
 const props = defineProps({
@@ -55,7 +55,10 @@ const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
   itemId.value
 );
 const { expand, toggle: onToggleExpand } = useExpand(props, emit, true);
-const componentName = MapCard;
+const { componentCard, componentCardHeader } = useComponent({
+  ...props,
+  containerId: containerId.value,
+});
 function onClose() {
   show.value = false;
 }
@@ -101,18 +104,19 @@ const isAutoWidth = computed(() => {
     }"
     :style="c_style"
   >
-    <component :is="componentName">
+    <component :is="componentCard">
       <div class="draggable-float">
         <template v-if="!disabledHeader && headerLocation === 'top'">
-          <div class="draggable-float-heading">
-            <div class="draggable-float-heading__content">
-              <div class="draggable-float-heading__title">
-                <slot name="title">
-                  {{ title }}
-                </slot>
-              </div>
-              <div class="map-spacer"></div>
+          <component :is="componentCardHeader">
+            <template #title>
+              <slot name="title">
+                {{ title }}
+              </slot>
+            </template>
+
+            <template #extra-btn>
               <slot name="extra-btn"></slot>
+
               <map-button @click="onToggleExpand">
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
@@ -128,9 +132,8 @@ const isAutoWidth = computed(() => {
               <map-button v-if="!disabledClose" @click="onClose">
                 <CloseIcon :size="16" />
               </map-button>
-            </div>
-          </div>
-          <hr class="map-divider" />
+            </template>
+          </component>
         </template>
         <div
           class="draggable-float-content"
@@ -140,14 +143,14 @@ const isAutoWidth = computed(() => {
           <slot></slot>
         </div>
         <template v-if="!disabledHeader && headerLocation === 'bottom'">
-          <div class="draggable-float-heading">
-            <div class="draggable-float-heading__content">
-              <div class="draggable-float-heading__title">
-                <slot name="title">
-                  {{ title }}
-                </slot>
-              </div>
-              <div class="map-spacer"></div>
+          <component :is="componentCardHeader">
+            <template #title>
+              <slot name="title">
+                {{ title }}
+              </slot>
+            </template>
+
+            <template #extra-btn>
               <slot name="extra-btn"></slot>
               <map-button @click="onToggleExpand">
                 <ExpandedIcon v-if="expand" :size="16" />
@@ -164,9 +167,8 @@ const isAutoWidth = computed(() => {
               <map-button v-if="!disabledClose" @click="onClose">
                 <CloseIcon :size="16" />
               </map-button>
-            </div>
-          </div>
-          <hr class="map-divider" />
+            </template>
+          </component>
         </template>
       </div>
     </component>
@@ -187,43 +189,6 @@ const isAutoWidth = computed(() => {
   flex-direction: column;
   height: 100%;
   width: 100%;
-}
-
-.draggable-float-heading {
-  flex-grow: 0;
-  contain: layout;
-  display: block;
-  max-width: 100%;
-}
-
-.draggable-float-heading__content {
-  padding: 0 4px 0 8px;
-  align-items: center;
-  display: flex;
-  position: relative;
-  z-index: 0;
-  flex: 1 1 auto;
-}
-
-.draggable-float-heading__content .drag {
-  margin: 4px;
-}
-
-.draggable-float-heading,
-.draggable-float-heading__content {
-  height: 48px;
-}
-
-.draggable-float-heading :deep(.map-control-button) {
-  background-color: unset;
-}
-
-.draggable-float-heading__title {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .draggable-float-content {

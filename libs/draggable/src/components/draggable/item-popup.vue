@@ -4,23 +4,23 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { inject, ref, Ref, watch } from 'vue';
-import MapCard from '../MapCard.vue';
-import MapButton from '../MapButton.vue';
+import { computed, inject, ref, Ref, watch } from 'vue';
+import MapButton from '../parts/MapButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
 import {
-  useInit,
+  useComponent,
+  useContainerOrder,
+  useContainerSize,
   useExpand,
+  useIcon,
+  useInit,
   useShow,
   withExpandEmit,
   withExpandProps,
+  withShareProps,
   withShowEmit,
   withShowProps,
-  withShareProps,
-  useContainerSize,
-  useContainerOrder,
-  useIcon,
 } from '../../hook';
 const {
   CloseIcon,
@@ -74,7 +74,10 @@ function activateEv() {
 function deactivateEv() {
   isActive.value = false;
 }
-const componentName = MapCard;
+const { componentCard, componentCardHeader } = useComponent({
+  ...props,
+  containerId: containerId.value,
+});
 function onResize(x: number, y: number, width: number, height: number) {
   p_width.value = width;
   p_height.value = height;
@@ -142,21 +145,22 @@ function onDragging() {
     @deactivated="deactivateEv()"
     @dragging="onDragging"
   >
-    <component :is="componentName" :width="p_width" :height="p_height">
+    <component :is="componentCard" :width="p_width" :height="p_height">
       <div class="draggable-popup-desktop">
         <template v-if="!disabledHeader">
-          <div class="draggable-popup-desktop-heading">
-            <div class="draggable-popup-desktop-heading__content">
-              <div class="draggable-popup-desktop-heading__icon">
+          <component :is="componentCardHeader">
+            <template #title>
+              <slot name="title">
+                {{ title }}
+              </slot>
+            </template>
+            <template #pre-title>
+              <div class="draggable-popup-drag-container">
                 <DragIcon :size="16" />
                 <div class="drag grabbing"></div>
               </div>
-              <div class="draggable-popup-desktop-heading__title">
-                <slot name="title">
-                  {{ title }}
-                </slot>
-              </div>
-              <div class="map-spacer"></div>
+            </template>
+            <template #extra-btn>
               <slot name="extra-btn"></slot>
               <template v-if="isHasItems && !disabledOrder">
                 <map-button :disabled="isFirst" @click="onToBack()">
@@ -173,9 +177,8 @@ function onDragging() {
               <map-button v-if="!disabledClose" @click="onClose">
                 <CloseIcon :size="16" />
               </map-button>
-            </div>
-          </div>
-          <hr class="map-divider" />
+            </template>
+          </component>
         </template>
         <div v-show="expand" class="draggable-popup-desktop-content">
           <slot></slot>
@@ -194,12 +197,15 @@ function onDragging() {
 .draggable-popup-desktop .map-spacer {
   flex-grow: 1;
 }
+
 .draggable-popup-desktop .map-divider {
   flex-grow: 0;
 }
+
 .vdr {
   border: none;
 }
+
 .draggable-popup-desktop {
   display: flex;
   flex-direction: column;
@@ -208,43 +214,12 @@ function onDragging() {
   overflow: hidden;
 }
 
-.draggable-popup-desktop-heading {
-  flex-grow: 0;
-  contain: layout;
-  display: block;
-  max-width: 100%;
-}
-.draggable-popup-desktop-heading__content {
-  align-items: center;
-  display: flex;
-  position: relative;
-  z-index: 0;
-  flex: 1 1 auto;
-}
-
-.draggable-popup-desktop-heading,
-.draggable-popup-desktop-heading__content {
-  height: 48px;
-}
-
-.draggable-popup-desktop-heading :deep(.map-control-button) {
-  background-color: unset;
-}
-
-.draggable-popup-desktop-heading__title {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .draggable-popup-desktop-content {
   flex-grow: 1;
   overflow: auto;
 }
 
-.draggable-popup-desktop-heading__icon {
+.draggable-popup-drag-container {
   position: relative;
   height: 100%;
   display: flex;
@@ -252,14 +227,14 @@ function onDragging() {
   justify-content: center;
   width: 30px;
   flex-grow: 0;
+  flex: 0 0 30px;
 }
 
-.draggable-popup-desktop-heading__icon > .material-design-icon {
+.draggable-popup-drag-container > .material-design-icon {
   margin-top: 8px;
-  margin-left: 4px;
 }
 
-.draggable-popup-desktop-heading__icon .drag {
+.draggable-popup-drag-container .drag {
   position: absolute;
   top: 0;
   height: 100%;

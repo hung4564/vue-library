@@ -19,3 +19,7 @@ export const registerAction = store.actions.registerAction;
 
 export const setToFront = store.actions.setToFront;
 export const setToBack = store.actions.setToBack;
+export const setComponentCard = store.actions.setComponentCard;
+export const setComponentCardHeader = store.actions.setComponentCardHeader;
+export const setComponentCardSidebarToggle =
+  store.actions.setComponentCardSidebarToggle;

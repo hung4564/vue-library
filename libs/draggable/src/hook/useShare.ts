@@ -1,3 +1,5 @@
+import { withShareComponent } from './useComponent';
+
 export const withShareProps = {
   disabledExpand: Boolean,
   disabledHeader: Boolean,
@@ -8,4 +10,5 @@ export const withShareProps = {
     type: String,
     default: '',
   },
+  ...withShareComponent,
 };
