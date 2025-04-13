@@ -26,7 +26,7 @@ export default defineConfig({
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../../dist/libs/map-measurement',
+    outDir: '../../../dist/libs/map/measurement',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,

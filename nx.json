@@ -87,7 +87,6 @@
     },
     "changelog": {
       "projectChangelogs": {
-        "createRelease": "github",
         "renderOptions": {
           "authors": true,
           "mapAuthorsToGitHubUsernames": true,
@@ -97,6 +96,6 @@
       },
       "automaticFromRef": true
     },
-    "projects": ["libs/*"]
+    "projects": ["libs/share/*", "libs/ui/*", "libs/map/*", "libs/*"]
   }
 }
