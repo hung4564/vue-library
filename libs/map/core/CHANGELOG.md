@@ -1,3 +1,21 @@
+## 0.2.0 (2025-04-14)
+
+### 🚀 Features
+
+- add props show for MouseCoordinatesControl
+
+### 🩹 Fixes
+
+- build
+
+- build
+
+- event
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.0 (2025-04-13)
 
 ### 🚀 Features

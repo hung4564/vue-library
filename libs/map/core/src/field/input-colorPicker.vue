@@ -22,7 +22,7 @@ defineProps({
   disabled: Boolean,
 });
 const emit = defineEmits(['change']);
-function onSetValue({ hex }) {
+function onSetValue({ hex }: { hex: string }) {
   form.value = hex;
   emit('change', hex);
 }
