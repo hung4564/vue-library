@@ -1,6 +1,7 @@
 /// <reference types='vitest' />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import * as path from 'path';
+import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
@@ -9,6 +10,7 @@ export default defineConfig({
   cacheDir: '../../../node_modules/.vite/libs/map/dataset',
 
   plugins: [
+    vue(),
     nxViteTsPaths(),
     dts({
       entryRoot: 'src',
@@ -51,6 +53,13 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/content-menu',
       ],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
     },
   },
 });

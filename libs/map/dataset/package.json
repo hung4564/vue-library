@@ -1,6 +1,18 @@
 {
   "name": "@hungpvq/vue-map-dataset",
   "version": "0.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
   "dependencies": {},
   "main": "./index.js",
   "module": "./index.mjs",
