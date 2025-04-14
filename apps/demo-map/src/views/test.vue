@@ -29,6 +29,7 @@ import {
   IdentifyMapboxComponent,
   LayerControl,
   LayerHighlight,
+  LayerInfoControl,
   LayerSimpleMapboxBuild,
   MultiMapboxLayerComponent,
   RasterUrlSource,
@@ -213,6 +214,9 @@ function onMapLoaded(map: MapSimple) {
       },
     },
   ];
+  const group = { id: 'test', name: 'test' };
+  list1.group = group;
+  list2.group = group;
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
   groupLayer2.add(metadataForList2);
@@ -279,6 +283,11 @@ function onMapLoaded(map: MapSimple) {
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
     <ComponentManagementControl />
+    <LayerInfoControl show>
+      <template #endList="{ mapId }">
+        <BaseMapCard :mapId="mapId" />
+      </template>
+    </LayerInfoControl>
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">

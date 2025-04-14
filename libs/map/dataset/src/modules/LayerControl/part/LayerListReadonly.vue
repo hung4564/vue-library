@@ -9,7 +9,7 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
-import { nextTick, onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
 import {
   IDataset,
   IGroupListViewUI,
@@ -27,7 +27,6 @@ const props = defineProps({
   disabledDrag: Boolean,
   disabled: Boolean,
 });
-const emit = defineEmits(['click:create']);
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,
@@ -108,29 +107,17 @@ function updateList() {
     updateTree();
   });
 }
+const instance = getCurrentInstance();
 function updateTree() {
+  console.log(views.value);
   if (groupRef.value) groupRef.value.update(views.value);
+  instance?.proxy?.$forceUpdate();
 }
 function getViewFromStore() {
   views.value =
     getAllComponentsByType<IListViewUI>(mapId.value, 'list').sort(
       (a, b) => b.index - a.index
     ) || [];
-}
-function openAddLayer() {
-  emit('click:create');
-}
-function addNewGroup() {
-  if (groupRef.value) groupRef.value.addNewGroup('');
-}
-function onRemoveAllLayer() {
-  if (!views.value || views.value.length === 0) {
-    return;
-  }
-  views.value.forEach((view) => {
-    removeComponent(mapId.value, view);
-  });
-  updateList();
 }
 const contextMenuRef = ref<
   | {
@@ -181,12 +168,6 @@ function onLayerAction({
   <div class="layer-control-container">
     <div class="layer-control__header">
       <div class="v-spacer"></div>
-      <button class="layer-item__button" @click="addNewGroup()">
-        <SvgIcon size="16" type="mdi" :path="path.group.create" />
-      </button>
-      <button class="layer-item__button" @click="onRemoveAllLayer">
-        <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-      </button>
     </div>
     <div class="layer-control__list">
       <draggable-group-list
@@ -194,7 +175,7 @@ function onLayerAction({
         v-model:items="views"
         v-model:selected="layers_select"
         :disabled="disabled"
-        :disabledDrag="disabledDrag"
+        disabledDrag
         @click-drag:done="updateLayers()"
         @click-group:remove="onRemoveGroupLayer"
       >
@@ -215,7 +196,7 @@ function onLayerAction({
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
               :mapId="mapId"
-              :readonly="false"
+              readonly
             >
             </component>
           </slot>

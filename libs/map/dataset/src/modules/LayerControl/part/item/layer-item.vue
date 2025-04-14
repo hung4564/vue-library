@@ -50,6 +50,29 @@
         >
           <SvgIcon size="14" type="mdi" :path="path.menu" />
         </button>
+        <template v-if="!showBottom">
+          <template v-for="(menu, i) in extra_bottoms" :key="i">
+            <LayerMenu
+              class="layer-item__button"
+              :item="menu"
+              :data="item"
+              :disabled="loading"
+              :mapId="mapId"
+              @click="onLayerAction(menu)"
+            />
+          </template>
+          <button
+            class="layer-item__button"
+            @click.stop="onToggleLegend"
+            v-if="isHasLegend"
+          >
+            <SvgIcon
+              size="14"
+              type="mdi"
+              :path="legendShow ? path.legendClose : path.legendOpen"
+            />
+          </button>
+        </template>
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
@@ -109,7 +132,11 @@ import { IListViewUI, MenuAction } from '../../../../interfaces';
 import LayerItemIcon from './layer-item-icon.vue';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerMenu from './menu/index.vue';
-const props = defineProps<{ item: IListViewUI; mapId: string }>();
+const props = defineProps<{
+  item: IListViewUI;
+  mapId: string;
+  readonly: boolean;
+}>();
 const emit = defineEmits([
   'update:item',
   'click',
@@ -170,7 +197,10 @@ const content_menus = computed(() => {
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const showBottom = computed(() => {
-  return !props.item.config.disabled_opacity || extra_bottoms.value.length > 0;
+  return (
+    !props.readonly &&
+    (!props.item.config.disabled_opacity || extra_bottoms.value.length > 0)
+  );
 });
 function onLayerAction(action: MenuAction<IListViewUI>) {
   emit('click:action', { action, item: props.item });
