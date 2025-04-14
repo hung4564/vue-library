@@ -1,3 +1,41 @@
+## 0.3.0 (2025-04-14)
+
+### 🚀 Features
+
+- list, aside control
+
+- add props show for MouseCoordinatesControl
+
+- change locale
+
+- add custom locale function
+
+- **shared:** add new store
+
+### 🩹 Fixes
+
+- doc
+
+- build
+
+- build
+
+- event
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.2.0 (2025-04-14)
+
+### 🚀 Features
+
+- add props show for MouseCoordinatesControl
+
+### 🩹 Fixes
+
+- event
+
 ## 0.1.0 (2025-04-13)
 
 ### 🚀 Features
@@ -9,10 +47,6 @@
 ### 🩹 Fixes
 
 - doc ([6a97b81](https://github.com/hung4564/vue-library/commit/6a97b81))
-
-### ❤️ Thank You
-
-- hung.pv
 
 ## 0.0.2 (2024-06-17)
 

@@ -5,69 +5,98 @@ import { Event } from '../Event';
 type MapRangerHandle = {
   destroy: () => void;
 };
+
 export class EventBboxRanger extends Event<
   'click',
   EventBboxRangerOption,
   EventBboxRangerHandle
 > {
   protected map_ranger?: MapRangerHandle;
+  protected _originalHandlers: Record<string, boolean> = {};
+
   constructor() {
     super('click', 'map');
     this.setClassPointer('pointer');
   }
+
   setClassPointer(classPointer: string) {
     this.options.classPointer = classPointer;
   }
+
   override setHandler(handler: EventBboxRangerHandle) {
     this.handler = handler;
     return this;
   }
+
   override addToMap(map: MapSimple) {
     if (!this.handler) {
       return this;
     }
     if (this.options.classPointer)
       map.getCanvas().classList.add(this.options.classPointer);
-    map.dragPan.disable();
-    map.boxZoom.disable();
-    this.map_ranger = startBoxRangerMap(
-      map.getCanvasContainer() as HTMLCanvasElement,
-      this.handler
-    );
+
+    try {
+      // Store original handlers state
+      this._originalHandlers = {
+        scrollZoom: map.scrollZoom.isEnabled(),
+        dragRotate: map.dragRotate.isEnabled(),
+        touchZoomRotate: map.touchZoomRotate.isEnabled(),
+        doubleClickZoom: map.doubleClickZoom.isEnabled(),
+        dragPan: map.dragPan.isEnabled(),
+        boxZoom: map.boxZoom.isEnabled(),
+      };
+
+      // Disable map interactions
+      if (map.scrollZoom.isEnabled()) map.scrollZoom.disable();
+      if (map.dragRotate.isEnabled()) map.dragRotate.disable();
+      if (map.touchZoomRotate.isEnabled()) map.touchZoomRotate.disable();
+      if (map.doubleClickZoom.isEnabled()) map.doubleClickZoom.disable();
+      if (map.dragPan.isEnabled()) map.dragPan.disable();
+      if (map.boxZoom.isEnabled()) map.boxZoom.disable();
+
+      this.map_ranger = startBoxRangerMap(
+        map.getCanvasContainer() as HTMLCanvasElement,
+        this.handler
+      );
+    } catch (error) {
+      console.error('Error disabling map controls:', error);
+    }
     return this;
   }
+
   override removeFromMap(map: MapSimple) {
     if (this.options.classPointer)
       map.getCanvas().classList.remove(this.options.classPointer);
+
+    try {
+      // Re-enable map interactions based on original state
+      if (this._originalHandlers.scrollZoom !== false) map.scrollZoom.enable();
+      if (this._originalHandlers.dragRotate !== false) map.dragRotate.enable();
+      if (this._originalHandlers.touchZoomRotate !== false)
+        map.touchZoomRotate.enable();
+      if (this._originalHandlers.doubleClickZoom !== false)
+        map.doubleClickZoom.enable();
+      if (this._originalHandlers.dragPan !== false) map.dragPan.enable();
+      if (this._originalHandlers.boxZoom !== false) map.boxZoom.enable();
+    } catch (error) {
+      console.error('Error re-enabling map controls:', error);
+    }
+
     if (this.map_ranger) {
       this.map_ranger.destroy();
       this.map_ranger = undefined;
     }
-    map.dragPan.enable();
-    map.boxZoom.enable();
     return this;
   }
 }
+
 export function startBoxRangerMap(
   canvas: HTMLCanvasElement,
   cb_bbox: EventBboxRangerHandle | undefined
 ): MapRangerHandle {
-  let can_draw = true;
-  // Variable to hold the starting xy coordinates
-  // when `mousedown` occured.
   let start: Coordinates;
-
-  // Variable to hold the current xy coordinates
-  // when `mousemove` or `mouseup` occurs.
   let current: Coordinates;
-
-  // Variable for the draw box element.
   let box: HTMLDivElement | undefined;
-
-  // Set `true` to dispatch the event before other functions
-  // call it. This is necessary for disabling the default map
-  // dragging behaviour.
-  canvas.addEventListener('mousedown', mouseDown, true);
 
   // Return the xy coordinates of the mouse position
   function mousePos(e: any): Coordinates {
@@ -79,25 +108,24 @@ export function startBoxRangerMap(
   }
 
   function mouseDown(e: any) {
-    // // Continue the rest of the function if the shiftkey is pressed.
-    // if (!(e.shiftKey && e.button === 0)) return;
-    // Disable default drag zooming when the shift key is held down.
+    // Prevent default behavior
+    e.preventDefault();
+    e.stopPropagation();
 
-    // Call functions for the following events
+    start = mousePos(e);
+
+    // Add event listeners
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     document.addEventListener('keydown', onKeyDown);
-
-    // Capture the first xy coordinates
-    start = mousePos(e);
   }
 
   function onMouseMove(e: any) {
-    if (!can_draw) return;
-    // Capture the ongoing xy coordinates
+    e.preventDefault();
+    e.stopPropagation();
+
     current = mousePos(e);
 
-    // Append the box element if it doesnt exist
     if (!box) {
       box = document.createElement('div');
       box.classList.add('boxdraw');
@@ -109,44 +137,48 @@ export function startBoxRangerMap(
       minY = Math.min(start.y, current.y),
       maxY = Math.max(start.y, current.y);
 
-    // Adjust width and xy position of the box element ongoing
-    const pos = `translate(${minX}px, ${minY}px)`;
-    box.style.transform = pos;
+    box.style.transform = `translate(${minX}px, ${minY}px)`;
     box.style.width = maxX - minX + 'px';
     box.style.height = maxY - minY + 'px';
   }
 
   function onMouseUp(e: any) {
-    // Capture xy coordinates
+    e.preventDefault();
+    e.stopPropagation();
+
     finish([start, mousePos(e)]);
   }
 
   function onKeyDown(e: any) {
-    // If the ESC key is pressed
     if (e.keyCode === 27) finish();
   }
 
   function finish(bbox?: [Coordinates, Coordinates]) {
-    // Remove these events now that finish has been called.
+    // Clean up event listeners
     document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('keydown', onKeyDown);
     document.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('keydown', onKeyDown);
+
     if (box) {
       if (box.parentNode) box.parentNode.removeChild(box);
       box = undefined;
     }
-    // If bbox exists. use this value as the argument for `queryRenderedFeatures`
+
     if (bbox && cb_bbox) {
       cb_bbox(bbox);
     }
   }
+
   function destroy() {
-    // Remove these events now that finish has been called.
-    canvas.removeEventListener('mousedown', mouseDown);
-    can_draw = false;
+    canvas.removeEventListener('mousedown', mouseDown, true);
     cb_bbox = undefined;
     finish();
   }
+
+  // Add the initial mousedown listener
+  canvas.addEventListener('mousedown', mouseDown, true);
+  canvas.style.cursor = 'crosshair';
+
   return {
     destroy: destroy,
   };

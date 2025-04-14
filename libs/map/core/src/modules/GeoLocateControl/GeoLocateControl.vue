@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import { toValue, tryOnMounted, tryOnUnmounted } from '@hungpvq/shared';
+import { useGeolocation } from '@hungpvq/shared-core';
+import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, Marker } from 'mapbox-gl';
 import { computed, nextTick, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
-import type { MapSimple } from '@hungpvq/shared-map';
+import { useMap, withMapProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import { useGeolocation } from '@hungpvq/shared-core';
-import { tryOnMounted, tryOnUnmounted, toValue } from '@hungpvq/shared';
 const { coords, error, resume, pause } = useGeolocation({
   immediate: false,
 });
@@ -17,8 +17,8 @@ const props = defineProps({
   ...withMapProps,
 });
 const { mapId, callMap, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     action: {
       'geolocate-control-find-my-location': 'Find my location',

@@ -14,9 +14,9 @@ const props = defineProps({
   ...withMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocale({
+setLocaleDefault({
   map: {
     'crs-control': {
       title: 'Crs setting',

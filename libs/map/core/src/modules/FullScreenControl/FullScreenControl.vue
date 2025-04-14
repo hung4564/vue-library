@@ -4,8 +4,8 @@ import { useFullscreen } from '@hungpvq/shared-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
+import { useMap, withMapProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
   fullscreen: mdiFullscreen,
@@ -16,8 +16,8 @@ const props = defineProps({
   type: { type: String, default: 'body' },
 });
 const { callMap, mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     action: {
       'fullscreen-control-enter': 'Enter fullscreen',

@@ -11,6 +11,10 @@ import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const { getCrsItems, setCrs, getCrs, getCrsItem } = crsStore;
 const props = defineProps({
   ...withMapProps,
+  hideZoom: Boolean,
+  hideCrsSelect: Boolean,
+  hideScale: Boolean,
+  hideCoordinates: Boolean,
 });
 const path = {
   icon: mdiMapMarkerOutline,
@@ -93,6 +97,7 @@ function onZoomEnd() {
 }
 
 function updateScale(map: MapSimple, container: HTMLElement) {
+  if (props.hideScale) return;
   // A horizontal scale is imagined to be present at center of the map
   // container with maximum length (Default) as 100px.
   // Using spherical law of cosines approximation, the real distance is
@@ -144,7 +149,7 @@ function getRoundNum(num: number) {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <div class="button-container mouse-coordinates-container">
-        <div class="mouse-coordinates-part zoom-part">
+        <div class="mouse-coordinates-part zoom-part" v-if="!hideZoom">
           <div class="mouse-coordinates-zoom">
             <span title="Current Zoom" class="icon">
               <SvgIcon :size="16" type="mdi" :path="path.zoom" />
@@ -152,7 +157,10 @@ function getRoundNum(num: number) {
             <div style="margin-left: 4px">{{ currentZoom }}</div>
           </div>
         </div>
-        <div class="mouse-coordinates-part coordinates-part">
+        <div
+          class="mouse-coordinates-part coordinates-part"
+          v-if="!hideCoordinates"
+        >
           <div class="mouse-coordinates-point">
             <div
               style="margin-left: 4px"
@@ -175,7 +183,7 @@ function getRoundNum(num: number) {
             </i>
           </div>
         </div>
-        <div class="mouse-coordinates-part crs-part">
+        <div class="mouse-coordinates-part crs-part" v-if="!hideCrsSelect">
           <div class="mouse-coordinates-point">
             <select v-model="crs" class="crs-select" style="width: 70px">
               <option
@@ -188,7 +196,7 @@ function getRoundNum(num: number) {
             </select>
           </div>
         </div>
-        <div class="mouse-coordinates-part scale-part">
+        <div class="mouse-coordinates-part scale-part" v-if="!hideScale">
           <div ref="scale" class="scale-custom"></div>
         </div>
       </div>
@@ -325,5 +333,8 @@ function getRoundNum(num: number) {
   font-size: 14px;
   color: #333;
   padding: 4px;
+}
+.crs-select {
+  background-color: transparent;
 }
 </style>
