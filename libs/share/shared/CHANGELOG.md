@@ -1,3 +1,23 @@
+## 0.2.0 (2025-04-14)
+
+### 🚀 Features
+
+- list, aside control
+
+- editor io custom
+
+- **shared:** add new store
+
+### 🩹 Fixes
+
+- doc
+
+- build
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.1 (2025-04-14)
 
 ## 0.1.0 (2025-04-13)

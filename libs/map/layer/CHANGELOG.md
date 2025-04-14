@@ -1,3 +1,19 @@
+## 0.3.0 (2025-04-14)
+
+### 🚀 Features
+
+- list, aside control
+
+- change locale
+
+### 🩹 Fixes
+
+- build
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.2.0 (2025-04-14)
 
 ### 🚀 Features

@@ -1,3 +1,15 @@
+## 0.2.0 (2025-04-14)
+
+### 🚀 Features
+
+- add handle for card container
+
+- **shared:** add new store
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.0 (2025-04-13)
 
 ### 🚀 Features

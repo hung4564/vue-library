@@ -1,3 +1,31 @@
+## 0.3.0 (2025-04-14)
+
+### 🚀 Features
+
+- list, aside control
+
+- add props show for MouseCoordinatesControl
+
+- change locale
+
+- add custom locale function
+
+- **shared:** add new store
+
+### 🩹 Fixes
+
+- doc
+
+- build
+
+- build
+
+- event
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.2.0 (2025-04-14)
 
 ### 🚀 Features
