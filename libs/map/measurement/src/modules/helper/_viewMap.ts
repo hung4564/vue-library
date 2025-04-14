@@ -35,6 +35,12 @@ export class MapView extends View {
     if (this.onStart) {
       this.onStart();
     }
+    this.layers.forEach((layer) => {
+      const layerId = layer.id;
+      if (this.map.getLayer(layerId)) {
+        this.map.moveLayer(layerId);
+      }
+    });
   }
   reset() {
     const source = this.map.getSource(this.source.id);
