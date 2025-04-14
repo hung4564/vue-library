@@ -52,10 +52,7 @@ export function addStore<T = any>(
 }
 export function getStore<T = any>(mapId: string, key: string) {
   const store = actions.getMapStore(mapId);
-  if (!store) {
-    return;
-  }
-  return store[key] as T;
+  return (store?.[key] || {}) as T;
 }
 export const getMap = store.actions.getMap;
 
