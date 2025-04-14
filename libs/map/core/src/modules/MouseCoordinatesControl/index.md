@@ -11,6 +11,15 @@ package: vue-map
 
 <!--@include: ../ModuleContainer/props.md-->
 
+and
+
+| Prop              | Description | Type      | Required | Default Value |
+| ----------------- | ----------- | --------- | -------- | ------------- |
+| `hideCrsSelect`   |             | `boolean` | `false`  | false         |
+| `hideScale`       |             | `boolean` | `false`  | false         |
+| `hideCoordinates` |             | `boolean` | `false`  | false         |
+| `hideZoom`        |             | `boolean` | `false`  | false         |
+
 ## Events
 
 ## Slots
