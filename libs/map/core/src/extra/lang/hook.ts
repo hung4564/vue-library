@@ -1,5 +1,10 @@
 import { computed } from 'vue';
-import { getMapLang, setMapLang, setMapLocaleDefault } from './store';
+import {
+  getMapLang,
+  setMapLang,
+  setMapLocaleDefault,
+  setMapTranslate,
+} from './store';
 
 // Cache for storing resolved property values
 const propCache = new Map<string, any>();
@@ -7,17 +12,23 @@ const propCache = new Map<string, any>();
 export function useLang(mapId: string) {
   const storeLang = computed(() => getMapLang(mapId));
 
-  function transLocal(key: string) {
+  function transLocal(key: string, params?: Record<string, any>) {
+    // If custom translate function exists, use it
+    if (storeLang.value?.translate) {
+      return storeLang.value.translate(key, params);
+    }
+
+    // Otherwise use default translation logic
     // Try to get from map-specific locale first
     const fromLocale = getProp(storeLang.value?.locale, key);
     if (fromLocale !== undefined) {
-      return fromLocale;
+      return interpolate(fromLocale, params);
     }
 
     // If not found, try to get from default locale
     const fromDefault = getProp(storeLang.value?.localeDefault, key);
     if (fromDefault !== undefined) {
-      return fromDefault;
+      return interpolate(fromDefault, params);
     }
 
     // If still not found, return the key itself
@@ -31,11 +42,18 @@ export function useLang(mapId: string) {
   function setLocale(locale: any) {
     setMapLang(mapId, locale);
   }
+
   function setLocaleDefault(locale: any) {
     setMapLocaleDefault(mapId, locale);
   }
 
-  return { trans, setLocale, setLocaleDefault };
+  function setTranslate(
+    translate: (key: string, params?: Record<string, any>) => string
+  ) {
+    setMapTranslate(mapId, translate);
+  }
+
+  return { trans, setLocale, setLocaleDefault, setTranslate };
 }
 
 function getProp(object: any, path: string | string[], defaultVal?: string) {
@@ -66,4 +84,13 @@ function getProp(object: any, path: string | string[], defaultVal?: string) {
     propCache.set(cacheKey, result);
   }
   return result;
+}
+
+function interpolate(text: string, params?: Record<string, any>): string {
+  if (!params) return text;
+
+  return text.replace(/\{(\w+)\}/g, (match, key) => {
+    const value = params[key];
+    return value !== undefined ? String(value) : match;
+  });
 }

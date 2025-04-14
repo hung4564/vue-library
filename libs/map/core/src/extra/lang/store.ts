@@ -7,6 +7,7 @@ const KEY = 'lang';
 export type MapLocateStore = {
   locale: any;
   localeDefault: any;
+  translate?: (key: string, params?: Record<string, any>) => string;
 };
 
 function initMapLang(mapId: string) {
@@ -43,6 +44,16 @@ export function setMapLocaleDefault(
   const store = getMapLang(mapId);
   if (store) {
     store.localeDefault = merge({}, store.localeDefault, locale);
+  }
+}
+
+export function setMapTranslate(
+  mapId: string,
+  translate: (key: string, params?: Record<string, any>) => string
+) {
+  const store = getMapLang(mapId);
+  if (store) {
+    store.translate = translate;
   }
 }
 
