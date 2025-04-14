@@ -17,6 +17,8 @@ import {
   addDataset,
   ComponentManagementControl,
   createDataset,
+  createLegend,
+  createMultiLegend,
   DataManagementMapboxComponent,
   DatasetComposite,
   DatasetPartListViewUiComponent,
@@ -85,6 +87,23 @@ function onMapLoaded(map: MapSimple) {
   const list1 = new DatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.opacity = 0.5;
+  list1.legend = createMultiLegend([
+    {
+      type: 'text',
+      value: { text: 'text-test', value: 'test-value' },
+    },
+    {
+      type: 'linear',
+      value: {
+        text: 'legend linear',
+        items: [
+          { value: 'test 1', color: '#fff' },
+          { value: 'test 2', color: '#000' },
+          { value: 'test 3', color: 'red' },
+        ],
+      },
+    },
+  ]);
   const layer1 = new MultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
       .setStyleType('area')
@@ -102,6 +121,7 @@ function onMapLoaded(map: MapSimple) {
   const list2 = new DatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
   list2.opacity = 0.5;
+  list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
   const layer2 = new MultiMapboxLayerComponent('layer point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')

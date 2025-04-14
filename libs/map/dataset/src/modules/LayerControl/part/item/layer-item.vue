@@ -72,9 +72,22 @@
           @click="onLayerAction(menu)"
         />
       </template>
+      <button
+        class="layer-item__button"
+        @click.stop="onToggleLegend"
+        v-if="isHasLegend"
+      >
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="legendShow ? path.legendClose : path.legendOpen"
+        />
+      </button>
     </div>
 
-    <div :id="bottomLayerItem" />
+    <div v-if="props.item.legend && legendShow">
+      <component :is="props.item.legend()"></component>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -135,9 +148,6 @@ const onToggleShow = () => {
   item.show = !item.show;
   emit('update:item', item);
 };
-const bottomLayerItem = computed(() => {
-  return `layer-item-${props.item.id}-bottom`;
-});
 const button_menus = computed<MenuAction<IListViewUI>[]>(() => {
   if (!props.item) {
     return [];
@@ -171,6 +181,12 @@ function handleContextClick(event: MouseEvent) {
     actions: content_menus.value,
     item: props.item,
   });
+}
+
+const isHasLegend = computed(() => props.item && props.item.legend);
+const legendShow = ref(false);
+function onToggleLegend() {
+  legendShow.value = !legendShow.value;
 }
 </script>
 

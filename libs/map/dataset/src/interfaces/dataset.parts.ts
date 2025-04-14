@@ -70,6 +70,7 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
     index: number;
     group?: IGroupListViewUI<IListViewUI>;
     show?: boolean;
+    legend?: () => any;
   };
 
 export type IMapboxSourceView = IDatasetMap & {

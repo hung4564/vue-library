@@ -3,3 +3,4 @@ export { default as IdentifyControl } from './IdentifyControl/IdentifyControl.vu
 export { default as LayerControl } from './LayerControl/LayerControl.vue';
 export { default as LayerDetail } from './LayerDetail/LayerDetail.vue';
 export { default as LayerHighlight } from './LayerHighlight/LayerHighlight.vue';
+export { createLegend, createMultiLegend } from './Legend';

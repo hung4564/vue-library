@@ -26,4 +26,5 @@ export class DatasetPartListViewUiComponent
   index = 0;
   group?: IGroupListViewUI<IListViewUI>;
   show = true;
+  legend?: () => any;
 }
