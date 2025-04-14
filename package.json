@@ -17,6 +17,7 @@
     "ts-check": "nx run-many --target ts-check --all",
     "lint": "nx run-many --target lint --all",
     "build": "nx run-many --target build --all",
+    "release-publish": "nx run-many --target nx-release-publish --all",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
