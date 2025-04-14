@@ -28,6 +28,6 @@
     "@hungpvq/content-menu": ">=0.0.1",
     "@turf/turf": "^6.5.0",
     "mapbox-gl": ">=1.13.0",
-    "@hungpvq/shared-integrations": ">=0.0.1"
+    "vuedraggable": "^4.1.0"
   }
 }

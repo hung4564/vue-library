@@ -1,7 +1,7 @@
 /// <reference types='vitest' />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import * as path from 'path';
 import vue from '@vitejs/plugin-vue';
+import * as path from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
@@ -48,10 +48,10 @@ export default defineConfig({
         '@hungpvq/shared-map',
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
-        '@hungpvq/shared-integrations',
         '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/content-menu',
+        'vuedraggable',
       ],
       output: {
         // Provide global variables to use in the UMD build

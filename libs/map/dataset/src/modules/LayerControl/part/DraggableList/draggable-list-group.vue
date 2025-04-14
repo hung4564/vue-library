@@ -36,39 +36,18 @@
         _show: isGroupShow,
       }"
     >
-      <div
-        v-if="!p_children || p_children.length < 1"
-        class="draggable-group__nodata"
-      >
-        Drag layer inside this group
-      </div>
-      <div class="draggable-group__children" ref="child">
+      <slot :group="layerGroup" name="item">
         <div
-          class="draggable__item"
-          v-for="element in p_children"
-          :key="element.id"
-          :data-id="element.id"
+          v-if="!p_children || p_children.length < 1"
+          class="draggable-group__nodata"
         >
-          <DraggableListItem
-            :disabledDrag="disabledDrag"
-            :isSelected="selected.includes(element.id)"
-            :item="element"
-          >
-            <slot
-              :group="layerGroup"
-              :isSelected="selected.includes(element.id)"
-              :item="element"
-              name="item"
-              :toggleSelect="toggleSelect"
-            ></slot>
-          </DraggableListItem>
+          Drag layer inside this group
         </div>
-      </div>
+      </slot>
     </div>
   </DraggableListItem>
 </template>
 <script setup lang="ts">
-import { useStoreSortable } from '@hungpvq/shared-integrations';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiChevronDown,
@@ -78,7 +57,7 @@ import {
   mdiEyeOff,
   mdiUngroup,
 } from '@mdi/js';
-import { nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import DraggableListItem from './draggable-list-item.vue';
 const props = defineProps({
   layerGroup: { type: Object, required: true },
@@ -86,7 +65,6 @@ const props = defineProps({
   disabledSelect: Boolean,
   disabledDrag: Boolean,
   checkItemCanPutInChildren: { type: Function },
-  currentItemDrag: { type: Object },
   readonly: Boolean,
 });
 const emit = defineEmits([
@@ -95,11 +73,7 @@ const emit = defineEmits([
   'click:select',
   'drag-done',
   'update:layer-group',
-  'update:currentItemDrag',
 ]);
-function toggleSelect() {
-  emit('click:select');
-}
 const path = {
   group: {
     open: mdiChevronUp,
@@ -119,43 +93,6 @@ function deleteGroup() {
 }
 function unGroup() {
   emit('click:un-group');
-}
-const child = ref<HTMLElement | null>(null);
-const p_children = ref<any[]>(props.layerGroup['children'].slice());
-useStoreSortable(
-  child,
-  {
-    get() {
-      return p_children.value;
-    },
-    set(value) {
-      p_children.value = value;
-      onEnd();
-    },
-  },
-  {
-    handle: '.draggable-handle',
-    group: {
-      name: 'layers',
-      pull: true,
-      put: props.checkItemCanPutInChildren as any,
-    },
-    onChoose(e) {
-      emit(
-        'update:currentItemDrag',
-        e.oldIndex != null ? p_children.value[e.oldIndex] : undefined
-      );
-    },
-  }
-);
-function onEnd() {
-  nextTick(() => {
-    emit('update:layer-group', {
-      ...props.layerGroup,
-      children: p_children.value,
-    });
-    emit('drag-done');
-  });
 }
 </script>
 <style scoped>
