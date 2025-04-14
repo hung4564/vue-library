@@ -35,7 +35,7 @@
         </button>
         <button
           class="layer-item__button"
-          v-if="!item.config.disable_delete"
+          v-if="!item.config.disable_delete && !props.readonly"
           :disabled="loading"
           @click.stop="onRemove"
         >

@@ -20,7 +20,7 @@ import {
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
 import { getAllComponentsByType, removeComponent } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
-import DraggableGroupList from './DraggableList/draggable-list.vue';
+import DraggableGroupList from './DraggableList/draggable-list-readonly.vue';
 import LayerItem from './item/layer-item.vue';
 const props = defineProps({
   ...withMapProps,

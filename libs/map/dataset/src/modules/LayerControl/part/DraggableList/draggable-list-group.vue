@@ -5,13 +5,17 @@
         {{ layerGroup.name }}
       </span>
       <div class="draggable-group__action">
-        <template v-if="layerGroup.children && layerGroup.children.length > 0">
+        <template
+          v-if="
+            !readonly && layerGroup.children && layerGroup.children.length > 0
+          "
+        >
           <span @click="unGroup()">
             <SvgIcon size="14" type="mdi" :path="path.group.unGroup" />
           </span>
         </template>
 
-        <span @click="deleteGroup()">
+        <span @click="deleteGroup()" v-if="!readonly">
           <SvgIcon size="14" type="mdi" :path="path.group.delete" />
         </span>
         <span @click="toggleShowChildrenGroup()">
@@ -28,7 +32,8 @@
     <div v-if="isGroupShow" class="draggable-group__divider"></div>
     <div
       :class="{
-        'draggable-group__children-container': isGroupShow,
+        'draggable-group__children-container': true,
+        _show: isGroupShow,
       }"
     >
       <div
@@ -82,6 +87,7 @@ const props = defineProps({
   disabledDrag: Boolean,
   checkItemCanPutInChildren: { type: Function },
   currentItemDrag: { type: Object },
+  readonly: Boolean,
 });
 const emit = defineEmits([
   'click:delete',
@@ -190,6 +196,10 @@ function onEnd() {
 }
 .draggable-group__children-container {
   position: relative;
+  display: none;
+}
+.draggable-group__children-container._show {
+  display: block;
 }
 .draggable-group__nodata {
   position: absolute;
