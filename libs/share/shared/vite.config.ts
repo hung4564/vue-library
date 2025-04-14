@@ -7,7 +7,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/shared',
+  cacheDir: '../../../node_modules/.vite/libs/shared/shared',
 
   plugins: [
     vue(),
@@ -26,7 +26,7 @@ export default defineConfig({
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../../dist/libs/shared',
+    outDir: '../../../dist/libs/share/shared',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

@@ -3,10 +3,22 @@ import { reactive } from 'vue';
 import { ContainerStore, ContainerStoreAction } from '../types';
 
 const store = createStore('drag', {
-  state: reactive<{ container: Record<string, ContainerStore> }>({
-    container: {},
-  }),
+  state: {
+    container: reactive<Record<string, ContainerStore>>({}),
+    componentCard: undefined,
+    componentCardHeader: undefined,
+    componentCardSidebarToggle: undefined,
+  },
   getters: {
+    getComponentCard(containerId: string) {
+      return store.state.componentCard;
+    },
+    getComponentCardHeader(containerId: string) {
+      return store.state.componentCardHeader;
+    },
+    getComponentCardSidebarToggle(containerId: string) {
+      return store.state.componentCardSidebarToggle;
+    },
     getItems(containerId: string) {
       const container = store.actions.getContainer(containerId);
       return container.items;
@@ -51,6 +63,15 @@ const store = createStore('drag', {
         throw 'Not found container for id ' + id;
       }
       return container;
+    },
+    setComponentCard(componentCard: any) {
+      store.state.componentCard = componentCard;
+    },
+    setComponentCardHeader(componentCardHeader: any) {
+      store.state.componentCardHeader = componentCardHeader;
+    },
+    setComponentCardSidebarToggle(componentCardSidebarToggle: any) {
+      store.state.componentCardSidebarToggle = componentCardSidebarToggle;
     },
     setParentProps(
       containerId: string,

@@ -81,11 +81,13 @@
     "projectsRelationship": "independent",
     "version": {
       "preVersionCommand": "npx nx run-many -t build",
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "fallbackCurrentVersionResolver": "disk"
+      }
     },
     "changelog": {
       "projectChangelogs": {
-        "createRelease": "github",
         "renderOptions": {
           "authors": true,
           "mapAuthorsToGitHubUsernames": true,
@@ -95,6 +97,6 @@
       },
       "automaticFromRef": true
     },
-    "projects": ["libs/*"]
+    "projects": ["libs/share/*", "libs/ui/*", "libs/map/*", "libs/*"]
   }
 }

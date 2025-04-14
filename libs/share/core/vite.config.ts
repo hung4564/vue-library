@@ -20,9 +20,7 @@ export default defineConfig({
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
     copy({
-      targets: [
-        { src: 'package.json', dest: '../../../dist/libs/shared-core' },
-      ],
+      targets: [{ src: 'package.json', dest: '../../../dist/libs/share/core' }],
       hook: 'writeBundle',
     }),
   ],
@@ -35,7 +33,7 @@ export default defineConfig({
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../../dist/libs/shared-core',
+    outDir: '../../../dist/libs/share/core',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

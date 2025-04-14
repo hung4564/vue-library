@@ -5,20 +5,20 @@ export default {
 </script>
 <script setup lang="ts">
 import { computed, inject, ref, Ref, StyleValue } from 'vue';
-import MapCard from '../MapCard.vue';
-import MapButton from '../MapButton.vue';
 import {
-  useInit,
+  useComponent,
+  useContainerOrder,
   useExpand,
+  useIcon,
+  useInit,
   useShow,
   withExpandEmit,
   withExpandProps,
+  withShareProps,
   withShowEmit,
   withShowProps,
-  withShareProps,
-  useIcon,
-  useContainerOrder,
 } from '../../hook';
+import MapButton from '../parts/MapButton.vue';
 const { CloseIcon, ToBackIcon, FullscreenIcon, OffFullscreenIcon } = useIcon();
 const props = defineProps({
   ...withShowProps,
@@ -40,7 +40,10 @@ const { isFirst, isHasItems, onToBack } = useContainerOrder(
   itemId.value
 );
 const { expand, toggle: onToggleExpand } = useExpand(props, emit, false);
-const componentName = MapCard;
+const { componentCard, componentCardHeader } = useComponent({
+  ...props,
+  containerId: containerId.value,
+});
 function onClose() {
   show.value = false;
 }
@@ -53,34 +56,34 @@ const c_style = computed(() => {
 </script>
 <template>
   <div v-if="show" class="popup-mobile-container" :style="c_style">
-    <component :is="componentName">
+    <component :is="componentCard">
       <div class="draggable-bottom">
         <template v-if="!disabledHeader">
-          <div class="draggable-bottom-heading">
-            <div class="draggable-bottom-heading__title">
+          <component :is="componentCardHeader">
+            <template #title>
               <slot name="title">
                 {{ title }}
               </slot>
-            </div>
-            <div class="draggable-bottom-heading__content"></div>
-            <div class="map-spacer"></div>
-            <slot name="extra-btn"></slot>
-
-            <template v-if="isHasItems && !disabledOrder">
-              <map-button :disabled="isFirst" @click.prevent.stop="onToBack()">
-                <ToBackIcon :size="16" />
+            </template>
+            <template #extra-btn>
+              <slot name="extra-btn"></slot>
+              <template v-if="isHasItems && !disabledOrder">
+                <map-button
+                  :disabled="isFirst"
+                  @click.prevent.stop="onToBack()"
+                >
+                  <ToBackIcon :size="16" />
+                </map-button>
+              </template>
+              <map-button @click="onToggleExpand()">
+                <FullscreenIcon :size="16" v-if="expand" />
+                <OffFullscreenIcon :size="16" v-else />
+              </map-button>
+              <map-button v-if="!disabledClose" @click="onClose">
+                <CloseIcon :size="16" />
               </map-button>
             </template>
-            <map-button @click="onToggleExpand()">
-              <FullscreenIcon :size="16" v-if="expand" />
-              <OffFullscreenIcon :size="16" v-else />
-            </map-button>
-            <map-button v-if="!disabledClose" @click="onClose">
-              <CloseIcon :size="16" />
-            </map-button>
-          </div>
-
-          <hr class="map-divider" />
+          </component>
         </template>
         <div class="draggable-bottom-content">
           <slot></slot>
@@ -108,39 +111,6 @@ const c_style = computed(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.draggable-bottom-heading {
-  align-items: center;
-  display: flex;
-  position: relative;
-  z-index: 0;
-  flex-grow: 0;
-  max-width: 100%;
-  padding: 0 8px;
-}
-
-.draggable-bottom-heading__content {
-  contain: layout;
-  display: block;
-  flex: 1 1 auto;
-}
-
-.draggable-bottom-heading,
-.draggable-bottom-heading__content {
-  height: 48px;
-}
-
-.draggable-bottom-heading :deep(.map-control-button) {
-  background-color: unset;
-}
-
-.draggable-bottom-heading__title {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .draggable-bottom-content {

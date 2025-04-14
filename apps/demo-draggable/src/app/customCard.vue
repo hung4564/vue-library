@@ -30,27 +30,30 @@ export default {
 
 <style lang="scss">
 .card {
-  background-color: rgba(32, 43, 54, 0.9);
-  color: #fff;
+  background-color: #fff;
+  color: rgb(32, 43, 54);
   button {
-    color: #fff;
+    color: rgb(32, 43, 54);
   }
 
   position: relative;
   border: none;
+  overflow: auto;
+  padding-right: 1px;
 
   &:before,
   &:after {
     content: '';
     position: absolute;
+    z-index: 1;
   }
   &:not(.border-0):before {
     left: 15px;
     right: 15px;
     top: 0;
     bottom: 0;
-    border-top: 1px solid #fff;
-    border-bottom: 1px solid #fff;
+    border-top: 1px solid rgb(32, 43, 54);
+    border-bottom: 1px solid rgb(32, 43, 54);
     opacity: 0.3;
     background: transparent;
   }
@@ -59,8 +62,8 @@ export default {
     bottom: 15px;
     left: 0;
     right: 0;
-    border-left: 1px solid #fff;
-    border-right: 1px solid #fff;
+    border-left: 1px solid rgb(32, 43, 54);
+    border-right: 1px solid rgb(32, 43, 54);
     opacity: 0.3;
     background: transparent;
   }
@@ -83,6 +86,7 @@ export default {
   & .card-arrow-top-right,
   & .card-arrow-bottom-left,
   & .card-arrow-bottom-right {
+    z-index: 11;
     width: 10px;
     height: 10px;
     position: absolute;
@@ -92,7 +96,7 @@ export default {
       position: absolute;
       width: 2px;
       height: 8px;
-      background: #fff;
+      background: rgb(32, 43, 54);
       opacity: 0.75;
     }
     &:after {
@@ -100,7 +104,7 @@ export default {
       position: absolute;
       width: 10px;
       height: 2px;
-      background: #fff;
+      background: rgb(32, 43, 54);
       opacity: 0.75;
     }
   }
@@ -143,6 +147,13 @@ export default {
     &:after {
       right: 0;
     }
+  }
+  &::before,
+  &::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: currentColor;
   }
 }
 

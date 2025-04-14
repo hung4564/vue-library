@@ -5,20 +5,22 @@ export default {
 </script>
 <script setup lang="ts">
 import { computed, inject, ref, Ref, StyleValue } from 'vue';
-import MapCard from '../MapCard.vue';
-import MapButton from '../MapButton.vue';
 import {
-  useInit,
+  useComponent,
+  useContainerOrder,
   useExpand,
+  useIcon,
+  useInit,
   useShow,
   withExpandEmit,
   withExpandProps,
+  withShareProps,
   withShowEmit,
   withShowProps,
-  withShareProps,
-  useIcon,
-  useContainerOrder,
 } from '../../hook';
+import { store } from '../../store/store';
+import MapButton from '../parts/MapButton.vue';
+import MapSidebarToggle from '../parts/MapSidebarToggle.vue';
 const {
   CloseIcon,
   SidebarLeftExpandedIcon,
@@ -32,6 +34,7 @@ const props = defineProps({
   ...withShowProps,
   ...withExpandProps,
   ...withShareProps,
+  componentMapSidebarToggle: { type: [String, Object] },
   width: { type: [Number, String], default: 'auto' },
   right: Boolean,
 });
@@ -53,7 +56,16 @@ const { expand, toggle: onToggleExpand } = useExpand(props, emit, true);
 const isAutoWidth = computed(() => {
   return !props.width || props.width == 'auto';
 });
-const componentName = MapCard;
+const { componentCard, componentCardHeader } = useComponent({
+  ...props,
+  containerId: containerId.value,
+});
+const componentMapSidebarToggle = computed(
+  () =>
+    store.getters.getComponentCardSidebarToggle(containerId.value) ||
+    props.componentMapSidebarToggle ||
+    MapSidebarToggle
+);
 function onClose() {
   show.value = false;
 }
@@ -83,19 +95,17 @@ const c_style = computed(() => {
     :style="c_style"
   >
     <div class="sidebar-container--content">
-      <component :is="componentName" width="100%" height="100%">
+      <component :is="componentCard" width="100%" height="100%">
         <div class="draggable-sidebar">
           <template v-if="!disabledHeader">
-            <div class="draggable-sidebar-heading">
-              <div class="draggable-sidebar-heading__content">
-                <div class="draggable-sidebar-heading__title">
-                  <slot name="title">
-                    {{ title }}
-                  </slot>
-                </div>
-                <div class="map-spacer"></div>
+            <component :is="componentCardHeader">
+              <template #title>
+                <slot name="title">
+                  {{ title }}
+                </slot>
+              </template>
+              <template #extra-btn>
                 <slot name="extra-btn"></slot>
-
                 <template v-if="isHasItems && !disabledOrder">
                   <map-button :disabled="isFirst" @click="onToBack()">
                     <ToBackIcon :size="16" />
@@ -107,9 +117,8 @@ const c_style = computed(() => {
                 <map-button v-if="!disabledClose" @click="onClose">
                   <CloseIcon :size="16" />
                 </map-button>
-              </div>
-            </div>
-            <hr class="map-divider" />
+              </template>
+            </component>
           </template>
           <div class="draggable-sidebar-content">
             <slot></slot>
@@ -142,43 +151,6 @@ const c_style = computed(() => {
   flex-direction: column;
   height: 100%;
   width: 100%;
-}
-
-.draggable-sidebar-heading {
-  flex-grow: 0;
-  contain: layout;
-  display: block;
-  max-width: 100%;
-}
-
-.draggable-sidebar-heading__content {
-  padding: 0 4px 0 8px;
-  align-items: center;
-  display: flex;
-  position: relative;
-  z-index: 0;
-  flex: 1 1 auto;
-}
-
-.draggable-sidebar-heading__content .drag {
-  margin: 4px;
-}
-
-.draggable-sidebar-heading,
-.draggable-sidebar-heading__content {
-  height: 48px;
-}
-
-.draggable-sidebar-heading :deep(.map-control-button) {
-  background-color: unset;
-}
-
-.draggable-sidebar-heading__title {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .draggable-sidebar-content {
@@ -325,11 +297,6 @@ const c_style = computed(() => {
       right: 0;
       transform: translateY(-50%);
     }
-  }
-}
-.draggable-sidebar-heading {
-  button {
-    color: #fff;
   }
 }
 </style>

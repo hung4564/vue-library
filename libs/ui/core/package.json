@@ -1,13 +1,17 @@
 {
   "name": "@hungpvq/ui-core",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
-    ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
-    },
     ".": {
       "import": "./index.mjs",
       "require": "./index.js"
