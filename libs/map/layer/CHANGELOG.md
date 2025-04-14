@@ -1,3 +1,17 @@
+## 0.2.0 (2025-04-14)
+
+### 🚀 Features
+
+- change locale
+
+### 🩹 Fixes
+
+- build
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.1 (2025-04-14)
 
 ### 🩹 Fixes
