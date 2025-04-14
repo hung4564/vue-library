@@ -21,8 +21,8 @@ const path = {
   save: mdiContentSaveOutline,
 };
 const { callMap, mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     print: {
       title: 'Print',

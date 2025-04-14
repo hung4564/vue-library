@@ -82,6 +82,7 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
+import { CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
 import {
   EventClick,
   MapControlButton,
@@ -124,7 +125,6 @@ import { FormView } from './helper/_viewForm';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import { IViewSettingField } from './types';
-import { CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
 const { getCrsItems } = crsStore;
 const { addImage } = imageStore;
 let handler = MeasurementHandle();
@@ -155,8 +155,8 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onInit,
   onDestroy
 );
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     measurement: {
       action: {

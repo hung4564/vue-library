@@ -47,8 +47,8 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
+import { useMap, withMapProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
   plus: mdiPlus,
@@ -65,8 +65,8 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onInit,
   onDestroy
 );
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     action: {
       'navigation-control-zoom-in': 'Zoom in',

@@ -4,18 +4,18 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
+import { useLang } from '../../extra';
 import { BaseButton, InputText } from '../../field';
 import { useMap, useShow, withMapProps } from '../../hooks';
-import { useLang } from '../../extra';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = defineProps({
   ...withMapProps,
 });
 const [show, setShow] = useShow(false);
 const { callMap, mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocale({
+setLocaleDefault({
   map: {
     'setting-control': {
       title: 'Setting',

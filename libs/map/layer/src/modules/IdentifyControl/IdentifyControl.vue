@@ -28,9 +28,9 @@ const props = defineProps({
   ...withMapProps,
 });
 const { mapId, moduleContainerProps, callMap } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
-setLocale({
+setLocaleDefault({
   map: {
     identify: {
       title: 'Identify',

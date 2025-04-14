@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useMap, withMapProps } from '../../hooks';
 import { useLang } from '../../extra';
-import type { MapSimple } from '@hungpvq/shared-map';
+import { useMap, withMapProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = defineProps({
   ...withMapProps,
@@ -19,8 +19,8 @@ const i_center = ref({
 const i_zoom = ref(props.zoom || 0);
 
 const { callMap, mapId, moduleContainerProps } = useMap(props, onInit);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     home: {
       title: 'Default view',

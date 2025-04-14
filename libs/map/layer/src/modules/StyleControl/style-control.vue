@@ -11,18 +11,18 @@ import {
 } from '@hungpvq/vue-map-core';
 import { getLayerFromView } from '../../helper';
 
+import { MapSimple } from '@hungpvq/shared-map';
 import enLang from './lang/style-control.json';
 import circleStyleLang from './lang/style/circle-style.json';
 import fillStyleLang from './lang/style/fill-style.json';
 import lineStyleLang from './lang/style/line-style.json';
 import rasterStyleLang from './lang/style/raster-style.json';
 import symbolStyleLang from './lang/style/symbol-style.json';
-import { MapSimple } from '@hungpvq/shared-map';
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: ILayerMapView; option: any }>();
 const { mapId, callMap } = useMap();
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: { 'style-control': enLang },
   'circle-style': circleStyleLang,
   'line-style': lineStyleLang,

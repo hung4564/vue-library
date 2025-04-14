@@ -4,19 +4,19 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
+import { CrsItem, crsStore } from '../../extra/crs';
+import { useLang } from '../../extra/lang';
 import { Collapse, InputSelect, InputText } from '../../field';
 import { useMap, useShow, withMapProps } from '../../hooks';
-import { CrsItem, crsStore } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import { useLang } from '../../extra/lang';
 const { getCrsItems, setCrsItems } = crsStore;
 const props = defineProps({
   ...withMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocale({
+setLocaleDefault({
   map: {
     'crs-control': {
       title: 'Crs setting',

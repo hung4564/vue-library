@@ -112,7 +112,7 @@ const props = defineProps({
   },
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -134,7 +134,7 @@ watch(
   },
   { immediate: true }
 );
-setLocale({
+setLocaleDefault({
   map: {
     basemap: {
       title: 'Map basemap',
