@@ -5,3 +5,6 @@ export { default as LayerInfoControl } from './LayerControl/LayerInfoControl.vue
 export { default as LayerDetail } from './LayerDetail/LayerDetail.vue';
 export { default as LayerHighlight } from './LayerHighlight/LayerHighlight.vue';
 export { createLegend, createMultiLegend } from './Legend';
+export { default as ListGroupItem } from './List/ListGroupItem.vue';
+export { default as ListItem } from './List/ListItem.vue';
+export { default as RecursiveList } from './List/RecursiveList.vue';

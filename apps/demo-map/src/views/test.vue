@@ -283,11 +283,11 @@ function onMapLoaded(map: MapSimple) {
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
     <ComponentManagementControl />
-    <!-- <LayerInfoControl show>
+    <LayerInfoControl show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
-    </LayerInfoControl> -->
+    </LayerInfoControl>
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">

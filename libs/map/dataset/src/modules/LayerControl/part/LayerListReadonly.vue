@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -12,17 +13,17 @@ import {
 import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
 import type {
   IDataset,
-  IGroupListViewUI,
   IListViewUI,
   IMapboxLayerView,
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import { getAllComponentsByType, removeComponent } from '../../../store';
+import { getAllComponentsByType } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
-import DraggableGroupList from './DraggableList/draggable-list-readonly.vue';
+import { convertListToTree, Group, Item, TreeItem } from '../../../utils/tree';
+import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';
-import type { MapSimple } from '@hungpvq/shared-map';
+
 const props = defineProps({
   ...withMapProps,
   disabledDrag: Boolean,
@@ -40,44 +41,6 @@ const views = ref<Array<IListViewUI>>([]);
 onMounted(() => {
   updateList();
 });
-const groupRef = ref<
-  | {
-      addNewGroup(name: string): void;
-      update(items: any[]): void;
-    }
-  | undefined
->(undefined);
-const layers_select = ref<IListViewUI[]>([]);
-function updateLayers() {
-  callMap((map: MapSimple) => {
-    let beforeId: string = '';
-    views.value.slice().forEach((view, index) => {
-      view.index = index;
-      applyToAllLeaves(view.getParent() as IDataset, [
-        (leaf) => {
-          if (isMapboxLayerView(leaf)) {
-            leaf.moveLayer(map, beforeId);
-            beforeId = leaf.getBeforeId();
-          }
-        },
-      ]);
-    });
-  });
-}
-function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
-  if (!group) {
-    return;
-  }
-  if (typeof group == 'string') {
-    return;
-  }
-  if (!group || !group.children || group.children.length === 0) {
-    return;
-  }
-  group.children.forEach((view: IListViewUI) => {
-    removeComponent(mapId.value, view);
-  });
-}
 function onUpdateLayer(view: IListViewUI) {
   callMap((map: MapSimple) => {
     runAllComponentsWithCheck(
@@ -97,20 +60,18 @@ function onUpdateLayer(view: IListViewUI) {
     );
   });
 }
-function onRemoveLayer(view: IListViewUI) {
-  if (!view) return;
-  removeComponent(mapId.value, view);
-  updateList();
-}
 function updateList() {
   getViewFromStore();
   nextTick(() => {
     updateTree();
   });
 }
+
 const instance = getCurrentInstance();
+const treeLayer = ref<TreeItem[]>([]);
+
 function updateTree() {
-  if (groupRef.value) groupRef.value.update(views.value);
+  treeLayer.value = convertListToTree(views.value as any);
   instance?.proxy?.$forceUpdate();
 }
 function getViewFromStore() {
@@ -170,38 +131,22 @@ function onLayerAction({
       <div class="v-spacer"></div>
     </div>
     <div class="layer-control__list">
-      <draggable-group-list
-        ref="groupRef"
-        v-model:items="views"
-        v-model:selected="layers_select"
-        :disabled="disabled"
-        disabledDrag
-        @click-drag:done="updateLayers()"
-        @click-group:remove="onRemoveGroupLayer"
-      >
-        <template #item="{ isSelected, item, toggleSelect }">
-          <slot
-            name="item"
-            :item="item"
-            :isSelected="isSelected"
-            :toggleSelect="toggleSelect"
-          >
+      <div v-for="(item, index) in treeLayer" :key="item.id || index">
+        <RecursiveList :item="item" disabledDrag>
+          <template #leaf="{ item }">
             <component
               :is="item.component || LayerItem"
               :item="item"
-              :isSelected="isSelected"
-              @click="toggleSelect(item)"
               @update:item="onUpdateLayer"
-              @click:remove="onRemoveLayer"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
               :mapId="mapId"
               readonly
             >
             </component>
-          </slot>
-        </template>
-      </draggable-group-list>
+          </template>
+        </RecursiveList>
+      </div>
     </div>
     <ContextMenu ref="contextMenuRef">
       <ul class="layer-context-menu">

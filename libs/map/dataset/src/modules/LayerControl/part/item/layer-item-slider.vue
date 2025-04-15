@@ -19,10 +19,10 @@ export default {
       default: 0,
     },
     max: {
-      default: 100,
+      default: 1,
     },
     step: {
-      default: 1,
+      default: 0.01,
     },
     disabled: Boolean,
   },
