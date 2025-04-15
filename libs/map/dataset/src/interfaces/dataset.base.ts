@@ -1,4 +1,4 @@
-import { IDatasetVisitor } from './dataset.visitor';
+import type { IDatasetVisitor } from './dataset.visitor';
 
 /**
  * Base interface for the Dataset Composite pattern

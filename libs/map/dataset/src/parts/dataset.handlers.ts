@@ -1,5 +1,5 @@
-import { IDataset } from '../interfaces/dataset.base';
-import { DatasetLeaf } from '../model/dataset.base';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { DatasetLeaf } from '../model/dataset.base';
 import { DatasetHandlerBase } from '../model/dataset.handler';
 
 /**

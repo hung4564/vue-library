@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -9,8 +10,8 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
-import { nextTick, onMounted, reactive, ref } from 'vue';
-import {
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import type {
   IDataset,
   IGroupListViewUI,
   IListViewUI,
@@ -18,7 +19,11 @@ import {
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import { getAllComponentsByType, removeComponent } from '../../../store';
+import {
+  getAllComponentsByType,
+  getDatasetIds,
+  removeComponent,
+} from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
@@ -37,6 +42,16 @@ const path = {
 };
 const { callMap, mapId } = useMap(props);
 const views = ref<Array<IListViewUI>>([]);
+const datasetIds = computed(() => {
+  return getDatasetIds(mapId.value).value;
+});
+watch(
+  datasetIds,
+  () => {
+    updateList();
+  },
+  { deep: true }
+);
 onMounted(() => {
   updateList();
 });
@@ -49,7 +64,7 @@ const groupRef = ref<
 >(undefined);
 const layers_select = ref<IListViewUI[]>([]);
 function updateLayers() {
-  callMap((map) => {
+  callMap((map: MapSimple) => {
     let beforeId: string = '';
     views.value.slice().forEach((view, index) => {
       view.index = index;
@@ -79,7 +94,7 @@ function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
   });
 }
 function onUpdateLayer(view: IListViewUI) {
-  callMap((map) => {
+  callMap((map: MapSimple) => {
     runAllComponentsWithCheck(
       view.getParent() as IDataset,
       (dataset): dataset is IDataset & IMapboxLayerView =>

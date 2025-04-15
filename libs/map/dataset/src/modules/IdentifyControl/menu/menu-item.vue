@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import SvgIcon from '@jamescoyle/vue-icon';
 import { computed } from 'vue';
-import { IIdentifyView, MenuAction } from '../../../interfaces';
+import type { IIdentifyView, MenuAction } from '../../../interfaces';
 
 const props = defineProps<{
   item: MenuAction<IIdentifyView>;

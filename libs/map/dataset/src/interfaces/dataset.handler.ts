@@ -1,4 +1,4 @@
-import { IDataset } from './dataset.base';
+import type { IDataset } from './dataset.base';
 
 /**
  * Interface for handlers in the Chain of Responsibility pattern

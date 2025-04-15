@@ -1,5 +1,5 @@
-import { IDataset } from '../interfaces/dataset.base';
-import { IDatasetHandler } from '../interfaces/dataset.handler';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IDatasetHandler } from '../interfaces/dataset.handler';
 
 /**
  * Abstract base class for dataset handlers in the Chain of Responsibility pattern

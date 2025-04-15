@@ -1,7 +1,8 @@
 import { getMap } from '@hungpvq/vue-map-core';
-import { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
-import { IDataset } from '../interfaces/dataset.base';
-import {
+import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
+import type { IDataset } from '../interfaces/dataset.base';
+import type {
   IIdentifyView,
   IMapboxLayerView,
   MenuAction,
@@ -48,7 +49,7 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
         ]
       );
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
-      getMap(mapId, (map) => {
+      getMap(mapId, (map: MapSimple) => {
         const features: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
           pointOrBox,
           {
@@ -67,7 +68,12 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
             ids.add(id);
           }
         });
-        dataManagement.getData([...ids]).then((unique) => {
+        const idsGet = [...ids];
+        if (!idsGet || idsGet.length < 1) {
+          resolve([]);
+          return;
+        }
+        dataManagement.getData([...idsGet]).then((unique) => {
           resolve(
             unique.map((x, i) => ({
               id: x.id ?? i,

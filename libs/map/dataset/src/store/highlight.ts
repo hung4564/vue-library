@@ -1,6 +1,7 @@
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
 import type { GeoJSONSourceRaw, Layer } from 'mapbox-gl';
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
+import type { Ref } from 'vue';
 
 export const KEY = 'dataset-highlight';
 

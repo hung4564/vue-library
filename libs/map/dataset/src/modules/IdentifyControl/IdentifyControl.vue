@@ -14,11 +14,11 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
-import { MapMouseEvent, PointLike } from 'mapbox-gl';
-import { computed, onMounted, reactive, ref } from 'vue';
-import { IDataset } from '../../interfaces/dataset.base';
+import { MapMouseEvent, type PointLike } from 'mapbox-gl';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
-import { getAllComponentsByType } from '../../store';
+import { getAllComponentsByType, getDatasetIds } from '../../store';
 import { setFeatureHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
 const path = {
@@ -45,28 +45,25 @@ setLocale({
 });
 const views = ref<Array<IIdentifyView & IDataset>>([]);
 const currentIdentify = ref<IIdentifyView & IDataset>();
+const datasetIds = computed(() => {
+  return getDatasetIds(mapId.value).value;
+});
+watch(
+  datasetIds,
+  () => {
+    updateList();
+  },
+  { deep: true }
+);
 onMounted(() => {
   updateList();
 });
-
+const cUsedIdentify = computed(() => {
+  return views.value;
+});
 function updateList() {
   getViewFromStore();
-  onSelectIdentify(views.value[0]);
 }
-function onSelectIdentify(identify: IIdentifyView & IDataset) {
-  currentIdentify.value = identify;
-}
-const button_menus = computed<MenuAction<IIdentifyView & IDataset>[]>(() => {
-  if (!currentIdentify.value) {
-    return [];
-  }
-  return currentIdentify.value.menus;
-});
-const extra_menus = computed(() => {
-  return button_menus.value
-    .slice()
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
 function getViewFromStore() {
   views.value =
     getAllComponentsByType<IIdentifyView & IDataset>(mapId.value, 'identify') ||
@@ -100,7 +97,10 @@ function onBboxSelect(bbox: any) {
   if (!bbox) return;
   onGetFeatures(bbox);
 }
-const result = reactive<{ items: any[]; loading: boolean }>({
+const result = reactive<{
+  items: { identify: IIdentifyView & IDataset; features: any[] }[];
+  loading: boolean;
+}>({
   items: [],
   loading: false,
 });
@@ -114,23 +114,37 @@ const currentPoint = computed(() => {
 const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
-function onSelectFeatures(features: any[]) {
+function onSelectFeatures(
+  features: { identify: IIdentifyView & IDataset; features: any[] }[]
+) {
   result.items = features;
 }
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
-  if (!currentIdentify.value) return;
   result.loading = true;
   try {
     const startTime = Date.now();
-    const features = await currentIdentify.value.getFeatures(
-      mapId.value,
-      pointOrBox
+    const features = await Promise.all(
+      cUsedIdentify.value.map((x) =>
+        x
+          .getFeatures(mapId.value, pointOrBox)
+          .then((res) => ({
+            identify: x,
+            features: res,
+          }))
+          .catch((e) => {
+            console.error(e);
+            return {
+              identify: x,
+              features: [],
+            };
+          })
+      )
     );
     const elapsedTime = Date.now() - startTime;
     if (elapsedTime < 500) {
       await new Promise((resolve) => setTimeout(resolve, 500 - elapsedTime));
     }
-    onSelectFeatures(features);
+    onSelectFeatures(features.filter((item) => item.features.length > 0));
   } finally {
     result.loading = false;
   }
@@ -143,6 +157,7 @@ function toggleShow() {
 function close() {
   onRemoveIdentify();
   setFeatureHighlight(mapId.value, undefined, 'identify');
+  onSelectFeatures([]);
 }
 function onRemoveIdentify() {
   onRemoveMapClick();
@@ -182,11 +197,15 @@ function onRemoveBox() {
   removeEventBbox();
 }
 
-function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
-  if (menu.type != 'item' || !currentIdentify.value || !menu.click) {
+function onMenuAction(
+  identify: IIdentifyView & IDataset,
+  menu: MenuAction<IIdentifyView & IDataset>,
+  item: any
+) {
+  if (menu.type != 'item' || !identify || !menu.click) {
     return;
   }
-  menu.click(currentIdentify.value, mapId.value, item);
+  menu.click(identify, mapId.value, item);
 }
 </script>
 <template>
@@ -263,26 +282,43 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
             <template v-else>
               <div
                 v-for="item in result.items"
-                :key="item.id"
+                :key="item.identify.id"
                 class="identify-control-list-item"
               >
                 <div class="identify-control-list-item__container">
-                  <div class="identify-control-child-item" :title="item.name">
-                    <span>
-                      {{ item.name || '---' }}
-                    </span>
+                  <div
+                    class="identify-control-list-item__header"
+                    :title="item.identify.getName()"
+                  >
+                    {{ item.identify.getName() || '---' }}
                   </div>
-                  <div class="identify-control-child-item__spacer"></div>
-                  <div class="identify-control-child-item__action">
-                    <template v-for="(menu, i) in extra_menus" :key="i">
-                      <MenuItem
-                        class="layer-item__button"
-                        :item="menu"
-                        :data="item"
-                        :mapId="mapId"
-                        @click="onMenuAction(menu, item.data)"
-                      />
-                    </template>
+                  <div class="identify-control-list-item__child-container">
+                    <div
+                      class="identify-control-child-item"
+                      v-for="child in item.features"
+                      :key="child.id"
+                    >
+                      <span>
+                        {{ child.name }}
+                      </span>
+                      <div class="identify-control-child-item__spacer"></div>
+                      <div class="identify-control-child-item__action">
+                        <template
+                          v-for="(menu, i) in item.identify.menus"
+                          :key="i"
+                        >
+                          <MenuItem
+                            class="layer-item__button"
+                            :item="menu"
+                            :data="child"
+                            :mapId="mapId"
+                            @click="
+                              onMenuAction(item.identify, menu, child.data)
+                            "
+                          />
+                        </template>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -371,7 +407,6 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
     }
 
     &__container {
-      align-items: center;
       display: flex;
       letter-spacing: normal;
       min-height: 30px;
@@ -379,6 +414,17 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
       padding: 0 12px;
       position: relative;
       margin-top: 4px;
+      flex-direction: column;
+    }
+    &__child-container {
+      display: flex;
+      letter-spacing: normal;
+      min-height: 30px;
+      outline: none;
+      position: relative;
+      margin-top: 4px;
+      flex-direction: column;
+      gap: 4px;
     }
   }
 
@@ -409,7 +455,14 @@ function onMenuAction(menu: MenuAction<IIdentifyView & IDataset>, item: any) {
     }
   }
 }
-
+.identify-control-child-item {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  border: solid;
+  border-width: thin;
+  padding: 8px;
+}
 .identify-control-state {
   display: flex;
   align-items: center;

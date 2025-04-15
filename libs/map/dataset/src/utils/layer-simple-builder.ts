@@ -1,4 +1,4 @@
-import {
+import type {
   CircleLayer,
   FillLayer,
   Layer as LayerMapbox,

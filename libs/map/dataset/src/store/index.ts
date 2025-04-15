@@ -1,12 +1,8 @@
-import { MapSimple } from '@hungpvq/shared-map';
-import {
-  addStore,
-  addToQueue,
-  getMap,
-  getStore,
-  IListView,
-} from '@hungpvq/vue-map-core';
-import { IDataset } from '../interfaces/dataset.base';
+import type { MapSimple } from '@hungpvq/shared-map';
+import type { IListView } from '@hungpvq/vue-map-core';
+import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
+import { ref, Ref } from 'vue';
+import type { IDataset } from '../interfaces/dataset.base';
 import {
   applyToAllLeaves,
   findAllComponentsByType,
@@ -16,9 +12,10 @@ import { isComposite, isDatasetMap } from '../utils/check';
 export const KEY = 'dataset';
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
+  datasetIds: Ref<string[]>;
 };
 export function initMapLayer(mapId: string) {
-  addStore<MapLayerStore>(mapId, KEY, { datasets: {} });
+  addStore<MapLayerStore>(mapId, KEY, { datasets: {}, datasetIds: ref([]) });
 }
 addToQueue(KEY, initMapLayer);
 export async function addDataset(mapId: string, layer: IDataset) {
@@ -37,6 +34,7 @@ export async function addDataset(mapId: string, layer: IDataset) {
   allComponentsOfType.forEach((list, i) => {
     list.index = i + 1 + currentLists.length;
   });
+  store.datasetIds.value.push(layer.id);
   getMap(mapId, async (map: MapSimple) => {
     applyToAllLeaves(layer, [
       (leaf) => {
@@ -99,5 +97,9 @@ export function getAllComponentsByType<T>(mapId: string, targetType: string) {
   return views;
 }
 
+export function getDatasetIds(mapId: string) {
+  const store = getStore<MapLayerStore>(mapId, KEY);
+  return store.datasetIds;
+}
 export * from './component';
 export * from './highlight';

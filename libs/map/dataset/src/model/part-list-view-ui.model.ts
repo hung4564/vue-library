@@ -1,5 +1,5 @@
-import { Color } from '@hungpvq/shared-map';
-import {
+import type { Color } from '@hungpvq/shared-map';
+import type {
   IGroupListViewUI,
   IListViewUI,
   MenuAction,

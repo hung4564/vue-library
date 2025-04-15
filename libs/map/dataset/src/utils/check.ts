@@ -1,6 +1,6 @@
-import { IDataset } from '../interfaces/dataset.base';
-import { IDatasetMap } from '../interfaces/dataset.map';
-import { IMapboxLayerView } from '../interfaces/dataset.parts';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IDatasetMap } from '../interfaces/dataset.map';
+import type { IMapboxLayerView } from '../interfaces/dataset.parts';
 import { DatasetComposite } from '../model';
 
 // Type guard to check if a dataset implements IDatasetMap

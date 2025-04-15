@@ -1,12 +1,12 @@
-import { MapSimple } from '@hungpvq/shared-map';
-import {
+import type { MapSimple } from '@hungpvq/shared-map';
+import type {
   AnySourceData,
   GeoJSONSource,
-  GeoJSONSourceOptions,
   GeoJSONSourceRaw,
   RasterSource,
+  VectorSource,
 } from 'mapbox-gl';
-import { IMapboxSourceView } from '../interfaces/dataset.parts';
+import type { IMapboxSourceView } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 
 export abstract class DatasetPartMapboxSourceComponent<T = any>
@@ -59,5 +59,11 @@ export class GeojsonSource extends DatasetPartMapboxSourceComponent<
 export class RasterUrlSource extends DatasetPartMapboxSourceComponent {
   override getMapboxSource(): RasterSource {
     return this.data;
+  }
+}
+
+export class DatasetVectorTileSource extends DatasetPartMapboxSourceComponent<VectorSource> {
+  override getMapboxSource(): VectorSource {
+    return this.data!;
   }
 }

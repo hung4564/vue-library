@@ -2,10 +2,12 @@
   <div></div>
 </template>
 <script setup lang="ts">
+import type { MapSimple } from '@hungpvq/shared-map';
 import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from '@turf/turf';
 import { center } from '@turf/turf';
-import { type FillLayer, type GeoJSONSourceRaw, Marker } from 'mapbox-gl';
+import type { FillLayer, GeoJSONSourceRaw } from 'mapbox-gl';
+import { Marker } from 'mapbox-gl';
 import { computed, watch } from 'vue';
 import { getFeatureHighlight } from '../../store/highlight';
 
@@ -102,7 +104,7 @@ function updateHighlight(
     | GeoJSON.FeatureCollection<GeoJSON.Geometry>
     | string
 ) {
-  callMap((map) => {
+  callMap((map: MapSimple) => {
     updateSource(map, geojsonData);
     updateLayer(map);
     updateMarker(map, geojsonData);

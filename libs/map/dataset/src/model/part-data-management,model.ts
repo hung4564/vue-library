@@ -1,5 +1,5 @@
-import { MapSimple } from '@hungpvq/shared-map';
-import { IDataManagementView, IDatasetMap } from '../interfaces';
+import type { MapSimple } from '@hungpvq/shared-map';
+import type { IDataManagementView, IDatasetMap } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import { addComponent, setFeatureHighlight } from '../store';
 import { DatasetLeaf } from './dataset.base';
@@ -16,7 +16,7 @@ export abstract class DatasetPartDataManagementComponent<D = any>
     return 'dataManagement';
   }
   abstract showDetail(mapId: string, detail: D): void;
-  abstract getData(ids?: string[]): Promise<D[]>;
+  abstract override getData(ids?: string[]): Promise<D[]>;
   get fields() {
     return this.data?.fields;
   }

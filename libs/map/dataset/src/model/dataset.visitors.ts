@@ -1,5 +1,5 @@
-import { IDataset } from '../interfaces/dataset.base';
-import { IDatasetVisitor } from '../interfaces/dataset.visitor';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IDatasetVisitor } from '../interfaces/dataset.visitor';
 
 /**
  * Base visitor class that provides common functionality for all dataset visitors.

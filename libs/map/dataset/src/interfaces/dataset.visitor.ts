@@ -1,4 +1,4 @@
-import { IDataset } from './dataset.base';
+import type { IDataset } from './dataset.base';
 
 /**
  * Interface for visitors in the Visitor pattern

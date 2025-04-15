@@ -1,6 +1,6 @@
-import { MapSimple } from '@hungpvq/shared-map';
-import { type Layer } from 'mapbox-gl';
-import { IMapboxLayerView } from '../interfaces/dataset.parts';
+import type { MapSimple } from '@hungpvq/shared-map';
+import type { Layer } from 'mapbox-gl';
+import type { IMapboxLayerView } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 import { findFirstLeafByType } from './dataset.visitors';
 

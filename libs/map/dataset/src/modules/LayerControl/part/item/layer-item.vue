@@ -77,12 +77,7 @@
     </div>
     <div class="layer-item__action" v-if="showBottom">
       <div class="layer-item__opacity" v-if="!item.config.disabled_opacity">
-        <LayerItemSlider
-          v-model.number="opacity"
-          max="1"
-          step="0.01"
-          :disabled="loading"
-        />
+        <LayerItemSlider v-model.number="opacity" :disabled="loading" />
       </div>
       <div class="v-spacer"></div>
       <template v-for="(menu, i) in extra_bottoms" :key="i">
@@ -128,7 +123,7 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { computed, ref } from 'vue';
-import { IListViewUI, MenuAction } from '../../../../interfaces';
+import type { IListViewUI, MenuAction } from '../../../../interfaces';
 import LayerItemIcon from './layer-item-icon.vue';
 import LayerItemSlider from './layer-item-slider.vue';
 import LayerMenu from './menu/index.vue';

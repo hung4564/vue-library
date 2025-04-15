@@ -1,5 +1,5 @@
 declare module '@jamescoyle/vue-icon' {
-  import { DefineComponent } from 'vue';
+  import type { DefineComponent } from 'vue';
 
   const SvgIcon: DefineComponent<{
     type: string;

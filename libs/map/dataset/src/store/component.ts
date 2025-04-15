@@ -1,5 +1,6 @@
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
+import type { Ref } from 'vue';
 
 export const KEY = 'dataset-component';
 

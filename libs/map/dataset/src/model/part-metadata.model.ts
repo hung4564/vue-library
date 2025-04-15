@@ -1,4 +1,4 @@
-import { IMetadataView } from '../interfaces';
+import type { IMetadataView } from '../interfaces/dataset.parts';
 import { DatasetLeaf } from './dataset.base';
 
 export class DatasetPartMetadataComponent

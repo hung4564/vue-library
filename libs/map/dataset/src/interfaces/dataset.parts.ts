@@ -1,8 +1,8 @@
-import { Color, MapSimple } from '@hungpvq/shared-map';
+import type { Color, MapSimple } from '@hungpvq/shared-map';
 import type { BBox } from 'geojson';
-import { AnySourceData, PointLike } from 'mapbox-gl';
-import { IDataset } from './dataset.base';
-import { IDatasetMap } from './dataset.map';
+import type { AnySourceData, PointLike } from 'mapbox-gl';
+import type { IDataset } from './dataset.base';
+import type { IDatasetMap } from './dataset.map';
 
 /**
  * Menu Action Types

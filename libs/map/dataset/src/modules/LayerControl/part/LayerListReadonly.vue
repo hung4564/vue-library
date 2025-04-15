@@ -10,7 +10,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
-import {
+import type {
   IDataset,
   IGroupListViewUI,
   IListViewUI,
@@ -22,6 +22,7 @@ import { getAllComponentsByType, removeComponent } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import DraggableGroupList from './DraggableList/draggable-list-readonly.vue';
 import LayerItem from './item/layer-item.vue';
+import type { MapSimple } from '@hungpvq/shared-map';
 const props = defineProps({
   ...withMapProps,
   disabledDrag: Boolean,
@@ -48,7 +49,7 @@ const groupRef = ref<
 >(undefined);
 const layers_select = ref<IListViewUI[]>([]);
 function updateLayers() {
-  callMap((map) => {
+  callMap((map: MapSimple) => {
     let beforeId: string = '';
     views.value.slice().forEach((view, index) => {
       view.index = index;
@@ -78,7 +79,7 @@ function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
   });
 }
 function onUpdateLayer(view: IListViewUI) {
-  callMap((map) => {
+  callMap((map: MapSimple) => {
     runAllComponentsWithCheck(
       view.getParent() as IDataset,
       (dataset): dataset is IDataset & IMapboxLayerView =>
@@ -109,7 +110,6 @@ function updateList() {
 }
 const instance = getCurrentInstance();
 function updateTree() {
-  console.log(views.value);
   if (groupRef.value) groupRef.value.update(views.value);
   instance?.proxy?.$forceUpdate();
 }
