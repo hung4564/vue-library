@@ -29,7 +29,7 @@ type MenuItemCommon<T> = MenuCommon & {
 };
 
 /** Menu item type for bottom or extra location */
-type MenuItemBottomOrExtra<T> = MenuItemCommon<T> & {
+export type MenuItemBottomOrExtra<T> = MenuItemCommon<T> & {
   type: 'item';
   location?: 'bottom' | 'extra';
   icon: string;
@@ -76,6 +76,8 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
 export type IMapboxSourceView = IDatasetMap & {
   getMapboxSource: () => AnySourceData;
   updateData?(map: MapSimple, data: any): void;
+  getFieldsInfo(): IFieldInfo[];
+  getDataInfo(): any;
 };
 
 export type IMapboxLayerView = IDatasetMap & {
@@ -97,6 +99,15 @@ export type IIdentifyView<T extends IDataset = IDataset> = IDataset &
 
 export type IActionForView<T extends IDataset = IDataset> = {
   menus: MenuAction<T>[];
+  addMenu(menu: MenuAction<T>): void;
+  addMenus(menusToAdd: MenuAction<T>[]): void;
+  removeMenu: (id: string) => void;
+  updateMenu: (
+    id: string,
+    updater: (menu: MenuAction<T>) => MenuAction<T>
+  ) => void;
+  getMenu(id: string): MenuAction<T> | undefined;
+  hasMenu(id: string): boolean;
 };
 
 export type MenuAction<T> =
@@ -110,5 +121,12 @@ export type IMetadataView = {
 
 export type IDataManagementView<D = any> = {
   showDetail(mapId: string, detail: D): void;
-  getData(ids?: string[]): Promise<D[]>;
+  getList(ids?: string[]): Promise<D[]>;
+};
+
+export type IFieldInfo = {
+  trans?: string;
+  text?: string;
+  value: string;
+  inline?: boolean;
 };

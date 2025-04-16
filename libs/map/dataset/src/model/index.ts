@@ -6,4 +6,5 @@ export * from './part-identify.model';
 export * from './part-list-view-ui.model';
 export * from './part-mapbox-layer.model';
 export * from './part-mapbox-source.model';
+export * from './part-menu.model';
 export * from './part-metadata.model';

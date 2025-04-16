@@ -1,14 +1,13 @@
 import type { IMetadataView } from '../interfaces/dataset.parts';
-import { DatasetLeaf } from './dataset.base';
+import { createDatasetLeaf } from './dataset.base.function';
 
-export class DatasetPartMetadataComponent
-  extends DatasetLeaf<IMetadataView['metadata']>
-  implements IMetadataView
-{
-  override get type(): string {
-    return 'metadata';
-  }
-  get metadata(): IMetadataView['metadata'] {
-    return this.data;
-  }
+export function createDatasetPartMetadataComponent<
+  T extends IMetadataView['metadata']
+>(name: string, data: T) {
+  const base = createDatasetLeaf<T>(name, data);
+  return {
+    ...base,
+    type: 'metadata',
+    metadata: data,
+  };
 }

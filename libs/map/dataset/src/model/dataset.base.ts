@@ -79,7 +79,6 @@ export class DatasetLeaf<T = any> extends DatasetComponent<T> {
     return visitor.visitLeaf(this);
   }
 }
-
 /**
  * Composite node in the Dataset Composite pattern
  * Represents a dataset that can contain other datasets
@@ -106,7 +105,7 @@ export class DatasetComposite extends DatasetComponent {
 
   add(dataset: IDataset): void {
     this.children.push(dataset);
-    if (dataset instanceof DatasetComponent) {
+    if (typeof dataset?.setParent === 'function') {
       dataset.setParent(this);
     }
   }
@@ -115,7 +114,7 @@ export class DatasetComposite extends DatasetComponent {
     const index = this.children.findIndex((child) => child === dataset);
     if (index !== -1) {
       this.children.splice(index, 1);
-      if (dataset instanceof DatasetComponent) {
+      if (typeof dataset?.setParent === 'function') {
         dataset.setParent(undefined);
       }
     }

@@ -11,6 +11,7 @@ import { setFeatureHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 defineProps({
   item: {},
+  view: {},
   fields: {
     type: Array,
     default: () => [],
@@ -46,7 +47,8 @@ function onClose() {
             <TableTdLayer
               :field="field"
               :label="field.trans ? trans(field.trans) : field.text"
-              :layer="item"
+              :item="item"
+              :view="view"
               v-for="(field, i) in fields"
               :key="i"
             />

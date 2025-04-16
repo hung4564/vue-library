@@ -1,5 +1,5 @@
-import { getMap } from '@hungpvq/vue-map-core';
 import type { MapSimple } from '@hungpvq/shared-map';
+import { getMap } from '@hungpvq/vue-map-core';
 import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
 import type { IDataset } from '../interfaces/dataset.base';
 import type {
@@ -8,38 +8,48 @@ import type {
   MenuAction,
 } from '../interfaces/dataset.parts';
 import { isMapboxLayerView } from '../utils/check';
-import { DatasetLeaf } from './dataset.base';
+import { createDatasetLeaf } from './dataset.base.function';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
 } from './dataset.visitors';
 import { DatasetPartDataManagementComponent } from './part-data-management,model';
+import { createDatasetMenu } from './part-menu.model';
 
-export abstract class DatasetPartIdentifyComponent
-  extends DatasetLeaf<IIdentifyView['config']>
-  implements IIdentifyView<DatasetPartIdentifyComponent>
-{
-  menus: MenuAction<DatasetPartIdentifyComponent>[] = [];
-  override get type(): string {
-    return 'identify';
-  }
-  get config(): IIdentifyView['config'] {
-    return this.data || {};
-  }
-  abstract getFeatures(
-    mapId: string,
-    pointOrBox?: PointLike | [PointLike, PointLike]
-  ): Promise<{ id: string; name: string; data: any }[]>;
+export function createDatasetPartIdentifyComponent<
+  T extends IIdentifyView['config']
+>(name: string, config: T) {
+  const base = createDatasetLeaf<T>(name, config);
+  const menu = createDatasetMenu();
+
+  return {
+    get config() {
+      return config || {};
+    },
+    ...base,
+    ...menu,
+    get type(): string {
+      return 'identify';
+    },
+    // Abstract method (phải được implement bởi component cụ thể)
+    getFeatures(
+      mapId: string,
+      pointOrBox?: PointLike | [PointLike, PointLike]
+    ): Promise<{ id: string; name: string; data: any }[]> {
+      throw new Error('Method not implemented.');
+    },
+  };
 }
+export function createIdentifyMapboxComponent(name: string, config?: any) {
+  const datasetPartIdentify = createDatasetPartIdentifyComponent(name, config);
 
-export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
-  async getFeatures(
+  const getFeatures = async (
     mapId: string,
     pointOrBox?: PointLike | [PointLike, PointLike]
-  ) {
+  ): Promise<{ id: string; name: string; data: any }[]> => {
     return new Promise<{ id: string; name: string; data: any }[]>((resolve) => {
       const results = runAllComponentsWithCheck(
-        this.getParent() as IDataset,
+        datasetPartIdentify.getParent() || datasetPartIdentify,
         (dataset): dataset is IDataset & IMapboxLayerView =>
           isMapboxLayerView(dataset),
         [
@@ -48,6 +58,7 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
           },
         ]
       );
+
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
       getMap(mapId, (map: MapSimple) => {
         const features: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
@@ -59,30 +70,39 @@ export class IdentifyMapboxComponent extends DatasetPartIdentifyComponent {
 
         const ids = new Set<string>();
         const dataManagement = findSiblingOrNearestLeaf(
-          this,
+          datasetPartIdentify,
           (dataset) => dataset.type == 'dataManagement'
         ) as DatasetPartDataManagementComponent;
+
         features.forEach((x) => {
-          const id = x.properties?.[this.config.field_id || 'id'] ?? x.id;
+          const id =
+            x.properties?.[datasetPartIdentify.config.field_id || 'id'] ?? x.id;
           if (!ids.has(id)) {
             ids.add(id);
           }
         });
+
         const idsGet = [...ids];
         if (!idsGet || idsGet.length < 1) {
           resolve([]);
           return;
         }
-        dataManagement.getData([...idsGet]).then((unique) => {
+
+        dataManagement.getList([...idsGet]).then((unique) => {
           resolve(
             unique.map((x, i) => ({
               id: x.id ?? i,
-              name: x[this.config.field_name || 'name'] ?? '',
+              name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
               data: x,
             }))
           );
         });
       });
     });
-  }
+  };
+
+  return {
+    ...datasetPartIdentify,
+    getFeatures,
+  };
 }

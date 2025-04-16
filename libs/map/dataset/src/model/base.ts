@@ -9,3 +9,12 @@ export class Base {
     this._id = `${getUUIDv4()}`;
   }
 }
+export function createBase() {
+  const _id = getUUIDv4();
+
+  return {
+    get id() {
+      return _id;
+    },
+  };
+}

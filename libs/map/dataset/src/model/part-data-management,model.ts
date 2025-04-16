@@ -16,7 +16,7 @@ export abstract class DatasetPartDataManagementComponent<D = any>
     return 'dataManagement';
   }
   abstract showDetail(mapId: string, detail: D): void;
-  abstract override getData(ids?: string[]): Promise<D[]>;
+  abstract getList(ids?: string[]): Promise<D[]>;
   get fields() {
     return this.data?.fields;
   }
@@ -33,7 +33,7 @@ export class DataManagementMapboxComponent<
 {
   protected items: D[] = [];
   addToMap(map: MapSimple): void {
-    this.getData().then((items) => {
+    this.getList().then((items) => {
       const source = findSiblingOrNearestLeaf(
         this,
         (dataset) => dataset.type == 'source'
@@ -55,7 +55,7 @@ export class DataManagementMapboxComponent<
   setItems(items: D[]) {
     this.items = items;
   }
-  getData(ids?: string[]): Promise<any[]> {
+  getList(ids?: string[]): Promise<any[]> {
     return new Promise((resolve) => {
       if (!ids) {
         resolve(this.items);
@@ -71,6 +71,7 @@ export class DataManagementMapboxComponent<
       attr: {
         item: detail,
         fields: this.fields,
+        view: this,
       },
     });
     const { geometry, ...properties } = detail;

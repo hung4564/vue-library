@@ -10,7 +10,7 @@
         </div>
       </div>
     </template>
-    <div class="grid-row" v-else>
+    <div class="grid-row grid-row-full" v-else>
       <input-text-area readonly rows="10" v-model="value" :label="label" />
     </div>
   </TableTdCopy>
@@ -20,13 +20,12 @@ import { InputTextArea } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 import TableTdCopy from './table-td-copy.vue';
 const props = defineProps({
-  label: String,
-  layer: {},
+  item: {},
+  view: {},
   field: {},
+  label: {},
 });
-const value = computed(() =>
-  props.layer ? props.layer[props.field.value] : ''
-);
+const value = computed(() => (props.item ? props.item[props.field.value] : ''));
 </script>
 <style scoped>
 .grid-row {
@@ -37,7 +36,9 @@ const value = computed(() =>
   align-items: center;
   min-height: 40px;
 }
-
+.grid-row-full > * {
+  flex: 1;
+}
 .label-cell {
   flex: 0 0 100px;
   white-space: nowrap;
