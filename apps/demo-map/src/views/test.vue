@@ -17,26 +17,28 @@ import {
   addDataset,
   ComponentManagementControl,
   createDataset,
+  createDatasetPartListViewUiComponent,
+  createDatasetPartMetadataComponent,
+  createIdentifyMapboxComponent,
   createLegend,
+  createMenuItemShowDetailForItem,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemToBoundActionForItem,
+  createMenuItemToBoundActionForList,
   createMultiLegend,
   DataManagementMapboxComponent,
   DatasetComposite,
-  DatasetPartListViewUiComponent,
-  DatasetPartMetadataComponent,
-  findSiblingOrNearestLeaf,
   GeojsonSource,
   IdentifyControl,
-  IdentifyMapboxComponent,
+  IListViewUI,
   LayerControl,
   LayerHighlight,
   LayerInfoControl,
   LayerSimpleMapboxBuild,
   MultiMapboxLayerComponent,
   RasterUrlSource,
-  setFeatureHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { mdiCrosshairsGps, mdiInformation } from '@mdi/js';
 import { ref } from 'vue';
 
 const mapRef = ref();
@@ -64,7 +66,7 @@ function onMapLoaded(map: MapSimple) {
       type: 'raster',
     },
   ]);
-  const list_raster = new DatasetPartListViewUiComponent('test raster');
+  const list_raster = createDatasetPartListViewUiComponent('test raster');
   list_raster.color = '#0000FF';
   const groupLayer_raster = createDataset(
     'Group layer 1',
@@ -75,6 +77,7 @@ function onMapLoaded(map: MapSimple) {
   groupLayer_raster.add(list_raster);
   groupLayer_raster.add(layerraster);
   dataset_raster.add(groupLayer_raster);
+  list_raster.addMenu(createMenuItemShowDetailInfoSource());
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
   const source = new GeojsonSource('source', {
     type: 'FeatureCollection',
@@ -85,7 +88,7 @@ function onMapLoaded(map: MapSimple) {
     null,
     true
   ) as DatasetComposite;
-  const list1 = new DatasetPartListViewUiComponent('test area');
+  const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.opacity = 0.5;
   list1.legend = createMultiLegend([
@@ -119,7 +122,7 @@ function onMapLoaded(map: MapSimple) {
     null,
     true
   ) as DatasetComposite;
-  const list2 = new DatasetPartListViewUiComponent('test point');
+  const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
   list2.opacity = 0.5;
   list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
@@ -131,40 +134,11 @@ function onMapLoaded(map: MapSimple) {
       .build(),
   ]);
   list1.menus = [
-    {
-      location: 'extra',
-      type: 'item',
-      name: 'Fly to',
-      icon: mdiCrosshairsGps,
-      click: (layer, mapId) => {
-        const metadata = findSiblingOrNearestLeaf(
-          layer,
-          (dataset) => dataset.type == 'metadata'
-        ) as DatasetPartMetadataComponent;
-        getMap(mapId, (map) => {
-          fitBounds(map, metadata?.metadata?.bbox);
-        });
-      },
-    },
+    createMenuItemToBoundActionForList(),
+    createMenuItemShowDetailInfoSource(),
   ];
-  list2.menus = [
-    {
-      location: 'extra',
-      type: 'item',
-      name: 'Fly to',
-      icon: mdiCrosshairsGps,
-      click: (layer, mapId) => {
-        const metadata = findSiblingOrNearestLeaf(
-          layer,
-          (dataset) => dataset.type == 'metadata'
-        ) as DatasetPartMetadataComponent;
-        getMap(mapId, (map) => {
-          fitBounds(map, metadata?.metadata?.bbox);
-        });
-      },
-    },
-  ];
-  const metadataForList2 = new DatasetPartMetadataComponent(
+  list2.menus = [createMenuItemToBoundActionForList()];
+  const metadataForList2 = createDatasetPartMetadataComponent(
     'metadata for list2',
     {
       bbox: [
@@ -173,46 +147,16 @@ function onMapLoaded(map: MapSimple) {
       ],
     }
   );
-  const metadata = new DatasetPartMetadataComponent('metadata', {
+  const metadata = createDatasetPartMetadataComponent('metadata', {
     bbox: [
       104.96327341667353, 18.461221184685627, 107.53334783357559,
       20.18022781865689,
     ],
   });
-  const identify = new IdentifyMapboxComponent('test identify');
+  const identify = createIdentifyMapboxComponent('test identify');
   identify.menus = [
-    {
-      type: 'item',
-      name: 'Fly to',
-      icon: mdiCrosshairsGps,
-      click: (layer, mapId, value) => {
-        getMap(mapId, (map) => {
-          fitBounds(map, value.geometry);
-          const { geometry, ...properties } = value;
-          setFeatureHighlight(
-            mapId,
-            {
-              type: 'Feature',
-              geometry: value.geometry,
-              properties,
-            },
-            'identify'
-          );
-        });
-      },
-    },
-    {
-      type: 'item',
-      name: 'Detail',
-      icon: mdiInformation,
-      click: (layer, mapId, value) => {
-        const dataManagement = findSiblingOrNearestLeaf(
-          layer,
-          (dataset) => dataset.type == 'dataManagement'
-        ) as DataManagementMapboxComponent;
-        dataManagement?.showDetail(mapId, value);
-      },
-    },
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
   ];
   const group = { id: 'test', name: 'test' };
   list1.group = group;
@@ -270,14 +214,7 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(identify);
   dataset.add(metadata);
   addDataset(map.id, dataset);
-  // addDataset(map.id, dataset_raster);
-
-  // Example of adding a component through store
-  // store?.addComponent({
-  //   id: 'test-component',
-  //   component: () => import('./YourComponent.vue'),
-  //   attr: { /* component props */ }
-  // });
+  addDataset(map.id, dataset_raster);
 }
 </script>
 <template>
