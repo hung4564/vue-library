@@ -1,4 +1,4 @@
-import { LayerTypeConfig } from '../../../../types/style';
+import { LayerTypeConfig } from './style';
 
 export const CIRCLE_CONFIG: LayerTypeConfig = {
   TAB: {

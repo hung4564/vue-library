@@ -1,4 +1,4 @@
-import { LayerTypeConfig } from '../../../../types/style';
+import { LayerTypeConfig } from './style';
 
 export const RASTER_CONFIG: LayerTypeConfig = {
   TAB: {

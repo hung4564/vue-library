@@ -5,8 +5,8 @@ import {
   InputSlider,
   InputText,
 } from '@hungpvq/vue-map-core';
-import { ChoseTab, Tab } from '../../../../types/style';
 import { divColor, textAfter, textFormat } from '../label';
+import { ChoseTab, Tab } from './style';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   image: {

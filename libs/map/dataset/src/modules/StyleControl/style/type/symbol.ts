@@ -1,4 +1,4 @@
-import { LayerTypeConfig, Tab } from '../../../../types/style';
+import { LayerTypeConfig, Tab } from './style';
 
 import { SymbolLayer } from 'mapbox-gl';
 

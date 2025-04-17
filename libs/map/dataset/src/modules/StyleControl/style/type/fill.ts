@@ -1,4 +1,4 @@
-import { LayerTypeConfig } from '../../../../types/style';
+import { LayerTypeConfig } from './style';
 
 export const FILL_CONFIG: LayerTypeConfig = {
   TAB: {
