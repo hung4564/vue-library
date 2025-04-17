@@ -9,3 +9,4 @@ export { createLegend, createMultiLegend } from './Legend';
 export { default as ListGroupItem } from './List/ListGroupItem.vue';
 export { default as ListItem } from './List/ListItem.vue';
 export { default as RecursiveList } from './List/RecursiveList.vue';
+export { default as StyleControl } from './StyleControl/style-control.vue';

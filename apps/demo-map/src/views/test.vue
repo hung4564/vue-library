@@ -23,6 +23,7 @@ import {
   createLegend,
   createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
+  createMenuItemStyleEdit,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   createMultiLegend,
@@ -133,7 +134,7 @@ function onMapLoaded(map: MapSimple) {
       .setOpacity(list2.opacity)
       .build(),
     new LayerSimpleMapboxBuild()
-      .setStyleType('area')
+      .setStyleType('line')
       .setColor(list2.color)
       .setOpacity(list2.opacity)
       .build(),
@@ -141,6 +142,7 @@ function onMapLoaded(map: MapSimple) {
   list1.menus = [
     createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
   ];
   list2.menus = [createMenuItemToBoundActionForList()];
   const metadataForList2 = createDatasetPartMetadataComponent(

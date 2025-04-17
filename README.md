@@ -4,6 +4,7 @@
   -- [x] legend
   -- [x] LayerControlInfo
   -- [x] InfoLayerControl
-  -- [] Multi Identify
-  -- [] Create
-  -- [] StyleControl
+  -- [x] Multi Identify
+  -- [x] Create
+  -- [x] StyleControl
+  -- [] DrawControl

@@ -349,7 +349,7 @@ function onMenuAction(
   &-header {
     padding: 8px;
     width: 100%;
-    flex-grow: 0;
+    flex: 0 0 auto;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -357,7 +357,7 @@ function onMenuAction(
   }
 
   &-separator {
-    flex-grow: 0;
+    flex: 0 0 auto;
     display: block;
     flex: 1 1 0px;
     max-width: 100%;

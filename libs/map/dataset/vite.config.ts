@@ -53,6 +53,7 @@ export default defineConfig({
         '@hungpvq/content-menu',
         'vuedraggable',
         '@hungpvq/shared-file',
+        'lodash',
       ],
       output: {
         // Provide global variables to use in the UMD build

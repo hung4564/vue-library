@@ -86,6 +86,8 @@ export type IMapboxLayerView = IDatasetMap & {
   setOpacity(map: MapSimple, opacity: number): void;
   toggleShow(map: MapSimple, show?: boolean): void;
   moveLayer(map: MapSimple, beforeId: string): void;
+  getComponentUpdate(): () => any;
+  updateValue(map: MapSimple, value: any): void;
 };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {

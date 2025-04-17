@@ -1,6 +1,6 @@
 import { fitBounds } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
-import { mdiCrosshairsGps, mdiInformation } from '@mdi/js';
+import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
 import {
   IActionForView,
   IDataset,
@@ -10,6 +10,7 @@ import {
   MenuItemBottomOrExtra,
 } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
+import StyleControl from '../modules/StyleControl/style-control.vue';
 import { addComponent, setFeatureHighlight } from '../store';
 import { findSiblingOrNearestLeaf } from './dataset.visitors';
 import { DataManagementMapboxComponent } from './part-data-management,model';
@@ -138,6 +139,21 @@ export function createMenuItemShowDetailInfoSource() {
             view: layer,
           },
         });
+    },
+  });
+}
+export function createMenuItemStyleEdit() {
+  return createMenuItem({
+    type: 'item',
+    name: 'Edit style',
+    icon: mdiFormatLineStyle,
+    click: (layer, mapId) => {
+      addComponent(mapId, {
+        component: () => StyleControl,
+        attr: {
+          item: layer,
+        },
+      });
     },
   });
 }
