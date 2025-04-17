@@ -443,7 +443,6 @@ export class TypeCollectorVisitor extends BaseDatasetVisitor {
  * Usage:
  * const components = findAllComponentsByType(rootDataset, 'targetType');
  * components.forEach(component => {
- *   console.log(component.getName());
  * });
  */
 export function findAllComponentsByType(

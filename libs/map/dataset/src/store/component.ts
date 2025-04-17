@@ -1,6 +1,6 @@
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
-import { ref } from 'vue';
 import type { Ref } from 'vue';
+import { ref } from 'vue';
 
 export const KEY = 'dataset-component';
 
@@ -48,17 +48,6 @@ export function addComponent(
 ) {
   const store = getComponentStore(mapId);
   if (!store) return;
-
-  // Check for duplicate component based on attr only
-  const isDuplicate = store.components.some(
-    (existing) =>
-      JSON.stringify(existing.attr) === JSON.stringify(component.attr)
-  );
-
-  if (isDuplicate) {
-    console.warn('Component already exists with the same attributes');
-    return null;
-  }
 
   const id = generateId();
   store.components.push({

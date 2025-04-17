@@ -1,21 +1,26 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
-import type { IDataset } from '../interfaces/dataset.base';
+import type { IDataset } from '../../interfaces/dataset.base';
 import type {
+  IdentifyResult,
   IIdentifyView,
+  IIdentifyViewWithMerge,
   IMapboxLayerView,
-  MenuAction,
-} from '../interfaces/dataset.parts';
-import { isMapboxLayerView } from '../utils/check';
-import { createDatasetLeaf } from './dataset.base.function';
+} from '../../interfaces/dataset.parts';
+import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
+import { createDatasetLeaf } from '../dataset.base.function';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
-} from './dataset.visitors';
-import { DatasetPartDataManagementComponent } from './part-data-management,model';
-import { createDatasetMenu } from './part-menu.model';
-
+} from '../dataset.visitors';
+import { DatasetPartDataManagementComponent } from '../part-data-management,model';
+import { createDatasetMenu } from '../part-menu.model';
+import {
+  getMergedFeatures,
+  mergePayload,
+  splitResponse,
+} from './identifyMapboxMerged';
 export function createDatasetPartIdentifyComponent<
   T extends IIdentifyView['config']
 >(name: string, config: T) {
@@ -105,4 +110,86 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
     ...datasetPartIdentify,
     getFeatures,
   };
+}
+export function createIdentifyMapboxMergedComponent(
+  name: string,
+  config?: any
+): IIdentifyViewWithMerge {
+  const base = createDatasetPartIdentifyComponent(name, config);
+
+  const identifyGroupId = 'mapbox-group';
+
+  return {
+    ...base,
+    identifyGroupId,
+    mergePayload,
+    getMergedFeatures,
+    splitResponse,
+  };
+}
+
+function handleSingleIdentify(
+  identify: IIdentifyView,
+  mapId: string,
+  pointOrBox?: PointLike | [PointLike, PointLike]
+): Promise<IdentifyResult> {
+  return identify.getFeatures(mapId, pointOrBox).then((features) => ({
+    identify,
+    features,
+  }));
+}
+
+function handleMergedIdentifyGroup(
+  mergeIdentifies: IIdentifyViewWithMerge[],
+  mapId: string,
+  pointOrBox?: PointLike | [PointLike, PointLike]
+): Promise<IdentifyResult[]> {
+  const mergedIdentify = mergeIdentifies[0];
+
+  if (mergeIdentifies.length === 1) {
+    return handleSingleIdentify(mergedIdentify, mapId, pointOrBox).then(
+      (res) => [res]
+    );
+  }
+
+  const payload = mergedIdentify.mergePayload(
+    mergeIdentifies,
+    mapId,
+    pointOrBox
+  );
+
+  return mergedIdentify
+    .getMergedFeatures(mergeIdentifies, payload)
+    .then((response: any) => {
+      return mergedIdentify.splitResponse(mergeIdentifies, payload, response);
+    });
+}
+
+export async function handleMultiIdentify(
+  identifies: IIdentifyView[],
+  mapId: string,
+  pointOrBox?: PointLike | [PointLike, PointLike]
+): Promise<IdentifyResult[]> {
+  const promises: Promise<IdentifyResult | IdentifyResult[]>[] = [];
+  const groupMerge: Record<string, IIdentifyViewWithMerge[]> = {};
+
+  identifies.forEach((identify) => {
+    if (!isIdentifyMergeView(identify)) {
+      promises.push(handleSingleIdentify(identify, mapId, pointOrBox));
+      return;
+    }
+
+    const groupId = identify.identifyGroupId;
+    if (!groupMerge[groupId]) groupMerge[groupId] = [];
+    groupMerge[groupId].push(identify);
+  });
+
+  for (const groupId in groupMerge) {
+    const mergeIdentifies = groupMerge[groupId];
+    promises.push(
+      handleMergedIdentifyGroup(mergeIdentifies, mapId, pointOrBox)
+    );
+  }
+
+  return Promise.all(promises).then((res) => res.flat());
 }

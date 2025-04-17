@@ -87,15 +87,47 @@ export type IMapboxLayerView = IDatasetMap & {
   toggleShow(map: MapSimple, show?: boolean): void;
   moveLayer(map: MapSimple, beforeId: string): void;
 };
-
-export type IIdentifyView<T extends IDataset = IDataset> = IDataset &
+export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
     config: { field_name?: string; field_id?: string };
     getFeatures: (
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike]
-    ) => Promise<{ id: string; name: string; data: any }[]>;
+    ) => Promise<{ id: string; name: string; data: any }[]>; // Feature's result type
   };
+
+// IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase
+export type IIdentifyViewWithoutMerge<T extends IDataset = IDataset> =
+  IIdentifyViewBase<T>;
+
+// IIdentifyViewWithMerge kế thừa IIdentifyViewBase và thêm các method xử lý merge
+export type IIdentifyViewWithMerge<T extends IDataset = IDataset> =
+  IIdentifyViewBase<T> & {
+    identifyGroupId: string;
+    mergePayload(
+      identifies: IIdentifyView<T>[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+      mapId: string,
+      pointOrBox?: PointLike | [PointLike, PointLike]
+    ): any; // Đảm bảo return kiểu hợp lý cho payload
+
+    splitResponse(
+      identifies: IIdentifyView<T>[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+      payload: any, // Kiểu của payload từ merge
+      response: any // Response từ getMergedFeatures
+    ): IdentifyResult[]; // Trả về array kết quả từng identify
+
+    getMergedFeatures(identifies: IIdentifyView<T>[], payload: any): any; // Trả về kết quả đã merge
+  };
+
+// Define kiểu trả về cho mỗi kết quả sau khi split
+export type IdentifyResult = {
+  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
+  features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
+};
+// Union type cho IIdentifyView
+export type IIdentifyView<T extends IDataset = IDataset> =
+  | IIdentifyViewWithoutMerge<T>
+  | IIdentifyViewWithMerge<T>;
 
 export type IActionForView<T extends IDataset = IDataset> = {
   menus: MenuAction<T>[];

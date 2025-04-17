@@ -18,6 +18,7 @@ import { MapMouseEvent, type PointLike } from 'mapbox-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
+import { handleMultiIdentify } from '../../model';
 import { getAllComponentsByType, getDatasetIds } from '../../store';
 import { setFeatureHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
@@ -123,22 +124,10 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
   result.loading = true;
   try {
     const startTime = Date.now();
-    const features = await Promise.all(
-      cUsedIdentify.value.map((x) =>
-        x
-          .getFeatures(mapId.value, pointOrBox)
-          .then((res) => ({
-            identify: x,
-            features: res,
-          }))
-          .catch((e) => {
-            console.error(e);
-            return {
-              identify: x,
-              features: [],
-            };
-          })
-      )
+    const features = await handleMultiIdentify(
+      cUsedIdentify.value,
+      mapId.value,
+      pointOrBox
     );
     const elapsedTime = Date.now() - startTime;
     if (elapsedTime < 500) {
@@ -411,9 +400,8 @@ function onMenuAction(
       letter-spacing: normal;
       min-height: 30px;
       outline: none;
-      padding: 0 12px;
+      padding: 8px;
       position: relative;
-      margin-top: 4px;
       flex-direction: column;
     }
     &__child-container {
@@ -422,7 +410,6 @@ function onMenuAction(
       min-height: 30px;
       outline: none;
       position: relative;
-      margin-top: 4px;
       flex-direction: column;
       gap: 4px;
     }

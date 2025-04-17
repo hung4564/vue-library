@@ -24,12 +24,18 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
+import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerList from './part/LayerList.vue';
 
 const props = defineProps({
   ...withMapProps,
   ...makeShowProps({ show: false }),
 });
+defineSlots<{
+  titleList: (props: { mapId: string }) => any;
+  endList: (props: { mapId: string }) => any;
+  default(): any;
+}>();
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);
 setLocale({
@@ -71,6 +77,10 @@ const path = {
   layer: { create: mdiPlus },
 };
 const [show, toggleShow] = useShow(props.show);
+const [showCreate, toggleShowCreate] = useShow();
+function openAddLayer() {
+  toggleShowCreate();
+}
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -96,14 +106,22 @@ const [show, toggleShow] = useShow(props.show);
           </span>
         </template>
         <div class="layer-control">
-          <LayerList :mapId="mapId" />
+          <LayerList :mapId="mapId">
+            <template #title>
+              <slot name="titleList" :mapId="mapId">
+                <button class="layer-item__button" @click.stop="openAddLayer()">
+                  <SvgIcon size="14" type="mdi" :path="path.layer.create" />
+                </button>
+              </slot>
+            </template>
+          </LayerList>
           <div class="base-map-card-container">
             <slot name="endList" :mapId="mapId"> </slot>
           </div>
         </div>
       </DraggableItemSideBar>
     </template>
-
+    <CreateControl v-model:show="showCreate" />
     <slot />
   </ModuleContainer>
 </template>

@@ -32,7 +32,15 @@ const props = defineProps({
   disabledDrag: Boolean,
   disabled: Boolean,
 });
-const emit = defineEmits(['click:create']);
+
+defineSlots<{
+  title(): any;
+  item(props: {
+    item: IListViewUI;
+    isSelected: boolean;
+    toggleSelect: (item: IListViewUI) => void;
+  }): any;
+}>();
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,
@@ -132,9 +140,6 @@ function getViewFromStore() {
       (a, b) => b.index - a.index
     ) || [];
 }
-function openAddLayer() {
-  emit('click:create');
-}
 function addNewGroup() {
   if (groupRef.value) groupRef.value.addNewGroup('');
 }
@@ -195,6 +200,7 @@ function onLayerAction({
 <template lang="">
   <div class="layer-control-container">
     <div class="layer-control__header">
+      <slot name="title"></slot>
       <div class="v-spacer"></div>
       <button class="layer-item__button" @click="addNewGroup()">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />

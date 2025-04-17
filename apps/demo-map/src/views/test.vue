@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { fitBounds, type MapSimple } from '@hungpvq/shared-map';
+import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  getMap,
   GotoControl,
   HomeControl,
   Map,
@@ -20,6 +19,7 @@ import {
   createDatasetPartListViewUiComponent,
   createDatasetPartMetadataComponent,
   createIdentifyMapboxComponent,
+  createIdentifyMapboxMergedComponent,
   createLegend,
   createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
@@ -132,6 +132,11 @@ function onMapLoaded(map: MapSimple) {
       .setColor(list2.color)
       .setOpacity(list2.opacity)
       .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list2.color)
+      .setOpacity(list2.opacity)
+      .build(),
   ]);
   list1.menus = [
     createMenuItemToBoundActionForList(),
@@ -154,15 +159,27 @@ function onMapLoaded(map: MapSimple) {
     ],
   });
   const identify = createIdentifyMapboxComponent('test identify');
+  const identify1 = createIdentifyMapboxMergedComponent('test identify 1');
+  const identify2 = createIdentifyMapboxMergedComponent('test identify 2');
   identify.menus = [
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ];
+  identify1.menus = [
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ];
+  identify2.menus = [
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(),
   ];
   const group = { id: 'test', name: 'test' };
   list1.group = group;
+  groupLayer1.add(identify1);
   list2.group = group;
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
+  groupLayer2.add(identify2);
   groupLayer2.add(metadataForList2);
   const dataManagement = new DataManagementMapboxComponent('data management', {
     fields: [
@@ -214,17 +231,17 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(identify);
   dataset.add(metadata);
   addDataset(map.id, dataset);
-  addDataset(map.id, dataset_raster);
+  // addDataset(map.id, dataset_raster);
 }
 </script>
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
     <ComponentManagementControl />
-    <LayerInfoControl show>
+    <!-- <LayerInfoControl show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
-    </LayerInfoControl>
+    </LayerInfoControl> -->
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">

@@ -1,6 +1,11 @@
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IDatasetMap } from '../interfaces/dataset.map';
-import type { IMapboxLayerView } from '../interfaces/dataset.parts';
+import type {
+  IDataManagementView,
+  IIdentifyView,
+  IIdentifyViewWithMerge,
+  IMapboxLayerView,
+} from '../interfaces/dataset.parts';
 import { DatasetComposite } from '../model';
 
 // Type guard to check if a dataset implements IDatasetMap
@@ -26,4 +31,19 @@ export function isComposite(
   dataset: IDataset
 ): dataset is IDataset & DatasetComposite {
   return dataset.isComposite();
+}
+
+export function isIdentifyMergeView<T extends IDataset>(
+  view: IIdentifyView<T>
+): view is IIdentifyViewWithMerge<T> {
+  return 'identifyGroupId' in view;
+}
+export function isDataManagementView(
+  dataset: any
+): dataset is IDataManagementView {
+  return (
+    dataset?.type === 'dataManagement' &&
+    typeof dataset.showDetail === 'function' &&
+    typeof dataset.getList === 'function'
+  );
 }
