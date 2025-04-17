@@ -111,7 +111,9 @@ export class DatasetComposite extends DatasetComponent {
   }
 
   remove(dataset: IDataset): void {
-    const index = this.children.findIndex((child) => child === dataset);
+    const index = this.children.findIndex(
+      (child) => child === dataset || child.id === dataset.id
+    );
     if (index !== -1) {
       this.children.splice(index, 1);
       if (typeof dataset?.setParent === 'function') {

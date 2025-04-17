@@ -90,7 +90,7 @@ export function getAllComponentsByType<T>(mapId: string, targetType: string) {
     return [];
   }
   const views: T[] = [];
-  Object.values(store.datasets).forEach((dataset) => {
+  (Object.values(store.datasets || {}) || []).forEach((dataset) => {
     const allComponentsOfType = findAllComponentsByType(dataset, targetType);
     views.push(...(allComponentsOfType as T[]));
   });

@@ -31,7 +31,6 @@ export function createDatasetComponent<T = any>(
     setParent(newParent?: ReturnType<typeof createDatasetComponent>) {
       parent = newParent;
     },
-
     getParent(): ReturnType<typeof createDatasetComponent> | undefined {
       return parent;
     },
