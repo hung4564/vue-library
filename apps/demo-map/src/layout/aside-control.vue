@@ -30,9 +30,6 @@
             <RouterLink to="/draw">draw </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/Layer">layer </RouterLink>
-          </v-list-item>
-          <v-list-item>
             <RouterLink to="/measurement">measurement </RouterLink>
           </v-list-item>
         </v-list>

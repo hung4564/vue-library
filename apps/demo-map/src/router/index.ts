@@ -18,20 +18,8 @@ const router = createRouter({
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
-      path: '/layer/',
-      component: () => import('../views/LayerControl/example.vue'),
-    },
-    {
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
-    },
-    {
-      path: '/geojson/',
-      component: () => import('../views/GeojsonIo/index.vue'),
-    },
-    {
-      path: '/test/',
-      component: () => import('../views/test.vue'),
     },
   ],
 });

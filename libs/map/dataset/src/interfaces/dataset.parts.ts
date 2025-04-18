@@ -1,4 +1,5 @@
 import type { Color, MapSimple } from '@hungpvq/shared-map';
+import { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type { AnySourceData, PointLike } from 'mapbox-gl';
 import type { IDataset } from './dataset.base';
@@ -156,7 +157,7 @@ export type IMetadataView = {
 export type IDataManagementView<D = any> = {
   showDetail(mapId: string, detail: D): void;
   getList(ids?: string[]): Promise<D[]>;
-};
+} & IDrawHandler;
 
 export type IFieldInfo = {
   trans?: string;

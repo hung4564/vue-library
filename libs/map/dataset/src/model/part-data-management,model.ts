@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { copyByJson } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
+import booleanIntersects from '@turf/boolean-intersects';
+import { point as pointTurf } from '@turf/turf';
+import type { Feature } from 'geojson';
 import type { IDataManagementView, IDatasetMap } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import { addComponent, setFeatureHighlight } from '../store';
@@ -26,7 +31,12 @@ export class DataManagementMapboxComponent<
     D extends {
       id: string;
       geometry: { type: string; coordinates: any[] };
-    } = any
+      [key: string]: any;
+    } = {
+      id: string;
+      geometry: { type: string; coordinates: any[] };
+      [key: string]: any;
+    }
   >
   extends DatasetPartDataManagementComponent<D>
   implements IDatasetMap
@@ -74,15 +84,59 @@ export class DataManagementMapboxComponent<
         view: this,
       },
     });
-    const { geometry, ...properties } = detail;
-    setFeatureHighlight(
-      mapId,
-      {
-        type: 'Feature',
-        geometry,
-        properties,
-      },
-      'detail'
-    );
+    setFeatureHighlight(mapId, convertItemToFeature(detail), 'detail');
   }
+
+  async addFeatures(features: Feature[] = []) {
+    this.items.push(...features.map(convertFeatureToItem<D>));
+    this.items = copyByJson(this.items);
+  }
+  async updateFeatures(features: Feature[] = []) {
+    const object_cache = features.reduce<Record<string, Feature>>(
+      (acc, cur) => {
+        acc[cur.properties!.id] = cur;
+        return acc;
+      },
+      {}
+    );
+    this.items.forEach((feature, i) => {
+      if (object_cache[feature.id]) {
+        this.items[i] = convertFeatureToItem<D>(object_cache[feature.id]);
+      }
+    });
+  }
+  async deleteFeatures(features: Feature[] = []) {
+    const object_cache = features.reduce<Record<string, Feature>>(
+      (acc, cur) => {
+        acc[cur.properties!.id] = cur;
+        return acc;
+      },
+      {}
+    );
+    this.items = this.items.filter((x) => !object_cache[x.id]);
+  }
+  async getFeatures(point: [number, number]) {
+    return this.items
+      .filter((feature) =>
+        booleanIntersects(feature.geometry, pointTurf(point))
+      )
+      .map(convertItemToFeature);
+  }
+}
+
+function convertFeatureToItem<T>(feature: Feature) {
+  return {
+    id: feature.id,
+    ...feature.properties,
+    geometry: feature.geometry,
+  } as T;
+}
+function convertItemToFeature(item: any): Feature {
+  const { geometry, ...properties } = item;
+  return {
+    id: item.id,
+    type: 'Feature',
+    geometry,
+    properties,
+  };
 }

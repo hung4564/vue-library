@@ -1,262 +1,308 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/shared-map';
+import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
+  getMap,
   GotoControl,
   HomeControl,
   Map,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
-  langStore,
 } from '@hungpvq/vue-map-core';
 import {
-  DrawControl,
-  DrawingType,
-  LayerDrawBuild,
-} from '@hungpvq/vue-map-draw';
-import {
+  addDataset,
+  ComponentManagementControl,
+  createDataset,
+  createDatasetPartListViewUiComponent,
+  createDatasetPartMetadataComponent,
+  createIdentifyMapboxComponent,
+  createIdentifyMapboxMergedComponent,
+  createLegend,
+  createMenuItem,
+  createMenuItemShowDetailForItem,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemStyleEdit,
+  createMenuItemToBoundActionForItem,
+  createMenuItemToBoundActionForList,
+  createMultiLegend,
+  DataManagementMapboxComponent,
+  DatasetComposite,
+  findSiblingOrNearestLeaf,
+  GeojsonSource,
   IdentifyControl,
-  LayerBuilder,
+  IListViewUI,
+  isDataManagementView,
+  isDatasetMap,
+  isMapboxLayerView,
   LayerControl,
+  LayerHighlight,
+  LayerInfoControl,
   LayerSimpleMapboxBuild,
-  addLayer,
-  createGeoJsonLayer,
-  createRasterUrlLayer,
-} from '@hungpvq/vue-map-layer';
+  MultiMapboxLayerComponent,
+  RasterUrlSource,
+} from '@hungpvq/vue-map-dataset';
+import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
-import AsideControl from '../layout/aside-control.vue';
-function onMapLoaded(map: MapSimple) {
-  langStore.setMapLang(map.id, {
-    map: {
-      basemap: {
-        title: 'Bản Đồ nền',
-        setting: 'Cài Đặt',
-      },
-      'crs-control': {
-        title: 'Cài đặt CRS',
-        field: {
-          name: 'tên',
-          unit: 'đơn vị',
-          epsg: 'EPSG',
-          proj4js: 'proj4js',
-        },
-      },
-      action: {
-        'fullscreen-control-enter': 'Toàn màn hình',
-        'fullscreen-control-exit': 'Thoát toàn màn hình',
-        'geolocate-control-find-my-location': 'Tìm vị trí của tôi',
-        'geolocate-control-location-not-available': 'Vị trí không có sẵn',
-        'navigation-control-zoom-in': 'Phóng to',
-        'navigation-control-zoom-out': 'Thu phóng ra',
-        'navigation-control-reset-bearing': 'Đặt lại về phía bắc',
-      },
-      'goto-control': {
-        title: 'Đi đến',
-        field: {
-          zoom: 'Phóng',
-          center: 'Trung tâm',
-          sprite: 'URL sprite',
-          glyphs: 'Url glyphs',
-        },
-        btn: {
-          apply: 'Đi đến',
-        },
-      },
-      home: {
-        title: 'Trang chủ',
-      },
-      'setting-control': {
-        title: 'Cài đặt',
-        field: {
-          zoom: 'Phóng',
-          center: 'Trung tâm',
-          sprite: 'URL sprite',
-          glyphs: 'Url glyphs',
-        },
-        btn: {
-          apply: 'Áp dụng',
-        },
-      },
-      'layer-control': {
-        title: 'Kiểm soát lớp',
-        'create-btn': 'Tạo lớp',
-        create: {
-          title: 'Lớp mới',
-        },
-        field: {
-          name: 'Tên',
-          type: 'Kiểu',
-          url: 'URL',
-          minzoom: 'Thu phóng tối thiểu',
-          maxzoom: 'Phóng to tối đa',
-          file: 'Tài liệu',
-          geojson: 'Geojson',
-          tiles: 'Gạch',
-          bound: {
-            title: 'Ràng buộc',
-            minx: 'Kinh độ tối thiểu',
-            miny: 'Vĩ độ tối thiểu',
-            maxx: 'Kinh độ tối đa',
-            maxy: 'Vĩ độ tối đa',
-          },
-        },
-        info: {
-          title: 'Thông tin',
-        },
-      },
-      identify: {
-        title: 'Nhận dạng',
-        point: 'Điểm',
-      },
-      measurement: {
-        action: {
-          clear: 'Thông thoáng',
-          close: 'Đóng',
-          setting: 'Cài đặt',
-          download: 'Tải xuống',
-          'add-point': 'Thêm điểm',
-          'fly-to': 'Lấp đầy ràng buộc',
-          add: 'Thêm vào',
-        },
-        title: 'Đo lường',
-        result: 'Kết quả đo lường',
-        field: {
-          'unit-distance': 'Khoảng cách đơn vị',
-          'unit-area': 'Khu vực đơn vị',
-        },
-        tools: {
-          point: 'Đo điểm',
-          distance: 'Đo khoảng cách',
-          area: 'Đo diện tích',
-          azimuth: 'Đo góc phương vị',
-        },
-        unit: {
-          meter: 'Mét',
-          kilometer: 'Km',
-          'square-meter': 'Mét vuông',
-          hecta: 'HECTA',
-          'square-kilometer': 'Km vuông',
-        },
-        setting: {
-          title: 'Cài đặt',
-          field: {
-            data: 'Dữ liệu',
-          },
-          point: 'Điểm',
-          distance: 'Khoảng cách',
-          area: 'Khu vực',
-          azimuth: 'Phương vị',
-        },
-        'no-data': {
-          text: 'Trạng thái',
-          value: 'Chờ...',
-        },
-      },
-      print: {
-        title: 'In',
-        actions: {
-          save: 'cứu',
-          clear: 'thông thoáng',
-          setting: 'Cài đặt',
-        },
-        setting: {
-          title: 'Cài đặt',
-        },
-        field: {
-          ratio: 'Tỷ lệ',
-          orientation: 'Định hướng',
-        },
-        btn: {
-          apply: 'In',
-        },
-      },
-    },
-  });
-  addLayer(
-    map.id,
-    createRasterUrlLayer({
-      name: 'raster 1',
-      tiles: [
-        'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
-      ],
-      maxZoom: 6,
-      bounds: [
-        104.96327341667353, 18.461221184685627, 106.65936430823979,
-        19.549518287564368,
-      ],
-    })
-  );
+import { mdiInformation, mdiPencil } from '@mdi/js';
+import { ref } from 'vue';
 
-  addLayer(
-    map.id,
-    createGeoJsonLayer({
-      name: 'geojson 1',
-      type: 'line',
-      color: '#ff0000',
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {
-              id: '1',
-              name: 'feature 2',
-            },
-            geometry: {
-              coordinates: [
-                [
-                  [104.96327341667353, 19.549518287564368],
-                  [104.96327341667353, 18.461221184685627],
-                  [106.65936430823979, 18.461221184685627],
-                  [106.65936430823979, 19.549518287564368],
-                  [104.96327341667353, 19.549518287564368],
-                ],
-              ],
-              type: 'Polygon',
-            },
-          },
+const mapRef = ref();
+
+function onMapLoaded(map: MapSimple) {
+  const dataset_raster = createDataset(
+    'Group test',
+    null,
+    true
+  ) as DatasetComposite;
+  const source_raster = new RasterUrlSource('source', {
+    name: 'raster 1',
+    type: 'raster',
+    tiles: [
+      'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
+    ],
+    maxZoom: 6,
+    bounds: [
+      104.96327341667353, 18.461221184685627, 106.65936430823979,
+      19.549518287564368,
+    ],
+  });
+  const layerraster = new MultiMapboxLayerComponent('layer raster', [
+    {
+      type: 'raster',
+    },
+  ]);
+  const list_raster = createDatasetPartListViewUiComponent('test raster');
+  list_raster.color = '#0000FF';
+  const groupLayer_raster = createDataset(
+    'Group layer 1',
+    null,
+    true
+  ) as DatasetComposite;
+  dataset_raster.add(source_raster);
+  groupLayer_raster.add(list_raster);
+  groupLayer_raster.add(layerraster);
+  dataset_raster.add(groupLayer_raster);
+  list_raster.addMenu(createMenuItemShowDetailInfoSource());
+  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const source = new GeojsonSource('source', {
+    type: 'FeatureCollection',
+    features: [],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true
+  ) as DatasetComposite;
+  const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
+  list1.color = '#0000FF';
+  list1.opacity = 0.5;
+  list1.legend = createMultiLegend([
+    {
+      type: 'text',
+      value: { text: 'text-test', value: 'test-value' },
+    },
+    {
+      type: 'linear',
+      value: {
+        text: 'legend linear',
+        items: [
+          { value: 'test 1', color: '#fff' },
+          { value: 'test 2', color: '#000' },
+          { value: 'test 3', color: 'red' },
         ],
       },
-      builds: [
-        LayerBuilder.map().setLayers([
-          new LayerSimpleMapboxBuild()
-            .setStyleType('area')
-            .setColor('#0000FF')
-            .build(),
-          new LayerSimpleMapboxBuild()
-            .setStyleType('point')
-            .setColor('#ff0000')
-            .build(),
-        ]),
-        new LayerDrawBuild().setDrawSupport([
-          DrawingType.POINT,
-          DrawingType.POLYGON,
-          DrawingType.LINE_STRING,
-        ]),
+    },
+  ]);
+  const layer1 = new MultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list1.color)
+      .setOpacity(list1.opacity)
+      .build(),
+  ]);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  const groupLayer2 = createDataset(
+    'Group layer 2',
+    null,
+    true
+  ) as DatasetComposite;
+  const list2 = createDatasetPartListViewUiComponent('test point');
+  list2.color = '#ff0000';
+  list2.opacity = 0.5;
+  list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
+  const layer2 = new MultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(list2.color)
+      .setOpacity(list2.opacity)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setColor(list2.color)
+      .setOpacity(list2.opacity)
+      .build(),
+  ]);
+  list1.menus = [
+    createMenuItemToBoundActionForList(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
+  ];
+  list2.menus = [createMenuItemToBoundActionForList(), createMenuDrawLayer()];
+  const metadataForList2 = createDatasetPartMetadataComponent(
+    'metadata for list2',
+    {
+      bbox: [
+        105.88454157202995, 20.878811643339404, 106.16710803591963,
+        21.0854254401454,
       ],
-    })
+    }
   );
+  const metadata = createDatasetPartMetadataComponent('metadata', {
+    bbox: [
+      104.96327341667353, 18.461221184685627, 107.53334783357559,
+      20.18022781865689,
+    ],
+  });
+  const identify = createIdentifyMapboxComponent('test identify');
+  const identify1 = createIdentifyMapboxMergedComponent('test identify 1');
+  const identify2 = createIdentifyMapboxMergedComponent('test identify 2');
+  identify.menus = [
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ];
+  identify1.menus = [
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ];
+  identify2.menus = [
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ];
+  const group = { id: 'test', name: 'test' };
+  list1.group = group;
+  groupLayer1.add(identify1);
+  list2.group = group;
+  groupLayer2.add(layer2);
+  groupLayer2.add(list2);
+  groupLayer2.add(identify2);
+  groupLayer2.add(metadataForList2);
+  const dataManagement = new DataManagementMapboxComponent('data management', {
+    fields: [
+      { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+      { text: 'Name', value: 'name' },
+    ],
+  });
+  dataManagement.setItems([
+    {
+      id: '1',
+      name: 'feature 1',
+      geometry: {
+        coordinates: [
+          [
+            [104.96327341667353, 19.549518287564368],
+            [104.96327341667353, 18.461221184685627],
+            [106.65936430823979, 18.461221184685627],
+            [106.65936430823979, 19.549518287564368],
+            [104.96327341667353, 19.549518287564368],
+          ],
+        ],
+        type: 'Polygon',
+      },
+    },
+    {
+      id: '2',
+      name: 'feature 2',
+      geometry: {
+        coordinates: [
+          [
+            [105.80782070639765, 20.18022781865689],
+            [105.80782070639765, 18.841791883714322],
+            [107.53334783357559, 18.841791883714322],
+            [107.53334783357559, 20.18022781865689],
+            [105.80782070639765, 20.18022781865689],
+          ],
+        ],
+        type: 'Polygon',
+      },
+    },
+  ]);
+  dataset.add(source);
+  dataset.add(dataManagement);
+  dataset.add(groupLayer1);
+  dataset.add(groupLayer2);
+  dataset.add(identify);
+  dataset.add(metadata);
+  addDataset(map.id, dataset);
+  // addDataset(map.id, dataset_raster);
+}
+
+function createMenuDrawLayer() {
+  return createMenuItem({
+    type: 'item',
+    name: 'Edit feature',
+    icon: mdiPencil,
+    click: (layer, mapId) => {
+      const maybeDataManagement = findSiblingOrNearestLeaf(
+        layer,
+        (dataset) => dataset.type === 'dataManagement'
+      );
+      if (isDataManagementView(maybeDataManagement)) {
+        callDraw(mapId, {
+          cleanAfterDone: true,
+          draw_support: [
+            DrawingType.POINT,
+            DrawingType.POLYGON,
+            DrawingType.LINE_STRING,
+          ],
+          getFeatures:
+            maybeDataManagement.getFeatures &&
+            maybeDataManagement.getFeatures.bind(maybeDataManagement),
+          addFeatures:
+            maybeDataManagement.addFeatures &&
+            maybeDataManagement.addFeatures.bind(maybeDataManagement),
+          updateFeatures:
+            maybeDataManagement.updateFeatures &&
+            maybeDataManagement.updateFeatures.bind(maybeDataManagement),
+          deleteFeatures:
+            maybeDataManagement.deleteFeatures &&
+            maybeDataManagement.deleteFeatures.bind(maybeDataManagement),
+          reset: async () => {
+            getMap(mapId, (map) => {
+              if (isDatasetMap(maybeDataManagement))
+                maybeDataManagement.addToMap(map);
+            });
+          },
+        });
+      }
+    },
+  });
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded">
-    <AsideControl position="top-left" show />
+  <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <ComponentManagementControl />
+    <!-- <LayerInfoControl show>
+      <template #endList="{ mapId }">
+        <BaseMapCard :mapId="mapId" />
+      </template>
+    </LayerInfoControl> -->
     <MeasurementControl position="top-right" />
     <DrawControl position="top-right" />
-    <IdentifyControl position="top-right" />
-    <GotoControl position="top-right" />
-    <LayerControl position="top-left">
+    <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <PrintAdvancedControl />
-    <PrintControl />
+    <IdentifyControl position="top-right" />
+    <GotoControl position="top-right" />
     <CrsControl />
     <SettingControl />
     <GeoLocateControl />
@@ -265,6 +311,7 @@ function onMapLoaded(map: MapSimple) {
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
+    <LayerHighlight />
   </Map>
 </template>
 

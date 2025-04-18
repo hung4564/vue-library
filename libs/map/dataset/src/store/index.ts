@@ -1,7 +1,7 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { IListView } from '@hungpvq/vue-map-core';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import { ref, Ref } from 'vue';
+import { IListViewUI } from '../interfaces';
 import type { IDataset } from '../interfaces/dataset.base';
 import {
   applyToAllLeaves,
@@ -23,12 +23,12 @@ export async function addDataset(mapId: string, layer: IDataset) {
   if (!store) {
     return;
   }
-  const currentLists = getAllComponentsByType<IListView & IDataset>(
+  const currentLists = getAllComponentsByType<IListViewUI & IDataset>(
     mapId,
     'list'
   );
   const allComponentsOfType = findAllComponentsByType(layer, 'list') as Array<
-    IListView & IDataset
+    IListViewUI & IDataset
   >;
   store.datasets[layer.id] = layer;
   allComponentsOfType.forEach((list, i) => {
