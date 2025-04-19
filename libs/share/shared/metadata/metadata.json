@@ -127,6 +127,27 @@
       "description": "read file"
     },
     {
+      "name": "useDownloadFile",
+      "package": "Share - File",
+      "docs": "/shared-file/useDownloadFile/",
+      "category": "Browser",
+      "description": "Easily download files from a URL, Blob, Base64, or Buffer (ArrayBuffer/Uint8Array). Provides download status tracking and error handling."
+    },
+    {
+      "name": "useConvertToGeoJSON",
+      "package": "Share - File",
+      "docs": "/shared-file/useConvertToGeoJSON/",
+      "category": "Geojson",
+      "description": "Easily convert raw input data into GeoJSON format, with automatic geometry detection, validation."
+    },
+    {
+      "name": "useGeoConvertFile",
+      "package": "Share - File",
+      "docs": "/shared-file/useGeoConvertFile/",
+      "category": "Geojson",
+      "description": "Easily convert GeoJSON data into multiple formats, including Shapefile, KML, GPX, CSV, and more."
+    },
+    {
       "name": "useIntersectionObserver",
       "package": "Share - Core",
       "docs": "/shared-core/useIntersectionObserver/",

@@ -43,7 +43,14 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['vue', '@hungpvq/shared', '@hungpvq/shared-core'],
+      external: [
+        'vue',
+        '@hungpvq/shared',
+        '@hungpvq/shared-core',
+        'tokml',
+        'papaparse',
+        '@mapbox/shp-write',
+      ],
     },
   },
 });
