@@ -8,7 +8,7 @@ import Demo from './demo.vue'
 
 # useFileReader
 
-<FunctionInfo :frontmatter="$frontmatter" package="Share - Core" fn="useFileReader" />
+<FunctionInfo :frontmatter="$frontmatter" package="Share - File" fn="useFileReader" />
 Open file dialog with ease.
 
 ## Demo
@@ -20,7 +20,7 @@ Open file dialog with ease.
 ## Usage
 
 ```ts
-import { useFileReader } from '@hungpvq@shared-core';
+import { useFileReader } from '@hungpvq/shared-file';
 
 const { read } = useFileReader();
 ```

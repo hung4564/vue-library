@@ -8,7 +8,7 @@ import Demo from './demo.vue'
 
 # useFileDialog
 
-<FunctionInfo :frontmatter="$frontmatter" package="Share - Core" fn="useFileDialog" />
+<FunctionInfo :frontmatter="$frontmatter" package="Share - File" fn="useFileDialog" />
 Open file dialog with ease.
 
 ## Demo
@@ -20,7 +20,7 @@ Open file dialog with ease.
 ## Usage
 
 ```ts
-import { useFileDialog } from '@hungpvq@shared-core';
+import { useFileDialog } from '@hungpvq/shared-file';
 
 const { files, open, reset, onChange } = useFileDialog({
   accept: 'image/*', // Set to accept only image files

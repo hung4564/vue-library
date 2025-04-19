@@ -18,7 +18,7 @@ import { addStore, getMap, getStore, addToQueue } from '@hungpvq/vue-map-core';
 import { addStore, getStore, addToQueue } from '@hungpvq/vue-map-core';
 export const KEY = 'layer';
 export type MapLayerStore = {
-  layers: Record<string, ILayer>;
+  layers: Record<string, any>;
   layerIds: Ref<string[]>;
 };
 export function initMapLayer(mapId: string) {

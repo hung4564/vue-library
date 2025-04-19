@@ -1,4 +1,3 @@
-export * from './layer';
 export * from './store';
 declare global {
   interface Window {

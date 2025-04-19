@@ -1,6 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
-  ILayer,
   addStore,
   addToQueue,
   getStore,
@@ -228,26 +227,6 @@ export function callDraw(map_id: string, option: DrawOption) {
   action.reset = option.reset;
   action.save = option.save;
   return register_id;
-}
-export function callDrawForLayer(map_id: string, layer: ILayer) {
-  const handler = (layer.getView('draw') as ILayerDrawView).handler;
-  handler.setLayer(layer);
-  return callDraw(map_id, {
-    cleanAfterDone: true,
-    draw_support: (layer.getView('draw') as ILayerDrawView).draw_support,
-    getFeatures: handler.getFeatures && handler.getFeatures.bind(handler),
-    addFeatures: handler.addFeatures && handler.addFeatures.bind(handler),
-    updateFeatures:
-      handler.updateFeatures && handler.updateFeatures.bind(handler),
-    deleteFeatures:
-      handler.deleteFeatures && handler.deleteFeatures.bind(handler),
-    reset: async () => {
-      storeMap.actions.getMap(map_id, (map) => {
-        handler.updateLayer(layer);
-        layer.getView('source').updateForMap(map);
-      });
-    },
-  });
 }
 
 export const getDrawIsActivated = (map_id: string) =>
