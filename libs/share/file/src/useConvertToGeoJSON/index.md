@@ -61,7 +61,7 @@ const rawData = [
 ## Usage
 
 ```ts
-import { useConvertToGeoJSON } from '@hungpvq@shared-file';
+import { useConvertToGeoJSON } from '@hungpvq/shared-file';
 
 const { convertFeature, convertList } = useConvertToGeoJSON();
 

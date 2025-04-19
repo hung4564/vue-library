@@ -46,7 +46,7 @@ Easily download files from a URL, Blob, Base64, or Buffer (ArrayBuffer/Uint8Arra
 ## Usage
 
 ```ts
-import { useDownloadFile } from '@hungpvq@shared-file';
+import { useDownloadFile } from '@hungpvq/shared-file';
 
 const { status, error, downloadFile } = useDownloadFile();
 

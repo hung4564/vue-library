@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  useConvertToGeoJSON,
+  useDownloadFile,
+  useGeoConvertToFile,
+} from '@hungpvq/shared-file';
 import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
@@ -37,7 +42,6 @@ import {
   IListViewUI,
   isDataManagementView,
   isDatasetMap,
-  isMapboxLayerView,
   LayerControl,
   LayerHighlight,
   LayerInfoControl,
@@ -47,11 +51,13 @@ import {
 } from '@hungpvq/vue-map-dataset';
 import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { mdiInformation, mdiPencil } from '@mdi/js';
+import { mdiDownload, mdiPencil } from '@mdi/js';
 import { ref } from 'vue';
-
+const { status, error, downloadFile } = useDownloadFile();
 const mapRef = ref();
 
+const { convertList } = useConvertToGeoJSON();
+const { convert } = useGeoConvertToFile();
 function onMapLoaded(map: MapSimple) {
   const dataset_raster = createDataset(
     'Group test',
@@ -152,7 +158,11 @@ function onMapLoaded(map: MapSimple) {
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ];
-  list2.menus = [createMenuItemToBoundActionForList(), createMenuDrawLayer()];
+  list2.menus = [
+    createMenuItemToBoundActionForList(),
+    createMenuDrawLayer(),
+    createMenuDownload(),
+  ];
   const metadataForList2 = createDatasetPartMetadataComponent(
     'metadata for list2',
     {
@@ -243,7 +253,30 @@ function onMapLoaded(map: MapSimple) {
   addDataset(map.id, dataset);
   // addDataset(map.id, dataset_raster);
 }
+function createMenuDownload() {
+  return createMenuItem({
+    type: 'item',
+    name: 'Download',
+    icon: mdiDownload,
+    click: async (layer, mapId) => {
+      const maybeDataManagement = findSiblingOrNearestLeaf(
+        layer,
+        (dataset) => dataset.type === 'dataManagement'
+      );
 
+      if (isDataManagementView(maybeDataManagement)) {
+        console.log(maybeDataManagement, maybeDataManagement.getData());
+        const data = await convert(
+          convertList((await maybeDataManagement.getList()) || []),
+          {
+            filename: 'download.geojson',
+          }
+        );
+        if (data) downloadFile(data, 'download.geojson');
+      }
+    },
+  });
+}
 function createMenuDrawLayer() {
   return createMenuItem({
     type: 'item',

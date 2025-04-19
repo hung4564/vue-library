@@ -6,9 +6,9 @@ category: Geojson
 import Demo from './demo.vue'
 </script>
 
-# useGeoConvertFile
+# useGeoConvertToFile
 
-<FunctionInfo :frontmatter="$frontmatter" package="Share - File" fn="useGeoConvertFile" />
+<FunctionInfo :frontmatter="$frontmatter" package="Share - File" fn="useGeoConvertToFile" />
 Easily convert GeoJSON data into multiple formats, including Shapefile, KML, GPX, CSV, and more.
 
 ## Demo
@@ -84,9 +84,9 @@ Easily convert GeoJSON data into multiple formats, including Shapefile, KML, GPX
 ## Usage
 
 ```ts
-import { useGeoConvertFile } from '@hungpvq@shared-file';
+import { useGeoConvertToFile } from '@hungpvq/shared-file';
 
-const { convert } = useGeoConvertFile();
+const { convert } = useGeoConvertToFile();
 
 // Convert GeoJSON to Shapefile
 const geojsonData = {

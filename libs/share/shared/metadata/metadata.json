@@ -141,9 +141,9 @@
       "description": "Easily convert raw input data into GeoJSON format, with automatic geometry detection, validation."
     },
     {
-      "name": "useGeoConvertFile",
+      "name": "useGeoConvertToFile",
       "package": "Share - File",
-      "docs": "/shared-file/useGeoConvertFile/",
+      "docs": "/shared-file/useGeoConvertToFile/",
       "category": "Geojson",
       "description": "Easily convert GeoJSON data into multiple formats, including Shapefile, KML, GPX, CSV, and more."
     },

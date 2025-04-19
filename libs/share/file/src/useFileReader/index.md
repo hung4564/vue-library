@@ -20,7 +20,7 @@ Open file dialog with ease.
 ## Usage
 
 ```ts
-import { useFileReader } from '@hungpvq@shared-file';
+import { useFileReader } from '@hungpvq/shared-file';
 
 const { read } = useFileReader();
 ```
