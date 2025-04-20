@@ -14,12 +14,13 @@ export function createMultiMapboxLayerComponent(
     name,
     data
   );
-
+  const cacheOpacity: Record<string, number> = {};
   // Gán id nếu chưa có
-  base.getData().forEach((layer: any, index: number) => {
+  base.getData().forEach((layer, index: number) => {
     if (!layer.id) {
       layer.id = `${base.id}-${index}`;
     }
+    cacheOpacity[layer.id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
   });
 
   return createNamedComponent('MultiMapboxLayerComponent', {
@@ -80,9 +81,11 @@ export function createMultiMapboxLayerComponent(
     setOpacity(map: MapSimple, opacity: number): void {
       base.getData().forEach((layer) => {
         if (map.getLayer(layer.id!)) {
-          const keyOpacity =
-            layer.type === 'symbol' ? 'icon-opacity' : `${layer.type}-opacity`;
-          map.setPaintProperty(layer.id!, keyOpacity, opacity);
+          map.setPaintProperty(
+            layer.id!,
+            getKeyOpacity(layer),
+            opacity * (cacheOpacity[layer.id!] ?? 1)
+          );
         }
       });
     },
@@ -142,4 +145,10 @@ function updateStyleLayer(map: MapSimple, old: any, newVal: any) {
       map.setLayoutProperty(old.id, key, newVal.layout[key]);
     }
   }
+}
+
+function getKeyOpacity(layer: Partial<Layer>): keyof Layer['paint'] {
+  const keyOpacity =
+    layer.type === 'symbol' ? 'icon-opacity' : `${layer.type}-opacity`;
+  return keyOpacity as keyof Layer['paint'];
 }
