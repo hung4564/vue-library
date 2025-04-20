@@ -293,7 +293,7 @@ function onMenuAction(
                       <div class="identify-control-child-item__spacer"></div>
                       <div class="identify-control-child-item__action">
                         <template
-                          v-for="(menu, i) in item.identify.menus"
+                          v-for="(menu, i) in item.identify.getMenus()"
                           :key="i"
                         >
                           <MenuItem

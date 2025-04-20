@@ -133,9 +133,9 @@ export type IIdentifyView<T extends IDataset = IDataset> =
   | IIdentifyViewWithMerge<T>;
 
 export type IActionForView<T extends IDataset = IDataset> = {
-  menus: MenuAction<T>[];
   addMenu(menu: MenuAction<T>): void;
   addMenus(menusToAdd: MenuAction<T>[]): void;
+  getMenus(): MenuAction<T>[];
   removeMenu: (id: string) => void;
   updateMenu: (
     id: string,

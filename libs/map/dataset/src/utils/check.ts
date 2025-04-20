@@ -5,6 +5,7 @@ import type {
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
+  IMapboxSourceView,
 } from '../interfaces/dataset.parts';
 import { DatasetComposite } from '../model';
 
@@ -12,6 +13,12 @@ import { DatasetComposite } from '../model';
 export function isDatasetMap(
   dataset: IDataset
 ): dataset is IDataset & IDatasetMap {
+  return 'removeFromMap' in dataset && 'addToMap' in dataset;
+}
+
+export function isDatasetSourceMap(
+  dataset: IDataset
+): dataset is IDataset & IMapboxSourceView {
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 

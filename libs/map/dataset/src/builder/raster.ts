@@ -3,8 +3,8 @@ import { IDataset } from '../interfaces';
 import {
   createDataset,
   createDatasetPartListViewUiComponent,
-  MultiMapboxLayerComponent,
-  RasterUrlSource,
+  createDatasetPartRasterSourceComponent,
+  createMultiMapboxLayerComponent,
   type DatasetComposite,
 } from '../model';
 
@@ -22,15 +22,15 @@ export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
     true
   ) as DatasetComposite;
 
-  const source_raster = new RasterUrlSource(data.name, {
+  const source_raster = createDatasetPartRasterSourceComponent(data.name, {
     name: data.name,
     type: 'raster',
     tiles: data.tiles,
-    maxZoom: data.maxZoom,
-    minZoom: data.minZoom,
+    maxzoom: data.maxZoom,
+    minzoom: data.minZoom,
     bounds: data.bounds,
   });
-  const layerraster = new MultiMapboxLayerComponent(data.name, [
+  const layerraster = createMultiMapboxLayerComponent(data.name, [
     {
       type: 'raster',
     },

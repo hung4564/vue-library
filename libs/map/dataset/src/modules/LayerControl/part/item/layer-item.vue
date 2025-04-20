@@ -174,7 +174,7 @@ const button_menus = computed<MenuAction<IListViewUI>[]>(() => {
   if (!props.item) {
     return [];
   }
-  return props.item.menus || [];
+  return props.item.getMenus() || [];
 });
 const extra_menus = computed(() => {
   return button_menus.value

@@ -3,6 +3,7 @@ import { getMap } from '@hungpvq/vue-map-core';
 import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
 import {
   IActionForView,
+  IDataManagementView,
   IDataset,
   IMapboxSourceView,
   IMetadataView,
@@ -13,14 +14,15 @@ import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../modules/StyleControl/style-control.vue';
 import { addComponent, setFeatureHighlight } from '../store';
 import { findSiblingOrNearestLeaf } from './dataset.visitors';
-import { DataManagementMapboxComponent } from './part-data-management,model';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset
 >(): IActionForView<T> {
   const menus: MenuAction<T>[] = [];
   return {
-    menus,
+    getMenus() {
+      return menus;
+    },
     addMenu(menu: MenuAction<T>) {
       if (menu.id && menus.some((m) => m.id === menu.id)) {
         return; // Không thêm nếu trùng id
@@ -114,7 +116,7 @@ export function createMenuItemShowDetailForItem() {
       const dataManagement = findSiblingOrNearestLeaf(
         layer,
         (dataset) => dataset.type == 'dataManagement'
-      ) as DataManagementMapboxComponent;
+      ) as unknown as IDataManagementView;
       dataManagement?.showDetail(mapId, value);
     },
   });

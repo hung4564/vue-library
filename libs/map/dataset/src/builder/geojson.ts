@@ -3,15 +3,15 @@ import { getChartRandomColor } from '@hungpvq/vue-map-core';
 import type { GeoJSON } from 'geojson';
 import { IDataset, IListViewUI } from '../interfaces';
 import {
+  createDataManagementMapboxComponent,
   createDataset,
+  createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createIdentifyMapboxComponent,
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
-  DataManagementMapboxComponent,
+  createMultiMapboxLayerComponent,
   DatasetComposite,
-  GeojsonSource,
-  MultiMapboxLayerComponent,
 } from '../model';
 import { LayerSimpleMapboxBuild } from '../utils/layer-simple-builder';
 export type GeojsonDatasetOption = {
@@ -27,7 +27,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   list.color = data.color || getChartRandomColor();
   const groupLayer = createDataset(data.name, null, true) as DatasetComposite;
 
-  const layer = new MultiMapboxLayerComponent(data.name, [
+  const layer = createMultiMapboxLayerComponent(data.name, [
     new LayerSimpleMapboxBuild()
       .setStyleType(data.type)
       .setColor(list.color)
@@ -37,16 +37,16 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   groupLayer.add(layer);
   groupLayer.add(list);
   const dataConvert = convertGeojsonToList(data.geojson);
-  const dataManagement = new DataManagementMapboxComponent(data.name, {
+  const dataManagement = createDataManagementMapboxComponent(data.name, {
     fields: dataConvert.fields,
   });
   dataManagement.setItems(dataConvert.items);
   const identify = createIdentifyMapboxComponent(data.name);
-  identify.menus = [
+  identify.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(),
-  ];
-  const source = new GeojsonSource(data.name, {
+  ]);
+  const source = createDatasetPartGeojsonSourceComponent(data.name, {
     type: 'FeatureCollection',
     features: [],
   });

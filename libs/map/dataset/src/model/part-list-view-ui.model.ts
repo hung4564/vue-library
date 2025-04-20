@@ -1,4 +1,5 @@
 import type { IListViewUI } from '../interfaces/dataset.parts';
+import { createNamedComponent } from './base';
 import { createDatasetLeaf } from './dataset.base.function';
 import { createDatasetMenu } from './part-menu.model';
 export function createDatasetPartListViewUiComponent<T = any>(
@@ -8,7 +9,7 @@ export function createDatasetPartListViewUiComponent<T = any>(
   const base = createDatasetLeaf<T>(name, data);
   const menu = createDatasetMenu();
 
-  return {
+  return createNamedComponent('ListViewUIComponent', {
     ...base,
     ...menu,
     get type(): string {
@@ -29,5 +30,5 @@ export function createDatasetPartListViewUiComponent<T = any>(
     group: undefined,
     show: true,
     legend: undefined,
-  };
+  });
 }

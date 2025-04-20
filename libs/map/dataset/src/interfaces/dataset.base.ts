@@ -4,7 +4,7 @@ import type { IDatasetVisitor } from './dataset.visitor';
  * Base interface for the Dataset Composite pattern
  * This interface defines the common operations for both leaf and composite nodes
  */
-export interface IDataset extends IDatasetVisit {
+export interface IDataset<T = any> extends IDatasetVisit {
   get type(): string;
   get id(): string;
   /**
@@ -19,11 +19,11 @@ export interface IDataset extends IDatasetVisit {
   /**
    * Get the data of the dataset
    */
-  getData(): any;
+  getData(): T;
   /**
    * Get the data of the dataset
    */
-  setData(data: any): void;
+  setData(data: T): void;
 
   /**
    * Add a child dataset (only applicable for composite nodes)

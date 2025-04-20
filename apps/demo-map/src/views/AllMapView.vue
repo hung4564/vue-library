@@ -34,10 +34,9 @@ import {
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   createMultiLegend,
-  DataManagementMapboxComponent,
+  createDataManagementMapboxComponent,
   DatasetComposite,
   findSiblingOrNearestLeaf,
-  GeojsonSource,
   IdentifyControl,
   IListViewUI,
   isDataManagementView,
@@ -46,8 +45,9 @@ import {
   LayerHighlight,
   LayerInfoControl,
   LayerSimpleMapboxBuild,
-  MultiMapboxLayerComponent,
-  RasterUrlSource,
+  createMultiMapboxLayerComponent,
+  createDatasetPartRasterSourceComponent,
+  createDatasetPartGeojsonSourceComponent,
 } from '@hungpvq/vue-map-dataset';
 import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
@@ -64,7 +64,7 @@ function onMapLoaded(map: MapSimple) {
     null,
     true
   ) as DatasetComposite;
-  const source_raster = new RasterUrlSource('source', {
+  const source_raster = createDatasetPartRasterSourceComponent('source', {
     name: 'raster 1',
     type: 'raster',
     tiles: [
@@ -76,7 +76,7 @@ function onMapLoaded(map: MapSimple) {
       19.549518287564368,
     ],
   });
-  const layerraster = new MultiMapboxLayerComponent('layer raster', [
+  const layerraster = createMultiMapboxLayerComponent('layer raster', [
     {
       type: 'raster',
     },
@@ -94,7 +94,7 @@ function onMapLoaded(map: MapSimple) {
   dataset_raster.add(groupLayer_raster);
   list_raster.addMenu(createMenuItemShowDetailInfoSource());
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
-  const source = new GeojsonSource('source', {
+  const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
@@ -105,7 +105,6 @@ function onMapLoaded(map: MapSimple) {
   ) as DatasetComposite;
   const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
-  list1.opacity = 0.5;
   list1.legend = createMultiLegend([
     {
       type: 'text',
@@ -123,11 +122,11 @@ function onMapLoaded(map: MapSimple) {
       },
     },
   ]);
-  const layer1 = new MultiMapboxLayerComponent('layer area', [
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
       .setStyleType('area')
       .setColor(list1.color)
-      .setOpacity(list1.opacity)
+      .setOpacity(0.5)
       .build(),
   ]);
   groupLayer1.add(layer1);
@@ -139,9 +138,8 @@ function onMapLoaded(map: MapSimple) {
   ) as DatasetComposite;
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
-  list2.opacity = 0.5;
   list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
-  const layer2 = new MultiMapboxLayerComponent('layer point', [
+  const layer2 = createMultiMapboxLayerComponent('layer point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
       .setColor(list2.color)
@@ -150,19 +148,19 @@ function onMapLoaded(map: MapSimple) {
     new LayerSimpleMapboxBuild()
       .setStyleType('line')
       .setColor(list2.color)
-      .setOpacity(list2.opacity)
+      .setOpacity(0.5)
       .build(),
   ]);
-  list1.menus = [
+  list1.addMenus([
     createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
-  ];
-  list2.menus = [
+  ]);
+  list2.addMenus([
     createMenuItemToBoundActionForList(),
     createMenuDrawLayer(),
     createMenuDownload(),
-  ];
+  ]);
   const metadataForList2 = createDatasetPartMetadataComponent(
     'metadata for list2',
     {
@@ -181,18 +179,18 @@ function onMapLoaded(map: MapSimple) {
   const identify = createIdentifyMapboxComponent('test identify');
   const identify1 = createIdentifyMapboxMergedComponent('test identify 1');
   const identify2 = createIdentifyMapboxMergedComponent('test identify 2');
-  identify.menus = [
+  identify.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(),
-  ];
-  identify1.menus = [
+  ]);
+  identify1.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(),
-  ];
-  identify2.menus = [
+  ]);
+  identify2.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(),
-  ];
+  ]);
   const group = { id: 'test', name: 'test' };
   list1.group = group;
   groupLayer1.add(identify1);
@@ -201,15 +199,18 @@ function onMapLoaded(map: MapSimple) {
   groupLayer2.add(list2);
   groupLayer2.add(identify2);
   groupLayer2.add(metadataForList2);
-  const dataManagement = new DataManagementMapboxComponent('data management', {
-    fields: [
-      { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
-      { text: 'Name', value: 'name' },
-      { text: 'Name', value: 'name' },
-      { text: 'Name', value: 'name' },
-      { text: 'Name', value: 'name' },
-    ],
-  });
+  const dataManagement = createDataManagementMapboxComponent(
+    'data management',
+    {
+      fields: [
+        { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+      ],
+    }
+  );
   dataManagement.setItems([
     {
       id: '1',
@@ -251,6 +252,7 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(identify);
   dataset.add(metadata);
   addDataset(map.id, dataset);
+  console.log('test', dataset);
   // addDataset(map.id, dataset_raster);
 }
 function createMenuDownload() {
@@ -265,7 +267,6 @@ function createMenuDownload() {
       );
 
       if (isDataManagementView(maybeDataManagement)) {
-        console.log(maybeDataManagement, maybeDataManagement.getData());
         const data = await convert(
           convertList((await maybeDataManagement.getList()) || []),
           {

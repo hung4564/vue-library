@@ -9,6 +9,7 @@ import type {
   IMapboxLayerView,
 } from '../../interfaces/dataset.parts';
 import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
+import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 import {
   findSiblingOrNearestLeaf,
@@ -27,7 +28,7 @@ export function createDatasetPartIdentifyComponent<
   const base = createDatasetLeaf<T>(name, config);
   const menu = createDatasetMenu();
 
-  return {
+  return createNamedComponent('IdentifyComponent', {
     get config() {
       return config || {};
     },
@@ -43,7 +44,7 @@ export function createDatasetPartIdentifyComponent<
     ): Promise<{ id: string; name: string; data: any }[]> {
       throw new Error('Method not implemented.');
     },
-  };
+  });
 }
 export function createIdentifyMapboxComponent(name: string, config?: any) {
   const datasetPartIdentify = createDatasetPartIdentifyComponent(name, config);
@@ -106,10 +107,10 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
     });
   };
 
-  return {
+  return createNamedComponent('IdentifyMapboxComponent', {
     ...datasetPartIdentify,
     getFeatures,
-  };
+  });
 }
 export function createIdentifyMapboxMergedComponent(
   name: string,
@@ -119,13 +120,13 @@ export function createIdentifyMapboxMergedComponent(
 
   const identifyGroupId = 'mapbox-group';
 
-  return {
+  return createNamedComponent('IdentifyMapboxMergedComponent', {
     ...base,
     identifyGroupId,
     mergePayload,
     getMergedFeatures,
     splitResponse,
-  };
+  });
 }
 
 function handleSingleIdentify(
