@@ -8,5 +8,5 @@ export type MapStore =
   | {
       maps: MapSimple[];
       [key: string]: any;
-      isMulti: true;
+      isMulti: boolean;
     };

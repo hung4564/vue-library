@@ -104,11 +104,14 @@ function getShow(index: number) {
   opacity: 0.5;
   z-index: -1;
 }
-.toggle-buttons-container {
+.layer-control .layer-item__button.toggle-buttons-container {
   display: flex;
   gap: 2px;
 }
 .toggle-buttons-container span {
   font-size: 0.7rem;
+}
+.toggle-buttons-container .layer-item__button {
+  height: 100%;
 }
 </style>

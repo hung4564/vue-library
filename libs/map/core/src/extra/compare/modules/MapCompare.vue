@@ -169,6 +169,7 @@ function setupCompare() {
   if (clearSync) {
     clearSync();
   }
+  countMap.value = setting.value.compare ? 2 : 1;
   if (isUseSwiper.value) {
     const swiper = MapCompareSwiper(
       swiperRef.value,
@@ -181,6 +182,11 @@ function setupCompare() {
   if (setting.value.sync) {
     clearSync = syncMove(maps);
   }
+  maps.forEach((map) => {
+    if (map) {
+      map.resize();
+    }
+  });
 }
 </script>
 <template>
@@ -260,6 +266,7 @@ function setupCompare() {
   .map-compare__container {
     position: relative;
     display: flex;
+    overflow: hidden;
     height: 100%;
     width: 100%;
     .map-compare__item {

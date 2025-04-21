@@ -3,7 +3,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
 import MapControlButton from '../../../../components/MapControlButton.vue';
-import { BaseButton, InputCheckbox } from '../../../../field';
+import { InputCheckbox } from '../../../../field';
 import { useMap, useShow, withMapProps } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../../lang';

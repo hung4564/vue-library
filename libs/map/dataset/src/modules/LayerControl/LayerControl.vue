@@ -133,7 +133,7 @@ function openAddLayer() {
 .layer-control {
   .layer-item__button {
     display: inline-block;
-    padding: 0 4px;
+    padding: 2px 4px;
     cursor: pointer;
     background: transparent;
     outline: none;

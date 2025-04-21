@@ -24,7 +24,7 @@ const store = createStore('map.core', {
     initMaps(id: string, maps: MapSimple[]) {
       store.state[id] = {
         maps,
-        isMulti: true,
+        isMulti: maps.length > 1,
       };
       addMapIdToQueue(id);
     },

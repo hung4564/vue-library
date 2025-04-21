@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import {
-  useConvertToGeoJSON,
-  useDownloadFile,
-  useGeoConvertToFile,
-} from '@hungpvq/shared-file';
-import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CompareSettingControl,
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  getMap,
+  CompareSettingCard,
   GotoControl,
   HomeControl,
-  Map,
   MapCompare,
   MouseCoordinatesControl,
   SettingControl,
@@ -259,6 +252,7 @@ function onMapLoaded(props: { id: string }) {
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
+        <CompareSettingCard :mapId="mapId" />
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
