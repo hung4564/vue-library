@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import {
+  CompareBaseMapCard,
+  CompareBaseMapControl,
+} from '@hungpvq/vue-map-basemap';
 import {
   CompareSettingControl,
   CrsControl,
@@ -244,14 +247,14 @@ function onMapLoaded(props: { id: string }) {
     <ComponentManagementControl />
     <!-- <LayerInfoControl show>
       <template #endList="{ mapId }">
-        <BaseMapCard :mapId="mapId" />
+        <CompareBaseMapCard :mapId="mapId" />
       </template>
     </LayerInfoControl> -->
     <CompareSettingControl />
     <MeasurementControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
-        <BaseMapCard :mapId="mapId" />
+        <CompareBaseMapCard :mapId="mapId" />
         <CompareSettingCard :mapId="mapId" />
       </template>
     </LayerControl>
@@ -264,7 +267,7 @@ function onMapLoaded(props: { id: string }) {
     <ZoomControl />
     <HomeControl />
     <MouseCoordinatesControl />
-    <BaseMapControl position="bottom-left" />
+    <CompareBaseMapControl position="bottom-left" />
     <LayerHighlight />
   </MapCompare>
 </template>

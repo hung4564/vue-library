@@ -5,7 +5,7 @@
       </map-image>
     </div>
     <div class="base-map-card__content">
-      <div>
+      <div class="base-map-card__title">
         {{ title || trans('map.basemap.title') }}
       </div>
       <div>
