@@ -11,7 +11,6 @@ import type { IListViewUI, MenuAction } from '../../../../../interfaces';
 
 const props = defineProps<{
   item: MenuAction<IListViewUI>;
-  data: IListViewUI;
 }>();
 </script>
 <style lang=""></style>

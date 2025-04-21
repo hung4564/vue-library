@@ -37,6 +37,16 @@ export type MenuItemBottomOrExtra<T> = MenuItemCommon<T> & {
   name?: string;
 };
 
+/** Menu item type custom component for bottom or extra location */
+export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
+  MenuItemCommon<T>,
+  'click'
+> & {
+  type: 'item';
+  location?: 'bottom' | 'extra';
+  component: () => any;
+};
+
 /** Menu item type for menu location */
 type MenuItemContentMenu<T> = MenuItemCommon<T> & {
   type: 'item';
@@ -71,6 +81,7 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
     index: number;
     group?: IGroupListViewUI<IListViewUI>;
     show?: boolean;
+    shows: boolean[];
     legend?: () => any;
   };
 
@@ -148,7 +159,8 @@ export type IActionForView<T extends IDataset = IDataset> = {
 export type MenuAction<T> =
   | MenuDivider
   | MenuItemBottomOrExtra<T>
-  | MenuItemContentMenu<T>;
+  | MenuItemContentMenu<T>
+  | MenuItemCustomComponentBottomOrExtra<T>;
 
 export type IMetadataView = {
   metadata?: { loading?: boolean; bbox?: BBox };

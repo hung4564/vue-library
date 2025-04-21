@@ -9,11 +9,13 @@ import {
   IMetadataView,
   MenuAction,
   MenuItemBottomOrExtra,
+  MenuItemCustomComponentBottomOrExtra,
 } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../modules/StyleControl/style-control.vue';
 import { addComponent, setFeatureHighlight } from '../store';
 import { findSiblingOrNearestLeaf } from './dataset.visitors';
+import ToggleShow from './menu/toggle-show.vue';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset
@@ -62,7 +64,7 @@ export function createDatasetMenu<
   };
 }
 export function createMenuItem<T extends IDataset>(
-  item: MenuItemBottomOrExtra<T>
+  item: MenuItemBottomOrExtra<T> | MenuItemCustomComponentBottomOrExtra<T>
 ): MenuAction<T> {
   return item;
 }
@@ -157,5 +159,14 @@ export function createMenuItemStyleEdit() {
         },
       });
     },
+  });
+}
+
+export function createMenuItemToggleShow() {
+  return createMenuItem({
+    type: 'item',
+    location: 'bottom',
+    name: 'ToggleShow',
+    component: () => ToggleShow,
   });
 }

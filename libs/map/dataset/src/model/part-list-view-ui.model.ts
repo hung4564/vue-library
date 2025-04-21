@@ -29,6 +29,7 @@ export function createDatasetPartListViewUiComponent<T = any>(
     index: 0,
     group: undefined,
     show: true,
+    shows: [],
     legend: undefined,
   });
 }

@@ -4,7 +4,14 @@ import { MapStore } from '../types';
 import { addMapIdToQueue, removeMapIdFromQueue } from './queue';
 const store = createStore('map.core', {
   state: {} as Record<string, MapStore>,
-  getters: {},
+  getters: {
+    getIsMulti(id: string): boolean {
+      return !!store.state[id].isMulti;
+    },
+    getMaps(id: string): MapSimple[] {
+      return store.state[id].maps;
+    },
+  },
   actions: {
     getMapStore(id: string) {
       const map = store.state[id];
@@ -13,6 +20,13 @@ const store = createStore('map.core', {
         // throw 'Not found map for id ' + id;
       }
       return map;
+    },
+    initMaps(id: string, maps: MapSimple[]) {
+      store.state[id] = {
+        maps,
+        isMulti: true,
+      };
+      addMapIdToQueue(id);
     },
     initMap(id: string, map: MapSimple) {
       store.state[id] = {
@@ -25,15 +39,20 @@ const store = createStore('map.core', {
       removeMapIdFromQueue(id);
     },
     getMap(id: string, cb?: MapFCOnUseMap) {
-      const map = store.state[id]?.map;
+      const map = store.state[id]?.map as MapSimple;
+      const maps = store.state[id]?.maps as MapSimple[];
+      if (maps) {
+        maps.forEach((map) => {
+          cb && cb(map);
+        });
+      }
       if (!map) {
         return;
         // throw 'Not found map for id ' + id;
       }
       if (cb) {
-        return cb(map);
+        cb(map);
       }
-      return map;
     },
   },
 });

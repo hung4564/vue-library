@@ -7,6 +7,7 @@ import {
 import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
+  CompareSettingControl,
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
@@ -14,6 +15,7 @@ import {
   GotoControl,
   HomeControl,
   Map,
+  MapCompare,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
@@ -30,35 +32,27 @@ import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   createLegend,
-  createMenuItem,
   createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
   createMenuItemStyleEdit,
   createMenuItemToBoundActionForItem,
-  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
   DatasetComposite,
-  findSiblingOrNearestLeaf,
   IdentifyControl,
   IListViewUI,
-  isDataManagementView,
-  isDatasetMap,
   LayerControl,
   LayerHighlight,
   LayerInfoControl,
   LayerSimpleMapboxBuild,
 } from '@hungpvq/vue-map-dataset';
-import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { mdiDownload, mdiPencil } from '@mdi/js';
 import { ref } from 'vue';
-const { status, error, downloadFile } = useDownloadFile();
 const mapRef = ref();
 
-const { convertList } = useConvertToGeoJSON();
-const { convert } = useGeoConvertToFile();
-function onMapLoaded(map: MapSimple) {
+function onMapLoaded(props: { id: string }) {
   const dataset_raster = createDataset(
     'Group test',
     null,
@@ -93,6 +87,7 @@ function onMapLoaded(map: MapSimple) {
   groupLayer_raster.add(layerraster);
   dataset_raster.add(groupLayer_raster);
   list_raster.addMenu(createMenuItemShowDetailInfoSource());
+  list_raster.addMenu(createMenuItemToggleShow());
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -152,15 +147,11 @@ function onMapLoaded(map: MapSimple) {
       .build(),
   ]);
   list1.addMenus([
-    createMenuItemToBoundActionForList(),
+    createMenuItemToggleShow(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
-  list2.addMenus([
-    createMenuItemToBoundActionForList(),
-    createMenuDrawLayer(),
-    createMenuDownload(),
-  ]);
+  list2.addMenus([createMenuItemToggleShow()]);
   const metadataForList2 = createDatasetPartMetadataComponent(
     'metadata for list2',
     {
@@ -251,84 +242,20 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  addDataset(map.id, dataset);
-  // addDataset(map.id, dataset_raster);
-}
-function createMenuDownload() {
-  return createMenuItem({
-    type: 'item',
-    name: 'Download',
-    icon: mdiDownload,
-    click: async (layer, mapId) => {
-      const maybeDataManagement = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type === 'dataManagement'
-      );
-
-      if (isDataManagementView(maybeDataManagement)) {
-        const data = await convert(
-          convertList((await maybeDataManagement.getList()) || []),
-          {
-            filename: 'download.geojson',
-          }
-        );
-        if (data) downloadFile(data, 'download.geojson');
-      }
-    },
-  });
-}
-function createMenuDrawLayer() {
-  return createMenuItem({
-    type: 'item',
-    name: 'Edit feature',
-    icon: mdiPencil,
-    click: (layer, mapId) => {
-      const maybeDataManagement = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type === 'dataManagement'
-      );
-      if (isDataManagementView(maybeDataManagement)) {
-        callDraw(mapId, {
-          cleanAfterDone: true,
-          draw_support: [
-            DrawingType.POINT,
-            DrawingType.POLYGON,
-            DrawingType.LINE_STRING,
-          ],
-          getFeatures:
-            maybeDataManagement.getFeatures &&
-            maybeDataManagement.getFeatures.bind(maybeDataManagement),
-          addFeatures:
-            maybeDataManagement.addFeatures &&
-            maybeDataManagement.addFeatures.bind(maybeDataManagement),
-          updateFeatures:
-            maybeDataManagement.updateFeatures &&
-            maybeDataManagement.updateFeatures.bind(maybeDataManagement),
-          deleteFeatures:
-            maybeDataManagement.deleteFeatures &&
-            maybeDataManagement.deleteFeatures.bind(maybeDataManagement),
-          reset: async () => {
-            getMap(mapId, (map) => {
-              if (isDatasetMap(maybeDataManagement))
-                maybeDataManagement.addToMap(map);
-            });
-          },
-        });
-      }
-    },
-  });
+  addDataset(props.id, dataset_raster);
+  addDataset(props.id, dataset);
 }
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <MapCompare ref="mapRef" @map-loaded="onMapLoaded">
     <ComponentManagementControl />
     <!-- <LayerInfoControl show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerInfoControl> -->
+    <CompareSettingControl />
     <MeasurementControl position="top-right" />
-    <DrawControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
@@ -345,10 +272,8 @@ function createMenuDrawLayer() {
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
     <LayerHighlight />
-  </Map>
+  </MapCompare>
 </template>
-
-<style></style>
 
 <style>
 * {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
+import { useBreakpoints } from '@hungpvq/shared-core';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import mapboxgl, { MapboxOptions } from 'mapbox-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
-import { actions, state as mapState } from '../store/store';
-import type { MapSimple } from '@hungpvq/shared-map';
-import { useBreakpoints } from '@hungpvq/shared-core';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
+import { actions, state as mapState } from '../store/store';
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');
 }
@@ -340,13 +340,6 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
   display: flex;
   align-content: center;
   justify-items: center;
-}
-
-.main-container {
-  position: relative;
-  min-height: 0;
-  min-width: 0;
-  z-index: 0;
 }
 
 .map-viewer {

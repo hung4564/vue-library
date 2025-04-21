@@ -83,12 +83,11 @@ export const setBaseMapForMap = async (mapId: string, item: BaseMapItem) => {
     layer = state.layer;
   }
   metadata.loading = true;
-
-  await store.actions.getMap(mapId, async (map: MapSimple) => {
-    await layer.removeFromMap(map);
+  store.actions.getMap(mapId, (map: MapSimple) => {
+    layer.removeFromMap(map);
   });
   await layer.setBaseMap(item);
-  await store.actions.getMap(mapId, async (map: MapSimple) => {
+  store.actions.getMap(mapId, (map: MapSimple) => {
     layer.addToMap(map, getLowestLayerId(map));
   });
   state.loading = false;

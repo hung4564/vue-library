@@ -214,7 +214,6 @@ function onInit(map: MapSimple) {
     stretchY: [[6, 10]],
   });
 
-  handler = MeasurementHandle();
   let mapView = new MapView(map);
   mapView.init(
     [

@@ -18,3 +18,8 @@ interface HTMLElement {
   webkitRequestFullscreen: any;
   msRequestFullscreen: any;
 }
+
+declare module '@mapbox/mapbox-gl-sync-move' {
+  const syncMove: (maps: mapboxgl.Map[]) => () => void;
+  export default syncMove;
+}

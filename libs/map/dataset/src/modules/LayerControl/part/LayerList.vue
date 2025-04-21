@@ -194,7 +194,9 @@ function onLayerAction({
   if (!action) return;
   if (action.type !== 'item') return;
   if (!item) return;
-  action.click(item, mapId.value, item);
+  if ('click' in action) {
+    action.click(item, mapId.value, item);
+  }
 }
 </script>
 <template lang="">

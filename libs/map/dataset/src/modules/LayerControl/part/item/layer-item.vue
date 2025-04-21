@@ -22,17 +22,10 @@
             :item="menu"
             :data="item"
             :disabled="loading"
+            :mapId="mapId"
             @click="onLayerAction(menu)"
           />
         </template>
-        <button
-          class="layer-item__button"
-          :disabled="loading"
-          @click.stop="onToggleShow"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.show" v-if="item.show" />
-          <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
-        </button>
         <button
           class="layer-item__button"
           v-if="!item.config.disable_delete && !props.readonly"
@@ -144,8 +137,6 @@ const path = {
   loading: mdiLoading,
   layer: mdiLayers,
   flyTo: mdiCrosshairsGps,
-  show: mdiEye,
-  hide: mdiEyeOff,
   delete: mdiDelete,
   edit: mdiPencilOutline,
   legendOpen: mdiMenuLeft,
@@ -164,11 +155,6 @@ const opacity = computed({
 });
 const onRemove = () => {
   emit('click:remove', props.item);
-};
-const onToggleShow = () => {
-  let item = props.item;
-  item.show = !item.show;
-  emit('update:item', item);
 };
 const button_menus = computed<MenuAction<IListViewUI>[]>(() => {
   if (!props.item) {
