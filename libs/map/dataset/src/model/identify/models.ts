@@ -3,6 +3,7 @@ import { getMap } from '@hungpvq/vue-map-core';
 import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
+  IDataManagementView,
   IdentifyResult,
   IIdentifyView,
   IIdentifyViewWithMerge,
@@ -15,7 +16,6 @@ import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
 } from '../dataset.visitors';
-import { DatasetPartDataManagementComponent } from '../part-data-management,model';
 import { createDatasetMenu } from '../part-menu.model';
 import {
   getMergedFeatures,
@@ -78,7 +78,7 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
         const dataManagement = findSiblingOrNearestLeaf(
           datasetPartIdentify,
           (dataset) => dataset.type == 'dataManagement'
-        ) as DatasetPartDataManagementComponent;
+        ) as unknown as IDataManagementView;
 
         features.forEach((x) => {
           const id =
