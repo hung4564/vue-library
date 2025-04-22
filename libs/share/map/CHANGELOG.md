@@ -1,3 +1,7 @@
+## 0.3.0 (2025-04-22)
+
+This was a version bump only for shared-map to align it with other projects, there were no code changes.
+
 ## 0.0.6 (2025-04-22)
 
 This was a version bump only for shared-map to align it with other projects, there were no code changes.
