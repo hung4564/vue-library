@@ -1,3 +1,7 @@
+# 1.0.0 (2025-04-22)
+
+This was a version bump only for shared-integrations to align it with other projects, there were no code changes.
+
 ## 0.0.5 (2025-04-14)
 
 ### 🩹 Fixes
