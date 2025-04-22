@@ -17,7 +17,7 @@ export function initStoreMapCompare(mapId: string) {
       compare: true,
       split: true,
       sync: true,
-      vertical: true,
+      vertical: false,
     }),
   });
 }

@@ -101,7 +101,7 @@ const setting = ref<{
   compare: true,
   split: true,
   sync: true,
-  vertical: true,
+  vertical: false,
 });
 const isUseSwiper = computed(() => {
   return setting.value.compare && setting.value.split;
