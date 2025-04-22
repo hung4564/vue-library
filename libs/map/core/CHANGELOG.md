@@ -1,3 +1,13 @@
+## 0.4.1 (2025-04-22)
+
+### 🩹 Fixes
+
+- change to vertical: false default
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.0 (2025-04-22)
 
 This was a version bump only for map-core to align it with other projects, there were no code changes.
