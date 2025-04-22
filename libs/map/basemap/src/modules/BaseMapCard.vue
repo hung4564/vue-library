@@ -5,7 +5,7 @@
       </map-image>
     </div>
     <div class="base-map-card__content">
-      <div>
+      <div class="base-map-card__title">
         {{ title || trans('map.basemap.title') }}
       </div>
       <div>
@@ -46,6 +46,7 @@ const onChangeBaseMap = (base_map: any) => {
 .base-map-card {
   display: flex;
   padding: 10px;
+  gap: 10px;
   .base-map-card__image {
     width: 70px;
     height: 70px;
@@ -54,7 +55,7 @@ const onChangeBaseMap = (base_map: any) => {
   }
   .base-map-card__content {
     flex-grow: 1;
-    padding: 4px 10px;
+    padding: 4px 0px;
     & > *:not(:first-child) {
       padding-top: 4px;
     }

@@ -1,0 +1,32 @@
+{
+  "name": "map-dataset",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/map/dataset/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist\\{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/map/dataset",
+        "main": "libs/map/dataset/src/index.ts",
+        "tsConfig": "libs/map/dataset/tsconfig.lib.json",
+        "assets": ["libs/map/dataset/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist\\{projectRoot}"
+      }
+    }
+  }
+}

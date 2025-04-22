@@ -5,7 +5,7 @@
         @click.stop="toggleShow()"
         :tooltip="trans('map.aside-control.title')"
       >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
+        <SvgIcon size="16" type="mdi" :path="path.icon" />
       </MapControlButton>
     </template>
 
@@ -28,9 +28,6 @@
           </v-list-item>
           <v-list-item>
             <RouterLink to="/draw">draw </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/Layer">layer </RouterLink>
           </v-list-item>
           <v-list-item>
             <RouterLink to="/measurement">measurement </RouterLink>

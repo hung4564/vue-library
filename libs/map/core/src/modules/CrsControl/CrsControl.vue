@@ -92,7 +92,7 @@ const onAdd = () => {
                       v-if="!crs_item.default"
                       @click.stop="onRemove(crs_item)"
                     >
-                      <SvgIcon size="14" type="mdi" :path="path.delete" />
+                      <SvgIcon size="16" type="mdi" :path="path.delete" />
                     </button>
                   </div>
                 </div>
@@ -130,7 +130,7 @@ const onAdd = () => {
           </div>
           <div class="crs-item__add">
             <button class="layer-item__button clickable" @click.stop="onAdd()">
-              <SvgIcon size="14" type="mdi" :path="path.plus" />
+              <SvgIcon size="16" type="mdi" :path="path.plus" />
             </button>
           </div>
         </div>

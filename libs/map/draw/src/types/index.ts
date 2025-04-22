@@ -1,12 +1,5 @@
-import { ILayer, IView } from '@hungpvq/vue-map-core';
-
-import type {
-  Feature,
-  FeatureCollection,
-  GeoJSON,
-  GeoJsonProperties,
-  Geometry,
-} from 'geojson';
+import type { IDrawHandler } from '@hungpvq/vue-map-core';
+import type { Feature, GeoJSON } from 'geojson';
 // #region store
 export type DrawSaveFcParams = {
   added: Record<string, Feature>;
@@ -46,35 +39,17 @@ export type IDrawOption = {
   handler: IDrawHandler;
 };
 
-export type ILayerDrawView = IView & {
+export type ILayerDrawView = {
   draw_support: string[];
   handler: IDrawHandler;
-};
-export type IDrawHandler<IFeature = GeoJsonProperties> = {
-  setLayer(layer: ILayer): void;
-  updateLayer(layer: ILayer): void;
-  setData(
-    data?: FeatureCollection<Geometry, IFeature> | string | undefined
-  ): void;
-  getAll(): FeatureCollection<Geometry, IFeature> | undefined;
-  addFeatures?: (
-    features: Feature<Geometry, IFeature>[]
-  ) => Promise<boolean | void>;
-  updateFeatures?: (
-    features: Feature<Geometry, IFeature>[]
-  ) => Promise<boolean | void>;
-  deleteFeatures?: (
-    features: Feature<Geometry, IFeature>[]
-  ) => Promise<boolean | void>;
-  getFeatures?: (point: [number, number]) => Promise<Feature[]>;
 };
 
 export type DrawOption = {
   draw_support: ILayerDrawView['draw_support'];
-  addFeatures?: IDrawHandler['addFeatures'];
-  getFeatures?: IDrawHandler['getFeatures'];
-  updateFeatures?: IDrawHandler['updateFeatures'];
-  deleteFeatures?: IDrawHandler['deleteFeatures'];
+  addFeatures: IDrawHandler['addFeatures'];
+  getFeatures: IDrawHandler['getFeatures'];
+  updateFeatures: IDrawHandler['updateFeatures'];
+  deleteFeatures: IDrawHandler['deleteFeatures'];
   reset?: () => Promise<void>;
   save?: (geojson?: GeoJSON) => Promise<void>;
   cleanAfterDone?: boolean;

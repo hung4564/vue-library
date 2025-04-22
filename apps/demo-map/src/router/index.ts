@@ -14,20 +14,16 @@ const router = createRouter({
       component: () => import('../views/Draw/example.vue'),
     },
     {
+      path: '/compare/',
+      component: () => import('../views/AllMapCompareView.vue'),
+    },
+    {
       path: '/basemap/',
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
-      path: '/layer/',
-      component: () => import('../views/LayerControl/example.vue'),
-    },
-    {
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
-    },
-    {
-      path: '/geojson/',
-      component: () => import('../views/GeojsonIo/index.vue'),
     },
   ],
 });

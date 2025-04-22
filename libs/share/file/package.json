@@ -23,6 +23,12 @@
   },
   "peerDependencies": {
     "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/shared-core": ">=0.0.1"
+    "@hungpvq/shared-core": ">=0.0.1",
+    "@mapbox/shp-write": "^0.4.3",
+    "papaparse": "^5.5.2",
+    "tokml": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.15"
   }
 }

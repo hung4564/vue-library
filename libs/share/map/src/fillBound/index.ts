@@ -24,7 +24,6 @@ export function fitBounds(map: MapSimple, value: any, { zoom = 15 } = {}) {
   const count = { left_count: 0, right_count: 0 };
   padding.left = count.left_count > 0 ? 450 : padding.left;
   padding.right = count.right_count > 0 ? 450 : padding.right;
-
   let bboxFil = undefined;
   if (value.length == 4) {
     bboxFil = value;
@@ -36,7 +35,7 @@ export function fitBounds(map: MapSimple, value: any, { zoom = 15 } = {}) {
 
   map.fitBounds(bboxFil, {
     padding,
-    duration: 0,
+    duration: 100,
   });
 }
 function getBBox(feature: any) {

@@ -6,10 +6,13 @@ import {
   setMapTranslate,
 } from './store';
 
-// Cache for storing resolved property values
+// Cache for storing resolved property values with max size limit
+const MAX_CACHE_SIZE = 1000;
 const propCache = new Map<string, any>();
 
 export function useLang(mapId: string) {
+  if (!mapId) throw new Error('mapId is required');
+
   const storeLang = computed(() => getMapLang(mapId));
 
   function transLocal(key: string, params?: Record<string, any>) {
@@ -56,8 +59,13 @@ export function useLang(mapId: string) {
   return { trans, setLocale, setLocaleDefault, setTranslate };
 }
 
-function getProp(object: any, path: string | string[], defaultVal?: string) {
+function getProp(
+  object: any,
+  path: string | string[],
+  defaultVal?: string
+): string | undefined {
   if (!object) return defaultVal;
+  if (!path) return defaultVal;
 
   const pathStr = Array.isArray(path) ? path.join('.') : path;
   const cacheKey = `${JSON.stringify(object)}_${pathStr}`;
@@ -65,6 +73,11 @@ function getProp(object: any, path: string | string[], defaultVal?: string) {
   // Check cache first
   if (propCache.has(cacheKey)) {
     return propCache.get(cacheKey);
+  }
+
+  // Clear cache if it exceeds max size
+  if (propCache.size >= MAX_CACHE_SIZE) {
+    propCache.clear();
   }
 
   const _path = Array.isArray(path)
@@ -87,6 +100,7 @@ function getProp(object: any, path: string | string[], defaultVal?: string) {
 }
 
 function interpolate(text: string, params?: Record<string, any>): string {
+  if (!text) return '';
   if (!params) return text;
 
   return text.replace(/\{(\w+)\}/g, (match, key) => {
