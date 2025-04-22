@@ -20,9 +20,10 @@ setLocaleDefault({
     'setting-control': {
       title: 'Setting',
       field: {
-        compare: 'compare map',
-        split: 'split map',
-        sync: 'sync map',
+        compare: 'compare',
+        split: 'split',
+        sync: 'sync',
+        vertical: 'vertical',
       },
       btn: {
         apply: 'Apply',
@@ -64,6 +65,12 @@ const setting = getMapCompareSetting(mapId.value);
               <InputCheckbox
                 :label="trans('map.setting-control.field.split')"
                 v-model="setting.split"
+              />
+            </div>
+            <div>
+              <InputCheckbox
+                :label="trans('map.setting-control.field.vertical')"
+                v-model="setting.vertical"
               />
             </div>
             <div>

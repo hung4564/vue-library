@@ -2,7 +2,10 @@
   <div class="base-map-card">
     <div class="base-map-card__image">
       <map-image v-if="current_baseMaps">
-        <div class="base-map-item-image-container">
+        <div
+          class="base-map-item-image-container"
+          :class="{ _vertical: setting.vertical }"
+        >
           <map-image
             v-for="(current_baseMap, i) in current_baseMaps"
             :src="current_baseMap.value?.thumbnail"
@@ -34,13 +37,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import {
-  store as storeMap,
-  useMap,
+  getMapCompareSetting,
   InputSelect,
   MapImage,
+  store as storeMap,
+  useMap,
 } from '@hungpvq/vue-map-core';
+import { computed, ref } from 'vue';
 import { useBaseMap } from '../hooks';
 const props = defineProps({
   mapId: { type: String, required: true },
@@ -50,11 +54,16 @@ const props = defineProps({
   },
 });
 const { mapId } = useMap(props);
-const mapIds = ref(
-  storeMap.actions.getMapStore(mapId.value).maps.map((x) => x.id)
+const setting = getMapCompareSetting(mapId.value);
+const mapIds = ref<string[]>(
+  storeMap.actions
+    .getMapStore(mapId.value)
+    ?.maps.map((x: { id: any }) => x.id) || []
 );
 const current_baseMaps = computed(() => {
-  return mapStoreUseBaseMap.value.map((x) => x.currentBaseMap);
+  return mapStoreUseBaseMap.value.map(
+    (x: { currentBaseMap: any }) => x.currentBaseMap
+  );
 });
 const c_items_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.baseMaps);
@@ -92,6 +101,9 @@ const onChangeBaseMap = (i: number, base_map: any) => {
 }
 .base-map-item-image-container .base-map-item-image {
   flex: 1 1 auto;
+}
+.base-map-item-image-container._vertical {
+  flex-direction: column;
 }
 </style>
 <style scoped>

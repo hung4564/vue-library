@@ -109,9 +109,6 @@ function onUpdateLayer(view: IListViewUI) {
         isMapboxLayerView(dataset),
       [
         (dataset) => {
-          dataset.toggleShow(map, view.show);
-        },
-        (dataset) => {
           if (!view.config.disabled_opacity) {
             dataset.setOpacity(map, view.opacity);
           }

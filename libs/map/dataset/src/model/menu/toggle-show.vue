@@ -5,14 +5,14 @@
       :class="{ _active: getShow(0) }"
       @click.stop="onToggleShowIndex(0)"
     >
-      <span>L</span>
+      <span>#1</span>
     </button>
     <button
       class="layer-item__button"
       @click.stop="onToggleShowIndex(1)"
       :class="{ _active: getShow(1) }"
     >
-      <span>R</span>
+      <span>#2</span>
     </button>
   </div>
   <button class="layer-item__button" @click.stop="onToggleShow" v-else>

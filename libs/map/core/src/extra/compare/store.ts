@@ -3,7 +3,12 @@ import { addStore, getStore } from '../../store';
 
 const KEY = 'map-compare';
 export type MapLocateStore = {
-  setting: Ref<{ compare?: boolean; split?: boolean; sync?: boolean }>;
+  setting: Ref<{
+    compare?: boolean;
+    split?: boolean;
+    sync?: boolean;
+    vertical?: boolean;
+  }>;
 };
 
 export function initStoreMapCompare(mapId: string) {
@@ -12,6 +17,7 @@ export function initStoreMapCompare(mapId: string) {
       compare: true,
       split: true,
       sync: true,
+      vertical: true,
     }),
   });
 }

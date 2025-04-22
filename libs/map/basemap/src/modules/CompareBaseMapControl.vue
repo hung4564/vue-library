@@ -10,11 +10,14 @@
             @click="onToggleList"
           >
             <div class="base-map-button__content">
-              <map-image :src="current_baseMaps.thumbnail">
-                <div class="base-map-item-image-container">
+              <map-image>
+                <div
+                  class="base-map-item-image-container"
+                  :class="{ _vertical: setting.vertical }"
+                >
                   <map-image
                     v-for="(current_baseMap, i) in current_baseMaps"
-                    :src="current_baseMap.value.thumbnail"
+                    :src="current_baseMap.value?.thumbnail"
                     :key="i"
                     class="base-map-item-image"
                   ></map-image>
@@ -66,8 +69,10 @@
                 class="clickable base-map-control-setting-item"
                 :class="{
                   'base-map-control-setting-item__active':
+                    current_baseMaps &&
+                    current_baseMaps[currentTab] &&
                     current_baseMaps[currentTab].value &&
-                    baseMap.id == current_baseMaps[currentTab].value.id,
+                    baseMap.id == current_baseMaps[currentTab].value?.id,
                 }"
                 :style="{ width: sizeBaseMap + 'px' }"
                 :title="baseMap.title"
@@ -99,15 +104,16 @@
 <script lang="ts" setup>
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
+  getMapCompareSetting,
   MapCard,
   MapControlButton,
   MapIcon,
   MapImage,
   ModuleContainer,
+  store as storeMap,
   useLang,
   useMap,
   withMapProps,
-  store as storeMap,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
@@ -135,10 +141,11 @@ const props = defineProps({
   },
 });
 const { mapId, moduleContainerProps } = useMap(props);
+const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
-const mapIds = ref(
-  storeMap.actions.getMapStore(mapId.value).maps.map((x) => x.id)
+const mapIds = ref<string[]>(
+  storeMap.actions.getMapStore(mapId.value)?.maps.map((x: any) => x.id) || []
 );
 const mapStoreUseBaseMap = computed(() => {
   return mapIds.value.map((mapId) => {
@@ -289,6 +296,9 @@ function onToggleList() {
 }
 .base-map-item-image-container .base-map-item-image {
   flex: 1 1 auto;
+}
+.base-map-item-image-container._vertical {
+  flex-direction: column;
 }
 </style>
 <style scoped>
