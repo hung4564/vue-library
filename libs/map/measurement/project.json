@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/map/measurement/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["map"],
   "targets": {
     "ts-check": {
       "executor": "nx:run-commands",

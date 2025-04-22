@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/share/map/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["map"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",

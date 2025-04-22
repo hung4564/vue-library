@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/draggable/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["draggable"],
   "// targets": "to see all targets run: nx show project draggable--web",
   "targets": {
     "ts-check": {

@@ -21,6 +21,11 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "map:build": "nx run-many --projects=tag:map --target=lint,build",
+    "map:release": "nx run-many --projects=tag:map --target=lint,build,nx-release-publish",
+    "map-docs:build": "nx run-many --projects=demo-map --target=lint,build,publish-demo",
+    "share:build": "nx run-many --projects=tag:share --target=lint,build",
+    "share:release": "nx run-many --projects=tag:share --target=lint,build,nx-release-publish",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
     "commit": "git-cz"
