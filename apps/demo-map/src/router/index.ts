@@ -25,6 +25,10 @@ const router = createRouter({
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
     },
+    {
+      path: '/story-telling/',
+      component: () => import('../views/StoryTelling/example.vue'),
+    },
   ],
 });
 
