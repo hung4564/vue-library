@@ -1,3 +1,15 @@
+## 0.4.2 (2025-04-24)
+
+### 🩹 Fixes
+
+- delete on multi
+
+- action dup
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.1 (2025-04-22)
 
 This was a version bump only for map-dataset to align it with other projects, there were no code changes.

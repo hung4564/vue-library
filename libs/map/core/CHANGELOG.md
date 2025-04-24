@@ -1,3 +1,17 @@
+## 0.4.2 (2025-04-24)
+
+### 🩹 Fixes
+
+- empty url stop call
+
+- resize div
+
+- add event for multi event
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.1 (2025-04-22)
 
 ### 🩹 Fixes
