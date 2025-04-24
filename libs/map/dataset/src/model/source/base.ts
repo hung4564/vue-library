@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import type { AnySourceData } from 'mapbox-gl';
-import { IDataset, IDatasetMap, IMapboxSourceView } from '../../interfaces';
+import { IDataset, IMapboxSourceView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
@@ -21,6 +21,9 @@ export function createDatasetPartMapboxSourceComponent<T = any>(
       }
     },
     removeFromMap(map: MapSimple) {
+      if (base.id && map.getLayer(base.id + '-hightLight')) {
+        map.removeLayer(base.id + '-hightLight');
+      }
       if (base.id && map.getSource(base.id)) {
         map.removeSource(base.id);
       }

@@ -90,6 +90,10 @@ export type IMapboxSourceView = IDatasetMap & {
   updateData?(map: MapSimple, data: any): void;
   getFieldsInfo(): IFieldInfo[];
   getDataInfo(): any;
+  hightLight?(
+    map: MapSimple,
+    geojsonData: GeoJSON.Feature<GeoJSON.Geometry> | undefined
+  ): void;
 };
 
 export type IMapboxLayerView = IDatasetMap & {

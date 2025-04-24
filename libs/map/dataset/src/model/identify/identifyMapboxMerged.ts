@@ -1,7 +1,6 @@
 import { getMap } from '@hungpvq/vue-map-core';
 import { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
 import {
-  IDataManagementView,
   IDataset,
   IdentifyResult,
   IIdentifyViewWithMerge,

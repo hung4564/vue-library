@@ -54,6 +54,29 @@ export function createDatasetPartGeojsonSourceComponent(
       }
       base.setData(data);
     },
+    hightLight(map: MapSimple, geojsonData: GeoJSON.Feature<GeoJSON.Geometry>) {
+      const layer = map.getLayer(base.id + '-hightLight');
+      if (!layer) {
+        map.addLayer({
+          id: base.id + '-hightLight',
+          source: base.id,
+          type: 'line',
+          filter: ['==', ['get', 'id'], geojsonData?.properties?.id || null],
+          paint: {
+            'line-color': '#004E98',
+            'line-width': 4,
+            'line-dasharray': [2, 2],
+          },
+        });
+      } else {
+        map.setFilter(base.id + '-hightLight', [
+          '==',
+          ['get', 'id'],
+          geojsonData?.properties?.id || null,
+        ]);
+      }
+      map.moveLayer(base.id + '-hightLight');
+    },
   });
 }
 export function createDatasetPartRasterSourceComponent(

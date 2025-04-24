@@ -9,7 +9,12 @@ import { center } from '@turf/turf';
 import type { FillLayer, GeoJSONSourceRaw } from 'mapbox-gl';
 import { Marker } from 'mapbox-gl';
 import { computed, watch } from 'vue';
-import { getFeatureHighlight } from '../../store/highlight';
+import { IMapboxSourceView } from '../../interfaces';
+import { findSiblingOrNearestLeaf } from '../../model/dataset.visitors';
+import {
+  getDatesetHighlight,
+  getFeatureHighlight,
+} from '../../store/highlight';
 
 const props = defineProps({
   ...withMapProps,
@@ -32,28 +37,28 @@ let marker: Marker | undefined = undefined;
 const { mapId, callMap } = useMap(props);
 
 const storeFeature = computed(() => {
-  return (
-    getFeatureHighlight(mapId.value)?.value || {
-      type: 'FeatureCollection' as const,
-      features: [],
-    }
-  );
+  return getFeatureHighlight(mapId.value)?.value;
 });
 
 const updateSource = (
   map: mapboxgl.Map,
-  geojsonData:
-    | GeoJSON.Feature<GeoJSON.Geometry>
-    | GeoJSON.FeatureCollection<GeoJSON.Geometry>
-    | string
+  geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>
 ) => {
   const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
   if (source) {
-    source.setData(geojsonData);
+    source.setData(
+      geojsonData || {
+        type: 'FeatureCollection' as const,
+        features: [],
+      }
+    );
   } else {
     map.addSource(sourceId, {
       type: 'geojson',
-      data: geojsonData,
+      data: geojsonData || {
+        type: 'FeatureCollection' as const,
+        features: [],
+      },
     });
   }
 };
@@ -98,12 +103,20 @@ const updateMarker = (
   }
 };
 
-function updateHighlight(
-  geojsonData:
-    | GeoJSON.Feature<GeoJSON.Geometry>
-    | GeoJSON.FeatureCollection<GeoJSON.Geometry>
-    | string
-) {
+function updateHighlight(geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>) {
+  const dataset = getDatesetHighlight(mapId.value);
+  if (dataset) {
+    const source = findSiblingOrNearestLeaf(
+      dataset,
+      (dataset) => dataset.type == 'source'
+    ) as unknown as IMapboxSourceView;
+    if (source && 'hightLight' in source) {
+      callMap((map: MapSimple) => {
+        source.hightLight?.(map, geojsonData);
+      });
+      return;
+    }
+  }
   callMap((map: MapSimple) => {
     updateSource(map, geojsonData);
     updateLayer(map);

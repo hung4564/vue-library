@@ -41,6 +41,7 @@ import {
   DatasetComposite,
   findSiblingOrNearestLeaf,
   IdentifyControl,
+  IdentifyShowFirstControl,
   IListViewUI,
   isDataManagementView,
   isDatasetMap,
@@ -344,6 +345,7 @@ function createMenuDrawLayer() {
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
+    <IdentifyShowFirstControl />
     <LayerHighlight />
   </Map>
 </template>

@@ -29,7 +29,7 @@ const path = {
 };
 const props = defineProps({
   ...withMapProps,
-  immediately: { type: Boolean, default: true },
+  immediately: Boolean,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);
@@ -205,10 +205,10 @@ function onMenuAction(
   menu: MenuAction<IIdentifyView & IDataset>,
   item: any
 ) {
-  if (menu.type != 'item' || !identify || !menu.click) {
+  if (menu.type != 'item' || !identify) {
     return;
   }
-  menu.click(identify, mapId.value, item);
+  if ('click' in menu) menu.click(identify, mapId.value, item);
 }
 onMounted(() => {
   if (props.immediately) onUseMapClick();

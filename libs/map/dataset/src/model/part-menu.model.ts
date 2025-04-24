@@ -103,7 +103,8 @@ export function createMenuItemToBoundActionForItem() {
             geometry,
             properties,
           },
-          'identify'
+          'identify',
+          layer
         );
       });
     },
@@ -143,6 +144,7 @@ export function createMenuItemShowDetailInfoSource() {
             fields: source.getFieldsInfo(),
             view: layer,
           },
+          check: 'detail',
         });
     },
   });
