@@ -10,6 +10,7 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
+  onBeforeUnmount,
   provide,
   ref,
   watch,
@@ -19,6 +20,7 @@ import { actions, store as storeMap } from '../../../store/store';
 import ActionControl from '../../event/modules/ActionControl.vue';
 import { getMapCompareSetting, initStoreMapCompare } from '../store';
 import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
+import { debounce } from 'lodash';
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
   tablet: 640,
@@ -92,6 +94,7 @@ let clearSync: (() => void) | undefined = undefined;
 let resizeSplit: (() => void) | undefined = undefined;
 const swiperRef = ref(null);
 const mapsRef = ref<any[]>([]);
+const containerRef = ref<any[]>([]);
 const setting = ref<{
   compare?: boolean;
   split?: boolean;
@@ -200,6 +203,34 @@ function setupCompare() {
     }
   });
 }
+let observer;
+const handleResize = debounce((entry) => {
+  const { width, height } = entry.contentRect;
+  console.log('Kích thước (debounced):', width, height);
+  actions.getMap(id.value, (map) => {
+    map.resize();
+  });
+  if (resizeSplit) {
+    resizeSplit();
+  }
+}, 200); // 200ms debounce
+onMounted(() => {
+  observer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      handleResize(entry);
+    }
+  });
+
+  if (containerRef.value) {
+    observer.observe(containerRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (observer && containerRef.value) {
+    observer.unobserve(containerRef.value);
+  }
+});
 </script>
 <template>
   <div v-if="!isSupport" class="">
@@ -219,7 +250,7 @@ function setupCompare() {
       'map-mobile-container': isMobile,
     }"
   >
-    <div class="map-viewer">
+    <div class="map-viewer" ref="containerRef">
       <div
         class="map-compare__container"
         :class="{
