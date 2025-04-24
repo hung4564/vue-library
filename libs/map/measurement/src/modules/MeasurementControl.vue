@@ -206,6 +206,10 @@ setLocaleDefault({
 });
 const event = new EventClick().setHandler(onMapClick);
 
+const { add: addEventClick, remove: removeEventClick } = setEventMap(
+  mapId.value,
+  event
+);
 function onInit(map: MapSimple) {
   addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
   addImage(map.id!, 'measurment-round', imageRounded, {
@@ -294,10 +298,6 @@ function onInit(map: MapSimple) {
         },
       },
     }
-  );
-  const { add: addEventClick, remove: removeEventClick } = setEventMap(
-    map.id,
-    event
   );
   mapView.onStart = () => {
     if (!map) {

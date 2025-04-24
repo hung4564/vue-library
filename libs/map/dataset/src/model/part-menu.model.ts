@@ -113,6 +113,7 @@ export function createMenuItemShowDetailForItem() {
   return createMenuItem({
     type: 'item',
     name: 'Detail',
+    id: 'show-detail',
     icon: mdiInformation,
     click: (layer, mapId, value) => {
       const dataManagement = findSiblingOrNearestLeaf(

@@ -29,6 +29,7 @@ const path = {
 };
 const props = defineProps({
   ...withMapProps,
+  immediately: { type: Boolean, default: true },
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);
@@ -45,7 +46,6 @@ setLocale({
   },
 });
 const views = ref<Array<IIdentifyView & IDataset>>([]);
-const currentIdentify = ref<IIdentifyView & IDataset>();
 const datasetIds = computed(() => {
   return getDatasetIds(mapId.value).value;
 });
@@ -119,6 +119,17 @@ function onSelectFeatures(
   features: { identify: IIdentifyView & IDataset; features: any[] }[]
 ) {
   result.items = features;
+  if (
+    props.immediately &&
+    features &&
+    features[0] &&
+    features[0].features &&
+    features[0].features[0]
+  ) {
+    const menu = features[0].identify.getMenu('show-detail');
+    if (menu)
+      onMenuAction(features[0].identify, menu, features[0].features[0].data);
+  }
 }
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
   result.loading = true;
@@ -149,6 +160,9 @@ function close() {
   onSelectFeatures([]);
 }
 function onRemoveIdentify() {
+  if (props.immediately) {
+    return;
+  }
   onRemoveMapClick();
   onRemoveBox();
 }
@@ -196,6 +210,9 @@ function onMenuAction(
   }
   menu.click(identify, mapId.value, item);
 }
+onMounted(() => {
+  if (props.immediately) onUseMapClick();
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

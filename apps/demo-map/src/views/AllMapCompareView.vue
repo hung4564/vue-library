@@ -258,7 +258,7 @@ function onMapLoaded(props: { id: string }) {
         <CompareSettingCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <IdentifyControl position="top-right" />
+    <IdentifyControl position="top-right" immediately />
     <GotoControl position="top-right" />
     <CrsControl />
     <SettingControl />
