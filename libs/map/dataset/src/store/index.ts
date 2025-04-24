@@ -62,8 +62,8 @@ export function removeDataset(mapId: string, layer: IDataset) {
   });
 }
 export function removeComponent(mapId: string, component: IDataset) {
+  const parent = component.getParent() || component;
   getMap(mapId, async (map: MapSimple) => {
-    const parent = component.getParent() || component;
     if (isDatasetMap(component)) {
       component.removeFromMap(map);
     }
@@ -74,11 +74,11 @@ export function removeComponent(mapId: string, component: IDataset) {
         }
       },
     ]);
-    // Remove component from parent
-    if (parent && isComposite(parent)) {
-      parent.remove(component);
-    }
   });
+  // Remove component from parent
+  if (parent && isComposite(parent)) {
+    parent.remove(component);
+  }
 }
 export function getStoreDataset(mapId: string) {
   const store = getStore<MapLayerStore>(mapId, KEY);
