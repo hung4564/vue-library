@@ -11,7 +11,7 @@ const props = defineProps({
   ...withMapProps,
 });
 const { callMap, mapId, moduleContainerProps } = useMap(props);
-const current_listener: Record<string, IEvent | undefined> = {};
+const current_listener: Record<string, Record<string, IEvent | undefined>> = {};
 const state = getStore<MapEventStore>(mapId.value, KEY);
 const events = computed(() => {
   return state.items;
@@ -27,13 +27,16 @@ function updateEventMap(events: IEvent[]) {
   const listeners = groupBy<IEvent>(events, (event) => {
     return event.event_map_type;
   });
-  const key_add: string[] = [];
   callMap((map) => {
+    const key_add: string[] = [];
+    if (!current_listener[map.id]) {
+      current_listener[map.id] = {};
+    }
     for (const key in listeners) {
       key_add.push(key);
       if (Object.prototype.hasOwnProperty.call(listeners, key)) {
         const events = listeners[key];
-        const current = current_listener[key];
+        const current = current_listener[map.id][key];
         const new_current = events[0];
 
         if (current && current.id === new_current.id) {
@@ -42,20 +45,20 @@ function updateEventMap(events: IEvent[]) {
         if (current) {
           current.removeFromMap(map);
         }
-        current_listener[key] = new_current;
+        current_listener[map.id][key] = new_current;
         if (new_current) {
           new_current.addToMap(map);
         }
         setCurrentEvent(mapId.value, key, new_current);
       }
     }
-    for (const key in current_listener) {
-      if (Object.prototype.hasOwnProperty.call(current_listener, key)) {
-        const element = current_listener[key];
+    for (const key in current_listener[map.id]) {
+      if (Object.prototype.hasOwnProperty.call(current_listener[map.id], key)) {
+        const element = current_listener[map.id][key];
         if (!key_add.includes(key) && element) {
           element.removeFromMap(map);
           setCurrentEvent(mapId.value, key, undefined);
-          current_listener[key] = undefined;
+          current_listener[map.id][key] = undefined;
         }
       }
     }
