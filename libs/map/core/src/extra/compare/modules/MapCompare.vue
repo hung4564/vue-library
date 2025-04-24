@@ -206,7 +206,6 @@ function setupCompare() {
 let observer;
 const handleResize = debounce((entry) => {
   const { width, height } = entry.contentRect;
-  console.log('Kích thước (debounced):', width, height);
   actions.getMap(id.value, (map) => {
     map.resize();
   });
