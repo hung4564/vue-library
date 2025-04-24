@@ -1,5 +1,3 @@
-import { getMap } from '@hungpvq/vue-map-core';
-import { GeoJSONSource } from 'mapbox-gl';
 import { onUnmounted, Ref, ref } from 'vue';
 import {
   createOrbitGlobalActions,
@@ -39,10 +37,10 @@ export interface UseStorytellingOptions {
   autoNext?: boolean;
   delayStart?: number;
   loop?: boolean;
+  speed?: number;
 }
 
 export function useStorytelling(options: UseStorytellingOptions) {
-  console.log('test', 'useStorytelling', options);
   const {
     chapters,
     globalActions = {},
@@ -50,10 +48,12 @@ export function useStorytelling(options: UseStorytellingOptions) {
     autoNext = true,
     delayStart = 0,
     loop = false,
+    speed,
   } = options;
 
   const currentIndex = ref(0);
   const isPlaying = ref(false);
+  const currentSpeed = ref(speed || 1);
   let timer: number | null = null;
 
   const play = () => {
@@ -107,7 +107,7 @@ export function useStorytelling(options: UseStorytellingOptions) {
         console.log('test', currentIndex.value, 'start', 'exit');
         chapter.onExit?.();
         next();
-      }, chapter.duration);
+      }, chapter.duration / currentSpeed.value);
     }
   };
 
@@ -167,6 +167,7 @@ export function useStorytelling(options: UseStorytellingOptions) {
 
   return {
     currentIndex,
+    currentSpeed,
     isPlaying,
     play,
     pause,

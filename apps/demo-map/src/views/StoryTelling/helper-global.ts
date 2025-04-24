@@ -104,7 +104,10 @@ export function createSimpleMapAction(mapId: Ref<string>) {
   };
 }
 
-function withMapReady(mapId: string, action: (map: mapboxgl.Map) => void) {
+export function withMapReady(
+  mapId: string,
+  action: (map: mapboxgl.Map) => void
+) {
   getMap(mapId, (map) => {
     if (map.isStyleLoaded()) {
       action(map);

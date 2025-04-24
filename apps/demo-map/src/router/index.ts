@@ -29,6 +29,10 @@ const router = createRouter({
       path: '/story-telling/',
       component: () => import('../views/StoryTelling/example.vue'),
     },
+    {
+      path: '/story-telling-gps/',
+      component: () => import('../views/StoryTelling/example-gps.vue'),
+    },
   ],
 });
 
