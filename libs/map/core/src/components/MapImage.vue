@@ -14,6 +14,9 @@ export default {
   data: () => ({}),
   computed: {
     styleImage() {
+      if (!this.src) {
+        return {};
+      }
       return {
         'background-image': `url(${this.src})`,
       };
