@@ -1,12 +1,10 @@
-import { Layer } from 'mapbox-gl';
+import type { Layer } from 'mapbox-gl';
 
-export interface ITab {
+interface ITabCommon<L> {
   trans?: string;
   text?: string;
-  key: string;
   type: string;
   format?: any;
-  part?: 'layout' | 'paint';
   component?: {
     content?: () => any;
     label?: any;
@@ -15,28 +13,47 @@ export interface ITab {
     content?: any;
     label?: any;
   };
+  key: string;
+  part?: 'paint' | 'layout';
+  disabled?: (layer: L) => boolean;
 }
-export interface UnitTab extends ITab {
+
+export type ITab<L extends Layer = Layer> =
+  | (ITabCommon<L> & {
+      key: keyof NonNullable<L['paint']>;
+      part?: 'paint';
+    })
+  | (ITabCommon<L> & {
+      key: keyof NonNullable<L['layout']>;
+      part: 'layout';
+    });
+
+export type UnitTab<L extends Layer = Layer> = ITab<L> & {
   unit?: string;
   type: 'unit';
-}
-export interface DividersTab extends ITab {
+};
+
+export type DividersTab<L extends Layer = Layer> = Omit<ITab<L>, 'key'> & {
   type: 'divider';
-}
-export interface ColorTab extends ITab {
+};
+
+export type ColorTab<L extends Layer = Layer> = ITab<L> & {
   unit?: string;
   type: 'color';
-}
-export interface OpacityTab extends ITab {
+};
+
+export type OpacityTab<L extends Layer = Layer> = ITab<L> & {
   type: 'opacity';
-}
-export interface NumberTab extends ITab {
+};
+
+export type NumberTab<L extends Layer = Layer> = ITab<L> & {
   type: 'number';
   min?: number;
   max?: number;
   step?: number;
-}
-export interface ChoseTab extends ITab {
+};
+
+export type ChoseTab<L extends Layer = Layer> = ITab<L> & {
   type: 'chose';
   menu: {
     text?: string;
@@ -45,32 +62,57 @@ export interface ChoseTab extends ITab {
     subtitle_trans?: string;
     value: string;
   }[];
-}
-export type Tab =
-  | DividersTab
-  | ITab
-  | ColorTab
-  | UnitTab
-  | OpacityTab
-  | NumberTab
-  | ChoseTab;
+};
 
-export type SingleTabConfig = {
+export type SelectTab<L extends Layer = Layer> = ITab<L> & {
+  type: 'select';
+  items: string[];
+};
+
+export type ArrayXYTab<L extends Layer = Layer> = ITab<L> & {
+  type: 'array-x-y';
+  unit: string;
+};
+
+export type ArrayIndexTab<L extends Layer = Layer> = ITab<L> & {
+  type: 'array-index';
+  data: {
+    text: string;
+    type: string;
+    value: 0;
+  }[];
+};
+
+export type Tab<L extends Layer = Layer> =
+  | DividersTab
+  | ITab<L>
+  | ColorTab<L>
+  | UnitTab<L>
+  | OpacityTab<L>
+  | NumberTab<L>
+  | ChoseTab<L>
+  | SelectTab<L>
+  | ArrayXYTab<L>
+  | ArrayIndexTab<L>;
+
+export type SingleTabConfig<L extends Layer = Layer> = {
   type: 'single';
-  items: Tab[];
+  items: Tab<L>[];
 };
-export type MultiTabConfig = {
+export type MultiTabConfig<L extends Layer = Layer> = {
   type: 'multi';
-  tabs: TabConfig[];
+  tabs: TabConfig<L>[];
 };
-export type LayerTabsConfig = SingleTabConfig | MultiTabConfig;
-export type LayerTypeConfig<L = Layer> = {
-  TAB: LayerTabsConfig;
+export type LayerTabsConfig<L extends Layer = Layer> =
+  | SingleTabConfig<L>
+  | MultiTabConfig<L>;
+export type LayerTypeConfig<L extends Layer = Layer> = {
+  TAB: LayerTabsConfig<L>;
   DEFAULT: Partial<L>;
 };
 
-export type TabConfig = {
+export type TabConfig<L extends Layer = Layer> = {
   trans?: string;
   text?: string;
-  items: Tab[];
+  items: Tab<L>[];
 };

@@ -1,6 +1,7 @@
-import { LayerTypeConfig } from './style';
+import type { LineLayer } from 'mapbox-gl';
+import type { LayerTypeConfig } from './style';
 
-export const LINE_CONFIG: LayerTypeConfig = {
+export const LINE_CONFIG: LayerTypeConfig<LineLayer> = {
   TAB: {
     type: 'single',
     items: [
@@ -8,6 +9,20 @@ export const LINE_CONFIG: LayerTypeConfig = {
         trans: 'line-style.setting.color',
         key: 'line-color',
         type: 'color',
+        disabled: (layer) => {
+          return !!layer.paint?.['line-pattern'];
+        },
+      },
+      {
+        trans: 'line-style.setting.pattern',
+        key: 'line-pattern',
+        type: 'image',
+        format: (value: string) => {
+          if (!value) {
+            return undefined;
+          }
+          return value;
+        },
       },
       {
         trans: 'line-style.setting.opacity',
@@ -19,16 +34,6 @@ export const LINE_CONFIG: LayerTypeConfig = {
         key: 'line-width',
         type: 'unit',
         unit: 'px',
-      },
-      {
-        trans: 'line-style.setting.pattern',
-        key: 'line-pattern',
-        type: 'image',
-      },
-      {
-        trans: 'line-style.setting.blur',
-        key: 'line-blur',
-        type: 'number',
       },
       {
         trans: 'line-style.setting.cap',
@@ -48,6 +53,7 @@ export const LINE_CONFIG: LayerTypeConfig = {
             value: 'square',
           },
         ],
+        part: 'layout',
       },
       {
         trans: 'line-style.setting.join',
@@ -67,6 +73,57 @@ export const LINE_CONFIG: LayerTypeConfig = {
             value: 'miter',
           },
         ],
+        part: 'layout',
+      },
+
+      {
+        trans: 'line-style.setting.round-limit',
+        key: 'line-round-limit',
+        type: 'unit',
+        part: 'layout',
+        unit: 'px',
+        disabled: (layer) => {
+          return layer.layout?.['line-join'] != 'round';
+        },
+      },
+      {
+        trans: 'line-style.setting.miter-limit',
+        key: 'line-miter-limit',
+        type: 'unit',
+        part: 'layout',
+        unit: 'px',
+      },
+      { type: 'divider' },
+      {
+        trans: 'line-style.setting.dash-array',
+        key: 'line-dasharray',
+        type: 'multiple',
+        disabled: (layer) => {
+          return !!layer.paint?.['line-pattern'];
+        },
+      },
+      {
+        trans: 'line-style.setting.grap-width',
+        key: 'line-gap-width',
+        type: 'unit',
+        unit: 'px',
+      },
+      {
+        trans: 'line-style.setting.blur',
+        key: 'line-blur',
+        type: 'unit',
+        unit: 'px',
+      },
+      {
+        trans: 'line-style.setting.offset',
+        key: 'line-offset',
+        type: 'unit',
+        unit: 'px',
+      },
+      {
+        trans: 'line-style.setting.translate',
+        key: 'line-translate',
+        type: 'array',
       },
     ],
   },

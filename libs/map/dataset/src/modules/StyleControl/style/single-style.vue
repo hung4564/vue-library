@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
 import { Layer } from 'mapbox-gl';
 import { computed, onMounted, ref } from 'vue';
-import { Tab, TabConfig } from '../../../types/style';
-import TabItem from '../component/tab-item.vue';
 import TabContent from '../component/tab-content.vue';
-import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
+import TabItem from '../component/tab-item.vue';
 import { DEFAULT_VALUE, TABS, convertTabWithDefaultConfig } from './type';
+import { Tab, TabConfig } from './type/style';
 const props = defineProps({
   trans: {
     required: true,
@@ -58,7 +58,12 @@ const emitInput = (value: any, tab: Tab, layer: any) => {
   if (tab.format) {
     value = tab.format(value);
   }
-  layer[tab.part || 'paint'][tab.key] = value;
+  if ('key' in tab) {
+    if (tab.format) {
+      value = tab.format(value);
+    }
+    layer[tab.part || 'paint'][tab.key] = value;
+  }
   emit('update-style', layer);
 };
 onMounted(() => {
@@ -155,6 +160,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
                 :text="item.text || trans(item.trans)"
                 :default_value="default_value[item.part || 'paint'][item.key]"
                 :active="tab && tab.key === item.key"
+                :disabled="item.disabled && item.disabled(layer)"
               >
               </TabItem>
             </div>
@@ -181,7 +187,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     </Collapse>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .style-edit-container {
   display: flex;
   flex-direction: column;
@@ -193,15 +199,14 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
   }
   .tab-group-label {
     display: flex;
-    flex-grow: 0;
+    flex-grow: 0 0 auto;
     .tab {
       border-bottom-width: 3px;
       border-bottom-color: #fff;
       border-bottom-style: solid;
       padding: 12px;
       text-align: center;
-      max-width: 100px;
-      flex-grow: 1;
+      flex: 1 1 auto;
     }
     .tab-active {
       border-bottom-color: var(--v-primary-base, #1a73e8);
@@ -217,11 +222,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
   height: 100%;
   width: 100%;
   .label-container {
-    & > div {
-      overflow: auto;
-    }
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     overflow: auto;
     border-right-width: thin;
     border-right-color: #fff;
@@ -229,14 +230,16 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     width: 30%;
     min-width: 150px;
     max-width: 200px;
-  }
-  .value-container {
     & > div {
       overflow: auto;
     }
-    flex-grow: 1;
-    flex-shrink: 1;
+  }
+  .value-container {
     overflow: auto;
+    flex: 1 1 auto;
+    & > div {
+      overflow: auto;
+    }
   }
   .tab-content-padding {
     min-height: 48px;
@@ -269,6 +272,29 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     }
     .label-config-item__input {
       padding-left: 16px;
+    }
+  }
+}
+::v-deep .collapse.collapse-item {
+  flex: 0 0 auto;
+  &:last-child {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .collapse-header {
+      flex: 0 0 auto;
+    }
+    .collapse-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+    .collapse-content-box {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
     }
   }
 }

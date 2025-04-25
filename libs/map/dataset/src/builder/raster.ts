@@ -1,5 +1,5 @@
 import type { BBox } from 'geojson';
-import { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces';
 import {
   createDataset,
   createDatasetPartListViewUiComponent,

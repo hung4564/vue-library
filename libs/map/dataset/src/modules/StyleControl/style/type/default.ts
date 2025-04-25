@@ -6,7 +6,7 @@ import {
   InputText,
 } from '@hungpvq/vue-map-core';
 import { divColor, textAfter, textFormat } from '../label';
-import { ChoseTab, Tab } from './style';
+import type { ChoseTab, Tab } from './style';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   image: {
@@ -27,6 +27,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
     props: {
       content: {
         disableAlpha: true,
+        class: 'tab-content-no-padding',
       },
     },
   },

@@ -1,7 +1,8 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
-import { ref, Ref } from 'vue';
-import { IListViewUI } from '../interfaces';
+import type { Ref } from 'vue';
+import { ref } from 'vue';
+import type { IListViewUI } from '../interfaces';
 import type { IDataset } from '../interfaces/dataset.base';
 import {
   applyToAllLeaves,

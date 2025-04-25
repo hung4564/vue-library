@@ -51,6 +51,7 @@ function onSetValue(item) {
   text-align: center;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .item-choose-active {
   color: var(--v-primary-base, #1a73e8);

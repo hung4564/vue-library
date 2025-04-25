@@ -1,6 +1,7 @@
-import { LayerTypeConfig } from './style';
+import type { CircleLayer } from 'mapbox-gl';
+import type { LayerTypeConfig } from './style';
 
-export const CIRCLE_CONFIG: LayerTypeConfig = {
+export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayer> = {
   TAB: {
     type: 'single',
     items: [
@@ -71,6 +72,20 @@ export const CIRCLE_CONFIG: LayerTypeConfig = {
           },
         ],
       },
+      {
+        trans: 'circle-style.setting.translate',
+        key: 'circle-translate',
+        type: 'array',
+        format: (value: string) => {
+          if (!value) {
+            return undefined;
+          }
+          if (typeof value == 'string') {
+            return value.split(',').map((x) => Number(x.trim()));
+          }
+          return value;
+        },
+      },
     ],
   },
   DEFAULT: {
@@ -85,6 +100,7 @@ export const CIRCLE_CONFIG: LayerTypeConfig = {
       'circle-stroke-opacity': 1,
       'circle-pitch-alignment': 'viewport',
       'circle-pitch-scale': 'map',
+      'circle-translate': [0, 0],
     },
   },
 };

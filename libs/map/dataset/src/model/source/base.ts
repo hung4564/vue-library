@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import type { AnySourceData } from 'mapbox-gl';
-import { IDataset, IMapboxSourceView } from '../../interfaces';
+import type { IDataset, IMapboxSourceView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 

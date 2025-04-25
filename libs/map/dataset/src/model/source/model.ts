@@ -1,6 +1,10 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import { GeoJSONSource, GeoJSONSourceRaw, RasterSource } from 'mapbox-gl';
-import { IDataset, IMapboxSourceView, IMetadataView } from '../../interfaces';
+import type { GeoJSONSource, GeoJSONSourceRaw, RasterSource } from 'mapbox-gl';
+import type {
+  IDataset,
+  IMapboxSourceView,
+  IMetadataView,
+} from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { findSiblingOrNearestLeaf } from '../dataset.visitors';
 import { createDatasetPartMapboxSourceComponent } from './base';

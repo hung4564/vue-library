@@ -1,8 +1,8 @@
-import { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import { IDataset, IMapboxSourceView } from '../interfaces';
+import type { IDataset, IMapboxSourceView } from '../interfaces';
 import { findSiblingOrNearestLeaf } from '../model';
 
 export const KEY = 'dataset-highlight';

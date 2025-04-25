@@ -36,6 +36,7 @@ import {
   createMenuItemStyleEdit,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
   DatasetComposite,
@@ -153,11 +154,13 @@ function onMapLoaded(map: MapSimple) {
       .build(),
   ]);
   list1.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
     createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
   list2.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
     createMenuItemToBoundActionForList(),
     createMenuDrawLayer(),
     createMenuDownload(),

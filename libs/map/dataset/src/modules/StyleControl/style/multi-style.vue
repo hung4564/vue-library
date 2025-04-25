@@ -148,7 +148,7 @@ const onShowAddStyle = (value: boolean) => {
 }
 .style-container {
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   height: 100%;
 }

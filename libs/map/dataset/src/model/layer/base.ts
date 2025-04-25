@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import { IDataset, IMapboxLayerView } from '../../interfaces';
+import type { IDataset, IMapboxLayerView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 import { createDatasetMenu } from '../part-menu.model';

@@ -1,6 +1,7 @@
-import { LayerTypeConfig } from './style';
+import type { RasterLayer } from 'mapbox-gl';
+import type { LayerTypeConfig } from './style';
 
-export const RASTER_CONFIG: LayerTypeConfig = {
+export const RASTER_CONFIG: LayerTypeConfig<RasterLayer> = {
   TAB: {
     type: 'single',
     items: [

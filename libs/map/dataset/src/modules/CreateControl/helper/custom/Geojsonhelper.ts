@@ -1,7 +1,5 @@
-import {
-  createGeoJsonDataset,
-  GeojsonDatasetOption,
-} from '../../../../builder';
+import type { GeojsonDatasetOption } from '../../../../builder';
+import { createGeoJsonDataset } from '../../../../builder';
 import { GeojsonUpload } from '../../config';
 import { ConfigHelper } from '../_default';
 

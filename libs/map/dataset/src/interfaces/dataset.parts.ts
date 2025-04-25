@@ -1,5 +1,5 @@
 import type { Color, MapSimple } from '@hungpvq/shared-map';
-import { IDrawHandler } from '@hungpvq/vue-map-core';
+import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type { AnySourceData, PointLike } from 'mapbox-gl';
 import type { IDataset } from './dataset.base';
