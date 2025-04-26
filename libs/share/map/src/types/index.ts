@@ -1,4 +1,4 @@
-import { Map } from 'mapbox-gl';
+import { Map } from 'maplibre-gl';
 
 export type MapSimple = Map & {
   id: string;

@@ -109,7 +109,7 @@ import {
   mdiRulerSquareCompass,
   mdiTableHeadersEye,
 } from '@mdi/js';
-import { MapMouseEvent } from 'mapbox-gl';
+import { MapMouseEvent } from 'maplibre-gl';
 import { nextTick, ref } from 'vue';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 import {

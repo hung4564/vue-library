@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
-import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
+import type { MapboxGeoJSONFeature, PointLike } from 'maplibre-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,

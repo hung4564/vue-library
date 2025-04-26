@@ -1,6 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { GeoJSONSource } from 'mapbox-gl';
+import { GeoJSONSource } from 'maplibre-gl';
 import { View } from './_view';
 
 export class MapView extends View {

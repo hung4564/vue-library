@@ -2,11 +2,17 @@
 import { BaseButton, InputSelect, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
-import { Layer } from 'mapbox-gl';
+import { Layer } from 'maplibre-gl';
 import { computed, nextTick, ref, watch } from 'vue';
 import { LayerSimpleMapboxBuild } from '../../../utils/layer-simple-builder';
 import SingleStyle from './single-style.vue';
-const props = defineProps({
+defineExpose({
+  SvgIcon,
+  SingleStyle,
+  BaseButton,
+  InputSelect,
+});
+defineProps({
   trans: {
     required: true,
   },
@@ -82,11 +88,11 @@ const onShowAddStyle = (value: boolean) => {
   <div class="multi-style-edit-container">
     <div class="tab-container">
       <div class="tab-item">
-        <input-select
+        <InputSelect
           :modelValue="tab"
           @update:modelValue="onSelectTab"
           :items="tabs"
-        ></input-select>
+        ></InputSelect>
       </div>
       <div
         class="tab-item tab-add clickable"

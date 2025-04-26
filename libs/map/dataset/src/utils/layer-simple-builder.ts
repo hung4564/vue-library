@@ -5,7 +5,7 @@ import type {
   LineLayer,
   RasterLayer,
   SymbolLayer,
-} from 'mapbox-gl';
+} from 'maplibre-gl';
 
 import type { Color } from '@hungpvq/shared-map';
 import { getChartRandomColor } from '@hungpvq/vue-map-core';

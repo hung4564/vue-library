@@ -1,5 +1,5 @@
 import { MapSimple } from '@hungpvq/shared-map';
-import { EventData, MapLayerEventType } from 'mapbox-gl';
+import { EventData, MapLayerEventType } from 'maplibre-gl';
 import { Base } from '../../../model/Base';
 import { IEvent } from '../types';
 

@@ -1,4 +1,4 @@
-import type { RasterLayer } from 'mapbox-gl';
+import type { RasterLayer } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
 export const RASTER_CONFIG: LayerTypeConfig<RasterLayer> = {

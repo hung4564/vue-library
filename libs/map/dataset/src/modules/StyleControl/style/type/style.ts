@@ -1,4 +1,4 @@
-import type { Layer } from 'mapbox-gl';
+import type { Layer } from 'maplibre-gl';
 
 interface ITabCommon<L> {
   trans?: string;

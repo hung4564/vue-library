@@ -1,5 +1,5 @@
 import { getMap } from '@hungpvq/vue-map-core';
-import { GeoJSONSource } from 'mapbox-gl';
+import { GeoJSONSource } from 'maplibre-gl';
 import { Ref } from 'vue';
 
 export function createOrbitGlobalActions(mapId: Ref<string>) {

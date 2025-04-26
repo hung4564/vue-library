@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import maplibregl from 'mapbox-gl';
+import maplibregl from 'maplibre-gl';
 
 export function exportMapbox(map: MapSimple): Promise<string> {
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {

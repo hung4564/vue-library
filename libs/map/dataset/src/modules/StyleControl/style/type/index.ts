@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import type { AnyLayer } from 'mapbox-gl';
+import type { AnyLayer, Layer } from 'maplibre-gl';
 import { CIRCLE_CONFIG } from './circle';
 import { CONFIG_TABS } from './default';
 import { FILL_CONFIG } from './fill';
@@ -8,12 +8,12 @@ import { RASTER_CONFIG } from './raster';
 import type { LayerTabsConfig, Tab } from './style';
 import { SYMBOL_CONFIG } from './symbol';
 
-export const TABS: Record<string, LayerTabsConfig<any>> = {
-  circle: CIRCLE_CONFIG.TAB,
-  line: LINE_CONFIG.TAB,
-  fill: FILL_CONFIG.TAB,
-  raster: RASTER_CONFIG.TAB,
-  symbol: SYMBOL_CONFIG.TAB,
+export const TABS: Record<string, LayerTabsConfig<Layer>> = {
+  circle: CIRCLE_CONFIG.TAB as LayerTabsConfig<Layer>,
+  line: LINE_CONFIG.TAB as LayerTabsConfig<Layer>,
+  fill: FILL_CONFIG.TAB as LayerTabsConfig<Layer>,
+  raster: RASTER_CONFIG.TAB as LayerTabsConfig<Layer>,
+  symbol: SYMBOL_CONFIG.TAB as LayerTabsConfig<Layer>,
 };
 export const DEFAULT_VALUE: Record<string, Partial<AnyLayer>> = {
   circle: CIRCLE_CONFIG.DEFAULT,

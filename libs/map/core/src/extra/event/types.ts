@@ -1,5 +1,5 @@
 import { Coordinates, MapSimple } from '@hungpvq/shared-map';
-import { EventData, MapLayerEventType } from 'mapbox-gl';
+import { EventData, MapLayerEventType } from 'maplibre-gl';
 
 export interface EventClickOption {
   classPointer?: string;

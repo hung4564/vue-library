@@ -32,7 +32,7 @@
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/vue-map-core": ">=0.0.1",
     "@hungpvq/content-menu": ">=0.0.1",
-    "mapbox-gl": ">=1.13.0",
+    "maplibre-gl": "^5.4.0",
     "@hungpvq/shared-map": ">=0.0.1"
   }
 }

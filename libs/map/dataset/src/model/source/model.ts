@@ -1,5 +1,9 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { GeoJSONSource, GeoJSONSourceRaw, RasterSource } from 'mapbox-gl';
+import type {
+  GeoJSONSource,
+  GeoJSONSourceRaw,
+  RasterSource,
+} from 'maplibre-gl';
 import type {
   IDataset,
   IMapboxSourceView,

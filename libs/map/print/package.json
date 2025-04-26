@@ -32,6 +32,6 @@
     "@hungpvq/vue-draggable": ">=0.0.1",
     "@hungpvq/shared-map": ">=0.0.1",
     "file-saver": "^2.0.5",
-    "mapbox-gl": ">=1.13.0"
+    "maplibre-gl": "^5.4.0"
   }
 }

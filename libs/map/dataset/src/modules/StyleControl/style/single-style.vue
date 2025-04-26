@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
-import { Layer } from 'mapbox-gl';
+import { Layer } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
 import TabContent from '../component/tab-content.vue';
 import TabItem from '../component/tab-item.vue';
@@ -275,7 +275,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     }
   }
 }
-::v-deep .collapse.collapse-item {
+:deep(.collapse.collapse-item) {
   flex: 0 0 auto;
   &:last-child {
     flex: 1 1 auto;

@@ -5,7 +5,7 @@ import {
   useMap,
   withMapProps,
 } from '@hungpvq/vue-map-core';
-import { MapMouseEvent, type PointLike } from 'mapbox-gl';
+import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';

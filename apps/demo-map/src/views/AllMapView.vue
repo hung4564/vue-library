@@ -48,14 +48,14 @@ import {
   isDatasetMap,
   LayerControl,
   LayerHighlight,
-  LayerInfoControl,
   LayerSimpleMapboxBuild,
 } from '@hungpvq/vue-map-dataset';
 import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 import { mdiDownload, mdiPencil } from '@mdi/js';
 import { ref } from 'vue';
-const { status, error, downloadFile } = useDownloadFile();
+const { downloadFile } = useDownloadFile();
 const mapRef = ref();
 
 const { convertList } = useConvertToGeoJSON();
@@ -339,6 +339,8 @@ function createMenuDrawLayer() {
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
+    <PrintAdvancedControl />
+    <PrintControl />
     <GotoControl position="top-right" />
     <CrsControl />
     <SettingControl />

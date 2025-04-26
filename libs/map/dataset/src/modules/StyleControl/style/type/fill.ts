@@ -1,4 +1,4 @@
-import type { FillLayer } from 'mapbox-gl';
+import type { FillLayer } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
 export const FILL_CONFIG: LayerTypeConfig<FillLayer> = {

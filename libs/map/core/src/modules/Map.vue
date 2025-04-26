@@ -3,7 +3,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { useBreakpoints } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
-import mapboxgl, { MapboxOptions } from 'mapbox-gl';
+import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { actions, state as mapState } from '../store/store';
@@ -16,7 +16,7 @@ const breakpoints = useBreakpoints({
   laptop: 1024,
   desktop: 1280,
 });
-const DEFAULTOPTION: Partial<MapboxOptions> = {
+const DEFAULTOPTION: Partial<MapOptions> = {
   center: [105.19084739818732, 15.827971829957548],
   zoom: 5.297175623863693,
   maxZoom: 22,
@@ -41,9 +41,28 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_e: 'map-destroy', _map: MapSimple): void;
 }>();
-mapboxgl.accessToken = props.mapboxAccessToken;
+function isWebglSupported() {
+  if (window.WebGLRenderingContext) {
+    const canvas = document.createElement('canvas');
+    try {
+      // Note that { failIfMajorPerformanceCaveat: true } can be passed as a second argument
+      // to canvas.getContext(), causing the check to fail if hardware rendering is not available. See
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+      // for more details.
+      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      if (context && typeof context.getParameter == 'function') {
+        return true;
+      }
+    } catch (e) {
+      // WebGL is supported, but disabled
+    }
+    return false;
+  }
+  // WebGL not supported
+  return false;
+}
 const mapContainer = ref<HTMLDivElement>();
-const isSupport = ref(mapboxgl.supported());
+const isSupport = ref(isWebglSupported());
 const loaded = ref(false);
 let map: mapboxgl.Map | undefined = undefined;
 const id = ref(getUUIDv4());
@@ -52,7 +71,6 @@ const state = computed(() => mapState[id.value]);
 onMounted(() => {
   const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
   map = new mapboxgl.Map({
-    accessToken: props.mapboxAccessToken,
     container: mapContainer.value!,
     style: {
       version: 8,
@@ -170,7 +188,7 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
     transform: rotate(-45deg);
   }
 }
-@import 'mapbox-gl/dist/mapbox-gl.css';
+@import 'maplibre-gl/dist/maplibre-gl.css';
 
 .draggable-container * {
   pointer-events: all;

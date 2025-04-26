@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
+import { MapSimple } from '@hungpvq/shared-map';
 import {
   EventClick,
   MapControlButton,
@@ -23,10 +24,9 @@ import {
   mdiPencil,
   mdiPlus,
 } from '@mdi/js';
-import { MapMouseEvent } from 'mapbox-gl';
+import { MapMouseEvent } from 'maplibre-gl';
 import { computed, ref } from 'vue';
 import { DrawingTypeName } from '..';
-import type { DrawOption } from '../../types';
 import {
   activateDraw,
   callDraw,
@@ -35,6 +35,7 @@ import {
   deactivateDraw,
   draw,
   getDrawAction,
+  getDrawControl,
   getDrawIsActivated,
   getDrawIsRegisterId,
   getDrawIsShow,
@@ -42,9 +43,8 @@ import {
   initDrawControl,
   saveDraw,
   setFeature,
-  getDrawControl,
 } from '../../store';
-import { MapSimple } from '@hungpvq/shared-map';
+import type { DrawOption } from '../../types';
 const props = defineProps({
   ...withMapProps,
   drawOptions: Object,

@@ -1,6 +1,6 @@
-import { copyByJson } from '@hungpvq/shared';
+import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { AnyLayer, Layer } from 'mapbox-gl';
+import type { AnyLayer, Layer } from 'maplibre-gl';
 import MultiStyle from '../../modules/StyleControl/style/multi-style.vue';
 import { createNamedComponent } from '../base';
 import { findFirstLeafByType } from '../dataset.visitors';
@@ -15,17 +15,25 @@ export function createMultiMapboxLayerComponent(
     data
   );
   const cacheOpacity: Record<string, number> = {};
-  // Gán id nếu chưa có
-  base.getData().forEach((layer, index: number) => {
-    if (!layer.id) {
-      layer.id = `${base.id}-${index}`;
-    }
-    cacheOpacity[layer.id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
+  base.getData().forEach((layer) => {
+    const layer_id = layer.id || getUUIDv4();
+    layer.id = layer_id;
+    cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
   });
 
   return createNamedComponent('MultiMapboxLayerComponent', {
     ...base,
 
+    setData(newData: Partial<Layer>[]) {
+      base.setData(
+        newData.map((layer) => {
+          const layer_id = layer.id || getUUIDv4();
+          layer.id = layer_id;
+          cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
+          return layer;
+        })
+      );
+    },
     getBeforeId(): string | undefined {
       return base.getData()[0]?.id;
     },
@@ -42,8 +50,8 @@ export function createMultiMapboxLayerComponent(
       const source = findFirstLeafByType(base, 'source');
       base.getData().forEach((layer) => {
         if (!map.getLayer(layer.id!)) {
-          if (!layer.source && source?.id) {
-            layer.source = source.id;
+          if (!layer.source && source) {
+            layer.source = (source as any).getSourceId();
           }
           map.addLayer(layer as AnyLayer, beforeId);
         }

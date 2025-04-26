@@ -1,4 +1,4 @@
-import type { LineLayer } from 'mapbox-gl';
+import type { LineLayer } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
 export const LINE_CONFIG: LayerTypeConfig<LineLayer> = {

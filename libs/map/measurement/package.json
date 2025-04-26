@@ -33,7 +33,7 @@
     "@mdi/js": "^7.4.47",
     "@turf/turf": "^6.5.0",
     "@turf/helpers": "^6.5.0",
-    "mapbox-gl": ">=1.13.0",
+    "maplibre-gl": "^5.4.0",
     "@hungpvq/shared": ">=0.0.1",
     "file-saver": "^2.0.5"
   }

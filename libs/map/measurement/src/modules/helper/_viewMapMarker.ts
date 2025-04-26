@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import type { Color, CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
-import { Marker } from 'mapbox-gl';
+import { Marker } from 'maplibre-gl';
 import { IViewSetting } from '../types';
 import { View } from './_view';
 

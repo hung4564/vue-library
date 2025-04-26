@@ -1,4 +1,4 @@
-import type { CircleLayer } from 'mapbox-gl';
+import type { CircleLayer } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
 export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayer> = {
