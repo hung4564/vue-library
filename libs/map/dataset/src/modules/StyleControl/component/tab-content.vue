@@ -30,6 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { copyByJson } from '@hungpvq/shared';
 import { computed } from 'vue';
 const props = defineProps({
   value: {},
@@ -50,8 +51,13 @@ const props = defineProps({
 const emit = defineEmits(['input']);
 const form = computed({
   get() {
-    if (props.value != null) return props.value;
-    return props.default_value;
+    const value =
+      props.value != null
+        ? props.value
+        : props.default_value != null
+        ? copyByJson(props.default_value)
+        : undefined;
+    return value;
   },
   set(value) {
     emit('input', value);
@@ -67,7 +73,8 @@ const attrs = computed(() => {
   return props.item.props.content;
 });
 const onSetDefaultValue = () => {
-  form.value = props.default_value;
+  form.value =
+    props.default_value != null ? copyByJson(props.default_value) : undefined;
 };
 </script>
 <style scoped>

@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import type { AnyLayer, Layer } from 'maplibre-gl';
+import type { LayerSpecification } from 'maplibre-gl';
 import { CIRCLE_CONFIG } from './circle';
 import { CONFIG_TABS } from './default';
 import { FILL_CONFIG } from './fill';
@@ -8,14 +8,14 @@ import { RASTER_CONFIG } from './raster';
 import type { LayerTabsConfig, Tab } from './style';
 import { SYMBOL_CONFIG } from './symbol';
 
-export const TABS: Record<string, LayerTabsConfig<Layer>> = {
-  circle: CIRCLE_CONFIG.TAB as LayerTabsConfig<Layer>,
-  line: LINE_CONFIG.TAB as LayerTabsConfig<Layer>,
-  fill: FILL_CONFIG.TAB as LayerTabsConfig<Layer>,
-  raster: RASTER_CONFIG.TAB as LayerTabsConfig<Layer>,
-  symbol: SYMBOL_CONFIG.TAB as LayerTabsConfig<Layer>,
+export const TABS: Record<string, LayerTabsConfig<LayerSpecification>> = {
+  circle: CIRCLE_CONFIG.TAB as LayerTabsConfig<LayerSpecification>,
+  line: LINE_CONFIG.TAB as LayerTabsConfig<LayerSpecification>,
+  fill: FILL_CONFIG.TAB as LayerTabsConfig<LayerSpecification>,
+  raster: RASTER_CONFIG.TAB as LayerTabsConfig<LayerSpecification>,
+  symbol: SYMBOL_CONFIG.TAB as LayerTabsConfig<LayerSpecification>,
 };
-export const DEFAULT_VALUE: Record<string, Partial<AnyLayer>> = {
+export const DEFAULT_VALUE: Record<string, Partial<LayerSpecification>> = {
   circle: CIRCLE_CONFIG.DEFAULT,
   line: LINE_CONFIG.DEFAULT,
   fill: FILL_CONFIG.DEFAULT,
@@ -38,6 +38,9 @@ export function convertTabWithDefaultConfig(
       default_config[x.type] || {},
       x
     );
+    if (!default_config[x.type]) {
+      console.log('type', 'missing', x.type);
+    }
     res.props = merge(
       {},
       res.props,

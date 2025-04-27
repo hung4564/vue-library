@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
-import { Layer } from 'maplibre-gl';
+import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
 import TabContent from '../component/tab-content.vue';
 import TabItem from '../component/tab-item.vue';
@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['input', 'update-style']);
-const layer = defineModel<Layer>({ required: true });
+const layer = defineModel<LayerSpecification>({ required: true });
 const tabs_format = computed<TabConfig[]>(() => {
   const tab = TABS[layer.value.type];
   if (tab.type === 'multi') {
@@ -241,12 +241,6 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
       overflow: auto;
     }
   }
-  .tab-content-padding {
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 16px;
-  }
   .value-container__label {
     padding: 16px 16px 0;
     font-weight: bolder;
@@ -297,5 +291,18 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
       flex: 1 1 auto;
     }
   }
+}
+</style>
+
+<style>
+.tab-content-padding {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.tab-content-padding .input-container {
+  width: 100%;
 }
 </style>

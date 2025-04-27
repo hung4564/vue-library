@@ -1,7 +1,7 @@
 import type { Color, MapSimple } from '@hungpvq/shared-map';
 import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
-import type { AnySourceData, PointLike } from 'maplibre-gl';
+import type { PointLike, SourceSpecification } from 'maplibre-gl';
 import type { IDataset } from './dataset.base';
 import type { IDatasetMap } from './dataset.map';
 
@@ -86,7 +86,7 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
   };
 
 export type IMapboxSourceView = IDatasetMap & {
-  getMapboxSource: () => AnySourceData & { id?: string };
+  getMapboxSource: () => SourceSpecification & { id?: string };
   updateData?(map: MapSimple, data: any): void;
   getFieldsInfo(): IFieldInfo[];
   getDataInfo(): any;

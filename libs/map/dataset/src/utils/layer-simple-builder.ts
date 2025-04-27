@@ -1,19 +1,19 @@
 import type {
-  CircleLayer,
-  FillLayer,
-  Layer as LayerMapbox,
-  LineLayer,
-  RasterLayer,
-  SymbolLayer,
+  CircleLayerSpecification,
+  FillLayerSpecification,
+  LayerSpecification as LayerMapbox,
+  LineLayerSpecification,
+  RasterLayerSpecification,
+  SymbolLayerSpecification,
 } from 'maplibre-gl';
 
 import type { Color } from '@hungpvq/shared-map';
 import { getChartRandomColor } from '@hungpvq/vue-map-core';
 export interface ILayerMapboxBuild {
-  build(): Omit<LayerMapbox, 'id'>;
+  build(): Omit<LayerMapbox, 'id' | 'source'>;
 }
 export class LayerRasterMapboxBuild implements ILayerMapboxBuild {
-  build(): Omit<RasterLayer, 'id'> {
+  build(): Omit<RasterLayerSpecification, 'id' | 'source'> {
     return {
       type: 'raster',
     };
@@ -44,7 +44,13 @@ export const getDefaultLayer = (
   type: string,
   color?: Color,
   opacity?: number
-): Omit<LineLayer | FillLayer | CircleLayer | SymbolLayer, 'id'> => {
+): Omit<
+  | LineLayerSpecification
+  | FillLayerSpecification
+  | CircleLayerSpecification
+  | SymbolLayerSpecification,
+  'id' | 'source'
+> => {
   switch (type) {
     case 'point':
       return {

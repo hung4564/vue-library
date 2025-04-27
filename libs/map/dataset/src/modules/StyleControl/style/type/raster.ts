@@ -1,7 +1,7 @@
-import type { RasterLayer } from 'maplibre-gl';
+import type { RasterLayerSpecification } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
-export const RASTER_CONFIG: LayerTypeConfig<RasterLayer> = {
+export const RASTER_CONFIG: LayerTypeConfig<RasterLayerSpecification> = {
   TAB: {
     type: 'single',
     items: [

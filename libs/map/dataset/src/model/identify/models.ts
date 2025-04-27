@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
-import type { MapboxGeoJSONFeature, PointLike } from 'maplibre-gl';
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -68,7 +68,7 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
 
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
       getMap(mapId, (map: MapSimple) => {
-        const features: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
+        const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
           pointOrBox,
           {
             layers: allLayerIds,
@@ -222,7 +222,7 @@ export async function handleMultiIdentifyGetFirst(
   });
   return new Promise((resolve) => {
     getMap(mapId, (map: MapSimple) => {
-      const features: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
+      const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         pointOrBox,
         {
           layers: allLayerIds,

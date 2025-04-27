@@ -1,8 +1,8 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import type {
   GeoJSONSource,
-  GeoJSONSourceRaw,
-  RasterSource,
+  GeoJSONSourceSpecification,
+  RasterSourceSpecification,
 } from 'maplibre-gl';
 import type {
   IDataset,
@@ -15,7 +15,7 @@ import { createDatasetPartMapboxSourceComponent } from './base';
 
 export function createDatasetPartGeojsonSourceComponent(
   name: string,
-  data?: GeoJSONSourceRaw['data']
+  data?: GeoJSONSourceSpecification['data']
 ): IMapboxSourceView & IDataset {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 
@@ -89,7 +89,7 @@ export function createDatasetPartGeojsonSourceComponent(
 }
 export function createDatasetPartRasterSourceComponent(
   name: string,
-  data?: RasterSource
+  data?: RasterSourceSpecification
 ): IMapboxSourceView & IDataset {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 

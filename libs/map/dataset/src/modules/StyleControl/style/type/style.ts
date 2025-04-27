@@ -1,4 +1,4 @@
-import type { Layer } from 'maplibre-gl';
+import type { LayerSpecification } from 'maplibre-gl';
 
 interface ITabCommon<L> {
   trans?: string;
@@ -18,7 +18,7 @@ interface ITabCommon<L> {
   disabled?: (layer: L) => boolean;
 }
 
-export type ITab<L extends Layer = Layer> =
+export type ITab<L extends LayerSpecification = LayerSpecification> =
   | (ITabCommon<L> & {
       key: keyof NonNullable<L['paint']>;
       part?: 'paint';
@@ -28,62 +28,71 @@ export type ITab<L extends Layer = Layer> =
       part: 'layout';
     });
 
-export type UnitTab<L extends Layer = Layer> = ITab<L> & {
-  unit?: string;
-  type: 'unit';
-};
+export type UnitTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    unit?: string;
+    type: 'unit';
+  };
 
-export type DividersTab<L extends Layer = Layer> = Omit<ITab<L>, 'key'> & {
-  type: 'divider';
-};
+export type DividersTab<L extends LayerSpecification = LayerSpecification> =
+  Omit<ITab<L>, 'key'> & {
+    type: 'divider';
+  };
 
-export type ColorTab<L extends Layer = Layer> = ITab<L> & {
-  unit?: string;
-  type: 'color';
-};
+export type ColorTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    unit?: string;
+    type: 'color';
+  };
 
-export type OpacityTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'opacity';
-};
+export type OpacityTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'opacity';
+  };
 
-export type NumberTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'number';
-  min?: number;
-  max?: number;
-  step?: number;
-};
+export type NumberTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'number';
+    min?: number;
+    max?: number;
+    step?: number;
+  };
 
-export type ChoseTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'chose';
-  menu: {
-    text?: string;
-    subtitle?: string;
-    text_trans?: string;
-    subtitle_trans?: string;
-    value: string;
-  }[];
-};
+export type ChoseTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'chose';
+    menu: {
+      text?: string;
+      subtitle?: string;
+      text_trans?: string;
+      subtitle_trans?: string;
+      value: string;
+    }[];
+  };
 
-export type SelectTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'select';
-  items: string[];
-};
+export type SelectTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'select';
+    items: string[];
+  };
 
-export type ArrayXYTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'array-x-y';
-  unit: string;
-};
+export type ArrayXYTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'array-x-y';
+    unit: string;
+  };
 
-export type ArrayIndexTab<L extends Layer = Layer> = ITab<L> & {
-  type: 'array-index';
-  data: {
-    text: string;
-    type: string;
-    value: 0;
-  }[];
-};
+export type ArrayIndexTab<L extends LayerSpecification = LayerSpecification> =
+  ITab<L> & {
+    type: 'array-index';
+    data: {
+      text: string;
+      type: string;
+      value: 0;
+    }[];
+  };
 
-export type Tab<L extends Layer = Layer> =
+export type Tab<L extends LayerSpecification = LayerSpecification> =
   | DividersTab
   | ITab<L>
   | ColorTab<L>
@@ -95,23 +104,25 @@ export type Tab<L extends Layer = Layer> =
   | ArrayXYTab<L>
   | ArrayIndexTab<L>;
 
-export type SingleTabConfig<L extends Layer = Layer> = {
-  type: 'single';
-  items: Tab<L>[];
-};
-export type MultiTabConfig<L extends Layer = Layer> = {
-  type: 'multi';
-  tabs: TabConfig<L>[];
-};
-export type LayerTabsConfig<L extends Layer = Layer> =
-  | SingleTabConfig<L>
-  | MultiTabConfig<L>;
-export type LayerTypeConfig<L extends Layer = Layer> = {
-  TAB: LayerTabsConfig<L>;
-  DEFAULT: Partial<L>;
-};
+export type SingleTabConfig<L extends LayerSpecification = LayerSpecification> =
+  {
+    type: 'single';
+    items: Tab<L>[];
+  };
+export type MultiTabConfig<L extends LayerSpecification = LayerSpecification> =
+  {
+    type: 'multi';
+    tabs: TabConfig<L>[];
+  };
+export type LayerTabsConfig<L extends LayerSpecification = LayerSpecification> =
+  SingleTabConfig<L> | MultiTabConfig<L>;
+export type LayerTypeConfig<L extends LayerSpecification = LayerSpecification> =
+  {
+    TAB: LayerTabsConfig<L>;
+    DEFAULT: Partial<L>;
+  };
 
-export type TabConfig<L extends Layer = Layer> = {
+export type TabConfig<L extends LayerSpecification = LayerSpecification> = {
   trans?: string;
   text?: string;
   items: Tab<L>[];

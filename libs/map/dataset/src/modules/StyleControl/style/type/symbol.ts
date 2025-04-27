@@ -1,13 +1,13 @@
 import type { LayerTypeConfig, Tab } from './style';
 
-import type { SymbolLayer } from 'maplibre-gl';
+import type { SymbolLayerSpecification } from 'maplibre-gl';
 
-const TEXT_STYLE: Tab<SymbolLayer>[] = [
+const TEXT_STYLE: Tab<SymbolLayerSpecification>[] = [
   {
     trans: 'symbol-style.setting.text-field',
     key: 'text-field',
     part: 'layout',
-    type: 'string',
+    type: 'text',
   },
   {
     trans: 'symbol-style.setting.text-color',
@@ -84,7 +84,7 @@ const TEXT_STYLE: Tab<SymbolLayer>[] = [
     type: 'unit',
   },
 ];
-const ICON_STYLE: Tab<SymbolLayer>[] = [
+const ICON_STYLE: Tab<SymbolLayerSpecification>[] = [
   {
     trans: 'symbol-style.setting.icon-image',
     key: 'icon-image',
@@ -155,7 +155,7 @@ const ICON_STYLE: Tab<SymbolLayer>[] = [
     ],
   },
 ];
-const POSITION_STYLE: Tab<SymbolLayer>[] = [
+const POSITION_STYLE: Tab<SymbolLayerSpecification>[] = [
   {
     trans: 'symbol-style.setting.symbol-placement',
     key: 'symbol-placement',
@@ -277,7 +277,7 @@ const POSITION_STYLE: Tab<SymbolLayer>[] = [
     part: 'layout',
   },
 ];
-const PLACEMENT_STYLE: Tab<SymbolLayer>[] = [
+const PLACEMENT_STYLE: Tab<SymbolLayerSpecification>[] = [
   {
     trans: 'symbol-style.setting.text-justify',
     key: 'text-justify',
@@ -391,7 +391,7 @@ const PLACEMENT_STYLE: Tab<SymbolLayer>[] = [
     part: 'layout',
   },
 ];
-export const SYMBOL_CONFIG: LayerTypeConfig<SymbolLayer> = {
+export const SYMBOL_CONFIG: LayerTypeConfig<SymbolLayerSpecification> = {
   TAB: {
     type: 'multi',
     tabs: [

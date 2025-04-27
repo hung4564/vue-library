@@ -1,16 +1,16 @@
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { AnyLayer, Layer } from 'maplibre-gl';
+import type { LayerSpecification } from 'maplibre-gl';
 import MultiStyle from '../../modules/StyleControl/style/multi-style.vue';
 import { createNamedComponent } from '../base';
 import { findFirstLeafByType } from '../dataset.visitors';
 import { createDatasetPartMapboxLayerComponent } from './base';
-
+type BaseLayerSpec = Partial<Omit<LayerSpecification, 'id'>> & { id?: string };
 export function createMultiMapboxLayerComponent(
   name: string,
-  data: Partial<Layer>[] = []
+  data: BaseLayerSpec[] = []
 ) {
-  const base = createDatasetPartMapboxLayerComponent<Partial<Layer>[]>(
+  const base = createDatasetPartMapboxLayerComponent<BaseLayerSpec[]>(
     name,
     data
   );
@@ -24,7 +24,7 @@ export function createMultiMapboxLayerComponent(
   return createNamedComponent('MultiMapboxLayerComponent', {
     ...base,
 
-    setData(newData: Partial<Layer>[]) {
+    setData(newData: BaseLayerSpec[]) {
       base.setData(
         newData.map((layer) => {
           const layer_id = layer.id || getUUIDv4();
@@ -50,10 +50,10 @@ export function createMultiMapboxLayerComponent(
       const source = findFirstLeafByType(base, 'source');
       base.getData().forEach((layer) => {
         if (!map.getLayer(layer.id!)) {
-          if (!layer.source && source) {
-            layer.source = (source as any).getSourceId();
+          if (!(layer as any).source && source) {
+            (layer as any).source = (source as any).getSourceId();
           }
-          map.addLayer(layer as AnyLayer, beforeId);
+          map.addLayer(layer as LayerSpecification, beforeId);
         }
       });
     },
@@ -104,6 +104,7 @@ export function createMultiMapboxLayerComponent(
     ) {
       const { type, index } = value;
       let { layer } = value;
+      const source = findFirstLeafByType(base, 'source');
 
       switch (type) {
         case 'update-one-layer':
@@ -118,7 +119,7 @@ export function createMultiMapboxLayerComponent(
           layer = {
             ...layer,
             id: `${base.id}-${base.getData().length}`,
-            source: base.getData()[0]?.source,
+            source: (source as any).getSourceId(),
           };
           map.addLayer(layer);
           base.getData().push(layer);
@@ -155,8 +156,10 @@ function updateStyleLayer(map: MapSimple, old: any, newVal: any) {
   }
 }
 
-function getKeyOpacity(layer: Partial<Layer>): keyof Layer['paint'] {
+function getKeyOpacity(
+  layer: BaseLayerSpec
+): keyof LayerSpecification['paint'] {
   const keyOpacity =
     layer.type === 'symbol' ? 'icon-opacity' : `${layer.type}-opacity`;
-  return keyOpacity as keyof Layer['paint'];
+  return keyOpacity as keyof LayerSpecification['paint'];
 }

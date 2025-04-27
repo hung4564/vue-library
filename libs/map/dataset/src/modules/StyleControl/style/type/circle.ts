@@ -1,7 +1,7 @@
-import type { CircleLayer } from 'maplibre-gl';
+import type { CircleLayerSpecification } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
-export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayer> = {
+export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayerSpecification> = {
   TAB: {
     type: 'single',
     items: [
@@ -75,16 +75,7 @@ export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayer> = {
       {
         trans: 'circle-style.setting.translate',
         key: 'circle-translate',
-        type: 'array',
-        format: (value: string) => {
-          if (!value) {
-            return undefined;
-          }
-          if (typeof value == 'string') {
-            return value.split(',').map((x) => Number(x.trim()));
-          }
-          return value;
-        },
+        type: 'array-x-y',
       },
     ],
   },

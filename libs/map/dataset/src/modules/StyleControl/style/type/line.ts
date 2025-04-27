@@ -1,7 +1,7 @@
-import type { LineLayer } from 'maplibre-gl';
+import type { LineLayerSpecification } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
-export const LINE_CONFIG: LayerTypeConfig<LineLayer> = {
+export const LINE_CONFIG: LayerTypeConfig<LineLayerSpecification> = {
   TAB: {
     type: 'single',
     items: [
@@ -123,7 +123,7 @@ export const LINE_CONFIG: LayerTypeConfig<LineLayer> = {
       {
         trans: 'line-style.setting.translate',
         key: 'line-translate',
-        type: 'array',
+        type: 'array-x-y',
       },
     ],
   },

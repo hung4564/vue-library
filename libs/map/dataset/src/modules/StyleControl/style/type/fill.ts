@@ -1,7 +1,7 @@
-import type { FillLayer } from 'maplibre-gl';
+import type { FillLayerSpecification } from 'maplibre-gl';
 import type { LayerTypeConfig } from './style';
 
-export const FILL_CONFIG: LayerTypeConfig<FillLayer> = {
+export const FILL_CONFIG: LayerTypeConfig<FillLayerSpecification> = {
   TAB: {
     type: 'single',
     items: [
@@ -45,7 +45,7 @@ export const FILL_CONFIG: LayerTypeConfig<FillLayer> = {
       {
         trans: 'fill-style.setting.translate',
         key: 'fill-translate',
-        type: 'array',
+        type: 'array-x-y',
       },
     ],
   },

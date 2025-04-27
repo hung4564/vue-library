@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { AnySourceData } from 'maplibre-gl';
+import type { SourceSpecification } from 'maplibre-gl';
 import type { IDataset, IMapboxSourceView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
@@ -35,7 +35,7 @@ export function createDatasetPartMapboxSourceComponent<T = any>(
         map.removeSource(source_id);
       }
     },
-    getMapboxSource(): AnySourceData & { id?: string } {
+    getMapboxSource(): SourceSpecification & { id?: string } {
       throw new Error('Method not implemented.');
     },
     getFieldsInfo(): any[] {
