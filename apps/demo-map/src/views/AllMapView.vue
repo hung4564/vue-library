@@ -11,6 +11,7 @@ import {
   FullScreenControl,
   GeoLocateControl,
   getMap,
+  GlobeControl,
   GotoControl,
   HomeControl,
   Map,
@@ -395,6 +396,7 @@ function createMenuDrawLayer() {
     <PrintAdvancedControl />
     <PrintControl />
     <GotoControl position="top-right" />
+    <GlobeControl />
     <CrsControl />
     <SettingControl />
     <GeoLocateControl />

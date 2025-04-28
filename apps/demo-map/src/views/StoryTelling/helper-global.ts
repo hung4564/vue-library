@@ -1,5 +1,5 @@
 import { getMap } from '@hungpvq/vue-map-core';
-import { GeoJSONSource } from 'maplibre-gl';
+import { GeoJSONSource, Map } from 'maplibre-gl';
 import { Ref } from 'vue';
 
 export function createOrbitGlobalActions(mapId: Ref<string>) {
@@ -104,10 +104,7 @@ export function createSimpleMapAction(mapId: Ref<string>) {
   };
 }
 
-export function withMapReady(
-  mapId: string,
-  action: (map: mapboxgl.Map) => void
-) {
+export function withMapReady(mapId: string, action: (map: Map) => void) {
   getMap(mapId, (map) => {
     if (map.isStyleLoaded()) {
       action(map);
