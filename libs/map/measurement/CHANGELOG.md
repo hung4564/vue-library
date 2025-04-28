@@ -1,3 +1,13 @@
+## 0.5.0 (2025-04-28)
+
+### 🚀 Features
+
+- change to maplibre
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.2 (2025-04-24)
 
 ### 🩹 Fixes

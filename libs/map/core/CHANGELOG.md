@@ -1,3 +1,21 @@
+## 0.5.0 (2025-04-28)
+
+### 🚀 Features
+
+- fix style control
+
+- change to maplibre
+
+- add missing input, type
+
+- add InspectControl
+
+- add globe
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.2 (2025-04-24)
 
 ### 🩹 Fixes
