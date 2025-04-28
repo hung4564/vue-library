@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import maplibregl from 'maplibre-gl';
+import { Map as MaplibreMap } from 'maplibre-gl';
 
 export function exportMapbox(map: MapSimple): Promise<string> {
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
@@ -70,39 +70,29 @@ function getMapBoxCanvas(
   const container = document.createElement('div');
   callback(container);
   hidden.appendChild(container);
-  const renderMap = new maplibregl.Map({
+  const renderMap: MaplibreMap = new MaplibreMap({
     container,
+    style: map.getStyle(),
     center: map.getCenter(),
     zoom: map.getZoom(),
     bearing: map.getBearing(),
     pitch: map.getPitch(),
     interactive: false,
-    preserveDrawingBuffer: true,
+    canvasContextAttributes: {
+      preserveDrawingBuffer: true,
+    },
     fadeDuration: 0,
-    attributionControl: false,
-    // hack to read transfrom request callback function
-    transformRequest: (map as any)._requestManager._transformRequestFn,
+    // attributionControl: false,
+    // hack to read transform request callback function
+    // eslint-disable-next-line
+    // @ts-ignore
+    transformRequest: (map as unknown)._requestManager._transformRequestFn,
   });
-  const images = ((map as any).style.imageManager || {}).images || {};
-  if (images && Object.keys(images)?.length > 0) {
-    Object.keys(images).forEach((key) => {
-      if (!key) return;
-      renderMap.addImage(key, images[key].data);
-    });
-  }
-  const style = map.getStyle();
-  if (style && style.sources) {
-    const sources = style.sources;
-    Object.keys(sources).forEach((name) => {
-      const src = sources[name];
-      Object.keys(src).forEach((key) => {
-        // delete properties if value is undefined.
-        // for instance, raster-dem might has undefined value in "url" and "bounds"
-        // @ts-expect-error:next-line
-        if (!src[key]) delete src[key];
-      });
-    });
-  }
-  renderMap.setStyle(style);
+  // the below code was added by https://github.com/watergis/maplibre-gl-export/pull/18.
+  const images = ((map as MaplibreMap).style.imageManager || {}).images || [];
+  Object.keys(images).forEach((key) => {
+    if (!images[key].data) return;
+    renderMap.addImage(key, images[key].data);
+  });
   return { renderMap, hidden };
 }
