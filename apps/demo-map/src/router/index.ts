@@ -14,6 +14,10 @@ const router = createRouter({
       component: () => import('../views/Draw/example.vue'),
     },
     {
+      path: '/inspect/',
+      component: () => import('../views/Draw/inspect.vue'),
+    },
+    {
       path: '/compare/',
       component: () => import('../views/AllMapCompareView.vue'),
     },

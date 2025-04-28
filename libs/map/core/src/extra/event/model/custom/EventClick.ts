@@ -29,3 +29,29 @@ export class EventClick extends Event<'click', EventClickOption> {
     return this;
   }
 }
+
+export class EventMouseMove extends Event<'mousemove', EventClickOption> {
+  constructor(type_select = 'map') {
+    super('mousemove', type_select);
+    this.setClassPointer('pointer');
+  }
+  setClassPointer(classPointer: string) {
+    this.options.classPointer = classPointer;
+  }
+  override addToMap(map: MapSimple) {
+    if (this.options.classPointer)
+      map.getCanvas().classList.add(this.options.classPointer);
+    if (this.handler) {
+      map.on('mousemove', this.handler);
+    }
+    return this;
+  }
+  override removeFromMap(map: MapSimple) {
+    if (this.options.classPointer)
+      map.getCanvas().classList.remove(this.options.classPointer);
+    if (this.handler) {
+      map.off('mousemove', this.handler);
+    }
+    return this;
+  }
+}

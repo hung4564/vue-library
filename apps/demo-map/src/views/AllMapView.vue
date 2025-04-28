@@ -50,7 +50,12 @@ import {
   LayerHighlight,
   LayerSimpleMapboxBuild,
 } from '@hungpvq/vue-map-dataset';
-import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
+import {
+  callDraw,
+  DrawControl,
+  DrawingType,
+  InspectControl,
+} from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 import { mdiDownload, mdiPencil } from '@mdi/js';
@@ -67,7 +72,6 @@ function onMapLoaded(map: MapSimple) {
     true
   ) as DatasetComposite;
   const source_raster = createDatasetPartRasterSourceComponent('source', {
-    name: 'raster 1',
     type: 'raster',
     tiles: [
       'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
@@ -381,6 +385,7 @@ function createMenuDrawLayer() {
     </LayerInfoControl> -->
     <MeasurementControl position="top-right" />
     <DrawControl position="top-right" />
+    <InspectControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />

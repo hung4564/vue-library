@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import { MapSimple } from '@hungpvq/shared-map';
 import {
   EventClick,
   MapControlButton,
@@ -25,7 +24,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { MapMouseEvent } from 'maplibre-gl';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { DrawingTypeName } from '..';
 import {
   activateDraw,
@@ -50,22 +49,26 @@ const props = defineProps({
   drawOptions: Object,
 });
 const drawOptions = props.drawOptions as DrawOption;
-const { mapId, moduleContainerProps } = useMap(
-  props,
-  (map: MapSimple) => {
-    onSelectMethod('select');
-    map.on('draw.create', onDrawCreated);
-    map.on('draw.update', onDrawUpdated);
-    map.on('draw.delete', onDrawDeleted);
-    map.addControl(control);
-  },
-  (map: MapSimple) => {
-    map.off('draw.create', onDrawCreated);
-    map.off('draw.update', onDrawUpdated);
-    map.off('draw.delete', onDrawDeleted);
-    map.removeControl(control);
-  }
-);
+const { mapId, moduleContainerProps, callMap } = useMap(props);
+const isShow = computed(() => {
+  return getDrawIsShow(mapId.value);
+});
+watch(isShow, (newValue) => {
+  callMap((map) => {
+    if (newValue) {
+      onSelectMethod('select');
+      map.on('draw.create', onDrawCreated);
+      map.on('draw.update', onDrawUpdated);
+      map.on('draw.delete', onDrawDeleted);
+      map.addControl(control as any);
+    } else {
+      map.off('draw.create', onDrawCreated);
+      map.off('draw.update', onDrawUpdated);
+      map.off('draw.delete', onDrawDeleted);
+      map.removeControl(control as any);
+    }
+  });
+});
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
   new EventClick().setHandler(onMapClick)
@@ -127,9 +130,6 @@ function onDraw(type: string) {
 }
 const isActivated = computed(() => {
   return getDrawIsActivated(mapId.value);
-});
-const isShow = computed(() => {
-  return getDrawIsShow(mapId.value);
 });
 const drawSupport = computed(() => {
   return getDrawSupport(mapId.value);

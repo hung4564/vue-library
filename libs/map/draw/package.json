@@ -26,13 +26,13 @@
     }
   },
   "peerDependencies": {
-    "@jamescoyle/vue-icon": "^0.1.2",
-    "@mdi/js": "^7.4.47",
-    "@mapbox/mapbox-gl-draw": ">=1.4.3",
-    "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/vue-map-core": ">=0.0.1",
     "@hungpvq/content-menu": ">=0.0.1",
-    "maplibre-gl": "^5.4.0",
-    "@hungpvq/shared-map": ">=0.0.1"
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-map": ">=0.0.1",
+    "@hungpvq/vue-map-core": ">=0.0.1",
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mapbox/mapbox-gl-draw": ">=1.4.3",
+    "@mdi/js": "^7.4.47",
+    "maplibre-gl": "^5.4.0"
   }
 }
