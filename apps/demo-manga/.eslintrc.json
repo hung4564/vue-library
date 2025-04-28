@@ -6,21 +6,17 @@
     "@vue/eslint-config-prettier/skip-formatting",
     "../../.eslintrc.base.json"
   ],
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "*.jsx",
-        "*.vue"
-      ],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.vue"],
       "rules": {
         "vue/multi-word-component-names": "off"
       }
+    },
+    {
+      "files": ["*.html"],
+      "processor": "vue/.vue"
     }
   ]
 }
