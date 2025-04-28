@@ -91,12 +91,9 @@ export function useStorytelling(options: UseStorytellingOptions) {
 
   const runCurrentChapter = () => {
     const chapter = chapters[currentIndex.value];
-    console.log('test', currentIndex.value, 'start');
-    console.log('test', currentIndex.value, 'start', 'chapter', chapter);
     chapter.onEnter?.();
 
     for (const action of chapter.actions ?? []) {
-      console.log('test', currentIndex.value, 'start', 'action', action);
       const resolved = resolveAction(action);
       resolved?.add?.();
     }
@@ -104,7 +101,6 @@ export function useStorytelling(options: UseStorytellingOptions) {
     if (autoNext && chapter.duration) {
       clearTimer();
       timer = window.setTimeout(() => {
-        console.log('test', currentIndex.value, 'start', 'exit');
         chapter.onExit?.();
         next();
       }, chapter.duration / currentSpeed.value);
@@ -112,28 +108,16 @@ export function useStorytelling(options: UseStorytellingOptions) {
   };
 
   const exitCurrentChapter = (nextIndex: number) => {
-    console.log('test', currentIndex.value, 'end', 'exit');
     const current = chapters[currentIndex.value];
-    console.log('test', currentIndex.value, 'end', 'chapter', current);
     const next = chapters[nextIndex];
     const nextTypes = new Set(next?.actions?.map((a) => a.type) ?? []);
 
     current?.onExit?.();
 
     for (const action of current?.actions ?? []) {
-      console.log(
-        'test',
-        currentIndex.value,
-        'end',
-        'action',
-        action,
-        nextTypes,
-        nextTypes.has(action.type)
-      );
       if (!nextTypes.has(action.type)) {
         const resolved = resolveAction(action);
         resolved?.remove?.();
-        console.log('test', currentIndex.value, 'end', 'remove action', action);
       }
     }
 

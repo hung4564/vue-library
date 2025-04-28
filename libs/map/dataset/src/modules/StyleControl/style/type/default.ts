@@ -2,21 +2,50 @@ import {
   InputCheckbox,
   InputChoose,
   InputColorPicker,
+  InputSelect,
   InputSlider,
   InputText,
 } from '@hungpvq/vue-map-core';
+import InputArrayIndex from '../field/InputArrayIndex.vue';
+import InputArrayXY from '../field/InputArrayXY.vue';
+import InputImage from '../field/InputImage.vue';
+import InputMultiple from '../field/InputMultiple.vue';
 import { divColor, textAfter, textFormat } from '../label';
-import { ChoseTab, Tab } from './style';
+import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from './style';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
-  image: {
+  'array-index': {
     component: {
-      content: () => InputText,
+      content: () => InputArrayIndex,
     },
     props: {
-      content: {
-        class: 'tab-content-padding',
-      },
+      content: (tab: ArrayIndexTab) => ({
+        items: tab.data,
+      }),
+    },
+  },
+  multiple: {
+    component: {
+      content: () => InputMultiple,
+    },
+    props: {},
+  },
+  select: {
+    component: {
+      content: () => InputSelect,
+    },
+    props: {
+      content: (tab: SelectTab) => ({
+        items: tab.items,
+      }),
+    },
+  },
+  image: {
+    component: {
+      content: () => InputImage,
+    },
+    props: {
+      content: {},
     },
   },
   color: {
@@ -27,6 +56,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
     props: {
       content: {
         disableAlpha: true,
+        class: 'tab-content-no-padding',
       },
     },
   },
@@ -35,9 +65,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
       content: () => InputCheckbox,
     },
     props: {
-      content: {
-        class: 'tab-content-padding',
-      },
+      content: {},
     },
   },
   chose: {
@@ -65,7 +93,6 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
     },
     props: {
       content: {
-        class: 'tab-content-padding',
         min: 0,
         max: 1,
         step: 0.01,
@@ -85,7 +112,6 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
     },
     props: {
       content: {
-        class: 'tab-content-padding',
         min: 0,
         max: 1,
         step: 0.01,
@@ -105,21 +131,44 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
     },
     props: {
       content: {
-        class: 'tab-content-padding',
         type: 'number',
         min: 0,
       },
     },
     format: (value: any) => +value,
   },
-  default: {
+  number: {
     component: {
       content: () => InputText,
     },
     props: {
       content: {
-        class: 'tab-content-padding',
+        type: 'number',
+        min: 0,
       },
+    },
+    format: (value: any) => +value,
+  },
+  text: {
+    component: {
+      content: () => InputText,
+    },
+    props: {
+      content: {},
+    },
+  },
+  'array-x-y': {
+    component: {
+      content: () => InputArrayXY,
+    },
+    props: {},
+  },
+  default: {
+    component: {
+      content: () => InputText,
+    },
+    props: {
+      content: {},
     },
   },
 };

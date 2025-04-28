@@ -2,7 +2,7 @@
   <div class="tab-item">
     <div
       v-if="!item.component || !item.component.content"
-      class="tab-item-no-content"
+      class="tab-item-content"
     >
       <p>
         {{ value || default_value }}
@@ -15,6 +15,7 @@
       :modelValue="form"
       @update:modelValue="form = $event"
       :mapId="mapId"
+      class="tab-item-content"
     ></component>
     <div v-if="default_value != null" class="full-width">
       <hr class="map-divider" />
@@ -29,6 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { copyByJson } from '@hungpvq/shared';
 import { computed } from 'vue';
 const props = defineProps({
   value: {},
@@ -49,8 +51,13 @@ const props = defineProps({
 const emit = defineEmits(['input']);
 const form = computed({
   get() {
-    if (props.value != null) return props.value;
-    return props.default_value;
+    const value =
+      props.value != null
+        ? props.value
+        : props.default_value != null
+        ? copyByJson(props.default_value)
+        : undefined;
+    return value;
   },
   set(value) {
     emit('input', value);
@@ -66,12 +73,12 @@ const attrs = computed(() => {
   return props.item.props.content;
 });
 const onSetDefaultValue = () => {
-  form.value = props.default_value;
+  form.value =
+    props.default_value != null ? copyByJson(props.default_value) : undefined;
 };
 </script>
 <style scoped>
 .tab-item {
-  align-items: center;
   display: flex;
   flex-direction: column;
   flex: 1 1 100%;
@@ -98,5 +105,14 @@ const onSetDefaultValue = () => {
 .map-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+.full-width {
+  width: 100%;
+}
+.tab-item-content {
+  padding: 8px 16px;
+}
+.tab-content-no-padding {
+  padding: 0px;
 }
 </style>

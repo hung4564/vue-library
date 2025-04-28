@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
-import type { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -10,6 +10,7 @@ import type {
   IMapboxLayerView,
 } from '../../interfaces/dataset.parts';
 import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
+import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 import {
@@ -67,7 +68,7 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
 
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
       getMap(mapId, (map: MapSimple) => {
-        const features: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
+        const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
           pointOrBox,
           {
             layers: allLayerIds,
@@ -193,4 +194,59 @@ export async function handleMultiIdentify(
   }
 
   return Promise.all(promises).then((res) => res.flat());
+}
+
+export async function handleMultiIdentifyGetFirst(
+  identifies: IIdentifyView[],
+  mapId: string,
+  pointOrBox?: PointLike | [PointLike, PointLike]
+): Promise<IdentifyResult> {
+  const allLayerIds: string[] = [];
+  const cache: Record<string, IIdentifyView> = {};
+  identifies.forEach((identify) => {
+    const results = runAllComponentsWithCheck(
+      identify.getParent() || identify,
+      (dataset): dataset is IDataset & IMapboxLayerView =>
+        isMapboxLayerView(dataset),
+      [
+        (dataset) => {
+          return dataset.getAllLayerIds();
+        },
+      ]
+    );
+    const layerIds = Array.from(results.values()).flat(2);
+    layerIds.forEach((layerId) => {
+      cache[layerId] = identify;
+    });
+    allLayerIds.push(...layerIds);
+  });
+  return new Promise((resolve) => {
+    getMap(mapId, (map: MapSimple) => {
+      const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
+        pointOrBox,
+        {
+          layers: allLayerIds,
+        }
+      );
+      if (features.length > 0) {
+        const x = features[0];
+        const datasetPartIdentify = cache[x.layer.id];
+        const id =
+          x.properties?.[datasetPartIdentify?.config?.field_id || 'id'] ?? x.id;
+        const name =
+          x.properties?.[datasetPartIdentify?.config?.field_name || 'id'] ??
+          x.id;
+        resolve({
+          identify: datasetPartIdentify,
+          features: [
+            {
+              id,
+              name,
+              data: convertFeatureToItem(x),
+            },
+          ],
+        });
+      }
+    });
+  });
 }

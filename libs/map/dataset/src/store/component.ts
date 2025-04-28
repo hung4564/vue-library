@@ -6,6 +6,7 @@ export const KEY = 'dataset-component';
 
 export type ComponentItem = {
   id: string;
+  check?: string;
   component: () => any;
   attr: any;
 };
@@ -49,6 +50,16 @@ export function addComponent(
   const store = getComponentStore(mapId);
   if (!store) return;
 
+  if (component.check) {
+    const index = store.components.findIndex((x) => x.check == component.check);
+    if (index >= 0) {
+      const id = store.components[index].id;
+      Object.assign(store.components[index], component);
+      store.componentIds.value.splice(index, 1);
+      store.componentIds.value.push(id);
+      return id;
+    }
+  }
   const id = generateId();
   store.components.push({
     ...component,

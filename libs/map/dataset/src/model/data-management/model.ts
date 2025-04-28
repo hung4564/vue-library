@@ -6,6 +6,10 @@ import type { Feature } from 'geojson';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
 import { addComponent, setFeatureHighlight } from '../../store';
 import { isDatasetSourceMap } from '../../utils/check';
+import {
+  convertFeatureToItem,
+  convertItemToFeature,
+} from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { findSiblingOrNearestLeaf } from '../dataset.visitors';
 import { createDatasetPartDataManagementComponent } from './base';
@@ -53,8 +57,14 @@ export function createDataManagementMapboxComponent<
         fields: config.fields,
         view: dataComponent,
       },
+      check: 'detail',
     });
-    setFeatureHighlight(mapId, convertItemToFeature(detail), 'detail');
+    setFeatureHighlight(
+      mapId,
+      convertItemToFeature(detail),
+      'detail',
+      dataComponent
+    );
   };
 
   const dataComponent = createNamedComponent('DataManagementMapboxComponent', {
@@ -100,22 +110,4 @@ export function createDataManagementMapboxComponent<
   });
 
   return dataComponent;
-}
-
-function convertFeatureToItem<T>(feature: Feature): T {
-  return {
-    id: feature.id,
-    ...feature.properties,
-    geometry: feature.geometry,
-  } as T;
-}
-
-function convertItemToFeature(item: any): Feature {
-  const { geometry, ...properties } = item;
-  return {
-    id: item.id,
-    type: 'Feature',
-    geometry,
-    properties,
-  };
 }

@@ -1,17 +1,11 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import {
-  addStore,
-  addToQueue,
-  getStore,
-  store as storeMap,
-} from '@hungpvq/vue-map-core';
+import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
 import { reactive } from 'vue';
 import {
   DrawOption,
   DrawSaveFc,
   DrawSaveFcParams,
-  ILayerDrawView,
   MapDrawStore,
 } from '../types';
 export const KEY = 'draw';

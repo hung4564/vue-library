@@ -1,4 +1,4 @@
-import { IDataset, IDatasetVisitor } from '../interfaces';
+import type { IDataset, IDatasetVisitor } from '../interfaces';
 import { createBase } from './base';
 
 export function createDatasetComponent<T = any>(

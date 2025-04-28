@@ -14,7 +14,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
-import { MapMouseEvent, type PointLike } from 'mapbox-gl';
+import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
@@ -29,7 +29,7 @@ const path = {
 };
 const props = defineProps({
   ...withMapProps,
-  immediately: { type: Boolean, default: true },
+  immediately: Boolean,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocale } = useLang(mapId.value);
@@ -205,10 +205,10 @@ function onMenuAction(
   menu: MenuAction<IIdentifyView & IDataset>,
   item: any
 ) {
-  if (menu.type != 'item' || !identify || !menu.click) {
+  if (menu.type != 'item' || !identify) {
     return;
   }
-  menu.click(identify, mapId.value, item);
+  if ('click' in menu) menu.click(identify, mapId.value, item);
 }
 onMounted(() => {
   if (props.immediately) onUseMapClick();

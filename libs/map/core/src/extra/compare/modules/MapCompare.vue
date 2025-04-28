@@ -4,13 +4,14 @@ import { useBreakpoints } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
-import mapboxgl from 'mapbox-gl';
+import { debounce } from 'lodash';
+import mapboxgl from 'maplibre-gl';
 import {
   computed,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   onUnmounted,
-  onBeforeUnmount,
   provide,
   ref,
   watch,
@@ -20,7 +21,6 @@ import { actions, store as storeMap } from '../../../store/store';
 import ActionControl from '../../event/modules/ActionControl.vue';
 import { getMapCompareSetting, initStoreMapCompare } from '../store';
 import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
-import { debounce } from 'lodash';
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
   tablet: 640,
@@ -41,9 +41,29 @@ const props = defineProps({
   },
   dragId: { type: String },
 });
+function isWebglSupported() {
+  if (window.WebGLRenderingContext) {
+    const canvas = document.createElement('canvas');
+    try {
+      // Note that { failIfMajorPerformanceCaveat: true } can be passed as a second argument
+      // to canvas.getContext(), causing the check to fail if hardware rendering is not available. See
+      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+      // for more details.
+      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      if (context && typeof context.getParameter == 'function') {
+        return true;
+      }
+    } catch (e) {
+      // WebGL is supported, but disabled
+    }
+    return false;
+  }
+  // WebGL not supported
+  return false;
+}
 const emit = defineEmits(['map-loaded', 'map-destroy']);
 const countMap = ref(2);
-const isSupport = ref(mapboxgl.supported());
+const isSupport = ref(isWebglSupported());
 const loaded = ref(false);
 const id = ref(getUUIDv4());
 onMounted(() => {
@@ -203,7 +223,7 @@ function setupCompare() {
     }
   });
 }
-let observer;
+let observer: any;
 const handleResize = debounce((entry) => {
   const { width, height } = entry.contentRect;
   actions.getMap(id.value, (map) => {

@@ -1,7 +1,7 @@
 import { fitBounds } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
-import {
+import type {
   IActionForView,
   IDataManagementView,
   IDataset,
@@ -103,7 +103,8 @@ export function createMenuItemToBoundActionForItem() {
             geometry,
             properties,
           },
-          'identify'
+          'identify',
+          layer
         );
       });
     },
@@ -143,6 +144,7 @@ export function createMenuItemShowDetailInfoSource() {
             fields: source.getFieldsInfo(),
             view: layer,
           },
+          check: 'detail',
         });
     },
   });
@@ -163,11 +165,14 @@ export function createMenuItemStyleEdit() {
   });
 }
 
-export function createMenuItemToggleShow() {
+export function createMenuItemToggleShow(
+  menu: Partial<MenuItemBottomOrExtra<any>>
+) {
   return createMenuItem({
     type: 'item',
     location: 'bottom',
     name: 'ToggleShow',
     component: () => ToggleShow,
+    ...menu,
   });
 }

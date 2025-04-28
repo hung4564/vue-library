@@ -1,4 +1,4 @@
-import { IDataManagementView, IDataset } from '../../interfaces';
+import type { IDataManagementView, IDataset } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 

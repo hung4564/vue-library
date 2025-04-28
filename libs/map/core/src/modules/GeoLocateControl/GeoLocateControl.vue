@@ -4,7 +4,7 @@ import { useGeolocation } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
-import { LngLatLike, Marker } from 'mapbox-gl';
+import { LngLatLike, Marker } from 'maplibre-gl';
 import { computed, nextTick, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';

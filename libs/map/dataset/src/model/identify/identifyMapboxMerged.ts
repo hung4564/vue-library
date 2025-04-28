@@ -1,7 +1,6 @@
 import { getMap } from '@hungpvq/vue-map-core';
-import { MapboxGeoJSONFeature, PointLike } from 'mapbox-gl';
-import {
-  IDataManagementView,
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+import type {
   IDataset,
   IdentifyResult,
   IIdentifyViewWithMerge,
@@ -18,13 +17,13 @@ function removeDuplicates(
   collected: {
     identify: IIdentifyViewWithMerge;
     identifyId: string;
-    feature: MapboxGeoJSONFeature;
+    feature: MapGeoJSONFeature;
     rawId: string;
   }[]
 ): {
   identify: IIdentifyViewWithMerge;
   identifyId: string;
-  feature: MapboxGeoJSONFeature;
+  feature: MapGeoJSONFeature;
   rawId: string;
 }[] {
   const seen = new Set<string>();
@@ -41,7 +40,7 @@ function formatFeature(
   collected: {
     identify: IIdentifyViewWithMerge;
     identifyId: string;
-    feature: MapboxGeoJSONFeature;
+    feature: MapGeoJSONFeature;
     rawId: string;
   }[],
   dataMap: Map<string, any>
@@ -96,7 +95,7 @@ export async function getMergedFeatures(
 
     getMap(payload.mapId, (map) => {
       const allLayerIds = Object.keys(layerIdMap);
-      const queriedFeatures: MapboxGeoJSONFeature[] = map.queryRenderedFeatures(
+      const queriedFeatures: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         payload.pointOrBox,
         { layers: allLayerIds }
       );
@@ -104,7 +103,7 @@ export async function getMergedFeatures(
       const collected: {
         identify: IIdentifyViewWithMerge;
         identifyId: string;
-        feature: MapboxGeoJSONFeature;
+        feature: MapGeoJSONFeature;
         rawId: string;
       }[] = [];
 

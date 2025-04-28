@@ -18,17 +18,14 @@ function loadImageViaTag(url: string): Promise<HTMLImageElement> {
   return promise;
 }
 
-export function addImageForMap(
+export async function addImageForMap(
   map: MapSimple,
   key: string,
   url: string,
   option: any = {}
 ) {
-  return new Promise((resolve, reject) => {
-    map.loadImage(url, (error: any, image: any) => {
-      if (error) reject(error);
-      if (!map.hasImage(key)) map.addImage(key, image, option);
-      resolve(true);
-    });
-  });
+  const image = await map.loadImage(url);
+
+  if (!map.hasImage(key)) map.addImage(key, image.data, option);
+  return true;
 }

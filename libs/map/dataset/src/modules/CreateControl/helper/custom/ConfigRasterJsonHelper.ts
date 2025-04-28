@@ -1,7 +1,5 @@
-import {
-  createRasterUrlDataset,
-  RasterUrlDatasetOption,
-} from '../../../../builder';
+import type { RasterUrlDatasetOption } from '../../../../builder';
+import { createRasterUrlDataset } from '../../../../builder';
 import { ConfigRasterJson } from '../../config';
 import { ConfigHelper } from '../_default';
 

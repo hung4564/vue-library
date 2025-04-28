@@ -1,13 +1,21 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import { GeoJSONSource, GeoJSONSourceRaw, RasterSource } from 'mapbox-gl';
-import { IDataset, IMapboxSourceView, IMetadataView } from '../../interfaces';
+import type {
+  GeoJSONSource,
+  GeoJSONSourceSpecification,
+  RasterSourceSpecification,
+} from 'maplibre-gl';
+import type {
+  IDataset,
+  IMapboxSourceView,
+  IMetadataView,
+} from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { findSiblingOrNearestLeaf } from '../dataset.visitors';
 import { createDatasetPartMapboxSourceComponent } from './base';
 
 export function createDatasetPartGeojsonSourceComponent(
   name: string,
-  data?: GeoJSONSourceRaw['data']
+  data?: GeoJSONSourceSpecification['data']
 ): IMapboxSourceView & IDataset {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 
@@ -54,11 +62,34 @@ export function createDatasetPartGeojsonSourceComponent(
       }
       base.setData(data);
     },
+    hightLight(map: MapSimple, geojsonData: GeoJSON.Feature<GeoJSON.Geometry>) {
+      const layer = map.getLayer(base.id + '-hightLight');
+      if (!layer) {
+        map.addLayer({
+          id: base.id + '-hightLight',
+          source: base.id,
+          type: 'line',
+          filter: ['==', ['get', 'id'], geojsonData?.properties?.id || null],
+          paint: {
+            'line-color': '#004E98',
+            'line-width': 4,
+            'line-dasharray': [2, 2],
+          },
+        });
+      } else {
+        map.setFilter(base.id + '-hightLight', [
+          '==',
+          ['get', 'id'],
+          geojsonData?.properties?.id || null,
+        ]);
+      }
+      map.moveLayer(base.id + '-hightLight');
+    },
   });
 }
 export function createDatasetPartRasterSourceComponent(
   name: string,
-  data?: RasterSource
+  data?: RasterSourceSpecification
 ): IMapboxSourceView & IDataset {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 

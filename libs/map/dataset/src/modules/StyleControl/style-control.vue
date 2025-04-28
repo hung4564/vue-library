@@ -39,16 +39,7 @@ let layer_map_component: any = shallowRef('');
 onMounted(() => {
   toggleShow(true);
   layer_map.value = undefined;
-  const layerView = findSiblingOrNearestLeaf(props.item, (dataset) =>
-    isMapboxLayerView(dataset)
-  );
-  if (layerView) {
-    if (isMapboxLayerView(layerView)) {
-      layer_map.value = layerView || undefined;
-      layer_map_component.value = layerView.getComponentUpdate();
-      layer.value = copyByJson(layerView.getData());
-    }
-  }
+  updateValue();
 });
 const onClose = () => {
   layer_map.value = undefined;
@@ -62,6 +53,19 @@ const onUpdateStyle = (value: any) => {
     }
     layer_map.value.updateValue(map, value);
   });
+  updateValue();
+};
+const updateValue = () => {
+  const layerView = findSiblingOrNearestLeaf(props.item, (dataset) =>
+    isMapboxLayerView(dataset)
+  );
+  if (layerView) {
+    if (isMapboxLayerView(layerView)) {
+      layer_map.value = layerView || undefined;
+      layer_map_component.value = layerView.getComponentUpdate();
+      layer.value = copyByJson(layerView.getData());
+    }
+  }
 };
 </script>
 <template>

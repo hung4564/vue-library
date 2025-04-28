@@ -1,6 +1,7 @@
 export { default as CrsControl } from './CrsControl/CrsControl.vue';
 export { default as FullScreenControl } from './FullScreenControl/FullScreenControl.vue';
 export { default as GeoLocateControl } from './GeoLocateControl/GeoLocateControl.vue';
+export { default as GlobeControl } from './GlobeControl/GlobeControl.vue';
 export { default as GotoControl } from './GotoControl/GotoControl.vue';
 export { default as HomeControl } from './HomeControl/HomeControl.vue';
 export { default as Map } from './Map.vue';

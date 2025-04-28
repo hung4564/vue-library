@@ -1,24 +1,23 @@
-import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
-import type { GeoJSONSourceRaw, Layer } from 'mapbox-gl';
-import { ref } from 'vue';
+import type { MapSimple } from '@hungpvq/shared-map';
+import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
+import { ref } from 'vue';
+import type { IDataset, IMapboxSourceView } from '../interfaces';
+import { findSiblingOrNearestLeaf } from '../model';
 
 export const KEY = 'dataset-highlight';
 
 export type MapDatasetHighlightStore = {
-  feature: Ref<
-    | GeoJSON.Feature<GeoJSON.Geometry>
-    | GeoJSON.FeatureCollection<GeoJSON.Geometry>
-    | string
-    | undefined
-  >;
+  feature: Ref<GeoJSON.Feature<GeoJSON.Geometry> | undefined>;
   source: Ref<string | undefined>;
+  dataset?: IDataset;
 };
 
 function initMapStore(mapId: string) {
   const store: MapDatasetHighlightStore = {
     feature: ref(undefined),
     source: ref(undefined),
+    dataset: undefined,
   };
 
   addStore<MapDatasetHighlightStore>(mapId, KEY, store);
@@ -32,12 +31,9 @@ export function getDatasetHighlightStore(mapId: string) {
 
 export function setFeatureHighlight(
   mapId: string,
-  feature:
-    | GeoJSON.Feature<GeoJSON.Geometry>
-    | GeoJSON.FeatureCollection<GeoJSON.Geometry>
-    | string
-    | undefined,
-  source?: string
+  feature: GeoJSON.Feature<GeoJSON.Geometry> | undefined,
+  source: string,
+  dataset?: IDataset
 ) {
   const store = getDatasetHighlightStore(mapId);
   if (!store) return;
@@ -46,9 +42,22 @@ export function setFeatureHighlight(
   if (!feature && store.source.value === source && store.feature.value) {
     store.feature.value = undefined;
     store.source.value = undefined;
+    if (store.dataset) {
+      const source = findSiblingOrNearestLeaf(
+        store.dataset,
+        (dataset) => dataset.type == 'source'
+      ) as unknown as IMapboxSourceView;
+      if (source && 'hightLight' in source) {
+        getMap(mapId, (map: MapSimple) => {
+          source.hightLight?.(map, undefined);
+        });
+        return;
+      }
+    }
+    store.dataset = undefined;
     return;
   }
-
+  store.dataset = dataset;
   store.feature.value = feature;
   store.source.value = source;
 }
@@ -63,4 +72,10 @@ export function getHighlightSource(mapId: string) {
   const store = getDatasetHighlightStore(mapId);
   if (!store) return;
   return store.source;
+}
+
+export function getDatesetHighlight(mapId: string) {
+  const store = getDatasetHighlightStore(mapId);
+  if (!store) return;
+  return store.dataset;
 }

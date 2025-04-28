@@ -1,6 +1,7 @@
-import { LayerTypeConfig } from './style';
+import type { CircleLayerSpecification } from 'maplibre-gl';
+import type { LayerTypeConfig } from './style';
 
-export const CIRCLE_CONFIG: LayerTypeConfig = {
+export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayerSpecification> = {
   TAB: {
     type: 'single',
     items: [
@@ -71,6 +72,11 @@ export const CIRCLE_CONFIG: LayerTypeConfig = {
           },
         ],
       },
+      {
+        trans: 'circle-style.setting.translate',
+        key: 'circle-translate',
+        type: 'array-x-y',
+      },
     ],
   },
   DEFAULT: {
@@ -85,6 +91,7 @@ export const CIRCLE_CONFIG: LayerTypeConfig = {
       'circle-stroke-opacity': 1,
       'circle-pitch-alignment': 'viewport',
       'circle-pitch-scale': 'map',
+      'circle-translate': [0, 0],
     },
   },
 };

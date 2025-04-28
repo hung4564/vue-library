@@ -16,7 +16,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import * as turf from '@turf/turf';
-import { GeoJSONSource, Marker } from 'mapbox-gl';
+import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';
 import { createZoomAction } from './helper-action';
 import { withMapReady } from './helper-global';

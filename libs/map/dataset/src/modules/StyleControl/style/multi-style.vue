@@ -2,11 +2,17 @@
 import { BaseButton, InputSelect, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
-import { Layer } from 'mapbox-gl';
+import { LayerSpecification } from 'maplibre-gl';
 import { computed, nextTick, ref, watch } from 'vue';
 import { LayerSimpleMapboxBuild } from '../../../utils/layer-simple-builder';
 import SingleStyle from './single-style.vue';
-const props = defineProps({
+defineExpose({
+  SvgIcon,
+  SingleStyle,
+  BaseButton,
+  InputSelect,
+});
+defineProps({
   trans: {
     required: true,
   },
@@ -15,7 +21,10 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['input', 'update-style', 'close']);
-const layers = defineModel<Layer[]>({ required: true, default: () => [] });
+const layers = defineModel<LayerSpecification[]>({
+  required: true,
+  default: () => [],
+});
 watch(layers, () => {
   if (!tab.value && layers.value.length > 0) {
     tab.value = layers.value[layers.value.length - 1].id;
@@ -27,7 +36,7 @@ const onSelectTab = (layer_id: string) => {
     tab.value = layer_id;
   });
 };
-const onUpdateStyleLayer = (layer: Layer, layer_id: string) => {
+const onUpdateStyleLayer = (layer: LayerSpecification, layer_id: string) => {
   emit('update-style', {
     type: 'update-one-layer',
     layer,
@@ -57,6 +66,12 @@ const onRemoveStyleLayer = (layer_id: string) => {
     layer: layers.value[index],
   });
   layers.value.splice(index, 1);
+  if (layers.value.length === 0) {
+    tab.value = undefined;
+    onShowAddStyle(true);
+  } else {
+    tab.value = layers.value[layers.value.length - 1]?.id; // Nếu tab hiện tại là layer bị xóa, chọn lại layer đầu tiên còn lại
+  }
   if (layers.value[0]) onSelectTab(layers.value[0].id);
 };
 const tab = ref<string | undefined>(layers.value[0].id);
@@ -82,37 +97,29 @@ const onShowAddStyle = (value: boolean) => {
   <div class="multi-style-edit-container">
     <div class="tab-container">
       <div class="tab-item">
-        <input-select
+        <InputSelect
           :modelValue="tab"
           @update:modelValue="onSelectTab"
           :items="tabs"
-        ></input-select>
+        ></InputSelect>
       </div>
-      <div
+      <button
         class="tab-item tab-add clickable"
         @click="onRemoveStyleLayer(tab)"
         :disabled="!tab"
       >
-        <div>
-          <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
-        </div>
-      </div>
-      <div
+        <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
+      </button>
+      <button
         class="tab-item tab-add clickable"
-        @click="onShowAddStyle(true)"
-        v-if="!showAdd"
+        @click="onShowAddStyle(!showAdd)"
       >
-        <div>
-          <SvgIcon size="14" type="mdi" :path="path.create" />
-        </div>
-      </div>
-      <div
-        class="tab-item tab-add clickable"
-        @click="onShowAddStyle(false)"
-        v-else
-      >
-        <SvgIcon size="14" type="mdi" :path="path.close" />
-      </div>
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="!showAdd ? path.create : path.close"
+        />
+      </button>
     </div>
     <div class="style-container" v-if="showAdd">
       <div class="add-style-container">
@@ -135,6 +142,7 @@ const onShowAddStyle = (value: boolean) => {
         :modelValue="current_layer"
         :trans="trans"
         :mapId="mapId"
+        :key="tab"
         @update-style="onUpdateStyleLayer($event, tab)"
       />
     </div>
@@ -148,7 +156,7 @@ const onShowAddStyle = (value: boolean) => {
 }
 .style-container {
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   height: 100%;
 }
@@ -170,11 +178,12 @@ const onShowAddStyle = (value: boolean) => {
     padding: 8px 16px;
   }
   .tab-add {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    max-width: 20px;
+    background: transparent;
   }
 }
 </style>

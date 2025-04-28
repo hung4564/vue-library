@@ -11,6 +11,7 @@ import {
   FullScreenControl,
   GeoLocateControl,
   getMap,
+  GlobeControl,
   GotoControl,
   HomeControl,
   Map,
@@ -36,24 +37,31 @@ import {
   createMenuItemStyleEdit,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
   DatasetComposite,
   findSiblingOrNearestLeaf,
   IdentifyControl,
+  IdentifyShowFirstControl,
   IListViewUI,
   isDataManagementView,
   isDatasetMap,
   LayerControl,
   LayerHighlight,
-  LayerInfoControl,
   LayerSimpleMapboxBuild,
 } from '@hungpvq/vue-map-dataset';
-import { callDraw, DrawControl, DrawingType } from '@hungpvq/vue-map-draw';
+import {
+  callDraw,
+  DrawControl,
+  DrawingType,
+  InspectControl,
+} from '@hungpvq/vue-map-draw';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 import { mdiDownload, mdiPencil } from '@mdi/js';
 import { ref } from 'vue';
-const { status, error, downloadFile } = useDownloadFile();
+const { downloadFile } = useDownloadFile();
 const mapRef = ref();
 
 const { convertList } = useConvertToGeoJSON();
@@ -65,7 +73,6 @@ function onMapLoaded(map: MapSimple) {
     true
   ) as DatasetComposite;
   const source_raster = createDatasetPartRasterSourceComponent('source', {
-    name: 'raster 1',
     type: 'raster',
     tiles: [
       'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
@@ -152,11 +159,13 @@ function onMapLoaded(map: MapSimple) {
       .build(),
   ]);
   list1.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
     createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
   list2.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
     createMenuItemToBoundActionForList(),
     createMenuDrawLayer(),
     createMenuDownload(),
@@ -252,7 +261,55 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(identify);
   dataset.add(metadata);
   addDataset(map.id, dataset);
+  addDataset(map.id, createDatasetPoint());
   // addDataset(map.id, dataset_raster);
+}
+function createDatasetPoint() {
+  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true
+  ) as DatasetComposite;
+  const list1: IListViewUI = createDatasetPartListViewUiComponent('test point');
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(list1.color)
+      .build(),
+  ]);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  list1.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToBoundActionForList(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
+  ]);
+  const dataManagement = createDataManagementMapboxComponent(
+    'data management',
+    {
+      fields: [{ text: 'Name', value: 'name' }],
+    }
+  );
+  dataManagement.setItems([
+    {
+      id: '2',
+      name: 'feature 2',
+      geometry: {
+        coordinates: [106.26447460804093, 20.9143362367018],
+        type: 'Point',
+      },
+    },
+  ]);
+  dataset.add(source);
+  dataset.add(dataManagement);
+  dataset.add(groupLayer1);
+  return dataset;
 }
 function createMenuDownload() {
   return createMenuItem({
@@ -329,13 +386,17 @@ function createMenuDrawLayer() {
     </LayerInfoControl> -->
     <MeasurementControl position="top-right" />
     <DrawControl position="top-right" />
+    <InspectControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
+    <PrintAdvancedControl />
+    <PrintControl />
     <GotoControl position="top-right" />
+    <GlobeControl />
     <CrsControl />
     <SettingControl />
     <GeoLocateControl />
@@ -344,6 +405,7 @@ function createMenuDrawLayer() {
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
+    <IdentifyShowFirstControl />
     <LayerHighlight />
   </Map>
 </template>

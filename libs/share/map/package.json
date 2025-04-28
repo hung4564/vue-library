@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "mapbox-gl": "^1.13.0",
+    "maplibre-gl": "^5.4.0",
     "@turf/turf": "^6.5.0"
   },
   "type": "commonjs",

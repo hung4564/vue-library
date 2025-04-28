@@ -1,4 +1,4 @@
-import { EaseToOptions, PaddingOptions } from 'mapbox-gl';
+import { EaseToOptions, PaddingOptions } from 'maplibre-gl';
 
 import { bbox, lineString, point, polygon } from '@turf/turf';
 import { CoordinatesNumber, MapSimple } from '../types';

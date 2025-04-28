@@ -1,12 +1,12 @@
 import { MapSimple } from '@hungpvq/shared-map';
-import { EventData, MapLayerEventType } from 'mapbox-gl';
+import { MapLayerEventType } from 'maplibre-gl';
 import { Base } from '../../../model/Base';
 import { IEvent } from '../types';
 
 export class Event<
     T extends keyof MapLayerEventType = 'click',
     IOption extends Record<string, any> = any,
-    ICallBack = (ev: MapLayerEventType[T] & EventData) => void
+    ICallBack = (ev: MapLayerEventType[T]) => void
   >
   extends Base
   implements IEvent<T, IOption, ICallBack>

@@ -1,2 +1,2 @@
 export { EventBboxRanger } from './EventBboxSelect';
-export { EventClick } from './EventClick';
+export { EventClick, EventMouseMove } from './EventClick';

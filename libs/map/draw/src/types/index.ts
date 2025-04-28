@@ -46,10 +46,10 @@ export type ILayerDrawView = {
 
 export type DrawOption = {
   draw_support: ILayerDrawView['draw_support'];
-  addFeatures: IDrawHandler['addFeatures'];
-  getFeatures: IDrawHandler['getFeatures'];
-  updateFeatures: IDrawHandler['updateFeatures'];
-  deleteFeatures: IDrawHandler['deleteFeatures'];
+  addFeatures?: IDrawHandler['addFeatures'];
+  getFeatures?: IDrawHandler['getFeatures'];
+  updateFeatures?: IDrawHandler['updateFeatures'];
+  deleteFeatures?: IDrawHandler['deleteFeatures'];
   reset?: () => Promise<void>;
   save?: (geojson?: GeoJSON) => Promise<void>;
   cleanAfterDone?: boolean;

@@ -1,5 +1,5 @@
-import type { BBox } from 'geojson';
-import { IDataset } from '../interfaces';
+import type { RasterSourceSpecification } from 'maplibre-gl';
+import type { IDataset } from '../interfaces';
 import {
   createDataset,
   createDatasetPartListViewUiComponent,
@@ -11,7 +11,7 @@ import {
 export type RasterUrlDatasetOption = {
   name: string;
   tiles: string[];
-  bounds?: BBox;
+  bounds?: RasterSourceSpecification['bounds'];
   maxZoom?: number;
   minZoom?: number;
 };
@@ -23,7 +23,6 @@ export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
   ) as DatasetComposite;
 
   const source_raster = createDatasetPartRasterSourceComponent(data.name, {
-    name: data.name,
     type: 'raster',
     tiles: data.tiles,
     maxzoom: data.maxZoom,

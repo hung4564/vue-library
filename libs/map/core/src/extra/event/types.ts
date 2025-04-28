@@ -1,5 +1,5 @@
 import { Coordinates, MapSimple } from '@hungpvq/shared-map';
-import { EventData, MapLayerEventType } from 'mapbox-gl';
+import { MapLayerEventType } from 'maplibre-gl';
 
 export interface EventClickOption {
   classPointer?: string;
@@ -11,7 +11,7 @@ export type EventBboxRangerHandle = (
 export interface IEvent<
   T extends keyof MapLayerEventType = 'click',
   IOption extends Record<string, any> = any,
-  ICallBack = (ev: MapLayerEventType[T] & EventData) => void
+  ICallBack = (ev: MapLayerEventType[T]) => void
 > {
   _id: string;
   get id(): string;

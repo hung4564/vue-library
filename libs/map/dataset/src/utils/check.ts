@@ -7,7 +7,7 @@ import type {
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import { DatasetComposite } from '../model';
+import type { DatasetComposite } from '../model';
 
 // Type guard to check if a dataset implements IDatasetMap
 export function isDatasetMap(
