@@ -1,3 +1,7 @@
+## 0.5.1 (2025-04-28)
+
+This was a version bump only for map-basemap to align it with other projects, there were no code changes.
+
 ## 0.5.0 (2025-04-28)
 
 This was a version bump only for map-basemap to align it with other projects, there were no code changes.
