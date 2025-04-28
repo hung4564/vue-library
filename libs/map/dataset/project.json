@@ -22,11 +22,6 @@
         "tsConfig": "libs/map/dataset/tsconfig.lib.json",
         "assets": ["libs/map/dataset/*.md"]
       }
-    },
-    "nx-release-publish": {
-      "options": {
-        "packageRoot": "dist\\{projectRoot}"
-      }
     }
   }
 }
