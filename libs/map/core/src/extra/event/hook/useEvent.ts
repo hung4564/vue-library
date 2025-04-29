@@ -1,4 +1,7 @@
+import { MapSimple } from '@hungpvq/shared-map';
+import { MapEventType } from 'maplibre-gl';
 import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { getMap } from '../../../store';
 import { addListenerMap, getCurrentEvent, removeListenerMap } from '../store';
 import { IEvent } from '../types';
 
@@ -26,4 +29,27 @@ export function setEventMap(mapId: string, event: IEvent) {
     return c_event && c_event.id === event.id;
   });
   return { add, remove, isActive };
+}
+
+type KnownMapEvent = keyof MapEventType;
+export function useEventListener<K extends KnownMapEvent>(
+  mapId: string,
+  event: K,
+  cb: (map: MapSimple, ev: MapEventType[K] & object) => void
+): void {
+  const wrappedCb: Record<string, ((ev: MapEventType[K]) => void) | undefined> =
+    {};
+  onMounted(() => {
+    getMap(mapId, (map) => {
+      const eventHandle = (ev: MapEventType[K]) => cb(map, ev);
+      wrappedCb[map.id] = eventHandle;
+      map.on(event, eventHandle);
+    });
+  });
+  onBeforeUnmount(() => {
+    getMap(mapId, (map) => {
+      const eventHandle = wrappedCb?.[map.id];
+      if (eventHandle) map.off(event, eventHandle);
+    });
+  });
 }

@@ -18,6 +18,10 @@ export function createMultiMapboxLayerComponent(
   base.getData().forEach((layer) => {
     const layer_id = layer.id || getUUIDv4();
     layer.id = layer_id;
+    if (!layer.metadata) {
+      layer.metadata = {};
+    }
+    (layer.metadata as any)['maplibregl-legend:name'] = name;
     cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
   });
 
@@ -29,6 +33,10 @@ export function createMultiMapboxLayerComponent(
         newData.map((layer) => {
           const layer_id = layer.id || getUUIDv4();
           layer.id = layer_id;
+          if (!layer.metadata) {
+            layer.metadata = {};
+          }
+          (layer.metadata as any)['maplibregl-legend:name'] = name;
           cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
           return layer;
         })

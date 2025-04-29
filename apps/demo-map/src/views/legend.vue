@@ -41,13 +41,29 @@ function onMapLoaded(map: MapSimple) {
       id: 'my-line-layer',
       type: 'line',
       source: 'my-line-source',
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: {},
       paint: {
-        'line-color': '#ff0000', // màu đỏ
-        'line-width': 4,
+        'line-pattern': 'aerialway_11',
+      },
+    },
+    {
+      id: 'my-line-dash-layer',
+      type: 'line',
+      source: 'my-line-source',
+      layout: {},
+      paint: {
+        'line-color': 'red',
+        'line-dasharray': [2, 2],
+      },
+    },
+    {
+      id: 'my-fill-layer',
+      type: 'fill',
+      source: 'my-fill-source',
+      layout: {},
+      paint: {
+        'fill-pattern': 'aerialway_11',
+        'fill-color': 'red',
       },
     },
     {
@@ -108,5 +124,16 @@ html,
   z-index: 999;
   background: white;
   padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+.legend-item-container {
+  display: flex;
+  align-items: center;
 }
 </style>

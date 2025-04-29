@@ -57,6 +57,7 @@ import {
   DrawingType,
   InspectControl,
 } from '@hungpvq/vue-map-draw';
+import { LegendControl } from '@hungpvq/vue-map-legend';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 import { mdiDownload, mdiPencil } from '@mdi/js';
@@ -397,6 +398,7 @@ function createMenuDrawLayer() {
     <PrintControl />
     <GotoControl position="top-right" />
     <GlobeControl />
+    <LegendControl />
     <CrsControl />
     <SettingControl />
     <GeoLocateControl />

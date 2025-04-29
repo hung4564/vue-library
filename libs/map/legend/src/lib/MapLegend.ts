@@ -49,6 +49,9 @@ export const MapLegend = ({
     }
     const imageData = map.getImage(id);
 
+    if (!imageData) {
+      return '';
+    }
     // Chuyển đổi dữ liệu của StyleImage thành ImageData
     const rgbaImage = imageData.data;
     const image = toImageDataFromRGBAImage(rgbaImage);

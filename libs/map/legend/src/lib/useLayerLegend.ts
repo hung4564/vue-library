@@ -21,7 +21,6 @@ export function useLayerLegend() {
   ): VNode | undefined {
     const zoom = map?.getZoom();
     const symbol = MapLegend({ map, zoom, layer });
-
     const symbolContent = (() => {
       if (!symbol) {
         return [
@@ -48,52 +47,23 @@ export function useLayerLegend() {
               }),
             ]
           ),
-          h('label', {}, layer.id),
         ];
-      } else {
-        if (symbol.element === 'div') {
-          const children: VNode[] = [];
-          if (
-            symbol.attributes.style.backgroundImage &&
-            !['url(undefined)', 'url(null)'].includes(
-              symbol.attributes.style.backgroundImage
-            )
-          ) {
-            const imgSrc = symbol.attributes.style.backgroundImage
-              .replace('url(', '')
-              .replace(')', '');
-            children.push(
-              h('img', {
-                src: imgSrc,
-                alt: layer.id,
-                style: 'height: 17px;',
-              })
-            );
-          }
-          return children;
-        } else if (symbol.element === 'svg') {
-          const svgChildren = symbol.children.map((child: any) =>
-            h(child.element, { ...child.attributes })
-          );
-          return [
-            h(
-              'svg',
-              {
-                ...symbol.attributes,
-                style: 'height: 17px;',
-                version: '1.1',
-              },
-              [h('g', {}, svgChildren)]
-            ),
-          ];
-        }
       }
+      if (symbol.element === 'div') {
+        return [renderElement(symbol)];
+      }
+      if (symbol.element === 'svg') {
+        symbol.attributes['style'] = 'height: 17px;';
+        symbol.attributes['version'] = '1.1';
+        return [renderElement(symbol)];
+      }
+      return h('div');
     })();
 
     const td1 = h(
-      'td',
+      'div',
       {
-        class: 'legend-table-td',
+        class: 'legend-item',
         style:
           symbol?.element === 'div'
             ? {
@@ -107,15 +77,20 @@ export function useLayerLegend() {
       },
       symbolContent
     );
-
-    const td2 = h('td', { class: 'legend-table-td' }, [
-      h('label', {}, layer.id),
-    ]);
-
-    return h('tr', {}, [td1, td2]);
+    return h(
+      'div',
+      {
+        class: 'legend-item-container',
+      },
+      [td1]
+    );
   }
 
   return {
     getLayerLegendVNode,
   };
+}
+function renderElement(element: any) {
+  const children = element.children?.map(renderElement) || [];
+  return h(element.element, { ...element.attributes }, children);
 }

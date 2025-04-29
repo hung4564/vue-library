@@ -59,7 +59,7 @@ export default function Line(props: PropsLegendOption<LineLayerSpecification>) {
                 element: 'image',
                 attributes: {
                   key: 'img',
-                  xlinkHref: linePatternDataUrl,
+                  'xlink:href': linePatternDataUrl,
                   x: 0,
                   y: 0,
                   width: style.strokeWidth,
