@@ -44,4 +44,6 @@ Thumbs.db
 docs/.vitepress/dist
 docs/.vitepress/cache
 .npmrc
-*.mjs
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

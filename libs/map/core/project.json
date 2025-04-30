@@ -9,9 +9,9 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "commands": ["vue-tsc -p tsconfig.lib.json"],
+        "commands": ["tsc -p tsconfig.lib.json"],
         "forwardAllArgs": false,
-        "description": "Type check with vue-tsc"
+        "description": "Type check with tsc"
       }
     }
   }

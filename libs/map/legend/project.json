@@ -13,16 +13,6 @@
   },
   "tags": ["map"],
   "targets": {
-    "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/map/legend",
-        "main": "libs/map/legend/src/index.ts",
-        "tsConfig": "libs/map/legend/tsconfig.lib.json",
-        "assets": ["libs/map/legend/*.md"]
-      }
-    },
     "ts-check": {
       "executor": "nx:run-commands",
       "options": {
