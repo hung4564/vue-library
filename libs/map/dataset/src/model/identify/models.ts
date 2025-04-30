@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
-import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -170,11 +170,19 @@ function handleMergedIdentifyGroup(
 export async function handleMultiIdentify(
   identifies: IIdentifyView[],
   mapId: string,
-  pointOrBox?: PointLike | [PointLike, PointLike]
+  pointOrBox?: PointLike | [PointLike, PointLike],
+  props = { selectThreshold: 5 }
 ): Promise<IdentifyResult[]> {
   const promises: Promise<IdentifyResult | IdentifyResult[]>[] = [];
   const groupMerge: Record<string, IIdentifyViewWithMerge[]> = {};
 
+  if (pointOrBox && isPointLike(pointOrBox)) {
+    const point = getXY(pointOrBox);
+    pointOrBox = [
+      [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
+      [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
+    ];
+  }
   identifies.forEach((identify) => {
     if (!isIdentifyMergeView(identify)) {
       promises.push(handleSingleIdentify(identify, mapId, pointOrBox));
@@ -199,7 +207,8 @@ export async function handleMultiIdentify(
 export async function handleMultiIdentifyGetFirst(
   identifies: IIdentifyView[],
   mapId: string,
-  pointOrBox?: PointLike | [PointLike, PointLike]
+  pointOrBox?: PointLike | [PointLike, PointLike],
+  props = { selectThreshold: 5 }
 ): Promise<IdentifyResult> {
   const allLayerIds: string[] = [];
   const cache: Record<string, IIdentifyView> = {};
@@ -222,6 +231,13 @@ export async function handleMultiIdentifyGetFirst(
   });
   return new Promise((resolve) => {
     getMap(mapId, (map: MapSimple) => {
+      if (pointOrBox && isPointLike(pointOrBox)) {
+        const point = getXY(pointOrBox);
+        pointOrBox = [
+          [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
+          [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
+        ];
+      }
       const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         pointOrBox,
         {
@@ -249,4 +265,18 @@ export async function handleMultiIdentifyGetFirst(
       }
     });
   });
+}
+
+function isPointLike(
+  input: PointLike | [PointLike, PointLike]
+): input is PointLike {
+  return !Array.isArray(input) || !Array.isArray(input[0]);
+}
+
+function getXY(point: PointLike): { x: number; y: number } {
+  if (point instanceof Point) {
+    return { x: point.x, y: point.y };
+  } else {
+    return { x: point[0], y: point[1] };
+  }
 }
