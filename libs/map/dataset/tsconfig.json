@@ -7,7 +7,6 @@
     "strict": true,
     "jsx": "preserve",
     "jsxImportSource": "vue",
-    "moduleResolution": "node",
     "resolveJsonModule": true
   },
   "files": [],

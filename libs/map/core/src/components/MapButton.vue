@@ -22,10 +22,11 @@
   </button>
 </template>
 
-<script>
-import { mdiLoading } from '@mdi/js';
+<script lang="ts">
 import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLoading } from '@mdi/js';
 export default {
+  name: 'MapButton',
   components: { SvgIcon },
   props: {
     height: { default: 32 },

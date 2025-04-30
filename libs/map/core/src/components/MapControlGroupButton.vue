@@ -5,10 +5,7 @@
       'button-group-row-container': row,
       'button-group-column-container': !row,
     }"
-    :style="{
-      width: !row ? size + 'px' : null,
-      height: row ? size + 'px' : null,
-    }"
+    :style="containerStyle"
   >
     <div
       class="button-group-sheet"
@@ -17,11 +14,11 @@
     >
       <MapButton
         v-for="(item, i) in items"
-        :key="i + '' + item.titl"
-        :height="size"
+        :key="i"
+        :height="Number(size)"
+        :width="Number(size)"
         text
         :title="item.title"
-        :width="size"
         @click="item.onClick"
       >
         <MapIcon>
@@ -33,15 +30,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import type { PropType } from 'vue';
 import MapButton from './MapButton.vue';
 import MapIcon from './MapIcon.vue';
+interface ButtonItem {
+  title: string;
+  icon: string;
+  onClick: (e: MouseEvent) => void;
+}
 export default {
+  name: 'MapControlGroupButton',
   components: { MapButton, MapIcon },
   props: {
     // {title:string,icon:string,onClick:(e)=>{}}
     items: {
-      type: Array,
+      type: Array as PropType<ButtonItem[]>,
       default: () => [],
     },
     row: Boolean,
@@ -52,6 +56,14 @@ export default {
       isGroup: true,
       size: this.size,
     };
+  },
+  computed: {
+    containerStyle(): Record<string, string | undefined> {
+      return {
+        width: !this.row ? `${this.size}px` : undefined,
+        height: this.row ? `${this.size}px` : undefined,
+      };
+    },
   },
 };
 </script>

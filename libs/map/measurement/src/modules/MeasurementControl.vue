@@ -82,15 +82,18 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
+import {
+  CoordinatesNumber,
+  MapSimple,
+  convertGeometry,
+  fitBounds,
+} from '@hungpvq/shared-map';
 import {
   EventClick,
   MapControlButton,
   MapControlGroupButton,
   ModuleContainer,
-  convertGeometry,
   crsStore,
-  fitBounds,
   imageStore,
   setEventMap,
   useLang,

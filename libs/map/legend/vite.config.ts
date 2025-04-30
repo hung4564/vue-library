@@ -43,7 +43,15 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['@hungpvq/shared-map', '@hungpvq/vue-map-core'],
+      external: [
+        '@hungpvq/shared-core',
+        '@hungpvq/shared-map',
+        '@hungpvq/vue-draggable',
+        '@hungpvq/vue-map-core',
+        'maplibre-gl',
+        '@jamescoyle/vue-icon',
+        '@mdi/js',
+      ],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps

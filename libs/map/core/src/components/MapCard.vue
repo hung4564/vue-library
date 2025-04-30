@@ -12,11 +12,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
+  name: 'MapCard',
   props: {
-    height: {},
-    width: {},
+    height: {
+      type: [String, Number],
+      default: undefined,
+    },
+    width: {
+      type: [String, Number],
+      default: undefined,
+    },
   },
   data: () => ({}),
   computed: {
