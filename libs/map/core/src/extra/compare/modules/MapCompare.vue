@@ -5,7 +5,6 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
 import { debounce } from 'lodash';
-import mapboxgl from 'maplibre-gl';
 import {
   computed,
   nextTick,

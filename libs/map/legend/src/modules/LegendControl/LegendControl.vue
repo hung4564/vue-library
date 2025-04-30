@@ -107,11 +107,11 @@ useEventListener(mapId.value, 'styledata', updateLegend);
   align-items: center;
   flex: 0 0 auto;
 }
-:deep(legend-item-container) {
+:deep(.legend-item-container) {
   width: 17px;
   height: 17px;
 }
-:deep(legend-item) {
+:deep(.legend-item) {
   width: 17px;
   height: 17px;
 }

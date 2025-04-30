@@ -45,7 +45,7 @@ setLocale({
     },
   },
 });
-const views = ref<Array<IIdentifyView & IDataset>>([]);
+const views = ref<Array<IIdentifyView>>([]);
 const datasetIds = computed(() => {
   return getDatasetIds(mapId.value).value;
 });
@@ -67,8 +67,7 @@ function updateList() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IIdentifyView & IDataset>(mapId.value, 'identify') ||
-    [];
+    getAllComponentsByType<IIdentifyView>(mapId.value, 'identify') || [];
 }
 const hasViews = computed(() => {
   return views.value.length > 0;
@@ -99,7 +98,7 @@ function onBboxSelect(bbox: any) {
   onGetFeatures(bbox);
 }
 const result = reactive<{
-  items: { identify: IIdentifyView & IDataset; features: any[] }[];
+  items: { identify: IIdentifyView; features: any[] }[];
   loading: boolean;
 }>({
   items: [],
@@ -116,7 +115,7 @@ const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
 function onSelectFeatures(
-  features: { identify: IIdentifyView & IDataset; features: any[] }[]
+  features: { identify: IIdentifyView; features: any[] }[]
 ) {
   result.items = features;
   if (
@@ -201,8 +200,8 @@ function onRemoveBox() {
 }
 
 function onMenuAction(
-  identify: IIdentifyView & IDataset,
-  menu: MenuAction<IIdentifyView & IDataset>,
+  identify: IIdentifyView,
+  menu: MenuAction<IIdentifyView>,
   item: any
 ) {
   if (menu.type != 'item' || !identify) {

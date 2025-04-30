@@ -6,10 +6,14 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from '@turf/turf';
 import { center } from '@turf/turf';
-import type { FillLayer, GeoJSONSourceRaw } from 'maplibre-gl';
+import type {
+  FillLayerSpecification,
+  GeoJSONSource,
+  GeoJSONSourceSpecification,
+} from 'maplibre-gl';
 import { Marker } from 'maplibre-gl';
 import { computed, watch } from 'vue';
-import { IMapboxSourceView } from '../../interfaces';
+import { IMapboxLayerView } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/dataset.visitors';
 import {
   getDatesetHighlight,
@@ -41,10 +45,10 @@ const storeFeature = computed(() => {
 });
 
 const updateSource = (
-  map: mapboxgl.Map,
+  map: MapSimple,
   geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>
 ) => {
-  const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
+  const source = map.getSource(sourceId) as GeoJSONSource;
   if (source) {
     source.setData(
       geojsonData || {
@@ -63,11 +67,11 @@ const updateSource = (
   }
 };
 
-const updateLayer = (map: mapboxgl.Map) => {
+const updateLayer = (map: MapSimple) => {
   if (map.getLayer(layerId)) {
     map.moveLayer(layerId);
   } else {
-    const layer = { ...props.layer } as FillLayer;
+    const layer = { ...props.layer } as FillLayerSpecification;
     layer.source = sourceId;
     layer.id = layerId;
     const topLayerId =
@@ -77,8 +81,8 @@ const updateLayer = (map: mapboxgl.Map) => {
 };
 
 const updateMarker = (
-  map: mapboxgl.Map,
-  geojsonData: GeoJSONSourceRaw['data']
+  map: MapSimple,
+  geojsonData: GeoJSONSourceSpecification['data']
 ) => {
   marker?.remove();
   marker = undefined;
@@ -108,8 +112,8 @@ function updateHighlight(geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>) {
   if (dataset) {
     const source = findSiblingOrNearestLeaf(
       dataset,
-      (dataset) => dataset.type == 'source'
-    ) as unknown as IMapboxSourceView;
+      (dataset) => dataset.type == 'layer'
+    ) as unknown as IMapboxLayerView;
     if (source && 'hightLight' in source) {
       callMap((map: MapSimple) => {
         source.hightLight?.(map, geojsonData);
@@ -120,7 +124,7 @@ function updateHighlight(geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>) {
   callMap((map: MapSimple) => {
     updateSource(map, geojsonData);
     updateLayer(map);
-    updateMarker(map, geojsonData);
+    updateMarker(map, geojsonData as any);
   });
 }
 

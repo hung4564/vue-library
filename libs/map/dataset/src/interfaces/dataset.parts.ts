@@ -85,17 +85,14 @@ export type IListViewUI<T extends IDataset = IDataset> = T &
     legend?: () => any;
   };
 
-export type IMapboxSourceView = IDatasetMap & {
-  getMapboxSource: () => SourceSpecification & { id?: string };
-  updateData?(map: MapSimple, data: any): void;
-  getFieldsInfo(): IFieldInfo[];
-  getDataInfo(): any;
-  getSourceId(): string;
-  hightLight?(
-    map: MapSimple,
-    geojsonData: GeoJSON.Feature<GeoJSON.Geometry> | undefined
-  ): void;
-};
+export type IMapboxSourceView = IDatasetMap &
+  IDataset & {
+    getMapboxSource: () => SourceSpecification & { id?: string };
+    updateData?(map: MapSimple, data: any): void;
+    getFieldsInfo(): IFieldInfo[];
+    getDataInfo(): any;
+    getSourceId(): string;
+  };
 
 export type IMapboxLayerView = IDatasetMap & {
   getBeforeId(): string;
@@ -105,6 +102,10 @@ export type IMapboxLayerView = IDatasetMap & {
   moveLayer(map: MapSimple, beforeId: string): void;
   getComponentUpdate(): () => any;
   updateValue(map: MapSimple, value: any): void;
+  hightLight?(
+    map: MapSimple,
+    geojsonData: GeoJSON.Feature<GeoJSON.Geometry> | undefined
+  ): void;
 };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
@@ -171,7 +172,7 @@ export type IMetadataView = {
   metadata?: { loading?: boolean; bbox?: BBox };
 };
 
-export type IDataManagementView<D = any> = {
+export type IDataManagementView<D = any> = IDataset & {
   showDetail(mapId: string, detail: D): void;
   getList(ids?: string[]): Promise<D[]>;
 } & IDrawHandler;

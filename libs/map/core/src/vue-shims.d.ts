@@ -1,3 +1,5 @@
+import { MapSimple } from '@hungpvq/shared-map';
+
 declare module '*.vue' {
   import { defineComponent } from 'vue';
   const component: ReturnType<typeof defineComponent>;
@@ -20,6 +22,6 @@ interface HTMLElement {
 }
 
 declare module '@mapbox/mapbox-gl-sync-move' {
-  const syncMove: (maps: mapboxgl.Map[]) => () => void;
+  const syncMove: (maps: MapSimple[]) => () => void;
   export default syncMove;
 }

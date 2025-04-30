@@ -2,7 +2,11 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { IDataset, IMapboxSourceView } from '../interfaces';
+import type {
+  IDataset,
+  IMapboxLayerView,
+  IMapboxSourceView,
+} from '../interfaces';
 import { findSiblingOrNearestLeaf } from '../model';
 
 export const KEY = 'dataset-highlight';
@@ -45,8 +49,8 @@ export function setFeatureHighlight(
     if (store.dataset) {
       const source = findSiblingOrNearestLeaf(
         store.dataset,
-        (dataset) => dataset.type == 'source'
-      ) as unknown as IMapboxSourceView;
+        (dataset) => dataset.type == 'layer'
+      ) as unknown as IMapboxLayerView;
       if (source && 'hightLight' in source) {
         getMap(mapId, (map: MapSimple) => {
           source.hightLight?.(map, undefined);
