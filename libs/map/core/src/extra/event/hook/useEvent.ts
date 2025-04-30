@@ -35,21 +35,31 @@ type KnownMapEvent = keyof MapEventType;
 export function useEventListener<K extends KnownMapEvent>(
   mapId: string,
   event: K,
-  cb: (map: MapSimple, ev: MapEventType[K] & object) => void
-): void {
+  cb: (map: MapSimple, ev: MapEventType[K] & object) => void,
+  immediate = true,
+): { add: () => void; remove: () => void } {
   const wrappedCb: Record<string, ((ev: MapEventType[K]) => void) | undefined> =
     {};
-  onMounted(() => {
+  const add = () => {
     getMap(mapId, (map) => {
       const eventHandle = (ev: MapEventType[K]) => cb(map, ev);
       wrappedCb[map.id] = eventHandle;
       map.on(event, eventHandle);
     });
-  });
-  onBeforeUnmount(() => {
+  };
+  const remove = () => {
     getMap(mapId, (map) => {
       const eventHandle = wrappedCb?.[map.id];
       if (eventHandle) map.off(event, eventHandle);
     });
+  };
+  onMounted(() => {
+    if (immediate) {
+      add();
+    }
   });
+  onBeforeUnmount(() => {
+    remove();
+  });
+  return { add, remove };
 }

@@ -2,6 +2,7 @@
 import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
+  InputCheckbox,
   MapControlButton,
   ModuleContainer,
   useEventListener,
@@ -12,12 +13,8 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMapLegend } from '@mdi/js';
-import { shallowRef } from 'vue';
-import {
-  getLegendName,
-  isDisabledLegendLayer,
-  isSupportGenLayerLegend,
-} from '../../check';
+import { ref, shallowRef, watch } from 'vue';
+import { getLegendName, isSupportGenLayerLegend } from '../../check';
 import { useLayerLegend } from '../../lib/useLayerLegend';
 const props = defineProps({
   ...withMapProps,
@@ -31,25 +28,57 @@ setLocaleDefault({
   map: {
     'legend-control': {
       title: 'Legend',
+      onlyRendered: 'Only rendered',
     },
   },
 });
 function onToggleShow() {
   setShow(!show.value);
 }
+const onlyRender = ref(false);
 const legends = shallowRef<{ icon: any; name: string }[]>([]);
 function updateLegend(map: MapSimple) {
   let layers = map?.getStyle().layers;
+  let visibleLayers: Set<string> | null = null;
+  if (onlyRender.value) {
+    visibleLayers = new Set(); // Dùng Set để tránh trùng lặp
+
+    // Lấy các feature đang render trong viewport
+    const features = map.queryRenderedFeatures();
+    for (const feature of features) {
+      visibleLayers.add(feature.layer.id);
+    }
+  }
   legends.value = layers
     .slice()
     .reverse()
-    .filter((layer) => isSupportGenLayerLegend(layer))
+    .filter(
+      (layer) =>
+        (!visibleLayers || (visibleLayers && visibleLayers.has(layer.id))) &&
+        isSupportGenLayerLegend(layer),
+    )
     .map((layer) => ({
       icon: getLayerLegendVNode(map, layer as any),
-      name: getLegendName(layer),
+      name: getLegendName(layer as any),
     }));
 }
 useEventListener(mapId.value, 'styledata', updateLegend);
+const { add, remove } = useEventListener(
+  mapId.value,
+  'moveend',
+  updateLegend,
+  false,
+);
+watch(onlyRender, (newValue) => {
+  if (newValue) {
+    add();
+    callMap((map) => {
+      updateLegend(map);
+    });
+  } else {
+    remove();
+  }
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -71,16 +100,24 @@ useEventListener(mapId.value, 'styledata', updateLegend);
         v-model:show="show"
         :title="trans('map.legend-control.title')"
       >
-        <div class="legend-control">
-          <div
-            v-for="(legendVNode, index) in legends"
-            :key="index"
-            class="legend-control-item"
-          >
-            <div class="legend-control-item__icon">
-              <component :is="legendVNode.icon" />
+        <div class="legend-control-container">
+          <div class="legend-control">
+            <div
+              v-for="(legendVNode, index) in legends"
+              :key="index"
+              class="legend-control-item"
+            >
+              <div class="legend-control-item__icon">
+                <component :is="legendVNode.icon" />
+              </div>
+              <span>{{ legendVNode.name }}</span>
             </div>
-            <span>{{ legendVNode.name }}</span>
+          </div>
+          <div class="legend-action">
+            <InputCheckbox
+              :label="trans('map.legend-control.onlyRendered')"
+              v-model="onlyRender"
+            />
           </div>
         </div>
       </DraggableItemPopup>
@@ -96,6 +133,8 @@ useEventListener(mapId.value, 'styledata', updateLegend);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1 1 auto;
+  overflow: auto;
 }
 .legend-control-item {
   display: flex;
@@ -114,5 +153,18 @@ useEventListener(mapId.value, 'styledata', updateLegend);
 :deep(.legend-item) {
   width: 17px;
   height: 17px;
+}
+.legend-control-container {
+  padding: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.legend-action {
+  flex: 0 0 auto;
+  padding: 8px;
 }
 </style>
