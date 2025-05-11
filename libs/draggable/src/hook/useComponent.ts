@@ -2,23 +2,21 @@ import { computed } from 'vue';
 
 import MapCard from '../components/parts/MapCard.vue';
 import MapHeader from '../components/parts/MapHeader.vue';
-import { store } from '../store/store';
+import { useDragStore } from '../store';
 export function useComponent(props: {
   componentCard?: any;
   componentCardHeader?: any;
   containerId: string;
 }) {
+  const store = useDragStore(props.containerId);
   const componentCard = computed(
-    () =>
-      store.getters.getComponentCard(props.containerId) ||
-      props.componentCard ||
-      MapCard
+    () => store.getters.getComponentCard() || props.componentCard || MapCard,
   );
   const componentCardHeader = computed(
     () =>
-      store.getters.getComponentCardHeader(props.containerId) ||
+      store.getters.getComponentCardHeader() ||
       props.componentCardHeader ||
-      MapHeader
+      MapHeader,
   );
   return { componentCard, componentCardHeader };
 }

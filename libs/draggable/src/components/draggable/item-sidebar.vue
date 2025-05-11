@@ -18,7 +18,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import { store } from '../../store/store';
+import { useDragStore } from '../../store';
 import MapButton from '../parts/MapButton.vue';
 import MapSidebarToggle from '../parts/MapSidebarToggle.vue';
 const {
@@ -41,8 +41,9 @@ const props = defineProps({
 const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
 const containerId = inject<Ref<string>>(
   'containerId',
-  ref(props.containerId || '')
+  ref(props.containerId || ''),
 );
+const store = useDragStore(containerId.value);
 if (!containerId.value) {
   throw 'Not set container id';
 }
@@ -50,7 +51,7 @@ const { show } = useShow(props, emit);
 const { zIndex, itemId } = useInit(containerId.value, show);
 const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
   containerId.value,
-  itemId.value
+  itemId.value,
 );
 const { expand, toggle: onToggleExpand } = useExpand(props, emit, true);
 const isAutoWidth = computed(() => {
@@ -62,9 +63,9 @@ const { componentCard, componentCardHeader } = useComponent({
 });
 const componentMapSidebarToggle = computed(
   () =>
-    store.getters.getComponentCardSidebarToggle(containerId.value) ||
+    store.getters.getComponentCardSidebarToggle() ||
     props.componentMapSidebarToggle ||
-    MapSidebarToggle
+    MapSidebarToggle,
 );
 function onClose() {
   show.value = false;

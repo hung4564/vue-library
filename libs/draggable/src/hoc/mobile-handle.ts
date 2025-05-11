@@ -1,9 +1,9 @@
 import { Component, Ref, computed, defineComponent, h, inject, ref } from 'vue';
-import { store } from '../store/store';
+import { useDragStore } from '../store';
 
 export function WithMobileHandle<T = Component>(
   Component: T,
-  ComponentMobile: any
+  ComponentMobile: any,
 ) {
   return defineComponent({
     name: 'WithMobileHandle' + (Component as any).name,
@@ -13,11 +13,10 @@ export function WithMobileHandle<T = Component>(
     setup(props) {
       const p_containerId = inject<Ref<string>>(
         'containerId',
-        ref(props.containerId || '')
+        ref(props.containerId || ''),
       );
-      const isMobile = computed(() =>
-        store.getters.getIsMobile(p_containerId.value)
-      );
+      const store = useDragStore(p_containerId.value);
+      const isMobile = computed(() => store.getters.getIsMobile());
       return { p_containerId, isMobile };
     },
     render() {
@@ -25,13 +24,13 @@ export function WithMobileHandle<T = Component>(
         return h(
           ComponentMobile as any,
           { ...this.$attrs, containerId: this.p_containerId },
-          this.$slots
+          this.$slots,
         );
       }
       return h(
         Component as any,
         { ...this.$attrs, containerId: this.p_containerId },
-        this.$slots
+        this.$slots,
       );
     },
   }) as T;
