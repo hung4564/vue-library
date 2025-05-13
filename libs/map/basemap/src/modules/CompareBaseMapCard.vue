@@ -44,7 +44,7 @@ import {
   store as storeMap,
   useMap,
 } from '@hungpvq/vue-map-core';
-import { computed, ref } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 const props = defineProps({
   mapId: { type: String, required: true },
@@ -58,11 +58,11 @@ const setting = getMapCompareSetting(mapId.value);
 const mapIds = ref<string[]>(
   storeMap.actions
     .getMapStore(mapId.value)
-    ?.maps.map((x: { id: any }) => x.id) || []
+    ?.maps.map((x: { id: any }) => x.id) || [],
 );
 const current_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map(
-    (x: { currentBaseMap: any }) => x.currentBaseMap
+    (x: { currentBaseMap: any }) => x.currentBaseMap,
   );
 });
 const c_items_baseMaps = computed(() => {
@@ -76,6 +76,9 @@ const mapStoreUseBaseMap = computed(() => {
 const onChangeBaseMap = (i: number, base_map: any) => {
   mapStoreUseBaseMap.value[i].setCurrent(base_map);
 };
+onBeforeUnmount(() => {
+  return mapStoreUseBaseMap.value.map((x) => x.remove());
+});
 </script>
 <style lang="scss" scoped>
 .base-map-card {

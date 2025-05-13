@@ -60,7 +60,7 @@ export const { state, getters, actions } = store;
 export function addStore<T = any>(
   mapId: string,
   key: string,
-  defaultValue?: T
+  defaultValue?: T,
 ) {
   const store = actions.getMapStore(mapId);
   if (!store) {

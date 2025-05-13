@@ -1,3 +1,4 @@
+import mitt, { Emitter } from 'mitt';
 import { reactive } from 'vue';
 import { addStore, addToQueue, getStore } from '../../store';
 import { IEvent } from './types';
@@ -9,6 +10,7 @@ export type MapEventStore = {
 };
 function initMapEvent(mapId: string) {
   addStore<MapEventStore>(mapId, KEY, reactive({ items: [], current: {} }));
+  addStore<Emitter<any>>(mapId, 'mitt', mitt());
 }
 addToQueue(KEY, initMapEvent);
 
@@ -37,7 +39,7 @@ export function getCurrentEvent(mapId: string, event_map_type: string) {
 export function setCurrentEvent(
   mapId: string,
   event_map_type: string,
-  event?: IEvent
+  event?: IEvent,
 ) {
   const store = getStore<MapEventStore>(mapId, KEY);
   store.current[event_map_type] = event;

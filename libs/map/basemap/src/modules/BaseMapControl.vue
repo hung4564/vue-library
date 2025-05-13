@@ -88,7 +88,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
@@ -119,20 +119,20 @@ const {
   setDefaultBaseMap,
   setCurrent,
   currentBaseMap: current_baseMaps,
+  remove,
+  init,
 } = useBaseMap(mapId.value);
 watch(
   () => props.baseMaps as BaseMapItem[],
   (value: BaseMapItem[]) => {
     setBaseMaps(value);
   },
-  { immediate: true }
 );
 watch(
   () => props.defaultBaseMap,
   (value) => {
     setDefaultBaseMap(value);
   },
-  { immediate: true }
 );
 setLocaleDefault({
   map: {
@@ -151,10 +151,17 @@ const path = {
 const show = ref(false);
 function onClick(baseMap: any) {
   setCurrent(baseMap);
+  setBaseMaps(value);
 }
 function onToggleList() {
   show.value = !show.value;
 }
+onMounted(() => {
+  init(props.baseMaps, props.defaultBaseMap);
+});
+onBeforeUnmount(() => {
+  remove();
+});
 </script>
 <style scoped>
 .base-map-button__title {
