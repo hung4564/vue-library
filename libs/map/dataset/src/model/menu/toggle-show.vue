@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import { MapSimple } from '@hungpvq/shared-map';
-import { store, store as storeMap, useMap } from '@hungpvq/vue-map-core';
+import { getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, ref } from 'vue';
@@ -58,12 +58,12 @@ const onToggleShow = () => {
         (dataset) => {
           dataset.toggleShow(map, show);
         },
-      ]
+      ],
     );
   });
 };
 function onToggleShowIndex(index: number) {
-  const maps = store.getters.getMaps(mapId.value);
+  const maps = getMaps(mapId.value);
   const map = maps[index];
   const show = getShow(index);
   let item = props.data;
@@ -76,12 +76,12 @@ function onToggleShowIndex(index: number) {
       (dataset) => {
         dataset.toggleShow(map, item.shows[index]);
       },
-    ]
+    ],
   );
 }
 const isMulti = ref(false);
 onMounted(() => {
-  isMulti.value = storeMap.getters.getIsMulti(mapId.value);
+  isMulti.value = getIsMulti(mapId.value);
 });
 function getShow(index: number) {
   let item = props.data;

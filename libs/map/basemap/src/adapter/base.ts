@@ -1,5 +1,5 @@
 import { MapSimple } from '@hungpvq/shared-map';
-import { store } from '@hungpvq/vue-map-core';
+import { getMap } from '@hungpvq/vue-map-core';
 import { BaseMapLayer } from '../hooks/model';
 import { BaseMapItem, IBaseMapLayer } from '../types';
 
@@ -42,7 +42,7 @@ export class DefaultBaseMapAdapter extends BaseMapAdapter {
     if (!item) return;
     let layer = this.layer;
     if (layer) {
-      store.actions.getMap(mapId, (map: MapSimple) => {
+      getMap(mapId, (map: MapSimple) => {
         if (layer) {
           layer.removeFromMap(map);
         }
@@ -51,11 +51,11 @@ export class DefaultBaseMapAdapter extends BaseMapAdapter {
     if (!layer) {
       layer = new BaseMapLayer();
     }
-    store.actions.getMap(mapId, (map: MapSimple) => {
+    getMap(mapId, (map: MapSimple) => {
       layer.removeFromMap(map);
     });
     await layer.setBaseMap(item);
-    store.actions.getMap(mapId, (map: MapSimple) => {
+    getMap(mapId, (map: MapSimple) => {
       layer.addToMap(map, getLowestLayerId(map));
     });
     this.layer = layer;

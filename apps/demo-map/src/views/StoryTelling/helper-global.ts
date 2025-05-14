@@ -1,4 +1,4 @@
-import { getMap } from '@hungpvq/vue-map-core';
+import { getMap, store } from '@hungpvq/vue-map-core';
 import { GeoJSONSource, Map } from 'maplibre-gl';
 import { Ref } from 'vue';
 

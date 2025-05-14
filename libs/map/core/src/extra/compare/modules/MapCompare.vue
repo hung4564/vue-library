@@ -16,7 +16,12 @@ import {
   watch,
 } from 'vue';
 import Map from '../../../modules/Map.vue';
-import { actions, store as storeMap } from '../../../store/store';
+import {
+  getMap,
+  initMaps,
+  removeMap,
+  store as storeMap,
+} from '../../../store/store';
 import ActionControl from '../../event/modules/ActionControl.vue';
 import { getMapCompareSetting, initStoreMapCompare } from '../store';
 import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
@@ -148,7 +153,7 @@ function initCompare() {
       map.resize();
     }
   });
-  storeMap.actions.initMaps(id.value, maps);
+  initMaps(storeMap, id.value, maps);
   initStoreMapCompare(id.value);
 
   watch(
@@ -170,10 +175,10 @@ function initCompare() {
             setupCompare();
           });
         },
-        { deep: true }
+        { deep: true },
       );
     },
-    { immediate: true }
+    { immediate: true },
   );
   setupCompare();
 }
@@ -184,7 +189,7 @@ function destroy() {
   if (clearSync) {
     clearSync();
   }
-  actions.removeMap(id.value);
+  removeMap(storeMap, id.value);
   nextTick(() => {
     maps = [];
   });
@@ -203,12 +208,12 @@ function setupCompare() {
       ? MapCompareSwiperVertical(
           swiperRef.value,
           mapsRef.value?.[0].$el,
-          mapsRef.value?.[1].$el
+          mapsRef.value?.[1].$el,
         )
       : MapCompareSwiper(
           swiperRef.value,
           mapsRef.value?.[0].$el,
-          mapsRef.value?.[1].$el
+          mapsRef.value?.[1].$el,
         );
     clearSplit = swiper.clear;
     resizeSplit = swiper.resize;
@@ -225,7 +230,7 @@ function setupCompare() {
 let observer: any;
 const handleResize = debounce((entry) => {
   const { width, height } = entry.contentRect;
-  actions.getMap(id.value, (map) => {
+  getMap(id.value, (map) => {
     map.resize();
   });
   if (resizeSplit) {

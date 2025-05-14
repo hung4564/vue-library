@@ -37,7 +37,7 @@ export const initDrawControl = (map_id: string, control: any) => {
 export const activateDraw = (
   map_id: string,
   register_id: string,
-  geojson?: GeoJSON
+  geojson?: GeoJSON,
 ) => {
   if (!register_id) {
     throw new Error('Need register id');
@@ -85,7 +85,7 @@ export const draw = (
   register_id: string,
   type: string,
   callback?: DrawSaveFc,
-  options?: any
+  options?: any,
 ) => {
   const store = getDrawStore(map_id);
   checkDrawId(map_id, register_id);
@@ -126,7 +126,7 @@ function convertData(store: MapDrawStore): DrawSaveFcParams {
 export const saveDraw = (
   map_id: string,
   register_id: string,
-  callback?: DrawSaveFc
+  callback?: DrawSaveFc,
 ) => {
   const store = getDrawStore(map_id);
   const state = store.state;
@@ -177,7 +177,7 @@ export const clearDraw = (map_id: string) => {
 export function setFeature(
   map_id: string,
   type: 'added' | 'updated' | 'deleted',
-  feature: Feature
+  feature: Feature,
 ) {
   const store = getDrawStore(map_id);
   switch (type) {

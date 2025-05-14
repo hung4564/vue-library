@@ -19,7 +19,7 @@ function removeDuplicates(
     identifyId: string;
     feature: MapGeoJSONFeature;
     rawId: string;
-  }[]
+  }[],
 ): {
   identify: IIdentifyViewWithMerge;
   identifyId: string;
@@ -43,7 +43,7 @@ function formatFeature(
     feature: MapGeoJSONFeature;
     rawId: string;
   }[],
-  dataMap: Map<string, any>
+  dataMap: Map<string, any>,
 ): {
   identify: IIdentifyViewWithMerge;
   identifyId: string;
@@ -78,7 +78,7 @@ export async function getMergedFeatures(
     mapId: string;
     pointOrBox?: PointLike | [PointLike, PointLike];
     layerIdMap: Record<string, IIdentifyViewWithMerge>;
-  }
+  },
 ): Promise<
   {
     identifyId: string;
@@ -97,7 +97,7 @@ export async function getMergedFeatures(
       const allLayerIds = Object.keys(layerIdMap);
       const queriedFeatures: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         payload.pointOrBox,
-        { layers: allLayerIds }
+        { layers: allLayerIds },
       );
 
       const collected: {
@@ -134,7 +134,7 @@ export async function getMergedFeatures(
       const anyIdentify = identifies[0];
       const maybeDataManagement = findSiblingOrNearestLeaf(
         anyIdentify,
-        (dataset) => dataset.type === 'dataManagement'
+        (dataset) => dataset.type === 'dataManagement',
       );
 
       // Nếu không có dataManagement, trả về raw feature info
@@ -167,7 +167,7 @@ export const splitResponse = (
       name: string;
       data: any;
     };
-  }[]
+  }[],
 ): IdentifyResult[] => {
   const resultsMap = new Map<string, IdentifyResult>();
 
@@ -187,7 +187,7 @@ export const splitResponse = (
 export const mergePayload = (
   identifies: IIdentifyViewWithMerge[],
   mapId: string,
-  pointOrBox?: PointLike | [PointLike, PointLike]
+  pointOrBox?: PointLike | [PointLike, PointLike],
 ) => {
   const layerIdMap: Record<string, IIdentifyViewWithMerge> = {};
 
@@ -196,7 +196,7 @@ export const mergePayload = (
       identify.getParent() || identify,
       (dataset): dataset is IDataset & IMapboxLayerView =>
         isMapboxLayerView(dataset),
-      [(dataset) => dataset.getAllLayerIds()]
+      [(dataset) => dataset.getAllLayerIds()],
     );
 
     const allLayerIds: string[] = Array.from(layers.values()).flat(2);

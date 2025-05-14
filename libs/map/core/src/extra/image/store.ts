@@ -1,7 +1,7 @@
 import { MapSimple } from '@hungpvq/shared-map';
 import { reactive } from 'vue';
 import { addToQueue } from '../../store/queue';
-import { actions, addStore, getStore } from '../../store/store';
+import { addStore, getMap, getStore, store } from '../../store/store';
 import { addImageForMap } from './helpers';
 
 const KEY = 'image';
@@ -26,7 +26,7 @@ export async function addImage(
   mapId: string,
   key: string,
   image_url: string,
-  option: any = {}
+  option: any = {},
 ) {
   const storeImage = getStore<MapImageStore>(mapId, KEY);
   storeImage.images[key] = {
@@ -36,8 +36,8 @@ export async function addImage(
     is_sprite: false,
     category: 'custom',
   };
-  const promises = actions.getMap(mapId, async (map: MapSimple) =>
-    addImageForMap(map, key, image_url, option)
+  const promises = getMap(mapId, async (map: MapSimple) =>
+    addImageForMap(map, key, image_url, option),
   );
   return promises;
 }

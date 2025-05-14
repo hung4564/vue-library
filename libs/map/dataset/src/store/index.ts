@@ -27,7 +27,7 @@ export async function addDataset(mapId: string, layer: IDataset) {
   const currentLists = getAllComponentsByType<IListViewUI>(mapId, 'list');
   const allComponentsOfType = findAllComponentsByType(
     layer,
-    'list'
+    'list',
   ) as Array<IListViewUI>;
   store.datasets[layer.id] = layer;
   allComponentsOfType.forEach((list, i) => {
