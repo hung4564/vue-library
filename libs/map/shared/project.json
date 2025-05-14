@@ -1,7 +1,7 @@
 {
   "name": "shared-map",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/share/map/src",
+  "sourceRoot": "libs/map/shared/src",
   "projectType": "library",
   "tags": ["map"],
   "targets": {
@@ -9,10 +9,10 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/share/map",
-        "main": "libs/share/map/src/index.ts",
-        "tsConfig": "libs/share/map/tsconfig.lib.json",
-        "assets": ["libs/share/map/*.md"]
+        "outputPath": "dist/libs/map/shared",
+        "main": "libs/map/shared/src/index.ts",
+        "tsConfig": "libs/map/shared/tsconfig.lib.json",
+        "assets": ["libs/map/shared/*.md"]
       }
     },
     "ts-check": {

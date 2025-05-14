@@ -55,7 +55,7 @@ function getBBox(feature: any) {
 
 export function convertGeometry(
   coordinates: CoordinatesNumber[],
-  properties: any = {}
+  properties: any = {},
 ) {
   if (coordinates.length == 0) {
     return;
