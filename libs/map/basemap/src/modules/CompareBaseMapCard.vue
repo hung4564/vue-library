@@ -42,7 +42,6 @@ import {
   getMapStore,
   InputSelect,
   MapImage,
-  store as storeMap,
   useMap,
 } from '@hungpvq/vue-map-core';
 import { computed, onBeforeUnmount, ref } from 'vue';
@@ -57,7 +56,7 @@ const props = defineProps({
 const { mapId } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
 const mapIds = ref<string[]>(
-  getMapStore(storeMap, mapId.value)?.maps.map((x: { id: any }) => x.id) || [],
+  getMapStore(mapId.value)?.maps.map((x: { id: any }) => x.id) || [],
 );
 const current_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map(

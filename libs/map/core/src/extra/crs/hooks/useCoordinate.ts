@@ -1,10 +1,10 @@
 import proj4 from 'proj4';
-import { getCrsItem } from './store';
-import { CrsItem } from './types';
+import { getCrsItem } from '../store';
+import { CrsItem } from '../types';
 export function useCoordinate(mapId: string) {
   function format(
     { longitude, latitude }: { longitude: number; latitude: number },
-    isDMS = false
+    isDMS = false,
   ) {
     const crs: CrsItem =
       getCrsItem(mapId) ||
@@ -21,7 +21,7 @@ export function useCoordinate(mapId: string) {
 export function formatCoordinate(
   { longitude, latitude }: { longitude: number; latitude: number },
   crs?: CrsItem,
-  isDMS = false
+  isDMS = false,
 ) {
   const currentPoint = { longitude: '0', latitude: '0' };
   if (!longitude || !latitude) return currentPoint;
@@ -65,10 +65,10 @@ export function dms_to_des(
     deg: 0,
     min: 0,
     sec: 0,
-  }
+  },
 ) {
   const result = (Number(deg) + Number(min) / 60 + Number(sec) / 3600).toFixed(
-    6
+    6,
   );
   return result;
 }
@@ -86,13 +86,13 @@ export function deg_to_dms_string(str: number) {
 }
 export const latDMS = (lat: number) => {
   return `${dcToDeg(lat)}° ${dcToMin(lat)}' ${parseFloat(
-    dcToSec(lat).toFixed(2)
+    dcToSec(lat).toFixed(2),
   )}" ${lat > 0 ? 'N' : 'S'}`;
 };
 
 export const lngDMS = (lng: number) => {
   return `${dcToDeg(lng)}° ${dcToMin(lng)}' ${parseFloat(
-    dcToSec(lng).toFixed(2)
+    dcToSec(lng).toFixed(2),
   )}" ${lng > 0 ? 'E' : 'W'}`;
 };
 

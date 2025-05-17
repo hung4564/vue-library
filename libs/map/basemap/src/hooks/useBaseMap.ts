@@ -1,4 +1,4 @@
-import { getStore, MittType } from '@hungpvq/vue-map-core';
+import { getStore, MAP_STORE_KEY, MittType } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import {
   BaseMapItem,
@@ -9,7 +9,10 @@ import {
 const KEY = 'basemap';
 export function useBaseMap(mapId: string) {
   const state = getStore<BaseMapStore>(mapId, KEY);
-  const emitter = getStore<MittType<MittTypeBaseMap>>(mapId, 'mitt');
+  const emitter = getStore<MittType<MittTypeBaseMap>>(
+    mapId,
+    MAP_STORE_KEY.MITT,
+  );
   function setBaseMaps(baseMaps: BaseMapItem[]) {
     state.baseMaps = baseMaps;
     emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);

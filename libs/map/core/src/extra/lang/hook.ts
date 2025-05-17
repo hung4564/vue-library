@@ -1,19 +1,36 @@
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { getStore } from '../../store';
+import { MittType } from '../../types';
+import { MAP_STORE_KEY } from '../../types/key';
 import {
   getMapLang,
   setMapLang,
   setMapLocaleDefault,
   setMapTranslate,
 } from './store';
+import { MittTypeMapLang, MittTypeMapLangEventKey } from './types';
 
-// Cache for storing resolved property values with max size limit
-const MAX_CACHE_SIZE = 1000;
 const propCache = new Map<string, any>();
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
 
-  const storeLang = computed(() => getMapLang(mapId));
+  const storeLang = shallowRef(getMapLang(mapId));
+  const emitter = getStore<MittType<MittTypeMapLang>>(
+    mapId,
+    MAP_STORE_KEY.MITT,
+  );
+  onMounted(() => {
+    emitter.on(MittTypeMapLangEventKey.setLocale, update);
+    emitter.on(MittTypeMapLangEventKey.setTranslate, update);
+  });
+  onUnmounted(() => {
+    emitter.off(MittTypeMapLangEventKey.setLocale, update);
+    emitter.off(MittTypeMapLangEventKey.setTranslate, update);
+  });
+  function update() {
+    storeLang.value = getMapLang(mapId);
+  }
 
   function transLocal(key: string, params?: Record<string, any>) {
     // If custom translate function exists, use it
@@ -51,7 +68,7 @@ export function useLang(mapId: string) {
   }
 
   function setTranslate(
-    translate: (key: string, params?: Record<string, any>) => string
+    translate: (key: string, params?: Record<string, any>) => string,
   ) {
     setMapTranslate(mapId, translate);
   }
@@ -62,41 +79,35 @@ export function useLang(mapId: string) {
 function getProp(
   object: any,
   path: string | string[],
-  defaultVal?: string
+  defaultVal?: string,
 ): string | undefined {
   if (!object) return defaultVal;
   if (!path) return defaultVal;
 
   const pathStr = Array.isArray(path) ? path.join('.') : path;
-  const cacheKey = `${JSON.stringify(object)}_${pathStr}`;
 
-  // Check cache first
-  if (propCache.has(cacheKey)) {
-    return propCache.get(cacheKey);
+  let objCache = propCache.get(object);
+  if (!objCache) {
+    objCache = new Map();
+    propCache.set(object, objCache);
   }
 
-  // Clear cache if it exceeds max size
-  if (propCache.size >= MAX_CACHE_SIZE) {
-    propCache.clear();
+  if (objCache.has(pathStr)) {
+    return objCache.get(pathStr);
   }
 
-  const _path = Array.isArray(path)
-    ? path
-    : path.split('.').filter((i) => i.length);
-
-  if (_path.length < 1) {
-    const result = object === undefined ? defaultVal : object;
-    if (result !== undefined && result !== defaultVal) {
-      propCache.set(cacheKey, result);
+  const _path = Array.isArray(path) ? path : path.split('.').filter(Boolean);
+  let current = object;
+  for (const segment of _path) {
+    if (current && typeof current === 'object' && segment in current) {
+      current = current[segment];
+    } else {
+      return defaultVal;
     }
-    return result;
   }
 
-  const result = getProp(object[_path.shift()!], _path, defaultVal);
-  if (result !== undefined && result !== defaultVal) {
-    propCache.set(cacheKey, result);
-  }
-  return result;
+  objCache.set(pathStr, current);
+  return current;
 }
 
 function interpolate(text: string, params?: Record<string, any>): string {

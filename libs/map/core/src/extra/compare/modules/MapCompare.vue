@@ -8,22 +8,31 @@ import { debounce } from 'lodash';
 import {
   computed,
   nextTick,
+  onBeforeMount,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  watch,
 } from 'vue';
 import Map from '../../../modules/Map.vue';
 import {
   getMap,
+  getStore,
   initMaps,
   removeMap,
   store as storeMap,
 } from '../../../store/store';
+import { MittType } from '../../../types';
+import { MAP_STORE_KEY } from '../../../types/key';
 import ActionControl from '../../event/modules/ActionControl.vue';
-import { getMapCompareSetting, initStoreMapCompare } from '../store';
+import { initStoreMitt } from '../../mitt';
+import { initStoreMapCompare } from '../store';
+import {
+  MapCompareSetting,
+  MittTypeMapCompare,
+  MittTypeMapCompareEventKey,
+} from '../types';
 import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
@@ -133,7 +142,9 @@ const setting = ref<{
 const isUseSwiper = computed(() => {
   return setting.value.compare && setting.value.split;
 });
-let stopSettingWatcher: (() => void) | null = null;
+onBeforeMount(() => {
+  initStoreMitt(id.value);
+});
 function initCompare() {
   if (!maps) return;
   if (
@@ -155,31 +166,15 @@ function initCompare() {
   });
   initMaps(storeMap, id.value, maps);
   initStoreMapCompare(id.value);
-
-  watch(
-    id,
-    (newMapId) => {
-      if (!newMapId) return;
-
-      // Dừng watcher cũ nếu có
-      if (stopSettingWatcher) stopSettingWatcher();
-
-      const s_setting = getMapCompareSetting(newMapId);
-
-      // Watch setting mới
-      stopSettingWatcher = watch(
-        s_setting,
-        (newVal) => {
-          setting.value = { ...newVal };
-          nextTick(() => {
-            setupCompare();
-          });
-        },
-        { deep: true },
-      );
-    },
-    { immediate: true },
+  setupCompare();
+  const emitter = getStore<MittType<MittTypeMapCompare>>(
+    id.value,
+    MAP_STORE_KEY.MITT,
   );
+  emitter.on(MittTypeMapCompareEventKey.set, updateSetting);
+}
+function updateSetting(p_setting: MapCompareSetting) {
+  setting.value = p_setting;
   setupCompare();
 }
 function destroy() {
@@ -193,7 +188,6 @@ function destroy() {
   nextTick(() => {
     maps = [];
   });
-  if (stopSettingWatcher) stopSettingWatcher();
 }
 function setupCompare() {
   if (clearSplit) {

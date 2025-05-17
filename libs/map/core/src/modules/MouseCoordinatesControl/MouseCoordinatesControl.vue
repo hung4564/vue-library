@@ -6,9 +6,12 @@ import { computed, nextTick, ref } from 'vue';
 import { useMap, withMapProps } from '../../hooks';
 
 import type { MapSimple } from '@hungpvq/shared-map';
-import { CrsItem, crsStore, useCoordinate } from '../../extra/crs';
+import {
+  useCoordinate,
+  useMapCrsCurrent,
+  useMapCrsItems,
+} from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const { getCrsItems, setCrs, getCrs, getCrsItem } = crsStore;
 const props = defineProps({
   ...withMapProps,
   hideZoom: Boolean,
@@ -29,27 +32,23 @@ const isDMS = ref(false);
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,
-  onDestroy
+  onDestroy,
 );
 const { format: formatCoordinate } = useCoordinate(mapId.value);
 
-const crsItems = computed(() => {
-  return getCrsItems(mapId.value);
+const { items: crsItems } = useMapCrsItems(mapId.value);
+const { item, setItem, isCrsDegree } = useMapCrsCurrent(mapId.value, {
+  onChange: () => {
+    changePixelValue();
+  },
 });
-const p_crs = ref<string>(getCrs(mapId.value));
-const p_crsItem = ref<CrsItem | undefined>(getCrsItem(mapId.value));
-const crs = computed({
+const crs = computed<string | undefined>({
   get() {
-    return p_crs.value;
+    return item.value?.epsg;
   },
   set(value) {
-    p_crs.value = value;
-    p_crsItem.value = crsItems.value.find((x) => x.epsg == value);
-    return setCrs(mapId.value, value!);
+    return setItem(value);
   },
-});
-const isCrsDegree = computed(() => {
-  return p_crsItem.value?.unit === 'degree';
 });
 function onInit(map: MapSimple) {
   currentZoom.value = +map.getZoom().toFixed(2);
@@ -133,14 +132,14 @@ function getRoundNum(num: number) {
     d >= 10
       ? 10
       : d >= 5
-      ? 5
-      : d >= 3
-      ? 3
-      : d >= 2
-      ? 2
-      : d >= 1
-      ? 1
-      : getDecimalRoundNum(d);
+        ? 5
+        : d >= 3
+          ? 3
+          : d >= 2
+            ? 2
+            : d >= 1
+              ? 1
+              : getDecimalRoundNum(d);
 
   return pow10 * d;
 }
@@ -326,8 +325,10 @@ function getRoundNum(num: number) {
   }
 }
 .mouse-coordinates-part {
-  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
-    0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+  box-shadow:
+    0px 3px 1px -2px rgb(0 0 0 / 20%),
+    0px 2px 2px 0px rgb(0 0 0 / 14%),
+    0px 1px 5px 0px rgb(0 0 0 / 12%);
   background-color: hsla(0, 0%, 100%, 0.7529411764705882);
   border-radius: 4px;
   font-size: 14px;

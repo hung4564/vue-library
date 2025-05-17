@@ -147,7 +147,7 @@ const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
 const mapIds = ref<string[]>(
-  getMapStore(storeMap, mapId.value)?.maps.map((x: MapSimple) => x.id) || [],
+  getMapStore(mapId.value)?.maps.map((x: MapSimple) => x.id) || [],
 );
 const mapStoreUseBaseMap = computed(() => {
   return mapIds.value.map((mapId) => {

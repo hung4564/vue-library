@@ -6,4 +6,5 @@ export * from './model/Base';
 export * from './modules';
 export * from './store';
 export * from './types';
+export * from './types/key';
 export * from './utils';
