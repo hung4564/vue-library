@@ -21,13 +21,14 @@
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],
       "@hungpvq/shared-file": ["libs/share/file/src/index.ts"],
       "@hungpvq/shared-integrations": ["libs/share/integrations/src/index.ts"],
-      "@hungpvq/shared-map": ["libs/share/map/src/index.ts"],
+      "@hungpvq/shared-map": ["libs/map/shared/src/index.ts"],
       "@hungpvq/ui-core": ["libs/ui/core/src/index.ts"],
       "@hungpvq/vue-draggable": ["libs/draggable/src/index.ts"],
       "@hungpvq/vue-map-basemap": ["libs/map/basemap/src/index.ts"],
       "@hungpvq/vue-map-core": ["libs/map/core/src/index.ts"],
       "@hungpvq/vue-map-dataset": ["libs/map/dataset/src/index.ts"],
       "@hungpvq/vue-map-draw": ["libs/map/draw/src/index.ts"],
+      "@hungpvq/vue-map-legend": ["libs/map/legend/src/index.ts"],
       "@hungpvq/vue-map-measurement": ["libs/map/measurement/src/index.ts"],
       "@hungpvq/vue-map-print": ["libs/map/print/src/index.ts"]
     }

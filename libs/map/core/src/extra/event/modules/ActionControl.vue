@@ -1,28 +1,25 @@
 <script setup lang="ts">
 import { groupBy } from 'lodash';
-import { computed, watch } from 'vue';
 
+import { onMounted } from 'vue';
 import { useMap, withMapProps } from '../../../hooks';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { getStore } from '../../../store';
-import { KEY, MapEventStore, setCurrentEvent } from '../store';
+import { useEventMapItems } from '../hook';
+import { setCurrentEvent } from '../store';
 import { IEvent } from '../types';
 const props = defineProps({
   ...withMapProps,
 });
 const { callMap, mapId, moduleContainerProps } = useMap(props);
 const current_listener: Record<string, Record<string, IEvent | undefined>> = {};
-const state = getStore<MapEventStore>(mapId.value, KEY);
-const events = computed(() => {
-  return state.items;
-});
-watch(
-  events,
-  (value) => {
+const { items } = useEventMapItems(mapId.value, {
+  onChange: (value) => {
     updateEventMap(value);
   },
-  { deep: true }
-);
+});
+onMounted(() => {
+  updateEventMap(items.value);
+});
 function updateEventMap(events: IEvent[]) {
   const listeners = groupBy<IEvent>(events, (event) => {
     return event.event_map_type;

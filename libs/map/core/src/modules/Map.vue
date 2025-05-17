@@ -6,7 +6,7 @@ import { DraggableContainer } from '@hungpvq/vue-draggable';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
-import { actions, state as mapState } from '../store/store';
+import { initMap, removeMap, store } from '../store/store';
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');
 }
@@ -67,7 +67,6 @@ const loaded = ref(false);
 let map: mapboxgl.Map | undefined = undefined;
 const id = ref(getUUIDv4());
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const state = computed(() => mapState[id.value]);
 onMounted(() => {
   const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
   map = new mapboxgl.Map({
@@ -83,7 +82,7 @@ onMounted(() => {
     ...initOptions,
   });
   (map as any).id = id.value;
-  actions.initMap(id.value, map as MapSimple);
+  initMap(store, id.value, map as MapSimple);
   map.once('load', () => {
     loaded.value = true;
     emit('map-loaded', map! as MapSimple);
@@ -95,7 +94,7 @@ onUnmounted(() => {
     emit('map-destroy', map as MapSimple);
   }
   map = undefined;
-  actions.removeMap(id.value);
+  removeMap(store, id.value);
 });
 
 const draggableTo = computed(() => {
@@ -240,8 +239,10 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
 .map-container {
   .map-control-button,
   .button-group-container > .button-group-sheet {
-    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-      0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    box-shadow:
+      0 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0 2px 2px 0 rgba(0, 0, 0, 0.14),
+      0 1px 5px 0 rgba(0, 0, 0, 0.12);
   }
 
   .button-group-container .map-control-button {

@@ -10,7 +10,7 @@
     <slot />
   </button>
 </template>
-<script setup>
+<script setup lang="ts">
 const props = defineProps({ active: Boolean, disabled: Boolean });
 </script>
 <style scoped>

@@ -1,18 +1,18 @@
 import { MapFCOnUseMap } from '@hungpvq/shared-map';
 import { computed, inject, onMounted, onUnmounted } from 'vue';
-import { actions } from '../store/store';
+import { getMap } from '../store/store';
 
 export const useMap = (
   props: any = {},
   onInit?: MapFCOnUseMap,
-  onDestroy?: MapFCOnUseMap
+  onDestroy?: MapFCOnUseMap,
 ) => {
   const i_map_id = inject('$map.id');
   const c_mapId = computed(() => {
     return props.mapId || i_map_id;
   });
   onMounted(() => {
-    actions.getMap(c_mapId.value, async (_map) => {
+    getMap(c_mapId.value, async (_map) => {
       if (onInit instanceof Function) {
         await onInit(_map);
       }
@@ -20,7 +20,7 @@ export const useMap = (
   });
   onUnmounted(async () => {
     if (onDestroy instanceof Function) {
-      actions.getMap(c_mapId.value, async (_map) => {
+      getMap(c_mapId.value, async (_map) => {
         if (onInit instanceof Function) {
           await onDestroy(_map);
         }
@@ -28,7 +28,7 @@ export const useMap = (
     }
   });
   function callMap(cb: MapFCOnUseMap) {
-    return actions.getMap(c_mapId.value, cb);
+    return getMap(c_mapId.value, cb);
   }
   const moduleContainerProps = {
     mapId: props.mapId,
@@ -51,7 +51,7 @@ export const withMapProps = {
     validator(value: string) {
       return (
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(
-          value
+          value,
         ) !== -1
       );
     },

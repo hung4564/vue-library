@@ -22,6 +22,10 @@ export class MapView extends View {
       if (!layer.id) {
         layer.id = `measurment-control-${getUUIDv4()}`;
       }
+      if (!layer.metadata) {
+        layer.metadata = {};
+      }
+      layer.metadata['maplibregl-legend:disable'] = true;
       if (!layer.source) {
         layer.source = source.id;
       }

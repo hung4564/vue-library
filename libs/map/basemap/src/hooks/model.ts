@@ -93,6 +93,10 @@ async function loadVector(item: BaseMapVectorItem) {
       Object.assign(layer, {
         id: layerId,
         source: sourceId,
+        metadata: {
+          ...layer.metadata,
+          'maplibregl-legend:disable': true,
+        },
       })
     );
   }
@@ -118,6 +122,9 @@ async function loadRaster(item: BaseMapRasterItem): Promise<LoaderReturn> {
     id: layerId,
     type: 'raster',
     source: sourceId,
+    metadata: {
+      'maplibregl-legend:disable': true,
+    },
   };
 
   return { layers: [layer], sources };

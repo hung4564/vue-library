@@ -4,10 +4,8 @@ import {
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
-  setComponentCard,
 } from '@hungpvq/vue-draggable';
 import { ref } from 'vue';
-import CustomCard from './customCard.vue';
 const containerId = ref('');
 function init(id) {
   containerId.value = id;

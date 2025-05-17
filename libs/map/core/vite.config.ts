@@ -49,6 +49,7 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-map',
         '@mapbox/mapbox-gl-sync-move',
+        'mitt',
       ],
       output: {
         // Provide global variables to use in the UMD build

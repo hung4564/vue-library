@@ -18,6 +18,10 @@ export function createMultiMapboxLayerComponent(
   base.getData().forEach((layer) => {
     const layer_id = layer.id || getUUIDv4();
     layer.id = layer_id;
+    if (!layer.metadata) {
+      layer.metadata = {};
+    }
+    (layer.metadata as any)['maplibregl-legend:name'] = name;
     cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
   });
 
@@ -29,6 +33,10 @@ export function createMultiMapboxLayerComponent(
         newData.map((layer) => {
           const layer_id = layer.id || getUUIDv4();
           layer.id = layer_id;
+          if (!layer.metadata) {
+            layer.metadata = {};
+          }
+          (layer.metadata as any)['maplibregl-legend:name'] = name;
           cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
           return layer;
         })
@@ -59,6 +67,9 @@ export function createMultiMapboxLayerComponent(
     },
 
     removeFromMap(map: MapSimple): void {
+      if (map.getLayer(base.id + '-hightLight')) {
+        map.removeLayer(base.id + '-hightLight');
+      }
       base.getData().forEach((layer) => {
         if (map.getLayer(layer.id!)) {
           map.removeLayer(layer.id!);
@@ -132,6 +143,42 @@ export function createMultiMapboxLayerComponent(
           base.getData().splice(index, 1);
           break;
       }
+    },
+    hightLight(map: MapSimple, geojsonData: GeoJSON.Feature<GeoJSON.Geometry>) {
+      const layer = map.getLayer(base.id + '-hightLight');
+      if (!layer) {
+        const source = findFirstLeafByType(base, 'source');
+        if (source) {
+          const source_id = (source as any).getSourceId();
+          if (source_id) {
+            map.addLayer({
+              id: base.id + '-hightLight',
+              source: source_id,
+              type: 'line',
+              metadata: {
+                'maplibregl-legend:disable': true,
+              },
+              filter: [
+                '==',
+                ['get', 'id'],
+                geojsonData?.properties?.id || null,
+              ],
+              paint: {
+                'line-color': '#004E98',
+                'line-width': 4,
+                'line-dasharray': [2, 2],
+              },
+            });
+          }
+        }
+      } else {
+        map.setFilter(base.id + '-hightLight', [
+          '==',
+          ['get', 'id'],
+          geojsonData?.properties?.id || null,
+        ]);
+      }
+      map.moveLayer(base.id + '-hightLight');
     },
   });
 }

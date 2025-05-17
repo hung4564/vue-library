@@ -1,4 +1,4 @@
-import type { IDataManagementView, IDataset } from '../../interfaces';
+import type { IDataManagementView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
@@ -7,7 +7,7 @@ export function createDatasetPartDataManagementComponent<D = any>(
   config: {
     fields?: { trans?: string; text?: string; value: string }[];
   } = {}
-): IDataManagementView<D> & IDataset {
+): IDataManagementView<D> {
   const base = createDatasetLeaf<typeof config>(name, config);
 
   return createNamedComponent('DataManagementComponent', {

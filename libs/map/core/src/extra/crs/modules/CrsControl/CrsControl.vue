@@ -2,14 +2,13 @@
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import { computed } from 'vue';
-import MapControlButton from '../../components/MapControlButton.vue';
-import { CrsItem, crsStore } from '../../extra/crs';
-import { useLang } from '../../extra/lang';
-import { Collapse, InputSelect, InputText } from '../../field';
-import { useMap, useShow, withMapProps } from '../../hooks';
-import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const { getCrsItems, setCrsItems } = crsStore;
+import MapControlButton from '../../../../components/MapControlButton.vue';
+import { useLang } from '../../../../extra/lang';
+import { Collapse, InputSelect, InputText } from '../../../../field';
+import { useMap, useShow, withMapProps } from '../../../../hooks';
+import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useMapCrsItems } from '../../hooks';
+import { type CrsItem } from '../../types';
 const props = defineProps({
   ...withMapProps,
 });
@@ -34,9 +33,7 @@ const [show, setShow] = useShow(false);
 function onToggleShow() {
   setShow(!show.value);
 }
-const crs_items = computed(() => {
-  return getCrsItems(mapId.value);
-});
+const { items: crs_items, setItems } = useMapCrsItems(mapId.value);
 const unit_items = [
   { text: 'degree', value: 'degree' },
   { text: 'meter', value: 'meter' },
@@ -46,13 +43,11 @@ const path = {
   plus: mdiPlus,
 };
 const onRemove = (item: CrsItem) => {
-  setCrsItems(
-    mapId.value,
-    crs_items.value.filter((x) => x.epsg !== item.epsg)
-  );
+  setItems(crs_items.value.filter((x) => x.epsg !== item.epsg));
 };
 const onAdd = () => {
   crs_items.value.push({ name: '', unit: 'degree', epsg: '' });
+  setItems(crs_items.value);
 };
 </script>
 <template>

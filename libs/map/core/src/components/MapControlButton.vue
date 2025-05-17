@@ -40,6 +40,7 @@
 import MapButton from './MapButton.vue';
 import MapIcon from './MapIcon.vue';
 export default {
+  name: 'MapControlButton',
   components: { MapButton, MapIcon },
   props: {
     icon: {

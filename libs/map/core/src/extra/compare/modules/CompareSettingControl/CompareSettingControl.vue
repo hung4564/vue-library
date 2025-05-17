@@ -7,7 +7,7 @@ import { InputCheckbox } from '../../../../field';
 import { useMap, useShow, withMapProps } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../../lang';
-import { getMapCompareSetting } from '../../store';
+import { useMapCompareSetting } from '../../hooks';
 const props = defineProps({
   ...withMapProps,
 });
@@ -31,7 +31,7 @@ setLocaleDefault({
     },
   },
 });
-const setting = getMapCompareSetting(mapId.value);
+const { setting, updateSetting } = useMapCompareSetting(mapId.value);
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -65,18 +65,21 @@ const setting = getMapCompareSetting(mapId.value);
               <InputCheckbox
                 :label="trans('map.setting-control.field.split')"
                 v-model="setting.split"
+                @change="updateSetting()"
               />
             </div>
             <div>
               <InputCheckbox
                 :label="trans('map.setting-control.field.vertical')"
                 v-model="setting.vertical"
+                @change="updateSetting()"
               />
             </div>
             <div>
               <InputCheckbox
                 :label="trans('map.setting-control.field.sync')"
                 v-model="setting.sync"
+                @change="updateSetting()"
               />
             </div>
           </div>

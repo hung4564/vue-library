@@ -10,3 +10,11 @@ export type CrsItem = {
   unit: 'degree' | 'meter';
   proj4js?: string;
 };
+export const MittTypeMapCrsEventKey = {
+  setItems: 'map:crs:set-items',
+  setCurrent: 'map:crs:set-current',
+} as const;
+export type MittTypeMapCrs = {
+  [MittTypeMapCrsEventKey.setCurrent]: CrsItem | undefined | null;
+  [MittTypeMapCrsEventKey.setItems]: CrsItem[];
+};

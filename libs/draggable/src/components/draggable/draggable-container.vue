@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import { computed, nextTick, onMounted, onUnmounted, provide, ref } from 'vue';
-import { init, remove, setParentProps } from '../../store';
-import { store } from '../../store/store';
+import { nextTick, onMounted, onUnmounted, provide, ref } from 'vue';
+import { useDragStore } from '../../store';
 const emit = defineEmits({
   init: (id: string) => {
     return true;
@@ -15,9 +14,9 @@ const box = ref<HTMLDivElement>();
 const { containerId } = defineProps<{ containerId?: string }>();
 const p_container_id = ref(containerId || `draggable-container-${getUUIDv4()}`);
 const init_done = ref(false);
-const state = computed(() => store.state);
+const store = useDragStore(p_container_id.value);
 onMounted(() => {
-  init(p_container_id.value);
+  store.actions.initContainer();
   window.addEventListener('resize', onResize);
   nextTick(() => {
     onResize();
@@ -26,14 +25,14 @@ onMounted(() => {
   });
 });
 onUnmounted(() => {
-  remove(p_container_id.value);
+  store.actions.removeContainer();
   window.removeEventListener('resize', onResize);
   emit('destroy', p_container_id.value);
 });
 provide('containerId', p_container_id);
 function onResize() {
   const clientWidth = box.value?.clientWidth || 0;
-  setParentProps(p_container_id.value, {
+  store.actions.setParentProps({
     width: clientWidth,
     height: box.value?.clientHeight || 0,
     isMobile: clientWidth < 600,

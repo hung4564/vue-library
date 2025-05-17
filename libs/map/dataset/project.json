@@ -13,19 +13,13 @@
   },
   "tags": ["map"],
   "targets": {
-    "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+    "ts-check": {
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "dist/libs/map/dataset",
-        "main": "libs/map/dataset/src/index.ts",
-        "tsConfig": "libs/map/dataset/tsconfig.lib.json",
-        "assets": ["libs/map/dataset/*.md"]
-      }
-    },
-    "nx-release-publish": {
-      "options": {
-        "packageRoot": "dist\\{projectRoot}"
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
       }
     }
   }

@@ -26,7 +26,7 @@ import {
   useMap,
   withMapProps,
 } from '@hungpvq/vue-map-core';
-import { watch } from 'vue';
+import { watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
@@ -48,24 +48,30 @@ const {
   setDefaultBaseMap,
   setCurrent,
   currentBaseMap: current_baseMaps,
+  remove,
+  init,
 } = useBaseMap(mapId.value);
 watch(
   () => props.baseMaps as BaseMapItem[],
   (value: BaseMapItem[]) => {
     setBaseMaps(value);
   },
-  { immediate: true }
 );
 watch(
   () => props.defaultBaseMap,
   (value) => {
     setDefaultBaseMap(value);
   },
-  { immediate: true }
 );
 function onClick(baseMap: any) {
   setCurrent(baseMap);
 }
+onMounted(() => {
+  init(props.baseMaps, props.defaultBaseMap);
+});
+onBeforeUnmount(() => {
+  remove();
+});
 </script>
 <style scoped>
 .base-map-item {

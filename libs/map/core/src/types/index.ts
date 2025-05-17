@@ -1,7 +1,6 @@
+import type { Emitter, EventType } from 'mitt';
+
 export * from './store';
-declare global {
-  interface Window {
-    $_hungpv_drag: any;
-    $_hungpv_map_queue: any;
-  }
-}
+
+export const MITT_KEY = 'mitt';
+export type MittType<T extends Record<EventType, unknown>> = Emitter<T>;

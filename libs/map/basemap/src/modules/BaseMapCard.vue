@@ -22,6 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { onBeforeUnmount } from 'vue';
 import { useLang, useMap, InputSelect, MapImage } from '@hungpvq/vue-map-core';
 import { useBaseMap } from '../hooks';
 const props = defineProps({
@@ -37,10 +38,14 @@ const {
   baseMaps: c_baseMaps,
   setCurrent,
   currentBaseMap: current_baseMaps,
+  remove,
 } = useBaseMap(mapId.value);
 const onChangeBaseMap = (base_map: any) => {
   setCurrent(base_map);
 };
+onBeforeUnmount(() => {
+  remove();
+});
 </script>
 <style lang="scss" scoped>
 .base-map-card {

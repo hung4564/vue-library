@@ -28,9 +28,6 @@ export function createDatasetPartMapboxSourceComponent<T = any>(
     },
     removeFromMap(map: MapSimple) {
       const source_id = this.getSourceId();
-      if (source_id && map.getLayer(source_id + '-hightLight')) {
-        map.removeLayer(source_id + '-hightLight');
-      }
       if (source_id && map.getSource(source_id)) {
         map.removeSource(source_id);
       }

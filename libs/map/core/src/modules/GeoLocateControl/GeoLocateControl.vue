@@ -5,7 +5,7 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, Marker } from 'maplibre-gl';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
 import { useMap, withMapProps } from '../../hooks';
@@ -52,20 +52,22 @@ watch(coords, (value) => {
     return;
   }
   center.value = [value.longitude, value.latitude];
-  onAddUi();
   p_accuracy.value = value.accuracy;
+  if (center.value) onAddUi();
 });
 async function onClick() {
   callMap((map) => {
     if (!active.value) {
       active.value = true;
-      resume();
-      nextTick(() => {
-        if (center.value)
+      resume().then((position) => {
+        if (position) {
+          const coords: GeolocationCoordinates = position.coords;
+          const lngLat: LngLatLike = [coords.longitude, coords.latitude];
           map.flyTo({
-            center: toValue(center),
+            center: lngLat,
             zoom: 14,
           });
+        }
       });
       return;
     }
@@ -114,27 +116,40 @@ tryOnMounted(() => {
   }
 });
 function onAddUi() {
-  p_userLocationDotMarker.value = new Marker({
-    element: p_dotElement,
-    rotationAlignment: 'map',
-    pitchAlignment: 'map',
-  });
-  _accuracyCircleMarker.value = new Marker({
-    element: p_circleElement,
-    pitchAlignment: 'map',
-  });
   callMap((map) => {
-    map.on('zoom', onZoom);
-    if (center.value) {
-      p_userLocationDotMarker.value &&
-        p_userLocationDotMarker.value.setLngLat(center.value).addTo(map);
-      _accuracyCircleMarker.value &&
-        _accuracyCircleMarker.value.setLngLat(center.value).addTo(map);
+    if (!p_userLocationDotMarker.value) {
+      p_userLocationDotMarker.value = new Marker({
+        element: p_dotElement,
+        rotationAlignment: 'map',
+        pitchAlignment: 'map',
+      })
+        .setLngLat(center.value!)
+        .addTo(map);
+    } else {
+      p_userLocationDotMarker.value.setLngLat(center.value!).addTo(map);
     }
+
+    if (!_accuracyCircleMarker.value) {
+      _accuracyCircleMarker.value = new Marker({
+        element: p_circleElement,
+        pitchAlignment: 'map',
+      })
+        .setLngLat(center.value!)
+        .addTo(map);
+    } else {
+      _accuracyCircleMarker.value.setLngLat(center.value!).addTo(map);
+    }
+
+    map.on('zoom', onZoom);
     updateCircleRadius(map);
   });
 }
 function updateCircleRadius(map: MapSimple) {
+  if (!p_accuracy.value || p_accuracy.value <= 1) {
+    p_circleElement.style.width = '1px';
+    p_circleElement.style.height = '1px';
+    return;
+  }
   const y = map.getContainer().getBoundingClientRect().height / 2;
   const a = map.unproject([0, y]);
   const b = map.unproject([100, y]);

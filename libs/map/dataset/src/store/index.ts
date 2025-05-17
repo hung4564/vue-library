@@ -24,13 +24,11 @@ export async function addDataset(mapId: string, layer: IDataset) {
   if (!store) {
     return;
   }
-  const currentLists = getAllComponentsByType<IListViewUI & IDataset>(
-    mapId,
-    'list'
-  );
-  const allComponentsOfType = findAllComponentsByType(layer, 'list') as Array<
-    IListViewUI & IDataset
-  >;
+  const currentLists = getAllComponentsByType<IListViewUI>(mapId, 'list');
+  const allComponentsOfType = findAllComponentsByType(
+    layer,
+    'list',
+  ) as Array<IListViewUI>;
   store.datasets[layer.id] = layer;
   allComponentsOfType.forEach((list, i) => {
     list.index = i + 1 + currentLists.length;

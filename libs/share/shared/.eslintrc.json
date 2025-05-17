@@ -6,7 +6,11 @@
     "@vue/eslint-config-prettier/skip-formatting",
     "../../../.eslintrc.base.json"
   ],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": [
+    "!**/*",
+    "**/vite.config.*.timestamp*",
+    "**/vitest.config.*.timestamp*"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.vue"],

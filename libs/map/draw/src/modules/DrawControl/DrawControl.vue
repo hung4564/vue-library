@@ -44,6 +44,7 @@ import {
   setFeature,
 } from '../../store';
 import type { DrawOption } from '../../types';
+import layers from './theme';
 const props = defineProps({
   ...withMapProps,
   drawOptions: Object,
@@ -71,11 +72,12 @@ watch(isShow, (newValue) => {
 });
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
-  new EventClick().setHandler(onMapClick)
+  new EventClick().setHandler(onMapClick),
 );
 let control = new MapboxDraw({
   displayControlsDefault: false,
   boxSelect: false,
+  styles: layers,
 });
 function onDrawCreated(event: DrawCreateEvent) {
   for (const feature of event.features) {

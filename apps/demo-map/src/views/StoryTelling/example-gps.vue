@@ -13,6 +13,7 @@ import {
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
+  store,
 } from '@hungpvq/vue-map-core';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import * as turf from '@turf/turf';
@@ -98,7 +99,7 @@ const chapters: Chapter[] = gpsTrack.map((point, index) => {
   };
 });
 chapters[0].actions?.push(
-  createZoomAction([gpsTrack[0].lng, gpsTrack[0].lat], 12)
+  createZoomAction([gpsTrack[0].lng, gpsTrack[0].lat], 12),
 );
 const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
   mapId,
@@ -148,7 +149,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
             console.error(
               'Invalid coordinates for segment',
               startCoord,
-              endCoord
+              endCoord,
             );
             return;
           }
@@ -181,7 +182,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
         },
       }),
     },
-  }
+  },
 );
 function updateTrail(coord: [number, number]) {
   getMap(mapId.value, (map) => {

@@ -35,7 +35,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
     altitudeAccuracy: null,
     heading: null,
     speed: null,
-  });
+  } as GeolocationPosition['coords']);
 
   function updatePosition(position: GeolocationPosition) {
     locatedAt.value = position.timestamp;
@@ -43,26 +43,48 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
     error.value = null;
   }
 
-  let watcher: number;
+  let watcher: number | null = null;
 
-  function resume() {
-    if (isSupported.value) {
-      watcher = navigator!.geolocation.watchPosition(
-        updatePosition,
-        (err) => (error.value = err),
+  function resume(): Promise<GeolocationPosition> {
+    return new Promise((resolve, reject) => {
+      if (!isSupported.value || !navigator?.geolocation) {
+        reject(new Error('Geolocation is not supported'));
+        return;
+      }
+
+      let resolved = false;
+
+      watcher = navigator.geolocation.watchPosition(
+        (position) => {
+          updatePosition(position);
+          if (!resolved) {
+            resolved = true;
+            resolve(position);
+          }
+        },
+        (err) => {
+          error.value = err;
+          if (!resolved) {
+            resolved = true;
+            reject(err);
+          }
+        },
         {
           enableHighAccuracy,
           maximumAge,
           timeout,
         }
       );
-    }
+    });
   }
 
   if (immediate) resume();
 
   function pause() {
-    if (watcher && navigator) navigator.geolocation.clearWatch(watcher);
+    if (watcher != null && navigator?.geolocation) {
+      navigator.geolocation.clearWatch(watcher);
+      watcher = null;
+    }
   }
 
   tryOnScopeDispose(() => {

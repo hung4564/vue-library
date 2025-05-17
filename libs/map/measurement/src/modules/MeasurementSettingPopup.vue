@@ -28,9 +28,9 @@
 
 <script setup>
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import { fitBounds } from '@hungpvq/shared-map';
 import {
   ModuleContainer,
-  fitBounds,
   useLang,
   useMap,
   withMapProps,

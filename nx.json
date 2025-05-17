@@ -67,7 +67,6 @@
       }
     },
     "ts-check": {
-      "inputs": ["default", "^production", "{projectRoot}/tsconfig.lib.json"],
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",

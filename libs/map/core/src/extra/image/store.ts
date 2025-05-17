@@ -1,10 +1,9 @@
 import { MapSimple } from '@hungpvq/shared-map';
-import { reactive } from 'vue';
 import { addToQueue } from '../../store/queue';
-import { actions, addStore, getStore } from '../../store/store';
+import { addStore, getMap, getStore } from '../../store/store';
+import { MAP_STORE_KEY } from '../../types/key';
 import { addImageForMap } from './helpers';
 
-const KEY = 'image';
 export type MapImageStore = {
   images: Record<
     string,
@@ -18,17 +17,17 @@ export type MapImageStore = {
   >;
 };
 export function initMapImage(mapId: string) {
-  addStore(mapId, KEY, reactive({ images: {} }));
+  addStore(mapId, MAP_STORE_KEY.IMAGE, { images: {} });
 }
-addToQueue(KEY, initMapImage);
+addToQueue(MAP_STORE_KEY.IMAGE, initMapImage);
 
 export async function addImage(
   mapId: string,
   key: string,
   image_url: string,
-  option: any = {}
+  option: any = {},
 ) {
-  const storeImage = getStore<MapImageStore>(mapId, KEY);
+  const storeImage = getStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE);
   storeImage.images[key] = {
     path: image_url,
     id: key,
@@ -36,8 +35,8 @@ export async function addImage(
     is_sprite: false,
     category: 'custom',
   };
-  const promises = actions.getMap(mapId, async (map: MapSimple) =>
-    addImageForMap(map, key, image_url, option)
+  const promises = getMap(mapId, async (map: MapSimple) =>
+    addImageForMap(map, key, image_url, option),
   );
   return promises;
 }

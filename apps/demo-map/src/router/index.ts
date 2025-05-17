@@ -10,6 +10,10 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/legend/',
+      component: () => import('../views/legend.vue'),
+    },
+    {
       path: '/draw/',
       component: () => import('../views/Draw/example.vue'),
     },

@@ -102,9 +102,11 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
+import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   getMapCompareSetting,
+  getMapStore,
   MapCard,
   MapControlButton,
   MapIcon,
@@ -117,7 +119,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
@@ -145,7 +147,7 @@ const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
 const mapIds = ref<string[]>(
-  storeMap.actions.getMapStore(mapId.value)?.maps.map((x: any) => x.id) || []
+  getMapStore(mapId.value)?.maps.map((x: MapSimple) => x.id) || [],
 );
 const mapStoreUseBaseMap = computed(() => {
   return mapIds.value.map((mapId) => {
@@ -165,7 +167,6 @@ watch(
       c.setBaseMaps(value);
     });
   },
-  { immediate: true }
 );
 watch(
   () => props.defaultBaseMap,
@@ -174,7 +175,6 @@ watch(
       c.setDefaultBaseMap(value);
     });
   },
-  { immediate: true }
 );
 setLocaleDefault({
   map: {
@@ -197,6 +197,14 @@ function onClick(i: number, baseMap: any) {
 function onToggleList() {
   show.value = !show.value;
 }
+onMounted(() => {
+  mapStoreUseBaseMap.value.forEach((c) => {
+    c.init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
+  });
+});
+onBeforeUnmount(() => {
+  mapStoreUseBaseMap.value.map((x) => x.remove());
+});
 </script>
 <style scoped>
 .base-map-button__title {

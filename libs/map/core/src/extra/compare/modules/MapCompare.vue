@@ -5,21 +5,34 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
 import { debounce } from 'lodash';
-import mapboxgl from 'maplibre-gl';
 import {
   computed,
   nextTick,
+  onBeforeMount,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  watch,
 } from 'vue';
 import Map from '../../../modules/Map.vue';
-import { actions, store as storeMap } from '../../../store/store';
+import {
+  getMap,
+  getStore,
+  initMaps,
+  removeMap,
+  store as storeMap,
+} from '../../../store/store';
+import { MittType } from '../../../types';
+import { MAP_STORE_KEY } from '../../../types/key';
 import ActionControl from '../../event/modules/ActionControl.vue';
-import { getMapCompareSetting, initStoreMapCompare } from '../store';
+import { initStoreMitt } from '../../mitt';
+import { initStoreMapCompare } from '../store';
+import {
+  MapCompareSetting,
+  MittTypeMapCompare,
+  MittTypeMapCompareEventKey,
+} from '../types';
 import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
@@ -129,7 +142,9 @@ const setting = ref<{
 const isUseSwiper = computed(() => {
   return setting.value.compare && setting.value.split;
 });
-let stopSettingWatcher: (() => void) | null = null;
+onBeforeMount(() => {
+  initStoreMitt(id.value);
+});
 function initCompare() {
   if (!maps) return;
   if (
@@ -149,33 +164,17 @@ function initCompare() {
       map.resize();
     }
   });
-  storeMap.actions.initMaps(id.value, maps);
+  initMaps(storeMap, id.value, maps);
   initStoreMapCompare(id.value);
-
-  watch(
-    id,
-    (newMapId) => {
-      if (!newMapId) return;
-
-      // Dừng watcher cũ nếu có
-      if (stopSettingWatcher) stopSettingWatcher();
-
-      const s_setting = getMapCompareSetting(newMapId);
-
-      // Watch setting mới
-      stopSettingWatcher = watch(
-        s_setting,
-        (newVal) => {
-          setting.value = { ...newVal };
-          nextTick(() => {
-            setupCompare();
-          });
-        },
-        { deep: true }
-      );
-    },
-    { immediate: true }
+  setupCompare();
+  const emitter = getStore<MittType<MittTypeMapCompare>>(
+    id.value,
+    MAP_STORE_KEY.MITT,
   );
+  emitter.on(MittTypeMapCompareEventKey.set, updateSetting);
+}
+function updateSetting(p_setting: MapCompareSetting) {
+  setting.value = p_setting;
   setupCompare();
 }
 function destroy() {
@@ -185,11 +184,10 @@ function destroy() {
   if (clearSync) {
     clearSync();
   }
-  actions.removeMap(id.value);
+  removeMap(storeMap, id.value);
   nextTick(() => {
     maps = [];
   });
-  if (stopSettingWatcher) stopSettingWatcher();
 }
 function setupCompare() {
   if (clearSplit) {
@@ -204,12 +202,12 @@ function setupCompare() {
       ? MapCompareSwiperVertical(
           swiperRef.value,
           mapsRef.value?.[0].$el,
-          mapsRef.value?.[1].$el
+          mapsRef.value?.[1].$el,
         )
       : MapCompareSwiper(
           swiperRef.value,
           mapsRef.value?.[0].$el,
-          mapsRef.value?.[1].$el
+          mapsRef.value?.[1].$el,
         );
     clearSplit = swiper.clear;
     resizeSplit = swiper.resize;
@@ -226,7 +224,7 @@ function setupCompare() {
 let observer: any;
 const handleResize = debounce((entry) => {
   const { width, height } = entry.contentRect;
-  actions.getMap(id.value, (map) => {
+  getMap(id.value, (map) => {
     map.resize();
   });
   if (resizeSplit) {

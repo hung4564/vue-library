@@ -18,7 +18,7 @@ import { findSiblingOrNearestLeaf } from './dataset.visitors';
 import ToggleShow from './menu/toggle-show.vue';
 
 export function createDatasetMenu<
-  T extends IDataset = IDataset
+  T extends IDataset = IDataset,
 >(): IActionForView<T> {
   const menus: MenuAction<T>[] = [];
   return {
@@ -64,7 +64,7 @@ export function createDatasetMenu<
   };
 }
 export function createMenuItem<T extends IDataset>(
-  item: MenuItemBottomOrExtra<T> | MenuItemCustomComponentBottomOrExtra<T>
+  item: MenuItemBottomOrExtra<T> | MenuItemCustomComponentBottomOrExtra<T>,
 ): MenuAction<T> {
   return item;
 }
@@ -78,7 +78,7 @@ export function createMenuItemToBoundActionForList() {
     click: (layer, mapId) => {
       const metadata = findSiblingOrNearestLeaf(
         layer,
-        (dataset) => dataset.type == 'metadata'
+        (dataset) => dataset.type == 'metadata',
       ) as IMetadataView;
       getMap(mapId, (map) => {
         fitBounds(map, metadata?.metadata?.bbox);
@@ -104,7 +104,7 @@ export function createMenuItemToBoundActionForItem() {
             properties,
           },
           'identify',
-          layer
+          layer,
         );
       });
     },
@@ -119,7 +119,7 @@ export function createMenuItemShowDetailForItem() {
     click: (layer, mapId, value) => {
       const dataManagement = findSiblingOrNearestLeaf(
         layer,
-        (dataset) => dataset.type == 'dataManagement'
+        (dataset) => dataset.type == 'dataManagement',
       ) as unknown as IDataManagementView;
       dataManagement?.showDetail(mapId, value);
     },
@@ -134,7 +134,7 @@ export function createMenuItemShowDetailInfoSource() {
     click: (layer, mapId) => {
       const source = findSiblingOrNearestLeaf(
         layer,
-        (dataset) => dataset.type == 'source'
+        (dataset) => dataset.type == 'source',
       ) as IMapboxSourceView | null;
       if (source)
         addComponent(mapId, {
@@ -166,7 +166,7 @@ export function createMenuItemStyleEdit() {
 }
 
 export function createMenuItemToggleShow(
-  menu: Partial<MenuItemBottomOrExtra<any>>
+  menu: Partial<MenuItemBottomOrExtra<any>>,
 ) {
   return createMenuItem({
     type: 'item',

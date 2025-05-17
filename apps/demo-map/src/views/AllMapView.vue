@@ -18,6 +18,7 @@ import {
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
+  store,
 } from '@hungpvq/vue-map-core';
 import {
   addDataset,
@@ -57,6 +58,7 @@ import {
   DrawingType,
   InspectControl,
 } from '@hungpvq/vue-map-draw';
+import { LegendControl } from '@hungpvq/vue-map-legend';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
 import { mdiDownload, mdiPencil } from '@mdi/js';
@@ -70,7 +72,7 @@ function onMapLoaded(map: MapSimple) {
   const dataset_raster = createDataset(
     'Group test',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const source_raster = createDatasetPartRasterSourceComponent('source', {
     type: 'raster',
@@ -93,7 +95,7 @@ function onMapLoaded(map: MapSimple) {
   const groupLayer_raster = createDataset(
     'Group layer 1',
     null,
-    true
+    true,
   ) as DatasetComposite;
   dataset_raster.add(source_raster);
   groupLayer_raster.add(list_raster);
@@ -108,7 +110,7 @@ function onMapLoaded(map: MapSimple) {
   const groupLayer1 = createDataset(
     'Group layer 1',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
@@ -141,7 +143,7 @@ function onMapLoaded(map: MapSimple) {
   const groupLayer2 = createDataset(
     'Group layer 2',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
@@ -177,7 +179,7 @@ function onMapLoaded(map: MapSimple) {
         105.88454157202995, 20.878811643339404, 106.16710803591963,
         21.0854254401454,
       ],
-    }
+    },
   );
   const metadata = createDatasetPartMetadataComponent('metadata', {
     bbox: [
@@ -218,7 +220,7 @@ function onMapLoaded(map: MapSimple) {
         { text: 'Name', value: 'name' },
         { text: 'Name', value: 'name' },
       ],
-    }
+    },
   );
   dataManagement.setItems([
     {
@@ -273,7 +275,7 @@ function createDatasetPoint() {
   const groupLayer1 = createDataset(
     'Group layer 1',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const list1: IListViewUI = createDatasetPartListViewUiComponent('test point');
   const layer1 = createMultiMapboxLayerComponent('layer area', [
@@ -294,7 +296,7 @@ function createDatasetPoint() {
     'data management',
     {
       fields: [{ text: 'Name', value: 'name' }],
-    }
+    },
   );
   dataManagement.setItems([
     {
@@ -319,7 +321,7 @@ function createMenuDownload() {
     click: async (layer, mapId) => {
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,
-        (dataset) => dataset.type === 'dataManagement'
+        (dataset) => dataset.type === 'dataManagement',
       );
 
       if (isDataManagementView(maybeDataManagement)) {
@@ -327,7 +329,7 @@ function createMenuDownload() {
           convertList((await maybeDataManagement.getList()) || []),
           {
             filename: 'download.geojson',
-          }
+          },
         );
         if (data) downloadFile(data, 'download.geojson');
       }
@@ -342,7 +344,7 @@ function createMenuDrawLayer() {
     click: (layer, mapId) => {
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,
-        (dataset) => dataset.type === 'dataManagement'
+        (dataset) => dataset.type === 'dataManagement',
       );
       if (isDataManagementView(maybeDataManagement)) {
         callDraw(mapId, {
@@ -397,6 +399,7 @@ function createMenuDrawLayer() {
     <PrintControl />
     <GotoControl position="top-right" />
     <GlobeControl />
+    <LegendControl />
     <CrsControl />
     <SettingControl />
     <GeoLocateControl />

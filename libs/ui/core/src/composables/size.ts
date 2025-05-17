@@ -1,5 +1,4 @@
 import { propsFactory } from '@hungpvq/shared';
-import { includes } from 'lodash';
 import { getCurrentInstanceName } from '../utils/getCurrentInstance';
 import { convertToUnit, destructComputed } from '../utils/helpers';
 
@@ -25,7 +24,7 @@ export function useSize(props: SizeProps, name = getCurrentInstanceName()) {
   return destructComputed(() => {
     let sizeClasses;
     let sizeStyles;
-    if (includes(predefinedSizes, props.size)) {
+    if (typeof props.size == 'string' && predefinedSizes.includes(props.size)) {
       sizeClasses = `${name}--size-${props.size}`;
     } else if (props.size) {
       sizeStyles = {

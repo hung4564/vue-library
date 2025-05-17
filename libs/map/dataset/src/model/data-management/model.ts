@@ -23,10 +23,10 @@ export function createDataManagementMapboxComponent<
     id: string;
     geometry: { type: string; coordinates: any[] };
     [key: string]: any;
-  }
+  },
 >(
   name: string,
-  config: { fields?: { trans?: string; text?: string; value: string }[] } = {}
+  config: { fields?: { trans?: string; text?: string; value: string }[] } = {},
 ) {
   const base = createDatasetPartDataManagementComponent<D>(name, config);
 
@@ -63,7 +63,7 @@ export function createDataManagementMapboxComponent<
       mapId,
       convertItemToFeature(detail),
       'detail',
-      dataComponent
+      dataComponent,
     );
   };
 
@@ -88,12 +88,12 @@ export function createDataManagementMapboxComponent<
           acc[cur.properties!.id] = cur;
           return acc;
         },
-        {}
+        {},
       );
       items = items.map((item) =>
         mapFeatures[item.id]
           ? convertFeatureToItem<D>(mapFeatures[item.id])
-          : item
+          : item,
       );
     },
     async deleteFeatures(features: Feature[] = []) {
@@ -103,7 +103,7 @@ export function createDataManagementMapboxComponent<
     async getFeatures(point: [number, number]) {
       return items
         .filter((feature) =>
-          booleanIntersects(feature.geometry, pointTurf(point))
+          booleanIntersects(feature.geometry, pointTurf(point)),
         )
         .map(convertItemToFeature);
     },
