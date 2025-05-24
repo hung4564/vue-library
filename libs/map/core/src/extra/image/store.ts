@@ -1,8 +1,9 @@
-import { MapSimple } from '@hungpvq/shared-map';
+import { logHelper, MapSimple } from '@hungpvq/shared-map';
 import { addToQueue } from '../../store/queue';
 import { addStore, getMap, getStore } from '../../store/store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { addImageForMap } from './helpers';
+import { logger } from './logger';
 
 export type MapImageStore = {
   images: Record<
@@ -17,6 +18,7 @@ export type MapImageStore = {
   >;
 };
 export function initMapImage(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore(mapId, MAP_STORE_KEY.IMAGE, { images: {} });
 }
 addToQueue(MAP_STORE_KEY.IMAGE, initMapImage);
@@ -27,6 +29,7 @@ export async function addImage(
   image_url: string,
   option: any = {},
 ) {
+  logHelper(logger, mapId, 'store').debug('addImage', key, image_url, option);
   const storeImage = getStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE);
   storeImage.images[key] = {
     path: image_url,

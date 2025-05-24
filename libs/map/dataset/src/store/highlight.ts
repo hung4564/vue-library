@@ -1,8 +1,9 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { IDataset, IMapboxLayerView } from '../interfaces';
+import { logger } from '../logger';
 import { findSiblingOrNearestLeaf } from '../model';
 
 export const KEY = 'dataset-highlight';
@@ -14,6 +15,7 @@ export type MapDatasetHighlightStore = {
 };
 
 function initMapStore(mapId: string) {
+  logHelper(logger, mapId, 'store-highlight').debug('init');
   const store: MapDatasetHighlightStore = {
     feature: ref(undefined),
     source: ref(undefined),
@@ -38,6 +40,12 @@ export function setFeatureHighlight(
   const store = getDatasetHighlightStore(mapId);
   if (!store) return;
 
+  logHelper(logger, mapId, 'store-highlight').debug('setFeatureHighlight', {
+    store,
+    feature,
+    source,
+    dataset,
+  });
   // If setting from same source source and feature exists, clear it
   if (!feature && store.source.value === source && store.feature.value) {
     store.feature.value = undefined;

@@ -1,8 +1,10 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { merge } from 'lodash';
 import { addStore, getStore } from '../../store';
 import { addToQueue } from '../../store/queue';
 import { MittType } from '../../types';
 import { MAP_STORE_KEY } from '../../types/key';
+import { logger } from './logger';
 import {
   MapLangLocale,
   MapTranslateFunction,
@@ -17,6 +19,7 @@ export type MapLocateStore = {
 };
 
 function initMapLang(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG, {
     locale: {},
     localeDefault: {},
@@ -33,6 +36,7 @@ export function getMapLang(mapId: string) {
 }
 
 export function setMapLang(mapId: string, locale: MapLangLocale) {
+  logHelper(logger, mapId, 'store').debug('setMapLang', locale);
   const store = getMapLang(mapId);
   if (store) {
     store.locale = merge({}, store.locale, locale);
@@ -55,6 +59,7 @@ export function setMapTranslate(
   mapId: string,
   translate: MapTranslateFunction,
 ) {
+  logHelper(logger, mapId, 'store').debug('setMapTranslate', translate);
   const store = getMapLang(mapId);
   if (store) {
     store.translate = translate;

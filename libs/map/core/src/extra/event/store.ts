@@ -1,6 +1,8 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getStore } from '../../store';
 import { MittType } from '../../types';
 import { MAP_STORE_KEY } from '../../types/key';
+import { logger } from './logger';
 import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from './types';
 
 export type MapEventStore = {
@@ -8,6 +10,7 @@ export type MapEventStore = {
   current: { [key: string]: IEvent | undefined };
 };
 function initMapEvent(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT, {
     items: [],
     current: {},
@@ -16,6 +19,7 @@ function initMapEvent(mapId: string) {
 addToQueue(MAP_STORE_KEY.EVENT, initMapEvent);
 
 export async function addListenerMap(mapId: string, event: IEvent) {
+  logHelper(logger, mapId, 'store').debug('addListenerMap', event);
   const store = getStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT);
   store.items.unshift(event);
   const emitter = getStore<MittType<MittTypeMapEvent>>(
@@ -27,6 +31,7 @@ export async function addListenerMap(mapId: string, event: IEvent) {
 }
 
 export async function removeListenerMap(mapId: string, event: IEvent) {
+  logHelper(logger, mapId, 'store').debug('removeListenerMap', event);
   const store = getStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT);
   if (!store || !store.items || store.items.length < 1) {
     return;
@@ -60,6 +65,11 @@ export function setCurrentEvent(
   event_map_type: string,
   event?: IEvent,
 ) {
+  logHelper(logger, mapId, 'store').debug(
+    'setCurrentEvent',
+    event_map_type,
+    event,
+  );
   const store = getStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT);
   store.current[event_map_type] = event;
   const emitter = getStore<MittType<MittTypeMapEvent>>(

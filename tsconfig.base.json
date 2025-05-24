@@ -20,7 +20,7 @@
       "@hungpvq/shared": ["libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],
       "@hungpvq/shared-file": ["libs/share/file/src/index.ts"],
-      "@hungpvq/shared-integrations": ["libs/share/integrations/src/index.ts"],
+      "@hungpvq/shared-log": ["libs/share/log/src/index.ts"],
       "@hungpvq/shared-map": ["libs/map/shared/src/index.ts"],
       "@hungpvq/ui-core": ["libs/ui/core/src/index.ts"],
       "@hungpvq/vue-draggable": ["libs/draggable/src/index.ts"],

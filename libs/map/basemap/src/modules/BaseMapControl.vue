@@ -92,6 +92,8 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
+import { logger } from '../logger';
+import { logHelper } from '@hungpvq/shared-map';
 const props = defineProps({
   ...withMapProps,
   baseMaps: {
@@ -150,8 +152,11 @@ const path = {
 };
 const show = ref(false);
 function onClick(baseMap: any) {
+  logHelper(logger, mapId, 'control', 'BaseMapControl').debug(
+    'onClick',
+    baseMap,
+  );
   setCurrent(baseMap);
-  setBaseMaps(value);
 }
 function onToggleList() {
   show.value = !show.value;

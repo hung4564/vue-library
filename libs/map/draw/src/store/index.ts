@@ -1,7 +1,9 @@
 import { getUUIDv4 } from '@hungpvq/shared';
+import { logHelper } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
 import { reactive } from 'vue';
+import { logger } from '../logger';
 import {
   DrawOption,
   DrawSaveFc,
@@ -10,6 +12,7 @@ import {
 } from '../types';
 export const KEY = 'draw';
 export function initMapDraw(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapDrawStore>(mapId, KEY, {
     control: null,
     state: reactive({
@@ -31,6 +34,7 @@ function getDrawStore(map_id: string): MapDrawStore {
   return getStore<MapDrawStore>(map_id, KEY);
 }
 export const initDrawControl = (map_id: string, control: any) => {
+  logHelper(logger, map_id, 'store').debug('initDrawControl', control);
   getDrawStore(map_id).control = control;
 };
 
@@ -42,6 +46,11 @@ export const activateDraw = (
   if (!register_id) {
     throw new Error('Need register id');
   }
+  logHelper(logger, map_id, 'store').debug(
+    'activateDraw',
+    register_id,
+    geojson,
+  );
   const store = getDrawStore(map_id);
   const state = store.state;
   const control = store.control;
@@ -53,6 +62,7 @@ export const activateDraw = (
   }
 };
 export const deactivateDraw = (map_id: string) => {
+  logHelper(logger, map_id, 'store').debug('deactivateDraw');
   const store = getDrawStore(map_id);
   const control = store.control;
   const result: DrawSaveFcParams = convertData(store);
@@ -87,6 +97,12 @@ export const draw = (
   callback?: DrawSaveFc,
   options?: any,
 ) => {
+  logHelper(logger, map_id, 'store').debug('draw', {
+    register_id,
+    type,
+    callback,
+    options,
+  });
   const store = getDrawStore(map_id);
   checkDrawId(map_id, register_id);
   const control = store.control;
@@ -138,6 +154,10 @@ export const saveDraw = (
   }
   const result: DrawSaveFcParams = convertData(store);
 
+  logHelper(logger, map_id, 'store').debug('saveDraw', {
+    register_id,
+    result,
+  });
   if (action.deleteFeatures) {
     action.deleteFeatures(Object.values(result.deleted));
   }
@@ -157,6 +177,7 @@ export const saveDraw = (
   // deactivateDraw(map_id);
 };
 export function cancelDraw(map_id: string) {
+  logHelper(logger, map_id, 'store').debug('cancelDraw');
   const store = getDrawStore(map_id);
   const state = store.state;
   clearDraw(map_id);
@@ -164,6 +185,7 @@ export function cancelDraw(map_id: string) {
   // deactivateDraw(map_id);
 }
 export const clearDraw = (map_id: string) => {
+  logHelper(logger, map_id, 'store').debug('clearDraw');
   const store = getDrawStore(map_id);
   const state = store.state;
   store.featuresAdded = {};
@@ -179,6 +201,7 @@ export function setFeature(
   type: 'added' | 'updated' | 'deleted',
   feature: Feature,
 ) {
+  logHelper(logger, map_id, 'store').debug('setFeature', { type, feature });
   const store = getDrawStore(map_id);
   switch (type) {
     case 'added':
@@ -206,6 +229,7 @@ export function checkAndCallDone(map_id: string, register_id: string) {
   }
 }
 export function callDraw(map_id: string, option: DrawOption) {
+  logHelper(logger, map_id, 'store').debug('callDraw', { option });
   const register_id = getUUIDv4();
   const store = getDrawStore(map_id);
   const state = store.state;
