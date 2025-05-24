@@ -1,6 +1,7 @@
 import { createStore } from '@hungpvq/shared';
-import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
+import { logHelper, MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
 import { MapStore } from '../types';
+import { logger } from './logger';
 import { addMapIdToQueue, removeMapIdFromQueue } from './queue';
 type MapRootStore = Record<string, MapStore>;
 const store = createStore<MapRootStore>('map.core', {});
@@ -38,11 +39,13 @@ export function getMaps(id: string): MapSimple[] {
   return getMapStore(id)?.maps;
 }
 export function removeMap(store: MapRootStore, id: string) {
+  logHelper(logger, id, 'store').debug('removeMap');
   delete store[id];
   removeMapIdFromQueue(id);
 }
 
 export function initMap(store: MapRootStore, id: string, map: MapSimple) {
+  logHelper(logger, id, 'store').debug('init', map);
   store[id] = {
     map,
   };
@@ -50,6 +53,7 @@ export function initMap(store: MapRootStore, id: string, map: MapSimple) {
 }
 
 export function initMaps(store: MapRootStore, id: string, maps: MapSimple[]) {
+  logHelper(logger, id, 'store').debug('init maps', maps);
   store[id] = {
     maps,
     isMulti: maps.length > 1,

@@ -1,9 +1,10 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { IListViewUI } from '../interfaces';
 import type { IDataset } from '../interfaces/dataset.base';
+import { logger } from '../logger';
 import {
   applyToAllLeaves,
   findAllComponentsByType,
@@ -16,6 +17,7 @@ export type MapLayerStore = {
   datasetIds: Ref<string[]>;
 };
 export function initMapLayer(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapLayerStore>(mapId, KEY, { datasets: {}, datasetIds: ref([]) });
 }
 addToQueue(KEY, initMapLayer);
@@ -43,6 +45,10 @@ export async function addDataset(mapId: string, layer: IDataset) {
       },
     ]);
   });
+  logHelper(logger, mapId, 'store').debug('addDataset', {
+    store,
+    dataset: layer,
+  });
 }
 export function removeDataset(mapId: string, layer: IDataset) {
   const store = getStoreDataset(mapId);
@@ -59,8 +65,13 @@ export function removeDataset(mapId: string, layer: IDataset) {
       },
     ]);
   });
+  logHelper(logger, mapId, 'store').debug('removeDataset', {
+    store,
+    dataset: layer,
+  });
 }
 export function removeComponent(mapId: string, component: IDataset) {
+  logHelper(logger, mapId, 'store').debug('removeComponent', component);
   const parent = component.getParent() || component;
   getMap(mapId, async (map: MapSimple) => {
     if (isDatasetMap(component)) {

@@ -30,6 +30,8 @@ import { watch, onMounted, onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
+import { logger } from '../logger';
+import { logHelper } from '@hungpvq/shared-map';
 const props = defineProps({
   ...withMapProps,
   baseMaps: {
@@ -64,6 +66,10 @@ watch(
   },
 );
 function onClick(baseMap: any) {
+  logHelper(logger, mapId, 'control', 'BaseMapTagControl').debug(
+    'onClick',
+    baseMap,
+  );
   setCurrent(baseMap);
 }
 onMounted(() => {

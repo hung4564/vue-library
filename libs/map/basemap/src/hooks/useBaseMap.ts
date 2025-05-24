@@ -1,5 +1,7 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { getStore, MAP_STORE_KEY, MittType } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
+import { logger } from '../logger';
 import {
   BaseMapItem,
   BaseMapStore,
@@ -14,10 +16,18 @@ export function useBaseMap(mapId: string) {
     MAP_STORE_KEY.MITT,
   );
   function setBaseMaps(baseMaps: BaseMapItem[]) {
+    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
+      'setBaseMaps',
+      baseMaps,
+    );
     state.baseMaps = baseMaps;
     emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);
   }
   function setDefaultBaseMap(defaultBaseMap?: string) {
+    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
+      'setDefaultBaseMap',
+      defaultBaseMap,
+    );
     state.defaultBaseMap = defaultBaseMap || '';
     const baseMap = state.adapter.getIndexDefault(
       state.baseMaps,
@@ -26,6 +36,7 @@ export function useBaseMap(mapId: string) {
     if (!state.current && baseMap) setCurrent(baseMap);
   }
   async function setCurrent(baseMap: BaseMapItem) {
+    logHelper(logger, mapId, 'hook', 'useBaseMap').debug('setCurrent', baseMap);
     if (state.loading) return;
     state.current = baseMap;
     emitter.emit(MittTypeBaseMapEventKey.setCurrent, state.current);
@@ -53,6 +64,11 @@ export function useBaseMap(mapId: string) {
     );
   };
   const init = (baseMaps: BaseMapItem[], defaultBaseMap?: string) => {
+    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
+      'init',
+      baseMaps,
+      defaultBaseMap,
+    );
     setDefaultBaseMap(defaultBaseMap);
     setBaseMaps(baseMaps);
   };

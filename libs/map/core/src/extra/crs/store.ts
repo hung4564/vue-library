@@ -1,7 +1,9 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { addStore, getStore } from '../../store';
 import { addToQueue } from '../../store/queue';
 import { MittType } from '../../types';
 import { MAP_STORE_KEY } from '../../types/key';
+import { logger } from './logger';
 import {
   MittTypeMapCrsEventKey,
   type CrsItem,
@@ -20,6 +22,7 @@ const item_init: CrsItem[] = [
   },
 ];
 function initMapCrs(mapId: string) {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS, {
     crs: '4326',
     items: item_init.slice(),
@@ -29,6 +32,7 @@ function initMapCrs(mapId: string) {
 addToQueue(MAP_STORE_KEY.CRS, initMapCrs);
 
 export async function setCrsItems(mapId: string, items: CrsItem[]) {
+  logHelper(logger, mapId, 'store').debug('setCrsItems', items);
   const store = getStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS);
   store.items = items;
   const emitter = getStore<MittType<MittTypeMapCrs>>(mapId, MAP_STORE_KEY.MITT);
@@ -48,6 +52,7 @@ export function setCrs(mapId: string, crs: string | undefined | null) {
   if (!crs) {
     crs = '4326';
   }
+  logHelper(logger, mapId, 'store').debug('setCrs', crs);
   getStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS).crs = crs;
   const crsItem = getStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS).items.find(
     (x) => x.epsg == crs,

@@ -1,6 +1,8 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import { logger } from '../logger';
 
 export const KEY = 'dataset-component';
 
@@ -23,6 +25,7 @@ function generateId(prefix = 'component'): string {
 }
 
 function initMapStore(mapId: string) {
+  logHelper(logger, mapId, 'store-component').debug('init');
   const components: ComponentItem[] = [];
   const componentIds = ref<string[]>([]);
 
@@ -45,11 +48,15 @@ export function getAllComponentIds(mapId: string) {
 
 export function addComponent(
   mapId: string,
-  component: Omit<ComponentItem, 'id'>
+  component: Omit<ComponentItem, 'id'>,
 ) {
   const store = getComponentStore(mapId);
   if (!store) return;
 
+  logHelper(logger, mapId, 'store-component').debug('addComponent', {
+    component,
+    store,
+  });
   if (component.check) {
     const index = store.components.findIndex((x) => x.check == component.check);
     if (index >= 0) {
@@ -71,6 +78,10 @@ export function addComponent(
 export function removeComponent(mapId: string, id: string) {
   const store = getComponentStore(mapId);
   if (!store) return;
+  logHelper(logger, mapId, 'store-component').debug('removeComponent', {
+    id,
+    store,
+  });
   store.components = store.components.filter((x) => x.id !== id);
   store.componentIds.value = store.componentIds.value.filter((x) => x !== id);
 }

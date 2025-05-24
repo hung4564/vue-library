@@ -1,4 +1,6 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
+import { logger } from '../logger';
 
 export const KEY = 'print';
 export type PrintOption = {
@@ -18,8 +20,9 @@ function initMapPrint(mapId: string) {
 addToQueue(KEY, initMapPrint);
 export const initPrint = (
   mapId: string,
-  { show, close, save, saveAll }: MapEventStore
+  { show, close, save, saveAll }: MapEventStore,
 ) => {
+  logHelper(logger, mapId, 'store').debug('init');
   addStore<MapEventStore>(mapId, KEY, { show, close, save, saveAll });
 };
 export function showPrint(
@@ -28,8 +31,9 @@ export function showPrint(
     ratio: 1,
     orientation: 'portrait',
     format: 'png',
-  }
+  },
 ) {
+  logHelper(logger, mapId, 'store').debug('showPrint', options);
   const store = getStore<MapEventStore>(mapId, KEY);
   store.show(options);
 }
@@ -40,14 +44,15 @@ export function closePrint(mapId: string) {
 
 export function savePrint(
   mapId: string,
-  cb?: (image: string) => Promise<void>
+  cb?: (image: string) => Promise<void>,
 ) {
+  logHelper(logger, mapId, 'store').debug('savePrint', cb);
   const store = getStore<MapEventStore>(mapId, KEY);
   store.save(cb);
 }
 export function saveAllPrint(
   mapId: string,
-  cb?: (image: string) => Promise<void>
+  cb?: (image: string) => Promise<void>,
 ) {
   const store = getStore<MapEventStore>(mapId, KEY);
   store.saveAll(cb);

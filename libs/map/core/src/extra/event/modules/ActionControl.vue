@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { logHelper } from '@hungpvq/shared-map';
 import { groupBy } from 'lodash';
 
 import { onMounted } from 'vue';
 import { useMap, withMapProps } from '../../../hooks';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useEventMapItems } from '../hook';
+import { logger } from '../logger';
 import { setCurrentEvent } from '../store';
 import { IEvent } from '../types';
 const props = defineProps({

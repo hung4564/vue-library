@@ -128,6 +128,8 @@ import { FormView } from './helper/_viewForm';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import { IViewSettingField } from './types';
+import { logger } from '../logger';
+import { logHelper } from '@hungpvq/shared-map';
 const { getCrsItems } = crsStore;
 const { addImage } = imageStore;
 let handler = MeasurementHandle();
@@ -156,7 +158,7 @@ const path = {
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,
-  onDestroy
+  onDestroy,
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
@@ -211,7 +213,7 @@ const event = new EventClick().setHandler(onMapClick);
 
 const { add: addEventClick, remove: removeEventClick } = setEventMap(
   mapId.value,
-  event
+  event,
 );
 function onInit(map: MapSimple) {
   addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
@@ -300,7 +302,7 @@ function onInit(map: MapSimple) {
           features: [],
         },
       },
-    }
+    },
   );
   mapView.onStart = () => {
     if (!map) {
@@ -345,6 +347,11 @@ function onInit(map: MapSimple) {
   handler.addView(mapView);
   handler.addView(markerView);
   handler.addView(formView);
+
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'init',
+    handler,
+  );
 }
 function onDestroy() {
   if (handler) {
@@ -353,6 +360,10 @@ function onDestroy() {
   clear();
 }
 function onMapClick(event: MapMouseEvent) {
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'onMapClick',
+    event,
+  );
   const newCoordinate: CoordinatesNumber = [
     event.lngLat.lng!,
     event.lngLat.lat!,
@@ -371,21 +382,37 @@ function checkMeasureRun(type: string) {
 }
 function onMeasureDistance() {
   if (!checkMeasureRun('distance')) return;
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'setAction',
+    'distance',
+  );
   handler.setAction(new MeasureDistance());
   handler.start();
 }
 function onMeasureArea() {
   if (!checkMeasureRun('area')) return;
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'setAction',
+    'area',
+  );
   handler.setAction(new MeasureArea());
   handler.start();
 }
 function onMeasureAzimuth() {
   if (!checkMeasureRun('azimuth')) return;
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'setAction',
+    'azimuth',
+  );
   handler.setAction(new MeasureAzimuth());
   handler.start();
 }
 function onMeasureMarker() {
   if (!checkMeasureRun('point')) return;
+  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+    'setAction',
+    'point',
+  );
   handler.setAction(new MeasurePoint(getCrsItems(mapId.value)));
   handler.start();
 }
