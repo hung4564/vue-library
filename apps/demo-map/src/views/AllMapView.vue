@@ -292,6 +292,12 @@ function createDatasetPoint() {
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
+  const identify = createIdentifyMapboxComponent('test identify');
+  identify.addMenus([
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ]);
+  dataset.add(identify);
   const dataManagement = createDataManagementMapboxComponent(
     'data management',
     {

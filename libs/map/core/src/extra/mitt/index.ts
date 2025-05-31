@@ -6,7 +6,7 @@ import { MAP_STORE_KEY } from '../../types/key';
 const loggerEvent = loggerFactory
   .createLogger()
   .setNamespace('map:' + MAP_STORE_KEY.MITT, 2);
-loggerFactory.disable('map:' + MAP_STORE_KEY.MITT);
+loggerFactory.disableEverything();
 export function initStoreMitt(mapId: string) {
   const eventHandle = mitt();
   logHelper(loggerEvent, mapId, 'store').debug('init');

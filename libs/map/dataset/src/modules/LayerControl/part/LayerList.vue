@@ -27,6 +27,7 @@ import {
 import { isMapboxLayerView } from '../../../utils/check';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
+import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 const props = defineProps({
   ...withMapProps,
   disabledDrag: Boolean,
@@ -58,7 +59,7 @@ watch(
   () => {
     updateList();
   },
-  { deep: true }
+  { deep: true },
 );
 onMounted(() => {
   updateList();
@@ -113,7 +114,7 @@ function onUpdateLayer(view: IListViewUI) {
             dataset.setOpacity(map, view.opacity);
           }
         },
-      ]
+      ],
     );
   });
 }
@@ -134,7 +135,7 @@ function updateTree() {
 function getViewFromStore() {
   views.value =
     getAllComponentsByType<IListViewUI>(mapId.value, 'list').sort(
-      (a, b) => b.index - a.index
+      (a, b) => b.index - a.index,
     ) || [];
 }
 function addNewGroup() {
@@ -201,6 +202,7 @@ function onLayerAction({
     <div class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
+      <ButtonToggleShowALl :items="views" />
       <button class="layer-item__button" @click="addNewGroup()">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
       </button>
