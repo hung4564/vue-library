@@ -15,14 +15,15 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import { computed, onMounted, ref } from 'vue';
-import { addDataset } from '../../store';
+import { useMapDataset } from '../../store';
 import { ConfigNo } from './config';
 import { LAYER_TYPES, LayerHelper } from './helper';
 const props = defineProps({
   show: Boolean,
 });
-const { mapId, moduleContainerProps, callMap } = useMap(props);
+const { mapId, moduleContainerProps } = useMap(props);
 const { trans } = useLang(mapId.value);
+const { addDataset } = useMapDataset(mapId.value);
 const emit = defineEmits(['update:show']);
 const c_show = computed({
   get() {
@@ -66,9 +67,7 @@ function onAddLayer(form) {
     return;
   }
   let layer = handle(form.config);
-  callMap((map) => {
-    addDataset(map.id, layer);
-  });
+  addDataset(layer);
   reset();
   c_show.value = false;
 }

@@ -2,9 +2,10 @@ import { logHelper, MapSimple } from '@hungpvq/shared-map';
 import { MapEventType } from 'maplibre-gl';
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { getMap } from '../../../store';
+import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
-import { addListenerMap, getCurrentEvent, removeListenerMap } from '../store';
-import { IEvent } from '../types';
+import { useMapEventStore } from '../store';
+import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 
 export function useEventMap(mapId: string, event: IEvent, immediate = false) {
   const { add, remove, isActive } = setEventMap(mapId, event);
@@ -19,16 +20,35 @@ export function useEventMap(mapId: string, event: IEvent, immediate = false) {
   return { add, remove, isActive };
 }
 export function setEventMap(mapId: string, event: IEvent) {
+  const store = useMapEventStore(mapId);
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   const add = () => {
     logHelper(logger, mapId, 'hook', 'useEventMap').debug('add', event);
-    addListenerMap(mapId, event);
+    logHelper(logger, mapId, 'store').debug('addListenerMap', event);
+    store.items.unshift(event);
+    emitter.emit(MittTypeMapEventEventKey.add, event);
+    emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
   };
   const remove = () => {
     logHelper(logger, mapId, 'hook', 'useEventMap').debug('remove', event);
-    removeListenerMap(mapId, event);
+    if (!store || !store.items || store.items.length < 1) {
+      return;
+    }
+    const events = store.items;
+    const event_index = events.findIndex((x) => x.id === event.id);
+    if (event_index < 0) {
+      return;
+    }
+    store.items.splice(event_index, 1);
+    emitter.emit(MittTypeMapEventEventKey.remove, event);
+    emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
   };
+  function getCurrentEvent(event_map_type: string) {
+    return (store.current || {})[event_map_type];
+  }
+
   const isActive = computed(() => {
-    const c_event = getCurrentEvent(mapId, event.event_map_type);
+    const c_event = getCurrentEvent(event.event_map_type);
     return c_event && c_event.id === event.id;
   });
   return { add, remove, isActive };

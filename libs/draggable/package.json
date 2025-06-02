@@ -28,6 +28,7 @@
   "peerDependencies": {
     "vue-material-design-icons": "^5.3.0",
     "@hungpvq/shared": ">=0.0.1",
-    "vue-draggable-resizable": "^3.0.0"
+    "vue-draggable-resizable": "^3.0.0",
+    "@hungpvq/shared-store": ">=0.0.1"
   }
 }

@@ -15,10 +15,7 @@ import { Marker } from 'maplibre-gl';
 import { computed, watch } from 'vue';
 import { IMapboxLayerView } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/dataset.visitors';
-import {
-  getDatesetHighlight,
-  getFeatureHighlight,
-} from '../../store/highlight';
+import { useMapDatasetHighlight } from '../../store/highlight';
 
 const props = defineProps({
   ...withMapProps,
@@ -39,14 +36,17 @@ const sourceId = 'source-highlighted';
 const layerId = 'layer-highlighted';
 let marker: Marker | undefined = undefined;
 const { mapId, callMap } = useMap(props);
+const { getFeatureHighlight, getDatesetHighlight } = useMapDatasetHighlight(
+  mapId.value,
+);
 
 const storeFeature = computed(() => {
-  return getFeatureHighlight(mapId.value)?.value;
+  return getFeatureHighlight();
 });
 
 const updateSource = (
   map: MapSimple,
-  geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>
+  geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>,
 ) => {
   const source = map.getSource(sourceId) as GeoJSONSource;
   if (source) {
@@ -54,7 +54,7 @@ const updateSource = (
       geojsonData || {
         type: 'FeatureCollection' as const,
         features: [],
-      }
+      },
     );
   } else {
     map.addSource(sourceId, {
@@ -82,7 +82,7 @@ const updateLayer = (map: MapSimple) => {
 
 const updateMarker = (
   map: MapSimple,
-  geojsonData: GeoJSONSourceSpecification['data']
+  geojsonData: GeoJSONSourceSpecification['data'],
 ) => {
   marker?.remove();
   marker = undefined;
@@ -108,11 +108,11 @@ const updateMarker = (
 };
 
 function updateHighlight(geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>) {
-  const dataset = getDatesetHighlight(mapId.value);
+  const dataset = getDatesetHighlight();
   if (dataset) {
     const source = findSiblingOrNearestLeaf(
       dataset,
-      (dataset) => dataset.type == 'layer'
+      (dataset) => dataset.type == 'layer',
     ) as unknown as IMapboxLayerView;
     if (source && 'hightLight' in source) {
       callMap((map: MapSimple) => {
@@ -131,8 +131,8 @@ function updateHighlight(geojsonData?: GeoJSON.Feature<GeoJSON.Geometry>) {
 watch(
   storeFeature,
   () => {
-    updateHighlight(storeFeature.value);
+    updateHighlight(storeFeature.value?.value);
   },
-  { deep: true }
+  { deep: true },
 );
 </script>

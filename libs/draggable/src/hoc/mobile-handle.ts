@@ -1,5 +1,5 @@
 import { Component, Ref, computed, defineComponent, h, inject, ref } from 'vue';
-import { useDragStore } from '../store';
+import { useDragIsMobile } from '../store';
 
 export function WithMobileHandle<T = Component>(
   Component: T,
@@ -15,8 +15,8 @@ export function WithMobileHandle<T = Component>(
         'containerId',
         ref(props.containerId || ''),
       );
-      const store = useDragStore(p_containerId.value);
-      const isMobile = computed(() => store.getters.getIsMobile());
+      const store = useDragIsMobile(p_containerId.value);
+      const isMobile = computed(() => store.getIsMobile());
       return { p_containerId, isMobile };
     },
     render() {

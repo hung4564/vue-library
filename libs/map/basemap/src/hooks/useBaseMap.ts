@@ -1,20 +1,16 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { getStore, MAP_STORE_KEY, MittType } from '@hungpvq/vue-map-core';
+import { useMapMittStore } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import { logger } from '../logger';
+import { useMapBaseMapStore } from '../store';
 import {
   BaseMapItem,
-  BaseMapStore,
   MittTypeBaseMap,
   MittTypeBaseMapEventKey,
 } from '../types';
-const KEY = 'basemap';
 export function useBaseMap(mapId: string) {
-  const state = getStore<BaseMapStore>(mapId, KEY);
-  const emitter = getStore<MittType<MittTypeBaseMap>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
+  const state = useMapBaseMapStore(mapId);
+  const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
   function setBaseMaps(baseMaps: BaseMapItem[]) {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
       'setBaseMaps',
@@ -41,7 +37,7 @@ export function useBaseMap(mapId: string) {
     state.current = baseMap;
     emitter.emit(MittTypeBaseMapEventKey.setCurrent, state.current);
     state.loading = true;
-    await state.adapter.setCurrent(baseMap);
+    await state.adapter.setCurrent(mapId, baseMap);
     state.loading = false;
   }
   const baseMaps = ref<BaseMapItem[]>(state.baseMaps);

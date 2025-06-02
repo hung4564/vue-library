@@ -13,7 +13,7 @@ import type {
 } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../modules/StyleControl/style-control.vue';
-import { addComponent, setFeatureHighlight } from '../store';
+import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 import { findSiblingOrNearestLeaf } from './dataset.visitors';
 import ToggleShow from './menu/toggle-show.vue';
 
@@ -93,11 +93,11 @@ export function createMenuItemToBoundActionForItem() {
     name: 'Fly to',
     icon: mdiCrosshairsGps,
     click: (layer, mapId, value) => {
+      const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
       getMap(mapId, (map) => {
         fitBounds(map, value.geometry);
         const { geometry, ...properties } = value;
         setFeatureHighlight(
-          mapId,
           {
             type: 'Feature',
             geometry,
@@ -136,8 +136,9 @@ export function createMenuItemShowDetailInfoSource() {
         layer,
         (dataset) => dataset.type == 'source',
       ) as IMapboxSourceView | null;
-      if (source)
-        addComponent(mapId, {
+      if (source) {
+        const { addComponent } = useMapDatasetComponent(mapId);
+        addComponent({
           component: () => LayerDetail,
           attr: {
             item: source.getDataInfo(),
@@ -146,6 +147,7 @@ export function createMenuItemShowDetailInfoSource() {
           },
           check: 'detail',
         });
+      }
     },
   });
 }
@@ -155,7 +157,8 @@ export function createMenuItemStyleEdit() {
     name: 'Edit style',
     icon: mdiFormatLineStyle,
     click: (layer, mapId) => {
-      addComponent(mapId, {
+      const { addComponent } = useMapDatasetComponent(mapId);
+      addComponent({
         component: () => StyleControl,
         attr: {
           item: layer,
@@ -166,7 +169,7 @@ export function createMenuItemStyleEdit() {
 }
 
 export function createMenuItemToggleShow(
-  menu: Partial<MenuItemBottomOrExtra<any>>,
+  menu: Partial<MenuItemBottomOrExtra<any>> = {},
 ) {
   return createMenuItem({
     type: 'item',

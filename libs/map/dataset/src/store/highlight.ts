@@ -1,5 +1,6 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
-import { addStore, addToQueue, getMap, getStore } from '@hungpvq/vue-map-core';
+import { defineStore } from '@hungpvq/shared-store';
+import { useMapStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { IDataset, IMapboxLayerView } from '../interfaces';
@@ -14,76 +15,81 @@ export type MapDatasetHighlightStore = {
   dataset?: IDataset;
 };
 
-function initMapStore(mapId: string) {
-  logHelper(logger, mapId, 'store-highlight').debug('init');
-  const store: MapDatasetHighlightStore = {
-    feature: ref(undefined),
-    source: ref(undefined),
-    dataset: undefined,
-  };
-
-  addStore<MapDatasetHighlightStore>(mapId, KEY, store);
-}
-
-addToQueue(KEY, initMapStore);
-
-export function getDatasetHighlightStore(mapId: string) {
-  return getStore<MapDatasetHighlightStore>(mapId, KEY);
-}
-
-export function setFeatureHighlight(
-  mapId: string,
-  feature: GeoJSON.Feature<GeoJSON.Geometry> | undefined,
-  source: string,
-  dataset?: IDataset,
-) {
-  const store = getDatasetHighlightStore(mapId);
-  if (!store) return;
-
-  logHelper(logger, mapId, 'store-highlight').debug('setFeatureHighlight', {
-    store,
-    feature,
-    source,
-    dataset,
-  });
-  // If setting from same source source and feature exists, clear it
-  if (!feature && store.source.value === source && store.feature.value) {
-    store.feature.value = undefined;
-    store.source.value = undefined;
-    if (store.dataset) {
-      const source = findSiblingOrNearestLeaf(
-        store.dataset,
-        (dataset) => dataset.type == 'layer',
-      ) as unknown as IMapboxLayerView;
-      if (source && 'hightLight' in source) {
-        getMap(mapId, (map: MapSimple) => {
-          source.hightLight?.(map, undefined);
-        });
-        return;
-      }
-    }
-    store.dataset = undefined;
-    return;
+export const useMapDatasetHighlightStore = (mapId: string) =>
+  defineStore<MapDatasetHighlightStore>(
+    ['map:core', mapId, 'store-highlight'],
+    () => {
+      logHelper(logger, mapId, 'store').debug('init');
+      return {
+        feature: ref(undefined),
+        source: ref(undefined),
+        dataset: undefined,
+      };
+    },
+  )();
+export const useMapDatasetHighlight = (mapId: string) => {
+  const store = useMapDatasetHighlightStore(mapId);
+  const { getMap } = useMapStore(mapId);
+  function getStore() {
+    return store;
   }
-  store.dataset = dataset;
-  store.feature.value = feature;
-  store.source.value = source;
-}
+  function setFeatureHighlight(
+    feature: GeoJSON.Feature<GeoJSON.Geometry> | undefined,
+    source: string,
+    dataset?: IDataset,
+  ) {
+    if (!store) return;
 
-export function getFeatureHighlight(mapId: string) {
-  const store = getDatasetHighlightStore(mapId);
-  if (!store) return;
-  return store.feature;
-}
+    logHelper(logger, mapId, 'store-highlight').debug('setFeatureHighlight', {
+      store,
+      feature,
+      source,
+      dataset,
+    });
+    // If setting from same source source and feature exists, clear it
+    if (!feature && store.source.value === source && store.feature.value) {
+      store.feature.value = undefined;
+      store.source.value = undefined;
+      if (store.dataset) {
+        const source = findSiblingOrNearestLeaf(
+          store.dataset,
+          (dataset) => dataset.type == 'layer',
+        ) as unknown as IMapboxLayerView;
+        if (source && 'hightLight' in source) {
+          getMap((map: MapSimple) => {
+            source.hightLight?.(map, undefined);
+          });
+          return;
+        }
+      }
+      store.dataset = undefined;
+      return;
+    }
+    store.dataset = dataset;
+    store.feature.value = feature;
+    store.source.value = source;
+  }
 
-export function getHighlightSource(mapId: string) {
-  const store = getDatasetHighlightStore(mapId);
-  if (!store) return;
-  return store.source;
-}
+  function getFeatureHighlight() {
+    if (!store) return;
+    return store.feature;
+  }
 
-export function getDatesetHighlight(mapId: string) {
-  const store = getDatasetHighlightStore(mapId);
-  if (!store) return;
-  return store.dataset;
-}
+  function getHighlightSource() {
+    if (!store) return;
+    return store.source;
+  }
+
+  function getDatesetHighlight() {
+    if (!store) return;
+    return store.dataset;
+  }
+
+  return {
+    getStore,
+    setFeatureHighlight,
+    getHighlightSource,
+    getDatesetHighlight,
+    getFeatureHighlight,
+  };
+};

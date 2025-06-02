@@ -22,11 +22,11 @@
   </div>
 </template>
 <script setup lang="ts">
+import { logHelper } from '@hungpvq/shared-map';
+import { InputSelect, MapImage, useLang, useMap } from '@hungpvq/vue-map-core';
 import { onBeforeUnmount } from 'vue';
-import { useLang, useMap, InputSelect, MapImage } from '@hungpvq/vue-map-core';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import { logHelper } from '@hungpvq/shared-map';
 const props = defineProps({
   mapId: { type: String, required: true },
   title: {
@@ -43,7 +43,10 @@ const {
   remove,
 } = useBaseMap(mapId.value);
 const onChangeBaseMap = (base_map: any) => {
-  logHelper(logger, mapId, 'control', 'BaseMapCard').debug('onClick', base_map);
+  logHelper(logger, mapId.value, 'control', 'BaseMapCard').debug(
+    'onClick',
+    base_map,
+  );
   setCurrent(base_map);
 };
 onBeforeUnmount(() => {

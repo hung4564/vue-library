@@ -42,7 +42,12 @@ export default defineConfig({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['vue', '@hungpvq/shared', '@hungpvq/shared-core'],
+      external: [
+        'vue',
+        '@hungpvq/shared',
+        '@hungpvq/shared-core',
+        '@hungpvq/shared-store',
+      ],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps

@@ -1,7 +1,7 @@
 import { logHelper } from '@hungpvq/shared-map';
 import { addStore, getStore } from '../../store';
-import { MittType } from '../../types';
 import { MAP_STORE_KEY } from '../../types/key';
+import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {
   MapCompareSetting,
@@ -44,10 +44,7 @@ export function updateMapCompareSetting(
   logHelper(logger, mapId, 'store').debug('updateMapCompareSetting', setting);
   const store = getMapCompare(mapId);
   if (store) store.setting = { ...store.setting, ...setting };
-  const emitter = getStore<MittType<MittTypeMapCompare>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
+  const emitter = useMapMittStore<MittTypeMapCompare>(mapId);
   emitter.emit(MittTypeMapCompareEventKey.set, {
     ...store?.setting,
     ...setting,

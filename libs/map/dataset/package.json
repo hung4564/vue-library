@@ -33,6 +33,7 @@
     "maplibre-gl": "^5.4.0",
     "vuedraggable": "^4.1.0",
     "@hungpvq/shared-file": ">=0.0.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "@hungpvq/shared-store": ">=0.0.1"
   }
 }

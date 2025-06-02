@@ -1,6 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useDragStore } from '../store';
+import { useDragContainer, useDragItem } from '../store';
 import { checkIsFirst, checkIsLast } from '../utils/array';
 
 export function useInit(containerId: string, show: Ref<boolean>, id?: string) {
@@ -9,28 +9,28 @@ export function useInit(containerId: string, show: Ref<boolean>, id?: string) {
   function setZIndex(value: number) {
     zIndex.value = value;
   }
-  const store = useDragStore(containerId);
+  const store = useDragItem(containerId);
   onMounted(() => {
-    store.actions.registerItem(itemId.value);
-    store.actions.registerAction(itemId.value, {
+    store.registerItem(itemId.value);
+    store.registerAction(itemId.value, {
       setZIndex,
     });
     if (show.value) {
-      store.actions.registerItemShow(itemId.value, show.value);
+      store.registerItemShow(itemId.value, show.value);
     }
   });
   onUnmounted(() => {
-    store.actions.unRegisterItem(itemId.value);
+    store.unRegisterItem(itemId.value);
   });
   watch(show, (value) => {
-    store.actions.registerItemShow(itemId.value, value);
+    store.registerItemShow(itemId.value, value);
   });
   return { itemId, zIndex };
 }
 export function useContainerOrder(containerId: string, itemId: string) {
-  const store = useDragStore(containerId);
-  const items = computed(() => store.getters.getItems());
-  const itemShows = computed(() => store.getters.getItemsShow());
+  const store = useDragItem(containerId);
+  const items = computed(() => store.getItems());
+  const itemShows = computed(() => store.getItemsShow());
   const isLast = computed(() => {
     return checkIsLast(itemId, itemShows.value);
   });
@@ -41,17 +41,17 @@ export function useContainerOrder(containerId: string, itemId: string) {
     return itemShows.value.length > 1;
   });
   function onToBack() {
-    store.actions.setToBack(itemId);
+    store.setToBack(itemId);
   }
   function onToFront() {
-    store.actions.setToFront(itemId);
+    store.setToFront(itemId);
   }
   return { items, itemShows, isLast, isFirst, isHasItems, onToBack, onToFront };
 }
 
 export function useContainerSize(containerId: string) {
-  const store = useDragStore(containerId);
-  const containerWidth = computed(() => store.getters.getWidth());
-  const containerHeight = computed(() => store.getters.getHeight());
+  const store = useDragContainer(containerId);
+  const containerWidth = computed(() => store.getWidth());
+  const containerHeight = computed(() => store.getHeight());
   return { containerWidth, containerHeight };
 }

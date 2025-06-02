@@ -1,0 +1,26 @@
+{
+  "name": "@hungpvq/shared-store",
+  "version": "0.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.4",
+    "@vue/reactivity": "^3.5.16"
+  }
+}

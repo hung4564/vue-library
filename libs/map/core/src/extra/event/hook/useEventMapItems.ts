@@ -1,8 +1,6 @@
 import { onMounted, onUnmounted, shallowRef } from 'vue';
-import { getStore } from '../../../store';
-import { MittType } from '../../../types';
-import { MAP_STORE_KEY } from '../../../types/key';
-import { getEvents } from '../store';
+import { useMapMittStore } from '../../mitt';
+import { useMapEventStore } from '../store';
 import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 
 export const useEventMapItems = (
@@ -13,11 +11,13 @@ export const useEventMapItems = (
     onChange?: (p_item: IEvent[]) => void;
   } = {},
 ) => {
-  const items = shallowRef(getEvents(mapId));
-  const emitter = getStore<MittType<MittTypeMapEvent>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
+  const store = useMapEventStore(mapId);
+  function getEvents() {
+    return store.items;
+  }
+
+  const items = shallowRef(getEvents());
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   function updateItems(p_items: IEvent[]) {
     items.value = p_items;
     onChange && onChange(p_items);

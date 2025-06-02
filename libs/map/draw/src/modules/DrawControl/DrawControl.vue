@@ -26,23 +26,7 @@ import {
 import { MapMouseEvent } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
 import { DrawingTypeName } from '..';
-import {
-  activateDraw,
-  callDraw,
-  cancelDraw,
-  checkAndCallDone,
-  deactivateDraw,
-  draw,
-  getDrawAction,
-  getDrawControl,
-  getDrawIsActivated,
-  getDrawIsRegisterId,
-  getDrawIsShow,
-  getDrawSupport,
-  initDrawControl,
-  saveDraw,
-  setFeature,
-} from '../../store';
+import { useMapDraw } from '../../store';
 import type { DrawOption } from '../../types';
 import layers from './theme';
 const props = defineProps({
@@ -51,8 +35,25 @@ const props = defineProps({
 });
 const drawOptions = props.drawOptions as DrawOption;
 const { mapId, moduleContainerProps, callMap } = useMap(props);
+const {
+  initDrawControl,
+  activateDraw,
+  deactivateDraw,
+  callDraw,
+  cancelDraw,
+  checkAndCallDone,
+  draw,
+  getDrawAction,
+  getDrawControl,
+  getDrawIsActivated,
+  getDrawIsRegisterId,
+  getDrawIsShow,
+  getDrawSupport,
+  saveDraw,
+  setFeature,
+} = useMapDraw(mapId.value);
 const isShow = computed(() => {
-  return getDrawIsShow(mapId.value);
+  return getDrawIsShow();
 });
 watch(isShow, (newValue) => {
   callMap((map) => {
@@ -81,26 +82,26 @@ let control = new MapboxDraw({
 });
 function onDrawCreated(event: DrawCreateEvent) {
   for (const feature of event.features) {
-    setFeature(mapId.value, 'added', feature);
+    setFeature('added', feature);
   }
-  checkAndCallDone(mapId.value, register_id.value!);
+  checkAndCallDone(register_id.value!);
   onSelectMethod('select');
 }
 function onDrawUpdated(event: DrawUpdateEvent) {
   for (const feature of event.features) {
-    setFeature(mapId.value, 'updated', feature);
+    setFeature('updated', feature);
   }
-  checkAndCallDone(mapId.value, register_id.value!);
+  checkAndCallDone(register_id.value!);
   onSelectMethod('select');
 }
 function onDrawDeleted(event: DrawDeleteEvent) {
   for (const feature of event.features) {
-    setFeature(mapId.value, 'deleted', feature);
+    setFeature('deleted', feature);
   }
-  checkAndCallDone(mapId.value, register_id.value!);
+  checkAndCallDone(register_id.value!);
   onSelectMethod('select');
 }
-initDrawControl(mapId.value, control);
+initDrawControl(control);
 const path = {
   add: mdiPlus,
   delete: mdiDeleteOutline,
@@ -124,34 +125,34 @@ function onSelectMethod(value: 'select' | 'delete' | 'create') {
   }
 }
 const register_id = computed(() => {
-  return getDrawIsRegisterId(mapId.value);
+  return getDrawIsRegisterId();
 });
 function onDraw(type: string) {
-  activateDraw(mapId.value, register_id.value!);
-  draw(mapId.value, register_id.value!, type);
+  activateDraw(register_id.value!);
+  draw(register_id.value!, type);
 }
 const isActivated = computed(() => {
-  return getDrawIsActivated(mapId.value);
+  return getDrawIsActivated();
 });
 const drawSupport = computed(() => {
-  return getDrawSupport(mapId.value);
+  return getDrawSupport();
 });
 const isDraw = computed(() => {
   return isActivated.value;
 });
 function onSave() {
-  saveDraw(mapId.value, register_id.value!);
+  saveDraw(register_id.value!);
 }
 function onCancel() {
-  cancelDraw(mapId.value);
+  cancelDraw();
 }
 function close() {
-  deactivateDraw(mapId.value);
+  deactivateDraw();
   removeEventClick();
 }
 async function onMapClick(e: MapMouseEvent) {
-  const action = getDrawAction(mapId.value);
-  const control = getDrawControl(mapId.value);
+  const action = getDrawAction();
+  const control = getDrawControl();
   const features =
     (await (action.getFeatures &&
       action.getFeatures([e.lngLat.lng, e.lngLat.lat]))) || [];
@@ -159,8 +160,8 @@ async function onMapClick(e: MapMouseEvent) {
     case 'select': {
       const feature_ids = control?.add({ type: 'FeatureCollection', features });
       if (feature_ids && feature_ids.length > 0) {
-        activateDraw(mapId.value, register_id.value!);
-        draw(mapId.value, register_id.value!, 'direct_select', undefined, {
+        activateDraw(register_id.value!);
+        draw(register_id.value!, 'direct_select', undefined, {
           featureId: feature_ids[0],
         });
       }
@@ -205,7 +206,7 @@ function onInitDraw() {
   if (!drawOptions) {
     return;
   }
-  callDraw(mapId.value, drawOptions);
+  callDraw(drawOptions);
 }
 </script>
 <template setup>

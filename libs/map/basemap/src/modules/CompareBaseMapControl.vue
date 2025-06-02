@@ -112,7 +112,6 @@ import {
   MapIcon,
   MapImage,
   ModuleContainer,
-  store as storeMap,
   useLang,
   useMap,
   withMapProps,

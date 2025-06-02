@@ -1,7 +1,5 @@
 import { onMounted, onUnmounted, ref } from 'vue';
-import { getStore } from '../../../store';
-import { MittType } from '../../../types';
-import { MAP_STORE_KEY } from '../../../types/key';
+import { useMapMittStore } from '../../mitt';
 import { getMapCompareSetting, updateMapCompareSetting } from '../store';
 import {
   MapCompareSetting,
@@ -21,10 +19,7 @@ export const useMapCompareSetting = (
     setting.value = p_setting;
     onChange && onChange(p_setting);
   }
-  const emitter = getStore<MittType<MittTypeMapCompare>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
+  const emitter = useMapMittStore<MittTypeMapCompare>(mapId);
   onMounted(() => {
     emitter.on(MittTypeMapCompareEventKey.set, update);
   });

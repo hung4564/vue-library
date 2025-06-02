@@ -4,7 +4,7 @@ import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
-import { addComponent, setFeatureHighlight } from '../../store';
+import { useMapDatasetComponent, useMapDatasetHighlight } from '../../store';
 import { isDatasetSourceMap } from '../../utils/check';
 import {
   convertFeatureToItem,
@@ -50,7 +50,9 @@ export function createDataManagementMapboxComponent<
   };
 
   const showDetail = (mapId: string, detail: D) => {
-    addComponent(mapId, {
+    const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
+    const { addComponent } = useMapDatasetComponent(mapId);
+    addComponent({
       component: () => LayerDetail,
       attr: {
         item: detail,
@@ -59,12 +61,7 @@ export function createDataManagementMapboxComponent<
       },
       check: 'detail',
     });
-    setFeatureHighlight(
-      mapId,
-      convertItemToFeature(detail),
-      'detail',
-      dataComponent,
-    );
+    setFeatureHighlight(convertItemToFeature(detail), 'detail', dataComponent);
   };
 
   const dataComponent = createNamedComponent('DataManagementMapboxComponent', {

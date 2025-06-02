@@ -21,7 +21,7 @@ import {
   type StyleSpecification,
 } from 'maplibre-gl';
 import { computed, ref, shallowRef } from 'vue';
-import { getDrawIsShow } from '../../store';
+import { useMapDraw } from '../../store';
 import { brightColor } from './colors';
 import {
   getSourcesFromMap,
@@ -51,13 +51,14 @@ const _popup = shallowRef(
   new Popup({
     closeButton: false,
     closeOnClick: false,
-  })
+  }),
 );
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,
-  onDestroy
+  onDestroy,
 );
+const { getDrawIsShow } = useMapDraw(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const showInspect = ref(props.showInspectDefault);
 setLocaleDefault({
@@ -72,11 +73,11 @@ const eventMouseMove = new EventMouseMove().setHandler(onMapMouseMove);
 const _popupBlocked = ref(false);
 const { add: addEventClick, remove: removeEventClick } = setEventMap(
   mapId.value,
-  event
+  event,
 );
 const { add: addEventMouseMove, remove: removeEventMouseMove } = setEventMap(
   mapId.value,
-  eventMouseMove
+  eventMouseMove,
 );
 function onMapMouseMove(e: MapMouseEvent) {
   if (showInspect.value) {
@@ -210,14 +211,14 @@ function render(map: MapSimple) {
 function _inspectStyle(map: MapSimple) {
   const coloredLayers = generateColoredLayers(
     sources,
-    props.assignLayerColor as (layerId: string, alpha: number) => string
+    props.assignLayerColor as (layerId: string, alpha: number) => string,
   );
   return props.buildInspectStyle(map.getStyle(), coloredLayers, {
     backgroundColor: props.backgroundColor,
   });
 }
 const isDrawShow = computed(() => {
-  return getDrawIsShow(mapId.value);
+  return getDrawIsShow();
 });
 </script>
 <template>

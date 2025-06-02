@@ -55,6 +55,7 @@ export default defineConfig({
         '@hungpvq/shared-file',
         'lodash',
         '@hungpvq/shared-log',
+        '@hungpvq/shared-store',
       ],
       output: {
         // Provide global variables to use in the UMD build

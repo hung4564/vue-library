@@ -19,15 +19,11 @@ import type {
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import {
-  getAllComponentsByType,
-  getDatasetIds,
-  removeComponent,
-} from '../../../store';
+import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
+import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
-import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 const props = defineProps({
   ...withMapProps,
   disabledDrag: Boolean,
@@ -50,9 +46,11 @@ const path = {
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
+const { getAllComponentsByType, getDatasetIds, removeComponent } =
+  useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
 const datasetIds = computed(() => {
-  return getDatasetIds(mapId.value).value;
+  return getDatasetIds().value;
 });
 watch(
   datasetIds,
@@ -99,7 +97,7 @@ function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
     return;
   }
   group.children.forEach((view: IListViewUI) => {
-    removeComponent(mapId.value, view);
+    removeComponent(view);
   });
 }
 function onUpdateLayer(view: IListViewUI) {
@@ -120,7 +118,7 @@ function onUpdateLayer(view: IListViewUI) {
 }
 function onRemoveLayer(view: IListViewUI) {
   if (!view) return;
-  removeComponent(mapId.value, view);
+  removeComponent(view);
   updateList();
 }
 function updateList() {
@@ -134,7 +132,7 @@ function updateTree() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IListViewUI>(mapId.value, 'list').sort(
+    getAllComponentsByType<IListViewUI>('list').sort(
       (a, b) => b.index - a.index,
     ) || [];
 }
@@ -146,7 +144,7 @@ function onRemoveAllLayer() {
     return;
   }
   views.value.forEach((view) => {
-    removeComponent(mapId.value, view);
+    removeComponent(view);
   });
   updateList();
 }

@@ -10,21 +10,22 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { handleMultiIdentifyGetFirst } from '../../model';
-import { getAllComponentsByType, getDatasetIds } from '../../store';
+import { useMapDataset } from '../../store';
 const props = defineProps({
   ...withMapProps,
 });
 const { mapId } = useMap(props);
+const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const views = ref<Array<IIdentifyView & IDataset>>([]);
 const datasetIds = computed(() => {
-  return getDatasetIds(mapId.value).value;
+  return getDatasetIds().value;
 });
 watch(
   datasetIds,
   () => {
     updateList();
   },
-  { deep: true }
+  { deep: true },
 );
 onMounted(() => {
   updateList();
@@ -34,8 +35,7 @@ function updateList() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IIdentifyView & IDataset>(mapId.value, 'identify') ||
-    [];
+    getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
 }
 const {
   add: addEventClick,
@@ -71,7 +71,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     const feature = await handleMultiIdentifyGetFirst(
       cUsedIdentify.value,
       mapId.value,
-      pointOrBox
+      pointOrBox,
     );
     onSelectFeatures(feature);
   } finally {
@@ -82,7 +82,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
 function onMenuAction(
   identify: IIdentifyView & IDataset,
   menu: MenuAction<IIdentifyView & IDataset>,
-  item: any
+  item: any,
 ) {
   if (menu.type != 'item' || !identify) {
     return;

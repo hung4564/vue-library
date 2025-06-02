@@ -21,7 +21,6 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
-  addDataset,
   ComponentManagementControl,
   createDataManagementMapboxComponent,
   createDataset,
@@ -51,12 +50,13 @@ import {
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
+  useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {
-  callDraw,
   DrawControl,
   DrawingType,
   InspectControl,
+  useMapDraw,
 } from '@hungpvq/vue-map-draw';
 import { LegendControl } from '@hungpvq/vue-map-legend';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
@@ -69,6 +69,7 @@ const mapRef = ref();
 const { convertList } = useConvertToGeoJSON();
 const { convert } = useGeoConvertToFile();
 function onMapLoaded(map: MapSimple) {
+  const { addDataset } = useMapDataset(map.id);
   const dataset_raster = createDataset(
     'Group test',
     null,
@@ -262,9 +263,9 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  addDataset(map.id, dataset);
-  addDataset(map.id, createDatasetPoint());
-  // addDataset(map.id, dataset_raster);
+  addDataset(dataset);
+  addDataset(createDatasetPoint());
+  // addDataset( dataset_raster);
 }
 function createDatasetPoint() {
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
@@ -348,12 +349,13 @@ function createMenuDrawLayer() {
     name: 'Edit feature',
     icon: mdiPencil,
     click: (layer, mapId) => {
+      const { callDraw } = useMapDraw(mapId);
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,
         (dataset) => dataset.type === 'dataManagement',
       );
       if (isDataManagementView(maybeDataManagement)) {
-        callDraw(mapId, {
+        callDraw({
           cleanAfterDone: true,
           draw_support: [
             DrawingType.POINT,

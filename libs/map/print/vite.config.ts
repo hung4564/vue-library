@@ -50,6 +50,7 @@ export default defineConfig({
         '@hungpvq/vue-map-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
+        '@hungpvq/shared-store',
       ],
       output: {
         // Provide global variables to use in the UMD build

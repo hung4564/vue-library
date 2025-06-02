@@ -51,6 +51,7 @@ export default defineConfig({
         '@mapbox/mapbox-gl-sync-move',
         'mitt',
         '@hungpvq/shared-log',
+        '@hungpvq/shared-store',
       ],
       output: {
         // Provide global variables to use in the UMD build

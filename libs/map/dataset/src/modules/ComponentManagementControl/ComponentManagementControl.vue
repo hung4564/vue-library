@@ -12,9 +12,7 @@ import { useMap, withMapProps } from '@hungpvq/vue-map-core';
 import { computed, getCurrentInstance, ref, watch } from 'vue';
 import {
   type ComponentItem,
-  getAllComponentIds,
-  getComponentStore,
-  removeComponent,
+  useMapDatasetComponent,
 } from '../../store/component';
 
 const instance = getCurrentInstance();
@@ -22,13 +20,15 @@ const props = defineProps({
   ...withMapProps,
 });
 const { mapId } = useMap(props);
-const store = getComponentStore(mapId.value);
+const { getAllComponentIds, getStore, removeComponent } =
+  useMapDatasetComponent(mapId.value);
+const store = getStore();
 
 function onRemoveComponent(item: ComponentItem) {
-  removeComponent(mapId.value, item.id);
+  removeComponent(item.id);
 }
 const storeComponents = computed(() => {
-  return getAllComponentIds(mapId.value)?.value || [];
+  return getAllComponentIds()?.value || [];
 });
 const components = ref<ComponentItem[]>([]);
 // Watch for changes in components and update the view
@@ -39,6 +39,6 @@ watch(
     instance?.proxy?.$forceUpdate();
     // Force update to re-render components
   },
-  { deep: true }
+  { deep: true },
 );
 </script>

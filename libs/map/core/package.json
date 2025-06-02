@@ -38,6 +38,7 @@
     "lodash": "^4.17.21",
     "maplibre-gl": "^5.4.0",
     "@mapbox/mapbox-gl-sync-move": "^0.3.1",
-    "mitt": "^3.0.1"
+    "mitt": "^3.0.1",
+    "@hungpvq/shared-store": ">=0.0.1"
   }
 }

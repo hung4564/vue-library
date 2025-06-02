@@ -8,7 +8,6 @@ import { debounce } from 'lodash';
 import {
   computed,
   nextTick,
-  onBeforeMount,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -16,17 +15,9 @@ import {
   ref,
 } from 'vue';
 import Map from '../../../modules/Map.vue';
-import {
-  getMap,
-  getStore,
-  initMaps,
-  removeMap,
-  store as storeMap,
-} from '../../../store/store';
-import { MittType } from '../../../types';
-import { MAP_STORE_KEY } from '../../../types/key';
+import { getMap, useMapContainer } from '../../../store/store';
 import ActionControl from '../../event/modules/ActionControl.vue';
-import { initStoreMitt } from '../../mitt';
+import { useMapMittStore } from '../../mitt';
 import { initStoreMapCompare } from '../store';
 import {
   MapCompareSetting,
@@ -79,6 +70,7 @@ const countMap = ref(2);
 const isSupport = ref(isWebglSupported());
 const loaded = ref(false);
 const id = ref(getUUIDv4());
+const store = useMapContainer(id.value);
 onMounted(() => {
   nextTick(() => {
     onResize();
@@ -142,9 +134,6 @@ const setting = ref<{
 const isUseSwiper = computed(() => {
   return setting.value.compare && setting.value.split;
 });
-onBeforeMount(() => {
-  initStoreMitt(id.value);
-});
 function initCompare() {
   if (!maps) return;
   if (
@@ -164,13 +153,10 @@ function initCompare() {
       map.resize();
     }
   });
-  initMaps(storeMap, id.value, maps);
+  store.initMaps(maps);
   initStoreMapCompare(id.value);
   setupCompare();
-  const emitter = getStore<MittType<MittTypeMapCompare>>(
-    id.value,
-    MAP_STORE_KEY.MITT,
-  );
+  const emitter = useMapMittStore<MittTypeMapCompare>(id.value);
   emitter.on(MittTypeMapCompareEventKey.set, updateSetting);
 }
 function updateSetting(p_setting: MapCompareSetting) {
@@ -184,7 +170,7 @@ function destroy() {
   if (clearSync) {
     clearSync();
   }
-  removeMap(storeMap, id.value);
+  store.removeMap();
   nextTick(() => {
     maps = [];
   });
