@@ -10,6 +10,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { handleMultiIdentifyGetFirst } from '../../model';
+import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
 const props = defineProps({
   ...withMapProps,
@@ -84,10 +85,7 @@ function onMenuAction(
   menu: MenuAction<IIdentifyView & IDataset>,
   item: any,
 ) {
-  if (menu.type != 'item' || !identify) {
-    return;
-  }
-  if ('click' in menu) menu.click(identify, mapId.value, item);
+  handleMenuAction(menu, identify, mapId.value, item);
 }
 onMounted(() => {
   addEventClick();

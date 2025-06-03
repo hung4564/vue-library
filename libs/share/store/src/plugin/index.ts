@@ -1,8 +1,8 @@
-import { App, inject } from 'vue';
-import { AppStore } from '../store/createStore';
+import { App } from 'vue';
+import { GlobalStoreService } from '../store';
 const STORE_KEY = Symbol('@hungpvq/store');
 export function createStoreRegistryPlugin() {
-  const store = AppStore.getInstance();
+  const store = GlobalStoreService.getInstance();
 
   return {
     install(app: App) {
@@ -12,7 +12,9 @@ export function createStoreRegistryPlugin() {
 }
 
 export function useStoreRegistry() {
-  const registry = inject<AppStore>(STORE_KEY) || AppStore.getInstance();
+  // FIXME: cần xử lý trường hợp inject
+  //const registry = inject<GlobalStoreService>(STORE_KEY) || GlobalStoreService.getInstance();
+  const registry = GlobalStoreService.getInstance();
   if (!registry)
     throw new Error(
       'Store registry not found. Did you forget to app.use(createStoreRegistryPlugin())?',

@@ -18,6 +18,7 @@ import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { handleMultiIdentify } from '../../model';
+import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
 import { useMapDatasetHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
@@ -204,10 +205,7 @@ function onMenuAction(
   menu: MenuAction<IIdentifyView>,
   item: any,
 ) {
-  if (menu.type != 'item' || !identify) {
-    return;
-  }
-  if ('click' in menu) menu.click(identify, mapId.value, item);
+  handleMenuAction(menu, identify, mapId.value, item);
 }
 onMounted(() => {
   if (props.immediately) onUseMapClick();

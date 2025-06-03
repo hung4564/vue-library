@@ -19,6 +19,7 @@ import type {
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
+import { handleMenuAction } from '../../../model/menu';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
@@ -187,12 +188,7 @@ function onLayerAction({
   action: MenuAction<IListViewUI>;
   item: IListViewUI;
 }) {
-  if (!action) return;
-  if (action.type !== 'item') return;
-  if (!item) return;
-  if ('click' in action) {
-    action.click(item, mapId.value, item);
-  }
+  handleMenuAction(action, item, mapId.value, item);
 }
 </script>
 <template lang="">

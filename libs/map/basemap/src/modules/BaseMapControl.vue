@@ -75,6 +75,7 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
+import { logHelper } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   MapCard,
@@ -88,12 +89,11 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
-import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
+import { logger } from '../logger';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
-import { logger } from '../logger';
-import { logHelper } from '@hungpvq/shared-map';
 const props = defineProps({
   ...withMapProps,
   baseMaps: {
@@ -152,7 +152,7 @@ const path = {
 };
 const show = ref(false);
 function onClick(baseMap: any) {
-  logHelper(logger, mapId, 'control', 'BaseMapControl').debug(
+  logHelper(logger, mapId.value, 'control', 'BaseMapControl').debug(
     'onClick',
     baseMap,
   );
@@ -162,7 +162,7 @@ function onToggleList() {
   show.value = !show.value;
 }
 onMounted(() => {
-  init(props.baseMaps, props.defaultBaseMap);
+  init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
 });
 onBeforeUnmount(() => {
   remove();

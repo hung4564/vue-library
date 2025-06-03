@@ -13,7 +13,6 @@ import type {
 } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../modules/StyleControl/style-control.vue';
-import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 import { findSiblingOrNearestLeaf } from './dataset.visitors';
 import ToggleShow from './menu/toggle-show.vue';
 
@@ -92,22 +91,27 @@ export function createMenuItemToBoundActionForItem() {
     type: 'item',
     name: 'Fly to',
     icon: mdiCrosshairsGps,
-    click: (layer, mapId, value) => {
-      const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
-      getMap(mapId, (map) => {
-        fitBounds(map, value.geometry);
-        const { geometry, ...properties } = value;
-        setFeatureHighlight(
-          {
-            type: 'Feature',
-            geometry,
-            properties,
-          },
-          'identify',
-          layer,
-        );
-      });
-    },
+    click: [
+      ['fitBounds', (layer, mapId, value) => [layer, mapId, value.geometry]],
+      [
+        'highlight',
+        (layer, mapId, value) => {
+          const { geometry, ...properties } = value;
+          return [
+            layer,
+            mapId,
+            {
+              detail: {
+                type: 'Feature',
+                geometry,
+                properties,
+              },
+              key: 'identify',
+            },
+          ];
+        },
+      ],
+    ],
   });
 }
 export function createMenuItemShowDetailForItem() {
@@ -131,24 +135,31 @@ export function createMenuItemShowDetailInfoSource() {
     type: 'item',
     name: 'Info',
     icon: mdiInformation,
-    click: (layer, mapId) => {
-      const source = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type == 'source',
-      ) as IMapboxSourceView | null;
-      if (source) {
-        const { addComponent } = useMapDatasetComponent(mapId);
-        addComponent({
-          component: () => LayerDetail,
-          attr: {
-            item: source.getDataInfo(),
-            fields: source.getFieldsInfo(),
-            view: layer,
-          },
-          check: 'detail',
-        });
-      }
-    },
+    click: [
+      [
+        'addComponent',
+        (layer, mapId) => {
+          const source = findSiblingOrNearestLeaf(
+            layer,
+            (dataset) => dataset.type == 'source',
+          ) as IMapboxSourceView | null;
+          if (source)
+            return [
+              layer,
+              mapId,
+              {
+                component: () => LayerDetail,
+                attr: {
+                  item: source.getDataInfo(),
+                  fields: source.getFieldsInfo(),
+                  view: layer,
+                },
+                check: 'detail',
+              },
+            ];
+        },
+      ],
+    ],
   });
 }
 export function createMenuItemStyleEdit() {
@@ -156,15 +167,21 @@ export function createMenuItemStyleEdit() {
     type: 'item',
     name: 'Edit style',
     icon: mdiFormatLineStyle,
-    click: (layer, mapId) => {
-      const { addComponent } = useMapDatasetComponent(mapId);
-      addComponent({
-        component: () => StyleControl,
-        attr: {
-          item: layer,
-        },
-      });
-    },
+    click: [
+      [
+        'addComponent',
+        (layer, mapId) => [
+          layer,
+          mapId,
+          {
+            component: () => StyleControl,
+            attr: {
+              item: layer,
+            },
+          },
+        ],
+      ],
+    ],
   });
 }
 
