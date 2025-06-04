@@ -71,7 +71,7 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
         const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
           pointOrBox,
           {
-            layers: allLayerIds,
+            layers: allLayerIds.filter((id) => map.getLayer(id)),
           },
         );
 
@@ -241,7 +241,7 @@ export async function handleMultiIdentifyGetFirst(
       const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         pointOrBox,
         {
-          layers: allLayerIds,
+          layers: allLayerIds.filter((id) => map.getLayer(id)),
         },
       );
       if (features.length > 0) {
