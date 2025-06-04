@@ -265,7 +265,67 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(metadata);
   addDataset(dataset);
   addDataset(createDatasetPoint());
+  addDataset(createDatasetLineString());
   // addDataset( dataset_raster);
+}
+function createDatasetLineString() {
+  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true,
+  ) as DatasetComposite;
+  const list1: IListViewUI =
+    createDatasetPartListViewUiComponent('test line string');
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setColor(list1.color)
+      .build(),
+  ]);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  list1.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToBoundActionForList(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
+  ]);
+  const identify = createIdentifyMapboxComponent('test identify');
+  identify.addMenus([
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ]);
+  dataset.add(identify);
+  const dataManagement = createDataManagementMapboxComponent(
+    'data management',
+    {
+      fields: [{ text: 'Name', value: 'name' }],
+    },
+  );
+  dataManagement.setItems([
+    {
+      id: '2',
+      name: 'feature 2',
+      geometry: {
+        coordinates: [
+          [104.3289285884349, 21.35998263691249],
+          [105.11257582166496, 21.70421219227839],
+          [105.16699576841705, 21.35998263691249],
+          [104.89489603465671, 21.39038859819064],
+        ],
+        type: 'LineString',
+      },
+    },
+  ]);
+  dataset.add(source);
+  dataset.add(dataManagement);
+  dataset.add(groupLayer1);
+  return dataset;
 }
 function createDatasetPoint() {
   const dataset = createDataset('Group test', null, true) as DatasetComposite;

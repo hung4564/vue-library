@@ -50,18 +50,6 @@ export const useMapDatasetHighlight = (mapId: string) => {
     if (!feature && store.source.value === source && store.feature.value) {
       store.feature.value = undefined;
       store.source.value = undefined;
-      if (store.dataset) {
-        const source = findSiblingOrNearestLeaf(
-          store.dataset,
-          (dataset) => dataset.type == 'layer',
-        ) as unknown as IMapboxLayerView;
-        if (source && 'hightLight' in source) {
-          getMap((map: MapSimple) => {
-            source.hightLight?.(map, undefined);
-          });
-          return;
-        }
-      }
       store.dataset = undefined;
       return;
     }

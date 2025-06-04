@@ -254,13 +254,12 @@ export async function handleMultiIdentifyGetFirst(
           x.id;
         resolve({
           identify: datasetPartIdentify,
-          features: [
-            {
-              id,
-              name,
-              data: convertFeatureToItem(x),
-            },
-          ],
+          layer: x.layer,
+          feature: {
+            id,
+            name,
+            data: convertFeatureToItem(x),
+          },
         });
       }
     });

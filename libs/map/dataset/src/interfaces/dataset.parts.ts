@@ -2,7 +2,11 @@ import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import type { Color, MapSimple } from '@hungpvq/shared-map';
 import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
-import type { PointLike, SourceSpecification } from 'maplibre-gl';
+import type {
+  LayerSpecification,
+  PointLike,
+  SourceSpecification,
+} from 'maplibre-gl';
 import type { IDataset } from './dataset.base';
 import type { IDatasetMap } from './dataset.map';
 
@@ -129,10 +133,6 @@ export type IMapboxLayerView = IDatasetMap & {
   moveLayer(map: MapSimple, beforeId: string): void;
   getComponentUpdate(): () => any;
   updateValue(map: MapSimple, value: any): void;
-  hightLight?(
-    map: MapSimple,
-    geojsonData: GeoJSON.Feature<GeoJSON.Geometry> | undefined,
-  ): void;
 };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
@@ -167,10 +167,16 @@ export type IIdentifyViewWithMerge<T extends IDataset = IDataset> =
   };
 
 // Define kiểu trả về cho mỗi kết quả sau khi split
-export type IdentifyResult = {
-  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-  features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
-};
+export type IdentifyResult =
+  | {
+      identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
+      features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
+    }
+  | {
+      identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
+      layer: LayerSpecification;
+      feature: { id: string | number; name: string; data: any }; // Features của mỗi identify
+    };
 // Union type cho IIdentifyView
 export type IIdentifyView<T extends IDataset = IDataset> =
   | IIdentifyViewWithoutMerge<T>

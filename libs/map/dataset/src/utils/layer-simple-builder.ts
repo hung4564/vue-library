@@ -19,15 +19,17 @@ export class LayerRasterMapboxBuild implements ILayerMapboxBuild {
     };
   }
 }
+export type LayerStyleType = 'point' | 'line' | 'area' | 'symbol';
+
 export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
   public color?: Color;
   public opacity?: number;
-  public type = 'point';
+  public type: LayerStyleType = 'point';
   setColor(color: Color | undefined) {
     this.color = color;
     return this;
   }
-  setStyleType(type: string) {
+  setStyleType(type: LayerStyleType) {
     this.type = type;
     return this;
   }
@@ -43,7 +45,7 @@ export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
 export const getDefaultLayer = (
   type: string,
   color?: Color,
-  opacity?: number
+  opacity?: number,
 ): Omit<
   | LineLayerSpecification
   | FillLayerSpecification

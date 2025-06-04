@@ -56,11 +56,11 @@ const result = reactive<{
 });
 function onSelectFeatures(feature: {
   identify: IIdentifyView & IDataset;
-  features: any[];
+  feature: any;
 }) {
-  if (feature && feature.features && feature.features[0]) {
+  if (feature && feature.feature) {
     const menu = feature.identify.getMenu('show-detail');
-    if (menu) onMenuAction(feature.identify, menu, feature.features[0].data);
+    if (menu) onMenuAction(feature.identify, menu, feature.feature.data);
   }
 }
 const cUsedIdentify = computed(() => {
