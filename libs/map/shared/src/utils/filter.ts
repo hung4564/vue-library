@@ -1,20 +1,22 @@
 /**
- * Kết hợp filter cũ với điều kiện ['==', '$type', 'LineString']
- * @param oldFilter Filter cũ (có thể null)
- * @returns Filter mới đã kết hợp
+ * Gộp 2 filter Maplibre bằng toán tử "all" hoặc "any"
+ * @param filter1 - Filter thứ nhất
+ * @param filter2 - Filter thứ hai
+ * @param operator - 'all' | 'any' (mặc định: 'all')
+ * @returns Filter mới đã gộp
  */
-export function combineWithLineStringType(oldFilter: any[] | null): any[] {
-  const newCondition = ['==', '$type', 'LineString'];
+export function mergeFilters(
+  filter1: any | null | undefined,
+  filter2: any | null | undefined,
+  operator: 'all' | 'any' = 'all',
+): any | null {
+  const filters: any[] = [];
 
-  if (!oldFilter) {
-    return newCondition;
-  }
+  if (filter1 && Array.isArray(filter1)) filters.push(filter1);
+  if (filter2 && Array.isArray(filter2)) filters.push(filter2);
 
-  if (Array.isArray(oldFilter) && oldFilter[0] === 'all') {
-    // Đã là 'all', chỉ cần thêm điều kiện mới
-    return [...oldFilter, newCondition];
-  }
+  if (filters.length === 0) return null;
+  if (filters.length === 1) return filters[0];
 
-  // Chưa phải 'all', kết hợp lại
-  return ['all', oldFilter, newCondition];
+  return [operator, ...filters];
 }

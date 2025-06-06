@@ -178,8 +178,11 @@ export const splitResponse = (
         features: [],
       });
     }
-
-    resultsMap.get(identifyId)?.features.push(feature);
+    const result = resultsMap.get(identifyId);
+    if (result)
+      if ('features' in result) {
+        result.features.push(feature);
+      }
   });
 
   return Array.from(resultsMap.values());

@@ -13,11 +13,14 @@ import {
   createMenuItemToBoundActionForItem,
   createMultiMapboxLayerComponent,
 } from '../model';
-import { LayerSimpleMapboxBuild } from '../utils/layer-simple-builder';
+import {
+  LayerSimpleMapboxBuild,
+  type LayerStyleType,
+} from '../utils/layer-simple-builder';
 export type GeojsonDatasetOption = {
   name: string;
   geojson: GeoJSON;
-  type: string;
+  type: LayerStyleType;
   color?: Color;
 };
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {

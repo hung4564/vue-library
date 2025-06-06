@@ -2,6 +2,7 @@ export * from './data-management';
 export * from './dataset.base';
 export * from './dataset.handler';
 export * from './dataset.visitors';
+export * from './highlight';
 export * from './identify';
 export * from './layer';
 export * from './part-list-view-ui.model';

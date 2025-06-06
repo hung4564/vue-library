@@ -1,16 +1,15 @@
-import { logHelper, type MapSimple } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/shared-map';
 import { defineStore } from '@hungpvq/shared-store';
-import { useMapStore } from '@hungpvq/vue-map-core';
+import type { GeoJSONFeature } from 'maplibre-gl';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { IDataset, IMapboxLayerView } from '../interfaces';
+import type { IDataset } from '../interfaces';
 import { logger } from '../logger';
-import { findSiblingOrNearestLeaf } from '../model';
 
 export const KEY = 'dataset-highlight';
 
 export type MapDatasetHighlightStore = {
-  feature: Ref<GeoJSON.Feature<GeoJSON.Geometry> | undefined>;
+  feature: Ref<GeoJSONFeature | undefined>;
   source: Ref<string | undefined>;
   dataset?: IDataset;
 };
@@ -29,12 +28,11 @@ export const useMapDatasetHighlightStore = (mapId: string) =>
   )();
 export const useMapDatasetHighlight = (mapId: string) => {
   const store = useMapDatasetHighlightStore(mapId);
-  const { getMap } = useMapStore(mapId);
   function getStore() {
     return store;
   }
   function setFeatureHighlight(
-    feature: GeoJSON.Feature<GeoJSON.Geometry> | undefined,
+    feature: GeoJSONFeature | undefined,
     source: string,
     dataset?: IDataset,
   ) {

@@ -4,7 +4,6 @@ import {
   useDownloadFile,
   useGeoConvertToFile,
 } from '@hungpvq/shared-file';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
@@ -25,6 +24,7 @@ import {
   createDataManagementMapboxComponent,
   createDataset,
   createDatasetPartGeojsonSourceComponent,
+  createDatasetPartHighlightComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
@@ -345,7 +345,9 @@ function createDatasetPoint() {
       .setColor(list1.color)
       .build(),
   ]);
+  const highlight = createDatasetPartHighlightComponent();
   groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
   groupLayer1.add(list1);
   list1.addMenus([
     createMenuItemToggleShow({ location: 'extra' }),
