@@ -4,21 +4,16 @@ import { BaseMapLayer } from '../hooks/model';
 import { BaseMapItem, IBaseMapLayer } from '../types';
 
 export abstract class BaseMapAdapter {
-  protected mapId: string;
   protected current?: BaseMapItem;
   protected layer?: IBaseMapLayer;
-
-  constructor(mapId: string) {
-    this.mapId = mapId;
-  }
 
   public getCurrent(): BaseMapItem | undefined {
     return this.current;
   }
 
-  public async setCurrent(baseMap: BaseMapItem) {
+  public async setCurrent(mapId: string, baseMap: BaseMapItem) {
     this.current = baseMap;
-    await this.onApplyBaseMap(this.mapId, baseMap);
+    await this.onApplyBaseMap(mapId, baseMap);
   }
 
   public getIndexDefault(

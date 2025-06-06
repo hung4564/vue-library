@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   makeShowProps,
   MapControlButton,
@@ -14,8 +15,6 @@ import {
   useShow,
   withMapProps,
 } from '@hungpvq/vue-map-core';
-
-import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
@@ -25,6 +24,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import CreateControl from '../CreateControl/CreateControl.vue';
+import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
 
 const props = defineProps({
@@ -123,6 +123,7 @@ function openAddLayer() {
     </template>
     <CreateControl v-model:show="showCreate" />
     <slot />
+    <LayerMenuDefaultHandle />
   </ModuleContainer>
 </template>
 

@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { addStore, addToQueue, getStore } from '@hungpvq/vue-map-core';
+import { defineStore } from '@hungpvq/shared-store';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
@@ -24,64 +24,61 @@ function generateId(prefix = 'component'): string {
     .substring(2, 11)}`;
 }
 
-function initMapStore(mapId: string) {
-  logHelper(logger, mapId, 'store-component').debug('init');
-  const components: ComponentItem[] = [];
-  const componentIds = ref<string[]>([]);
+export const useMapDatasetComponentStore = (mapId: string) =>
+  defineStore<MapDatasetComponentStore>(['map:core', mapId, KEY], () => {
+    logHelper(logger, mapId, 'store').debug('init');
+    const components: ComponentItem[] = [];
+    const componentIds = ref<string[]>([]);
+    return {
+      components,
+      componentIds,
+    };
+  })();
 
-  const store: MapDatasetComponentStore = {
-    components,
-    componentIds,
-  };
-
-  addStore<MapDatasetComponentStore>(mapId, KEY, store);
-}
-
-addToQueue(KEY, initMapStore);
-
-export function getComponentStore(mapId: string) {
-  return getStore<MapDatasetComponentStore>(mapId, KEY);
-}
-export function getAllComponentIds(mapId: string) {
-  return getComponentStore(mapId)?.componentIds;
-}
-
-export function addComponent(
-  mapId: string,
-  component: Omit<ComponentItem, 'id'>,
-) {
-  const store = getComponentStore(mapId);
-  if (!store) return;
-
-  logHelper(logger, mapId, 'store-component').debug('addComponent', {
-    component,
-    store,
-  });
-  if (component.check) {
-    const index = store.components.findIndex((x) => x.check == component.check);
-    if (index >= 0) {
-      const id = store.components[index].id;
-      Object.assign(store.components[index], component);
-      store.componentIds.value.splice(index, 1);
-      store.componentIds.value.push(id);
-      return id;
-    }
+export const useMapDatasetComponent = (mapId: string) => {
+  const store = useMapDatasetComponentStore(mapId);
+  function getStore() {
+    return store;
   }
-  const id = generateId();
-  store.components.push({
-    ...component,
-    id,
-  });
-  store.componentIds.value.push(id);
-  return id;
-}
-export function removeComponent(mapId: string, id: string) {
-  const store = getComponentStore(mapId);
-  if (!store) return;
-  logHelper(logger, mapId, 'store-component').debug('removeComponent', {
-    id,
-    store,
-  });
-  store.components = store.components.filter((x) => x.id !== id);
-  store.componentIds.value = store.componentIds.value.filter((x) => x !== id);
-}
+  function getAllComponentIds() {
+    return store.componentIds;
+  }
+  function addComponent(component: Omit<ComponentItem, 'id'>) {
+    if (!store) return;
+
+    logHelper(logger, mapId, 'store-component').debug('addComponent', {
+      component,
+      store,
+    });
+    if (component.check) {
+      const index = store.components.findIndex(
+        (x) => x.check == component.check,
+      );
+      if (index >= 0) {
+        const id = store.components[index].id;
+        Object.assign(store.components[index], component);
+        store.componentIds.value.splice(index, 1);
+        store.componentIds.value.push(id);
+        return id;
+      }
+    }
+    const id = generateId();
+    store.components.push({
+      ...component,
+      id,
+    });
+    store.componentIds.value.push(id);
+    return id;
+  }
+  function removeComponent(id: string) {
+    if (!store) return;
+    logHelper(logger, mapId, 'store-component').debug('removeComponent', {
+      id,
+      store,
+    });
+    store.components = store.components.filter((x) => x.id !== id);
+    store.componentIds.value = store.componentIds.value.filter((x) => x !== id);
+  }
+
+  return { getStore, getAllComponentIds, addComponent, removeComponent };
+};

@@ -4,7 +4,6 @@ import {
   useDownloadFile,
   useGeoConvertToFile,
 } from '@hungpvq/shared-file';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
@@ -21,11 +20,11 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
-  addDataset,
   ComponentManagementControl,
   createDataManagementMapboxComponent,
   createDataset,
   createDatasetPartGeojsonSourceComponent,
+  createDatasetPartHighlightComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
@@ -51,12 +50,13 @@ import {
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
+  useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {
-  callDraw,
   DrawControl,
   DrawingType,
   InspectControl,
+  useMapDraw,
 } from '@hungpvq/vue-map-draw';
 import { LegendControl } from '@hungpvq/vue-map-legend';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
@@ -69,6 +69,7 @@ const mapRef = ref();
 const { convertList } = useConvertToGeoJSON();
 const { convert } = useGeoConvertToFile();
 function onMapLoaded(map: MapSimple) {
+  const { addDataset } = useMapDataset(map.id);
   const dataset_raster = createDataset(
     'Group test',
     null,
@@ -262,9 +263,69 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  addDataset(map.id, dataset);
-  addDataset(map.id, createDatasetPoint());
-  // addDataset(map.id, dataset_raster);
+  addDataset(dataset);
+  addDataset(createDatasetPoint());
+  addDataset(createDatasetLineString());
+  // addDataset( dataset_raster);
+}
+function createDatasetLineString() {
+  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true,
+  ) as DatasetComposite;
+  const list1: IListViewUI =
+    createDatasetPartListViewUiComponent('test line string');
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setColor(list1.color)
+      .build(),
+  ]);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  list1.addMenus([
+    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToBoundActionForList(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
+  ]);
+  const identify = createIdentifyMapboxComponent('test identify');
+  identify.addMenus([
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(),
+  ]);
+  dataset.add(identify);
+  const dataManagement = createDataManagementMapboxComponent(
+    'data management',
+    {
+      fields: [{ text: 'Name', value: 'name' }],
+    },
+  );
+  dataManagement.setItems([
+    {
+      id: '2',
+      name: 'feature 2',
+      geometry: {
+        coordinates: [
+          [104.3289285884349, 21.35998263691249],
+          [105.11257582166496, 21.70421219227839],
+          [105.16699576841705, 21.35998263691249],
+          [104.89489603465671, 21.39038859819064],
+        ],
+        type: 'LineString',
+      },
+    },
+  ]);
+  dataset.add(source);
+  dataset.add(dataManagement);
+  dataset.add(groupLayer1);
+  return dataset;
 }
 function createDatasetPoint() {
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
@@ -284,7 +345,9 @@ function createDatasetPoint() {
       .setColor(list1.color)
       .build(),
   ]);
+  const highlight = createDatasetPartHighlightComponent();
   groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
   groupLayer1.add(list1);
   list1.addMenus([
     createMenuItemToggleShow({ location: 'extra' }),
@@ -348,12 +411,13 @@ function createMenuDrawLayer() {
     name: 'Edit feature',
     icon: mdiPencil,
     click: (layer, mapId) => {
+      const { callDraw } = useMapDraw(mapId);
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,
         (dataset) => dataset.type === 'dataManagement',
       );
       if (isDataManagementView(maybeDataManagement)) {
-        callDraw(mapId, {
+        callDraw({
           cleanAfterDone: true,
           draw_support: [
             DrawingType.POINT,

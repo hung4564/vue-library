@@ -18,7 +18,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import { useDragStore } from '../../store';
+import { useDragComponent } from '../../store';
 import MapButton from '../parts/MapButton.vue';
 import MapSidebarToggle from '../parts/MapSidebarToggle.vue';
 const {
@@ -43,7 +43,7 @@ const containerId = inject<Ref<string>>(
   'containerId',
   ref(props.containerId || ''),
 );
-const store = useDragStore(containerId.value);
+const store = useDragComponent();
 if (!containerId.value) {
   throw 'Not set container id';
 }
@@ -63,7 +63,7 @@ const { componentCard, componentCardHeader } = useComponent({
 });
 const componentMapSidebarToggle = computed(
   () =>
-    store.getters.getComponentCardSidebarToggle() ||
+    store.getComponentCardSidebarToggle() ||
     props.componentMapSidebarToggle ||
     MapSidebarToggle,
 );

@@ -96,6 +96,12 @@
       },
       "automaticFromRef": true
     },
-    "projects": ["libs/share/*", "libs/ui/*", "libs/map/*", "libs/*"]
+    "projects": [
+      "libs/share/*",
+      "libs/ui/*",
+      "libs/map/*",
+      "libs/*",
+      "shared-store"
+    ]
   }
 }

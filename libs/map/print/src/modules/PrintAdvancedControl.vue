@@ -20,7 +20,7 @@ import {
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref } from 'vue';
-import { initPrint, type PrintOption } from '../store';
+import { useMapPrint, type PrintOption } from '../store';
 import {
   CrosshairManager,
   PrintableAreaManager,
@@ -68,8 +68,9 @@ const print = ref({
 onBeforeUnmount(() => {
   onClosePrint();
 });
+const { initPrint } = useMapPrint(mapId.value);
 function onInit() {
-  initPrint(mapId.value, {
+  initPrint({
     show: (options) => onShowPrint(options),
     close: () => onClosePrint(),
     save: (cb) => onSave(cb),
@@ -96,7 +97,7 @@ async function onSave(cb?: (image: string) => Promise<void>) {
       print.value.loading = true;
       let image = await exportMapboxWithOptions(
         map,
-        printableArea.getCutSize()
+        printableArea.getCutSize(),
       );
       if (cb) {
         cb(image);

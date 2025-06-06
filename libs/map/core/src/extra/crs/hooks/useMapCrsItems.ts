@@ -1,8 +1,8 @@
+import { logHelper } from '@hungpvq/shared-map';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
-import { getStore } from '../../../store';
-import { MittType } from '../../../types';
-import { MAP_STORE_KEY } from '../../../types/key';
-import { getCrsItem, getCrsItems, setCrs, setCrsItems } from '../store';
+import { useMapMittStore } from '../../mitt';
+import { logger } from '../logger';
+import { useMapCrsStore } from '../store';
 import { CrsItem, MittTypeMapCrs, MittTypeMapCrsEventKey } from '../types';
 
 export const useMapCrsItems = (
@@ -13,12 +13,15 @@ export const useMapCrsItems = (
     onChange?: (p_item: CrsItem[]) => void;
   } = {},
 ) => {
-  const items = shallowRef(getCrsItems(mapId));
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
+  const store = useMapCrsStore(mapId);
+  const items = shallowRef(store.items);
   function setItems(p_items: CrsItem[]) {
-    setCrsItems(mapId, p_items);
+    logHelper(logger, mapId, 'store').debug('setCrsItems', items);
+    store.items = p_items;
+    emitter.emit(MittTypeMapCrsEventKey.setItems, p_items);
     items.value = [...p_items];
   }
-  const emitter = getStore<MittType<MittTypeMapCrs>>(mapId, MAP_STORE_KEY.MITT);
   function updateItems(p_items: CrsItem[]) {
     items.value = p_items;
     onChange && onChange(p_items);
@@ -40,11 +43,16 @@ export const useMapCrsCurrent = (
     onChange?: (p_item: CrsItem | undefined | null) => void;
   } = {},
 ) => {
-  const item = shallowRef<CrsItem | undefined | null>(getCrsItem(mapId));
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
+  const store = useMapCrsStore(mapId);
+  const item = shallowRef<CrsItem | undefined | null>(store.item);
   function setItem(crs: string | undefined | null) {
-    setCrs(mapId, crs);
+    logHelper(logger, mapId, 'store').debug('setCrs', crs);
+    store.crs = crs || '4326';
+    const crsItem = store.items.find((x) => x.epsg == crs);
+    store.item = crsItem;
+    emitter.emit(MittTypeMapCrsEventKey.setCurrent, crsItem);
   }
-  const emitter = getStore<MittType<MittTypeMapCrs>>(mapId, MAP_STORE_KEY.MITT);
   function updateItem(p_item: CrsItem | undefined | null) {
     item.value = p_item;
     onChange && onChange(p_item);

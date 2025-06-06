@@ -1,25 +1,16 @@
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
-import { getStore } from '../../store';
-import { MittType } from '../../types';
-import { MAP_STORE_KEY } from '../../types/key';
-import {
-  getMapLang,
-  setMapLang,
-  setMapLocaleDefault,
-  setMapTranslate,
-} from './store';
+import { useMapMittStore } from '../mitt';
+import { useMapLocale } from './store';
 import { MittTypeMapLang, MittTypeMapLangEventKey } from './types';
 
 const propCache = new Map<string, any>();
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
-
-  const storeLang = shallowRef(getMapLang(mapId));
-  const emitter = getStore<MittType<MittTypeMapLang>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
+  const { getMapLang, setMapLang, setMapLocaleDefault, setMapTranslate } =
+    useMapLocale(mapId);
+  const storeLang = shallowRef(getMapLang());
+  const emitter = useMapMittStore<MittTypeMapLang>(mapId);
   onMounted(() => {
     emitter.on(MittTypeMapLangEventKey.setLocale, update);
     emitter.on(MittTypeMapLangEventKey.setTranslate, update);
@@ -29,7 +20,7 @@ export function useLang(mapId: string) {
     emitter.off(MittTypeMapLangEventKey.setTranslate, update);
   });
   function update() {
-    storeLang.value = getMapLang(mapId);
+    storeLang.value = getMapLang();
   }
 
   function transLocal(key: string, params?: Record<string, any>) {
@@ -60,17 +51,17 @@ export function useLang(mapId: string) {
   });
 
   function setLocale(locale: any) {
-    setMapLang(mapId, locale);
+    setMapLang(locale);
   }
 
   function setLocaleDefault(locale: any) {
-    setMapLocaleDefault(mapId, locale);
+    setMapLocaleDefault(locale);
   }
 
   function setTranslate(
     translate: (key: string, params?: Record<string, any>) => string,
   ) {
-    setMapTranslate(mapId, translate);
+    setMapTranslate(translate);
   }
 
   return { trans, setLocale, setLocaleDefault, setTranslate };

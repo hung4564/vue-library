@@ -1,13 +1,14 @@
 import proj4 from 'proj4';
-import { getCrsItem } from '../store';
+import { useMapCrsStore } from '../store';
 import { CrsItem } from '../types';
 export function useCoordinate(mapId: string) {
+  const store = useMapCrsStore(mapId);
   function format(
     { longitude, latitude }: { longitude: number; latitude: number },
     isDMS = false,
   ) {
     const crs: CrsItem =
-      getCrsItem(mapId) ||
+      store.item ||
       ({
         name: 'WGS 84',
         epsg: '4326',

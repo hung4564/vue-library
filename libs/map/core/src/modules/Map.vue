@@ -6,7 +6,7 @@ import { DraggableContainer } from '@hungpvq/vue-draggable';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
-import { initMap, removeMap, store } from '../store/store';
+import { useMapContainer } from '../store/store';
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');
 }
@@ -66,6 +66,7 @@ const isSupport = ref(isWebglSupported());
 const loaded = ref(false);
 let map: mapboxgl.Map | undefined = undefined;
 const id = ref(getUUIDv4());
+const store = useMapContainer(id.value);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 onMounted(() => {
   const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
@@ -82,10 +83,10 @@ onMounted(() => {
     ...initOptions,
   });
   (map as any).id = id.value;
-  initMap(store, id.value, map as MapSimple);
+  store.initMap(map as MapSimple);
   map.once('load', () => {
-    loaded.value = true;
     emit('map-loaded', map! as MapSimple);
+    loaded.value = true;
   });
 });
 onUnmounted(() => {
@@ -94,7 +95,7 @@ onUnmounted(() => {
     emit('map-destroy', map as MapSimple);
   }
   map = undefined;
-  removeMap(store, id.value);
+  store.removeMap();
 });
 
 const draggableTo = computed(() => {

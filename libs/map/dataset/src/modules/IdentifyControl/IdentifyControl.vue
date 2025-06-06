@@ -16,11 +16,11 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { handleMultiIdentify } from '../../model';
-import { getAllComponentsByType, getDatasetIds } from '../../store';
-import { setFeatureHighlight } from '../../store/highlight';
+import { handleMenuAction } from '../../model/menu';
+import { useMapDataset } from '../../store';
+import { useMapDatasetHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
 const path = {
   icon: mdiHandPointingUp,
@@ -32,6 +32,8 @@ const props = defineProps({
   immediately: Boolean,
 });
 const { mapId, moduleContainerProps } = useMap(props);
+const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
+const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocale } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
 setLocale({
@@ -47,14 +49,14 @@ setLocale({
 });
 const views = ref<Array<IIdentifyView>>([]);
 const datasetIds = computed(() => {
-  return getDatasetIds(mapId.value).value;
+  return getDatasetIds().value;
 });
 watch(
   datasetIds,
   () => {
     updateList();
   },
-  { deep: true }
+  { deep: true },
 );
 onMounted(() => {
   updateList();
@@ -66,8 +68,7 @@ function updateList() {
   getViewFromStore();
 }
 function getViewFromStore() {
-  views.value =
-    getAllComponentsByType<IIdentifyView>(mapId.value, 'identify') || [];
+  views.value = getAllComponentsByType<IIdentifyView>('identify') || [];
 }
 const hasViews = computed(() => {
   return views.value.length > 0;
@@ -83,7 +84,7 @@ const {
   isActive: isEventClickBox,
 } = useEventMap(
   mapId.value,
-  (new EventBboxRanger() as any).setHandler(onBboxSelect)
+  (new EventBboxRanger() as any).setHandler(onBboxSelect),
 );
 
 const origin = reactive({ latitude: 0, longitude: 0 });
@@ -115,7 +116,7 @@ const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
 function onSelectFeatures(
-  features: { identify: IIdentifyView; features: any[] }[]
+  features: { identify: IIdentifyView; features: any[] }[],
 ) {
   result.items = features;
   if (
@@ -137,7 +138,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     const features = await handleMultiIdentify(
       cUsedIdentify.value,
       mapId.value,
-      pointOrBox
+      pointOrBox,
     );
     const elapsedTime = Date.now() - startTime;
     if (elapsedTime < 500) {
@@ -155,7 +156,7 @@ function toggleShow() {
 }
 function close() {
   onRemoveIdentify();
-  setFeatureHighlight(mapId.value, undefined, 'identify');
+  setFeatureHighlight(undefined, 'identify');
   onSelectFeatures([]);
 }
 function onRemoveIdentify() {
@@ -202,12 +203,9 @@ function onRemoveBox() {
 function onMenuAction(
   identify: IIdentifyView,
   menu: MenuAction<IIdentifyView>,
-  item: any
+  item: any,
 ) {
-  if (menu.type != 'item' || !identify) {
-    return;
-  }
-  if ('click' in menu) menu.click(identify, mapId.value, item);
+  handleMenuAction(menu, identify, mapId.value, item);
 }
 onMounted(() => {
   if (props.immediately) onUseMapClick();

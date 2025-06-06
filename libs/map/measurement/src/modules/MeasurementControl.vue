@@ -87,17 +87,18 @@ import {
   MapSimple,
   convertGeometry,
   fitBounds,
+  logHelper,
 } from '@hungpvq/shared-map';
 import {
   EventClick,
   MapControlButton,
   MapControlGroupButton,
   ModuleContainer,
-  crsStore,
-  imageStore,
   setEventMap,
   useLang,
   useMap,
+  useMapCrsItems,
+  useMapImage,
   withMapProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -114,6 +115,7 @@ import {
 } from '@mdi/js';
 import { MapMouseEvent } from 'maplibre-gl';
 import { nextTick, ref } from 'vue';
+import { logger } from '../logger';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 import {
   MapMarkerView,
@@ -128,10 +130,6 @@ import { FormView } from './helper/_viewForm';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import { IViewSettingField } from './types';
-import { logger } from '../logger';
-import { logHelper } from '@hungpvq/shared-map';
-const { getCrsItems } = crsStore;
-const { addImage } = imageStore;
 let handler = MeasurementHandle();
 const DEFAULT_COLOR_HIGHLIGHT = '#004E98';
 const props = defineProps({
@@ -160,7 +158,9 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onInit,
   onDestroy,
 );
+const crsHandle = useMapCrsItems(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
+const imageHandle = useMapImage(mapId.value);
 setLocaleDefault({
   map: {
     measurement: {
@@ -216,8 +216,8 @@ const { add: addEventClick, remove: removeEventClick } = setEventMap(
   event,
 );
 function onInit(map: MapSimple) {
-  addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
-  addImage(map.id!, 'measurment-round', imageRounded, {
+  imageHandle.addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
+  imageHandle.addImage(map.id!, 'measurment-round', imageRounded, {
     content: [4, 4, 12, 12],
     stretchX: [[6, 10]],
     stretchY: [[6, 10]],
@@ -348,7 +348,7 @@ function onInit(map: MapSimple) {
   handler.addView(markerView);
   handler.addView(formView);
 
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'init',
     handler,
   );
@@ -360,7 +360,7 @@ function onDestroy() {
   clear();
 }
 function onMapClick(event: MapMouseEvent) {
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'onMapClick',
     event,
   );
@@ -382,7 +382,7 @@ function checkMeasureRun(type: string) {
 }
 function onMeasureDistance() {
   if (!checkMeasureRun('distance')) return;
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'setAction',
     'distance',
   );
@@ -391,7 +391,7 @@ function onMeasureDistance() {
 }
 function onMeasureArea() {
   if (!checkMeasureRun('area')) return;
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'setAction',
     'area',
   );
@@ -400,7 +400,7 @@ function onMeasureArea() {
 }
 function onMeasureAzimuth() {
   if (!checkMeasureRun('azimuth')) return;
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'setAction',
     'azimuth',
   );
@@ -409,11 +409,11 @@ function onMeasureAzimuth() {
 }
 function onMeasureMarker() {
   if (!checkMeasureRun('point')) return;
-  logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
     'setAction',
     'point',
   );
-  handler.setAction(new MeasurePoint(getCrsItems(mapId.value)));
+  handler.setAction(new MeasurePoint(crsHandle.items.value));
   handler.start();
 }
 function toggleSetting() {

@@ -10,21 +10,23 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { handleMultiIdentifyGetFirst } from '../../model';
-import { getAllComponentsByType, getDatasetIds } from '../../store';
+import { handleMenuAction } from '../../model/menu';
+import { useMapDataset } from '../../store';
 const props = defineProps({
   ...withMapProps,
 });
 const { mapId } = useMap(props);
+const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const views = ref<Array<IIdentifyView & IDataset>>([]);
 const datasetIds = computed(() => {
-  return getDatasetIds(mapId.value).value;
+  return getDatasetIds().value;
 });
 watch(
   datasetIds,
   () => {
     updateList();
   },
-  { deep: true }
+  { deep: true },
 );
 onMounted(() => {
   updateList();
@@ -34,8 +36,7 @@ function updateList() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IIdentifyView & IDataset>(mapId.value, 'identify') ||
-    [];
+    getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
 }
 const {
   add: addEventClick,
@@ -55,11 +56,11 @@ const result = reactive<{
 });
 function onSelectFeatures(feature: {
   identify: IIdentifyView & IDataset;
-  features: any[];
+  feature: any;
 }) {
-  if (feature && feature.features && feature.features[0]) {
+  if (feature && feature.feature) {
     const menu = feature.identify.getMenu('show-detail');
-    if (menu) onMenuAction(feature.identify, menu, feature.features[0].data);
+    if (menu) onMenuAction(feature.identify, menu, feature.feature.data);
   }
 }
 const cUsedIdentify = computed(() => {
@@ -71,7 +72,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     const feature = await handleMultiIdentifyGetFirst(
       cUsedIdentify.value,
       mapId.value,
-      pointOrBox
+      pointOrBox,
     );
     onSelectFeatures(feature);
   } finally {
@@ -82,12 +83,9 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
 function onMenuAction(
   identify: IIdentifyView & IDataset,
   menu: MenuAction<IIdentifyView & IDataset>,
-  item: any
+  item: any,
 ) {
-  if (menu.type != 'item' || !identify) {
-    return;
-  }
-  if ('click' in menu) menu.click(identify, mapId.value, item);
+  handleMenuAction(menu, identify, mapId.value, item);
 }
 onMounted(() => {
   addEventClick();

@@ -1,2 +1,2 @@
 export * from './hooks';
-export * as imageStore from './store';
+export { useMapImage } from './store';

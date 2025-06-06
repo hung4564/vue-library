@@ -3,8 +3,8 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
+import type { MenuAction } from '../../interfaces';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
-import { addComponent, setFeatureHighlight } from '../../store';
 import { isDatasetSourceMap } from '../../utils/check';
 import {
   convertFeatureToItem,
@@ -12,6 +12,7 @@ import {
 } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { findSiblingOrNearestLeaf } from '../dataset.visitors';
+import { handleMenuAction, handleMenuActionClick } from '../menu';
 import { createDatasetPartDataManagementComponent } from './base';
 
 export function createDataManagementMapboxComponent<
@@ -50,20 +51,39 @@ export function createDataManagementMapboxComponent<
   };
 
   const showDetail = (mapId: string, detail: D) => {
-    addComponent(mapId, {
-      component: () => LayerDetail,
-      attr: {
-        item: detail,
-        fields: config.fields,
-        view: dataComponent,
-      },
-      check: 'detail',
-    });
-    setFeatureHighlight(
-      mapId,
-      convertItemToFeature(detail),
-      'detail',
+    handleMenuActionClick(
+      [
+        [
+          'addComponent',
+          [
+            dataComponent,
+            mapId,
+            {
+              component: () => LayerDetail,
+              attr: {
+                item: detail,
+                fields: config.fields,
+                view: dataComponent,
+              },
+              check: 'detail',
+            },
+          ],
+        ],
+        [
+          'highlight',
+          [
+            dataComponent,
+            mapId,
+            {
+              detail: convertItemToFeature(detail),
+              key: 'detail',
+            },
+          ],
+        ],
+      ],
       dataComponent,
+      mapId,
+      detail,
     );
   };
 

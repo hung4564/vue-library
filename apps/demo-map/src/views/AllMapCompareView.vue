@@ -4,11 +4,11 @@ import {
   CompareBaseMapControl,
 } from '@hungpvq/vue-map-basemap';
 import {
+  CompareSettingCard,
   CompareSettingControl,
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  CompareSettingCard,
   GotoControl,
   HomeControl,
   MapCompare,
@@ -17,7 +17,6 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
-  addDataset,
   ComponentManagementControl,
   createDataManagementMapboxComponent,
   createDataset,
@@ -42,6 +41,7 @@ import {
   LayerHighlight,
   LayerInfoControl,
   LayerSimpleMapboxBuild,
+  useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import { mdiDownload, mdiPencil } from '@mdi/js';
@@ -49,13 +49,13 @@ import { ref } from 'vue';
 const mapRef = ref();
 
 function onMapLoaded(props: { id: string }) {
+  const { addDataset } = useMapDataset(props.id);
   const dataset_raster = createDataset(
     'Group test',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const source_raster = createDatasetPartRasterSourceComponent('source', {
-    name: 'raster 1',
     type: 'raster',
     tiles: [
       'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
@@ -76,7 +76,7 @@ function onMapLoaded(props: { id: string }) {
   const groupLayer_raster = createDataset(
     'Group layer 1',
     null,
-    true
+    true,
   ) as DatasetComposite;
   dataset_raster.add(source_raster);
   groupLayer_raster.add(list_raster);
@@ -92,7 +92,7 @@ function onMapLoaded(props: { id: string }) {
   const groupLayer1 = createDataset(
     'Group layer 1',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
@@ -125,7 +125,7 @@ function onMapLoaded(props: { id: string }) {
   const groupLayer2 = createDataset(
     'Group layer 2',
     null,
-    true
+    true,
   ) as DatasetComposite;
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
@@ -155,7 +155,7 @@ function onMapLoaded(props: { id: string }) {
         105.88454157202995, 20.878811643339404, 106.16710803591963,
         21.0854254401454,
       ],
-    }
+    },
   );
   const metadata = createDatasetPartMetadataComponent('metadata', {
     bbox: [
@@ -196,7 +196,7 @@ function onMapLoaded(props: { id: string }) {
         { text: 'Name', value: 'name' },
         { text: 'Name', value: 'name' },
       ],
-    }
+    },
   );
   dataManagement.setItems([
     {
@@ -238,8 +238,8 @@ function onMapLoaded(props: { id: string }) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  addDataset(props.id, dataset_raster);
-  addDataset(props.id, dataset);
+  addDataset(dataset_raster);
+  addDataset(dataset);
 }
 </script>
 <template>

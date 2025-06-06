@@ -5,14 +5,17 @@ import { groupBy } from 'lodash';
 import { onMounted } from 'vue';
 import { useMap, withMapProps } from '../../../hooks';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useMapMittStore } from '../../mitt';
 import { useEventMapItems } from '../hook';
 import { logger } from '../logger';
-import { setCurrentEvent } from '../store';
-import { IEvent } from '../types';
+import { useMapEventStore } from '../store';
+import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 const props = defineProps({
   ...withMapProps,
 });
 const { callMap, mapId, moduleContainerProps } = useMap(props);
+const store = useMapEventStore(mapId.value);
+const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
 const current_listener: Record<string, Record<string, IEvent | undefined>> = {};
 const { items } = useEventMapItems(mapId.value, {
   onChange: (value) => {
@@ -22,6 +25,19 @@ const { items } = useEventMapItems(mapId.value, {
 onMounted(() => {
   updateEventMap(items.value);
 });
+function setCurrentEvent(
+  mapId: string,
+  event_map_type: string,
+  event?: IEvent,
+) {
+  logHelper(logger, mapId, 'store').debug(
+    'setCurrentEvent',
+    event_map_type,
+    event,
+  );
+  store.current[event_map_type] = event;
+  emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
+}
 function updateEventMap(events: IEvent[]) {
   const listeners = groupBy<IEvent>(events, (event) => {
     return event.event_map_type;

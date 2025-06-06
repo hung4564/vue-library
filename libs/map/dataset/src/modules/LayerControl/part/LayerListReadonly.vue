@@ -18,7 +18,8 @@ import type {
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import { getAllComponentsByType } from '../../../store';
+import { handleMenuAction } from '../../../model/menu';
+import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import { convertListToTree, Group, Item, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
@@ -37,6 +38,7 @@ const path = {
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
+const { getAllComponentsByType } = useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
 onMounted(() => {
   updateList();
@@ -56,7 +58,7 @@ function onUpdateLayer(view: IListViewUI) {
             dataset.setOpacity(map, view.opacity);
           }
         },
-      ]
+      ],
     );
   });
 }
@@ -76,8 +78,8 @@ function updateTree() {
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IListViewUI>(mapId.value, 'list').sort(
-      (a, b) => b.index - a.index
+    getAllComponentsByType<IListViewUI>('list').sort(
+      (a, b) => b.index - a.index,
     ) || [];
 }
 const contextMenuRef = ref<
@@ -119,10 +121,7 @@ function onLayerAction({
   action: MenuAction<IListViewUI>;
   item: IListViewUI;
 }) {
-  if (!action) return;
-  if (action.type !== 'item') return;
-  if (!item) return;
-  action.click(item, mapId.value, item);
+  handleMenuAction(action, item, mapId.value, item);
 }
 </script>
 <template lang="">

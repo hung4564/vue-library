@@ -1,9 +1,8 @@
 import { logHelper } from '@hungpvq/shared-map';
+import { defineStore } from '@hungpvq/shared-store';
 import { merge } from 'lodash';
-import { addStore, getStore } from '../../store';
-import { addToQueue } from '../../store/queue';
-import { MittType } from '../../types';
 import { MAP_STORE_KEY } from '../../types/key';
+import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {
   MapLangLocale,
@@ -18,57 +17,44 @@ export type MapLocateStore = {
   translate?: (key: string, params?: MapLangLocale) => string;
 };
 
-function initMapLang(mapId: string) {
-  logHelper(logger, mapId, 'store').debug('init');
-  addStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG, {
-    locale: {},
-    localeDefault: {},
-  });
-}
+export const useMapLocaleStore = (mapId: string) =>
+  defineStore<MapLocateStore>(['map:core', mapId, MAP_STORE_KEY.LANG], () => {
+    logHelper(logger, mapId, 'store').debug('init');
+    return {
+      locale: {},
+      localeDefault: {},
+    };
+  })();
+export const useMapLocale = (mapId: string) => {
+  const store = useMapLocaleStore(mapId);
 
-export function getMapLang(mapId: string) {
-  const store = getStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG);
-  if (!store) {
-    initMapLang(mapId);
-    return getStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG);
+  function setMapLang(locale: MapLangLocale) {
+    logHelper(logger, mapId, 'store').debug('setMapLang', locale);
+
+    if (store) {
+      store.locale = merge({}, store.locale, locale);
+    }
+    const emitter = useMapMittStore<MittTypeMapLang>(mapId);
+    emitter?.emit(MittTypeMapLangEventKey.setLocale, locale);
   }
-  return store;
-}
 
-export function setMapLang(mapId: string, locale: MapLangLocale) {
-  logHelper(logger, mapId, 'store').debug('setMapLang', locale);
-  const store = getMapLang(mapId);
-  if (store) {
-    store.locale = merge({}, store.locale, locale);
+  function setMapLocaleDefault(locale: MapLangLocale) {
+    if (store) {
+      store.localeDefault = merge({}, store.localeDefault, locale);
+    }
   }
-  const emitter = getStore<MittType<MittTypeMapLang>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
-  emitter?.emit(MittTypeMapLangEventKey.setLocale, locale);
-}
 
-export function setMapLocaleDefault(mapId: string, locale: MapLangLocale) {
-  const store = getMapLang(mapId);
-  if (store) {
-    store.localeDefault = merge({}, store.localeDefault, locale);
+  function setMapTranslate(translate: MapTranslateFunction) {
+    logHelper(logger, mapId, 'store').debug('setMapTranslate', translate);
+
+    if (store) {
+      store.translate = translate;
+    }
+    const emitter = useMapMittStore<MittTypeMapLang>(mapId);
+    emitter?.emit(MittTypeMapLangEventKey.setTranslate, translate);
   }
-}
-
-export function setMapTranslate(
-  mapId: string,
-  translate: MapTranslateFunction,
-) {
-  logHelper(logger, mapId, 'store').debug('setMapTranslate', translate);
-  const store = getMapLang(mapId);
-  if (store) {
-    store.translate = translate;
+  function getMapLang() {
+    return store;
   }
-  const emitter = getStore<MittType<MittTypeMapLang>>(
-    mapId,
-    MAP_STORE_KEY.MITT,
-  );
-  emitter?.emit(MittTypeMapLangEventKey.setTranslate, translate);
-}
-
-addToQueue(MAP_STORE_KEY.LANG, initMapLang);
+  return { getMapLang, setMapTranslate, setMapLocaleDefault, setMapLang };
+};

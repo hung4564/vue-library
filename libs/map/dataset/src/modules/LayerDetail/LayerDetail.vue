@@ -7,7 +7,7 @@ export default {
 <script setup>
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { ModuleContainer, useLang, useMap } from '@hungpvq/vue-map-core';
-import { setFeatureHighlight } from '../../store';
+import { useMapDatasetHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 defineProps({
   item: {},
@@ -18,6 +18,7 @@ defineProps({
   },
 });
 const { mapId } = useMap();
+const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans } = useLang(mapId.value);
 const emit = defineEmits(['close']);
 function onUpdateShow(val) {
@@ -26,7 +27,7 @@ function onUpdateShow(val) {
   }
 }
 function onClose() {
-  setFeatureHighlight(mapId.value, undefined, 'detail');
+  setFeatureHighlight(undefined, 'detail');
 }
 </script>
 <template>

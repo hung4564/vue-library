@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
 import { nextTick, onMounted, onUnmounted, provide, ref } from 'vue';
-import { useDragStore } from '../../store';
+import { useDragContainer } from '../../store';
 const emit = defineEmits({
   init: (id: string) => {
     return true;
@@ -14,9 +14,9 @@ const box = ref<HTMLDivElement>();
 const { containerId } = defineProps<{ containerId?: string }>();
 const p_container_id = ref(containerId || `draggable-container-${getUUIDv4()}`);
 const init_done = ref(false);
-const store = useDragStore(p_container_id.value);
+const store = useDragContainer(p_container_id.value);
 onMounted(() => {
-  store.actions.initContainer();
+  store.initContainer();
   window.addEventListener('resize', onResize);
   nextTick(() => {
     onResize();
@@ -25,14 +25,14 @@ onMounted(() => {
   });
 });
 onUnmounted(() => {
-  store.actions.removeContainer();
+  store.removeContainer();
   window.removeEventListener('resize', onResize);
   emit('destroy', p_container_id.value);
 });
 provide('containerId', p_container_id);
 function onResize() {
   const clientWidth = box.value?.clientWidth || 0;
-  store.actions.setParentProps({
+  store.setParentProps({
     width: clientWidth,
     height: box.value?.clientHeight || 0,
     isMobile: clientWidth < 600,
