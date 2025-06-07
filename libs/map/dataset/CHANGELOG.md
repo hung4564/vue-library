@@ -1,3 +1,13 @@
+## 0.6.1 (2025-06-07)
+
+### 🩹 Fixes
+
+- identify bbox and select in build ([acef677](https://github.com/hung4564/vue-library/commit/acef677))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.6.0 (2025-06-07)
 
 ### 🚀 Features
