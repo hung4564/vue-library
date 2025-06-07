@@ -1,3 +1,9 @@
+## 0.2.2 (2025-06-07)
+
+### 🧱 Updated Dependencies
+
+- Updated shared-store to 0.1.0
+
 ## 0.2.1 (2025-04-22)
 
 This was a version bump only for draggable to align it with other projects, there were no code changes.
