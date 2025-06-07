@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import type { IDataset } from '../../interfaces/dataset.base';
@@ -9,6 +9,7 @@ import type {
   IIdentifyViewWithMerge,
   IMapboxLayerView,
 } from '../../interfaces/dataset.parts';
+import { loggerIdentify } from '../../logger';
 import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
@@ -67,6 +68,11 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
       );
 
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
+      logHelper(loggerIdentify, mapId, 'model').debug(
+        'start',
+        allLayerIds,
+        pointOrBox,
+      );
       getMap(mapId, (map: MapSimple) => {
         const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
           pointOrBox,
@@ -96,13 +102,13 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
         }
 
         dataManagement.getList([...idsGet]).then((unique) => {
-          resolve(
-            unique.map((x, i) => ({
-              id: x.id ?? i,
-              name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
-              data: x,
-            })),
-          );
+          const result = unique.map((x, i) => ({
+            id: x.id ?? i,
+            name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
+            data: x,
+          }));
+          logHelper(loggerIdentify, mapId, 'model').debug('end', results);
+          resolve(result);
         });
       });
     });
@@ -173,15 +179,28 @@ export async function handleMultiIdentify(
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
 ): Promise<IdentifyResult[]> {
+  logHelper(loggerIdentify, mapId, 'multi').debug(
+    'start',
+    identifies,
+    props.selectThreshold,
+    pointOrBox,
+  );
   const promises: Promise<IdentifyResult | IdentifyResult[]>[] = [];
   const groupMerge: Record<string, IIdentifyViewWithMerge[]> = {};
-
   if (pointOrBox && isPointLike(pointOrBox)) {
     const point = getXY(pointOrBox);
     pointOrBox = [
       [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
       [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
     ];
+    logHelper(loggerIdentify, mapId, 'multi').debug(
+      'convert',
+      point,
+      point.x,
+      point.y,
+      props.selectThreshold,
+      pointOrBox,
+    );
   }
   identifies.forEach((identify) => {
     if (!isIdentifyMergeView(identify)) {
@@ -200,8 +219,9 @@ export async function handleMultiIdentify(
       handleMergedIdentifyGroup(mergeIdentifies, mapId, pointOrBox),
     );
   }
-
-  return Promise.all(promises).then((res) => res.flat());
+  const result = await Promise.all(promises).then((res) => res.flat());
+  logHelper(loggerIdentify, mapId, 'getFirst').debug('end', result);
+  return result;
 }
 
 export async function handleMultiIdentifyGetFirst(
@@ -229,6 +249,11 @@ export async function handleMultiIdentifyGetFirst(
     });
     allLayerIds.push(...layerIds);
   });
+  logHelper(loggerIdentify, mapId, 'getFirst').debug(
+    'start',
+    allLayerIds,
+    pointOrBox,
+  );
   return new Promise((resolve) => {
     getMap(mapId, (map: MapSimple) => {
       if (pointOrBox && isPointLike(pointOrBox)) {
@@ -237,12 +262,26 @@ export async function handleMultiIdentifyGetFirst(
           [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
           [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
         ];
+        logHelper(loggerIdentify, mapId, 'getFirst').debug(
+          'convert',
+          point,
+          point.x,
+          point.y,
+          props.selectThreshold,
+          pointOrBox,
+        );
       }
       const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         pointOrBox,
         {
           layers: allLayerIds.filter((id) => map.getLayer(id)),
         },
+      );
+      logHelper(loggerIdentify, mapId, 'getFirst').debug(
+        'current',
+        allLayerIds.filter((id) => map.getLayer(id)),
+        features,
+        pointOrBox,
       );
       if (features.length > 0) {
         const x = features[0];
@@ -252,7 +291,7 @@ export async function handleMultiIdentifyGetFirst(
         const name =
           x.properties?.[datasetPartIdentify?.config?.field_name || 'id'] ??
           x.id;
-        resolve({
+        const result = {
           identify: datasetPartIdentify,
           layer: x.layer,
           feature: {
@@ -260,20 +299,41 @@ export async function handleMultiIdentifyGetFirst(
             name,
             data: convertFeatureToItem(x),
           },
-        });
+        };
+        logHelper(loggerIdentify, mapId, 'getFirst').debug('end', result);
+        resolve(result);
       }
     });
   });
 }
 
-function isPointLike(
-  input: PointLike | [PointLike, PointLike],
-): input is PointLike {
-  return !Array.isArray(input) || !Array.isArray(input[0]);
+function isPointLike(value: unknown): value is PointLike {
+  if (Array.isArray(value)) {
+    return (
+      value.length === 2 &&
+      typeof value[0] === 'number' &&
+      typeof value[1] === 'number'
+    );
+  }
+
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'x' in value &&
+    'y' in value
+  ) {
+    const v = value as { x: unknown; y: unknown };
+    return typeof v.x === 'number' && typeof v.y === 'number';
+  }
+
+  return false;
+}
+function isObjectWithXY(p: any): p is { x: number; y: number } {
+  return p && typeof p.x === 'number' && typeof p.y === 'number';
 }
 
 function getXY(point: PointLike): { x: number; y: number } {
-  if (point instanceof Point) {
+  if (point instanceof Point || isObjectWithXY(point)) {
     return { x: point.x, y: point.y };
   } else {
     return { x: point[0], y: point[1] };

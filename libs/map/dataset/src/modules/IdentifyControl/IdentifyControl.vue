@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logHelper } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -15,8 +16,9 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
+import { loggerIdentify } from '../../logger';
 import { handleMultiIdentify } from '../../model';
 import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
@@ -89,11 +91,19 @@ const {
 
 const origin = reactive({ latitude: 0, longitude: 0 });
 function onMapClick(e: MapMouseEvent) {
+  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
+  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
+  if (isEventClickBox.value) return;
+  logHelper(loggerIdentify, mapId.value, 'multi').debug('onMapClick', e);
   origin.latitude = e.lngLat.lat;
   origin.longitude = e.lngLat.lng;
   onGetFeatures(e.point);
 }
 function onBboxSelect(bbox: any) {
+  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
+  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
+  if (isEventClickActive.value) return;
+  logHelper(loggerIdentify, mapId.value, 'multi').debug('onBboxSelect', bbox);
   onRemoveBox();
   if (!bbox) return;
   onGetFeatures(bbox);
@@ -118,6 +128,10 @@ const hasSelectedPoint = computed(() => {
 function onSelectFeatures(
   features: { identify: IIdentifyView; features: any[] }[],
 ) {
+  logHelper(loggerIdentify, mapId.value, 'multi').debug(
+    'onSelectFeatures',
+    features,
+  );
   result.items = features;
   if (
     props.immediately &&
@@ -128,12 +142,20 @@ function onSelectFeatures(
   ) {
     const menu = features[0].identify.getMenu('show-detail');
     if (menu)
-      onMenuAction(features[0].identify, menu, features[0].features[0].data);
+      onMenuAction(
+        features[0].identify,
+        menu as any,
+        features[0].features[0].data,
+      );
   }
 }
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
   result.loading = true;
   try {
+    logHelper(loggerIdentify, mapId.value, 'multi').debug(
+      'onGetFeatures',
+      pointOrBox,
+    );
     const startTime = Date.now();
     const features = await handleMultiIdentify(
       cUsedIdentify.value,
@@ -144,7 +166,15 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     if (elapsedTime < 500) {
       await new Promise((resolve) => setTimeout(resolve, 500 - elapsedTime));
     }
-    onSelectFeatures(features.filter((item) => item.features.length > 0));
+    logHelper(loggerIdentify, mapId.value, 'multi').debug(
+      'onGetFeatures',
+      features,
+    );
+    onSelectFeatures(
+      features.filter(
+        (item) => 'features' in item && item.features.length > 0,
+      ) as any,
+    );
   } finally {
     result.loading = false;
   }
@@ -197,14 +227,12 @@ function onStartBox() {
 }
 function onRemoveBox() {
   isSelectBbox.value = false;
-  removeEventBbox();
+  setTimeout(() => {
+    removeEventBbox();
+  }, 500);
 }
 
-function onMenuAction(
-  identify: IIdentifyView,
-  menu: MenuAction<IIdentifyView>,
-  item: any,
-) {
+function onMenuAction(identify: IIdentifyView, menu: MenuAction, item: any) {
   handleMenuAction(menu, identify, mapId.value, item);
 }
 onMounted(() => {

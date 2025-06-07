@@ -80,7 +80,7 @@ export type MenuItemContentMenu<T> = MenuItemCommon<T> & {
   name: string;
   icon?: string;
 };
-export type MenuAction<T> =
+export type MenuAction<T = any> =
   | MenuDivider
   | MenuItemBottomOrExtra<T>
   | MenuItemContentMenu<T>

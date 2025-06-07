@@ -16,7 +16,7 @@ import type {
 import MenuDivider from './menu-divider.vue';
 import MenuItem from './menu-item.vue';
 const props = defineProps<{
-  item: MenuAction<IIdentifyView>;
+  item: MenuAction;
   data: IIdentifyView;
   mapId: string;
 }>();

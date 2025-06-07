@@ -1,6 +1,12 @@
 import { logHelper, MapSimple } from '@hungpvq/shared-map';
 import { MapEventType } from 'maplibre-gl';
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  shallowRef,
+} from 'vue';
 import { getMap } from '../../../store';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
@@ -22,6 +28,12 @@ export function useEventMap(mapId: string, event: IEvent, immediate = false) {
 export function setEventMap(mapId: string, event: IEvent) {
   const store = useMapEventStore(mapId);
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  onMounted(() => {
+    emitter.on(MittTypeMapEventEventKey.setCurrent, updateCurrent);
+  });
+  onUnmounted(() => {
+    emitter.off(MittTypeMapEventEventKey.setCurrent, updateCurrent);
+  });
   const add = () => {
     logHelper(logger, mapId, 'hook', 'useEventMap').debug('add', event);
     logHelper(logger, mapId, 'store').debug('addListenerMap', event);
@@ -43,13 +55,12 @@ export function setEventMap(mapId: string, event: IEvent) {
     emitter.emit(MittTypeMapEventEventKey.remove, event);
     emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
   };
-  function getCurrentEvent(event_map_type: string) {
-    return (store.current || {})[event_map_type];
+  function updateCurrent(value: IEvent | undefined | null) {
+    current.value = value;
   }
-
+  const current = shallowRef<IEvent | undefined | null>();
   const isActive = computed(() => {
-    const c_event = getCurrentEvent(event.event_map_type);
-    return c_event && c_event.id === event.id;
+    return !!current.value && current.value.id === event.id;
   });
   return { add, remove, isActive };
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logHelper } from '@hungpvq/shared-map';
 import {
   EventClick,
   useEventMap,
@@ -8,7 +9,12 @@ import {
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
-import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
+import type {
+  IdentifyResult,
+  IIdentifyView,
+  MenuAction,
+} from '../../interfaces/dataset.parts';
+import { loggerIdentify } from '../../logger';
 import { handleMultiIdentifyGetFirst } from '../../model';
 import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
@@ -45,8 +51,10 @@ const {
 } = useEventMap(mapId.value, new EventClick().setHandler(onMapClick));
 
 function onMapClick(e: MapMouseEvent) {
+  logHelper(loggerIdentify, mapId.value, 'getFirst').debug('onMapClick', e);
   onGetFeatures(e.point);
 }
+logHelper(loggerIdentify, mapId.value, 'getFirst').debug('init');
 const result = reactive<{
   items: { identify: IIdentifyView & IDataset; features: any[] }[];
   loading: boolean;
@@ -54,25 +62,39 @@ const result = reactive<{
   items: [],
   loading: false,
 });
-function onSelectFeatures(feature: {
-  identify: IIdentifyView & IDataset;
-  feature: any;
-}) {
-  if (feature && feature.feature) {
+function onSelectFeatures(feature: IdentifyResult) {
+  logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
+    'onSelectFeatures',
+    feature,
+  );
+  if (feature && 'feature' in feature && feature.feature) {
     const menu = feature.identify.getMenu('show-detail');
-    if (menu) onMenuAction(feature.identify, menu, feature.feature.data);
+    logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
+      'onSelectFeatures',
+      feature,
+      menu,
+    );
+    if (menu) onMenuAction(feature.identify, menu as any, feature.feature.data);
   }
 }
 const cUsedIdentify = computed(() => {
   return views.value;
 });
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
+  logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
+    'onGetFeatures',
+    pointOrBox,
+  );
   result.loading = true;
   try {
     const feature = await handleMultiIdentifyGetFirst(
       cUsedIdentify.value,
       mapId.value,
       pointOrBox,
+    );
+    logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
+      'onGetFeatures',
+      feature,
     );
     onSelectFeatures(feature);
   } finally {
