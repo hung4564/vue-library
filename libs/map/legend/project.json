@@ -3,13 +3,6 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/map/legend/src",
   "projectType": "library",
-  "release": {
-    "version": {
-      "currentVersionResolver": "git-tag",
-      "preserveLocalDependencyProtocols": false,
-      "manifestRootsToUpdate": ["dist\\{projectRoot}"]
-    }
-  },
   "tags": ["map"],
   "targets": {
     "ts-check": {
