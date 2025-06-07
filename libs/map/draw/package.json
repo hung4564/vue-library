@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/vue-map-draw",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "author": {
     "name": "hung.pv"
   },
@@ -28,8 +28,8 @@
   "peerDependencies": {
     "@hungpvq/content-menu": ">=0.0.1",
     "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/shared-map": "0.5.2",
-    "@hungpvq/vue-map-core": "0.5.2",
+    "@hungpvq/shared-map": "0.6.0",
+    "@hungpvq/vue-map-core": "0.6.0",
     "@hungpvq/shared-store": "0.1.0",
     "@hungpvq/shared-log": "0.1.0",
     "@jamescoyle/vue-icon": "^0.1.2",
