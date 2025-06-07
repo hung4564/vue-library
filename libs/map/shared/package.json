@@ -17,7 +17,7 @@
     "tslib": "^2.3.0",
     "maplibre-gl": "^5.4.0",
     "@turf/turf": "^6.5.0",
-    "@hungpvq/shared-log": "0.1.0"
+    "@hungpvq/shared-log": ">=0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -1,3 +1,18 @@
+## 0.6.0 (2025-06-07)
+
+### 🚀 Features
+
+- add log ([#6](https://github.com/hung4564/vue-library/pull/6))
+
+### 🧱 Updated Dependencies
+
+- Updated shared-map to 0.6.0
+- Updated map-core to 0.6.0
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+
 ## 0.5.1 (2025-04-28)
 
 This was a version bump only for map-draw to align it with other projects, there were no code changes.
