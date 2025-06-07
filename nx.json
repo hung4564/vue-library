@@ -80,18 +80,15 @@
     "projectsRelationship": "independent",
     "version": {
       "preVersionCommand": "npx nx run-many -t build",
-      "generatorOptions": {
-        "currentVersionResolver": "git-tag",
-        "fallbackCurrentVersionResolver": "disk"
-      }
+      "conventionalCommits": true
     },
     "changelog": {
       "projectChangelogs": {
         "renderOptions": {
           "authors": true,
-          "mapAuthorsToGitHubUsernames": true,
           "commitReferences": true,
-          "versionTitleDate": true
+          "versionTitleDate": true,
+          "applyUsernameToAuthors": true
         }
       },
       "automaticFromRef": true
