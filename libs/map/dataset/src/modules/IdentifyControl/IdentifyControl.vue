@@ -91,8 +91,6 @@ const {
 
 const origin = reactive({ latitude: 0, longitude: 0 });
 function onMapClick(e: MapMouseEvent) {
-  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
-  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
   if (isEventClickBox.value) return;
   logHelper(loggerIdentify, mapId.value, 'multi').debug('onMapClick', e);
   origin.latitude = e.lngLat.lat;
@@ -100,8 +98,6 @@ function onMapClick(e: MapMouseEvent) {
   onGetFeatures(e.point);
 }
 function onBboxSelect(bbox: any) {
-  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
-  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
   if (isEventClickActive.value) return;
   logHelper(loggerIdentify, mapId.value, 'multi').debug('onBboxSelect', bbox);
   onRemoveBox();

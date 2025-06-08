@@ -1,5 +1,6 @@
 export { default as ComponentManagementControl } from './ComponentManagementControl/ComponentManagementControl.vue';
 export { default as CreateControl } from './CreateControl/CreateControl.vue';
+export { default as DatasetControl } from './DatasetControl/DatasetControl.vue';
 export { default as IdentifyControl } from './IdentifyControl/IdentifyControl.vue';
 export { default as IdentifyShowFirstControl } from './IdentifyControl/IdentifyShowFirstControl.vue';
 export { default as LayerControl } from './LayerControl/LayerControl.vue';

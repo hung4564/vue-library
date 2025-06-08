@@ -118,7 +118,11 @@ export const useMapDataset = (mapId: string) => {
   function getDatasetIds() {
     return store.datasetIds;
   }
+  function getDatasets() {
+    return store.datasetIds.value.map((id) => store.datasets[id]);
+  }
   return {
+    getDatasets,
     addDataset,
     getDatasetIds,
     removeComponent,

@@ -42,6 +42,7 @@ import {
   createMultiLegend,
   createMultiMapboxLayerComponent,
   DatasetComposite,
+  DatasetControl,
   findSiblingOrNearestLeaf,
   IdentifyControl,
   IdentifyShowFirstControl,
@@ -462,7 +463,7 @@ function createMenuDrawLayer() {
     <MeasurementControl position="top-right" />
     <DrawControl position="top-right" />
     <InspectControl position="top-right" />
-    <LayerControl position="top-left" show>
+    <LayerControl position="top-left">
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
@@ -483,6 +484,7 @@ function createMenuDrawLayer() {
     <BaseMapControl position="bottom-left" />
     <IdentifyShowFirstControl />
     <LayerHighlight />
+    <DatasetControl position="top-left" show />
   </Map>
 </template>
 
