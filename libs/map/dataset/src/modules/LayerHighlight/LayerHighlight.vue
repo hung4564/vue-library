@@ -133,6 +133,7 @@ const updateSource = (map: MapSimple, geojsonData?: GeoJSONFeature) => {
   }
 };
 
+const animationClearFrameId = ref<Record<string, any>>({});
 const highlight = (map: MapSimple, durationMs = 5000) => {
   Object.values(layerIds.value).forEach((id) => {
     if (map.getLayer(id)) {
@@ -142,7 +143,8 @@ const highlight = (map: MapSimple, durationMs = 5000) => {
   startAnimation(map);
 
   if (durationMs > 0) {
-    setTimeout(() => {
+    clearTimeout(animationClearFrameId.value[map.id]);
+    animationClearFrameId.value[map.id] = setTimeout(() => {
       clear(map);
     }, durationMs);
   }
