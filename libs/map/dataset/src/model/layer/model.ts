@@ -3,16 +3,16 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import type { LayerSpecification } from 'maplibre-gl';
 import MultiStyle from '../../modules/StyleControl/style/multi-style.vue';
 import { createNamedComponent } from '../base';
-import { findFirstLeafByType } from '../dataset.visitors';
+import { findFirstLeafByType } from '../visitors';
 import { createDatasetPartMapboxLayerComponent } from './base';
 type BaseLayerSpec = Partial<Omit<LayerSpecification, 'id'>> & { id?: string };
 export function createMultiMapboxLayerComponent(
   name: string,
-  data: BaseLayerSpec[] = []
+  data: BaseLayerSpec[] = [],
 ) {
   const base = createDatasetPartMapboxLayerComponent<BaseLayerSpec[]>(
     name,
-    data
+    data,
   );
   const cacheOpacity: Record<string, number> = {};
   base.getData().forEach((layer) => {
@@ -39,7 +39,7 @@ export function createMultiMapboxLayerComponent(
           (layer.metadata as any)['maplibregl-legend:name'] = name;
           cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
           return layer;
-        })
+        }),
       );
     },
     getBeforeId(): string | undefined {
@@ -91,7 +91,7 @@ export function createMultiMapboxLayerComponent(
           map.setLayoutProperty(
             layer.id!,
             'visibility',
-            show ? 'visible' : 'none'
+            show ? 'visible' : 'none',
           );
         }
       });
@@ -103,7 +103,7 @@ export function createMultiMapboxLayerComponent(
           map.setPaintProperty(
             layer.id!,
             getKeyOpacity(layer),
-            opacity * (cacheOpacity[layer.id!] ?? 1)
+            opacity * (cacheOpacity[layer.id!] ?? 1),
           );
         }
       });
@@ -111,7 +111,7 @@ export function createMultiMapboxLayerComponent(
 
     updateValue(
       map: MapSimple,
-      value: { type: string; index: number; layer: any }
+      value: { type: string; index: number; layer: any },
     ) {
       const { type, index } = value;
       let { layer } = value;
@@ -187,7 +187,7 @@ function updateStyleLayer(map: MapSimple, old: any, newVal: any) {
   map.setLayerZoomRange(
     old.id,
     newVal['min-zoom'] ?? old['min-zoom'] ?? 0,
-    newVal['max-zoom'] ?? old['max-zoom'] ?? 24
+    newVal['max-zoom'] ?? old['max-zoom'] ?? 24,
   );
 
   for (const key in newVal.paint) {
@@ -204,7 +204,7 @@ function updateStyleLayer(map: MapSimple, old: any, newVal: any) {
 }
 
 function getKeyOpacity(
-  layer: BaseLayerSpec
+  layer: BaseLayerSpec,
 ): keyof LayerSpecification['paint'] {
   const keyOpacity =
     layer.type === 'symbol' ? 'icon-opacity' : `${layer.type}-opacity`;

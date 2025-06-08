@@ -11,20 +11,20 @@ import type { DatasetComposite } from '../model';
 
 // Type guard to check if a dataset implements IDatasetMap
 export function isDatasetMap(
-  dataset: IDataset
+  dataset: IDataset,
 ): dataset is IDataset & IDatasetMap {
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 
 export function isDatasetSourceMap(
-  dataset: IDataset
+  dataset: IDataset,
 ): dataset is IDataset & IMapboxSourceView {
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 
 // Type guard to check if a dataset implements IMapboxLayerView
 export function isMapboxLayerView(
-  dataset: IDataset
+  dataset: IDataset,
 ): dataset is IDataset & IMapboxLayerView {
   return (
     'toggleShow' in dataset &&
@@ -35,22 +35,32 @@ export function isMapboxLayerView(
 }
 // Type guard to check if a dataset implements IMapboxLayerView
 export function isComposite(
-  dataset: IDataset
+  dataset: IDataset,
 ): dataset is IDataset & DatasetComposite {
   return dataset.isComposite();
 }
 
 export function isIdentifyMergeView<T extends IDataset>(
-  view: IIdentifyView<T>
+  view: IIdentifyView<T>,
 ): view is IIdentifyViewWithMerge<T> {
   return 'identifyGroupId' in view;
 }
 export function isDataManagementView(
-  dataset: any
+  dataset: any,
 ): dataset is IDataManagementView {
   return (
     dataset?.type === 'dataManagement' &&
     typeof dataset.showDetail === 'function' &&
     typeof dataset.getList === 'function'
+  );
+}
+export function isDatasetHasMethod<T, K extends keyof any>(
+  obj: unknown,
+  methodName: K,
+): obj is T & Record<K, (...args: any[]) => any> {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof (obj as any)[methodName] === 'function'
   );
 }

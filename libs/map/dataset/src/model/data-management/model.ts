@@ -3,7 +3,6 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
-import type { MenuAction } from '../../interfaces';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
 import { isDatasetSourceMap } from '../../utils/check';
 import {
@@ -11,8 +10,8 @@ import {
   convertItemToFeature,
 } from '../../utils/convert';
 import { createNamedComponent } from '../base';
-import { findSiblingOrNearestLeaf } from '../dataset.visitors';
-import { handleMenuAction, handleMenuActionClick } from '../menu';
+import { handleMenuActionClick } from '../menu';
+import { findSiblingOrNearestLeaf } from '../visitors';
 import { createDatasetPartDataManagementComponent } from './base';
 
 export function createDataManagementMapboxComponent<

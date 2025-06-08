@@ -1,10 +1,8 @@
-import type { IDatasetVisitor } from './dataset.visitor';
-
 /**
  * Base interface for the Dataset Composite pattern
  * This interface defines the common operations for both leaf and composite nodes
  */
-export interface IDataset<T = any> extends IDatasetVisit {
+export interface IDataset<T = any> {
   get type(): string;
   get id(): string;
   /**
@@ -41,9 +39,6 @@ export interface IDataset<T = any> extends IDatasetVisit {
    * Get all child datasets (only applicable for composite nodes)
    */
   getChildren?(): IDataset[];
-}
-
-export interface IDatasetVisit {
   /**
    * Get the parent dataset
    * @returns The parent dataset or undefined if this is a root dataset
@@ -61,11 +56,4 @@ export interface IDatasetVisit {
    * @returns True if this dataset is a composite, false otherwise
    */
   isComposite(): boolean;
-
-  /**
-   * Accept a visitor
-   * @param visitor The visitor to accept
-   * @returns The result of the visitor's visit
-   */
-  accept(visitor: IDatasetVisitor): any;
 }

@@ -1,9 +1,9 @@
-import type { IDataset, IDatasetVisitor } from '../interfaces';
+import type { IDataset } from '../interfaces';
 import { createBase } from './base';
 
 export function createDatasetComponent<T = any>(
   name: string,
-  data?: T
+  data?: T,
 ): IDataset {
   let parent: ReturnType<typeof createDatasetComponent> | undefined;
 
@@ -37,9 +37,6 @@ export function createDatasetComponent<T = any>(
 
     isComposite(): boolean {
       return false;
-    },
-    accept(visitor: IDatasetVisitor): any {
-      return visitor.visitLeaf(this); // default behavior
     },
   };
 }

@@ -1,6 +1,6 @@
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import { findFirstLeafByType } from '../dataset.visitors';
+import { findFirstLeafByType } from '../visitors';
 import type { IHighlightConfig, IHighlightView } from './types';
 
 export function createDatasetPartHighlightComponent<

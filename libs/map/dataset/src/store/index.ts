@@ -9,7 +9,8 @@ import { logger } from '../logger';
 import {
   applyToAllLeaves,
   findAllComponentsByType,
-} from '../model/dataset.visitors';
+  traverseTree,
+} from '../model/visitors';
 import { isComposite, isDatasetMap } from '../utils/check';
 
 export const KEY = 'dataset';
@@ -41,13 +42,15 @@ export const useMapDataset = (mapId: string) => {
     });
     store.datasetIds.value.push(layer.id);
     getMap(async (map: MapSimple) => {
-      applyToAllLeaves(layer, [
-        (leaf) => {
-          if (isDatasetMap(leaf)) {
-            leaf.addToMap(map);
+      traverseTree(
+        layer,
+        (node) => {
+          if (isDatasetMap(node)) {
+            node.addToMap(map);
           }
         },
-      ]);
+        {},
+      );
     });
     logHelper(logger, mapId, 'store').debug('addDataset', {
       store,
@@ -60,13 +63,17 @@ export const useMapDataset = (mapId: string) => {
     }
     delete store.datasets[layer.id];
     getMap(async (map: MapSimple) => {
-      applyToAllLeaves(layer, [
-        (leaf) => {
-          if (isDatasetMap(leaf)) {
-            leaf.removeFromMap(map);
+      traverseTree(
+        layer,
+        (node) => {
+          if (isDatasetMap(node)) {
+            node.removeFromMap(map);
           }
         },
-      ]);
+        {
+          direction: 'rtl',
+        },
+      );
     });
     logHelper(logger, mapId, 'store').debug('removeDataset', {
       store,

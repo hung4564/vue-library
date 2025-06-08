@@ -10,12 +10,12 @@ import type {
   IMetadataView,
 } from '../../interfaces';
 import { createNamedComponent } from '../base';
-import { findSiblingOrNearestLeaf } from '../dataset.visitors';
+import { findSiblingOrNearestLeaf } from '../visitors';
 import { createDatasetPartMapboxSourceComponent } from './base';
 
 export function createDatasetPartGeojsonSourceComponent(
   name: string,
-  data?: GeoJSONSourceSpecification['data']
+  data?: GeoJSONSourceSpecification['data'],
 ): IMapboxSourceView {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 
@@ -40,7 +40,7 @@ export function createDatasetPartGeojsonSourceComponent(
     getDataInfo: () => {
       const metadata = findSiblingOrNearestLeaf(
         base,
-        (d) => d.type === 'metadata'
+        (d) => d.type === 'metadata',
       ) as IMetadataView;
 
       return {
@@ -54,7 +54,7 @@ export function createDatasetPartGeojsonSourceComponent(
       data:
         | GeoJSON.Feature<GeoJSON.Geometry>
         | GeoJSON.FeatureCollection<GeoJSON.Geometry>
-        | string
+        | string,
     ) {
       const source = map.getSource(base.id) as GeoJSONSource;
       if (source) {
@@ -66,7 +66,7 @@ export function createDatasetPartGeojsonSourceComponent(
 }
 export function createDatasetPartRasterSourceComponent(
   name: string,
-  data?: RasterSourceSpecification
+  data?: RasterSourceSpecification,
 ): IMapboxSourceView {
   const base = createDatasetPartMapboxSourceComponent(name, data);
 
@@ -81,7 +81,7 @@ export function createDatasetPartRasterSourceComponent(
     getDataInfo: () => {
       const metadata = findSiblingOrNearestLeaf(
         base,
-        (d) => d.type === 'metadata'
+        (d) => d.type === 'metadata',
       ) as IMetadataView;
 
       const raster = base.getData();

@@ -33,7 +33,7 @@ import {
   MenuAction,
 } from '../../interfaces';
 import { isMapboxLayerView } from '../../utils/check';
-import { runAllComponentsWithCheck } from '../dataset.visitors';
+import { runAllComponentsWithCheck } from '../visitors';
 
 const path = {
   show: mdiEye,

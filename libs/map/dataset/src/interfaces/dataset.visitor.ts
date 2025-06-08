@@ -10,19 +10,19 @@ export interface IDatasetVisitor {
    * @param dataset The leaf dataset to visit
    * @returns The result of visiting the leaf dataset
    */
-  visitLeaf(dataset: IDataset): any;
+  visitLeaf(dataset: IDataset): void | false;
 
   /**
    * Visit a composite dataset
    * @param dataset The composite dataset to visit
    * @returns The result of visiting the composite dataset
    */
-  visitComposite(dataset: IDataset): any;
+  visitComposite(dataset: IDataset): void | false;
 
   /**
    * Visit a root dataset (top-level dataset)
    * @param dataset The root dataset to visit
    * @returns The result of visiting the root dataset
    */
-  visitRoot(dataset: IDataset): any;
+  visitRoot(dataset: IDataset): void | false;
 }

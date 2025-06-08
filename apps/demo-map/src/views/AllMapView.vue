@@ -10,6 +10,7 @@ import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
+  getChartRandomColor,
   getMap,
   GlobeControl,
   GotoControl,
@@ -50,6 +51,7 @@ import {
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
+  printTreeFromNode,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {
@@ -263,6 +265,7 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
+  printTreeFromNode(dataset);
   addDataset(dataset);
   addDataset(createDatasetPoint());
   addDataset(createDatasetLineString());
@@ -281,6 +284,7 @@ function createDatasetLineString() {
   ) as DatasetComposite;
   const list1: IListViewUI =
     createDatasetPartListViewUiComponent('test line string');
+  list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
       .setStyleType('line')
@@ -291,7 +295,6 @@ function createDatasetLineString() {
   groupLayer1.add(list1);
   list1.addMenus([
     createMenuItemToggleShow({ location: 'extra' }),
-    createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
@@ -339,6 +342,7 @@ function createDatasetPoint() {
     true,
   ) as DatasetComposite;
   const list1: IListViewUI = createDatasetPartListViewUiComponent('test point');
+  list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
@@ -351,7 +355,6 @@ function createDatasetPoint() {
   groupLayer1.add(list1);
   list1.addMenus([
     createMenuItemToggleShow({ location: 'extra' }),
-    createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);

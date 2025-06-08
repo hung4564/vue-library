@@ -13,8 +13,8 @@ import type {
 } from '../interfaces';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../modules/StyleControl/style-control.vue';
-import { findSiblingOrNearestLeaf } from './dataset.visitors';
 import ToggleShow from './menu/toggle-show.vue';
+import { findSiblingOrNearestLeaf } from './visitors';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset,

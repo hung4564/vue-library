@@ -10,7 +10,7 @@ import { isDataManagementView, isMapboxLayerView } from '../../utils/check';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
-} from '../dataset.visitors';
+} from '../visitors';
 
 // Tách hàm để loại bỏ các mục trùng lặp
 function removeDuplicates(

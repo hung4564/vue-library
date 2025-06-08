@@ -14,11 +14,11 @@ import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
+import { createDatasetMenu } from '../part-menu.model';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
-} from '../dataset.visitors';
-import { createDatasetMenu } from '../part-menu.model';
+} from '../visitors';
 import {
   getMergedFeatures,
   mergePayload,
