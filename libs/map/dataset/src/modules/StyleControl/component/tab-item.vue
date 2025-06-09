@@ -1,5 +1,5 @@
 <template lang="">
-  <button
+  <BaseButton
     class="tab-item"
     :class="{ 'tab-item-active': active, 'tab-item-disabled': disabled }"
     :disabled="disabled"
@@ -21,9 +21,10 @@
         :default_value="default_value"
       ></component>
     </div>
-  </button>
+  </BaseButton>
 </template>
 <script setup lang="ts">
+import { BaseButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 const props = defineProps({
   value: {},

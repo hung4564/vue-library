@@ -1,10 +1,10 @@
 import type { IListViewUI } from '../interfaces/dataset.parts';
 import { createNamedComponent } from './base';
 import { createDatasetLeaf } from './dataset.base.function';
-import { createDatasetMenu } from './part-menu.model';
+import { createDatasetMenu } from './menu';
 export function createDatasetPartListViewUiComponent<T = any>(
   name: string,
-  data?: T
+  data?: T,
 ): IListViewUI<any> {
   const base = createDatasetLeaf<T>(name, data);
   const menu = createDatasetMenu();

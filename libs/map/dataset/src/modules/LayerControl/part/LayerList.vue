@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { useMap, withMapProps } from '@hungpvq/vue-map-core';
+import { BaseButton, useMap, withMapProps } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
@@ -29,6 +29,7 @@ const props = defineProps({
   ...withMapProps,
   disabledDrag: Boolean,
   disabled: Boolean,
+  disabledCreateGroup: Boolean,
 });
 
 defineSlots<{
@@ -172,7 +173,7 @@ function handleContextClick({
   item: IListViewUI;
   actions: MenuAction<IListViewUI>[];
 }) {
-  menu_context.items = actions ? [...actions] : [];
+  menu_context.items = actions ? [...actions] : ([] as any);
   menu_context.view = item;
   if (contextMenuRef.value) contextMenuRef.value.open(event, item);
 }
@@ -197,12 +198,12 @@ function onLayerAction({
       <slot name="title"></slot>
       <div class="v-spacer"></div>
       <ButtonToggleShowALl :items="views" />
-      <button class="layer-item__button" @click="addNewGroup()">
+      <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
-      </button>
-      <button class="layer-item__button" @click="onRemoveAllLayer">
+      </BaseButton>
+      <BaseButton @click="onRemoveAllLayer">
         <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-      </button>
+      </BaseButton>
     </div>
     <div class="layer-control__list">
       <draggable-group-list
@@ -282,18 +283,6 @@ function onLayerAction({
 
 .v-spacer {
   flex: 1 1 auto;
-}
-
-.layer-control__header .layer-item__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
 }
 </style>
 

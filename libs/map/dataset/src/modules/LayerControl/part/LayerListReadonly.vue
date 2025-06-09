@@ -17,11 +17,11 @@ import type {
   IMapboxLayerView,
   MenuAction,
 } from '../../../interfaces';
-import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
+import { runAllComponentsWithCheck } from '../../../model';
 import { handleMenuAction } from '../../../model/menu';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
-import { convertListToTree, Group, Item, TreeItem } from '../../../utils/tree';
+import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';
 
@@ -105,7 +105,7 @@ function handleContextClick({
   item: IListViewUI;
   actions: MenuAction<IListViewUI>[];
 }) {
-  menu_context.items = actions ? [...actions] : [];
+  menu_context.items = actions ? [...actions] : ([] as any);
   menu_context.view = item;
   if (contextMenuRef.value) contextMenuRef.value.open(event, item);
 }
@@ -191,18 +191,6 @@ function onLayerAction({
 
 .v-spacer {
   flex: 1 1 auto;
-}
-
-.layer-control__header .layer-item__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
 }
 </style>
 

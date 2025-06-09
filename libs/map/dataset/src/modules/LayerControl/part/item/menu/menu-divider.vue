@@ -8,8 +8,8 @@ defineProps<{
   data: IListViewUI;
 }>();
 </script>
-<style>
-.layer-control .layer-item__button.menu-divider {
+<style scoped>
+.menu-divider {
   border-left: 1px solid currentColor;
   height: 75%;
   width: 0px;

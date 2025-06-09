@@ -48,7 +48,7 @@ const onAddStyleLayer = (type: string) => {
   emit('update-style', {
     type: 'add-one-layer',
     layer: new LayerSimpleMapboxBuild()
-      .setStyleType(type)
+      .setStyleType(type as any)
       .setColor('#fff')
       .build(),
   });
@@ -103,14 +103,14 @@ const onShowAddStyle = (value: boolean) => {
           :items="tabs"
         ></InputSelect>
       </div>
-      <button
+      <BaseButton
         class="tab-item tab-add clickable"
         @click="onRemoveStyleLayer(tab)"
         :disabled="!tab"
       >
         <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
-      </button>
-      <button
+      </BaseButton>
+      <BaseButton
         class="tab-item tab-add clickable"
         @click="onShowAddStyle(!showAdd)"
       >
@@ -119,7 +119,7 @@ const onShowAddStyle = (value: boolean) => {
           type="mdi"
           :path="!showAdd ? path.create : path.close"
         />
-      </button>
+      </BaseButton>
     </div>
     <div class="style-container" v-if="showAdd">
       <div class="add-style-container">

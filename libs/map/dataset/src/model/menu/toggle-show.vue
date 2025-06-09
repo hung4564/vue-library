@@ -1,28 +1,26 @@
 <template lang="">
   <div v-if="isMulti" class="toggle-buttons-container">
-    <button
-      class="layer-item__button"
+    <BaseButton
       :class="{ _active: getShow(0) }"
       @click.stop="onToggleShowIndex(0)"
     >
       <span>#1</span>
-    </button>
-    <button
-      class="layer-item__button"
+    </BaseButton>
+    <BaseButton
       @click.stop="onToggleShowIndex(1)"
       :class="{ _active: getShow(1) }"
     >
       <span>#2</span>
-    </button>
+    </BaseButton>
   </div>
-  <button class="layer-item__button" @click.stop="onToggleShow" v-else>
+  <BaseButton @click.stop="onToggleShow" v-else>
     <SvgIcon size="14" type="mdi" :path="path.show" v-if="data.show" />
     <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
-  </button>
+  </BaseButton>
 </template>
 <script setup lang="ts">
 import { MapSimple } from '@hungpvq/shared-map';
-import { getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
+import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, ref } from 'vue';
@@ -104,14 +102,7 @@ function getShow(index: number) {
   opacity: 0.5;
   z-index: -1;
 }
-.layer-control .layer-item__button.toggle-buttons-container {
-  display: flex;
-  gap: 2px;
-}
 .toggle-buttons-container span {
   font-size: 0.7rem;
-}
-.toggle-buttons-container .layer-item__button {
-  height: 100%;
 }
 </style>

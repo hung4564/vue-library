@@ -2,11 +2,11 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import type { IDataset, IMapboxLayerView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import { createDatasetMenu } from '../part-menu.model';
+import { createDatasetMenu } from '../menu';
 
 export function createDatasetPartMapboxLayerComponent<T = any>(
   name: string,
-  data: T
+  data: T,
 ): IMapboxLayerView & IDataset<T> {
   const base = createDatasetLeaf<T>(name, data);
   const menu = createDatasetMenu();

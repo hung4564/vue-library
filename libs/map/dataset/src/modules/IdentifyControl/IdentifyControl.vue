@@ -16,7 +16,7 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
 import { handleMultiIdentify } from '../../model';
@@ -335,7 +335,6 @@ onMounted(() => {
                           :key="i"
                         >
                           <MenuItem
-                            class="layer-item__button"
                             :item="menu"
                             :data="child"
                             :mapId="mapId"
@@ -466,17 +465,6 @@ onMounted(() => {
     &__action {
       flex-grow: 0;
       flex-shrink: 0;
-
-      .layer-item__button {
-        display: inline-block;
-        padding: 2px 4px;
-        cursor: pointer;
-        background: transparent;
-        outline: none;
-        box-shadow: none;
-        border: none;
-        min-width: 25px;
-      }
     }
   }
 }

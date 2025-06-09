@@ -14,7 +14,7 @@ import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import { createDatasetMenu } from '../part-menu.model';
+import { createDatasetMenu } from '../menu';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,

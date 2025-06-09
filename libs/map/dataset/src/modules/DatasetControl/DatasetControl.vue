@@ -17,7 +17,7 @@ import {
   withMapProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiDatabaseOutline, mdiInformation } from '@mdi/js';
+import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
 import type { IDataset } from '../../interfaces/dataset.base';
 import { handleMenuActionClick } from '../../model/menu';
@@ -39,9 +39,12 @@ setLocaleDefault({
 const path = {
   icon: mdiDatabaseOutline,
   detail: mdiInformation,
+  delete: mdiDelete,
 };
 const [show, toggleShow] = useShow(props.show);
-const { getDatasets, getDatasetIds } = useMapDataset(mapId.value);
+const { getDatasets, getDatasetIds, removeDataset } = useMapDataset(
+  mapId.value,
+);
 const datasetIds = computed(() => {
   return getDatasetIds().value;
 });
@@ -82,6 +85,9 @@ function onShowDetail(view: IDataset) {
     view,
   );
 }
+function onRemove(view: IDataset) {
+  removeDataset(view);
+}
 onMounted(() => {
   updateList();
 });
@@ -117,6 +123,10 @@ defineSlots<{
                 <div class="dataset-item__title-action">
                   <BaseButton @click.stop="onShowDetail(view)">
                     <SvgIcon size="16" type="mdi" :path="path.detail" />
+                  </BaseButton>
+
+                  <BaseButton @click.stop="onRemove(view)">
+                    <SvgIcon size="16" type="mdi" :path="path.delete" />
                   </BaseButton>
                 </div>
               </div>

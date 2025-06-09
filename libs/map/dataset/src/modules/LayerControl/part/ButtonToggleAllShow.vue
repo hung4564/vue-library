@@ -1,33 +1,30 @@
 <template lang="">
   <div v-if="isMulti" class="toggle-buttons-container">
-    <button
-      class="layer-item__button"
+    <BaseButton
       :class="{ _active: allLayerMultiShow[0] }"
       @click.stop="onToggleShowIndex(0, !allLayerMultiShow[0])"
     >
       <span>#1</span>
-    </button>
-    <button
-      class="layer-item__button"
+    </BaseButton>
+    <BaseButton
       @click.stop="onToggleShowIndex(1, !allLayerMultiShow[1])"
       :class="{ _active: allLayerMultiShow[1] }"
     >
       <span>#2</span>
-    </button>
+    </BaseButton>
   </div>
-  <button
-    class="layer-item__button"
+  <BaseButton
     @click.stop="onToggleShow(!allLayerShow)"
     v-else
     :title="!allLayerShow ? 'Ẩn toàn bộ các lớp' : 'Hiện toàn bộ các lớp'"
   >
     <SvgIcon size="16" type="mdi" :path="!allLayerShow ? mdiEye : mdiEyeOff" />
-  </button>
+  </BaseButton>
 </template>
 <script setup lang="ts">
-import SvgIcon from '@jamescoyle/vue-icon';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { getMaps, getIsMulti, useMap } from '@hungpvq/vue-map-core';
+import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, ref } from 'vue';
 import type {
@@ -35,8 +32,8 @@ import type {
   IListViewUI,
   IMapboxLayerView,
 } from '../../../interfaces';
-import { isMapboxLayerView } from '../../../utils/check';
 import { runAllComponentsWithCheck } from '../../../model';
+import { isMapboxLayerView } from '../../../utils/check';
 
 const allLayerShow = ref(true);
 const allLayerMultiShow = ref([true, true]);

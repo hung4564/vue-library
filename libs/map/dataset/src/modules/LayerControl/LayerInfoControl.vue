@@ -90,27 +90,6 @@ const [show, toggleShow] = useShow(props.show);
   height: 100%;
 }
 .layer-control {
-  .layer-item__button {
-    display: inline-block;
-    padding: 0 4px;
-    cursor: pointer;
-    background: transparent;
-    outline: none;
-    box-shadow: none;
-    border: none;
-    min-width: 25px;
-  }
-  .layer-item__title-action .layer-item__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .layer-item__button[disabled='disabled'] {
-    cursor: default;
-    pointer-events: none;
-    opacity: 0.25;
-  }
-
   .map-row {
     box-sizing: border-box;
     display: flex;
@@ -185,16 +164,5 @@ const [show, toggleShow] = useShow(props.show);
 }
 .v-spacer {
   flex: 1 1 auto;
-}
-.layer-control__header .layer-item__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
 }
 </style>
