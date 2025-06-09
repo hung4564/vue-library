@@ -52,7 +52,6 @@ import {
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
-  printTreeFromNode,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {
@@ -266,7 +265,6 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  printTreeFromNode(dataset);
   addDataset(dataset);
   addDataset(createDatasetPoint());
   addDataset(createDatasetLineString());

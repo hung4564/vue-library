@@ -36,9 +36,9 @@ const props = defineProps({
 const { mapId, moduleContainerProps } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
-setLocale({
+setLocaleDefault({
   map: {
     identify: {
       title: 'Identify',

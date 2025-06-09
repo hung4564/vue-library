@@ -37,8 +37,8 @@ defineSlots<{
   default(): any;
 }>();
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     'layer-control': {
       title: 'Layer Control',

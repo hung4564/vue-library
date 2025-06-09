@@ -28,8 +28,8 @@ const props = defineProps({
   ...makeShowProps({ show: false }),
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     'dataset-control': {
       title: 'Dataset Control',
