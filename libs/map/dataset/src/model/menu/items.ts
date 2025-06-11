@@ -10,11 +10,11 @@ import type {
   MenuAction,
   MenuItemBottomOrExtra,
   MenuItemCustomComponentBottomOrExtra,
-} from '../interfaces';
-import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
-import StyleControl from '../modules/StyleControl/style-control.vue';
-import ToggleShow from './menu/toggle-show.vue';
-import { findSiblingOrNearestLeaf } from './visitors';
+} from '../../interfaces';
+import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
+import StyleControl from '../../modules/StyleControl/style-control.vue';
+import { findSiblingOrNearestLeaf } from '../visitors';
+import ToggleShow from './toggle-show.vue';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset,

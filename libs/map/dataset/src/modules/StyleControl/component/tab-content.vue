@@ -19,18 +19,19 @@
     ></component>
     <div v-if="default_value != null" class="full-width">
       <hr class="map-divider" />
-      <button
+      <BaseButton
         @click="onSetDefaultValue()"
         :disabled="form == null || form == default_value"
         class="map-button text-center full-width"
       >
         {{ trans('map.style-control.back-to-default') }}
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { copyByJson } from '@hungpvq/shared';
+import { BaseButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 const props = defineProps({
   value: {},
@@ -55,8 +56,8 @@ const form = computed({
       props.value != null
         ? props.value
         : props.default_value != null
-        ? copyByJson(props.default_value)
-        : undefined;
+          ? copyByJson(props.default_value)
+          : undefined;
     return value;
   },
   set(value) {

@@ -18,7 +18,6 @@
         <slot name="pre-btn" :loading="loading" />
         <template v-for="(menu, i) in extra_menus" :key="i">
           <LayerMenu
-            class="layer-item__button"
             :item="menu"
             :data="item"
             :disabled="loading"
@@ -26,27 +25,24 @@
             @click="onLayerAction(menu)"
           />
         </template>
-        <button
-          class="layer-item__button"
+        <BaseButton
           v-if="!item.config.disable_delete && !props.readonly"
           :disabled="loading"
           @click.stop="onRemove"
         >
           <SvgIcon size="14" type="mdi" :path="path.delete" />
-        </button>
+        </BaseButton>
         <slot name="extra-btn" :loading="loading" />
-        <button
+        <BaseButton
           v-if="content_menus.length > 0"
-          class="layer-item__button"
           :disabled="loading"
           @click.prevent.stop="handleContextClick"
         >
           <SvgIcon size="14" type="mdi" :path="path.menu" />
-        </button>
+        </BaseButton>
         <template v-if="!showBottom">
           <template v-for="(menu, i) in extra_bottoms" :key="i">
             <LayerMenu
-              class="layer-item__button"
               :item="menu"
               :data="item"
               :disabled="loading"
@@ -54,17 +50,13 @@
               @click="onLayerAction(menu)"
             />
           </template>
-          <button
-            class="layer-item__button"
-            @click.stop="onToggleLegend"
-            v-if="isHasLegend"
-          >
+          <BaseButton @click.stop="onToggleLegend" v-if="isHasLegend">
             <SvgIcon
               size="14"
               type="mdi"
               :path="legendShow ? path.legendClose : path.legendOpen"
             />
-          </button>
+          </BaseButton>
         </template>
       </div>
     </div>
@@ -75,7 +67,6 @@
       <div class="v-spacer"></div>
       <template v-for="(menu, i) in extra_bottoms" :key="i">
         <LayerMenu
-          class="layer-item__button"
           :item="menu"
           :data="item"
           :disabled="loading"
@@ -83,17 +74,13 @@
           @click="onLayerAction(menu)"
         />
       </template>
-      <button
-        class="layer-item__button"
-        @click.stop="onToggleLegend"
-        v-if="isHasLegend"
-      >
+      <BaseButton @click.stop="onToggleLegend" v-if="isHasLegend">
         <SvgIcon
           size="14"
           type="mdi"
           :path="legendShow ? path.legendClose : path.legendOpen"
         />
-      </button>
+      </BaseButton>
     </div>
 
     <div v-if="props.item.legend && legendShow">
@@ -102,13 +89,12 @@
   </div>
 </template>
 <script setup lang="ts">
+import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
   mdiDelete,
   mdiDotsVertical,
-  mdiEye,
-  mdiEyeOff,
   mdiLayers,
   mdiLoading,
   mdiMenuDown,
@@ -156,7 +142,7 @@ const opacity = computed({
 const onRemove = () => {
   emit('click:remove', props.item);
 };
-const button_menus = computed<MenuAction<IListViewUI>[]>(() => {
+const button_menus = computed<MenuAction<any>[]>(() => {
   if (!props.item) {
     return [];
   }

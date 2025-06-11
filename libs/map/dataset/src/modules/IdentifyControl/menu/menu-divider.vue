@@ -6,8 +6,8 @@ import type { IIdentifyView, MenuAction } from '../../../interfaces';
 
 defineProps<{ item: MenuAction<IIdentifyView>; data: IIdentifyView }>();
 </script>
-<style>
-.layer-control .layer-item__button.menu-divider {
+<style scoped>
+.menu-divider {
   border-left: 1px solid currentColor;
   height: 75%;
   width: 0px;

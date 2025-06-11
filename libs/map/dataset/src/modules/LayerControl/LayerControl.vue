@@ -7,6 +7,7 @@ export default {
 <script setup lang="ts">
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
+  BaseButton,
   makeShowProps,
   MapControlButton,
   ModuleContainer,
@@ -30,6 +31,14 @@ import LayerList from './part/LayerList.vue';
 const props = defineProps({
   ...withMapProps,
   ...makeShowProps({ show: false }),
+  disabledCreate: {
+    type: Boolean,
+    default: false,
+  },
+  disabledCreateGroup: {
+    type: Boolean,
+    default: false,
+  },
 });
 defineSlots<{
   titleList: (props: { mapId: string }) => any;
@@ -37,8 +46,8 @@ defineSlots<{
   default(): any;
 }>();
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocale } = useLang(mapId.value);
-setLocale({
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
   map: {
     'layer-control': {
       title: 'Layer Control',
@@ -106,12 +115,12 @@ function openAddLayer() {
           </span>
         </template>
         <div class="layer-control">
-          <LayerList :mapId="mapId">
+          <LayerList :mapId="mapId" :disabledCreateGroup="disabledCreateGroup">
             <template #title>
               <slot name="titleList" :mapId="mapId">
-                <button class="layer-item__button" @click.stop="openAddLayer()">
+                <BaseButton @click.stop="openAddLayer()" v-if="!disabledCreate">
                   <SvgIcon size="14" type="mdi" :path="path.layer.create" />
-                </button>
+                </BaseButton>
               </slot>
             </template>
           </LayerList>
@@ -132,27 +141,6 @@ function openAddLayer() {
   height: 100%;
 }
 .layer-control {
-  .layer-item__button {
-    display: inline-block;
-    padding: 2px 4px;
-    cursor: pointer;
-    background: transparent;
-    outline: none;
-    box-shadow: none;
-    border: none;
-    min-width: 25px;
-  }
-  .layer-item__title-action .layer-item__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .layer-item__button[disabled='disabled'] {
-    cursor: default;
-    pointer-events: none;
-    opacity: 0.25;
-  }
-
   .map-row {
     box-sizing: border-box;
     display: flex;
@@ -227,16 +215,5 @@ function openAddLayer() {
 }
 .v-spacer {
   flex: 1 1 auto;
-}
-.layer-control__header .layer-item__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
 }
 </style>

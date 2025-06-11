@@ -16,7 +16,7 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
 import { handleMultiIdentify } from '../../model';
@@ -36,9 +36,9 @@ const props = defineProps({
 const { mapId, moduleContainerProps } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-const { trans, setLocale } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
-setLocale({
+setLocaleDefault({
   map: {
     identify: {
       title: 'Identify',
@@ -91,8 +91,6 @@ const {
 
 const origin = reactive({ latitude: 0, longitude: 0 });
 function onMapClick(e: MapMouseEvent) {
-  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
-  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
   if (isEventClickBox.value) return;
   logHelper(loggerIdentify, mapId.value, 'multi').debug('onMapClick', e);
   origin.latitude = e.lngLat.lat;
@@ -100,8 +98,6 @@ function onMapClick(e: MapMouseEvent) {
   onGetFeatures(e.point);
 }
 function onBboxSelect(bbox: any) {
-  console.log('map:identify', 'isEventClickBox', isEventClickBox.value);
-  console.log('map:identify', 'isEventClickActive', isEventClickActive.value);
   if (isEventClickActive.value) return;
   logHelper(loggerIdentify, mapId.value, 'multi').debug('onBboxSelect', bbox);
   onRemoveBox();
@@ -339,7 +335,6 @@ onMounted(() => {
                           :key="i"
                         >
                           <MenuItem
-                            class="layer-item__button"
                             :item="menu"
                             :data="child"
                             :mapId="mapId"
@@ -470,17 +465,6 @@ onMounted(() => {
     &__action {
       flex-grow: 0;
       flex-shrink: 0;
-
-      .layer-item__button {
-        display: inline-block;
-        padding: 2px 4px;
-        cursor: pointer;
-        background: transparent;
-        outline: none;
-        box-shadow: none;
-        border: none;
-        min-width: 25px;
-      }
     }
   }
 }

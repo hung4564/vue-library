@@ -57,11 +57,14 @@ export const useMapDataset = (mapId: string) => {
       dataset: layer,
     });
   }
-  function removeDataset(mapId: string, layer: IDataset) {
+  function removeDataset(layer: IDataset) {
     if (!store) {
       return;
     }
     delete store.datasets[layer.id];
+    store.datasetIds.value = store.datasetIds.value.filter(
+      (id) => id !== layer.id,
+    );
     getMap(async (map: MapSimple) => {
       traverseTree(
         layer,
@@ -118,7 +121,11 @@ export const useMapDataset = (mapId: string) => {
   function getDatasetIds() {
     return store.datasetIds;
   }
+  function getDatasets() {
+    return store.datasetIds.value.map((id) => store.datasets[id]);
+  }
   return {
+    getDatasets,
     addDataset,
     getDatasetIds,
     removeComponent,
