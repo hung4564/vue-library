@@ -1,3 +1,21 @@
+## 0.7.0 (2025-06-11)
+
+### 🚀 Features
+
+- update dataset ([#8](https://github.com/hung4564/vue-library/pull/8))
+- change visitors ([7d45f37](https://github.com/hung4564/vue-library/commit/7d45f37))
+
+### 🩹 Fixes
+
+- **map-dataset:** clean clean timeout on new highlight ([24be3a4](https://github.com/hung4564/vue-library/commit/24be3a4))
+- version ([be1706c](https://github.com/hung4564/vue-library/commit/be1706c))
+- identify bbox and select in build ([acef677](https://github.com/hung4564/vue-library/commit/acef677))
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+- hung.pv
+
 ## 0.6.1 (2025-06-07)
 
 ### 🩹 Fixes
