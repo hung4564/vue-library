@@ -81,9 +81,6 @@ function onClose() {
 .table-content > div:hover {
   background: #616161;
 }
-</style>
-
-<style scoped>
 .info-control-container {
   padding: 8px;
   box-sizing: border-box;
