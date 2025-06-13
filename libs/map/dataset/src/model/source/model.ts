@@ -3,6 +3,7 @@ import type {
   GeoJSONSource,
   GeoJSONSourceSpecification,
   RasterSourceSpecification,
+  VectorSourceSpecification,
 } from 'maplibre-gl';
 import type {
   IDataset,
@@ -89,6 +90,49 @@ export function createDatasetPartRasterSourceComponent(
         name: base.getName(),
         bbox: metadata?.metadata?.bbox || raster?.bounds,
         tiles: raster?.tiles?.join(',\n'),
+      };
+    },
+  });
+}
+
+export function createDatasetPartVectorTileComponent(
+  name: string,
+  data?: Partial<VectorSourceSpecification>,
+): IMapboxSourceView {
+  const base = createDatasetPartMapboxSourceComponent(name, data);
+
+  return createNamedComponent('GeojsonSourceComponent', {
+    ...base,
+    getMapboxSource: () => ({
+      type: 'vector',
+      ...base.getData(),
+    }),
+
+    getFieldsInfo: () => [
+      { trans: 'map.layer-control.field.name', value: 'name' },
+      { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
+      {
+        trans: 'map.layer-control.field.minzoom',
+        value: 'minzoom',
+      },
+      {
+        trans: 'map.layer-control.field.maxzoom',
+        value: 'maxzoom',
+      },
+    ],
+    getDataInfo: () => {
+      const metadata = findSiblingOrNearestLeaf(
+        base,
+        (d) => d.type === 'metadata',
+      ) as IMetadataView;
+
+      const raster = base.getData();
+      return {
+        name: base.getName(),
+        bbox: metadata?.metadata?.bbox || raster?.bounds,
+        tiles: raster?.tiles?.join(',\n'),
+        minzoom: raster?.minzoom,
+        maxzoom: raster?.maxzoom,
       };
     },
   });

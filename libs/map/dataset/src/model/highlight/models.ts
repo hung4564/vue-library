@@ -16,6 +16,9 @@ export function createDatasetPartHighlightComponent<
     highlight: (feature) => {
       const source = findFirstLeafByType(base, 'source');
       const source_id = (source as any)?.getSourceId();
+      if (!feature?.id) {
+        return undefined;
+      }
       return {
         source: source_id,
         filter: feature ? ['==', 'id', feature?.id] : undefined,
