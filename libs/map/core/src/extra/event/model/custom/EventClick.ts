@@ -3,6 +3,9 @@ import { EventClickOption } from '../../types';
 import { Event } from '../Event';
 
 export class EventClick extends Event<'click', EventClickOption> {
+  get name() {
+    return 'EventClick';
+  }
   constructor(type_select = 'map') {
     super('click', type_select);
     this.setClassPointer('pointer');
@@ -31,6 +34,9 @@ export class EventClick extends Event<'click', EventClickOption> {
 }
 
 export class EventMouseMove extends Event<'mousemove', EventClickOption> {
+  get name() {
+    return 'EventMouseMove';
+  }
   constructor(type_select = 'map') {
     super('mousemove', type_select);
     this.setClassPointer('pointer');

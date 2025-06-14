@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+  name: 'inspect-show-first-control',
+};
+</script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import {

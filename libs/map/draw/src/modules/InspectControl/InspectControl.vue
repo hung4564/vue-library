@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+  name: 'inspect-control',
+};
+</script>
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/shared-map';
 import {
@@ -5,7 +10,7 @@ import {
   EventMouseMove,
   MapControlButton,
   ModuleContainer,
-  setEventMap,
+  useEventMap,
   useLang,
   useMap,
   withMapProps,
@@ -71,11 +76,11 @@ setLocaleDefault({
 const event = new EventClick().setHandler(onMapMouseMove);
 const eventMouseMove = new EventMouseMove().setHandler(onMapMouseMove);
 const _popupBlocked = ref(false);
-const { add: addEventClick, remove: removeEventClick } = setEventMap(
+const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
   event,
 );
-const { add: addEventMouseMove, remove: removeEventMouseMove } = setEventMap(
+const { add: addEventMouseMove, remove: removeEventMouseMove } = useEventMap(
   mapId.value,
   eventMouseMove,
 );

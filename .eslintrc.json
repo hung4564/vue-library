@@ -34,6 +34,13 @@
       }
     },
     {
+      "files": ["*.vue"],
+      "rules": {
+        "vue/require-name-property": "error",
+        "vue/component-definition-name-casing": ["error", "PascalCase"]
+      }
+    },
+    {
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }

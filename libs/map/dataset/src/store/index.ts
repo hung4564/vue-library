@@ -13,7 +13,7 @@ import {
 } from '../model/visitors';
 import { isComposite, isDatasetMap } from '../utils/check';
 
-export const KEY = 'dataset';
+const KEY = 'dataset';
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
   datasetIds: Ref<string[]>;

@@ -11,6 +11,9 @@ export class EventBboxRanger extends Event<
   EventBboxRangerOption,
   EventBboxRangerHandle
 > {
+  get name() {
+    return 'EventBboxRanger';
+  }
   protected map_ranger?: MapRangerHandle;
   protected _originalHandlers: Record<string, boolean> = {};
 
@@ -56,7 +59,7 @@ export class EventBboxRanger extends Event<
 
       this.map_ranger = startBoxRangerMap(
         map.getCanvasContainer() as HTMLCanvasElement,
-        this.handler
+        this.handler,
       );
     } catch (error) {
       console.error('Error disabling map controls:', error);
@@ -92,7 +95,7 @@ export class EventBboxRanger extends Event<
 
 export function startBoxRangerMap(
   canvas: HTMLCanvasElement,
-  cb_bbox: EventBboxRangerHandle | undefined
+  cb_bbox: EventBboxRangerHandle | undefined,
 ): MapRangerHandle {
   let start: Coordinates;
   let current: Coordinates;

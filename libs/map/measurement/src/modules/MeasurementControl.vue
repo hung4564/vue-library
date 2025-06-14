@@ -81,6 +81,11 @@
     />
   </ModuleContainer>
 </template>
+<script lang="ts">
+export default {
+  name: 'measurement-control',
+};
+</script>
 <script lang="ts" setup>
 import {
   CoordinatesNumber,
@@ -94,7 +99,7 @@ import {
   MapControlButton,
   MapControlGroupButton,
   ModuleContainer,
-  setEventMap,
+  useEventMap,
   useLang,
   useMap,
   useMapCrsItems,
@@ -211,7 +216,7 @@ setLocaleDefault({
 });
 const event = new EventClick().setHandler(onMapClick);
 
-const { add: addEventClick, remove: removeEventClick } = setEventMap(
+const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
   event,
 );

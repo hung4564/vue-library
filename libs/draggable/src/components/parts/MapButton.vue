@@ -13,6 +13,7 @@
 
 <script>
 export default {
+  name: 'MapButton',
   props: { height: { default: 32 }, width: { default: 32 }, disabled: Boolean },
   computed: {
     bindStyle() {

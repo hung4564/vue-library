@@ -38,6 +38,11 @@
   </ModuleContainer>
 </template>
 <script lang="ts">
+export default {
+  name: 'AsideControl',
+};
+</script>
+<script lang="ts">
 import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {

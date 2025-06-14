@@ -4,7 +4,7 @@ import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
 
-export const KEY = 'dataset-component';
+const KEY = 'dataset-component';
 
 export type ComponentItem = {
   id: string;

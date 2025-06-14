@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+  name: 'draw-control',
+};
+</script>
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
 import {

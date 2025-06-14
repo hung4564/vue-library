@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'layer-control',
+  name: 'dataset-control',
 };
 </script>
 

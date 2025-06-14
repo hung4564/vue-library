@@ -16,6 +16,8 @@ export interface IEvent<
   _id: string;
   get id(): string;
   event_map_type: string;
+  from?: string;
+  name?: string;
   type_select: string;
   options: IOption;
   handler?: ICallBack;

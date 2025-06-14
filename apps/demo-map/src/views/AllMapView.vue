@@ -19,6 +19,7 @@ import {
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
+  EventManagementControl,
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
@@ -482,7 +483,8 @@ function createMenuDrawLayer() {
     <BaseMapControl position="bottom-left" />
     <IdentifyShowFirstControl />
     <LayerHighlight />
-    <DatasetControl position="top-left" show />
+    <DatasetControl position="top-left" />
+    <EventManagementControl position="top-left" show />
   </Map>
 </template>
 

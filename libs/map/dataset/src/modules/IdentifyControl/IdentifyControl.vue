@@ -1,3 +1,8 @@
+<script lang="ts">
+export default {
+  name: 'inspect-control',
+};
+</script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';

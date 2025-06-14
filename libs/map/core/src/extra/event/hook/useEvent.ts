@@ -2,6 +2,7 @@ import { logHelper, MapSimple } from '@hungpvq/shared-map';
 import { MapEventType } from 'maplibre-gl';
 import {
   computed,
+  getCurrentInstance,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
@@ -12,6 +13,12 @@ import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
 import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
+
+export function useComponentName() {
+  const instance = getCurrentInstance();
+  const name = instance?.type.name || 'unknown-component';
+  return name;
+}
 
 export function useEventMap(mapId: string, event: IEvent, immediate = false) {
   const { add, remove, isActive } = setEventMap(mapId, event);
@@ -25,7 +32,9 @@ export function useEventMap(mapId: string, event: IEvent, immediate = false) {
   }
   return { add, remove, isActive };
 }
-export function setEventMap(mapId: string, event: IEvent) {
+function setEventMap(mapId: string, event: IEvent) {
+  const name = useComponentName();
+  event.from = event.from || name;
   const store = useMapEventStore(mapId);
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   onMounted(() => {
@@ -36,7 +45,6 @@ export function setEventMap(mapId: string, event: IEvent) {
   });
   const add = () => {
     logHelper(logger, mapId, 'hook', 'useEventMap').debug('add', event);
-    logHelper(logger, mapId, 'store').debug('addListenerMap', event);
     store.items.unshift(event);
     emitter.emit(MittTypeMapEventEventKey.add, event);
     emitter.emit(MittTypeMapEventEventKey.setItems, store.items);

@@ -10,6 +10,12 @@
     <slot />
   </button>
 </template>
+<script lang="ts">
+export default {
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'BaseButton',
+};
+</script>
 <script setup lang="ts">
 const props = defineProps({ active: Boolean, disabled: Boolean });
 </script>

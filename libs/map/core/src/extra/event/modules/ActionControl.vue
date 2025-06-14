@@ -1,10 +1,14 @@
+<script lang="ts">
+export default {
+  name: 'action-control',
+};
+</script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import { groupBy } from 'lodash';
 
 import { onMounted } from 'vue';
 import { useMap, withMapProps } from '../../../hooks';
-import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapMittStore } from '../../mitt';
 import { useEventMapItems } from '../hook';
 import { logger } from '../logger';
@@ -13,7 +17,7 @@ import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 const props = defineProps({
   ...withMapProps,
 });
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId } = useMap(props);
 const store = useMapEventStore(mapId.value);
 const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
 const current_listener: Record<string, Record<string, IEvent | undefined>> = {};
@@ -81,5 +85,5 @@ function updateEventMap(events: IEvent[]) {
 }
 </script>
 <template>
-  <ModuleContainer v-bind="moduleContainerProps"></ModuleContainer>
+  <div></div>
 </template>

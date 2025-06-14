@@ -6,8 +6,6 @@ import { ref } from 'vue';
 import type { IDataset } from '../interfaces';
 import { logger } from '../logger';
 
-export const KEY = 'dataset-highlight';
-
 export type MapDatasetHighlightStore = {
   feature: Ref<GeoJSONFeature | undefined>;
   source: Ref<string | undefined>;
