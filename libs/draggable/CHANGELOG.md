@@ -1,3 +1,14 @@
+## 0.3.0 (2025-06-14)
+
+### 🚀 Features
+
+- add changeShow ([90cbc4d](https://github.com/hung4564/vue-library/commit/90cbc4d))
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.2.2 (2025-06-07)
 
 ### 🧱 Updated Dependencies

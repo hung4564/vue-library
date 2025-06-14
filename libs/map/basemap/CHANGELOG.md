@@ -1,3 +1,10 @@
+## 0.6.1 (2025-06-14)
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.6.1
+- Updated draggable to 0.3.0
+
 ## 0.6.0 (2025-06-07)
 
 ### 🚀 Features

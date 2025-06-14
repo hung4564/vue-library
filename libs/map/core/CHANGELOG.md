@@ -1,3 +1,23 @@
+## 0.6.1 (2025-06-14)
+
+### 🚀 Features
+
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+
+### 🩹 Fixes
+
+- name ([6442f0b](https://github.com/hung4564/vue-library/commit/6442f0b))
+- **core:** disable log ([cebf709](https://github.com/hung4564/vue-library/commit/cebf709))
+- identify bbox and select in build ([acef677](https://github.com/hung4564/vue-library/commit/acef677))
+
+### 🧱 Updated Dependencies
+
+- Updated draggable to 0.3.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.6.0 (2025-06-07)
 
 ### 🚀 Features

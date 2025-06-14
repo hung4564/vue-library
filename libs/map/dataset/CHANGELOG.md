@@ -1,3 +1,19 @@
+## 0.7.1 (2025-06-14)
+
+### 🚀 Features
+
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+- add vector tile source ([8afdeb6](https://github.com/hung4564/vue-library/commit/8afdeb6))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.6.1
+- Updated draggable to 0.3.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.7.0 (2025-06-11)
 
 ### 🚀 Features
