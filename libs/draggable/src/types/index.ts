@@ -6,4 +6,17 @@ export type ContainerStore = {
   width: number;
   isMobile: boolean;
 };
-export type ContainerStoreAction = { setZIndex: (value: number) => void };
+export type ContainerStoreAction = {
+  setZIndex: (value: number) => void;
+} & InitOption;
+
+export type InitOption =
+  | {
+      title?: string;
+      type: 'item-sidebar';
+      location: 'left' | 'right';
+    }
+  | {
+      title?: string;
+      type: Exclude<string, 'item-sidebar'>;
+    };

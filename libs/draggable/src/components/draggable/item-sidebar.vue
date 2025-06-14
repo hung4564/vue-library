@@ -48,7 +48,11 @@ if (!containerId.value) {
   throw 'Not set container id';
 }
 const { show } = useShow(props, emit);
-const { zIndex, itemId } = useInit(containerId.value, show);
+const { zIndex, itemId } = useInit(containerId.value, show, {
+  title: props.title,
+  type: 'item-sidebar',
+  location: props.right ? 'right' : 'left',
+});
 const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
   containerId.value,
   itemId.value,

@@ -48,17 +48,20 @@ const props = defineProps({
 const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
 const containerId = inject<Ref<string>>(
   'containerId',
-  ref(props.containerId || '')
+  ref(props.containerId || ''),
 );
 if (!containerId.value) {
   throw 'Not set container id';
 }
 const { show } = useShow(props, emit);
-const { zIndex, itemId } = useInit(containerId.value, show);
+const { zIndex, itemId } = useInit(containerId.value, show, {
+  title: props.title,
+  type: 'item-popup',
+});
 const { containerWidth, containerHeight } = useContainerSize(containerId.value);
 const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
   containerId.value,
-  itemId.value
+  itemId.value,
 );
 const init_done = ref(false);
 const isActive = ref(false);
@@ -90,7 +93,7 @@ watch(
   () => {
     init();
   },
-  { immediate: true }
+  { immediate: true },
 );
 function init() {
   init_done.value = false;

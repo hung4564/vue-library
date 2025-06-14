@@ -28,16 +28,19 @@ const props = defineProps({
 const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
 const containerId = inject<Ref<string>>(
   'containerId',
-  ref(props.containerId || '')
+  ref(props.containerId || ''),
 );
 if (!containerId.value) {
   throw 'Not set container id';
 }
 const { show } = useShow(props, emit);
-const { zIndex, itemId } = useInit(containerId.value, show);
+const { zIndex, itemId } = useInit(containerId.value, show, {
+  title: props.title,
+  type: 'item-bottom',
+});
 const { isFirst, isHasItems, onToBack } = useContainerOrder(
   containerId.value,
-  itemId.value
+  itemId.value,
 );
 const { expand, toggle: onToggleExpand } = useExpand(props, emit, false);
 const { componentCard, componentCardHeader } = useComponent({

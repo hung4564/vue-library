@@ -1,10 +1,17 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDragContainer, useDragItem } from '../store';
+import { InitOption } from '../types';
 import { checkIsFirst, checkIsLast } from '../utils/array';
 
-export function useInit(containerId: string, show: Ref<boolean>, id?: string) {
-  const itemId = ref(id || `draggable-item-${getUUIDv4()}`);
+export function useInit(
+  containerId: string,
+  show: Ref<boolean>,
+  optionDefault: InitOption = {
+    type: 'draggable-item',
+  },
+) {
+  const itemId = ref(`draggable-item-${getUUIDv4()}`);
   const zIndex = ref(0);
   function setZIndex(value: number) {
     zIndex.value = value;
@@ -13,6 +20,7 @@ export function useInit(containerId: string, show: Ref<boolean>, id?: string) {
   onMounted(() => {
     store.registerItem(itemId.value);
     store.registerAction(itemId.value, {
+      ...optionDefault,
       setZIndex,
     });
     if (show.value) {

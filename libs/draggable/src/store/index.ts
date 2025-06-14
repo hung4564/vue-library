@@ -2,7 +2,7 @@ import { defineStore } from '@hungpvq/shared-store';
 import { reactive } from 'vue';
 import { ContainerStore, ContainerStoreAction } from '../types';
 
-export const useDragStore = defineStore('drag', () => {
+export const useDragStore = defineStore('drag:core', () => {
   const container = reactive<Record<string, ContainerStore>>({});
   const componentCard = undefined;
   const componentCardHeader = undefined;
@@ -132,6 +132,18 @@ export const useDragContainer = (containerId: string) => {
     getWidth() {
       const container = store.container[containerId];
       return container.width;
+    },
+    getItems() {
+      const container = store.container?.[containerId];
+      return container?.items;
+    },
+    getItemAction(id: string) {
+      const container = store.container?.[containerId];
+      return container?.actions?.[id];
+    },
+    getItemShows() {
+      const container = store.container?.[containerId];
+      return container?.show;
     },
     getHeight() {
       const container = store.container[containerId];
