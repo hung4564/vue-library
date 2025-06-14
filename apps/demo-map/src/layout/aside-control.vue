@@ -38,11 +38,6 @@
   </ModuleContainer>
 </template>
 <script lang="ts">
-export default {
-  name: 'AsideControl',
-};
-</script>
-<script lang="ts">
 import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
@@ -58,6 +53,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMenu } from '@mdi/js';
 import { RouterLink } from 'vue-router';
 export default {
+  name: 'AsideControl',
   components: {
     VList,
     DraggableItemSideBar,

@@ -10,10 +10,17 @@ const containerId = ref('');
 function init(id) {
   containerId.value = id;
 }
+function onChangeShow(value) {
+  console.log('onChangeShow', value);
+}
 </script>
 
 <template>
-  <DraggableContainer containerId="test" @init="init">
+  <DraggableContainer
+    containerId="test"
+    @init="init"
+    @change-show="onChangeShow"
+  >
     <DraggableItemSideBar show title="sidebar 1">
       <div style="height: 100vh"></div>
     </DraggableItemSideBar>
