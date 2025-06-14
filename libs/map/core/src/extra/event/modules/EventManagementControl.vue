@@ -118,7 +118,7 @@ const groupedViews = computed(() => {
                   {{ event.name || 'N/A' }}
                 </div>
                 <div>
-                  <strong>{{ trans('map.event-control.field.name') }}:</strong>
+                  <strong>{{ trans('map.event-control.field.from') }}:</strong>
                   {{ event.from || 'N/A' }}
                 </div>
                 <div class="status">
