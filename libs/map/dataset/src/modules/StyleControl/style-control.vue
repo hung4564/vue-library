@@ -57,7 +57,7 @@ const onUpdateStyle = (value: any) => {
 };
 const updateValue = () => {
   const layerView = findSiblingOrNearestLeaf(props.item, (dataset) =>
-    isMapboxLayerView(dataset)
+    isMapboxLayerView(dataset),
   );
   if (layerView) {
     if (isMapboxLayerView(layerView)) {
@@ -77,6 +77,7 @@ const updateValue = () => {
         v-model:show="show"
         v-if="layer_map_component"
         @close="onClose"
+        :title="trans('map.style-control.title')"
       >
         <template #title>
           <span class="layer-control__title">

@@ -108,6 +108,7 @@ function openAddLayer() {
       <DraggableItemSideBar
         :containerId="props.containerId"
         v-model:show="show"
+        :title="trans('map.layer-control.title')"
       >
         <template #title>
           <span class="layer-control__title">

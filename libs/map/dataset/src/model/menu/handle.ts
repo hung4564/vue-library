@@ -20,6 +20,9 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
   mapId: string,
   value: any,
 ) {
+  if (!click) {
+    return;
+  }
   if (typeof click === 'function') {
     // Trường hợp: hàm trực tiếp
     click(layer, mapId, value);

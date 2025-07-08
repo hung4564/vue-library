@@ -113,6 +113,7 @@ defineSlots<{
       <DraggableItemSideBar
         :containerId="props.containerId"
         v-model:show="show"
+        :title="trans('map.dataset-control.title')"
       >
         <template #title> {{ trans('map.dataset-control.title') }} </template>
         <div class="dataset-control">

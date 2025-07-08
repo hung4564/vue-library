@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
   width: 100%;
   text-align: center;
   overflow: hidden;
-  color: white;
+  color: var(--card-color);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
 }
 
