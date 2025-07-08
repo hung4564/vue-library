@@ -20,7 +20,13 @@ export function useShow(props: any, emit?: any, init?: boolean) {
       }
     },
   });
-  return { show };
+  function open() {
+    show.value = true;
+  }
+  function close() {
+    show.value = false;
+  }
+  return { show, open, close };
 }
 export const withShowProps = {
   show: Boolean,
@@ -58,4 +64,24 @@ export const withExpandProps = {
 
 export const withExpandEmit = {
   'update:expand': (_value: boolean) => Boolean,
+};
+
+export const useHighlight = () => {
+  const isHighlight = ref(false);
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  const setHighLight = (highlight?: boolean) => {
+    const newValue = highlight !== undefined ? highlight : !isHighlight.value;
+    isHighlight.value = newValue;
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    if (newValue) {
+      timeout = setTimeout(() => {
+        isHighlight.value = false;
+        timeout = null;
+      }, 5000);
+    }
+  };
+  return { isHighlight, setHighLight };
 };

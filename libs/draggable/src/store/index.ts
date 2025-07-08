@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 import {
   ContainerStore,
   ContainerStoreAction,
+  ContainerStoreOtherAction,
   LocationSideBar,
 } from '../types';
 
@@ -123,6 +124,12 @@ export const useDragItem = (containerId: string) => {
     },
     registerAction(id: string, action: ContainerStoreAction) {
       container.actions[id] = action;
+    },
+    registerOtherAction(
+      id: string,
+      action: Partial<ContainerStoreOtherAction>,
+    ) {
+      container.actions[id] = { ...container.actions[id], ...action };
     },
     unRegisterItem(id: string) {
       if (!container) {

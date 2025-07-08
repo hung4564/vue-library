@@ -6,6 +6,7 @@ export default {
 <script setup lang="ts">
 import { inject, ref, Ref } from 'vue';
 import {
+  useInitAction,
   useShow,
   withExpandEmit,
   withShareComponent,
@@ -33,7 +34,7 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw 'Not set container id';
 }
-const { show } = useShow(props, emit);
+const { show, open, close } = useShow(props, emit);
 const c_location =
   props.location != null
     ? (props.location as LocationSideBar)
@@ -44,6 +45,10 @@ const { location, itemId } = useInitSidebar(containerId.value, show, {
   title: props.title,
   type: 'item-sidebar',
   location: c_location,
+});
+useInitAction(containerId.value, itemId.value, {
+  open,
+  close,
 });
 </script>
 

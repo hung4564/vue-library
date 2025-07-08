@@ -10,7 +10,13 @@ export type ContainerStore = {
 export type ContainerStoreAction = {
   setZIndex: (value: number) => void;
   setShow: (value: boolean) => void;
-} & InitOption;
+} & Partial<ContainerStoreOtherAction> &
+  InitOption;
+export type ContainerStoreOtherAction = {
+  setHighLight: (highlight?: boolean) => void;
+  open: () => void;
+  close: () => void;
+};
 
 export type InitOption =
   | {
@@ -23,7 +29,7 @@ export type InitOption =
       type: Exclude<string, 'item-sidebar'>;
     };
 export type LocationSideBar = 'left' | 'right' | 'top' | 'bottom';
-type SidebarConfig = {
+export type SidebarConfig = {
   items: string[];
   show?: string;
 };

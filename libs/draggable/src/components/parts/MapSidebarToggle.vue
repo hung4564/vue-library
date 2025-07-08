@@ -50,7 +50,7 @@ defineProps({
   height: 48px;
 }
 
-.draggable-header :deep(.map-control-button) {
+.draggable-header :deep(.hungpvq-draggable-button) {
   background-color: unset;
 }
 

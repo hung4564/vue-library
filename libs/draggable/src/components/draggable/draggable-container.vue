@@ -133,6 +133,7 @@ function onResize() {
 }
 :root {
   --card-background-color: rgba(32, 43, 54, 0.9);
+  --card-highlight-background-color: rgba(26, 115, 232);
   --card-color: #fff;
 }
 </style>
