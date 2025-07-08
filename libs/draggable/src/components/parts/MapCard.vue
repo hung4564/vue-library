@@ -31,11 +31,11 @@ export default {
 
 <style lang="scss">
 .card {
-  background-color: rgba(32, 43, 54, 0.9);
-  color: #fff;
+  background-color: var(--card-background-color);
+  color: var(--card-color);
 
   button {
-    color: #fff;
+    color: var(--card-color);
   }
 
   position: relative;

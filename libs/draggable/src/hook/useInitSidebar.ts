@@ -1,43 +1,48 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useDragContainer, useDragItem } from '../store';
-import { InitOption } from '../types';
+import { useDragContainer, useDragItem, useSidebarItem } from '../store';
+import { LocationSideBar } from '../types';
 import { checkIsFirst, checkIsLast } from '../utils/array';
 
-export function useInit(
+export function useInitSidebar(
   containerId: string,
   show: Ref<boolean>,
-  optionDefault: InitOption = {
-    type: 'draggable-item',
+  optionDefault: {
+    title?: string;
+    type: 'item-sidebar';
+    location: LocationSideBar;
   },
 ) {
   const itemId = ref(`draggable-item-${getUUIDv4()}`);
-  const zIndex = ref(10);
+  const zIndex = ref(0);
   function setZIndex(value: number) {
     zIndex.value = value;
   }
   function setShow(value: boolean) {
     show.value = value;
   }
-  const store = useDragItem(containerId);
+  const store = useSidebarItem(containerId);
   onMounted(() => {
-    store.registerItem(itemId.value);
+    store.registerSideBar(itemId.value, optionDefault.location);
     store.registerAction(itemId.value, {
       ...optionDefault,
       setZIndex,
       setShow,
     });
     if (show.value) {
-      store.registerItemShow(itemId.value, show.value);
+      store.registerSideBarShow(itemId.value, show.value);
     }
   });
   onUnmounted(() => {
-    store.unRegisterItem(itemId.value);
+    store.unRegisterSideBar(itemId.value);
   });
   watch(show, (value) => {
-    store.registerItemShow(itemId.value, value);
+    if (value) store.registerSideBarShow(itemId.value, value);
   });
-  return { itemId, zIndex };
+  const location = computed(() => {
+    return optionDefault.location;
+  });
+  return { itemId, zIndex, location };
 }
 export function useContainerOrder(containerId: string, itemId: string) {
   const store = useDragItem(containerId);

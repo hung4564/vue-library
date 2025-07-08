@@ -8,18 +8,18 @@ category: Component
 
 ## Props
 
-| Prop             | Description | Type            | Required | Default Value |
-| ---------------- | ----------- | --------------- | -------- | ------------- |
-| `show`           |             | `boolean`       | `fasle`  | false         |
-| `expand`         |             | `boolean`       | `fasle`  | false         |
-| `width`          |             | `number,string` | `fasle`  | 'auto'        |
-| `right`          |             | `boolean`       | `fasle`  | --            |
-| `title`          |             | `string`        | `fasle`  | --            |
-| `disabledExpand` |             | `boolean`       | `fasle`  | --            |
-| `disabledHeader` |             | `boolean`       | `fasle`  | --            |
-| `disabledClose`  |             | `boolean`       | `fasle`  | --            |
-| `disabledOrder`  |             | `boolean`       | `fasle`  | --            |
-| `containerId`    |             | `string`        | `fasle`  | --            |
+| Prop             | Description                         | Type            | Required | Default Value |
+| ---------------- | ----------------------------------- | --------------- | -------- | ------------- |
+| `show`           |                                     | `boolean`       | `fasle`  | false         |
+| `expand`         |                                     | `boolean`       | `fasle`  | false         |
+| `width`          |                                     | `number,string` | `fasle`  | 'auto'        |
+| `location`       | 'left' , 'right' , 'top' , 'bottom' | `string`        | `fasle`  | --            |
+| `title`          |                                     | `string`        | `fasle`  | --            |
+| `disabledExpand` |                                     | `boolean`       | `fasle`  | --            |
+| `disabledHeader` |                                     | `boolean`       | `fasle`  | --            |
+| `disabledClose`  |                                     | `boolean`       | `fasle`  | --            |
+| `disabledOrder`  |                                     | `boolean`       | `fasle`  | --            |
+| `containerId`    |                                     | `string`        | `fasle`  | --            |
 
 ## Events
 

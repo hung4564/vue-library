@@ -1,12 +1,12 @@
 import { computed, ref, watch } from 'vue';
 
-export function useShow(props: any, emit: any, init?: boolean) {
+export function useShow(props: any, emit?: any, init?: boolean) {
   const p_show = ref<boolean>(!!props.show || !!init);
   watch(
     () => props.show,
     (value) => {
       p_show.value = value;
-    }
+    },
   );
   const show = computed({
     get() {
@@ -14,9 +14,9 @@ export function useShow(props: any, emit: any, init?: boolean) {
     },
     set(val) {
       p_show.value = val;
-      emit('update:show', val);
+      emit && emit('update:show', val);
       if (!val) {
-        emit('close');
+        emit && emit('close');
       }
     },
   });
@@ -30,13 +30,13 @@ export const withShowEmit = {
   'update:show': (value: boolean) => Boolean,
   close: () => Boolean,
 };
-export function useExpand(props: any, emit: any, init?: boolean) {
+export function useExpand(props: any, emit?: any, init?: boolean) {
   const p_expand = ref<boolean>(!!init);
   watch(
     () => props.expand,
     (value) => {
       p_expand.value = value;
-    }
+    },
   );
   const expand = computed({
     get() {
@@ -44,7 +44,7 @@ export function useExpand(props: any, emit: any, init?: boolean) {
     },
     set(val) {
       p_expand.value = val;
-      emit('update:expand', val);
+      emit && emit('update:expand', val);
     },
   });
   function toggle() {
