@@ -37,7 +37,9 @@ const { width, height, items, itemShows, sideBar } = useManagement(
     </div>
     <div>
       <div class="management-info-line">
-        <label>Item</label>
+        <label
+          >Item({{ items.length }} item{{ items.length !== 1 ? 's' : '' }})
+        </label>
       </div>
       <ShowStatusDragItem
         :items="items"
