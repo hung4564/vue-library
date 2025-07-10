@@ -1,3 +1,13 @@
+## 0.4.0 (2025-07-10)
+
+### 🚀 Features
+
+- new for draggable ([#9](https://github.com/hung4564/vue-library/pull/9))
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+
 ## 0.3.0 (2025-06-14)
 
 ### 🚀 Features
