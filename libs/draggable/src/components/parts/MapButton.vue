@@ -1,11 +1,11 @@
 <template>
   <button
-    class="map-control-button"
+    class="hungpvq-draggable-button"
     v-bind="$attrs"
     :style="bindStyle"
     :class="bindClass"
   >
-    <span class="map-control-button__content">
+    <span class="hungpvq-draggable-button__content">
       <slot />
     </span>
   </button>
@@ -20,18 +20,18 @@ export default {
       return { width: `${this.width}px`, height: `${this.height}px` };
     },
     bindClass() {
-      return { 'map-control-button--disabled': this.disabled };
+      return { 'hungpvq-draggable-button--disabled': this.disabled };
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.map-control-button {
+.hungpvq-draggable-button {
   cursor: pointer;
   pointer-events: all;
   border-style: none;
-  background-color: #f5f5f5;
+  background-color: transparent;
   font-size: 0.625rem;
   align-items: center;
   border-radius: 4px;

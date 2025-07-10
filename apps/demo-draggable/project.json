@@ -5,10 +5,14 @@
   "sourceRoot": "apps/demo-draggable/src",
   "// targets": "to see all targets run: nx show project demo-draggable --web",
   "targets": {
-    "publish": {
-      "executor": "@nx/vite:build",
+    "publish-demo": {
+      "cache": true,
+      "inputs": ["production", "^production"],
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "deploy/demo-draggable"
+        "commands": ["vite build"],
+        "outDir": "../../deploy/demo-draggable",
+        "cwd": "{projectRoot}"
       }
     }
   }

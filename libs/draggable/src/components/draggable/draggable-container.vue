@@ -3,7 +3,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { debounce } from 'lodash';
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue';
 import { useDragContainer } from '../../store';
-import { InitOption } from '../../types';
+import SidebarContainer from './sidebar/sidebar-container.vue';
 type ResultShow = {
   sidebar?: {
     leftCount: number;
@@ -99,6 +99,12 @@ function onResize() {
 
 <template>
   <div class="draggable-container" ref="box" :id="containerId">
+    <template v-if="p_container_id && init_done">
+      <SidebarContainer location="left" />
+      <SidebarContainer location="right" />
+      <SidebarContainer location="top" />
+      <SidebarContainer location="bottom" />
+    </template>
     <slot v-if="p_container_id && init_done" :containerId="containerId" />
   </div>
 </template>
@@ -124,5 +130,10 @@ function onResize() {
   transition: inherit;
   border-color: #fff;
   opacity: 0.3;
+}
+:root {
+  --card-background-color: rgba(32, 43, 54, 0.9);
+  --card-highlight-background-color: rgba(26, 115, 232);
+  --card-color: #fff;
 }
 </style>

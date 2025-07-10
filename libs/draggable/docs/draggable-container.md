@@ -14,10 +14,11 @@ category: Component
 
 ## Events
 
-| Name    | Description             |
-| ------- | ----------------------- |
-| init    | `({id:String}) => void` |
-| destroy | `({id:String}) => void` |
+| Name       | Description                                       |
+| ---------- | ------------------------------------------------- |
+| init       | `({id:String}) => void`                           |
+| destroy    | `({id:String}) => void`                           |
+| changeShow | `({show: ResultShow; idsShow: string[]}) => void` |
 
 ## Slots
 

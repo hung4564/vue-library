@@ -9,8 +9,10 @@ import {
   useComponent,
   useContainerOrder,
   useExpand,
+  useHighlight,
   useIcon,
-  useInit,
+  useInitAction,
+  useInitItem,
   useShow,
   withExpandEmit,
   withExpandProps,
@@ -33,10 +35,16 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw 'Not set container id';
 }
-const { show } = useShow(props, emit);
-const { zIndex, itemId } = useInit(containerId.value, show, {
+const { show, open, close } = useShow(props, emit);
+const { zIndex, itemId } = useInitItem(containerId.value, show, {
   title: props.title,
   type: 'item-bottom',
+});
+const { isHighlight, setHighLight } = useHighlight();
+useInitAction(containerId.value, itemId.value, {
+  setHighLight,
+  open,
+  close,
 });
 const { isFirst, isHasItems, onToBack } = useContainerOrder(
   containerId.value,
@@ -59,7 +67,7 @@ const c_style = computed(() => {
 </script>
 <template>
   <div v-if="show" class="popup-mobile-container" :style="c_style">
-    <component :is="componentCard">
+    <component :is="componentCard" :highlight="isHighlight">
       <div class="draggable-bottom">
         <template v-if="!disabledHeader">
           <component :is="componentCardHeader">

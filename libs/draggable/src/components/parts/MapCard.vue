@@ -1,5 +1,9 @@
 <template>
-  <div class="card" :style="cardStyle" v-bind="$attrs">
+  <div
+    :style="cardStyle"
+    v-bind="$attrs"
+    :class="{ 'hungpvq-draggable-card': true, highlight }"
+  >
     <div class="card-container">
       <slot />
     </div>
@@ -17,6 +21,10 @@ export default {
   props: {
     height: {},
     width: {},
+    highlight: {
+      type: Boolean,
+      default: false,
+    },
   },
   name: 'MapCard',
   data: () => ({}),
@@ -30,16 +38,15 @@ export default {
 </script>
 
 <style lang="scss">
-.card {
-  background-color: rgba(32, 43, 54, 0.9);
-  color: #fff;
-
+.hungpvq-draggable-card {
+  background-color: var(--card-background-color);
+  color: var(--card-color);
   button {
-    color: #fff;
+    color: var(--card-color);
   }
 
   position: relative;
-  border: none;
+  border: 2px solid transparent;
   overflow: auto;
   padding: 1px;
 
@@ -72,6 +79,9 @@ export default {
     background: transparent;
   }
 
+  &.highlight {
+    border: 2px solid var(--card-highlight-background-color);
+  }
   &
     > *:not(.card-arrow):not(.card-img-overlay):not(.card-img):not(
       .hljs-container
@@ -171,7 +181,7 @@ export default {
   }
 }
 
-.card,
+.hungpvq-draggable-card,
 .card-container {
   height: 100%;
 }

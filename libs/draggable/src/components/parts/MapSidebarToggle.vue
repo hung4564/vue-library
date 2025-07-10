@@ -6,28 +6,17 @@ export default {
 <script setup lang="ts">
 import { useIcon } from '../../hook';
 
-const {
-  SidebarLeftExpandedIcon,
-  SidebarLeftCloseExpandedIcon,
-  SidebarRightExpandedIcon,
-  SidebarRightCloseExpandedIcon,
-} = useIcon();
+const { SidebarExpandedIcon, SidebarCloseExpandedIcon } = useIcon();
 defineProps({
-  right: Boolean,
+  location: String,
   expand: Boolean,
 });
 </script>
 
 <template>
   <button>
-    <span v-if="!right">
-      <SidebarLeftExpandedIcon v-if="expand" :size="16" />
-      <SidebarLeftCloseExpandedIcon v-else :size="16" />
-    </span>
-    <span v-else>
-      <SidebarRightExpandedIcon v-if="expand" :size="16" />
-      <SidebarRightCloseExpandedIcon v-else :size="16" />
-    </span>
+    <SidebarExpandedIcon v-if="expand" :size="16" />
+    <SidebarCloseExpandedIcon v-else :size="16" />
   </button>
 </template>
 
@@ -61,7 +50,7 @@ defineProps({
   height: 48px;
 }
 
-.draggable-header :deep(.map-control-button) {
+.draggable-header :deep(.hungpvq-draggable-button) {
   background-color: unset;
 }
 

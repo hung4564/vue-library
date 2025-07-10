@@ -23,3 +23,8 @@ export const withShareComponent = {
   componentCard: { type: [String, Object] },
   componentCardHeader: { type: [String, Object] },
 };
+
+export type PropsShareComponent = {
+  componentCard?: any;
+  componentCardHeader?: any;
+};

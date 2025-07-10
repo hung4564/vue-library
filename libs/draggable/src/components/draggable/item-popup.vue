@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, Ref, watch } from 'vue';
+import { inject, ref, Ref, watch } from 'vue';
 import MapButton from '../parts/MapButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
@@ -13,8 +13,10 @@ import {
   useContainerOrder,
   useContainerSize,
   useExpand,
+  useHighlight,
   useIcon,
-  useInit,
+  useInitAction,
+  useInitItem,
   useShow,
   withExpandEmit,
   withExpandProps,
@@ -53,10 +55,16 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw 'Not set container id';
 }
-const { show } = useShow(props, emit);
-const { zIndex, itemId } = useInit(containerId.value, show, {
+const { show, open, close } = useShow(props, emit);
+const { zIndex, itemId } = useInitItem(containerId.value, show, {
   title: props.title,
   type: 'item-popup',
+});
+const { isHighlight, setHighLight } = useHighlight();
+useInitAction(containerId.value, itemId.value, {
+  setHighLight,
+  open,
+  close,
 });
 const { containerWidth, containerHeight } = useContainerSize(containerId.value);
 const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
@@ -148,7 +156,12 @@ function onDragging() {
     @deactivated="deactivateEv()"
     @dragging="onDragging"
   >
-    <component :is="componentCard" :width="p_width" :height="p_height">
+    <component
+      :is="componentCard"
+      :width="p_width"
+      :height="p_height"
+      :highlight="isHighlight"
+    >
       <div class="draggable-popup-desktop">
         <template v-if="!disabledHeader">
           <component :is="componentCardHeader">

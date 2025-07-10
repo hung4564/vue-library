@@ -387,3 +387,25 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
   width: 100%;
 }
 </style>
+
+<style lang="scss">
+.context-menu {
+  z-index: 900;
+  width: 150px;
+  border-bottom-width: 0px;
+  padding: 0;
+  margin: 0;
+  background-color: var(--card-background-color);
+  color: var(--card-color);
+  // Have to use the element so we can make use of `first-of-type` and
+  // `last-of-type`
+  li {
+    display: flex;
+    cursor: pointer;
+    padding: 5px 10px;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+  }
+}
+</style>

@@ -4,11 +4,18 @@ import ArrowDownDropCircleOutlineIcon from 'vue-material-design-icons/ArrowDownD
 import ArrowUpDropCircleOutlineIcon from 'vue-material-design-icons/ArrowUpDropCircleOutline.vue';
 import CloseIcon from 'vue-material-design-icons/Close.vue';
 import DragVariantIcon from 'vue-material-design-icons/DragVariant.vue';
+import HideIcon from 'vue-material-design-icons/EyeOffOutline.vue';
+import ShowIcon from 'vue-material-design-icons/EyeOutline.vue';
+import MarkerIcon from 'vue-material-design-icons/Marker.vue';
+import MenuIcon from 'vue-material-design-icons/Menu.vue';
 import MenuLeftIcon from 'vue-material-design-icons/MenuLeft.vue';
 import MenuRightIcon from 'vue-material-design-icons/MenuRight.vue';
 export function useIcon() {
   return {
+    ShowIcon,
+    HideIcon,
     CloseIcon,
+    HighlightIcon: MarkerIcon,
     FullscreenIcon: ArrowDownDropCircleOutlineIcon,
     OffFullscreenIcon: ArrowUpDropCircleOutlineIcon,
     ToBackIcon: ArrangeSendBackwardIcon,
@@ -16,9 +23,8 @@ export function useIcon() {
     ExpandedIcon: ArrowUpDropCircleOutlineIcon,
     CloseExpandedIcon: ArrowDownDropCircleOutlineIcon,
     DragIcon: DragVariantIcon,
-    SidebarLeftExpandedIcon: MenuLeftIcon,
-    SidebarLeftCloseExpandedIcon: MenuRightIcon,
-    SidebarRightExpandedIcon: MenuRightIcon,
-    SidebarRightCloseExpandedIcon: MenuLeftIcon,
+    SidebarExpandedIcon: MenuLeftIcon,
+    SidebarCloseExpandedIcon: MenuRightIcon,
+    SidebarOpenMenu: MenuIcon,
   };
 }

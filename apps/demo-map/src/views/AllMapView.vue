@@ -8,6 +8,7 @@ import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   CrsControl,
+  EventManagementControl,
   FullScreenControl,
   GeoLocateControl,
   getChartRandomColor,
@@ -19,7 +20,6 @@ import {
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
-  EventManagementControl,
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,

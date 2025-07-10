@@ -47,6 +47,8 @@ export default defineConfig({
         '@hungpvq/shared',
         '@hungpvq/shared-core',
         '@hungpvq/shared-store',
+        '@hungpvq/content-menu',
+        'lodash',
       ],
       output: {
         // Provide global variables to use in the UMD build

@@ -4,6 +4,7 @@ import {
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
+  ManagementControl,
 } from '@hungpvq/vue-draggable';
 import { ref } from 'vue';
 const containerId = ref('');
@@ -21,8 +22,14 @@ function onChangeShow(value) {
     @init="init"
     @change-show="onChangeShow"
   >
-    <DraggableItemSideBar show title="sidebar 1">
-      <div style="height: 100vh"></div>
+    <DraggableItemSideBar show title="right sidebar 1" location="right">
+      <div style="height: 100vh">right sidebar 1</div>
+    </DraggableItemSideBar>
+    <DraggableItemSideBar show title="right sidebar 2" location="right">
+      <div style="height: 100vh">right sidebar 2</div>
+    </DraggableItemSideBar>
+    <DraggableItemSideBar show title="left sidebar 2">
+      <ManagementControl />
     </DraggableItemSideBar>
 
     <DraggableItemPopup show title="Popup 1" :top="10" :right="10">
@@ -42,7 +49,7 @@ function onChangeShow(value) {
   <Teleport :to="`#${containerId}`" v-if="containerId">
     <DraggableItemPopup
       show
-      title="Popup 2 is outside the container"
+      title="Popup 2 is outside the container and outside the container"
       :top="10"
       :left="410"
       :containerId="containerId"

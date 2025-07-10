@@ -1,6 +1,11 @@
 import { defineStore } from '@hungpvq/shared-store';
 import { reactive } from 'vue';
-import { ContainerStore, ContainerStoreAction } from '../types';
+import {
+  ContainerStore,
+  ContainerStoreAction,
+  ContainerStoreOtherAction,
+  LocationSideBar,
+} from '../types';
 
 export const useDragStore = defineStore('drag:core', () => {
   const container = reactive<Record<string, ContainerStore>>({});
@@ -25,13 +30,70 @@ export const useDragIsMobile = (containerId: string) => {
   };
 };
 
+export const useSidebarItem = (containerId: string) => {
+  const store = useDragStore();
+  const container = store.container[containerId];
+
+  function getStoreContainer(id: string) {
+    const container = store.container[id];
+    if (!container) {
+      throw 'Not found container for id ' + id;
+    }
+    return container;
+  }
+  function setShowSideBarId(itemId: string, show: boolean) {
+    const p_store = getStoreContainer(containerId);
+    const action = container.actions[itemId];
+    if (!('location' in action)) {
+      return;
+    }
+    const location = action.location;
+    const oldId = p_store.sideBar[location].show;
+    if (oldId && !show) {
+      p_store.actions[oldId].setShow(false);
+      p_store.sideBar[location].show = undefined;
+    } else if (show) {
+      if (oldId && itemId != oldId) p_store.actions[oldId].setShow(false);
+      p_store.sideBar[location].show = itemId;
+      p_store.actions[itemId].setShow(true);
+    }
+  }
+  return {
+    getStoreContainer,
+    registerSideBar(id: string, location: LocationSideBar) {
+      getStoreContainer(containerId).sideBar[location].items.push(id);
+    },
+    registerSideBarShow(id: string, show: boolean) {
+      setShowSideBarId(id, show);
+    },
+    unRegisterSideBar(id: string) {
+      if (!container) {
+        return;
+      }
+      const store = getStoreContainer(containerId);
+      const action = container.actions[id];
+      if (!('location' in action)) {
+        return;
+      }
+      const location = action.location;
+      store.sideBar[location].items = store.sideBar[location].items.filter(
+        (x) => x !== id,
+      );
+      store.sideBar[location].show = undefined;
+      delete container.actions[id];
+    },
+    registerAction(id: string, action: ContainerStoreAction) {
+      container.actions[id] = action;
+    },
+  };
+};
 export const useDragItem = (containerId: string) => {
   const store = useDragStore();
   const container = store.container[containerId];
   function updateAllIndex() {
     container.show.forEach((itemId, idx) => {
       const action = container.actions[itemId];
-      if (action) action.setZIndex(idx + 2);
+      if (action) action.setZIndex(idx + 10);
     });
   }
 
@@ -56,11 +118,18 @@ export const useDragItem = (containerId: string) => {
     p_store.show = item_ids_show;
   }
   return {
+    getStoreContainer,
     registerItem(id: string) {
       getStoreContainer(containerId).items.push(id);
     },
     registerAction(id: string, action: ContainerStoreAction) {
       container.actions[id] = action;
+    },
+    registerOtherAction(
+      id: string,
+      action: Partial<ContainerStoreOtherAction>,
+    ) {
+      container.actions[id] = { ...container.actions[id], ...action };
     },
     unRegisterItem(id: string) {
       if (!container) {
@@ -121,6 +190,12 @@ export const useDragContainer = (containerId: string) => {
   const initContainer = () => {
     store.container[containerId] = {
       items: [],
+      sideBar: {
+        left: { items: [], show: undefined },
+        right: { items: [], show: undefined },
+        top: { items: [], show: undefined },
+        bottom: { items: [], show: undefined },
+      },
       show: [],
       actions: {},
       height: 0,
@@ -147,7 +222,7 @@ export const useDragContainer = (containerId: string) => {
     },
     getHeight() {
       const container = store.container[containerId];
-      return container.height;
+      return container?.height;
     },
     initContainer,
     removeContainer() {
@@ -158,7 +233,7 @@ export const useDragContainer = (containerId: string) => {
       height: number;
       isMobile: boolean;
     }) {
-      const container = store.container[containerId];
+      const container = store.container[containerId] || {};
       container.width = props.width;
       container.height = props.height;
       container.isMobile = props.isMobile;

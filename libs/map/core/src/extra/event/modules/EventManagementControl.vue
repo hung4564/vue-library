@@ -84,7 +84,7 @@ const groupedViews = computed(() => {
         v-if="!show"
         @click.stop="toggleShow()"
         :active="show"
-        :tooltip="trans('map.dataset-control.title')"
+        :tooltip="trans('map.event-control.title')"
       >
         <SvgIcon size="14" type="mdi" :path="path.icon" />
       </MapControlButton>
@@ -94,6 +94,7 @@ const groupedViews = computed(() => {
       <DraggableItemSideBar
         :containerId="props.containerId"
         v-model:show="show"
+        :title="trans('map.event-control.title')"
       >
         <template #title> {{ trans('map.event-control.title') }} </template>
         <div class="event-group-container">
