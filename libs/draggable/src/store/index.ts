@@ -70,16 +70,15 @@ export const useSidebarItem = (containerId: string) => {
       if (!container) {
         return;
       }
-      const store = getStoreContainer(containerId);
       const action = container.actions[id];
       if (!('location' in action)) {
         return;
       }
       const location = action.location;
-      store.sideBar[location].items = store.sideBar[location].items.filter(
-        (x) => x !== id,
-      );
-      store.sideBar[location].show = undefined;
+      container.sideBar[location].items = container.sideBar[
+        location
+      ].items.filter((x) => x !== id);
+      container.sideBar[location].show = undefined;
       delete container.actions[id];
     },
     registerAction(id: string, action: ContainerStoreAction) {
