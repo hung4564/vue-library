@@ -1,3 +1,13 @@
+## 0.4.1 (2025-07-12)
+
+### 🩹 Fixes
+
+- error store when unRegister ([b17dffb](https://github.com/hung4564/vue-library/commit/b17dffb))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.0 (2025-07-10)
 
 ### 🚀 Features
