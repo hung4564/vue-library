@@ -2,6 +2,7 @@
 import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
+  defaultMapProps,
   InputCheckbox,
   MapControlButton,
   ModuleContainer,
@@ -9,15 +10,15 @@ import {
   useLang,
   useMap,
   useShow,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 import { getLegendName, isSupportGenLayerLegend } from '../../check';
 import { useLayerLegend } from '../../lib/useLayerLegend';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const [show, setShow] = useShow(false);
 const { callMap, mapId, moduleContainerProps } = useMap(props);

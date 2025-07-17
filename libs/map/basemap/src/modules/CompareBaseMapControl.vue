@@ -105,6 +105,7 @@
 import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
+  defaultMapProps,
   getMapCompareSetting,
   getMapStore,
   MapCard,
@@ -114,7 +115,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
@@ -122,25 +123,24 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
-const props = defineProps({
-  ...withMapProps,
-  baseMaps: {
-    type: Array,
-    default: () => defaultbasemap,
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      baseMaps?: BaseMapItem[]; // Bạn có thể thay 'any[]' bằng kiểu cụ thể nếu biết
+      title?: string;
+      defaultBaseMap?: string;
+      controlIcon?: string;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    baseMaps: () => defaultbasemap,
+    title: '',
+    defaultBaseMap: 'Open Street Map',
+    controlIcon: '',
   },
-  title: {
-    type: String,
-    default: '',
-  },
-  defaultBaseMap: {
-    type: String,
-    default: 'Open Street Map',
-  },
-  controlIcon: {
-    type: String,
-    default: '',
-  },
-});
+);
+
 const { mapId, moduleContainerProps } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);

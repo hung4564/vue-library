@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMapMarkerOutline } from '@mdi/js';
@@ -6,12 +6,18 @@ import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
 import { BaseButton, InputText } from '../../field';
-import { useMap, useShow, withMapProps } from '../../hooks';
+import {
+  defaultMapProps,
+  useMap,
+  useShow,
+  WithShowProps,
+  type WithMapPropType,
+} from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
-const [show, setShow] = useShow(false);
+const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
@@ -22,8 +28,6 @@ setLocaleDefault({
       field: {
         zoom: 'Zoom',
         center: 'Center',
-        sprite: 'Sprite url',
-        glyphs: 'Glyphs url',
       },
       btn: {
         apply: 'Go to',
@@ -37,15 +41,16 @@ function onToggleShow() {
     callMap((_map) => {
       setting.value.zoom = _map.getZoom();
       setting.value.center = [
-        _map.getCenter().lng.toFixed(6),
-        _map.getCenter().lat.toFixed(6),
+        +_map.getCenter().lng.toFixed(6),
+        +_map.getCenter().lat.toFixed(6),
       ];
-      setting.value.sprite = _map.getStyle().sprite;
-      setting.value.glyphs = _map.getStyle().glyphs;
     });
   }
 }
-const setting = ref({ zoom: null, center: null, sprite: null, glyphs: null });
+const setting = ref<{
+  zoom?: number;
+  center: [number, number];
+}>({ center: [0, 0] });
 const onSetSetting = () => {
   callMap((map) => {
     if (setting.value.zoom) map.setZoom(setting.value.zoom);

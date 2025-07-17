@@ -8,7 +8,11 @@
   ></component>
 </template>
 <script setup lang="ts">
-import { useMap, withMapProps } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  useMap,
+  type WithMapPropType,
+} from '@hungpvq/vue-map-core';
 import { computed, getCurrentInstance, ref, watch } from 'vue';
 import {
   type ComponentItem,
@@ -16,8 +20,8 @@ import {
 } from '../../store/component';
 
 const instance = getCurrentInstance();
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const { mapId } = useMap(props);
 const { getAllComponentIds, getStore, removeComponent } =

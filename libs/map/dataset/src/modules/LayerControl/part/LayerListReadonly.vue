@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { useMap, withMapProps } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  useMap,
+  WithMapPropType,
+  WithShowProps,
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
@@ -25,11 +30,19 @@ import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';
 
-const props = defineProps({
-  ...withMapProps,
-  disabledDrag: Boolean,
-  disabled: Boolean,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      disabledDrag?: boolean;
+      disabled?: boolean;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    disabledDrag: false,
+    disabled: false,
+  },
+);
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,

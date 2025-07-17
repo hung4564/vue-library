@@ -99,15 +99,16 @@ export type IGroupListViewUI<T> =
       children?: T[];
     };
 
-export type IListViewUI<T extends IDataset = IDataset> = T &
+export type IListViewUI<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
     opacity: number;
     selected: boolean;
     color?: Color;
     config: {
-      disable_delete?: boolean;
+      disabled_delete?: boolean;
       disabled_opacity?: boolean;
       component?: any;
+      init_show_legend?: boolean;
     };
     index: number;
     group?: IGroupListViewUI<IListViewUI>;

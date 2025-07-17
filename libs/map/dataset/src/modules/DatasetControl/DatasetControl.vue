@@ -8,13 +8,14 @@ export default {
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
-  makeShowProps,
+  defaultMapProps,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
-  withMapProps,
+  WithMapPropType,
+  WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
@@ -23,9 +24,8 @@ import type { IDataset } from '../../interfaces/dataset.base';
 import { handleMenuActionClick } from '../../model/menu';
 import { useMapDataset } from '../../store';
 import DatasetDetail from './DatasetDetail.vue';
-const props = defineProps({
-  ...withMapProps,
-  ...makeShowProps({ show: false }),
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);

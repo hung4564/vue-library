@@ -70,4 +70,4 @@ export const MeasurementHandle = function () {
     getResult,
   };
 };
-export type MeasurementHandleType = typeof MeasurementHandle;
+export type MeasurementHandleType = ReturnType<typeof MeasurementHandle>;

@@ -1,0 +1,20 @@
+.table-show-info {
+  max-width: 100%;
+}
+
+.table-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+
+.table-content > div:not(:last-child) {
+  border-bottom: thin solid hsla(0, 0%, 100%, 0.12);
+}
+.table-content > div {
+  min-height: 40px;
+}
+
+.table-content > div:hover {
+  background: #616161;
+}

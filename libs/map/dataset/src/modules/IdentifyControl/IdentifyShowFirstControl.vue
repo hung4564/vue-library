@@ -6,10 +6,11 @@ export default {
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import {
+  defaultMapProps,
   EventClick,
   useEventMap,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
@@ -23,8 +24,8 @@ import { loggerIdentify } from '../../logger';
 import { handleMultiIdentifyGetFirst } from '../../model';
 import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const { mapId } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);

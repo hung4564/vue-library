@@ -1,20 +1,28 @@
 <script setup lang="ts">
 import {
+  defaultMapProps,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
 import { exportMapbox } from './print';
-const props = defineProps({
-  ...withMapProps,
-  fileName: { type: String, default: 'map' },
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      fileName?: string;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    fileName: 'map',
+  },
+);
 const path = {
   print: mdiPrinterOutline,
   close: mdiClose,

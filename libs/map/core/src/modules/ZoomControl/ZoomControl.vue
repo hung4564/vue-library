@@ -41,29 +41,38 @@
   </ModuleContainer>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
   plus: mdiPlus,
   minus: mdiMinus,
 };
-const props = defineProps({
-  ...withMapProps,
-  showCompass: { type: Boolean, default: true },
-  showZoom: { type: Boolean, default: true },
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      showCompass?: boolean;
+      showZoom?: boolean;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    showCompass: true,
+    showZoom: true,
+  },
+);
 const transform = ref('rotate(0deg)');
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,
-  onDestroy
+  onDestroy,
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
@@ -75,20 +84,20 @@ setLocaleDefault({
     },
   },
 });
-let bindSyncRotate = null;
-function onInit(_map) {
+let bindSyncRotate: any = null;
+function onInit(_map: MapSimple) {
   bindSyncRotate = syncRotate.bind(null, _map);
   _map.on('rotate', bindSyncRotate);
 }
-function onDestroy(_map) {
+function onDestroy(_map: MapSimple) {
   _map.off('rotate', bindSyncRotate);
 }
-function onZoomIn(e) {
+function onZoomIn(e: any) {
   callMap((map) => {
     map.zoomIn({}, { originalEvent: e });
   });
 }
-function onZoomOut(e) {
+function onZoomOut(e: any) {
   callMap((map) => {
     map.zoomOut({}, { originalEvent: e });
   });
@@ -98,7 +107,7 @@ function onResetBearing() {
     map.easeTo({ bearing: 0, pitch: 0 });
   });
 }
-function syncRotate(_map) {
+function syncRotate(_map: MapSimple) {
   const angle = _map.getBearing() * -1;
   transform.value = `rotate(${angle}deg)`;
 }

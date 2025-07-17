@@ -5,15 +5,15 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
   fullscreen: mdiFullscreen,
   exitFullscreen: mdiFullscreenExit,
 };
-const props = defineProps({
-  ...withMapProps,
-  type: { type: String, default: 'body' },
+const props = withDefaults(defineProps<WithMapPropType & { type?: string }>(), {
+  ...defaultMapProps,
+  type: 'body',
 });
 const { callMap, mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -26,7 +26,7 @@ setLocaleDefault({
   },
 });
 const { isFullscreen, enter, exit, toggle } = useFullscreen(
-  props.type == 'body' ? document.querySelector('body') : getMapContainer()
+  props.type == 'body' ? document.querySelector('body') : getMapContainer(),
 );
 function getMapContainer(el?: HTMLElement | null): HTMLElement {
   callMap((map) => {

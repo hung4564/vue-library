@@ -28,6 +28,7 @@ import {
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartHighlightComponent,
   createDatasetPartListViewUiComponent,
+  createDatasetPartListViewUiComponentBuilder,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
   createIdentifyMapboxComponent,
@@ -53,6 +54,7 @@ import {
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
+  LayerStyleType,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {
@@ -62,17 +64,26 @@ import {
   useMapDraw,
 } from '@hungpvq/vue-map-draw';
 import { LegendControl } from '@hungpvq/vue-map-legend';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import {
+  type MeasureActionItem,
+  MeasurementControl,
+  type MeasurementHandleType,
+} from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
-import { mdiDownload, mdiPencil } from '@mdi/js';
+import { mdiDownload, mdiPencil, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
+import AsideControl from '../layout/aside-control.vue';
 const { downloadFile } = useDownloadFile();
 const mapRef = ref();
 
 const { convertList } = useConvertToGeoJSON();
 const { convert } = useGeoConvertToFile();
+const mapId = ref('');
+const storeDataset = useMapDataset(mapId.value);
 function onMapLoaded(map: MapSimple) {
-  const { addDataset } = useMapDataset(map.id);
+  mapId.value = map.id;
+  const { addDataset, setMapId } = storeDataset;
+  setMapId(mapId.value);
   const dataset_raster = createDataset(
     'Group test',
     null,
@@ -450,6 +461,89 @@ function createMenuDrawLayer() {
     },
   });
 }
+
+const actionMeasures: MeasureActionItem[] = [
+  {
+    title: 'add to layer',
+    icon: mdiPlus,
+    type: 'add-to-layer',
+    show: (ctx) => !!ctx.measurementType,
+    handle: (ctx) => {
+      const { addDataset } = storeDataset;
+      const coordinates = ctx.coordinates;
+      if (!coordinates || coordinates.length < 1) {
+        return;
+      }
+      addDataset(createDatasetMeasure(ctx.handler, ctx.measurementType || ''));
+      ctx.clear();
+    },
+    disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
+    index: 0,
+  },
+];
+function convertMeasureTypeToStyleType(
+  measurementType: string,
+): LayerStyleType {
+  switch (measurementType) {
+    case 'area':
+      return 'area';
+    case 'distance':
+    case 'line':
+      return 'line';
+    case 'point':
+      return 'point';
+    default:
+      return 'line';
+  }
+}
+function createDatasetMeasure(
+  handler: MeasurementHandleType,
+  measurementType: string,
+) {
+  const result = handler.getResult();
+  const dataset = createDataset(
+    'Dataset Measure',
+    null,
+    true,
+  ) as DatasetComposite;
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: result.features || [],
+  });
+  const groupLayer1 = createDataset(
+    'Group layer 1',
+    null,
+    true,
+  ) as DatasetComposite;
+  const list1: IListViewUI = createDatasetPartListViewUiComponentBuilder(
+    'List Measure:' + measurementType,
+  )
+    .setColor(getChartRandomColor())
+    .configDisabledOpacity()
+    .configInitShowLegend()
+    .setLegend(
+      createMultiLegend([
+        {
+          type: 'text',
+          value: { text: 'Measure', value: result.format || result.value },
+        },
+      ]),
+    )
+    .build();
+  const layers = [
+    new LayerSimpleMapboxBuild()
+      .setStyleType(convertMeasureTypeToStyleType(measurementType || 'line'))
+      .setColor(list1.color)
+      .build(),
+  ];
+  const layer1 = createMultiMapboxLayerComponent('Layer Measure', layers);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  list1.addMenus([createMenuItemToggleShow({ location: 'extra' })]);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  return dataset;
+}
 </script>
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
@@ -459,7 +553,7 @@ function createMenuDrawLayer() {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerInfoControl> -->
-    <MeasurementControl position="top-right" />
+    <MeasurementControl position="top-right" :actions="actionMeasures" />
     <DrawControl position="top-right" />
     <InspectControl position="top-right" />
     <LayerControl position="top-left">
@@ -485,6 +579,7 @@ function createMenuDrawLayer() {
     <LayerHighlight />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" show />
+    <AsideControl position="top-left" show />
   </Map>
 </template>
 

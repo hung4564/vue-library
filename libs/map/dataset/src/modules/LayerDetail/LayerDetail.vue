@@ -59,35 +59,3 @@ function onClose() {
     </template>
   </ModuleContainer>
 </template>
-
-<style>
-.table-show-info {
-  max-width: 100%;
-}
-
-.table-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  width: 100%;
-}
-
-.table-content > div:not(:last-child) {
-  border-bottom: thin solid hsla(0, 0%, 100%, 0.12);
-}
-.table-content > div {
-  min-height: 40px;
-}
-
-.table-content > div:hover {
-  background: #616161;
-}
-.info-control-container {
-  padding: 8px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-</style>

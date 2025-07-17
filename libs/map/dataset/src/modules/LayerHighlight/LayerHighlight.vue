@@ -3,7 +3,11 @@
 </template>
 <script setup lang="ts">
 import { mergeFilters, type MapSimple } from '@hungpvq/shared-map';
-import { useMap, withMapProps } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  useMap,
+  WithMapPropType,
+} from '@hungpvq/vue-map-core';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
@@ -15,8 +19,8 @@ import type {
 import { computed, ref, toRaw, watch } from 'vue';
 import { findSiblingOrNearestLeaf, IHighlightView } from '../../model';
 import { useMapDatasetHighlight } from '../../store/highlight';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 
 const sourceId = 'source-highlighted';

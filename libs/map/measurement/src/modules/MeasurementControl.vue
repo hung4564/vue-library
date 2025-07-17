@@ -3,68 +3,27 @@
     <template #btn>
       <MapControlGroupButton row v-if="!measurement_type">
         <MapControlButton
-          :tooltip="trans('map.measurement.tools.distance')"
-          @click="onMeasureDistance()"
-          :active="measurement_type == 'distance'"
+          v-for="action in cButtonShowAction"
+          :key="action.type"
+          :tooltip="trans(action.title)"
+          @click="callAction(action)"
+          :active="action.isActive ? action.isActive() : false"
+          :disabled="action.disabled ? action.disabled({ coordinates }) : false"
         >
-          <SvgIcon :size="18" type="mdi" :path="path.distance" />
-        </MapControlButton>
-        <MapControlButton
-          :tooltip="trans('map.measurement.tools.area')"
-          @click="onMeasureArea()"
-          :active="measurement_type == 'area'"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.area" />
-        </MapControlButton>
-        <MapControlButton
-          :tooltip="trans('map.measurement.tools.azimuth')"
-          @click="onMeasureAzimuth()"
-          :active="measurement_type == 'azimuth'"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.azimuth" />
-        </MapControlButton>
-        <MapControlButton
-          :tooltip="trans('map.measurement.tools.point')"
-          @click="onMeasureMarker()"
-          :active="measurement_type == 'point'"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.point" />
+          <SvgIcon :size="18" type="mdi" :path="action.icon" />
         </MapControlButton>
       </MapControlGroupButton>
 
       <MapControlGroupButton v-else row>
-        <!-- <MapControlButton
-          :tooltip="trans('map.measurement.action.add')"
-          @click="addToLayerControl()"
-          :disabled="!coordinates || coordinates.length < 1"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.add" />
-        </MapControlButton> -->
         <MapControlButton
-          :tooltip="trans('map.measurement.action.setting')"
-          @click="toggleSetting()"
-          :active="setting.show"
+          v-for="action in cButtonHandleAction"
+          :key="action.title"
+          :tooltip="trans(action.title)"
+          :active="action.isActive ? action.isActive() : false"
+          :disabled="action.disabled ? action.disabled({ coordinates }) : false"
+          @click="callAction(action)"
         >
-          <SvgIcon :size="18" type="mdi" :path="path.setting" />
-        </MapControlButton>
-        <MapControlButton
-          :disabled="!coordinates || coordinates.length < 1"
-          :tooltip="trans('map.measurement.action.fly-to')"
-          @click="onFlyTo()"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.fillBound" />
-        </MapControlButton>
-        <MapControlButton
-          :tooltip="trans('map.measurement.action.clear')"
-          @click="reset()"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.clear" />
-        </MapControlButton>
-        <MapControlButton
-          :tooltip="trans('map.measurement.action.close')"
-          @click="clear()"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.close" />
+          <SvgIcon :size="18" type="mdi" :path="action.icon" />
         </MapControlButton>
       </MapControlGroupButton>
     </template>
@@ -99,12 +58,13 @@ import {
   MapControlButton,
   MapControlGroupButton,
   ModuleContainer,
+  WithMapPropType,
+  defaultMapProps,
   useEventMap,
   useLang,
   useMap,
   useMapCrsItems,
   useMapImage,
-  withMapProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -119,8 +79,9 @@ import {
   mdiTableHeadersEye,
 } from '@mdi/js';
 import { MapMouseEvent } from 'maplibre-gl';
-import { nextTick, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { logger } from '../logger';
+import { MeasureActionItem } from '../types';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 import {
   MapMarkerView,
@@ -137,16 +98,10 @@ import imageRounded from './img/rounded.png';
 import { IViewSettingField } from './types';
 let handler = MeasurementHandle();
 const DEFAULT_COLOR_HIGHLIGHT = '#004E98';
-const props = defineProps({
-  ...withMapProps,
-});
-const measurement_type = ref<string | undefined>('');
-const coordinates = ref<CoordinatesNumber[]>([]);
-const setting = ref<{
-  show: boolean;
-  fields?: IViewSettingField[];
-  maxLength?: number;
-}>({ show: true, maxLength: 0, fields: [] });
+interface Props extends WithMapPropType {
+  actions?: MeasureActionItem[];
+}
+
 const path = {
   add: mdiPlus,
   fillBound: mdiCrosshairsGps,
@@ -158,6 +113,133 @@ const path = {
   close: mdiClose,
   setting: mdiCogOutline,
 };
+
+const button_show: MeasureActionItem[] = [
+  {
+    index: 1,
+    title: 'map.measurement.tools.distance',
+    handle: () => onMeasureDistance(),
+    icon: path.distance,
+    type: 'distance',
+    isActive: () => measurement_type.value === 'distance',
+  },
+  {
+    index: 2,
+    title: 'map.measurement.tools.area',
+    handle: () => onMeasureArea(),
+    icon: path.area,
+    type: 'area',
+    isActive: () => measurement_type.value === 'area',
+  },
+  {
+    index: 3,
+    title: 'map.measurement.tools.azimuth',
+    handle: () => onMeasureAzimuth(),
+    icon: path.azimuth,
+    type: 'azimuth',
+    isActive: () => measurement_type.value === 'azimuth',
+  },
+  {
+    index: 4,
+    title: 'map.measurement.tools.point',
+    handle: () => onMeasureMarker(),
+    icon: path.point,
+    type: 'point',
+    isActive: () => measurement_type.value === 'point',
+  },
+];
+const button_handle: MeasureActionItem[] = [
+  {
+    index: 1,
+    title: 'map.measurement.action.setting',
+    handle: () => toggleSetting(),
+    icon: path.setting,
+    type: 'setting',
+    isActive: () => setting.value.show,
+  },
+  {
+    index: 2,
+    title: 'map.measurement.action.fly-to',
+    handle: () => onFlyTo(),
+    icon: path.fillBound,
+    disabled: (ctx: { coordinates?: CoordinatesNumber[] }) =>
+      !ctx.coordinates || ctx.coordinates.length < 1,
+    type: 'fly-to',
+  },
+  {
+    index: 3,
+    title: 'map.measurement.action.clear',
+    handle: () => reset(),
+    icon: path.clear,
+    type: 'clear',
+  },
+  {
+    index: 4,
+    title: 'map.measurement.action.close',
+    handle: () => clear(),
+    icon: path.close,
+    type: 'close',
+  },
+];
+const props = withDefaults(defineProps<Props>(), {
+  ...defaultMapProps,
+  actions: () => [],
+});
+function callAction(action: MeasureActionItem) {
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
+    'callAction',
+    action,
+  );
+  action.handle({
+    handler,
+    measurementType: measurement_type.value,
+    coordinates: coordinates.value,
+    clear,
+    reset,
+    onFlyTo,
+  });
+}
+const cButtonShowAction = computed<MeasureActionItem[]>(() => {
+  return [
+    ...button_show,
+    ...(props.actions || []).filter((x) => {
+      return (
+        !x.show ||
+        x.show({
+          handler,
+          measurementType: measurement_type.value,
+          status: 'select',
+        })
+      );
+    }),
+  ].sort((a, b) => {
+    return (a.index || 0) - (b.index || 0);
+  });
+});
+const cButtonHandleAction = computed<MeasureActionItem[]>(() => {
+  return [
+    ...button_handle,
+    ...(props.actions || []).filter((x) => {
+      return (
+        !x.show ||
+        x.show({
+          handler,
+          measurementType: measurement_type.value,
+          status: 'handle',
+        })
+      );
+    }),
+  ].sort((a, b) => {
+    return (a.index || 0) - (b.index || 0);
+  });
+});
+const measurement_type = ref<string | undefined>('');
+const coordinates = ref<CoordinatesNumber[]>([]);
+const setting = ref<{
+  show: boolean;
+  fields: IViewSettingField[];
+  maxLength?: number;
+}>({ show: true, maxLength: 0, fields: [] });
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,

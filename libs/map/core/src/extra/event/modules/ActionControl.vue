@@ -8,14 +8,14 @@ import { logHelper } from '@hungpvq/shared-map';
 import { groupBy } from 'lodash';
 
 import { onMounted } from 'vue';
-import { useMap, withMapProps } from '../../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../../hooks';
 import { useMapMittStore } from '../../mitt';
 import { useEventMapItems } from '../hook';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
 import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const { callMap, mapId } = useMap(props);
 const store = useMapEventStore(mapId.value);

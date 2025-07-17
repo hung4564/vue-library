@@ -1,5 +1,12 @@
 import { MapFCOnUseMap } from '@hungpvq/shared-map';
-import { computed, inject, onMounted, onUnmounted } from 'vue';
+import {
+  computed,
+  defineProps,
+  inject,
+  onMounted,
+  onUnmounted,
+  withDefaults,
+} from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
@@ -64,4 +71,29 @@ export const withMapProps = {
     type: Number,
     default: 0,
   },
+};
+const validPositions = [
+  'top-left',
+  'top-right',
+  'bottom-left',
+  'bottom-right',
+] as const;
+type Position = (typeof validPositions)[number];
+
+export interface WithMapPropType {
+  mapId?: string;
+  dragId?: string;
+  btnWidth?: number;
+  position?: Position;
+  controlVisible?: boolean;
+  order?: number;
+}
+
+export const defaultMapProps: Required<WithMapPropType> = {
+  mapId: '',
+  dragId: '',
+  btnWidth: 40,
+  position: 'bottom-right',
+  controlVisible: true,
+  order: 0,
 };

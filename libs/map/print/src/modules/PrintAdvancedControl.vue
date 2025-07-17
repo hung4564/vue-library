@@ -2,6 +2,7 @@
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
+  defaultMapProps,
   InputSelect,
   InputText,
   MapControlButton,
@@ -9,7 +10,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -23,16 +24,25 @@ import { onBeforeUnmount, ref } from 'vue';
 import { useMapPrint, type PrintOption } from '../store';
 import {
   CrosshairManager,
-  PrintableAreaManager,
   exportMapbox,
   exportMapboxWithOptions,
+  PrintableAreaManager,
 } from './print';
-const props = defineProps({
-  ...withMapProps,
-  disabledCrosshair: Boolean,
-  disabledPrintableArea: Boolean,
-  fileName: { type: String, default: 'map' },
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      disabledCrosshair?: boolean;
+      disabledPrintableArea?: boolean;
+      fileName?: string;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    disabledCrosshair: false,
+    disabledPrintableArea: false,
+    fileName: 'map',
+  },
+);
 const path = {
   print: mdiPrinterEye,
   close: mdiClose,

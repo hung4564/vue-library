@@ -6,13 +6,14 @@ export default {
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
 import {
+  defaultMapProps,
   EventClick,
   MapControlButton,
   MapControlGroupButton,
   ModuleContainer,
   useEventMap,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import MapboxDraw, {
@@ -34,10 +35,17 @@ import { DrawingTypeName } from '..';
 import { useMapDraw } from '../../store';
 import type { DrawOption } from '../../types';
 import layers from './theme';
-const props = defineProps({
-  ...withMapProps,
-  drawOptions: Object,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      drawOptions?: DrawOption;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    drawOptions: undefined,
+  },
+);
 const drawOptions = props.drawOptions as DrawOption;
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const {

@@ -3,7 +3,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
 import { debounce } from 'lodash';
 import { computed, nextTick, ref } from 'vue';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 
 import type { MapSimple } from '@hungpvq/shared-map';
 import {
@@ -12,13 +12,23 @@ import {
   useMapCrsItems,
 } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const props = defineProps({
-  ...withMapProps,
-  hideZoom: Boolean,
-  hideCrsSelect: Boolean,
-  hideScale: Boolean,
-  hideCoordinates: Boolean,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      hideZoom?: boolean;
+      hideCrsSelect?: boolean;
+      hideScale?: boolean;
+      hideCoordinates?: boolean;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    hideZoom: false,
+    hideCrsSelect: false,
+    hideScale: false,
+    hideCoordinates: false,
+  },
+);
 const path = {
   icon: mdiMapMarkerOutline,
   zoom: mdiMagnify,

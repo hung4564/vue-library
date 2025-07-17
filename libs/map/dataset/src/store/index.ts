@@ -24,9 +24,10 @@ export const useMapDatasetStore = (mapId: string) =>
     return { datasets: {}, datasetIds: ref([]) };
   })();
 
-export const useMapDataset = (mapId: string) => {
-  const store = useMapDatasetStore(mapId);
-  const { getMap } = useMapStore(mapId);
+export const useMapDataset = (propsMapId?: string) => {
+  let mapId = propsMapId ?? '';
+  let store = useMapDatasetStore(propsMapId ?? '');
+  let { getMap } = useMapStore(propsMapId ?? '');
   async function addDataset(layer: IDataset) {
     if (!store) {
       return;
@@ -125,6 +126,12 @@ export const useMapDataset = (mapId: string) => {
     return store.datasetIds.value.map((id) => store.datasets[id]);
   }
   return {
+    setMapId(pMapId: string) {
+      mapId = pMapId;
+      store = useMapDatasetStore(pMapId);
+      getMap = useMapStore(pMapId).getMap;
+    },
+
     getDatasets,
     addDataset,
     getDatasetIds,

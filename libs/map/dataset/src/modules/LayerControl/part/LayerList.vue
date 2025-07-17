@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { BaseButton, useMap, withMapProps } from '@hungpvq/vue-map-core';
+import {
+  BaseButton,
+  defaultMapProps,
+  useMap,
+  WithMapPropType,
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
@@ -25,12 +30,21 @@ import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
-const props = defineProps({
-  ...withMapProps,
-  disabledDrag: Boolean,
-  disabled: Boolean,
-  disabledCreateGroup: Boolean,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      disabledDrag?: boolean;
+      disabled?: boolean;
+      disabledCreateGroup?: boolean;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    disabledDrag: false,
+    disabled: false,
+    disabledCreateGroup: false,
+  },
+);
 
 defineSlots<{
   title(): any;

@@ -5,13 +5,19 @@ import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const props = defineProps({
-  ...withMapProps,
-  zoom: Number,
-  center: Array<number>,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      zoom?: number;
+      center?: Array<number>;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+  },
+);
 const i_center = ref({
   lat: 0,
   lng: 0,

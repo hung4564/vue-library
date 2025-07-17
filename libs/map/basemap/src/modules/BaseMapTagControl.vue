@@ -20,29 +20,32 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
+import { logHelper } from '@hungpvq/shared-map';
 import {
+  defaultMapProps,
   MapControlGroupButton,
   ModuleContainer,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import { watch, onMounted, onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { useBaseMap } from '../hooks';
+import { logger } from '../logger';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
-import { logger } from '../logger';
-import { logHelper } from '@hungpvq/shared-map';
-const props = defineProps({
-  ...withMapProps,
-  baseMaps: {
-    type: Array,
-    default: () => defaultbasemap,
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      baseMaps?: BaseMapItem[]; // hoặc cụ thể hơn nếu bạn biết kiểu phần tử
+      defaultBaseMap?: string;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    baseMaps: () => defaultbasemap,
+    defaultBaseMap: 'Open Street Map',
   },
-  defaultBaseMap: {
-    type: String,
-    default: 'Open Street Map',
-  },
-});
+);
 const { mapId, moduleContainerProps } = useMap(props);
 const {
   setBaseMaps,
@@ -66,7 +69,7 @@ watch(
   },
 );
 function onClick(baseMap: any) {
-  logHelper(logger, mapId, 'control', 'BaseMapTagControl').debug(
+  logHelper(logger, mapId.value, 'control', 'BaseMapTagControl').debug(
     'onClick',
     baseMap,
   );

@@ -10,7 +10,13 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
-import { makeShowProps, useMap, useShow, withMapProps } from '../../../hooks';
+import {
+  defaultMapProps,
+  useMap,
+  useShow,
+  WithMapPropType,
+  WithShowProps,
+} from '../../../hooks';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang';
 import { useMapMittStore } from '../../mitt';
@@ -21,9 +27,8 @@ import {
   type IEvent,
   type MittTypeMapEvent,
 } from '../types';
-const props = defineProps({
-  ...withMapProps,
-  ...makeShowProps({ show: false }),
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);

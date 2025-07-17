@@ -90,6 +90,7 @@ onMounted(() => {
   });
 });
 onUnmounted(() => {
+  loaded.value = false;
   if (map) {
     map.remove();
     emit('map-destroy', map as MapSimple);
@@ -116,6 +117,10 @@ const leftTopTo = computed(() => {
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
 const isMobile = breakpoints.smallerOrEqual('tablet');
+const loadedDrag = ref(false);
+function onDragLoadDone(e: any) {
+  loadedDrag.value = true;
+}
 </script>
 <template>
   <div v-if="!isSupport" class="">
@@ -139,11 +144,16 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
         <div class="left-bottom-container" :id="leftBottomTo" />
         <div class="right-top-container" :id="rightTopTo" />
         <div class="left-top-container" :id="leftTopTo" />
-        <draggable-container class="drag-container" :container-id="draggableTo">
+        <draggable-container
+          v-if="loaded"
+          class="drag-container"
+          :container-id="draggableTo"
+          @init="onDragLoadDone"
+        >
         </draggable-container>
       </template>
-      <slot v-if="loaded" />
-      <ActionControl v-if="loaded" />
+      <slot v-if="loaded && loadedDrag" />
+      <ActionControl v-if="loaded && loadedDrag" />
     </div>
   </div>
 </template>

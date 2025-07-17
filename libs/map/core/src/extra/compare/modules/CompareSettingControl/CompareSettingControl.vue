@@ -4,14 +4,20 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
 import MapControlButton from '../../../../components/MapControlButton.vue';
 import { InputCheckbox } from '../../../../field';
-import { useMap, useShow, withMapProps } from '../../../../hooks';
+import {
+  defaultMapProps,
+  useMap,
+  useShow,
+  WithShowProps,
+  type WithMapPropType,
+} from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../../lang';
 import { useMapCompareSetting } from '../../hooks';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
-const [show, toggleShow] = useShow(false);
+const [show, toggleShow] = useShow(props.show);
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 

@@ -26,7 +26,7 @@
           />
         </template>
         <BaseButton
-          v-if="!item.config.disable_delete && !props.readonly"
+          v-if="!item.config.disabled_delete && !props.readonly"
           :disabled="loading"
           @click.stop="onRemove"
         >
@@ -181,7 +181,7 @@ function handleContextClick(event: MouseEvent) {
 }
 
 const isHasLegend = computed(() => props.item && props.item.legend);
-const legendShow = ref(false);
+const legendShow = ref(props.item.config.init_show_legend ?? false);
 function onToggleLegend() {
   legendShow.value = !legendShow.value;
 }

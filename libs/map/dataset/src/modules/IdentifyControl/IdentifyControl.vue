@@ -3,11 +3,13 @@ export default {
   name: 'inspect-control',
 };
 </script>
+f
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
+  defaultMapProps,
   EventBboxRanger,
   EventClick,
   MapControlButton,
@@ -16,7 +18,8 @@ import {
   useEventMap,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
+  WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
@@ -34,10 +37,15 @@ const path = {
   boxSelect: mdiSelect,
   mapClick: mdiCursorPointer,
 };
-const props = defineProps({
-  ...withMapProps,
-  immediately: Boolean,
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType &
+      WithShowProps & {
+        immediately?: boolean;
+      }
+  >(),
+  { ...defaultMapProps },
+);
 const { mapId, moduleContainerProps } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
@@ -180,7 +188,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     result.loading = false;
   }
 }
-const show = ref(false);
+const show = ref(props.show);
 function toggleShow() {
   show.value = !show.value;
   onUseMapClick();

@@ -2,7 +2,7 @@ import { propsFactory } from '@hungpvq/shared';
 import { Ref, ref } from 'vue';
 
 export function useShow(
-  init = false
+  init = false,
   // eslint-disable-next-line no-unused-vars
 ): [Ref<boolean>, (value?: boolean | string) => void] {
   const show = ref(init);
@@ -20,5 +20,7 @@ export const makeShowProps = propsFactory(
   {
     show: Boolean,
   },
-  'show'
+  'show',
 );
+
+export type WithShowProps = { show?: boolean };

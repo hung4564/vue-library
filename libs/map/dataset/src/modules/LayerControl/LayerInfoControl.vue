@@ -6,13 +6,14 @@ export default {
 
 <script setup lang="ts">
 import {
-  makeShowProps,
+  defaultMapProps,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
-  withMapProps,
+  WithMapPropType,
+  WithShowProps,
 } from '@hungpvq/vue-map-core';
 
 import { DraggableItemFloat } from '@hungpvq/vue-draggable';
@@ -26,9 +27,8 @@ import {
 } from '@mdi/js';
 import LayerListReadonly from './part/LayerListReadonly.vue';
 
-const props = defineProps({
-  ...withMapProps,
-  ...makeShowProps({ show: false }),
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);

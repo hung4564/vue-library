@@ -8,13 +8,14 @@ export default {
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
-  makeShowProps,
+  defaultMapProps,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
-  withMapProps,
+  WithMapPropType,
+  WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -28,18 +29,20 @@ import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
 
-const props = defineProps({
-  ...withMapProps,
-  ...makeShowProps({ show: false }),
-  disabledCreate: {
-    type: Boolean,
-    default: false,
+const props = withDefaults(
+  defineProps<
+    WithMapPropType &
+      WithShowProps & {
+        disabledCreate?: boolean;
+        disabledCreateGroup?: boolean;
+      }
+  >(),
+  {
+    ...defaultMapProps,
+    disabledCreate: false,
+    disabledCreateGroup: false,
   },
-  disabledCreateGroup: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 defineSlots<{
   titleList: (props: { mapId: string }) => any;
   endList: (props: { mapId: string }) => any;

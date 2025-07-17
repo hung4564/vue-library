@@ -13,6 +13,7 @@
       <DraggableItemSideBar
         :containerId="props.containerId"
         v-model:show="show"
+        :title="trans('map.aside-control.title')"
       >
         <template #title>
           <span class="aside-control__title">

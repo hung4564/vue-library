@@ -6,6 +6,7 @@ export default {
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/shared-map';
 import {
+  defaultMapProps,
   EventClick,
   EventMouseMove,
   MapControlButton,
@@ -13,7 +14,7 @@ import {
   useEventMap,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
@@ -21,6 +22,7 @@ import { isEqual } from 'lodash';
 import {
   PointLike,
   Popup,
+  QueryRenderedFeaturesOptions,
   type MapMouseEvent,
   type MapSourceDataEvent,
   type StyleSpecification,
@@ -36,22 +38,41 @@ import {
 } from './inspect';
 import _renderPopup from './renderPopup';
 import { generateColoredLayers, generateInspectStyle } from './stylegen';
-const props = defineProps({
-  ...withMapProps,
-  showInspectDefault: Boolean,
-  useInspectStyle: { type: Boolean, default: true },
-  showInspectMapPopup: { type: Boolean, default: true },
-  showInspectMapPopupOnHover: { type: Boolean, default: false },
-  showMapPopup: { type: Boolean, default: false },
-  showMapPopupOnHover: { type: Boolean, default: true },
-  blockHoverPopupOnClick: { type: Boolean, default: false },
-  buildInspectStyle: { type: Function, default: generateInspectStyle },
-  backgroundColor: { type: String, default: '#fff' },
-  assignLayerColor: { type: Function, default: brightColor },
-  renderPopup: { type: Function, default: _renderPopup },
-  selectThreshold: { type: Number, default: 5 },
-  queryParameters: { type: Object, default: () => ({}) },
-});
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      showInspectDefault?: boolean;
+      useInspectStyle?: boolean;
+      showInspectMapPopup?: boolean;
+      showInspectMapPopupOnHover?: boolean;
+      showMapPopup?: boolean;
+      showMapPopupOnHover?: boolean;
+      blockHoverPopupOnClick?: boolean;
+      buildInspectStyle?: (...args: any[]) => any;
+      backgroundColor?: string;
+      assignLayerColor?: (...args: any[]) => any;
+      renderPopup?: (...args: any[]) => any;
+      selectThreshold?: number;
+      queryParameters?: QueryRenderedFeaturesOptions;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    showInspectDefault: false,
+    useInspectStyle: true,
+    showInspectMapPopup: true,
+    showInspectMapPopupOnHover: false,
+    showMapPopup: false,
+    showMapPopupOnHover: true,
+    blockHoverPopupOnClick: false,
+    buildInspectStyle: generateInspectStyle,
+    backgroundColor: '#fff',
+    assignLayerColor: brightColor,
+    renderPopup: _renderPopup,
+    selectThreshold: 5,
+    queryParameters: () => ({}),
+  },
+);
 const _popup = shallowRef(
   new Popup({
     closeButton: false,

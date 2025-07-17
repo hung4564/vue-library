@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { fitBounds } from '@hungpvq/shared-map';
-import { useMap, withMapProps } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  useMap,
+  WithMapPropType,
+} from '@hungpvq/vue-map-core';
 import { registerMenuHandler } from '../model/menu';
 import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);

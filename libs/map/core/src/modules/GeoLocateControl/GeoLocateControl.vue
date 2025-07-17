@@ -8,13 +8,13 @@ import { LngLatLike, Marker } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const { coords, error, resume, pause } = useGeolocation({
   immediate: false,
 });
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const { mapId, callMap, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -105,13 +105,13 @@ tryOnMounted(() => {
     p_dotElement.classList.add('mapboxgl-user-location');
     p_dotElement.appendChild(DOMcreate('div', 'mapboxgl-user-location-dot'));
     p_dotElement.appendChild(
-      DOMcreate('div', 'mapboxgl-user-location-heading')
+      DOMcreate('div', 'mapboxgl-user-location-heading'),
     );
   }
   if (!p_circleElement) {
     p_circleElement = DOMcreate(
       'div',
-      'mapboxgl-user-location-accuracy-circle'
+      'mapboxgl-user-location-accuracy-circle',
     );
   }
 });
@@ -164,7 +164,7 @@ function onZoom(map: any) {
 const DOMcreate = function (
   tagName: string,
   className: string,
-  container?: HTMLElement
+  container?: HTMLElement,
 ) {
   const el = window.document.createElement(tagName);
   if (className !== undefined) el.className = className;
@@ -173,7 +173,7 @@ const DOMcreate = function (
 };
 function isOutOfMapMaxBounds(
   map: MapSimple,
-  coordinates: GeolocationCoordinates
+  coordinates: GeolocationCoordinates,
 ) {
   const bounds = map.getBounds();
   return (

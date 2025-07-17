@@ -5,12 +5,18 @@ import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import MapControlButton from '../../../../components/MapControlButton.vue';
 import { useLang } from '../../../../extra/lang';
 import { Collapse, InputSelect, InputText } from '../../../../field';
-import { useMap, useShow, withMapProps } from '../../../../hooks';
+import {
+  defaultMapProps,
+  useMap,
+  useShow,
+  WithShowProps,
+  type WithMapPropType,
+} from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapCrsItems } from '../../hooks';
 import { type CrsItem } from '../../types';
-const props = defineProps({
-  ...withMapProps,
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -28,7 +34,7 @@ setLocaleDefault({
     },
   },
 });
-const [show, setShow] = useShow(false);
+const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {
   setShow(!show.value);

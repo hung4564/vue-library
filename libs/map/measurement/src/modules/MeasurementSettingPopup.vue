@@ -26,46 +26,56 @@
   </ModuleContainer>
 </template>
 
-<script setup>
-import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+<script setup lang="ts">
 import { fitBounds } from '@hungpvq/shared-map';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
+  defaultMapProps,
   ModuleContainer,
   useLang,
   useMap,
-  withMapProps,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
+import { IViewSettingField } from './types';
 const emit = defineEmits(['update:modelValue']);
-const props = defineProps({
-  ...withMapProps,
-  modelValue: Array,
-  maxLength: { type: Number, default: 0 },
-  fields: {
-    type: Array,
-    default: () => [{ text: 'Status', value: 'waiting...' }],
-  },
-  popUpPosition: {
-    type: Object,
-    default: () => ({
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      modelValue?: [number, number][]; // hoặc cụ thể hơn nếu bạn có kiểu
+      maxLength?: number;
+      fields?: IViewSettingField[];
+      popUpPosition?: {
+        top: number;
+        right: number;
+        width: number;
+        height: number;
+      };
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    maxLength: 0,
+    fields: () => [{ text: 'Status', value: 'waiting...' }],
+    popUpPosition: () => ({
       top: 50,
       right: 40,
       width: 350,
       height: 300,
     }),
   },
-});
+);
 const { callMap, moduleContainerProps, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
 const model = defineModel({ default: [[0, 0]] });
 const c_show = defineModel('show', { default: false });
-const onFlyTo = (geometry) => {
+const onFlyTo = (geometry: any) => {
   callMap((map) => {
     fitBounds(map, geometry);
   });
 };
-function setValue(value) {
+function setValue(value: { value: [number, number][] }) {
   emit('update:modelValue', value.value);
 }
 </script>

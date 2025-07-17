@@ -5,19 +5,17 @@ import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
-import { useMap, withMapProps } from '../../hooks';
+import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-const props = defineProps({
-  ...withMapProps,
-  zoom: Number,
-  center: Array<number>,
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
 });
 const currentProjection = ref<string | undefined>('mercator');
 
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
   onInit,
-  onDestroy
+  onDestroy,
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
