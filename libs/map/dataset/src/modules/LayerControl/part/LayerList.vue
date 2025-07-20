@@ -89,8 +89,8 @@ const layers_select = ref<IListViewUI[]>([]);
 function updateLayers() {
   callMap((map: MapSimple) => {
     let beforeId: string = '';
-    views.value.slice().forEach((view, index) => {
-      view.index = index;
+    views.value.slice().forEach((view, index, items) => {
+      view.index = items.length - index;
       applyToAllLeaves(view.getParent() as IDataset, [
         (leaf) => {
           if (isMapboxLayerView(leaf)) {
@@ -147,10 +147,8 @@ function updateTree() {
   if (groupRef.value) groupRef.value.update(views.value);
 }
 function getViewFromStore() {
-  views.value =
-    getAllComponentsByType<IListViewUI>('list').sort(
-      (a, b) => b.index - a.index,
-    ) || [];
+  const viewSource = getAllComponentsByType<IListViewUI>('list');
+  views.value = viewSource.sort((a, b) => b.index - a.index) || [];
 }
 function addNewGroup() {
   if (groupRef.value) groupRef.value.addNewGroup('');

@@ -556,7 +556,7 @@ function createDatasetMeasure(
     <MeasurementControl position="top-right" :actions="actionMeasures" />
     <DrawControl position="top-right" />
     <InspectControl position="top-right" />
-    <LayerControl position="top-left">
+    <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
@@ -578,8 +578,8 @@ function createDatasetMeasure(
     <IdentifyShowFirstControl />
     <LayerHighlight />
     <DatasetControl position="top-left" />
-    <EventManagementControl position="top-left" show />
-    <AsideControl position="top-left" show />
+    <EventManagementControl position="top-left" />
+    <AsideControl position="top-left" />
   </Map>
 </template>
 
