@@ -14,8 +14,8 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
+import { handleMenuAction } from '../../../extra/menu';
 import type { IListViewUI, MenuAction } from '../../../interfaces';
-import { handleMenuAction } from '../../../model/menu';
 import { useMapDataset } from '../../../store';
 import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';

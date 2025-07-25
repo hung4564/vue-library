@@ -5,7 +5,7 @@ import {
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import { registerMenuHandler } from '../model/menu';
+import { registerMenuHandler } from '../extra/menu';
 import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {

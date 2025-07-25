@@ -1,11 +1,11 @@
 import type { MapSimple } from '@hungpvq/shared-map';
+import { createDatasetMenu } from '../../extra/menu';
 import type { IDataset, IListViewUI, WithChildren } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import {
   addDatasetWithChildren,
   createDatasetLeaf,
 } from '../dataset.base.function';
-import { createDatasetMenu } from '../menu';
 /* =========================
  * Types (dùng polymorphic `this`)
  * ========================= */
@@ -107,7 +107,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         show: state.show ?? true,
         shows: state.shows ?? [],
         legend: state.legend,
-        toggleShow(map: MapSimple, show?: boolean) {
+        toggleShow(map: MapSimple, show: boolean) {
           dataset.show = !!show;
         },
       };

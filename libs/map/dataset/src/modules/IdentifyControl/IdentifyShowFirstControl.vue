@@ -14,6 +14,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { handleMenuAction } from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IdentifyResult,
@@ -22,7 +23,6 @@ import type {
 } from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
 import { handleMultiIdentifyGetFirst } from '../../model';
-import { handleMenuAction } from '../../model/menu';
 import { useMapDataset } from '../../store';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

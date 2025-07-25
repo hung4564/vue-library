@@ -31,8 +31,8 @@ import {
   MenuAction,
 } from '../../interfaces';
 import type { WithToggleShow } from '../../interfaces/dataset.extra';
+import { runAllComponentsWithCheck } from '../../model/visitors';
 import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
-import { runAllComponentsWithCheck } from '../visitors';
 
 const path = {
   show: mdiEye,

@@ -16,6 +16,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { handleMenuAction } from '../../../extra/menu';
 import type {
   IDataset,
   IGroupListViewUI,
@@ -24,7 +25,6 @@ import type {
   MenuAction,
 } from '../../../interfaces';
 import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import { handleMenuAction } from '../../../model/menu';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';

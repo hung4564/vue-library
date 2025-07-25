@@ -1,6 +1,7 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
+import { createDatasetMenu } from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -14,7 +15,6 @@ import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import { createDatasetMenu } from '../menu';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,

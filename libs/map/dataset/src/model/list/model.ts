@@ -1,4 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
+import { createDatasetMenu } from '../../extra/menu';
 import type { WithChildren } from '../../interfaces';
 import type { IListViewUI } from '../../interfaces/dataset.parts';
 import { createNamedComponent } from '../base';
@@ -6,7 +7,6 @@ import {
   addDatasetWithChildren,
   createDatasetLeaf,
 } from '../dataset.base.function';
-import { createDatasetMenu } from '../menu';
 export function createDatasetPartListViewUiComponent<T = any>(
   name: string,
   data?: T,
@@ -36,8 +36,8 @@ export function createDatasetPartListViewUiComponent<T = any>(
     show: true,
     shows: [],
     legend: undefined,
-    toggleShow() {
-      dataset.show = !dataset.show;
+    toggleShow(map: MapSimple, show: boolean) {
+      dataset.show = !!show;
     },
   });
   return dataset;
@@ -94,7 +94,7 @@ export function createDatasetPartSubListViewUiComponent<T = any>(
     index: 0,
     show: true,
     shows: [],
-    toggleShow(map: MapSimple, show?: boolean) {
+    toggleShow(map: MapSimple, show: boolean) {
       dataset.show = !!show;
     },
   });

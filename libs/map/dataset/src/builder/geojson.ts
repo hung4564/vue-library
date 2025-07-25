@@ -1,6 +1,10 @@
 import type { Color } from '@hungpvq/shared-map';
 import { getChartRandomColor } from '@hungpvq/vue-map-core';
 import type { GeoJSON } from 'geojson';
+import {
+  createMenuItemShowDetailForItem,
+  createMenuItemToBoundActionForItem,
+} from '../extra';
 import type { IDataset, IListViewUI } from '../interfaces';
 import type { DatasetComposite } from '../model';
 import {
@@ -9,8 +13,6 @@ import {
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createIdentifyMapboxComponent,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
   createMultiMapboxLayerComponent,
 } from '../model';
 import {

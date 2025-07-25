@@ -11,9 +11,9 @@ import type {
   MenuItemBottomOrExtra,
   MenuItemCustomComponentBottomOrExtra,
 } from '../../interfaces';
+import { findSiblingOrNearestLeaf } from '../../model/visitors';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../../modules/StyleControl/style-control.vue';
-import { findSiblingOrNearestLeaf } from '../visitors';
 import ToggleShow from './toggle-show.vue';
 
 export function createDatasetMenu<

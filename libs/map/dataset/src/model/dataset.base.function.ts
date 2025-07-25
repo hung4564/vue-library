@@ -1,4 +1,4 @@
-import type { IDataset, WithChildren } from '../interfaces';
+import type { IDataset, WithChildren, WithEvent } from '../interfaces';
 import { createBase } from './base';
 
 export function createDatasetComponent<T = any>(
@@ -71,5 +71,19 @@ export function addDatasetWithChildren<T extends IDataset = IDataset>(
     getChildren() {
       return [...children];
     },
+  });
+}
+
+import mitt, { type Emitter } from 'mitt';
+export function addDatasetWithEvent<
+  T extends IDataset = IDataset,
+  E extends Record<string, any> = any,
+>(parent: T): T & WithEvent<E> {
+  const emitter: Emitter<E> = mitt<E>();
+
+  return Object.assign(parent, {
+    emit: emitter.emit,
+    on: emitter.on,
+    off: emitter.off,
   });
 }
