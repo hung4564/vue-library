@@ -33,7 +33,7 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
     moveLayer(map: MapSimple, beforeId: string): void {
       throw new Error('Method not implemented.');
     },
-    toggleShow(map: MapSimple, show: boolean): void {
+    toggleShow(map: MapSimple, show?: boolean): void {
       throw new Error('Method not implemented.');
     },
     setOpacity(map: MapSimple, opacity: number): void {

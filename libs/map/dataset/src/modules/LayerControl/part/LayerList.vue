@@ -239,7 +239,6 @@ function onLayerAction({
               :item="item"
               :isSelected="isSelected"
               @click="toggleSelect(item)"
-              @update:item="onUpdateLayer"
               @click:remove="onRemoveLayer"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"

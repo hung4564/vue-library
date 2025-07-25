@@ -1,4 +1,8 @@
 import type { IDataset } from '../interfaces/dataset.base';
+import type {
+  WithSetOpacity,
+  WithToggleShow,
+} from '../interfaces/dataset.extra';
 import type { IDatasetMap } from '../interfaces/dataset.map';
 import type {
   IDataManagementView,
@@ -63,4 +67,12 @@ export function isDatasetHasMethod<T, K extends keyof any>(
     obj !== null &&
     typeof (obj as any)[methodName] === 'function'
   );
+}
+
+export function isHasToggleShow(dataset: any): dataset is WithToggleShow {
+  return 'toggleShow' in dataset;
+}
+
+export function isHasSetOpacity(dataset: any): dataset is WithSetOpacity {
+  return 'setOpacity' in dataset;
 }

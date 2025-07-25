@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import type { MapSimple } from '@hungpvq/shared-map';
 import {
   defaultMapProps,
   useMap,
   WithMapPropType,
-  WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -16,16 +14,9 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
-import type {
-  IDataset,
-  IListViewUI,
-  IMapboxLayerView,
-  MenuAction,
-} from '../../../interfaces';
-import { runAllComponentsWithCheck } from '../../../model';
+import type { IListViewUI, MenuAction } from '../../../interfaces';
 import { handleMenuAction } from '../../../model/menu';
 import { useMapDataset } from '../../../store';
-import { isMapboxLayerView } from '../../../utils/check';
 import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';
@@ -50,31 +41,12 @@ const path = {
   deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
-const { callMap, mapId } = useMap(props);
+const { mapId } = useMap(props);
 const { getAllComponentsByType } = useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
 onMounted(() => {
   updateList();
 });
-function onUpdateLayer(view: IListViewUI) {
-  callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
-      view.getParent() as IDataset,
-      (dataset): dataset is IDataset & IMapboxLayerView =>
-        isMapboxLayerView(dataset),
-      [
-        (dataset) => {
-          dataset.toggleShow(map, view.show);
-        },
-        (dataset) => {
-          if (!view.config.disabled_opacity) {
-            dataset.setOpacity(map, view.opacity);
-          }
-        },
-      ],
-    );
-  });
-}
 function updateList() {
   getViewFromStore();
   nextTick(() => {
@@ -149,7 +121,6 @@ function onLayerAction({
             <component
               :is="item.component || LayerItem"
               :item="item"
-              @update:item="onUpdateLayer"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
               :mapId="mapId"

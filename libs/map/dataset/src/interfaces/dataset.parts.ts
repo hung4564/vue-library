@@ -8,6 +8,7 @@ import type {
   SourceSpecification,
 } from 'maplibre-gl';
 import type { IDataset } from './dataset.base';
+import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
 
 export type MenuItemHandle<T> = (layer: T, map_id: string, value?: any) => any;
@@ -100,15 +101,17 @@ export type IGroupListViewUI<T> =
     };
 
 export type IListViewUI<T extends IDataset = IDataset> = IDataset &
+  WithToggleShow &
   IActionForView<T> & {
     opacity: number;
-    selected: boolean;
+    selected?: boolean;
     color?: Color;
     config: {
       disabled_delete?: boolean;
       disabled_opacity?: boolean;
       component?: any;
       init_show_legend?: boolean;
+      init_show_children?: boolean;
     };
     index: number;
     group?: IGroupListViewUI<IListViewUI>;
@@ -126,15 +129,15 @@ export type IMapboxSourceView = IDatasetMap &
     getSourceId(): string;
   };
 
-export type IMapboxLayerView = IDatasetMap & {
-  getBeforeId(): string;
-  getAllLayerIds(): string[];
-  setOpacity(map: MapSimple, opacity: number): void;
-  toggleShow(map: MapSimple, show?: boolean): void;
-  moveLayer(map: MapSimple, beforeId: string): void;
-  getComponentUpdate(): () => any;
-  updateValue(map: MapSimple, value: any): void;
-};
+export type IMapboxLayerView = IDatasetMap &
+  WithToggleShow &
+  WithSetOpacity & {
+    getBeforeId(): string;
+    getAllLayerIds(): string[];
+    moveLayer(map: MapSimple, beforeId: string): void;
+    getComponentUpdate(): () => any;
+    updateValue(map: MapSimple, value: any): void;
+  };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
     config: { field_name?: string; field_id?: string };

@@ -83,7 +83,7 @@ function onMapLoaded(props: { id: string }) {
   groupLayer_raster.add(layerraster);
   dataset_raster.add(groupLayer_raster);
   list_raster.addMenu(createMenuItemShowDetailInfoSource());
-  list_raster.addMenu(createMenuItemToggleShow());
+  list_raster.addMenu(createMenuItemToggleShow({ location: 'bottom' }));
   const dataset = createDataset('Group test', null, true) as DatasetComposite;
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -143,7 +143,7 @@ function onMapLoaded(props: { id: string }) {
       .build(),
   ]);
   list1.addMenus([
-    createMenuItemToggleShow(),
+    createMenuItemToggleShow({ location: 'bottom' }),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);

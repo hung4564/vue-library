@@ -74,7 +74,14 @@
           @click="onLayerAction(menu)"
         />
       </template>
-      <BaseButton @click.stop="onToggleLegend" v-if="isHasLegend">
+      <BaseButton @click.stop="onToggleChildren()">
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="childrenShow ? path.legendClose : path.legendOpen"
+        />
+      </BaseButton>
+      <BaseButton @click.stop="onToggleLegend()" v-if="isHasChildren">
         <SvgIcon
           size="14"
           type="mdi"
@@ -83,13 +90,22 @@
       </BaseButton>
     </div>
 
-    <div v-if="props.item.legend && legendShow">
-      <component :is="props.item.legend()"></component>
+    <div v-if="isHasLegend && legendShow">
+      <component :is="props.item.legend!()"></component>
+    </div>
+    <div v-if="isHasChildren && childrenShow" class="layer-item__children">
+      <LayerSubItem
+        v-for="item in children"
+        :key="item.id"
+        :item="item"
+        :mapId="mapId"
+      ></LayerSubItem>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapSimple } from '@hungpvq/shared-map';
+import { BaseButton, useMap, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -101,10 +117,17 @@ import {
   mdiMenuLeft,
   mdiPencilOutline,
 } from '@mdi/js';
-import { computed, ref } from 'vue';
-import type { IListViewUI, MenuAction } from '../../../../interfaces';
+import { computed, onMounted, ref } from 'vue';
+import type { IDataset, IListViewUI, MenuAction } from '../../../../interfaces';
+import { WithSetOpacity } from '../../../../interfaces/dataset.extra';
+import {
+  findAllComponentsByType,
+  runAllComponentsWithCheck,
+} from '../../../../model';
+import { isHasSetOpacity } from '../../../../utils/check';
 import LayerItemIcon from './layer-item-icon.vue';
 import LayerItemSlider from './layer-item-slider.vue';
+import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
   item: IListViewUI;
@@ -118,6 +141,7 @@ const emit = defineEmits([
   'click:action',
   'click:content-menu',
 ]);
+const { callMap } = useMap(props);
 const path = {
   menu: mdiDotsVertical,
   loading: mdiLoading,
@@ -136,6 +160,7 @@ const opacity = computed({
   set(value) {
     let item = props.item;
     item.opacity = value;
+    onSetOpacity(item);
     emit('update:item', item);
   },
 });
@@ -181,9 +206,38 @@ function handleContextClick(event: MouseEvent) {
 }
 
 const isHasLegend = computed(() => props.item && props.item.legend);
-const legendShow = ref(props.item.config.init_show_legend ?? false);
-function onToggleLegend() {
-  legendShow.value = !legendShow.value;
+const [childrenShow, onToggleChildren] = useShow(
+  props.item.config.init_show_children ?? false,
+);
+const [legendShow, onToggleLegend] = useShow(
+  props.item.config.init_show_legend ?? false,
+);
+const isHasChildren = ref(false);
+const children = ref<IListViewUI[]>([]);
+onMounted(() => {
+  const allComponentsOfType = findAllComponentsByType(
+    props.item,
+    'list-item',
+  ) as IListViewUI[];
+  isHasChildren.value = allComponentsOfType.length > 0;
+  children.value = allComponentsOfType;
+});
+function onSetOpacity(view: IListViewUI) {
+  const parent = props.item.getParent() || props.item;
+  callMap((map: MapSimple) => {
+    runAllComponentsWithCheck(
+      parent,
+      (dataset): dataset is IDataset & WithSetOpacity =>
+        isHasSetOpacity(dataset),
+      [
+        (dataset) => {
+          if (!view.config.disabled_opacity) {
+            dataset.setOpacity(map, view.opacity);
+          }
+        },
+      ],
+    );
+  });
 }
 </script>
 
@@ -230,6 +284,8 @@ function onToggleLegend() {
   flex-grow: 0;
   flex-shrink: 0;
   width: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .layer-item__icon > div {
@@ -259,5 +315,12 @@ function onToggleLegend() {
 
 .v-spacer {
   flex: 1 1 auto;
+}
+.layer-item__children {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 </style>

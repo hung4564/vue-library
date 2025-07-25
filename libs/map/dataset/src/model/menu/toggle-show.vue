@@ -30,7 +30,8 @@ import {
   IMapboxLayerView,
   MenuAction,
 } from '../../interfaces';
-import { isMapboxLayerView } from '../../utils/check';
+import type { WithToggleShow } from '../../interfaces/dataset.extra';
+import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
 import { runAllComponentsWithCheck } from '../visitors';
 
 const path = {
@@ -44,14 +45,13 @@ const props = defineProps<{
 }>();
 const { callMap, mapId } = useMap(props);
 const onToggleShow = () => {
-  const show = !props.data.show;
   let item = props.data;
-  item.show = !item.show;
+  const show = !item.show;
+  item.show = show;
   callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
+    runAllComponentsWithCheck<IDataset & WithToggleShow>(
       props.data.getParent() as IDataset,
-      (dataset): dataset is IDataset & IMapboxLayerView =>
-        isMapboxLayerView(dataset),
+      (dataset) => isHasToggleShow(dataset),
       [
         (dataset) => {
           dataset.toggleShow(map, show);

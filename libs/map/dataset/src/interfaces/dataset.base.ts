@@ -24,22 +24,6 @@ export interface IDataset<T = any> {
   setData(data: T): void;
 
   /**
-   * Add a child dataset (only applicable for composite nodes)
-   * @param dataset The dataset to add as a child
-   */
-  add?(dataset: IDataset): void;
-
-  /**
-   * Remove a child dataset (only applicable for composite nodes)
-   * @param dataset The dataset to remove
-   */
-  remove?(dataset: IDataset): void;
-
-  /**
-   * Get all child datasets (only applicable for composite nodes)
-   */
-  getChildren?(): IDataset[];
-  /**
    * Get the parent dataset
    * @returns The parent dataset or undefined if this is a root dataset
    */
@@ -56,4 +40,23 @@ export interface IDataset<T = any> {
    * @returns True if this dataset is a composite, false otherwise
    */
   isComposite(): boolean;
+}
+
+export interface WithChildren {
+  /**
+   * Add a child dataset (only applicable for composite nodes)
+   * @param dataset The dataset to add as a child
+   */
+  add(dataset: IDataset): void;
+
+  /**
+   * Remove a child dataset (only applicable for composite nodes)
+   * @param dataset The dataset to remove
+   */
+  remove(dataset: IDataset): void;
+
+  /**
+   * Get all child datasets (only applicable for composite nodes)
+   */
+  getChildren(): IDataset[];
 }
