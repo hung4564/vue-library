@@ -1,102 +1,24 @@
-import type { MapSimple } from '@hungpvq/shared-map';
-import { createDatasetMenu } from '../../extra/menu';
 import type { WithChildren } from '../../interfaces';
-import type { IListViewUI } from '../../interfaces/dataset.parts';
-import { createNamedComponent } from '../base';
 import {
-  addDatasetWithChildren,
-  createDatasetLeaf,
-} from '../dataset.base.function';
-export function createDatasetPartListViewUiComponent<T = any>(
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartSubListViewUiComponentBuilder,
+} from './builder';
+import type { IListViewUI } from './types';
+export function createDatasetPartListViewUiComponent(
   name: string,
-  data?: T,
-): IListViewUI<any> {
-  const base = createDatasetLeaf<T>(name, data);
-  const menu = createDatasetMenu();
-
-  const dataset = createNamedComponent('ListViewUIComponent', {
-    ...base,
-    ...menu,
-    get type(): string {
-      return 'list';
-    },
-
-    opacity: 1,
-    selected: false,
-    color: undefined,
-
-    config: {
-      disabled_delete: false,
-      disabled_opacity: false,
-      component: undefined,
-    },
-
-    index: 0,
-    group: undefined,
-    show: true,
-    shows: [],
-    legend: undefined,
-    toggleShow(map: MapSimple, show: boolean) {
-      dataset.show = !!show;
-    },
-  });
-  return dataset;
+): IListViewUI {
+  return createDatasetPartListViewUiComponentBuilder(name).build();
 }
 
-export function createDatasetPartGroupSubListViewUiComponent<T = any>(
+export function createDatasetPartGroupSubListViewUiComponent(
   name: string,
-  data?: T,
-): IListViewUI<any> & WithChildren {
-  const base = createDatasetLeaf<T>(name, data);
-  const menu = createDatasetMenu();
-
-  const dataset = createNamedComponent('GroupSubListViewUIComponent', {
-    ...base,
-    ...menu,
-    get type(): string {
-      return 'list';
-    },
-
-    opacity: 1,
-    color: undefined,
-    config: {},
-    index: 0,
-    show: true,
-    shows: [],
-    toggleShow(map: MapSimple, show?: boolean) {
-      dataset.show = !!show;
-    },
-  });
-  return addDatasetWithChildren(dataset);
+): IListViewUI & WithChildren {
+  return createDatasetPartGroupSubListViewUiComponentBuilder(name).build();
 }
 
-export function createDatasetPartSubListViewUiComponent<T = any>(
+export function createDatasetPartSubListViewUiComponent(
   name: string,
-  data?: T,
-): IListViewUI<any> {
-  const base = createDatasetLeaf<T>(name, data);
-  const menu = createDatasetMenu();
-
-  const dataset = createNamedComponent('SubListViewUIComponent', {
-    ...base,
-    ...menu,
-    get type(): string {
-      return 'list-item';
-    },
-
-    opacity: 1,
-    color: undefined,
-
-    config: {
-      component: undefined,
-    },
-
-    index: 0,
-    show: true,
-    shows: [],
-    toggleShow(map: MapSimple, show: boolean) {
-      dataset.show = !!show;
-    },
-  });
-  return dataset;
+): IListViewUI {
+  return createDatasetPartSubListViewUiComponentBuilder(name).build();
 }

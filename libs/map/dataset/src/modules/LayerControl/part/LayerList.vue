@@ -19,12 +19,15 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
 import type {
   IDataset,
-  IGroupListViewUI,
-  IListViewUI,
   IMapboxLayerView,
   MenuAction,
 } from '../../../interfaces';
-import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
+import {
+  applyToAllLeaves,
+  IGroupListViewUI,
+  IListViewUI,
+  runAllComponentsWithCheck,
+} from '../../../model';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';

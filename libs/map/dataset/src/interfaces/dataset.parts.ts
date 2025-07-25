@@ -7,6 +7,7 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
+import type { WithEvent } from '../extra/event';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
@@ -86,39 +87,6 @@ export type MenuAction<T = any> =
   | MenuItemBottomOrExtra<T>
   | MenuItemContentMenu<T>
   | MenuItemCustomComponentBottomOrExtra<T>;
-
-/**
- * View Interface Types
- * These types define the structure of different view interfaces
- */
-
-export type IGroupListViewUI<T> =
-  | string
-  | {
-      name: string;
-      id: string;
-      children?: T[];
-    };
-
-export type IListViewUI<T extends IDataset = IDataset> = IDataset &
-  WithToggleShow &
-  IActionForView<T> & {
-    opacity: number;
-    selected?: boolean;
-    color?: Color;
-    config: {
-      disabled_delete?: boolean;
-      disabled_opacity?: boolean;
-      component?: any;
-      init_show_legend?: boolean;
-      init_show_children?: boolean;
-    };
-    index: number;
-    group?: IGroupListViewUI<IListViewUI>;
-    show?: boolean;
-    shows: boolean[];
-    legend?: () => any;
-  };
 
 export type IMapboxSourceView = IDatasetMap &
   IDataset & {

@@ -30,7 +30,8 @@ import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
-import type { IListViewUI, MenuAction } from '../../../../interfaces';
+import type { MenuAction } from '../../../../interfaces';
+import type { IListViewUI } from '../../../../model';
 import LayerItemIcon from './layer-item-icon.vue';
 import LayerMenu from './menu/index.vue';
 

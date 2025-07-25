@@ -50,7 +50,6 @@ import {
   findSiblingOrNearestLeaf,
   IdentifyControl,
   IdentifyShowFirstControl,
-  IListViewUI,
   isDataManagementView,
   isDatasetMap,
   LayerControl,
@@ -129,7 +128,7 @@ function onMapLoaded(map: MapSimple) {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
+  const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
     {
@@ -300,8 +299,7 @@ function createDatasetLineString() {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI =
-    createDatasetPartListViewUiComponent('test line string');
+  const list1 = createDatasetPartListViewUiComponent('test line string');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
@@ -359,7 +357,7 @@ function createDatasetPoint() {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponent('test point');
+  const list1 = createDatasetPartListViewUiComponent('test point');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
@@ -522,7 +520,7 @@ function createDatasetMeasure(
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponentBuilder(
+  const list1 = createDatasetPartListViewUiComponentBuilder(
     'List Measure:' + measurementType,
   )
     .setColor(getChartRandomColor())

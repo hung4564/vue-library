@@ -3,9 +3,9 @@ import { defineStore } from '@hungpvq/shared-store';
 import { useMapStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { IListViewUI } from '../interfaces';
 import type { IDataset } from '../interfaces/dataset.base';
 import { logger } from '../logger';
+import type { IListViewUI } from '../model';
 import {
   applyToAllLeaves,
   findAllComponentsByType,

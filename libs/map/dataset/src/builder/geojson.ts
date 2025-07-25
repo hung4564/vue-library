@@ -5,7 +5,7 @@ import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
 } from '../extra';
-import type { IDataset, IListViewUI } from '../interfaces';
+import type { IDataset } from '../interfaces';
 import type { DatasetComposite } from '../model';
 import {
   createDataManagementMapboxComponent,
@@ -28,7 +28,7 @@ export type GeojsonDatasetOption = {
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   const dataset = createDataset(data.name, null, true) as DatasetComposite;
 
-  const list: IListViewUI = createDatasetPartListViewUiComponent(data.name);
+  const list = createDatasetPartListViewUiComponent(data.name);
   list.color = data.color || getChartRandomColor();
   const groupLayer = createDataset(data.name, null, true) as DatasetComposite;
 

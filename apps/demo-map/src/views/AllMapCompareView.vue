@@ -36,10 +36,8 @@ import {
   createMultiMapboxLayerComponent,
   DatasetComposite,
   IdentifyControl,
-  IListViewUI,
   LayerControl,
   LayerHighlight,
-  LayerInfoControl,
   LayerSimpleMapboxBuild,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
@@ -94,7 +92,7 @@ function onMapLoaded(props: { id: string }) {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
+  const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
     {

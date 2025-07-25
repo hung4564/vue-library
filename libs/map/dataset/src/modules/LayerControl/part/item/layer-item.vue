@@ -118,8 +118,9 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { computed, onMounted, ref } from 'vue';
-import type { IDataset, IListViewUI, MenuAction } from '../../../../interfaces';
+import type { IDataset, MenuAction } from '../../../../interfaces';
 import { WithSetOpacity } from '../../../../interfaces/dataset.extra';
+import type { IListViewUI } from '../../../../model';
 import {
   findAllComponentsByType,
   runAllComponentsWithCheck,
