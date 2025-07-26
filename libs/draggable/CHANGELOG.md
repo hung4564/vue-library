@@ -1,3 +1,13 @@
+## 0.4.2 (2025-07-26)
+
+### 🩹 Fixes
+
+- dup slot in draggale ([4b284ef](https://github.com/hung4564/vue-library/commit/4b284ef))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.1 (2025-07-12)
 
 ### 🩹 Fixes
