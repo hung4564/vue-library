@@ -12,9 +12,5 @@ export function addDatasetWithEvent<
 
 export function createDatasetEvent<E extends Record<string, any> = any>() {
   const emitter: Emitter<E> = mitt<E>();
-  return {
-    emit: emitter.emit,
-    on: emitter.on,
-    off: emitter.off,
-  };
+  return { emitter, emit: emitter.emit, on: emitter.on, off: emitter.off };
 }

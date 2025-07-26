@@ -5,7 +5,7 @@ import type { WithToggleShow } from '../../interfaces/dataset.extra';
 
 export type IListViewUI = IDataset &
   WithToggleShow &
-  WithEvent &
+  WithEvent<EventIListViewUI> &
   IActionForView & {
     opacity: number;
     selected?: boolean;
@@ -31,3 +31,7 @@ export type IGroupListViewUI<T> =
       id: string;
       children?: T[];
     };
+
+export type EventIListViewUI = {
+  toggleShow: { show: boolean; dataset: IListViewUI };
+};

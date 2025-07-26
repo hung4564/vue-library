@@ -14,7 +14,7 @@
     </BaseButton>
   </div>
   <BaseButton @click.stop="onToggleShow" v-else>
-    <SvgIcon size="14" type="mdi" :path="path.show" v-if="data.show" />
+    <SvgIcon size="14" type="mdi" :path="path.show" v-if="showValue" />
     <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
   </BaseButton>
 </template>
@@ -23,7 +23,7 @@ import { MapSimple } from '@hungpvq/shared-map';
 import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { IDataset, IMapboxLayerView, MenuAction } from '../../interfaces';
 import type { WithToggleShow } from '../../interfaces/dataset.extra';
 import { IListViewUI } from '../../model';
@@ -39,11 +39,10 @@ const props = defineProps<{
   data: IListViewUI;
   mapId: string;
 }>();
+const showValue = ref(props.data.show);
 const { callMap, mapId } = useMap(props);
 const onToggleShow = () => {
-  let item = props.data;
-  const show = !item.show;
-  item.show = show;
+  const show = !showValue.value;
   callMap((map: MapSimple) => {
     runAllComponentsWithCheck<IDataset & WithToggleShow>(
       props.data.getParent() as IDataset,
@@ -76,6 +75,19 @@ function onToggleShowIndex(index: number) {
 const isMulti = ref(false);
 onMounted(() => {
   isMulti.value = getIsMulti(mapId.value);
+});
+function toggleShow(e: { show: boolean }) {
+  const { show } = e;
+  showValue.value = show;
+}
+let mountedOnce = false;
+onMounted(() => {
+  if (mountedOnce) return;
+  mountedOnce = true;
+  props.data.on('toggleShow', toggleShow);
+});
+onUnmounted(() => {
+  props.data.off('toggleShow', toggleShow);
 });
 function getShow(index: number) {
   let item = props.data;

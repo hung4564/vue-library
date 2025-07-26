@@ -7,7 +7,7 @@ import {
   addDatasetWithChildren,
   createDatasetLeaf,
 } from '../dataset.base.function';
-import type { IListViewUI } from './types';
+import type { EventIListViewUI, IListViewUI } from './types';
 export interface ListViewUIBuilder {
   state: Partial<IListViewUI>;
   setColor(color: IListViewUI['color']): this;
@@ -76,7 +76,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
     build(): IListViewUI {
       const base = createDatasetLeaf<T>(name);
       const menu = createDatasetMenu();
-      const event = createDatasetEvent();
+      const event = createDatasetEvent<EventIListViewUI>();
 
       const dataset = {
         ...base,
@@ -96,6 +96,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         legend: state.legend,
         toggleShow(map: MapSimple, show: boolean) {
           dataset.show = !!show;
+          event.emit('toggleShow', { show, dataset });
         },
         config: {
           disabled_delete: false,
