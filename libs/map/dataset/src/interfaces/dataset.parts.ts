@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from '@hungpvq/shared';
-import type { Color, MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type {
@@ -7,7 +7,6 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { WithEvent } from '../extra/event';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
@@ -46,7 +45,7 @@ type MenuCommon = {
 
 /** Divider menu item type */
 export type MenuDivider = MenuCommon & {
-  location?: 'extra' | 'menu' | 'bottom';
+  location?: 'extra' | 'menu' | 'bottom' | 'prebottom';
   type: 'divider';
 };
 
@@ -71,7 +70,7 @@ export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
   'click'
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra';
+  location?: 'bottom' | 'extra' | 'prebottom';
   component: () => any;
 };
 

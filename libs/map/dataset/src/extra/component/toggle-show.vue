@@ -24,21 +24,17 @@ import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { IDataset, IMapboxLayerView, MenuAction } from '../../interfaces';
+import { IDataset, IMapboxLayerView } from '../../interfaces';
 import type { WithToggleShow } from '../../interfaces/dataset.extra';
-import { IListViewUI } from '../../model';
 import { runAllComponentsWithCheck } from '../../model/visitors';
 import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
+import { WithLayerItemActionType } from './types';
 
 const path = {
   show: mdiEye,
   hide: mdiEyeOff,
 };
-const props = defineProps<{
-  item: MenuAction<IListViewUI>;
-  data: IListViewUI;
-  mapId: string;
-}>();
+const props = defineProps<WithLayerItemActionType>();
 const showValue = ref(props.data.show);
 const { callMap, mapId } = useMap(props);
 const onToggleShow = () => {
@@ -80,10 +76,7 @@ function toggleShow(e: { show: boolean }) {
   const { show } = e;
   showValue.value = show;
 }
-let mountedOnce = false;
 onMounted(() => {
-  if (mountedOnce) return;
-  mountedOnce = true;
   props.data.on('toggleShow', toggleShow);
 });
 onUnmounted(() => {

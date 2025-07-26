@@ -1,7 +1,8 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { createDatasetEvent } from '../../extra/event';
-import { createDatasetMenu } from '../../extra/menu';
+import { createDatasetMenu, createMenuItemSetOpacity } from '../../extra/menu';
 import type { IDataset, WithChildren } from '../../interfaces';
+import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
 import {
   addDatasetWithChildren,
@@ -94,18 +95,22 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         show: state.show ?? true,
         shows: state.shows ?? [],
         legend: state.legend,
-        toggleShow(map: MapSimple, show: boolean) {
-          dataset.show = !!show;
-          event.emit('toggleShow', { show, dataset });
-        },
         config: {
           disabled_delete: false,
           disabled_opacity: false,
           component: undefined,
           ...state.config,
         },
+        toggleShow(map: MapSimple, show: boolean) {
+          return toggleShow.call(this, map, show);
+        },
+        setOpacity(map: MapSimple, opacity: number) {
+          return setOpacity.call(this, map, opacity);
+        },
       };
-
+      if (!dataset.config.disabled_opacity) {
+        dataset.addMenu(createMenuItemSetOpacity());
+      }
       return dataset;
     },
   };
@@ -194,6 +199,7 @@ export function createDatasetPartSubListViewUiComponentBuilder(
       return 'list-item';
     },
   });
+  base.configDisabledOpacity();
   const originBuild = base.build.bind(base);
 
   const extended = {

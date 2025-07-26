@@ -1,13 +1,20 @@
 import type { Color } from '@hungpvq/shared-map';
 import type { WithEvent } from '../../extra';
 import type { IActionForView, IDataset } from '../../interfaces';
-import type { WithToggleShow } from '../../interfaces/dataset.extra';
+import type {
+  WithOpacity,
+  WithSetOpacity,
+  WithShow,
+  WithToggleShow,
+} from '../../interfaces/dataset.extra';
 
 export type IListViewUI = IDataset &
   WithToggleShow &
+  WithShow &
+  WithOpacity &
+  WithSetOpacity &
   WithEvent<EventIListViewUI> &
   IActionForView & {
-    opacity: number;
     selected?: boolean;
     color?: Color;
     config: {
@@ -19,7 +26,6 @@ export type IListViewUI = IDataset &
     };
     index: number;
     group?: IGroupListViewUI<IListViewUI>;
-    show?: boolean;
     shows: boolean[];
     legend?: () => any;
   };
@@ -34,4 +40,5 @@ export type IGroupListViewUI<T> =
 
 export type EventIListViewUI = {
   toggleShow: { show: boolean; dataset: IListViewUI };
+  changeOpacity: { opacity: number; dataset: IListViewUI };
 };

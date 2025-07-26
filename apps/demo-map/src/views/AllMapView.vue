@@ -544,7 +544,7 @@ function createDatasetMeasure(
   const layer1 = createMultiMapboxLayerComponent('Layer Measure', layers);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  list1.addMenus([createMenuItemToggleShow()]);
+  list1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   dataset.add(source);
   dataset.add(groupLayer1);
   return dataset;
@@ -581,7 +581,7 @@ function createExampleGroupLayer() {
     .setColor(getChartRandomColor())
     .configInitShowChildren()
     .build();
-  list.addMenus([createMenuItemToggleShow()]);
+  list.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   groupLayer.add(list);
   dataset.add(groupLayer);
   const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
@@ -597,8 +597,8 @@ function createExampleGroupLayer() {
   groupSubLayer1.add(layer1);
   const subList2 = createDatasetPartSubListViewUiComponent('Sub list 2');
   subList2.color = getChartRandomColor();
-  subList1.addMenus([createMenuItemToggleShow()]);
-  subList2.addMenus([createMenuItemToggleShow()]);
+  subList1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  subList2.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   const groupSubLayer2 = createDataset('Group sub layer 2', null, true);
   const layer2 = createMultiMapboxLayerComponent('layer line', [
     new LayerSimpleMapboxBuild()

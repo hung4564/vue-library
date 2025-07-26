@@ -10,7 +10,9 @@ export function addDatasetWithEvent<
   return Object.assign(parent, menu);
 }
 
-export function createDatasetEvent<E extends Record<string, any> = any>() {
+export function createDatasetEvent<
+  E extends Record<string, any> = any,
+>(): WithEvent<E> {
   const emitter: Emitter<E> = mitt<E>();
-  return { emitter, emit: emitter.emit, on: emitter.on, off: emitter.off };
+  return { emit: emitter.emit, on: emitter.on, off: emitter.off };
 }

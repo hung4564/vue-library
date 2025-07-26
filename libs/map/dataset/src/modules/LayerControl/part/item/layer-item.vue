@@ -61,9 +61,15 @@
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
-      <div class="layer-item__opacity" v-if="!item.config.disabled_opacity">
-        <LayerItemSlider v-model.number="opacity" :disabled="loading" />
-      </div>
+      <template v-for="(menu, i) in bottoms" :key="i">
+        <LayerMenu
+          :item="menu"
+          :data="item"
+          :disabled="loading"
+          :mapId="mapId"
+          @click="onLayerAction(menu)"
+        />
+      </template>
       <div class="v-spacer"></div>
       <template v-for="(menu, i) in extra_bottoms" :key="i">
         <LayerMenu
@@ -127,7 +133,6 @@ import {
 } from '../../../../model';
 import { isHasSetOpacity } from '../../../../utils/check';
 import LayerItemIcon from './layer-item-icon.vue';
-import LayerItemSlider from './layer-item-slider.vue';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
@@ -179,6 +184,11 @@ const extra_menus = computed(() => {
     .filter((x) => !x.location || x.location == 'extra')
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
+const bottoms = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'prebottom')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
 const extra_bottoms = computed(() => {
   return button_menus.value
     .filter((x) => x.location == 'bottom')
@@ -221,7 +231,7 @@ onMounted(() => {
     'list-item',
   ) as IListViewUI[];
   isHasChildren.value = allComponentsOfType.length > 0;
-  children.value = allComponentsOfType;
+  children.value = allComponentsOfType.slice().reverse();
 });
 function onSetOpacity(view: IListViewUI) {
   const parent = props.item.getParent() || props.item;
@@ -274,11 +284,6 @@ function onSetOpacity(view: IListViewUI) {
 
 .layer-item__action {
   padding-top: 4px;
-}
-
-.layer-item__opacity {
-  flex: 1 1 auto;
-  max-width: 50%;
 }
 
 .layer-item__icon {
