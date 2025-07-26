@@ -3,7 +3,6 @@
     <Teleport :to="titleTo" v-if="hasSlotTitle">
       <slot name="title" />
     </Teleport>
-    <slot />
     <Teleport :to="contentTo">
       <slot />
     </Teleport>
