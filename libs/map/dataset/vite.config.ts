@@ -54,6 +54,7 @@ export default defineConfig({
         'vuedraggable',
         '@hungpvq/shared-file',
         'lodash',
+        'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
       ],
