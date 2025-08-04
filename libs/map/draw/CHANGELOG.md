@@ -1,3 +1,20 @@
+## 0.7.0 (2025-08-04)
+
+### 🚀 Features
+
+- new for draggable ([#9](https://github.com/hung4564/vue-library/pull/9))
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.0
+- Updated content-menu to 0.3.1
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+- hung.pv
+
 ## 0.6.0 (2025-06-07)
 
 ### 🚀 Features

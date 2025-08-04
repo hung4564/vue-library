@@ -1,3 +1,18 @@
+## 0.7.0 (2025-08-04)
+
+### 🚀 Features
+
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.0
+- Updated draggable to 0.4.3
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.6.1 (2025-06-14)
 
 ### 🚀 Features

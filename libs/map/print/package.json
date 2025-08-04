@@ -28,8 +28,8 @@
   "peerDependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
-    "@hungpvq/vue-map-core": "0.6.1",
-    "@hungpvq/vue-draggable": "0.4.2",
+    "@hungpvq/vue-map-core": "0.7.0",
+    "@hungpvq/vue-draggable": "0.4.3",
     "@hungpvq/shared-map": "0.6.0",
     "@hungpvq/shared-log": ">=0.0.1",
     "file-saver": "^2.0.5",

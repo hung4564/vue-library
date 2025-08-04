@@ -1,3 +1,9 @@
+## 0.4.3 (2025-08-04)
+
+### 🧱 Updated Dependencies
+
+- Updated content-menu to 0.3.1
+
 ## 0.4.2 (2025-07-26)
 
 ### 🩹 Fixes

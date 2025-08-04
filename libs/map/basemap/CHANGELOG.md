@@ -1,3 +1,18 @@
+## 0.7.0 (2025-08-04)
+
+### 🚀 Features
+
+- new for draggable ([#9](https://github.com/hung4564/vue-library/pull/9))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.0
+- Updated draggable to 0.4.3
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+
 ## 0.6.1 (2025-06-14)
 
 ### 🧱 Updated Dependencies

@@ -1,3 +1,13 @@
+## 0.3.1 (2025-08-04)
+
+### 🩹 Fixes
+
+- menu ([37fe21e](https://github.com/hung4564/vue-library/commit/37fe21e))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.3.0 (2025-04-22)
 
 This was a version bump only for content-menu to align it with other projects, there were no code changes.

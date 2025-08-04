@@ -1,3 +1,27 @@
+## 0.8.0 (2025-08-04)
+
+### 🚀 Features
+
+- add some event for dataset ([025b242](https://github.com/hung4564/vue-library/commit/025b242))
+- new for draggable ([#9](https://github.com/hung4564/vue-library/pull/9))
+- **map-event:** add EventManagementControl ([73de0da](https://github.com/hung4564/vue-library/commit/73de0da))
+- add vector tile source ([8afdeb6](https://github.com/hung4564/vue-library/commit/8afdeb6))
+
+### 🩹 Fixes
+
+- index ([27a262b](https://github.com/hung4564/vue-library/commit/27a262b))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.0
+- Updated content-menu to 0.3.1
+- Updated draggable to 0.4.3
+
+### ❤️ Thank You
+
+- Hưng @hung4564
+- hung.pv
+
 ## 0.7.1 (2025-06-14)
 
 ### 🚀 Features
