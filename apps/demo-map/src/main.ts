@@ -12,4 +12,3 @@ app.use(router);
 app.use(createStoreRegistryPlugin());
 
 app.mount('#root');
-app.config.unwrapInjectedRef = true;
