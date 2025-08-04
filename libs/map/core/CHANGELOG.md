@@ -1,3 +1,17 @@
+## 0.7.1 (2025-08-04)
+
+### 🩹 Fixes
+
+- build ([694662b](https://github.com/hung4564/vue-library/commit/694662b))
+
+### 🧱 Updated Dependencies
+
+- Updated shared-map to 0.7.1
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.7.0 (2025-08-04)
 
 ### 🚀 Features
