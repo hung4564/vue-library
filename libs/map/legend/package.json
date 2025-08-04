@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/vue-map-legend",
-  "version": "0.6.1",
+  "version": "0.7.1",
   "author": {
     "name": "hung.pv"
   },
@@ -16,9 +16,9 @@
   "peerDependencies": {
     "maplibre-gl": "^5.4.0",
     "@maplibre/maplibre-gl-style-spec": "^23.2.1",
-    "@hungpvq/shared-map": ">=0.0.1",
+    "@hungpvq/shared-map": "0.7.1",
     "@hungpvq/vue-draggable": "0.4.3",
-    "@hungpvq/vue-map-core": "0.7.0",
+    "@hungpvq/vue-map-core": "0.7.1",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47"
   },

@@ -1,3 +1,7 @@
+## 0.7.1 (2025-08-04)
+
+This was a version bump only for shared-map to align it with other projects, there were no code changes.
+
 ## 0.6.0 (2025-06-07)
 
 ### 🚀 Features
