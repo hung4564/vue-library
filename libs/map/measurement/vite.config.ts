@@ -50,6 +50,12 @@ export default defineConfig({
         '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
+        'lodash',
+        '@turf/turf',
+        'maplibre-gl',
+        'file-saver',
+        '@turf/helpers',
+        '@jamescoyle/vue-icon',
       ],
       output: {
         // Provide global variables to use in the UMD build

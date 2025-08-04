@@ -52,6 +52,11 @@ export default defineConfig({
         '@hungpvq/content-menu',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        'maplibre-gl',
+        '@mapbox/mapbox-gl-draw',
+        '@mdi/js',
+        'lodash',
+        'randomcolor',
       ],
       output: {
         // Provide global variables to use in the UMD build

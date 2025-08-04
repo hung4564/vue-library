@@ -52,6 +52,11 @@ export default defineConfig({
         'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        'lodash',
+        '@jamescoyle/vue-icon',
+        'maplibre-gl',
+        '@mdi/js',
+        'geojson',
       ],
       output: {
         // Provide global variables to use in the UMD build
