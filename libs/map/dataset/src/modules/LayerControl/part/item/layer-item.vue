@@ -52,7 +52,7 @@
               @click="onLayerAction(menu)"
             />
           </template>
-          <BaseButton @click.stop="onToggleLegend" v-if="isHasLegend">
+          <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
             <SvgIcon
               size="14"
               type="mdi"
@@ -82,14 +82,14 @@
           @click="onLayerAction(menu)"
         />
       </template>
-      <BaseButton @click.stop="onToggleChildren()">
+      <BaseButton @click.stop="onToggleChildren()" v-if="isHasChildren">
         <SvgIcon
           size="14"
           type="mdi"
           :path="childrenShow ? path.legendClose : path.legendOpen"
         />
       </BaseButton>
-      <BaseButton @click.stop="onToggleLegend()" v-if="isHasChildren">
+      <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
         <SvgIcon
           size="14"
           type="mdi"
@@ -207,7 +207,7 @@ function handleContextClick(event: MouseEvent) {
 }
 
 const isHasIcon = computed(() => props.item && props.item.icon);
-const isHasLegend = computed(() => props.item && props.item.legend);
+const isHasLegend = computed(() => props.item && !!props.item.legend);
 const [childrenShow, onToggleChildren] = useShow(
   props.item.config.init_show_children ?? false,
 );

@@ -544,7 +544,7 @@ function createDatasetMeasure(
   const layer1 = createMultiMapboxLayerComponent('Layer Measure', layers);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  list1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  list1.addMenus([createMenuItemToggleShow()]);
   dataset.add(source);
   dataset.add(groupLayer1);
   return dataset;
