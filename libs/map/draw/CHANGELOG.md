@@ -1,3 +1,10 @@
+## 0.7.2 (2025-08-04)
+
+### 🧱 Updated Dependencies
+
+- Updated shared-map to 0.7.2
+- Updated map-core to 0.7.2
+
 ## 0.7.1 (2025-08-04)
 
 ### 🩹 Fixes
