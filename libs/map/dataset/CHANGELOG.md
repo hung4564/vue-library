@@ -1,3 +1,30 @@
+## 0.8.2 (2025-08-04)
+
+### 🩹 Fixes
+
+- build ([694662b](https://github.com/hung4564/vue-library/commit/694662b))
+- missing packagate ([3ab9637](https://github.com/hung4564/vue-library/commit/3ab9637))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.8.1 (2025-08-04)
+
+### 🩹 Fixes
+
+- build ([694662b](https://github.com/hung4564/vue-library/commit/694662b))
+- missing packagate ([3ab9637](https://github.com/hung4564/vue-library/commit/3ab9637))
+
+### 🧱 Updated Dependencies
+
+- Updated shared-map to 0.7.1
+- Updated map-core to 0.7.1
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.8.0 (2025-08-04)
 
 ### 🚀 Features
