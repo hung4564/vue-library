@@ -55,7 +55,6 @@ export default defineConfig({
         'maplibre-gl',
         'file-saver',
         '@turf/helpers',
-        '@jamescoyle/vue-icon',
       ],
       output: {
         // Provide global variables to use in the UMD build

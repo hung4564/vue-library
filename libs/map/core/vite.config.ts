@@ -53,7 +53,6 @@ export default defineConfig({
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         'lodash',
-        '@jamescoyle/vue-icon',
         'maplibre-gl',
         '@mdi/js',
         'geojson',

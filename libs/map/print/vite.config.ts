@@ -51,7 +51,6 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
-        '@jamescoyle/vue-icon',
         '@mdi/js',
         'file-saver',
         'maplibre-gl',

@@ -49,7 +49,6 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/vue-map-core',
         'maplibre-gl',
-        '@jamescoyle/vue-icon',
         '@mdi/js',
       ],
       output: {
