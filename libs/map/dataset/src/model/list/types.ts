@@ -28,6 +28,7 @@ export type IListViewUI = IDataset &
     group?: IGroupListViewUI<IListViewUI>;
     shows: boolean[];
     legend?: () => any;
+    icon?: () => any;
   };
 
 export type IGroupListViewUI<T> =

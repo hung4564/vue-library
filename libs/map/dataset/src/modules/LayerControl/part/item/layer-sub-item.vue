@@ -1,7 +1,13 @@
 <template lang="">
   <div class="layer-sub-item-container">
     <div class="layer-sub-item__info">
-      <LayerItemIcon class="layer-sub-item__icon" :item="{ item }" />
+      <div v-if="isHasIcon" class="layer-sub-item__icon">
+        <component
+          :is="props.item.icon!()"
+          :data="item"
+          :mapId="mapId"
+        ></component>
+      </div>
       <span class="layer-sub-item__title" :title="item.getName()">
         <span>{{ item.getName() }}</span>
       </span>
@@ -32,7 +38,6 @@ import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
 import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
-import LayerItemIcon from './layer-item-icon.vue';
 import LayerMenu from './menu/index.vue';
 
 const path = {
@@ -42,6 +47,7 @@ const props = defineProps<{
   item: IListViewUI;
   mapId: string;
 }>();
+const isHasIcon = computed(() => props.item && props.item.icon);
 const emit = defineEmits(['click:action', 'click:content-menu']);
 const button_menus = computed<MenuAction<any>[]>(() => {
   if (!props.item) {

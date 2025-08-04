@@ -1,11 +1,13 @@
 <template>
   <div class="layer-item-container">
     <div class="layer-item__info">
-      <LayerItemIcon
-        class="layer-item__icon"
-        :loading="loading"
-        :item="{ item }"
-      />
+      <div v-if="isHasIcon" class="layer-item__icon">
+        <component
+          :is="props.item.icon!()"
+          :data="item"
+          :mapId="mapId"
+        ></component>
+      </div>
       <span
         class="layer-item__title"
         :title="item.getName()"
@@ -132,7 +134,6 @@ import {
   runAllComponentsWithCheck,
 } from '../../../../model';
 import { isHasSetOpacity } from '../../../../utils/check';
-import LayerItemIcon from './layer-item-icon.vue';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
@@ -159,17 +160,6 @@ const path = {
   legendClose: mdiMenuDown,
 };
 const loading = ref(false);
-const opacity = computed({
-  get() {
-    return props.item.opacity;
-  },
-  set(value) {
-    let item = props.item;
-    item.opacity = value;
-    onSetOpacity(item);
-    emit('update:item', item);
-  },
-});
 const onRemove = () => {
   emit('click:remove', props.item);
 };
@@ -216,6 +206,7 @@ function handleContextClick(event: MouseEvent) {
   });
 }
 
+const isHasIcon = computed(() => props.item && props.item.icon);
 const isHasLegend = computed(() => props.item && props.item.legend);
 const [childrenShow, onToggleChildren] = useShow(
   props.item.config.init_show_children ?? false,

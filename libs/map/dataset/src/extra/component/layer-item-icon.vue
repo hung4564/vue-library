@@ -11,8 +11,8 @@
   </div>
 </template>
 <script setup>
-import { mdiLayers, mdiLoading } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLayers, mdiLoading } from '@mdi/js';
 defineProps({
   loading: Boolean,
   item: {

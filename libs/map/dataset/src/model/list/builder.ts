@@ -1,4 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
+import LayerItemIcon from '../../extra/component/layer-item-icon.vue';
 import { createDatasetEvent } from '../../extra/event';
 import { createDatasetMenu, createMenuItemSetOpacity } from '../../extra/menu';
 import type { IDataset, WithChildren } from '../../interfaces';
@@ -95,6 +96,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         show: state.show ?? true,
         shows: state.shows ?? [],
         legend: state.legend,
+        icon: state.icon,
         config: {
           disabled_delete: false,
           disabled_opacity: false,
@@ -108,6 +110,9 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
           return setOpacity.call(this, map, opacity);
         },
       };
+      if (!state.icon) {
+        dataset.icon = () => LayerItemIcon;
+      }
       if (!dataset.config.disabled_opacity) {
         dataset.addMenu(createMenuItemSetOpacity());
       }
