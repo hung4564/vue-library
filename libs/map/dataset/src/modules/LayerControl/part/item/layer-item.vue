@@ -1,11 +1,13 @@
 <template>
   <div class="layer-item-container">
     <div class="layer-item__info">
-      <LayerItemIcon
-        class="layer-item__icon"
-        :loading="loading"
-        :item="{ item }"
-      />
+      <div v-if="isHasIcon" class="layer-item__icon">
+        <component
+          :is="props.item.icon!()"
+          :data="item"
+          :mapId="mapId"
+        ></component>
+      </div>
       <span
         class="layer-item__title"
         :title="item.getName()"
@@ -61,9 +63,15 @@
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
-      <div class="layer-item__opacity" v-if="!item.config.disabled_opacity">
-        <LayerItemSlider v-model.number="opacity" :disabled="loading" />
-      </div>
+      <template v-for="(menu, i) in bottoms" :key="i">
+        <LayerMenu
+          :item="menu"
+          :data="item"
+          :disabled="loading"
+          :mapId="mapId"
+          @click="onLayerAction(menu)"
+        />
+      </template>
       <div class="v-spacer"></div>
       <template v-for="(menu, i) in extra_bottoms" :key="i">
         <LayerMenu
@@ -74,7 +82,14 @@
           @click="onLayerAction(menu)"
         />
       </template>
-      <BaseButton @click.stop="onToggleLegend" v-if="isHasLegend">
+      <BaseButton @click.stop="onToggleChildren()">
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="childrenShow ? path.legendClose : path.legendOpen"
+        />
+      </BaseButton>
+      <BaseButton @click.stop="onToggleLegend()" v-if="isHasChildren">
         <SvgIcon
           size="14"
           type="mdi"
@@ -83,13 +98,22 @@
       </BaseButton>
     </div>
 
-    <div v-if="props.item.legend && legendShow">
-      <component :is="props.item.legend()"></component>
+    <div v-if="isHasLegend && legendShow">
+      <component :is="props.item.legend!()"></component>
+    </div>
+    <div v-if="isHasChildren && childrenShow" class="layer-item__children">
+      <LayerSubItem
+        v-for="item in children"
+        :key="item.id"
+        :item="item"
+        :mapId="mapId"
+      ></LayerSubItem>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapSimple } from '@hungpvq/shared-map';
+import { BaseButton, useMap, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -101,10 +125,16 @@ import {
   mdiMenuLeft,
   mdiPencilOutline,
 } from '@mdi/js';
-import { computed, ref } from 'vue';
-import type { IListViewUI, MenuAction } from '../../../../interfaces';
-import LayerItemIcon from './layer-item-icon.vue';
-import LayerItemSlider from './layer-item-slider.vue';
+import { computed, onMounted, ref } from 'vue';
+import type { IDataset, MenuAction } from '../../../../interfaces';
+import { WithSetOpacity } from '../../../../interfaces/dataset.extra';
+import type { IListViewUI } from '../../../../model';
+import {
+  findAllComponentsByType,
+  runAllComponentsWithCheck,
+} from '../../../../model';
+import { isHasSetOpacity } from '../../../../utils/check';
+import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
   item: IListViewUI;
@@ -118,6 +148,7 @@ const emit = defineEmits([
   'click:action',
   'click:content-menu',
 ]);
+const { callMap } = useMap(props);
 const path = {
   menu: mdiDotsVertical,
   loading: mdiLoading,
@@ -129,16 +160,6 @@ const path = {
   legendClose: mdiMenuDown,
 };
 const loading = ref(false);
-const opacity = computed({
-  get() {
-    return props.item.opacity;
-  },
-  set(value) {
-    let item = props.item;
-    item.opacity = value;
-    emit('update:item', item);
-  },
-});
 const onRemove = () => {
   emit('click:remove', props.item);
 };
@@ -151,6 +172,11 @@ const button_menus = computed<MenuAction<any>[]>(() => {
 const extra_menus = computed(() => {
   return button_menus.value
     .filter((x) => !x.location || x.location == 'extra')
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+});
+const bottoms = computed(() => {
+  return button_menus.value
+    .filter((x) => x.location == 'prebottom')
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const extra_bottoms = computed(() => {
@@ -180,10 +206,40 @@ function handleContextClick(event: MouseEvent) {
   });
 }
 
+const isHasIcon = computed(() => props.item && props.item.icon);
 const isHasLegend = computed(() => props.item && props.item.legend);
-const legendShow = ref(props.item.config.init_show_legend ?? false);
-function onToggleLegend() {
-  legendShow.value = !legendShow.value;
+const [childrenShow, onToggleChildren] = useShow(
+  props.item.config.init_show_children ?? false,
+);
+const [legendShow, onToggleLegend] = useShow(
+  props.item.config.init_show_legend ?? false,
+);
+const isHasChildren = ref(false);
+const children = ref<IListViewUI[]>([]);
+onMounted(() => {
+  const allComponentsOfType = findAllComponentsByType(
+    props.item,
+    'list-item',
+  ) as IListViewUI[];
+  isHasChildren.value = allComponentsOfType.length > 0;
+  children.value = allComponentsOfType.slice().reverse();
+});
+function onSetOpacity(view: IListViewUI) {
+  const parent = props.item.getParent() || props.item;
+  callMap((map: MapSimple) => {
+    runAllComponentsWithCheck(
+      parent,
+      (dataset): dataset is IDataset & WithSetOpacity =>
+        isHasSetOpacity(dataset),
+      [
+        (dataset) => {
+          if (!view.config.disabled_opacity) {
+            dataset.setOpacity(map, view.opacity);
+          }
+        },
+      ],
+    );
+  });
 }
 </script>
 
@@ -221,15 +277,12 @@ function onToggleLegend() {
   padding-top: 4px;
 }
 
-.layer-item__opacity {
-  flex: 1 1 auto;
-  max-width: 50%;
-}
-
 .layer-item__icon {
   flex-grow: 0;
   flex-shrink: 0;
   width: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .layer-item__icon > div {
@@ -259,5 +312,12 @@ function onToggleLegend() {
 
 .v-spacer {
   flex: 1 1 auto;
+}
+.layer-item__children {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 </style>

@@ -112,7 +112,7 @@ export class DatasetComposite extends DatasetComponent {
 
   remove(dataset: IDataset): void {
     const index = this.children.findIndex(
-      (child) => child === dataset || child.id === dataset.id
+      (child) => child === dataset || child.id === dataset.id,
     );
     if (index !== -1) {
       this.children.splice(index, 1);
@@ -124,20 +124,6 @@ export class DatasetComposite extends DatasetComponent {
 
   getChildren(): IDataset[] {
     return [...this.children];
-  }
-
-  /**
-   * Accept a visitor
-   * @param visitor The visitor to accept
-   * @returns The result of the visitor's visit
-   */
-  override accept(visitor: IDatasetVisitor): any {
-    // Check if this is a root node (no parent)
-    if (!this.parent) {
-      return visitor.visitRoot(this);
-    } else {
-      return visitor.visitComposite(this);
-    }
   }
 }
 
@@ -151,7 +137,17 @@ export class DatasetComposite extends DatasetComponent {
 export function createDataset(
   name: string,
   data?: any,
-  isComposite = false
+  isComposite?: false,
+): DatasetLeaf;
+export function createDataset(
+  name: string,
+  data?: any,
+  isComposite?: true,
+): DatasetComposite;
+export function createDataset(
+  name: string,
+  data?: any,
+  isComposite = false,
 ): IDataset {
   if (isComposite) {
     return new DatasetComposite(name);

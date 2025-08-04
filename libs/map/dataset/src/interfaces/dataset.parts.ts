@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from '@hungpvq/shared';
-import type { Color, MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/shared-map';
 import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type {
@@ -8,6 +8,7 @@ import type {
   SourceSpecification,
 } from 'maplibre-gl';
 import type { IDataset } from './dataset.base';
+import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
 
 export type MenuItemHandle<T> = (layer: T, map_id: string, value?: any) => any;
@@ -44,7 +45,7 @@ type MenuCommon = {
 
 /** Divider menu item type */
 export type MenuDivider = MenuCommon & {
-  location?: 'extra' | 'menu' | 'bottom';
+  location?: 'extra' | 'menu' | 'bottom' | 'prebottom';
   type: 'divider';
 };
 
@@ -69,7 +70,7 @@ export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
   'click'
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra';
+  location?: 'bottom' | 'extra' | 'prebottom';
   component: () => any;
 };
 
@@ -86,37 +87,6 @@ export type MenuAction<T = any> =
   | MenuItemContentMenu<T>
   | MenuItemCustomComponentBottomOrExtra<T>;
 
-/**
- * View Interface Types
- * These types define the structure of different view interfaces
- */
-
-export type IGroupListViewUI<T> =
-  | string
-  | {
-      name: string;
-      id: string;
-      children?: T[];
-    };
-
-export type IListViewUI<T extends IDataset = IDataset> = IDataset &
-  IActionForView<T> & {
-    opacity: number;
-    selected: boolean;
-    color?: Color;
-    config: {
-      disabled_delete?: boolean;
-      disabled_opacity?: boolean;
-      component?: any;
-      init_show_legend?: boolean;
-    };
-    index: number;
-    group?: IGroupListViewUI<IListViewUI>;
-    show?: boolean;
-    shows: boolean[];
-    legend?: () => any;
-  };
-
 export type IMapboxSourceView = IDatasetMap &
   IDataset & {
     getMapboxSource: () => SourceSpecification & { id?: string };
@@ -126,15 +96,15 @@ export type IMapboxSourceView = IDatasetMap &
     getSourceId(): string;
   };
 
-export type IMapboxLayerView = IDatasetMap & {
-  getBeforeId(): string;
-  getAllLayerIds(): string[];
-  setOpacity(map: MapSimple, opacity: number): void;
-  toggleShow(map: MapSimple, show?: boolean): void;
-  moveLayer(map: MapSimple, beforeId: string): void;
-  getComponentUpdate(): () => any;
-  updateValue(map: MapSimple, value: any): void;
-};
+export type IMapboxLayerView = IDatasetMap &
+  WithToggleShow &
+  WithSetOpacity & {
+    getBeforeId(): string;
+    getAllLayerIds(): string[];
+    moveLayer(map: MapSimple, beforeId: string): void;
+    getComponentUpdate(): () => any;
+    updateValue(map: MapSimple, value: any): void;
+  };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
   IActionForView<T> & {
     config: { field_name?: string; field_id?: string };

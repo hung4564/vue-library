@@ -1,35 +1,24 @@
-import type { IListViewUI } from '../../interfaces/dataset.parts';
-import { createNamedComponent } from '../base';
-import { createDatasetLeaf } from '../dataset.base.function';
-import { createDatasetMenu } from '../menu';
-export function createDatasetPartListViewUiComponent<T = any>(
+import type { WithChildren } from '../../interfaces';
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartSubListViewUiComponentBuilder,
+} from './builder';
+import type { IListViewUI } from './types';
+export function createDatasetPartListViewUiComponent(
   name: string,
-  data?: T,
-): IListViewUI<any> {
-  const base = createDatasetLeaf<T>(name, data);
-  const menu = createDatasetMenu();
+): IListViewUI {
+  return createDatasetPartListViewUiComponentBuilder(name).build();
+}
 
-  return createNamedComponent('ListViewUIComponent', {
-    ...base,
-    ...menu,
-    get type(): string {
-      return 'list';
-    },
+export function createDatasetPartGroupSubListViewUiComponent(
+  name: string,
+): IListViewUI & WithChildren {
+  return createDatasetPartGroupSubListViewUiComponentBuilder(name).build();
+}
 
-    opacity: 1,
-    selected: false,
-    color: undefined,
-
-    config: {
-      disabled_delete: false,
-      disabled_opacity: false,
-      component: undefined,
-    },
-
-    index: 0,
-    group: undefined,
-    show: true,
-    shows: [],
-    legend: undefined,
-  });
+export function createDatasetPartSubListViewUiComponent(
+  name: string,
+): IListViewUI {
+  return createDatasetPartSubListViewUiComponentBuilder(name).build();
 }

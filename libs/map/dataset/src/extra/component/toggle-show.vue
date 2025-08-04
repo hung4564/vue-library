@@ -14,7 +14,7 @@
     </BaseButton>
   </div>
   <BaseButton @click.stop="onToggleShow" v-else>
-    <SvgIcon size="14" type="mdi" :path="path.show" v-if="data.show" />
+    <SvgIcon size="14" type="mdi" :path="path.show" v-if="showValue" />
     <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
   </BaseButton>
 </template>
@@ -23,35 +23,26 @@ import { MapSimple } from '@hungpvq/shared-map';
 import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
-import { onMounted, ref } from 'vue';
-import {
-  IDataset,
-  IListViewUI,
-  IMapboxLayerView,
-  MenuAction,
-} from '../../interfaces';
-import { isMapboxLayerView } from '../../utils/check';
-import { runAllComponentsWithCheck } from '../visitors';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { IDataset, IMapboxLayerView } from '../../interfaces';
+import type { WithToggleShow } from '../../interfaces/dataset.extra';
+import { runAllComponentsWithCheck } from '../../model/visitors';
+import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
+import { WithLayerItemActionType } from './types';
 
 const path = {
   show: mdiEye,
   hide: mdiEyeOff,
 };
-const props = defineProps<{
-  item: MenuAction<IListViewUI>;
-  data: IListViewUI;
-  mapId: string;
-}>();
+const props = defineProps<WithLayerItemActionType>();
+const showValue = ref(props.data.show);
 const { callMap, mapId } = useMap(props);
 const onToggleShow = () => {
-  const show = !props.data.show;
-  let item = props.data;
-  item.show = !item.show;
+  const show = !showValue.value;
   callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
+    runAllComponentsWithCheck<IDataset & WithToggleShow>(
       props.data.getParent() as IDataset,
-      (dataset): dataset is IDataset & IMapboxLayerView =>
-        isMapboxLayerView(dataset),
+      (dataset) => isHasToggleShow(dataset),
       [
         (dataset) => {
           dataset.toggleShow(map, show);
@@ -80,6 +71,16 @@ function onToggleShowIndex(index: number) {
 const isMulti = ref(false);
 onMounted(() => {
   isMulti.value = getIsMulti(mapId.value);
+});
+function toggleShow(e: { show: boolean }) {
+  const { show } = e;
+  showValue.value = show;
+}
+onMounted(() => {
+  props.data.on('toggleShow', toggleShow);
+});
+onUnmounted(() => {
+  props.data.off('toggleShow', toggleShow);
 });
 function getShow(index: number) {
   let item = props.data;

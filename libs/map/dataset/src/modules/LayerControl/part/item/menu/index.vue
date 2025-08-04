@@ -9,7 +9,8 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IListViewUI, MenuAction } from '../../../../../interfaces';
+import type { MenuAction } from '../../../../../interfaces';
+import type { IListViewUI } from '../../../../../model';
 import MenuDivider from './menu-divider.vue';
 import MenuItem from './menu-item.vue';
 const props = defineProps<{

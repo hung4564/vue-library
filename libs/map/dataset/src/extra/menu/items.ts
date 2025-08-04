@@ -11,10 +11,10 @@ import type {
   MenuItemBottomOrExtra,
   MenuItemCustomComponentBottomOrExtra,
 } from '../../interfaces';
+import { findSiblingOrNearestLeaf } from '../../model/visitors';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
 import StyleControl from '../../modules/StyleControl/style-control.vue';
-import { findSiblingOrNearestLeaf } from '../visitors';
-import ToggleShow from './toggle-show.vue';
+import { SetOpacity, ToggleShow } from '../component/index';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset,
@@ -190,9 +190,21 @@ export function createMenuItemToggleShow(
 ) {
   return createMenuItem({
     type: 'item',
-    location: 'bottom',
+    location: 'extra',
     name: 'ToggleShow',
     component: () => ToggleShow,
+    ...menu,
+  });
+}
+
+export function createMenuItemSetOpacity(
+  menu: Partial<MenuItemBottomOrExtra<any>> = {},
+) {
+  return createMenuItem({
+    type: 'item',
+    location: 'prebottom',
+    name: 'SetOpacity',
+    component: () => SetOpacity,
     ...menu,
   });
 }

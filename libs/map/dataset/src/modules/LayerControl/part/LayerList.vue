@@ -16,15 +16,18 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { handleMenuAction } from '../../../extra/menu';
 import type {
   IDataset,
-  IGroupListViewUI,
-  IListViewUI,
   IMapboxLayerView,
   MenuAction,
 } from '../../../interfaces';
-import { applyToAllLeaves, runAllComponentsWithCheck } from '../../../model';
-import { handleMenuAction } from '../../../model/menu';
+import {
+  applyToAllLeaves,
+  IGroupListViewUI,
+  IListViewUI,
+  runAllComponentsWithCheck,
+} from '../../../model';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
@@ -239,7 +242,6 @@ function onLayerAction({
               :item="item"
               :isSelected="isSelected"
               @click="toggleSelect(item)"
-              @update:item="onUpdateLayer"
               @click:remove="onRemoveLayer"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"

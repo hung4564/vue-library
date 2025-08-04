@@ -26,11 +26,13 @@ import {
   createDataManagementMapboxComponent,
   createDataset,
   createDatasetPartGeojsonSourceComponent,
+  createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartHighlightComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
+  createDatasetPartSubListViewUiComponent,
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   createLegend,
@@ -48,7 +50,6 @@ import {
   findSiblingOrNearestLeaf,
   IdentifyControl,
   IdentifyShowFirstControl,
-  IListViewUI,
   isDataManagementView,
   isDatasetMap,
   LayerControl,
@@ -127,7 +128,7 @@ function onMapLoaded(map: MapSimple) {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponent('test area');
+  const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
     {
@@ -176,13 +177,13 @@ function onMapLoaded(map: MapSimple) {
       .build(),
   ]);
   list1.addMenus([
-    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToggleShow(),
     createMenuItemToBoundActionForList(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
   list2.addMenus([
-    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToggleShow(),
     createMenuItemToBoundActionForList(),
     createMenuDrawLayer(),
     createMenuDownload(),
@@ -280,10 +281,15 @@ function onMapLoaded(map: MapSimple) {
   addDataset(dataset);
   addDataset(createDatasetPoint());
   addDataset(createDatasetLineString());
+  addDataset(createExampleGroupLayer());
   // addDataset( dataset_raster);
 }
 function createDatasetLineString() {
-  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const dataset = createDataset(
+    'Group DatasetLineString',
+    null,
+    true,
+  ) as DatasetComposite;
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
@@ -293,8 +299,7 @@ function createDatasetLineString() {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI =
-    createDatasetPartListViewUiComponent('test line string');
+  const list1 = createDatasetPartListViewUiComponent('test line string');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
@@ -305,7 +310,7 @@ function createDatasetLineString() {
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
   list1.addMenus([
-    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToggleShow(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
@@ -352,7 +357,7 @@ function createDatasetPoint() {
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponent('test point');
+  const list1 = createDatasetPartListViewUiComponent('test point');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
     new LayerSimpleMapboxBuild()
@@ -365,7 +370,7 @@ function createDatasetPoint() {
   groupLayer1.add(highlight);
   groupLayer1.add(list1);
   list1.addMenus([
-    createMenuItemToggleShow({ location: 'extra' }),
+    createMenuItemToggleShow(),
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
@@ -515,7 +520,7 @@ function createDatasetMeasure(
     null,
     true,
   ) as DatasetComposite;
-  const list1: IListViewUI = createDatasetPartListViewUiComponentBuilder(
+  const list1 = createDatasetPartListViewUiComponentBuilder(
     'List Measure:' + measurementType,
   )
     .setColor(getChartRandomColor())
@@ -539,9 +544,72 @@ function createDatasetMeasure(
   const layer1 = createMultiMapboxLayerComponent('Layer Measure', layers);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  list1.addMenus([createMenuItemToggleShow({ location: 'extra' })]);
+  list1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   dataset.add(source);
   dataset.add(groupLayer1);
+  return dataset;
+}
+function createExampleGroupLayer() {
+  const dataset = createDataset('Example Group layer', null, true);
+
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          coordinates: [
+            [
+              [106.41291829184809, 21.063188440081973],
+              [106.41291829184809, 20.717051166796367],
+              [107.01740796748487, 20.717051166796367],
+              [107.01740796748487, 21.063188440081973],
+              [106.41291829184809, 21.063188440081973],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  dataset.add(source);
+  const groupLayer = createDataset('Group layer', null, true);
+  const list = createDatasetPartGroupSubListViewUiComponentBuilder(
+    'Example Group list',
+  )
+    .setColor(getChartRandomColor())
+    .configInitShowChildren()
+    .build();
+  list.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  groupLayer.add(list);
+  dataset.add(groupLayer);
+  const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
+  subList1.color = getChartRandomColor();
+  const groupSubLayer1 = createDataset('Group sub layer 1', null, true);
+  const layer1 = createMultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(subList1.color)
+      .build(),
+  ]);
+  groupSubLayer1.add(subList1);
+  groupSubLayer1.add(layer1);
+  const subList2 = createDatasetPartSubListViewUiComponent('Sub list 2');
+  subList2.color = getChartRandomColor();
+  subList1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  subList2.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  const groupSubLayer2 = createDataset('Group sub layer 2', null, true);
+  const layer2 = createMultiMapboxLayerComponent('layer line', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setColor(subList2.color)
+      .build(),
+  ]);
+  groupSubLayer2.add(subList2);
+  groupSubLayer2.add(layer2);
+  list.add(groupSubLayer1);
+  list.add(groupSubLayer2);
   return dataset;
 }
 </script>

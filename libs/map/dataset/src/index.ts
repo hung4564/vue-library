@@ -1,3 +1,4 @@
+export * from './extra';
 export * from './interfaces';
 export * from './model';
 export * from './modules';

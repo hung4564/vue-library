@@ -8,7 +8,8 @@
 <script setup lang="ts">
 import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import type { IListViewUI, MenuAction } from '../../../../../interfaces';
+import type { IListViewUI } from '../../../../..//model';
+import type { MenuAction } from '../../../../../interfaces';
 
 const props = defineProps<{
   item: MenuAction<IListViewUI>;

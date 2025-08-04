@@ -20,8 +20,8 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
+import { handleMenuActionClick } from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
-import { handleMenuActionClick } from '../../model/menu';
 import { useMapDataset } from '../../store';
 import DatasetDetail from './DatasetDetail.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {

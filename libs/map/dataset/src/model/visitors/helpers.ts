@@ -26,7 +26,11 @@ function findLeafInSubtreeBFS(
     (current) => {
       if (current === excludeNode) return;
 
-      const children = current.getChildren?.() || [];
+      const children =
+        'getChildren' in current &&
+        typeof (current as any).getChildren === 'function'
+          ? (current as any).getChildren()
+          : [];
 
       if (children.length === 0 && check(current)) {
         foundNode = current;
