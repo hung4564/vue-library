@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, shallowRef } from 'vue';
+import { onMounted, Ref, ref, shallowRef } from 'vue';
 
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
@@ -13,6 +13,8 @@ import { copyByJson } from '@hungpvq/shared';
 import { MapSimple } from '@hungpvq/shared-map';
 import { IDataset, IMapboxLayerView } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model';
+import { useUniversalRegistry } from '../../registry';
+import { ComponentType } from '../../types';
 import { isMapboxLayerView } from '../../utils/check';
 import enLang from './lang/style-control.json';
 import circleStyleLang from './lang/style/circle-style.json';
@@ -35,7 +37,9 @@ setLocaleDefault({
 const [show, toggleShow] = useShow(false);
 const layer = ref();
 const layer_map = ref<IMapboxLayerView | undefined>(undefined);
-let layer_map_component: any = shallowRef('');
+let layer_map_component: Ref<ComponentType> = shallowRef({
+  componentKey: '',
+});
 onMounted(() => {
   toggleShow(true);
   layer_map.value = undefined;
@@ -67,6 +71,7 @@ const updateValue = () => {
     }
   }
 };
+const { getComponent } = useUniversalRegistry();
 </script>
 <template>
   <ModuleContainer v-bind="$attrs">
@@ -86,7 +91,7 @@ const updateValue = () => {
         </template>
         <div class="style-control">
           <component
-            :is="layer_map_component()"
+            :is="getComponent(layer_map_component.componentKey)"
             v-model="layer"
             @update-style="onUpdateStyle"
             :trans="trans"

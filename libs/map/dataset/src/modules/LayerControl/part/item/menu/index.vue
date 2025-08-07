@@ -11,6 +11,7 @@
 import { computed } from 'vue';
 import type { MenuAction } from '../../../../../interfaces';
 import type { IListViewUI } from '../../../../../model';
+import { useUniversalRegistry } from '../../../../../registry';
 import MenuDivider from './menu-divider.vue';
 import MenuItem from './menu-item.vue';
 const props = defineProps<{
@@ -18,13 +19,14 @@ const props = defineProps<{
   data: IListViewUI;
   mapId: string;
 }>();
+const { getComponent } = useUniversalRegistry();
 const component = computed(() => {
   switch (props.item.type) {
     case 'divider':
       return MenuDivider;
   }
-  if (props.item.type == 'item' && 'component' in props.item) {
-    return props.item.component();
+  if (props.item.type == 'item' && 'componentKey' in props.item) {
+    return getComponent(props.item.componentKey);
   }
   return MenuItem;
 });

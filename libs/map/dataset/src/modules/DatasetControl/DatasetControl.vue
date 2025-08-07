@@ -71,7 +71,7 @@ function onShowDetail(view: IDataset) {
           view,
           mapId.value,
           {
-            component: () => DatasetDetail,
+            componentKey: 'dataset-detail',
             attr: {
               dataset: view,
             },

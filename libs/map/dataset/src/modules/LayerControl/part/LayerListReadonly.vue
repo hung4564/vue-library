@@ -17,6 +17,7 @@ import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
 import type { MenuAction } from '../../../interfaces';
 import type { IListViewUI } from '../../../model';
+import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
 import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
@@ -109,6 +110,7 @@ function onLayerAction({
 }) {
   handleMenuAction(action, item, mapId.value, item);
 }
+const { getComponent } = useUniversalRegistry();
 </script>
 <template lang="">
   <div class="layer-control-container">
@@ -120,7 +122,7 @@ function onLayerAction({
         <RecursiveList :item="item" disabledDrag>
           <template #leaf="{ item }">
             <component
-              :is="item.component || LayerItem"
+              :is="getComponent(item.config?.componentKey, LayerItem)"
               :item="item"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"

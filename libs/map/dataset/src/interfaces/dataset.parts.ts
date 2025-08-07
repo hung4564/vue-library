@@ -7,6 +7,7 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
+import type { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
@@ -71,7 +72,7 @@ export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
 > & {
   type: 'item';
   location?: 'bottom' | 'extra' | 'prebottom';
-  component: () => any;
+  componentKey: string;
 };
 
 /** Menu item type for menu location */
@@ -102,7 +103,7 @@ export type IMapboxLayerView = IDatasetMap &
     getBeforeId(): string;
     getAllLayerIds(): string[];
     moveLayer(map: MapSimple, beforeId: string): void;
-    getComponentUpdate(): () => any;
+    getComponentUpdate(): ComponentType;
     updateValue(map: MapSimple, value: any): void;
   };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &

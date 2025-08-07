@@ -2,7 +2,7 @@
   <component
     v-for="item in components"
     :key="item.id"
-    :is="item.component()"
+    :is="getComponent(item.componentKey)"
     v-bind="item.attr"
     @close="onRemoveComponent(item)"
   ></component>
@@ -14,10 +14,12 @@ import {
   type WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { computed, getCurrentInstance, ref, watch } from 'vue';
+import { useUniversalRegistry } from '../../registry';
 import {
   type ComponentItem,
   useMapDatasetComponent,
 } from '../../store/component';
+const { getComponent } = useUniversalRegistry();
 
 const instance = getCurrentInstance();
 const props = withDefaults(defineProps<WithMapPropType>(), {

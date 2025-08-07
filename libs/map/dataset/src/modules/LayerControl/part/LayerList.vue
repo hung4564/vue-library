@@ -17,17 +17,13 @@ import {
 } from '@mdi/js';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
-import type {
-  IDataset,
-  IMapboxLayerView,
-  MenuAction,
-} from '../../../interfaces';
+import type { IDataset, MenuAction } from '../../../interfaces';
 import {
   applyToAllLeaves,
   IGroupListViewUI,
   IListViewUI,
-  runAllComponentsWithCheck,
 } from '../../../model';
+import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
 import { isMapboxLayerView } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
@@ -119,22 +115,6 @@ function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
     removeComponent(view);
   });
 }
-function onUpdateLayer(view: IListViewUI) {
-  callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
-      view.getParent() as IDataset,
-      (dataset): dataset is IDataset & IMapboxLayerView =>
-        isMapboxLayerView(dataset),
-      [
-        (dataset) => {
-          if (!view.config.disabled_opacity) {
-            dataset.setOpacity(map, view.opacity);
-          }
-        },
-      ],
-    );
-  });
-}
 function onRemoveLayer(view: IListViewUI) {
   if (!view) return;
   removeComponent(view);
@@ -206,6 +186,7 @@ function onLayerAction({
 }) {
   handleMenuAction(action, item, mapId.value, item);
 }
+const { getComponent } = useUniversalRegistry();
 </script>
 <template lang="">
   <div class="layer-control-container">
@@ -238,7 +219,7 @@ function onLayerAction({
             :toggleSelect="toggleSelect"
           >
             <component
-              :is="item.component || LayerItem"
+              :is="getComponent(item.config?.componentKey, LayerItem)"
               :item="item"
               :isSelected="isSelected"
               @click="toggleSelect(item)"

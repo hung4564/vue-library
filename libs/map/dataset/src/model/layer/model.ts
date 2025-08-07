@@ -50,8 +50,10 @@ export function createMultiMapboxLayerComponent(
       return base.getData().map((l) => l.id!);
     },
 
-    getComponentUpdate(): () => any {
-      return () => MultiStyle;
+    getComponentUpdate() {
+      return {
+        componentKey: 'style-multi-control',
+      };
     },
 
     addToMap(map: MapSimple, beforeId?: string): void {

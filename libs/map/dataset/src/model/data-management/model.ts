@@ -58,7 +58,7 @@ export function createDataManagementMapboxComponent<
             dataComponent,
             mapId,
             {
-              component: () => LayerDetail,
+              componentKey: 'layer-detail',
               attr: {
                 item: detail,
                 fields: config.fields,

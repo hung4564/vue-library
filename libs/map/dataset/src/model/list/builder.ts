@@ -35,7 +35,6 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
     config: {
       disabled_delete: false,
       disabled_opacity: false,
-      component: undefined,
       init_show_legend: false,
     },
     index: 0,
@@ -100,7 +99,6 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         config: {
           disabled_delete: false,
           disabled_opacity: false,
-          component: undefined,
           ...state.config,
         },
         toggleShow(map: MapSimple, show: boolean) {
@@ -111,7 +109,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
         },
       };
       if (!state.icon) {
-        dataset.icon = () => LayerItemIcon;
+        dataset.icon = { componentKey: 'layer-icon' };
       }
       if (!dataset.config.disabled_opacity) {
         dataset.addMenu(createMenuItemSetOpacity());
@@ -170,7 +168,6 @@ export function createDatasetPartGroupSubListViewUiComponentBuilder(
     config: {
       disabled_delete: false,
       disabled_opacity: false,
-      component: undefined,
       init_show_legend: false,
       init_show_children: false,
     },

@@ -12,9 +12,6 @@ import type {
   MenuItemCustomComponentBottomOrExtra,
 } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
-import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
-import StyleControl from '../../modules/StyleControl/style-control.vue';
-import { SetOpacity, ToggleShow } from '../component/index';
 
 export function createDatasetMenu<
   T extends IDataset = IDataset,
@@ -26,15 +23,12 @@ export function createDatasetMenu<
     },
     addMenu(menu: MenuAction<T>) {
       if (menu.id && menus.some((m) => m.id === menu.id)) {
-        return; // Không thêm nếu trùng id
+        return;
       }
       menus.push(menu);
     },
     addMenus(menusToAdd: MenuAction<T>[]) {
       for (const menu of menusToAdd) {
-        // Nếu có hàm kiểm tra → phải pass check
-
-        // Kiểm tra không trùng ID
         if (menu.id && menus.some((m) => m.id === menu.id)) continue;
 
         menus.push(menu);
@@ -148,7 +142,7 @@ export function createMenuItemShowDetailInfoSource() {
               layer,
               mapId,
               {
-                component: () => LayerDetail,
+                componentKey: 'layer-detail',
                 attr: {
                   item: source.getDataInfo(),
                   fields: source.getFieldsInfo(),
@@ -174,7 +168,7 @@ export function createMenuItemStyleEdit() {
           layer,
           mapId,
           {
-            component: () => StyleControl,
+            componentKey: 'style-control',
             attr: {
               item: layer,
             },
@@ -192,7 +186,7 @@ export function createMenuItemToggleShow(
     type: 'item',
     location: 'extra',
     name: 'ToggleShow',
-    component: () => ToggleShow,
+    componentKey: 'layer-action-toggle-show',
     ...menu,
   });
 }
@@ -204,7 +198,7 @@ export function createMenuItemSetOpacity(
     type: 'item',
     location: 'prebottom',
     name: 'SetOpacity',
-    component: () => SetOpacity,
+    componentKey: 'layer-action-set-opacity',
     ...menu,
   });
 }

@@ -3,5 +3,6 @@
   "notebook.codeActionsOnSave": {},
   "editor.codeActionsOnSave": {
     "source.sortImports": "explicit"
-  }
+  },
+  "nxConsole.generateAiAgentRules": true
 }

@@ -3,15 +3,14 @@ import { defineStore } from '@hungpvq/shared-store';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
+import type { ComponentType } from '../types';
 
 const KEY = 'dataset-component';
 
 export type ComponentItem = {
   id: string;
   check?: string;
-  component: () => any;
-  attr: any;
-};
+} & ComponentType;
 
 export type MapDatasetComponentStore = {
   components: ComponentItem[];

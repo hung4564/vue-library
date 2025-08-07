@@ -1,4 +1,6 @@
-import { defineComponent, h } from 'vue';
+import { defineComponent, h, type PropType } from 'vue';
+import { useUniversalRegistry } from '../../registry';
+import type { ComponentType } from '../../types';
 import LayerLegendLinearGradient from './parts/linear-gradient.vue';
 import LayerLegendSingleColor from './parts/single-color.vue';
 import LayerLegendSingleText from './parts/single-value.vue';
@@ -33,26 +35,48 @@ type LegendPropsMap = {
 };
 export function createLegend<T extends LegendType>(
   type: T,
-  value: LegendPropsMap[T]
-) {
-  const Component = componentMap[type];
-
-  return () => h(Component, { value });
+  value: LegendPropsMap[T],
+): ComponentType {
+  return {
+    componentKey: `legend-${type}`,
+    attr: {
+      value,
+    },
+  };
 }
 
 export function createMultiLegend<T extends LegendType[]>(
-  legends: { type: T[number]; value: LegendPropsMap[T[number]] }[]
-) {
-  return () =>
-    defineComponent({
-      name: 'MultiLegend',
-      setup() {
-        return () => {
-          return legends.map((legend) => {
-            const Component = componentMap[legend.type];
-            return h(Component, { value: legend.value });
-          });
-        };
-      },
-    });
+  legends: { type: T[number]; value: LegendPropsMap[T[number]] }[],
+): ComponentType {
+  return {
+    componentKey: 'legend-multi',
+    attr: {
+      legends,
+    },
+  };
 }
+export const MultiLegend = defineComponent({
+  name: 'MultiLegend',
+  props: {
+    legends: {
+      type: Array as PropType<
+        { type: LegendType; value: LegendPropsMap[LegendType] }[]
+      >,
+      default: () => [],
+    },
+  },
+  setup(props) {
+    const { getComponent } = useUniversalRegistry();
+    return () =>
+      props.legends.map((legend) => {
+        const Component = getComponent(`legend-${legend.type}`);
+        if (!Component) {
+          console.warn(
+            `Component for legend type "${legend.type}" not found in UniversalRegistry`,
+          );
+          return null;
+        }
+        return h(Component, { value: legend.value });
+      });
+  },
+});
