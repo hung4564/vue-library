@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getUUIDv4 } from '@hungpvq/shared';
 import {
   useConvertToGeoJSON,
   useDownloadFile,
@@ -79,11 +80,11 @@ const mapRef = ref();
 
 const { convertList } = useConvertToGeoJSON();
 const { convert } = useGeoConvertToFile();
-const mapId = ref('');
+const mapId = ref(getUUIDv4());
 const storeDataset = useMapDataset(mapId.value);
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
-  const { addDataset, setMapId } = storeDataset;
+  const { addDataset, setMapId } = useMapDataset(mapId.value);
   setMapId(mapId.value);
   const dataset_raster = createDataset(
     'Group test',
@@ -614,7 +615,7 @@ function createExampleGroupLayer() {
 }
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <Map ref="mapRef" @map-loaded="onMapLoaded" :mapId="mapId">
     <ComponentManagementControl />
     <!-- <LayerInfoControl show>
       <template #endList="{ mapId }">

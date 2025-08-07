@@ -9,12 +9,12 @@
     </Teleport>
   </div>
 </template>
-<script>
+<script lang="ts">
 export default {
   name: 'ModuleContainer',
 };
 </script>
-<script setup>
+<script setup lang="ts">
 import { computed, inject, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
@@ -24,10 +24,10 @@ const props = defineProps({
   position: {
     type: String,
     default: 'bottom-right',
-    validator(value) {
+    validator(value: string) {
       return (
         ['top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(
-          value
+          value,
         ) !== -1
       );
     },
@@ -36,20 +36,20 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  order: {
-    type: Number,
-    default: 0,
-  },
+  top: Number,
+  bottom: Number,
+  left: Number,
+  right: Number,
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
 const hasSlotDraggable = computed(() => !!slots['draggable']);
-const i_dragId = inject('$map.dragId');
-const i_map_id = inject('$map.id');
-const c_containerId = computed(() => {
-  return props.dragId || i_dragId;
+const i_dragId = inject<string>('$map.dragId');
+const i_map_id = inject<string>('$map.id');
+const c_containerId = computed<string>(() => {
+  return props.dragId || i_dragId!;
 });
-const c_mapId = computed(() => {
-  return props.mapId || i_map_id;
+const c_mapId = computed<string>(() => {
+  return props.mapId || i_map_id!;
 });
 
 const draggableTo = computed(() => {
@@ -58,21 +58,47 @@ const draggableTo = computed(() => {
 const btnTo = computed(() => {
   return `#${props.position}-${c_mapId.value}`;
 });
+function resolvePosition(
+  value: number | undefined,
+  direction: string,
+  fallback: number,
+  position: string,
+): number | undefined {
+  if (value != null) return value;
+  if (position.includes(direction)) return fallback;
+  return undefined;
+}
+interface BindPosition {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  containerId: string;
+}
 const bindDrag = computed(() => {
-  let bind = {};
-  if (props.position.includes('left')) {
-    bind.left = 18 + props.btnWidth;
-  }
-  if (props.position.includes('right')) {
-    bind.right = 18 + props.btnWidth;
-  }
-  if (props.position.includes('top')) {
-    bind.top = 10;
-  }
-  if (props.position.includes('bottom')) {
-    bind.bottom = 10;
-  }
-  bind.containerId = c_containerId.value;
+  const left = resolvePosition(
+    props.left,
+    'left',
+    18 + props.btnWidth,
+    props.position,
+  );
+  const right = resolvePosition(
+    props.right,
+    'right',
+    18 + props.btnWidth,
+    props.position,
+  );
+  const top = resolvePosition(props.top, 'top', 10, props.position);
+  const bottom = resolvePosition(props.bottom, 'bottom', 10, props.position);
+
+  const bind: BindPosition = {
+    containerId: c_containerId.value,
+    ...(left !== undefined && { left }),
+    ...(right !== undefined && { right }),
+    ...(top !== undefined && { top }),
+    ...(bottom !== undefined && { bottom }),
+  };
+
   return bind;
 });
 </script>
