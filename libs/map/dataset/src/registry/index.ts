@@ -44,11 +44,22 @@ export class UniversalRegistry {
     if (!key.startsWith('component:')) key = `component:${key}`;
     return this.get<Component>(key);
   }
+
+  /** Helper cho menu handler */
+  static registerMenuHandler(key: string, fn: (...args: any[]) => any) {
+    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
+    this.register(key, fn);
+  }
+
+  static getMenuHandler(key: string) {
+    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
+    return this.get<(...args: any[]) => any>(key);
+  }
 }
 
 export function useUniversalRegistry() {
   function get<T = any>(
-    type: 'component' | 'method',
+    type: 'component' | 'method' | 'menu-handler',
     name: string,
     defaultValue?: T,
   ): T | undefined {
@@ -61,6 +72,12 @@ export function useUniversalRegistry() {
     get,
     getComponent(key: string, defaultValue?: Component): Component | undefined {
       return get<Component>('component', key, defaultValue);
+    },
+    getMenuHandler(
+      key: string,
+      defaultValue?: (...args: any[]) => any,
+    ): ((...args: any[]) => any) | undefined {
+      return get<(...args: any[]) => any>('menu-handler', key, defaultValue);
     },
   };
 }

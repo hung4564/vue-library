@@ -5,7 +5,7 @@ import {
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import { registerMenuHandler } from '../extra/menu';
+import { UniversalRegistry } from '../registry';
 import {
   ComponentItem,
   useMapDatasetComponent,
@@ -18,18 +18,23 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-registerMenuHandler(
+
+// Register menu handlers using UniversalRegistry
+UniversalRegistry.registerMenuHandler(
   'addComponent',
   (layer, mapId: string, component: ComponentItem) => {
     addComponent(component);
   },
 );
-registerMenuHandler('fitBounds', (layer, mapId: string, geometry: any) => {
-  callMap((map) => {
-    fitBounds(map, geometry);
-  });
-});
-registerMenuHandler(
+UniversalRegistry.registerMenuHandler(
+  'fitBounds',
+  (layer, mapId: string, geometry: any) => {
+    callMap((map) => {
+      fitBounds(map, geometry);
+    });
+  },
+);
+UniversalRegistry.registerMenuHandler(
   'highlight',
   (
     layer,

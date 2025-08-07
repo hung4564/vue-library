@@ -64,6 +64,10 @@ export const MultiLegend = defineComponent({
       >,
       default: () => [],
     },
+    data: {
+      type: Object as PropType<any>,
+      default: undefined,
+    },
   },
   setup(props) {
     const { getComponent } = useUniversalRegistry();

@@ -16,6 +16,7 @@ import { UniversalRegistry } from '../registry';
 export function createDatasetRegistryPlugin() {
   return {
     install() {
+      // Register components
       UniversalRegistry.registerComponent(
         'legend-linear',
         LayerLegendLinearGradient,
