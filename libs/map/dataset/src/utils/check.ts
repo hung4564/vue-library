@@ -41,7 +41,10 @@ export function isMapboxLayerView(
 export function isComposite(
   dataset: IDataset,
 ): dataset is IDataset & DatasetComposite {
-  return dataset.isComposite();
+  return (
+    dataset.type === 'composite' ||
+    ('getChildren' in dataset && typeof dataset.getChildren === 'function')
+  );
 }
 
 export function isIdentifyMergeView<T extends IDataset>(

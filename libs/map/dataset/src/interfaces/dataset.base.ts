@@ -34,12 +34,6 @@ export interface IDataset<T = any> {
    * @param parent The parent dataset to set
    */
   setParent(parent?: IDataset): void;
-
-  /**
-   * Check if this dataset is a composite (has children)
-   * @returns True if this dataset is a composite, false otherwise
-   */
-  isComposite(): boolean;
 }
 
 export interface WithChildren {
