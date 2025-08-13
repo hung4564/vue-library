@@ -46,7 +46,6 @@ import {
   createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
-  DatasetComposite,
   DatasetControl,
   findSiblingOrNearestLeaf,
   IdentifyControl,
@@ -86,49 +85,18 @@ function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
   const { addDataset, setMapId } = useMapDataset(mapId.value);
   setMapId(mapId.value);
-  const dataset_raster = createDataset(
-    'Group test',
-    null,
-    true,
-  ) as DatasetComposite;
-  const source_raster = createDatasetPartRasterSourceComponent('source', {
-    type: 'raster',
-    tiles: [
-      'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
-    ],
-    maxzoom: 6,
-    bounds: [
-      104.96327341667353, 18.461221184685627, 106.65936430823979,
-      19.549518287564368,
-    ],
-  });
-  const layerraster = createMultiMapboxLayerComponent('layer raster', [
-    {
-      type: 'raster',
-    },
-  ]);
-  const list_raster = createDatasetPartListViewUiComponent('test raster');
-  list_raster.color = '#0000FF';
-  const groupLayer_raster = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
-  dataset_raster.add(source_raster);
-  groupLayer_raster.add(list_raster);
-  groupLayer_raster.add(layerraster);
-  dataset_raster.add(groupLayer_raster);
-  list_raster.addMenu(createMenuItemShowDetailInfoSource());
-  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  addDataset(createGroupList());
+  addDataset(createDatasetPoint());
+  addDataset(createDatasetLineString());
+  addDataset(createExampleGroupLayer());
+}
+function createGroupList() {
+  const dataset = createDataset('Group test', null, true);
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer1 = createDataset('Group layer 1', null, true);
   const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
@@ -157,11 +125,7 @@ function onMapLoaded(map: MapSimple) {
   ]);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  const groupLayer2 = createDataset(
-    'Group layer 2',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer2 = createDataset('Group layer 2', null, true);
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
   list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
@@ -246,11 +210,11 @@ function onMapLoaded(map: MapSimple) {
       geometry: {
         coordinates: [
           [
-            [104.96327341667353, 19.549518287564368],
-            [104.96327341667353, 18.461221184685627],
-            [106.65936430823979, 18.461221184685627],
-            [106.65936430823979, 19.549518287564368],
-            [104.96327341667353, 19.549518287564368],
+            [105.10817952195043, 21.050029106661356],
+            [105.10817952195043, 19.961732003782615],
+            [106.80427041351669, 19.961732003782615],
+            [106.80427041351669, 21.050029106661356],
+            [105.10817952195043, 21.050029106661356],
           ],
         ],
         type: 'Polygon',
@@ -262,11 +226,11 @@ function onMapLoaded(map: MapSimple) {
       geometry: {
         coordinates: [
           [
-            [105.80782070639765, 20.18022781865689],
-            [105.80782070639765, 18.841791883714322],
-            [107.53334783357559, 18.841791883714322],
-            [107.53334783357559, 20.18022781865689],
-            [105.80782070639765, 20.18022781865689],
+            [105.82392138476081, 21.494059069396187],
+            [105.82392138476081, 20.15562313445362],
+            [107.54944851193875, 20.15562313445362],
+            [107.54944851193875, 21.494059069396187],
+            [105.82392138476081, 21.494059069396187],
           ],
         ],
         type: 'Polygon',
@@ -279,27 +243,43 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(groupLayer2);
   dataset.add(identify);
   dataset.add(metadata);
-  addDataset(dataset);
-  addDataset(createDatasetPoint());
-  addDataset(createDatasetLineString());
-  addDataset(createExampleGroupLayer());
-  // addDataset( dataset_raster);
+  return dataset;
+}
+function createRasterDataset() {
+  const dataset_raster = createDataset('Group test', null, true);
+  const source_raster = createDatasetPartRasterSourceComponent('source', {
+    type: 'raster',
+    tiles: [
+      'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
+    ],
+    maxzoom: 6,
+    bounds: [
+      104.96327341667353, 18.461221184685627, 106.65936430823979,
+      19.549518287564368,
+    ],
+  });
+  const layerraster = createMultiMapboxLayerComponent('layer raster', [
+    {
+      type: 'raster',
+    },
+  ]);
+  const list_raster = createDatasetPartListViewUiComponent('test raster');
+  list_raster.color = '#0000FF';
+  const groupLayer_raster = createDataset('Group layer 1', null, true);
+  dataset_raster.add(source_raster);
+  groupLayer_raster.add(list_raster);
+  groupLayer_raster.add(layerraster);
+  dataset_raster.add(groupLayer_raster);
+  list_raster.addMenu(createMenuItemShowDetailInfoSource());
+  return dataset_raster;
 }
 function createDatasetLineString() {
-  const dataset = createDataset(
-    'Group DatasetLineString',
-    null,
-    true,
-  ) as DatasetComposite;
+  const dataset = createDataset('Group DatasetLineString', null, true);
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer1 = createDataset('Group layer 1', null, true);
   const list1 = createDatasetPartListViewUiComponent('test line string');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
@@ -348,16 +328,12 @@ function createDatasetLineString() {
   return dataset;
 }
 function createDatasetPoint() {
-  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const dataset = createDataset('Group test', null, true);
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer1 = createDataset('Group layer 1', null, true);
   const list1 = createDatasetPartListViewUiComponent('test point');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
@@ -507,20 +483,12 @@ function createDatasetMeasure(
   measurementType: string,
 ) {
   const result = handler.getResult();
-  const dataset = createDataset(
-    'Dataset Measure',
-    null,
-    true,
-  ) as DatasetComposite;
+  const dataset = createDataset('Dataset Measure', null, true);
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: result.features || [],
   });
-  const groupLayer1 = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer1 = createDataset('Group layer 1', null, true);
   const list1 = createDatasetPartListViewUiComponentBuilder(
     'List Measure:' + measurementType,
   )
@@ -588,7 +556,7 @@ function createExampleGroupLayer() {
   const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
   subList1.color = getChartRandomColor();
   const groupSubLayer1 = createDataset('Group sub layer 1', null, true);
-  const layer1 = createMultiMapboxLayerComponent('layer point', [
+  const layer1 = createMultiMapboxLayerComponent('sub layer 1 - point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
       .setColor(subList1.color)
@@ -601,7 +569,7 @@ function createExampleGroupLayer() {
   subList1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   subList2.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   const groupSubLayer2 = createDataset('Group sub layer 2', null, true);
-  const layer2 = createMultiMapboxLayerComponent('layer line', [
+  const layer2 = createMultiMapboxLayerComponent('sub layer 2 - line', [
     new LayerSimpleMapboxBuild()
       .setStyleType('line')
       .setColor(subList2.color)

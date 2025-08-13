@@ -17,15 +17,11 @@ import {
 } from '@mdi/js';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
-import type { IDataset, MenuAction } from '../../../interfaces';
-import {
-  applyToAllLeaves,
-  IGroupListViewUI,
-  IListViewUI,
-} from '../../../model';
+import type { MenuAction } from '../../../interfaces';
+import { IGroupListViewUI, IListViewUI, traverseTree } from '../../../model';
 import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
-import { isMapboxLayerView } from '../../../utils/check';
+import { hasMoveLayer, isComposite } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
@@ -90,14 +86,18 @@ function updateLayers() {
     let beforeId: string = '';
     views.value.slice().forEach((view, index, items) => {
       view.index = items.length - index;
-      applyToAllLeaves(view.getParent() as IDataset, [
-        (leaf) => {
-          if (isMapboxLayerView(leaf)) {
-            leaf.moveLayer(map, beforeId);
-            beforeId = leaf.getBeforeId();
+      traverseTree(
+        view.getParent() || view,
+        (node) => {
+          if (hasMoveLayer(node)) {
+            node.moveLayer(map, beforeId);
+            beforeId = node.getBeforeId();
           }
         },
-      ]);
+        {
+          direction: 'rtl',
+        },
+      );
     });
   });
 }

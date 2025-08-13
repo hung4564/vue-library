@@ -224,7 +224,7 @@ onMounted(() => {
     'list-item',
   ) as IListViewUI[];
   isHasChildren.value = allComponentsOfType.length > 0;
-  children.value = allComponentsOfType.slice().reverse();
+  children.value = allComponentsOfType.sort((a, b) => b.index - a.index) || [];
 });
 </script>
 

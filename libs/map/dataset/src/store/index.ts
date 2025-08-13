@@ -26,8 +26,8 @@ export const useMapDatasetStore = (mapId: string) =>
 
 export const useMapDataset = (propsMapId?: string) => {
   let mapId = propsMapId ?? '';
-  let store = useMapDatasetStore(propsMapId ?? '');
-  let { getMap } = useMapStore(propsMapId ?? '');
+  let store = useMapDatasetStore(mapId);
+  let { getMap } = useMapStore(mapId);
   async function addDataset(layer: IDataset) {
     if (!store) {
       return;

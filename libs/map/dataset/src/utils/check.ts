@@ -37,6 +37,11 @@ export function isMapboxLayerView(
     'getBeforeId' in dataset
   );
 }
+export function hasMoveLayer(
+  dataset: IDataset,
+): dataset is IDataset & IMapboxLayerView {
+  return 'moveLayer' in dataset && 'getBeforeId' in dataset;
+}
 // Type guard to check if a dataset implements IMapboxLayerView
 export function isComposite(
   dataset: IDataset,
