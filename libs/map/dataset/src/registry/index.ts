@@ -55,6 +55,11 @@ export class UniversalRegistry {
     if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
     return this.get<(...args: any[]) => any>(key);
   }
+
+  static hasMenuHandler(key: string): boolean {
+    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
+    return this.registry.has(key);
+  }
 }
 
 export function useUniversalRegistry() {
