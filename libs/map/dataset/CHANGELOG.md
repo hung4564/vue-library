@@ -1,3 +1,13 @@
+## 0.9.4 (2025-08-18)
+
+### 🩹 Fixes
+
+- add popProps ([bf705fd](https://github.com/hung4564/vue-library/commit/bf705fd))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.3 (2025-08-18)
 
 ### 🩹 Fixes
