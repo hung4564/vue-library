@@ -1,3 +1,21 @@
+## 0.9.0 (2025-08-18)
+
+### 🚀 Features
+
+- change store menu to use UniversalRegistry ([93e8137](https://github.com/hung4564/vue-library/commit/93e8137))
+- change component to use from componentKey ([f32e00f](https://github.com/hung4564/vue-library/commit/f32e00f))
+
+### 🩹 Fixes
+
+- layer-sub-item order ([61a38a8](https://github.com/hung4564/vue-library/commit/61a38a8))
+- add check ([0133b6b](https://github.com/hung4564/vue-library/commit/0133b6b))
+- remove isComposite ([c96d138](https://github.com/hung4564/vue-library/commit/c96d138))
+- legend ([d45a5ef](https://github.com/hung4564/vue-library/commit/d45a5ef))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.8.3 (2025-08-04)
 
 ### 🩹 Fixes
