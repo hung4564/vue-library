@@ -16,6 +16,10 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  popupProps: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const { mapId } = useMap();
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
@@ -34,11 +38,11 @@ function onClose() {
   <ModuleContainer v-bind="$attrs">
     <template #draggable="props">
       <DraggableItemPopup
-        v-bind="props"
         show
         @close="onClose"
         @update:show="onUpdateShow"
         :width="400"
+        v-bind="{ ...props, ...popupProps }"
       >
         <template #title>
           {{ trans('map.layer-control.info.title') }}
