@@ -1,3 +1,13 @@
+## 0.9.3 (2025-08-18)
+
+### 🩹 Fixes
+
+- add menu ([a160e8a](https://github.com/hung4564/vue-library/commit/a160e8a))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.2 (2025-08-18)
 
 ### 🩹 Fixes
