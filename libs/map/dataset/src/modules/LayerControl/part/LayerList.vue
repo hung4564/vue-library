@@ -31,6 +31,7 @@ const props = withDefaults(
       disabledDrag?: boolean;
       disabled?: boolean;
       disabledCreateGroup?: boolean;
+      disabledDeleteAll?: boolean;
     }
   >(),
   {
@@ -38,6 +39,7 @@ const props = withDefaults(
     disabledDrag: false,
     disabled: false,
     disabledCreateGroup: false,
+    disabledDeleteAll: false,
   },
 );
 
@@ -184,6 +186,7 @@ function onLayerAction({
   action: MenuAction<IListViewUI>;
   item: IListViewUI;
 }) {
+  console.log('test', 'onLayerAction', action, item, mapId.value, item);
   handleMenuAction(action, item, mapId.value, item);
 }
 const { getComponent } = useUniversalRegistry();
@@ -197,7 +200,7 @@ const { getComponent } = useUniversalRegistry();
       <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
       </BaseButton>
-      <BaseButton @click="onRemoveAllLayer">
+      <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
         <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
       </BaseButton>
     </div>

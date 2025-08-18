@@ -20,6 +20,7 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
   mapId: string,
   value: any,
 ) {
+  console.log('test', 'handleMenuActionClick', click, layer, mapId, value);
   if (!click) {
     return;
   }
@@ -60,6 +61,7 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
         } else {
           const [customLayer, customMapId, customValue] = result;
           const handler = UniversalRegistry.getMenuHandler(key);
+          console.log('test', entry, key, handler);
           if (handler) handler(customLayer, customMapId, customValue);
           else
             console.warn(`[handleMenuAction] No handler found for key: ${key}`);
