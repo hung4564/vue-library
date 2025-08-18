@@ -23,7 +23,6 @@ import { computed, onMounted, shallowRef, watch } from 'vue';
 import { handleMenuActionClick } from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
 import { useMapDataset } from '../../store';
-import DatasetDetail from './DatasetDetail.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -71,7 +70,7 @@ function onShowDetail(view: IDataset) {
           view,
           mapId.value,
           {
-            component: () => DatasetDetail,
+            componentKey: 'dataset-detail',
             attr: {
               dataset: view,
             },

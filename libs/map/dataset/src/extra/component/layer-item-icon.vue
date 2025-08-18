@@ -19,6 +19,10 @@ defineProps({
     require: true,
     type: Object,
   },
+  data: {
+    type: Object,
+    default: undefined,
+  },
 });
 const path = {
   loading: mdiLoading,

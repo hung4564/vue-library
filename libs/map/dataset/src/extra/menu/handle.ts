@@ -1,5 +1,5 @@
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
-import { getMenuHandler } from './store';
+import { UniversalRegistry } from '../../registry';
 
 export function handleMenuAction<T extends IDataset = IDataset>(
   menu: MenuAction<T>,
@@ -28,13 +28,13 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
     click(layer, mapId, value);
   } else if (typeof click === 'string') {
     // Trường hợp: key string
-    const handler = getMenuHandler(click);
+    const handler = UniversalRegistry.getMenuHandler(click);
     handler?.(layer, mapId, value);
   } else if (Array.isArray(click)) {
     for (const entry of click) {
       if (typeof entry === 'string') {
         // Trường hợp: entry là key string
-        const handler = getMenuHandler(entry);
+        const handler = UniversalRegistry.getMenuHandler(entry);
         handler?.(layer, mapId, value);
       } else if (Array.isArray(entry) && typeof entry[0] === 'string') {
         // entry là tuple [key, transformer]
@@ -59,7 +59,7 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
           );
         } else {
           const [customLayer, customMapId, customValue] = result;
-          const handler = getMenuHandler(key);
+          const handler = UniversalRegistry.getMenuHandler(key);
           if (handler) handler(customLayer, customMapId, customValue);
           else
             console.warn(`[handleMenuAction] No handler found for key: ${key}`);

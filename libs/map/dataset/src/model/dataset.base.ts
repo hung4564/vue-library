@@ -34,14 +34,6 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
     return visitor.visitLeaf(this);
   }
 
-  /**
-   * You can provide a method that lets the client code figure out whether a
-   * Datasetcomponent can bear children.
-   */
-  public isComposite(): boolean {
-    return false;
-  }
-
   getName(): string {
     return this.name;
   }
@@ -91,10 +83,6 @@ export class DatasetComposite extends DatasetComponent {
 
   constructor(name: string) {
     super(name);
-  }
-
-  override isComposite(): boolean {
-    return true;
   }
 
   override getData(): any {

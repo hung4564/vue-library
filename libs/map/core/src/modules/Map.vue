@@ -34,6 +34,7 @@ const props = defineProps({
     }),
   },
   dragId: { type: String },
+  mapId: { type: String },
 });
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,7 +66,7 @@ const mapContainer = ref<HTMLDivElement>();
 const isSupport = ref(isWebglSupported());
 const loaded = ref(false);
 let map: mapboxgl.Map | undefined = undefined;
-const id = ref(getUUIDv4());
+const id = ref(props.mapId || getUUIDv4());
 const store = useMapContainer(id.value);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 onMounted(() => {

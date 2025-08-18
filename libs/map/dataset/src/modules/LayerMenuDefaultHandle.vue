@@ -5,8 +5,12 @@ import {
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import { registerMenuHandler } from '../extra/menu';
-import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
+import { UniversalRegistry } from '../registry';
+import {
+  ComponentItem,
+  useMapDatasetComponent,
+  useMapDatasetHighlight,
+} from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
@@ -14,27 +18,39 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-registerMenuHandler('addComponent', (layer, mapId: string, component: any) => {
-  addComponent(component);
-});
-registerMenuHandler('fitBounds', (layer, mapId: string, geometry: any) => {
-  callMap((map) => {
-    fitBounds(map, geometry);
-  });
-});
-registerMenuHandler(
-  'highlight',
-  (
-    layer,
-    mapId: string,
-    props: {
-      detail: any;
-      key: string;
+
+// Register menu handlers using UniversalRegistry
+if (!UniversalRegistry.hasMenuHandler('addComponent')) {
+  UniversalRegistry.registerMenuHandler(
+    'addComponent',
+    (layer, mapId: string, component: ComponentItem) => {
+      addComponent(component);
     },
-  ) => {
-    setFeatureHighlight(props.detail, props.key, layer);
-  },
-);
+  );
+}
+if (!UniversalRegistry.hasMenuHandler('fitBounds'))
+  UniversalRegistry.registerMenuHandler(
+    'fitBounds',
+    (layer, mapId: string, geometry: any) => {
+      callMap((map) => {
+        fitBounds(map, geometry);
+      });
+    },
+  );
+if (!UniversalRegistry.hasMenuHandler('highlight'))
+  UniversalRegistry.registerMenuHandler(
+    'highlight',
+    (
+      layer,
+      mapId: string,
+      props: {
+        detail: any;
+        key: string;
+      },
+    ) => {
+      setFeatureHighlight(props.detail, props.key, layer);
+    },
+  );
 </script>
 <template>
   <div></div>

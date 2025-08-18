@@ -3,7 +3,9 @@
     <div class="layer-sub-item__info">
       <div v-if="isHasIcon" class="layer-sub-item__icon">
         <component
-          :is="props.item.icon!()"
+          v-if="props.item.icon?.componentKey"
+          :is="getComponent(props.item.icon.componentKey)"
+          v-bind="props.item.icon.attr"
           :data="item"
           :mapId="mapId"
         ></component>
@@ -38,7 +40,9 @@ import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
 import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
+import { useUniversalRegistry } from '../../../../registry';
 import LayerMenu from './menu/index.vue';
+const { getComponent } = useUniversalRegistry();
 
 const path = {
   menu: mdiDotsVertical,

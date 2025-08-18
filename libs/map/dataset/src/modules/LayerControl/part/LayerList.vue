@@ -17,19 +17,11 @@ import {
 } from '@mdi/js';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
-import type {
-  IDataset,
-  IMapboxLayerView,
-  MenuAction,
-} from '../../../interfaces';
-import {
-  applyToAllLeaves,
-  IGroupListViewUI,
-  IListViewUI,
-  runAllComponentsWithCheck,
-} from '../../../model';
+import type { MenuAction } from '../../../interfaces';
+import { IGroupListViewUI, IListViewUI, traverseTree } from '../../../model';
+import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
-import { isMapboxLayerView } from '../../../utils/check';
+import { hasMoveLayer, isComposite } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
@@ -94,14 +86,18 @@ function updateLayers() {
     let beforeId: string = '';
     views.value.slice().forEach((view, index, items) => {
       view.index = items.length - index;
-      applyToAllLeaves(view.getParent() as IDataset, [
-        (leaf) => {
-          if (isMapboxLayerView(leaf)) {
-            leaf.moveLayer(map, beforeId);
-            beforeId = leaf.getBeforeId();
+      traverseTree(
+        view.getParent() || view,
+        (node) => {
+          if (hasMoveLayer(node)) {
+            node.moveLayer(map, beforeId);
+            beforeId = node.getBeforeId();
           }
         },
-      ]);
+        {
+          direction: 'rtl',
+        },
+      );
     });
   });
 }
@@ -117,22 +113,6 @@ function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
   }
   group.children.forEach((view: IListViewUI) => {
     removeComponent(view);
-  });
-}
-function onUpdateLayer(view: IListViewUI) {
-  callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
-      view.getParent() as IDataset,
-      (dataset): dataset is IDataset & IMapboxLayerView =>
-        isMapboxLayerView(dataset),
-      [
-        (dataset) => {
-          if (!view.config.disabled_opacity) {
-            dataset.setOpacity(map, view.opacity);
-          }
-        },
-      ],
-    );
   });
 }
 function onRemoveLayer(view: IListViewUI) {
@@ -206,6 +186,7 @@ function onLayerAction({
 }) {
   handleMenuAction(action, item, mapId.value, item);
 }
+const { getComponent } = useUniversalRegistry();
 </script>
 <template lang="">
   <div class="layer-control-container">
@@ -238,7 +219,7 @@ function onLayerAction({
             :toggleSelect="toggleSelect"
           >
             <component
-              :is="item.component || LayerItem"
+              :is="getComponent(item.config?.componentKey, LayerItem)"
               :item="item"
               :isSelected="isSelected"
               @click="toggleSelect(item)"

@@ -1,6 +1,7 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import { createDatasetMenu } from '../../extra/menu';
 import type { IDataset, IMapboxLayerView } from '../../interfaces';
+import type { ComponentType } from '../../types';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
@@ -42,7 +43,7 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
     updateValue(map: MapSimple, value: any): void {
       throw new Error('Method not implemented.');
     },
-    getComponentUpdate(): () => any {
+    getComponentUpdate(): ComponentType {
       throw new Error('Method not implemented.');
     },
   });

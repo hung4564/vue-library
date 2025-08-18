@@ -34,10 +34,6 @@ export function createDatasetComponent<T = any>(
     getParent(): ReturnType<typeof createDatasetComponent> | undefined {
       return parent;
     },
-
-    isComposite(): boolean {
-      return false;
-    },
   };
 }
 export function createDatasetLeaf<T = any>(name: string, data?: T) {

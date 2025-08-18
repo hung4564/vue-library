@@ -7,6 +7,7 @@ import type {
   WithShow,
   WithToggleShow,
 } from '../../interfaces/dataset.extra';
+import type { ComponentType } from '../../types';
 
 export type IListViewUI = IDataset &
   WithToggleShow &
@@ -20,15 +21,15 @@ export type IListViewUI = IDataset &
     config: {
       disabled_delete?: boolean;
       disabled_opacity?: boolean;
-      component?: any;
+      componentKey?: string;
       init_show_legend?: boolean;
       init_show_children?: boolean;
     };
     index: number;
     group?: IGroupListViewUI<IListViewUI>;
     shows: boolean[];
-    legend?: () => any;
-    icon?: () => any;
+    legend?: ComponentType;
+    icon?: ComponentType;
   };
 
 export type IGroupListViewUI<T> =

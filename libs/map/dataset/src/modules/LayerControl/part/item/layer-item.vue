@@ -3,7 +3,9 @@
     <div class="layer-item__info">
       <div v-if="isHasIcon" class="layer-item__icon">
         <component
-          :is="props.item.icon!()"
+          v-if="props.item.icon?.componentKey"
+          :is="getComponent(props.item.icon.componentKey)"
+          v-bind="props.item.icon.attr"
           :data="item"
           :mapId="mapId"
         ></component>
@@ -99,7 +101,12 @@
     </div>
 
     <div v-if="isHasLegend && legendShow">
-      <component :is="props.item.legend!()"></component>
+      <component
+        v-if="props.item.legend?.componentKey"
+        :is="getComponent(props.item.legend.componentKey)"
+        :data="item"
+        v-bind="props.item.legend.attr"
+      ></component>
     </div>
     <div v-if="isHasChildren && childrenShow" class="layer-item__children">
       <LayerSubItem
@@ -112,8 +119,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { MapSimple } from '@hungpvq/shared-map';
-import { BaseButton, useMap, useShow } from '@hungpvq/vue-map-core';
+import { BaseButton, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -126,16 +132,13 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { computed, onMounted, ref } from 'vue';
-import type { IDataset, MenuAction } from '../../../../interfaces';
-import { WithSetOpacity } from '../../../../interfaces/dataset.extra';
+import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
-import {
-  findAllComponentsByType,
-  runAllComponentsWithCheck,
-} from '../../../../model';
-import { isHasSetOpacity } from '../../../../utils/check';
+import { findAllComponentsByType } from '../../../../model';
+import { useUniversalRegistry } from '../../../../registry';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
+const { getComponent } = useUniversalRegistry();
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
@@ -148,7 +151,6 @@ const emit = defineEmits([
   'click:action',
   'click:content-menu',
 ]);
-const { callMap } = useMap(props);
 const path = {
   menu: mdiDotsVertical,
   loading: mdiLoading,
@@ -222,25 +224,8 @@ onMounted(() => {
     'list-item',
   ) as IListViewUI[];
   isHasChildren.value = allComponentsOfType.length > 0;
-  children.value = allComponentsOfType.slice().reverse();
+  children.value = allComponentsOfType.sort((a, b) => b.index - a.index) || [];
 });
-function onSetOpacity(view: IListViewUI) {
-  const parent = props.item.getParent() || props.item;
-  callMap((map: MapSimple) => {
-    runAllComponentsWithCheck(
-      parent,
-      (dataset): dataset is IDataset & WithSetOpacity =>
-        isHasSetOpacity(dataset),
-      [
-        (dataset) => {
-          if (!view.config.disabled_opacity) {
-            dataset.setOpacity(map, view.opacity);
-          }
-        },
-      ],
-    );
-  });
-}
 </script>
 
 <style scoped>
