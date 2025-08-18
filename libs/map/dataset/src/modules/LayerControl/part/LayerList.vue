@@ -186,7 +186,6 @@ function onLayerAction({
   action: MenuAction<IListViewUI>;
   item: IListViewUI;
 }) {
-  console.log('test', 'onLayerAction', action, item, mapId.value, item);
   handleMenuAction(action, item, mapId.value, item);
 }
 const { getComponent } = useUniversalRegistry();

@@ -23,7 +23,6 @@ const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 UniversalRegistry.registerMenuHandler(
   'addComponent',
   (layer, mapId: string, component: ComponentItem) => {
-    console.log('test', 'addComponent', component);
     addComponent(component);
   },
 );
