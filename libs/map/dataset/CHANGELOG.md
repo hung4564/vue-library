@@ -1,3 +1,13 @@
+## 0.9.1 (2025-08-18)
+
+### 🩹 Fixes
+
+- add export ([0e9fc49](https://github.com/hung4564/vue-library/commit/0e9fc49))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.0 (2025-08-18)
 
 ### 🚀 Features
