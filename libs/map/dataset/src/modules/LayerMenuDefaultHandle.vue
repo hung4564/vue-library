@@ -20,37 +20,34 @@ const { addComponent } = useMapDatasetComponent(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 
 // Register menu handlers using UniversalRegistry
-if (!UniversalRegistry.hasMenuHandler('addComponent')) {
-  UniversalRegistry.registerMenuHandler(
-    'addComponent',
-    (layer, mapId: string, component: ComponentItem) => {
-      addComponent(component);
+UniversalRegistry.registerMenuHandler(
+  'addComponent',
+  (layer, mapId: string, component: ComponentItem) => {
+    console.log('test', 'addComponent', component);
+    addComponent(component);
+  },
+);
+UniversalRegistry.registerMenuHandler(
+  'fitBounds',
+  (layer, mapId: string, geometry: any) => {
+    callMap((map) => {
+      fitBounds(map, geometry);
+    });
+  },
+);
+UniversalRegistry.registerMenuHandler(
+  'highlight',
+  (
+    layer,
+    mapId: string,
+    props: {
+      detail: any;
+      key: string;
     },
-  );
-}
-if (!UniversalRegistry.hasMenuHandler('fitBounds'))
-  UniversalRegistry.registerMenuHandler(
-    'fitBounds',
-    (layer, mapId: string, geometry: any) => {
-      callMap((map) => {
-        fitBounds(map, geometry);
-      });
-    },
-  );
-if (!UniversalRegistry.hasMenuHandler('highlight'))
-  UniversalRegistry.registerMenuHandler(
-    'highlight',
-    (
-      layer,
-      mapId: string,
-      props: {
-        detail: any;
-        key: string;
-      },
-    ) => {
-      setFeatureHighlight(props.detail, props.key, layer);
-    },
-  );
+  ) => {
+    setFeatureHighlight(props.detail, props.key, layer);
+  },
+);
 </script>
 <template>
   <div></div>
