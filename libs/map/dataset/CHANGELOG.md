@@ -1,3 +1,13 @@
+## 0.9.2 (2025-08-18)
+
+### 🩹 Fixes
+
+- add option ([53c1797](https://github.com/hung4564/vue-library/commit/53c1797))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.1 (2025-08-18)
 
 ### 🩹 Fixes
