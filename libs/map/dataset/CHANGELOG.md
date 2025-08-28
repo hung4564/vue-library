@@ -1,3 +1,13 @@
+## 0.9.5 (2025-08-28)
+
+### 🩹 Fixes
+
+- get identify ([8537451](https://github.com/hung4564/vue-library/commit/8537451))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.4 (2025-08-18)
 
 ### 🩹 Fixes
