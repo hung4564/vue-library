@@ -337,8 +337,9 @@ onMounted(() => {
                       class="identify-control-child-item"
                       v-for="child in item.features"
                       :key="child.id"
+                      :title="child.name"
                     >
-                      <span>
+                      <span class="identify-control-child-item__name">
                         {{ child.name }}
                       </span>
                       <div class="identify-control-child-item__spacer"></div>
@@ -520,5 +521,10 @@ onMounted(() => {
   to {
     transform: rotate(360deg);
   }
+}
+.identify-control-child-item__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
