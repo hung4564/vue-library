@@ -4,6 +4,7 @@ import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type {
   LayerSpecification,
+  MapGeoJSONFeature,
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
@@ -173,7 +174,8 @@ export type IMetadataView = {
 
 export type IDataManagementView<D = any> = IDataset & {
   showDetail(mapId: string, detail: D): void;
-  getList(ids?: string[]): Promise<D[]>;
+  getList(): Promise<D[]>;
+  getList(ids: string[], features: MapGeoJSONFeature[]): Promise<D[]>;
 } & IDrawHandler;
 
 export type IFieldInfo = {

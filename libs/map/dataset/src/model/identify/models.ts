@@ -81,12 +81,20 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
           },
         );
 
+        logHelper(loggerIdentify, mapId, 'model').debug(
+          'getFeatureFormMap',
+          features,
+        );
         const ids = new Set<string>();
         const dataManagement = findSiblingOrNearestLeaf(
           datasetPartIdentify,
           (dataset) => dataset.type == 'dataManagement',
         ) as unknown as IDataManagementView;
 
+        logHelper(loggerIdentify, mapId, 'model').debug(
+          'dataManagement',
+          dataManagement,
+        );
         features.forEach((x) => {
           const id =
             x.properties?.[datasetPartIdentify.config.field_id || 'id'] ?? x.id;
@@ -96,12 +104,13 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
         });
 
         const idsGet = [...ids];
+        logHelper(loggerIdentify, mapId, 'model').debug('idsGet', idsGet);
         if (!idsGet || idsGet.length < 1) {
           resolve([]);
           return;
         }
 
-        dataManagement.getList([...idsGet]).then((unique) => {
+        dataManagement.getList([...idsGet], features).then((unique) => {
           const result = unique.map((x, i) => ({
             id: x.id ?? i,
             name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',

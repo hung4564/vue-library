@@ -1,3 +1,4 @@
+import type { MapGeoJSONFeature } from 'maplibre-gl';
 import type { IDataManagementView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
@@ -6,7 +7,7 @@ export function createDatasetPartDataManagementComponent<D = any>(
   name: string,
   config: {
     fields?: { trans?: string; text?: string; value: string }[];
-  } = {}
+  } = {},
 ): IDataManagementView<D> {
   const base = createDatasetLeaf<typeof config>(name, config);
 
@@ -22,7 +23,7 @@ export function createDatasetPartDataManagementComponent<D = any>(
     showDetail(mapId: string, detail: D): void {
       throw new Error('Method showDetail not implemented.');
     },
-    getList(ids?: string[]): Promise<D[]> {
+    getList(ids?: string[], features?: MapGeoJSONFeature[]): Promise<D[]> {
       throw new Error('Method getList not implemented.');
     },
   });
