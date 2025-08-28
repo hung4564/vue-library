@@ -1,3 +1,13 @@
+## 0.9.6 (2025-08-28)
+
+### 🩹 Fixes
+
+- style ([0d7521b](https://github.com/hung4564/vue-library/commit/0d7521b))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.5 (2025-08-28)
 
 ### 🩹 Fixes
