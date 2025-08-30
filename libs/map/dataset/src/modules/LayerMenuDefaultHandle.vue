@@ -20,13 +20,15 @@ const { addComponent } = useMapDatasetComponent(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 
 // Register menu handlers using UniversalRegistry
-UniversalRegistry.registerMenuHandler(
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
   'addComponent',
   (layer, mapId: string, component: ComponentItem) => {
     addComponent(component);
   },
 );
-UniversalRegistry.registerMenuHandler(
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
   'fitBounds',
   (layer, mapId: string, geometry: any) => {
     callMap((map) => {
@@ -34,7 +36,8 @@ UniversalRegistry.registerMenuHandler(
     });
   },
 );
-UniversalRegistry.registerMenuHandler(
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
   'highlight',
   (
     layer,

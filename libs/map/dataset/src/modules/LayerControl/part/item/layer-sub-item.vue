@@ -42,7 +42,6 @@ import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
 import { useUniversalRegistry } from '../../../../registry';
 import LayerMenu from './menu/index.vue';
-const { getComponent } = useUniversalRegistry();
 
 const path = {
   menu: mdiDotsVertical,
@@ -51,6 +50,7 @@ const props = defineProps<{
   item: IListViewUI;
   mapId: string;
 }>();
+const { getComponent } = useUniversalRegistry(props.mapId);
 const isHasIcon = computed(() => props.item && props.item.icon);
 const emit = defineEmits(['click:action', 'click:content-menu']);
 const button_menus = computed<MenuAction<any>[]>(() => {

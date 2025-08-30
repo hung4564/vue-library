@@ -25,6 +25,15 @@
             <RouterLink to="/">Home </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/compare">Compare </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/story-telling">Story telling </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/story-telling-gps">Story telling GPS </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/basemap">BaseMap </RouterLink>
           </v-list-item>
           <v-list-item>

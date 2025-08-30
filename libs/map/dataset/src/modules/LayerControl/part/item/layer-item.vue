@@ -138,12 +138,12 @@ import { findAllComponentsByType } from '../../../../model';
 import { useUniversalRegistry } from '../../../../registry';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
-const { getComponent } = useUniversalRegistry();
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
   readonly: boolean;
 }>();
+const { getComponent } = useUniversalRegistry(props.mapId);
 const emit = defineEmits([
   'update:item',
   'click',

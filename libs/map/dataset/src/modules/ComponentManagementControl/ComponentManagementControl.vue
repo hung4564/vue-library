@@ -19,13 +19,13 @@ import {
   type ComponentItem,
   useMapDatasetComponent,
 } from '../../store/component';
-const { getComponent } = useUniversalRegistry();
-
-const instance = getCurrentInstance();
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const { mapId } = useMap(props);
+const { getComponent } = useUniversalRegistry(mapId.value);
+
+const instance = getCurrentInstance();
 const { getAllComponentIds, getStore, removeComponent } =
   useMapDatasetComponent(mapId.value);
 const store = getStore();

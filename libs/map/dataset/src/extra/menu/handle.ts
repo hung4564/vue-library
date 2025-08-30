@@ -28,13 +28,13 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
     click(layer, mapId, value);
   } else if (typeof click === 'string') {
     // Trường hợp: key string
-    const handler = UniversalRegistry.getMenuHandler(click);
+    const handler = UniversalRegistry.getMenuHandler(click, mapId);
     handler?.(layer, mapId, value);
   } else if (Array.isArray(click)) {
     for (const entry of click) {
       if (typeof entry === 'string') {
         // Trường hợp: entry là key string
-        const handler = UniversalRegistry.getMenuHandler(entry);
+        const handler = UniversalRegistry.getMenuHandler(entry, mapId);
         handler?.(layer, mapId, value);
       } else if (Array.isArray(entry) && typeof entry[0] === 'string') {
         // entry là tuple [key, transformer]
@@ -59,7 +59,7 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
           );
         } else {
           const [customLayer, customMapId, customValue] = result;
-          const handler = UniversalRegistry.getMenuHandler(key);
+          const handler = UniversalRegistry.getMenuHandler(key, mapId);
           if (handler) handler(customLayer, customMapId, customValue);
           else
             console.warn(`[handleMenuAction] No handler found for key: ${key}`);

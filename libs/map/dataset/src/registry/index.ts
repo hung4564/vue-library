@@ -1,88 +1,239 @@
 import { createStore } from '@hungpvq/shared';
+import { logHelper } from '@hungpvq/shared-map';
+import { defineStore } from '@hungpvq/shared-store';
 import type { Component } from 'vue';
+import { logger } from '../logger';
+const KEY = 'registry';
+export const useMapRegistryStore = (mapId: string) =>
+  defineStore<Map<string, RegistryItem>>(['map:core', mapId, KEY], () => {
+    logHelper(logger, mapId, 'store').debug('init');
+    return new Map<string, RegistryItem>();
+  })();
 
 export type RegistryItem = ((...args: any[]) => any) | Component;
+
 export class UniversalRegistry {
-  private static registry = createStore<Map<string, RegistryItem>>(
-    'map:registry',
+  // Global registry cho tất cả map
+  private static globalRegistry = createStore<Map<string, RegistryItem>>(
+    'map:registry:global',
     new Map<string, RegistryItem>(),
   );
 
-  /** Đăng ký item */
-  static register(key: string, item: RegistryItem) {
-    if (this.registry.has(key)) {
-      console.warn(`[UniversalRegistry] Key '${key}' đã tồn tại, sẽ ghi đè`);
-    }
-    this.registry.set(key, item);
+  // Namespace prefixes
+  private static readonly NAMESPACES = {
+    COMPONENT: 'component:',
+    METHOD: 'method:',
+    MENU_HANDLER: 'menu-handler:',
+  } as const;
+
+  // ===== GLOBAL REGISTRATION =====
+
+  /** Đăng ký component toàn cục */
+  static registerComponent(key: string, comp: Component) {
+    const namespacedKey = this.NAMESPACES.COMPONENT + key;
+    this.globalRegistry.set(namespacedKey, comp);
   }
 
-  /** Lấy item theo key */
+  /** Đăng ký method toàn cục */
+  static registerMethod(key: string, fn: (...args: any[]) => any) {
+    const namespacedKey = this.NAMESPACES.METHOD + key;
+    this.globalRegistry.set(namespacedKey, fn);
+  }
+
+  /** Đăng ký menu handler toàn cục */
+  static registerMenuHandler(key: string, fn: (...args: any[]) => any) {
+    const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
+    this.globalRegistry.set(namespacedKey, fn);
+  }
+
+  // ===== MAP-SPECIFIC REGISTRATION =====
+
+  /** Đăng ký component cho map cụ thể */
+  static registerComponentForMap(mapId: string, key: string, comp: Component) {
+    const namespacedKey = this.NAMESPACES.COMPONENT + key;
+    this.registerForMap(mapId, namespacedKey, comp);
+  }
+
+  /** Đăng ký method cho map cụ thể */
+  static registerMethodForMap(
+    mapId: string,
+    key: string,
+    fn: (...args: any[]) => any,
+  ) {
+    const namespacedKey = this.NAMESPACES.METHOD + key;
+    this.registerForMap(mapId, namespacedKey, fn);
+  }
+
+  /** Đăng ký menu handler cho map cụ thể */
+  static registerMenuHandlerForMap(
+    mapId: string,
+    key: string,
+    fn: (...args: any[]) => any,
+  ) {
+    const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
+    this.registerForMap(mapId, namespacedKey, fn);
+  }
+
+  // ===== INTERNAL HELPER =====
+
+  private static registerForMap(
+    mapId: string,
+    key: string,
+    item: RegistryItem,
+  ) {
+    const mapRegistry = useMapRegistryStore(mapId);
+
+    if (mapRegistry.has(key)) {
+      console.warn(
+        `[UniversalRegistry] Key '${key}' đã tồn tại cho map ${mapId}, sẽ ghi đè`,
+      );
+    }
+    mapRegistry.set(key, item);
+  }
+
+  // ===== RETRIEVAL WITH PRIORITY =====
+
+  /** Lấy component: map-specific trước, rồi global */
+  static getComponent(key: string, mapId?: string): Component | undefined {
+    const namespacedKey = this.NAMESPACES.COMPONENT + key;
+
+    // 1. Tìm trong map-specific trước (nếu có mapId)
+    if (mapId) {
+      const mapRegistry = useMapRegistryStore(mapId);
+      if (mapRegistry.has(namespacedKey)) {
+        return mapRegistry.get(namespacedKey) as Component;
+      }
+    }
+
+    // 2. Fallback to global
+    return this.globalRegistry.get(namespacedKey) as Component | undefined;
+  }
+
+  /** Lấy method: map-specific trước, rồi global */
+  static getMethod(
+    key: string,
+    mapId?: string,
+  ): ((...args: any[]) => any) | undefined {
+    const namespacedKey = this.NAMESPACES.METHOD + key;
+
+    // 1. Tìm trong map-specific trước
+    if (mapId) {
+      const mapRegistry = useMapRegistryStore(mapId);
+      if (mapRegistry.has(namespacedKey)) {
+        return mapRegistry.get(namespacedKey) as (...args: any[]) => any;
+      }
+    }
+
+    // 2. Fallback to global
+    return this.globalRegistry.get(namespacedKey) as
+      | ((...args: any[]) => any)
+      | undefined;
+  }
+
+  /** Lấy menu handler: map-specific trước, rồi global */
+  static getMenuHandler(
+    key: string,
+    mapId?: string,
+  ): ((...args: any[]) => any) | undefined {
+    const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
+
+    // 1. Tìm trong map-specific trước
+    if (mapId) {
+      const mapRegistry = useMapRegistryStore(mapId);
+      if (mapRegistry.has(namespacedKey)) {
+        return mapRegistry.get(namespacedKey) as (...args: any[]) => any;
+      }
+    }
+
+    // 2. Fallback to global
+    return this.globalRegistry.get(namespacedKey) as
+      | ((...args: any[]) => any)
+      | undefined;
+  }
+
+  // ===== BACKWARD COMPATIBILITY =====
+
+  /** Lấy item theo key (backward compatibility) */
   static get<T extends RegistryItem = RegistryItem>(
     key: string,
   ): T | undefined {
-    return this.registry.get(key) as T | undefined;
+    // Tìm trong tất cả map registries trước
+    // Note: Cần traverse tất cả map instances đang active
+    // Có thể cần thêm global map instance tracking
+    return this.globalRegistry.get(key) as T | undefined;
   }
 
-  /** Helper cho method */
-  static registerMethod(key: string, fn: (...args: any[]) => any) {
-    if (!key.startsWith('method:')) key = `method:${key}`;
-    this.register(key, fn);
+  /** Kiểm tra có menu handler không */
+  static hasMenuHandler(key: string, mapId?: string): boolean {
+    const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
+
+    if (mapId) {
+      const mapRegistry = useMapRegistryStore(mapId);
+      if (mapRegistry.has(namespacedKey)) return true;
+    }
+
+    return this.globalRegistry.has(namespacedKey);
   }
 
-  static getMethod(key: string) {
-    if (!key.startsWith('method:')) key = `method:${key}`;
-    return this.get<(...args: any[]) => any>(key);
-  }
+  // ===== UTILITY METHODS =====
 
-  /** Helper cho component */
-  static registerComponent(key: string, comp: Component) {
-    if (!key.startsWith('component:')) key = `component:${key}`;
-    this.register(key, comp);
-  }
+  /** Lấy tất cả keys trong namespace cho map cụ thể */
+  static getKeysForMap(
+    mapId: string,
+    namespace: 'component' | 'method' | 'menu-handler',
+  ): string[] {
+    const mapRegistry = useMapRegistryStore(mapId);
+    const prefix =
+      this.NAMESPACES[namespace.toUpperCase() as keyof typeof this.NAMESPACES];
 
-  static getComponent(key: string) {
-    if (!key.startsWith('component:')) key = `component:${key}`;
-    return this.get<Component>(key);
-  }
-
-  /** Helper cho menu handler */
-  static registerMenuHandler(key: string, fn: (...args: any[]) => any) {
-    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
-    this.register(key, fn);
-  }
-
-  static getMenuHandler(key: string) {
-    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
-    return this.get<(...args: any[]) => any>(key);
-  }
-
-  static hasMenuHandler(key: string): boolean {
-    if (!key.startsWith('menu-handler:')) key = `menu-handler:${key}`;
-    return this.registry.has(key);
+    return Array.from(mapRegistry.keys())
+      .filter((key) => key.startsWith(prefix))
+      .map((key) => key.replace(prefix, ''));
   }
 }
 
-export function useUniversalRegistry() {
+export function useUniversalRegistry(mapId?: string) {
   function get<T = any>(
     type: 'component' | 'method' | 'menu-handler',
     name: string,
     defaultValue?: T,
   ): T | undefined {
-    return (UniversalRegistry.get(`${type}:${name}`) || defaultValue) as
-      | T
-      | undefined;
+    const registry = UniversalRegistry as any;
+    const getter = `get${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+    if (registry[getter]) {
+      return registry[getter](name, mapId) || defaultValue;
+    }
+
+    return defaultValue;
   }
 
   return {
     get,
+    // Lấy component với priority: map-specific > global
     getComponent(key: string, defaultValue?: Component): Component | undefined {
-      return get<Component>('component', key, defaultValue);
+      return UniversalRegistry.getComponent(key, mapId) || defaultValue;
     },
+    // Lấy method với priority: map-specific > global
+    getMethod(
+      key: string,
+      defaultValue?: (...args: any[]) => any,
+    ): ((...args: any[]) => any) | undefined {
+      return UniversalRegistry.getMethod(key, mapId) || defaultValue;
+    },
+    // Lấy menu handler với priority: map-specific > global
     getMenuHandler(
       key: string,
       defaultValue?: (...args: any[]) => any,
     ): ((...args: any[]) => any) | undefined {
-      return get<(...args: any[]) => any>('menu-handler', key, defaultValue);
+      return UniversalRegistry.getMenuHandler(key, mapId) || defaultValue;
+    },
+    // Utility methods
+    getKeysForMap(
+      namespace: 'component' | 'method' | 'menu-handler',
+    ): string[] {
+      if (!mapId) return [];
+      return UniversalRegistry.getKeysForMap(mapId, namespace);
     },
   };
 }
