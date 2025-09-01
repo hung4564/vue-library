@@ -112,7 +112,7 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
 
         dataManagement.getList([...idsGet], features).then((unique) => {
           const result = unique.map((x, i) => ({
-            id: x.id ?? i,
+            id: x[datasetPartIdentify.config.field_id || 'id'] ?? x.id ?? i,
             name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
             data: x,
           }));
