@@ -146,12 +146,14 @@ export async function getMergedFeatures(
 
       // Sử dụng dataManagement để fetch dữ liệu
       const dataManagement = maybeDataManagement;
-      dataManagement.getList([...idSet]).then((fetchedData) => {
-        const dataMap = buildDataMap(fetchedData);
+      dataManagement
+        .getList([...idSet], queriedFeatures)
+        .then((fetchedData) => {
+          const dataMap = buildDataMap(fetchedData);
 
-        const results = formatFeature(deduplicated, dataMap);
-        resolve(results);
-      });
+          const results = formatFeature(deduplicated, dataMap);
+          resolve(results);
+        });
     });
   });
 }

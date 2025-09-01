@@ -19,7 +19,7 @@ const props = defineProps<{
   data: IListViewUI;
   mapId: string;
 }>();
-const { getComponent } = useUniversalRegistry();
+const { getComponent } = useUniversalRegistry(props.mapId);
 const component = computed(() => {
   switch (props.item.type) {
     case 'divider':

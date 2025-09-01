@@ -110,7 +110,7 @@ function onLayerAction({
 }) {
   handleMenuAction(action, item, mapId.value, item);
 }
-const { getComponent } = useUniversalRegistry();
+const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template lang="">
   <div class="layer-control-container">

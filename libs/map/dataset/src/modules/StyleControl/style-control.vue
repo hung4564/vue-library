@@ -71,7 +71,7 @@ const updateValue = () => {
     }
   }
 };
-const { getComponent } = useUniversalRegistry();
+const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template>
   <ModuleContainer v-bind="$attrs">

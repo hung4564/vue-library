@@ -1,3 +1,81 @@
+## 0.9.6 (2025-08-28)
+
+### 🩹 Fixes
+
+- style ([0d7521b](https://github.com/hung4564/vue-library/commit/0d7521b))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.5 (2025-08-28)
+
+### 🩹 Fixes
+
+- get identify ([8537451](https://github.com/hung4564/vue-library/commit/8537451))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.4 (2025-08-18)
+
+### 🩹 Fixes
+
+- add popProps ([bf705fd](https://github.com/hung4564/vue-library/commit/bf705fd))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.3 (2025-08-18)
+
+### 🩹 Fixes
+
+- add menu ([a160e8a](https://github.com/hung4564/vue-library/commit/a160e8a))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.2 (2025-08-18)
+
+### 🩹 Fixes
+
+- add option ([53c1797](https://github.com/hung4564/vue-library/commit/53c1797))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.1 (2025-08-18)
+
+### 🩹 Fixes
+
+- add export ([0e9fc49](https://github.com/hung4564/vue-library/commit/0e9fc49))
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.9.0 (2025-08-18)
+
+### 🚀 Features
+
+- change store menu to use UniversalRegistry ([93e8137](https://github.com/hung4564/vue-library/commit/93e8137))
+- change component to use from componentKey ([f32e00f](https://github.com/hung4564/vue-library/commit/f32e00f))
+
+### 🩹 Fixes
+
+- layer-sub-item order ([61a38a8](https://github.com/hung4564/vue-library/commit/61a38a8))
+- add check ([0133b6b](https://github.com/hung4564/vue-library/commit/0133b6b))
+- remove isComposite ([c96d138](https://github.com/hung4564/vue-library/commit/c96d138))
+- legend ([d45a5ef](https://github.com/hung4564/vue-library/commit/d45a5ef))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.8.3 (2025-08-04)
 
 ### 🩹 Fixes

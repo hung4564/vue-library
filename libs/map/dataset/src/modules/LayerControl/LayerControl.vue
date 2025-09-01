@@ -35,12 +35,14 @@ const props = withDefaults(
       WithShowProps & {
         disabledCreate?: boolean;
         disabledCreateGroup?: boolean;
+        disabledDeleteAll?: boolean;
       }
   >(),
   {
     ...defaultMapProps,
     disabledCreate: false,
     disabledCreateGroup: false,
+    disabledDeleteAll: false,
   },
 );
 defineSlots<{
@@ -119,7 +121,11 @@ function openAddLayer() {
           </span>
         </template>
         <div class="layer-control">
-          <LayerList :mapId="mapId" :disabledCreateGroup="disabledCreateGroup">
+          <LayerList
+            :mapId="mapId"
+            :disabledCreateGroup="disabledCreateGroup"
+            :disabledDeleteAll="disabledDeleteAll"
+          >
             <template #title>
               <slot name="titleList" :mapId="mapId">
                 <BaseButton @click.stop="openAddLayer()" v-if="!disabledCreate">
