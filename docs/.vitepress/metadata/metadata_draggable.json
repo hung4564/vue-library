@@ -1,0 +1,34 @@
+{
+  "functions": [
+    {
+      "name": "DraggableContainer",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-container",
+      "category": "Component"
+    },
+    {
+      "name": "DraggableItemSideBar",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-item-sidebar",
+      "category": "Component"
+    },
+    {
+      "name": "DraggableItemPopup",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-item-popup",
+      "category": "Component"
+    },
+    {
+      "name": "DraggableItemFloat",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-item-float",
+      "category": "Component"
+    },
+    {
+      "name": "DraggableItemBottom",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-item-bottom",
+      "category": "Component"
+    }
+  ]
+}

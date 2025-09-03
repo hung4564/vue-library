@@ -18,6 +18,7 @@
     "lint": "nx run-many --target lint --all",
     "build": "nx run-many --target lint,build --all",
     "release-publish": "nx run-many --target nx-release-publish --all",
+    "docs:pre-link": "node scripts/link-docs.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",

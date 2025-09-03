@@ -1,0 +1,117 @@
+{
+  "functions": [
+    {
+      "name": "Getting start",
+      "package": "Map",
+      "docs": "/map/"
+    },
+    {
+      "name": "Map",
+      "package": "Map - Core",
+      "docs": "/map/core/module/core/",
+      "category": "Core",
+      "order": 2
+    },
+    {
+      "name": "ModuleContainer",
+      "package": "Map - Core",
+      "docs": "/map/core/module/ModuleContainer",
+      "category": "Core",
+      "order": 2.1
+    },
+    {
+      "name": "Create custom control",
+      "package": "Map - Core",
+      "docs": "/map/core/module/core/custom-controls",
+      "category": "Core",
+      "order": 2.2
+    },
+    {
+      "name": "FullScreenControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/FullScreenControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
+      "name": "MouseCoordinatesControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/MouseCoordinatesControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
+      "name": "GeoLocateControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/GeoLocateControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "GotoControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/GotoControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "HomeControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/HomeControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
+      "name": "SettingControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/SettingControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "ZoomControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/ZoomControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
+      "name": "Lang",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-lang",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
+      "name": "Image",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-image",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
+      "name": "Event",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-event",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
+      "name": "Crs",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-crs",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Basemap",
+      "docs": "/map/basemap/"
+    },
+    {
+      "name": "Component",
+      "package": "Map - Basemap",
+      "docs": "/map/basemap/module/"
+    }
+  ]
+}

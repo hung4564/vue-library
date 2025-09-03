@@ -1,12 +1,5 @@
 import { MapFCOnUseMap } from '@hungpvq/shared-map';
-import {
-  computed,
-  defineProps,
-  inject,
-  onMounted,
-  onUnmounted,
-  withDefaults,
-} from 'vue';
+import { computed, inject, onMounted, onUnmounted } from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
