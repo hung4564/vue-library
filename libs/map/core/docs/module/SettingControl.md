@@ -1,5 +1,10 @@
 # SettingControl
 
+## Usecase
+
+- Provide a quick settings panel for toggling map options (labels, 3D, style).
+- Group advanced controls inside a single menu to reduce UI clutter.
+
 ## Props
 
 <!--@include: ./props.md-->

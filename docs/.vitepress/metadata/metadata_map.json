@@ -106,12 +106,74 @@
     {
       "name": "Getting start",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/"
+      "docs": "/map/basemap/",
+      "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/module/"
+      "docs": "/map/basemap/module/",
+      "order": 5.1
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Measurement",
+      "docs": "/map/measurement/",
+      "order": 5
+    },
+    {
+      "name": "Component",
+      "package": "Map - Measurement",
+      "docs": "/map/measurement/module",
+      "order": 5.2
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Print",
+      "docs": "/map/print/",
+      "order": 5
+    },
+    {
+      "name": "Component",
+      "package": "Map - Print",
+      "docs": "/map/print/module",
+      "order": 5.2
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Legend",
+      "docs": "/map/legend/",
+      "order": 5
+    },
+    {
+      "name": "Component",
+      "package": "Map - Legend",
+      "docs": "/map/legend/module",
+      "order": 5.2
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Draw",
+      "docs": "/map/draw/",
+      "order": 5
+    },
+    {
+      "name": "Component",
+      "package": "Map - Draw",
+      "docs": "/map/draw/module",
+      "order": 5.2
+    },
+    {
+      "name": "Getting start",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/",
+      "order": 5
+    },
+    {
+      "name": "Component",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module",
+      "order": 5.2
     }
   ]
 }

@@ -1,6 +1,6 @@
-# 📚 API Reference
+# 📚 Components
 
-<!--@include: ./BaseMapControl.md -->
-<!--@include: ./BaseMapCard.md -->
-<!--@include: ./BaseMapTagControl.md -->
-<!--@include: ./CompareBaseMapControl.md -->
+- [BaseMapControl](./BaseMapControl.md)
+- [BaseMapCard](./BaseMapCard.md)
+- [BaseMapTagControl](./BaseMapTagControl.md)
+- [CompareBaseMapControl](./CompareBaseMapControl.md)

@@ -1,5 +1,10 @@
 # HomeControl
 
+## Usecase
+
+- Reset view to a predefined center/zoom for consistent navigation.
+- Provide a “back to extent” button after user pans/zooms around.
+
 ## Props
 
 <!--@include: ./props.md-->

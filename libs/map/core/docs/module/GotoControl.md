@@ -1,5 +1,10 @@
 # GotoControl
 
+## Usecase
+
+- Jump to specific coordinates or saved places via UI.
+- Enable quick navigation between bookmarks in analytic dashboards.
+
 ## Props
 
 <!--@include: ./props.md-->

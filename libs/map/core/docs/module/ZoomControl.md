@@ -1,5 +1,10 @@
 # ZoomControl
 
+## Usecase
+
+- Add basic zoom and compass for kiosks or read-only maps.
+- Offer compact navigation when the default MapLibre controls are hidden.
+
 ## Props
 
 <!--@include: ./props.md-->

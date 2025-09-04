@@ -1,5 +1,10 @@
 # ModuleContainer
 
+## Usecase
+
+- Wrap custom controls with consistent draggable/toggleable behavior.
+- Standardize control chrome (button, header) across modules.
+
 ## Props
 
 <!--@include: ./props.md-->
@@ -11,7 +16,7 @@
 | Name        | Description |
 | ----------- | ----------- |
 | `btn`       |             |
-| `draggable` | id:string   |
+| `draggable` |             |
 
 ## Usage
 

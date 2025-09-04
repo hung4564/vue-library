@@ -1,5 +1,10 @@
 # MouseCoordinatesControl
 
+## Usecase
+
+- Show real-time coordinates and zoom for QA or data capture.
+- Allow users to copy coordinates in different CRS when needed.
+
 ## Props
 
 <!--@include: ./props.md-->

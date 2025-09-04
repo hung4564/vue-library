@@ -12,11 +12,11 @@ The Vue Library Map collection provides a complete set of Vue.js components and 
 
 - **[@hungpvq/vue-map-core](./core/)** - Core map functionality and components
 - **[@hungpvq/vue-map-basemap](./basemap/)** - Base map controls and switching
-- **[@hungpvq/vue-map-draw]** - Drawing and editing tools
-- **[@hungpvq/vue-map-measurement]** - Distance and area measurement
-- \*\*[@hungpvq/vue-map-print] - Map printing functionality
-- **[@hungpvq/vue-map-dataset]** - Dataset management and visualization
-- **[@hungpvq/vue-map-legend]** - Legend components
+- **[@hungpvq/vue-map-draw](./draw/)** - Drawing and editing tools
+- **[@hungpvq/vue-map-measurement](./measurement/)** - Distance and area measurement
+- **[@hungpvq/vue-map-print](./print/)** - Map printing functionality
+- **[@hungpvq/vue-map-dataset](./dataset/)** - Dataset management and visualization
+- **[@hungpvq/vue-map-legend](./legend/)** - Legend components
 
 ## 🚀 Quick Start
 
@@ -240,12 +240,11 @@ function onMapLoaded(map: any) {
 
 - **[Core](./core/)** - Core map functionality and components
 - **[Basemap](./basemap/)** - Base map controls and switching
-- **[Draw]** - Drawing and editing tools
-- **[Measurement]** - Distance and area measurement
-- **[Print]** - Map printing functionality
-- **[Dataset]** - Dataset management and visualization
-- **[Legend]** - Legend components
-- **[Complete Example]** - Full application example
+- **[Draw](./draw/)** - Drawing and editing tools
+- **[Measurement](./measurement/)** - Distance and area measurement
+- **[Print](./print/)** - Map printing functionality
+- **[Dataset](./dataset/)** - Dataset management and visualization
+- **[Legend](./legend/)** - Legend components
 
 ## 🛠️ Development
 

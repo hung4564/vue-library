@@ -37,6 +37,10 @@ export const useMap = (
     position: props.position,
     controlVisible: props.controlVisible,
     order: props.order,
+    top: props.top,
+    bottom: props.bottom,
+    left: props.left,
+    right: props.right,
   };
   return { callMap, mapId: c_mapId, moduleContainerProps };
 };

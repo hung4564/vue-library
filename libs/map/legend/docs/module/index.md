@@ -1,0 +1,3 @@
+# 📚 Components
+
+- [LegendControl](./LegendControl.md)

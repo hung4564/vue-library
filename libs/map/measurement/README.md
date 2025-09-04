@@ -78,14 +78,6 @@ function onMapLoaded(map: any) {
 | `controlVisible` | `boolean`             | `true`        | Control visibility         |
 | `actions`        | `MeasureActionItem[]` | `[]`          | Custom measurement actions |
 
-#### Events
-
-| Event                  | Payload             | Description                         |
-| ---------------------- | ------------------- | ----------------------------------- |
-| `measurement-start`    | `string`            | Fired when measurement starts       |
-| `measurement-complete` | `MeasurementResult` | Fired when measurement completes    |
-| `measurement-clear`    | -                   | Fired when measurements are cleared |
-
 ### MeasureActionItem Interface
 
 ```typescript

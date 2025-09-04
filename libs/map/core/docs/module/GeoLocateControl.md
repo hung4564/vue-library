@@ -1,5 +1,10 @@
 # GeoLocateControl
 
+## Usecase
+
+- Center the map to the user location on mobile devices.
+- Provide a locate-me button for field survey or navigation workflows.
+
 ## Props
 
 <!--@include: ./props.md-->

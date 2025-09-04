@@ -67,5 +67,5 @@ MIT License
 ## 🔗 Links
 
 - **[GitHub Repository](https://github.com/hung4564/vue-library)**
-- **[Documentation](./docs/)**
+- **[Documentation](/)**
 - **[Issues](https://github.com/hung4564/vue-library/issues)**

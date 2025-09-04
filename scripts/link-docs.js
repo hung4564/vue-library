@@ -12,6 +12,26 @@ const links = [
     target: path.resolve(__dirname, '../docs/pages/map/core'),
   },
   {
+    source: path.resolve(__dirname, '../libs/map/measurement/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/measurement'),
+  },
+  {
+    source: path.resolve(__dirname, '../libs/map/print/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/print'),
+  },
+  {
+    source: path.resolve(__dirname, '../libs/map/dataset/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/dataset'),
+  },
+  {
+    source: path.resolve(__dirname, '../libs/map/legend/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/legend'),
+  },
+  {
+    source: path.resolve(__dirname, '../libs/map/draw/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/draw'),
+  },
+  {
     source: path.resolve(__dirname, '../libs/draggable/docs'),
     target: path.resolve(__dirname, '../docs/pages/draggable'),
   },

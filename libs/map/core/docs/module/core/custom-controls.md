@@ -176,3 +176,41 @@ function addCustomMarker() {
 4. **Handle map loading states** - check if map exists before calling methods
 5. **Use consistent styling** with the existing control system
 6. **Implement proper cleanup** for event listeners and map modifications
+
+## Example: Draggable Popup with ModuleContainer
+
+This example demonstrates how to use a draggable popup inside a custom map control using `ModuleContainer`. The control button toggles the popup, and the popup itself is fully draggable and customizable.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { ModuleContainer, MapControlButton, WithMapPropType, defaultMapProps } from '@hungpvq/vue-map-core';
+import { useMap } from '@hungpvq/vue-map-core';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { moduleContainerProps } = useMap(props);
+const showPopup = ref(false);
+
+function onToggleShow() {
+  showPopup.value = !showPopup.value;
+}
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapControlButton @click="onToggleShow">
+        <span class="text-lg">⚙️</span>
+      </MapControlButton>
+    </template>
+    <template #draggable="draggableProps">
+      <DraggableItemPopup v-if="showPopup" v-bind="draggableProps" v-model:show="showPopup" :title="'Draggable Popup'" :width="400" :height="300">
+        <div style="padding: 16px;">This is a draggable popup inside a custom map control.</div>
+      </DraggableItemPopup>
+    </template>
+  </ModuleContainer>
+</template>
+```

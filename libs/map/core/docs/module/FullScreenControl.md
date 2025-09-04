@@ -1,5 +1,10 @@
 # FullScreenControl
 
+## Usecase
+
+- Present the map in full screen for demos or dashboards.
+- Improve focus on the map by hiding surrounding layout when needed.
+
 ## Props
 
 <!--@include: ./props.md-->
