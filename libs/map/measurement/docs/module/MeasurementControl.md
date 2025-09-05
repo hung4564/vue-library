@@ -1,13 +1,13 @@
-## 📚 MeasurementControl
+# 📚 MeasurementControl
 
-### Usecase
+## Usecase
 
 - Measure distance/area for planning and reporting tasks.
 - Offer ad-hoc measurement tools without leaving the map view.
 
 The `MeasurementControl` component provides a user interface for measuring distances, areas, and angles on the map. It is highly configurable and supports custom actions, multiple units, and event hooks for integration with your application logic.
 
-### Props
+## Props
 
 <!--@include: ../../core/module/props.md-->
 
@@ -17,7 +17,7 @@ and
 | --------- | --------------------- | ------- | -------------------------- |
 | `actions` | `MeasureActionItem[]` | `[]`    | Custom measurement actions |
 
-### Types
+## Types
 
 ```typescript
 interface MeasureActionItem {
@@ -32,7 +32,7 @@ interface MeasureActionItem {
 }
 ```
 
-### Usage
+## Usage
 
 ```vue
 <script setup lang="ts">

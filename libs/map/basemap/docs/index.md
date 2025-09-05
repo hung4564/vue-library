@@ -30,8 +30,6 @@ npm install @hungpvq/vue-map-basemap
 <!--@include: ./examples/custom.md -->
 <!--@include: ./examples/hook.md -->
 
-## 🔗 Integration
-
 ### With Map Core
 
 ```vue

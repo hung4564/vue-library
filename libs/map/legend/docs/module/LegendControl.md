@@ -1,21 +1,21 @@
-## MapLegend Control
+# MapLegend Control
 
-#### Usecase
+## Usecase
 
 - Display dynamic legend based on visible layers and symbology.
 - Provide contextual guidance for map colors, lines, and symbols.
 
-#### Props
+## Props
 
 <!--@include: ../../core/module/props.md-->
 
-#### Slots
+## Slots
 
 | Name      | Description                |
 | --------- | -------------------------- |
 | `default` | Custom legend content slot |
 
-#### Usage
+## Usage
 
 ```vue
 <script setup lang="ts">

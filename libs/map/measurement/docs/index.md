@@ -24,7 +24,7 @@ npm install @hungpvq/vue-map-measurement
 - ✅ **TypeScript support** – Full TypeScript typings
 - ✅ **Vue 3 Composition API** – Modern, composable API
 
-## 🔗 Integration
+## 🚀 Usage
 
 ### With Map Core
 

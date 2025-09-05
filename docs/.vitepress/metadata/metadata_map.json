@@ -124,7 +124,7 @@
     {
       "name": "Component",
       "package": "Map - Measurement",
-      "docs": "/map/measurement/module",
+      "docs": "/map/measurement/module/",
       "order": 5.2
     },
     {
@@ -136,7 +136,7 @@
     {
       "name": "Component",
       "package": "Map - Print",
-      "docs": "/map/print/module",
+      "docs": "/map/print/module/",
       "order": 5.2
     },
     {
@@ -148,7 +148,7 @@
     {
       "name": "Component",
       "package": "Map - Legend",
-      "docs": "/map/legend/module",
+      "docs": "/map/legend/module/",
       "order": 5.2
     },
     {
@@ -160,7 +160,7 @@
     {
       "name": "Component",
       "package": "Map - Draw",
-      "docs": "/map/draw/module",
+      "docs": "/map/draw/module/",
       "order": 5.2
     },
     {
@@ -172,8 +172,14 @@
     {
       "name": "Component",
       "package": "Map - Dataset",
-      "docs": "/map/dataset/module",
+      "docs": "/map/dataset/module/",
       "order": 5.2
+    },
+    {
+      "name": "Create Dataset",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/helper/CreateDataset",
+      "order": 5.3
     }
   ]
 }

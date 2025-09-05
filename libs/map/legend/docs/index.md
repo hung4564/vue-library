@@ -45,7 +45,7 @@ function onMapLoaded(map: any) {
 </script>
 ```
 
-## 🔗 Integration
+## 🚀 Usage
 
 ### With Map Core
 

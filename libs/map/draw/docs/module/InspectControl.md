@@ -1,11 +1,11 @@
-## InspectControl
+# InspectControl
 
-#### Usecase
+## Usecase
 
 - Inspect rendered features for debugging data and styles.
 - Provide quick identify functionality without building a full query UI.
 
-#### Props
+## Props
 
 <!--@include: ../../core/module/props.md-->
 
@@ -27,20 +27,20 @@ and
 | `selectThreshold`            | Pixel threshold for feature selection     | `number`   | false    | `5`                    |
 | `queryParameters`            | Parameters for querying rendered features | `object`   | false    | `() => ({})`           |
 
-#### Slots
+## Slots
 
 | Name      | Description         |
 | --------- | ------------------- |
 | `default` | Custom content slot |
 
-#### Usage Notes
+## Usage Notes
 
 - Use inside a `<Map>` component from `@hungpvq/vue-map-core`.
 - Useful for debugging and analyzing map layers and features.
 - Highly customizable via props for popup rendering and style.
 - Supports slot for custom UI extension.
 
-#### Usage
+## Usage
 
 ```vue
 <script setup lang="ts">

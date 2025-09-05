@@ -4,7 +4,7 @@
 
 ## 🚀 Introduction
 
-Map Dataset provides components and utilities to create, list, style, identify and manage map layers/datasets. It supports GeoJSON and raster sources, dynamic legends, identify tools, and layer grouping with drag-and-drop.
+Map Dataset provides components and utilities to create, list, style, identify and manage map layers/datasets. It supports GeoJSON and raster sources, dynamic legends, identify tools, and layer grouping with drag-and-drop functionality.
 
 ## 📦 Installation
 
@@ -18,16 +18,18 @@ yarn add @hungpvq/vue-map-dataset
 
 ## 🎯 Features
 
-- ✅ Dataset and layer management (create, group, reorder, delete)
-- ✅ Identify tools (click and box select, immediate show-first)
-- ✅ Style editor for Mapbox layers
-- ✅ Legends (linear gradient, single color, single value)
-- ✅ Component manager for dynamic UIs
-- ✅ TypeScript + Vue 3 Composition API
+- ✅ **Dataset and layer management** - Create, group, reorder, and delete layers dynamically
+- ✅ **Identify tools** - Click and box select with immediate show-first functionality
+- ✅ **Style editor** - Comprehensive styling for Mapbox layers
+- ✅ **Legends** - Linear gradient, single color, and single value legends
+- ✅ **Component manager** - Dynamic UI components for dataset management
+- ✅ **TypeScript support** - Full TypeScript support with comprehensive type definitions
+- ✅ **Vue 3 Composition API** - Modern Vue 3 Composition API integration
+- ✅ **Drag and drop** - Intuitive layer organization with drag-and-drop support
 
 ## 🚀 Usage
 
-### Layer Controls
+### Basic Layer Management
 
 ```vue
 <template>
@@ -40,7 +42,9 @@ yarn add @hungpvq/vue-map-dataset
 import { ref } from 'vue';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Map } from '@hungpvq/vue-map-core';
-import { DatasetControl, LayerControl, useMapDataset, createDataset, createDatasetPartGeojsonSourceComponent, createDatasetPartListViewUiComponent, createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+import { LayerControl, useMapDataset, createDataset, createDatasetPartGeojsonSourceComponent, createDatasetPartListViewUiComponent, createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
 
 const mapId = ref(getUUIDv4());
 
@@ -48,6 +52,7 @@ function onMapLoaded(map: any) {
   mapId.value = map.id;
   const { addDataset } = useMapDataset(mapId.value);
 
+  // Create sample dataset
   const dataset = createDataset('Sample Dataset', null, true);
 
   const source = createDatasetPartGeojsonSourceComponent('source', {
@@ -56,7 +61,10 @@ function onMapLoaded(map: any) {
       {
         type: 'Feature',
         properties: { name: 'Sample Point' },
-        geometry: { type: 'Point', coordinates: [105.8342, 21.0285] },
+        geometry: {
+          type: 'Point',
+          coordinates: [105.8342, 21.0285],
+        },
       },
     ],
   });
@@ -88,18 +96,64 @@ function onMapLoaded(map: any) {
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
 import { IdentifyControl, IdentifyShowFirstControl } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
 
-function onMapLoaded(map: any) {}
+function onMapLoaded(map: any) {
+  // Initialize datasets with identify capabilities
+}
 </script>
 ```
 
-### Style Control
+### Layer Information Display
 
 ```vue
-<StyleControl :item="dataset" />
+<template>
+  <Map @map-loaded="onMapLoaded">
+    <LayerInfoControl position="bottom-right" />
+  </Map>
+</template>
+
+<script setup lang="ts">
+import { Map } from '@hungpvq/vue-map-core';
+import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+</script>
 ```
 
-## 🔗 Integration
+### Complete Integration Example
 
-- Works with `@hungpvq/vue-map-core` map/controls, and can be combined with basemaps.
-- LayerControl exposes slots like `#endList` for inserting other UI (e.g., basemap card).
+```vue
+<template>
+  <Map @map-loaded="onMapLoaded">
+    <!-- Core controls -->
+    <ZoomControl position="top-right" />
+    <HomeControl position="top-right" />
+
+    <!-- Dataset controls -->
+    <LayerControl position="top-left" show>
+      <template #endList="{ mapId }">
+        <BaseMapCard :mapId="mapId" />
+      </template>
+    </LayerControl>
+
+    <LayerInfoControl position="bottom-right" />
+    <IdentifyControl position="top-right" />
+    <IdentifyShowFirstControl />
+  </Map>
+</template>
+
+<script setup lang="ts">
+import { Map, ZoomControl, HomeControl } from '@hungpvq/vue-map-core';
+import { LayerControl, LayerInfoControl, IdentifyControl, IdentifyShowFirstControl } from '@hungpvq/vue-map-dataset';
+import { BaseMapCard } from '@hungpvq/vue-map-basemap';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-map-basemap/style.css';
+
+function onMapLoaded(map: any) {
+  // Initialize your datasets here
+}
+</script>
+```

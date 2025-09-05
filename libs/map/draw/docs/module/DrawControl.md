@@ -1,11 +1,11 @@
-## DrawControl
+# DrawControl
 
-#### Usecase
+## Usecase
 
 - Let users sketch points/lines/polygons for feedback or annotation.
 - Collect geometry inputs for further analysis or data submission.
 
-#### Props
+## Props
 
 <!--@include: ../../core/module/props.md-->
 
@@ -15,20 +15,20 @@ and
 | ------------- | --------------------------- | ------------ | -------- | ------------- |
 | `drawOptions` | Drawing options (see below) | `DrawOption` | false    | `undefined`   |
 
-#### Slots
+## Slots
 
 | Name      | Description         |
 | --------- | ------------------- |
 | `default` | Custom content slot |
 
-#### Usage Notes
+## Usage Notes
 
 - Use inside a `<Map>` component from `@hungpvq/vue-map-core`.
 - Provide a `drawOptions` prop to configure supported geometry types and save behavior.
 - Emits events for all major draw actions (start, complete, update, delete).
 - Supports slot for custom button or UI extension.
 
-#### Usage
+## Usage
 
 ```vue
 <script setup lang="ts">
