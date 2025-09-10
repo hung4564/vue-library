@@ -99,6 +99,69 @@ UniversalRegistry.registerMenuHandlerForMap('custom-action', handlerFunction);
 UniversalRegistry.registerComponent('legend-linear', LayerLegendLinearGradient);
 ```
 
+---
+
+## Handling Menu Actions: `handleMenuAction` and `handleMenuActionClick`
+
+### `handleMenuAction`
+
+This function is used to trigger the action associated with a menu item. It is typically called when a user clicks a menu item in the UI.
+
+**Signature:**
+
+```typescript
+handleMenuAction(menu: MenuAction, layer: IDataset, mapId: string, value: any): void
+```
+
+- `menu`: The menu action object (from your menu definition)
+- `layer`: The dataset or layer the menu is attached to
+- `mapId`: The map instance ID
+- `value`: Optional value to pass to the action
+
+**Example (from a UI event handler):**
+
+```typescript
+import { handleMenuAction } from '@hungpvq/vue-map-dataset';
+
+function onMenuClick(action, item, mapId) {
+  handleMenuAction(action, item, mapId, item);
+}
+```
+
+### `handleMenuActionClick`
+
+This is a lower-level function that executes the `click` handler of a menu item. It is called internally by `handleMenuAction`, but can also be used directly if you want to trigger a menu action programmatically.
+
+**Signature:**
+
+```typescript
+handleMenuActionClick(click, layer, mapId, value): void
+```
+
+- `click`: The click handler (function, string key, or array for action chains)
+- `layer`: The dataset or layer
+- `mapId`: The map instance ID
+- `value`: Optional value
+
+**Example:**
+
+```typescript
+import { handleMenuActionClick } from '@hungpvq/vue-map-dataset';
+
+// Directly trigger a menu click handler
+handleMenuActionClick(menu.click, layer, mapId, value);
+```
+
+**Typical usage in LayerControl:**
+
+```typescript
+function onLayerAction({ action, item }) {
+  handleMenuAction(action, item, mapId, item);
+}
+```
+
+---
+
 ## Best Practices
 
 - Use descriptive names and icons for menu items
