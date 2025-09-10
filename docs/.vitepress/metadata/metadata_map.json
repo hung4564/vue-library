@@ -178,7 +178,7 @@
     {
       "name": "Create Dataset",
       "package": "Map - Dataset",
-      "docs": "/map/dataset/helper/CreateDataset",
+      "docs": "/map/dataset/create-dataset",
       "order": 5.3
     }
   ]
