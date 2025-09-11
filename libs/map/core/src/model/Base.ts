@@ -13,13 +13,13 @@ export class Base {
 
 export type IDrawHandler<IFeature = GeoJsonProperties> = {
   addFeatures?: (
-    features: Feature<Geometry, IFeature>[]
+    features: Feature<Geometry, IFeature>[],
   ) => Promise<boolean | void>;
   updateFeatures?: (
-    features: Feature<Geometry, IFeature>[]
+    features: Feature<Geometry, IFeature>[],
   ) => Promise<boolean | void>;
   deleteFeatures?: (
-    features: Feature<Geometry, IFeature>[]
+    features: Feature<Geometry, IFeature>[],
   ) => Promise<boolean | void>;
   getFeatures?: (point: [number, number]) => Promise<Feature[]>;
 };

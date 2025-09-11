@@ -3,16 +3,16 @@
 layout: home
 
 hero:
-  name: 'My Awesome Project'
-  text: 'A VitePress Site'
-  # tagline: My great project tagline
-  # actions:
-  #   - theme: brand
-  #     text: Shared
-  #     link: /shared
-  #   - theme: alt
-  #     text: Draggable
-  #     link: /draggable
+  name: 'VueLibrary'
+  text: 'Powerful Vue.js Map Libraries'
+  tagline: Build interactive map applications with Vue.js and MapLibre GL
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /map
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/hung4564/vue-library
 
 features:
   - title: Shared

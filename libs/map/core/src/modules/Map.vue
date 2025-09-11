@@ -37,9 +37,7 @@ const props = defineProps({
   mapId: { type: String },
 });
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_e: 'map-loaded', _map: MapSimple): void;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_e: 'map-destroy', _map: MapSimple): void;
 }>();
 function isWebglSupported() {

@@ -32,9 +32,3 @@ function onMapLoaded(map: MapSimple) {
   <BaseMapCard :mapId="mapId" />
 </template>
 ```
-
-## Component
-
-<!--@include: ./src/modules/BaseMapControl.md -->
-<!--@include: ./src/modules/BaseMapTagControl.md -->
-<!--@include: ./src/modules/BaseMapCard.md -->
