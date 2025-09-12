@@ -1,7 +1,9 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import LayerItemIcon from '../../extra/component/layer-item-icon.vue';
-import { createDatasetEvent } from '../../extra/event';
-import { createDatasetMenu, createMenuItemSetOpacity } from '../../extra/menu';
+import {
+  createMenuItemSetOpacity,
+  createWithEventHelper,
+  createWithMenuHelper,
+} from '../../extra';
 import type { IDataset, WithChildren } from '../../interfaces';
 import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
@@ -75,9 +77,9 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
       return this;
     },
     build(): IListViewUI {
-      const base = createDatasetLeaf<T>(name);
-      const menu = createDatasetMenu();
-      const event = createDatasetEvent<EventIListViewUI>();
+      const base = createDatasetLeaf(name);
+      const menu = createWithMenuHelper();
+      const event = createWithEventHelper<EventIListViewUI>();
 
       const dataset = {
         ...base,

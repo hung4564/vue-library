@@ -4,11 +4,10 @@ import type { IDataset, IMapboxSourceView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
-export function createDatasetPartMapboxSourceComponent<T = any>(
+export function createDatasetPartMapboxSourceComponent(
   name: string,
-  data: T
 ): IDataset & IMapboxSourceView {
-  const base = createDatasetLeaf<T>(name, data);
+  const base = createDatasetLeaf(name);
   return createNamedComponent('DatasetPartMapboxSourceComponent', {
     ...base,
 

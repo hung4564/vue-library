@@ -1,10 +1,7 @@
 import type { IDataset, WithChildren } from '../interfaces';
 import { createBase } from './base';
 
-export function createDatasetComponent<T = any>(
-  name: string,
-  data?: T,
-): IDataset {
+export function createDatasetComponent<T = any>(name: string): IDataset {
   let parent: ReturnType<typeof createDatasetComponent> | undefined;
 
   const base = createBase();
@@ -20,14 +17,6 @@ export function createDatasetComponent<T = any>(
       name = newName;
     },
 
-    getData(): T | undefined {
-      return data;
-    },
-
-    setData(newData: T) {
-      data = newData;
-    },
-
     setParent(newParent?: ReturnType<typeof createDatasetComponent>) {
       parent = newParent;
     },
@@ -36,8 +25,8 @@ export function createDatasetComponent<T = any>(
     },
   };
 }
-export function createDatasetLeaf<T = any>(name: string, data?: T) {
-  const base = createDatasetComponent<T>(name, data);
+export function createDatasetLeaf<T = any>(name: string) {
+  const base = createDatasetComponent<T>(name);
 
   return {
     ...base,

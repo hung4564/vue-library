@@ -9,7 +9,7 @@ export function createDatasetPartDataManagementComponent<D = any>(
     fields?: { trans?: string; text?: string; value: string }[];
   } = {},
 ): IDataManagementView<D> {
-  const base = createDatasetLeaf<typeof config>(name, config);
+  const base = createDatasetLeaf(name);
 
   return createNamedComponent('DataManagementComponent', {
     ...base,

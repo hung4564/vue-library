@@ -8,6 +8,7 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
+import type { WithDataHelper } from '../extra';
 import type { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
@@ -90,7 +91,8 @@ export type MenuAction<T = any> =
   | MenuItemCustomComponentBottomOrExtra<T>;
 
 export type IMapboxSourceView = IDatasetMap &
-  IDataset & {
+  IDataset &
+  WithDataHelper & {
     getMapboxSource: () => SourceSpecification & { id?: string };
     updateData?(map: MapSimple, data: any): void;
     getFieldsInfo(): IFieldInfo[];
@@ -108,7 +110,7 @@ export type IMapboxLayerView = IDatasetMap &
     updateValue(map: MapSimple, value: any): void;
   };
 export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
-  IActionForView<T> & {
+  WithMenuHelper<T> & {
     config: { field_name?: string; field_id?: string };
     getFeatures: (
       mapId: string,
@@ -155,7 +157,7 @@ export type IIdentifyView<T extends IDataset = IDataset> =
   | IIdentifyViewWithoutMerge<T>
   | IIdentifyViewWithMerge<T>;
 
-export type IActionForView<T extends IDataset = IDataset> = {
+export type WithMenuHelper<T extends IDataset = IDataset> = {
   addMenu(menu: MenuAction<T>): void;
   addMenus(menusToAdd: MenuAction<T>[]): void;
   getMenus(): MenuAction<T>[];

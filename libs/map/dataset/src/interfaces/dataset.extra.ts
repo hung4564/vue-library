@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { WithEvent } from '../extra';
+import type { WithEventHelper } from '../extra';
 import type { IDataset } from './dataset.base';
 
 export type WithToggleShow = {

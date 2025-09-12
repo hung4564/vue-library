@@ -6,14 +6,14 @@ import {
   createMenuItemToBoundActionForItem,
 } from '../extra';
 import type { IDataset } from '../interfaces';
-import type { DatasetComposite } from '../model';
 import {
   createDataManagementMapboxComponent,
-  createDataset,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
+  createGroupDataset,
   createIdentifyMapboxComponent,
   createMultiMapboxLayerComponent,
+  createRootDataset,
 } from '../model';
 import {
   LayerSimpleMapboxBuild,
@@ -26,11 +26,11 @@ export type GeojsonDatasetOption = {
   color?: Color;
 };
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
-  const dataset = createDataset(data.name, null, true) as DatasetComposite;
+  const dataset = createRootDataset(data.name);
 
   const list = createDatasetPartListViewUiComponent(data.name);
   list.color = data.color || getChartRandomColor();
-  const groupLayer = createDataset(data.name, null, true) as DatasetComposite;
+  const groupLayer = createGroupDataset(data.name);
 
   const layer = createMultiMapboxLayerComponent(data.name, [
     new LayerSimpleMapboxBuild()

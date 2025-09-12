@@ -1,7 +1,6 @@
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
 import type { LayerSpecification } from 'maplibre-gl';
-import MultiStyle from '../../modules/StyleControl/style/multi-style.vue';
 import { createNamedComponent } from '../base';
 import { findFirstLeafByType } from '../visitors';
 import { createDatasetPartMapboxLayerComponent } from './base';

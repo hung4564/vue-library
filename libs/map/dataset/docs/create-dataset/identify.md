@@ -27,7 +27,7 @@ const identifyMerged = createIdentifyMapboxMergedComponent('merge identify', { f
 
 ## Custom Menus in Identify
 
-The Identify component can also define custom menus, allowing you to add context-specific actions when a feature is identified. This is useful for providing additional operations such as showing details, exporting data, or triggering custom workflows directly from the identify popup or panel. See [menu](./menu) for more details.
+The Identify component can also define custom menus, allowing you to add context-specific actions when a feature is identified. This is useful for providing additional operations such as showing details, exporting data, or triggering custom workflows directly from the identify popup or panel. See [menu](./with-helper-menu) for more details.
 
 ### Example: Adding a Custom Menu to Identify
 

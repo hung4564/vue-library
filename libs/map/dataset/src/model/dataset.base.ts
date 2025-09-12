@@ -85,12 +85,6 @@ export class DatasetComposite extends DatasetComponent {
     super(name);
   }
 
-  override getData(): any {
-    // For composite nodes, we might want to aggregate data from all children
-    // or provide a different representation
-    return this.children.map((child) => child.getData());
-  }
-
   add(dataset: IDataset): void {
     this.children.push(dataset);
     if (typeof dataset?.setParent === 'function') {
@@ -142,4 +136,12 @@ export function createDataset(
   } else {
     return new DatasetLeaf(name, data);
   }
+}
+
+export function createRootDataset(name: string): DatasetComposite {
+  return new DatasetComposite(name);
+}
+
+export function createGroupDataset(name: string): DatasetComposite {
+  return new DatasetComposite(name);
 }

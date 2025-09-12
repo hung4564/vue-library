@@ -1,11 +1,11 @@
 import type { RasterSourceSpecification } from 'maplibre-gl';
 import type { IDataset } from '../interfaces';
 import {
-  createDataset,
   createDatasetPartListViewUiComponent,
   createDatasetPartRasterSourceComponent,
+  createGroupDataset,
   createMultiMapboxLayerComponent,
-  type DatasetComposite,
+  createRootDataset,
 } from '../model';
 
 export type RasterUrlDatasetOption = {
@@ -16,11 +16,7 @@ export type RasterUrlDatasetOption = {
   minZoom?: number;
 };
 export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
-  const dataset_raster = createDataset(
-    data.name,
-    null,
-    true
-  ) as DatasetComposite;
+  const dataset_raster = createRootDataset(data.name);
 
   const source_raster = createDatasetPartRasterSourceComponent(data.name, {
     type: 'raster',
@@ -35,11 +31,7 @@ export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
     },
   ]);
   const list_raster = createDatasetPartListViewUiComponent(data.name);
-  const groupLayer_raster = createDataset(
-    data.name,
-    null,
-    true
-  ) as DatasetComposite;
+  const groupLayer_raster = createGroupDataset(data.name);
   dataset_raster.add(source_raster);
   groupLayer_raster.add(list_raster);
   groupLayer_raster.add(layerraster);

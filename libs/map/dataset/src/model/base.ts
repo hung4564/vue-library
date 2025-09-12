@@ -22,7 +22,7 @@ export function createBase() {
 type PrototypeSource = string | Function;
 export function createNamedComponent<T extends object>(
   prototypeSource: PrototypeSource,
-  data: T
+  data: T,
 ): T {
   try {
     let prototypeFn: Function;

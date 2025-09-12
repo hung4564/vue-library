@@ -1,6 +1,6 @@
 import type { Color } from '@hungpvq/shared-map';
-import type { WithEvent } from '../../extra';
-import type { IActionForView, IDataset } from '../../interfaces';
+import type { WithEventHelper } from '../../extra';
+import type { IDataset, WithMenuHelper } from '../../interfaces';
 import type {
   WithOpacity,
   WithSetOpacity,
@@ -14,8 +14,8 @@ export type IListViewUI = IDataset &
   WithShow &
   WithOpacity &
   WithSetOpacity &
-  WithEvent<EventIListViewUI> &
-  IActionForView & {
+  WithEventHelper<EventIListViewUI> &
+  WithMenuHelper & {
     selected?: boolean;
     color?: Color;
     config: {

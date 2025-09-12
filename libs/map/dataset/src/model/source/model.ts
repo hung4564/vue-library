@@ -5,11 +5,8 @@ import type {
   RasterSourceSpecification,
   VectorSourceSpecification,
 } from 'maplibre-gl';
-import type {
-  IDataset,
-  IMapboxSourceView,
-  IMetadataView,
-} from '../../interfaces';
+import { createWithDataHelper } from '../../extra';
+import type { IMapboxSourceView, IMetadataView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { findSiblingOrNearestLeaf } from '../visitors';
 import { createDatasetPartMapboxSourceComponent } from './base';
@@ -18,13 +15,17 @@ export function createDatasetPartGeojsonSourceComponent(
   name: string,
   data?: GeoJSONSourceSpecification['data'],
 ): IMapboxSourceView {
-  const base = createDatasetPartMapboxSourceComponent(name, data);
+  const base = createDatasetPartMapboxSourceComponent(name);
+  const dataHelper = createWithDataHelper<
+    GeoJSONSourceSpecification['data'] | undefined
+  >(data);
 
   return createNamedComponent('GeojsonSourceComponent', {
     ...base,
+    ...dataHelper,
     getMapboxSource: () => ({
       type: 'geojson',
-      data: base.getData() || {
+      data: dataHelper.getData() || {
         type: 'FeatureCollection',
         features: [],
       },
@@ -47,7 +48,7 @@ export function createDatasetPartGeojsonSourceComponent(
       return {
         name: base.getName(),
         bbox: metadata?.metadata?.bbox,
-        geojson: JSON.stringify(base.getData(), undefined, 2),
+        geojson: JSON.stringify(dataHelper.getData(), undefined, 2),
       };
     },
     updateData(
@@ -61,19 +62,21 @@ export function createDatasetPartGeojsonSourceComponent(
       if (source) {
         source.setData(data);
       }
-      base.setData(data);
+      dataHelper.setData(data);
     },
   });
 }
 export function createDatasetPartRasterSourceComponent(
   name: string,
-  data?: RasterSourceSpecification,
+  data: RasterSourceSpecification,
 ): IMapboxSourceView {
-  const base = createDatasetPartMapboxSourceComponent(name, data);
+  const base = createDatasetPartMapboxSourceComponent(name);
+  const dataHelper = createWithDataHelper<RasterSourceSpecification>(data);
 
   return createNamedComponent('RasterSourceComponent', {
     ...base,
-    getMapboxSource: () => base.getData(),
+    ...dataHelper,
+    getMapboxSource: () => dataHelper.getData(),
     getFieldsInfo: () => [
       { trans: 'map.layer-control.field.name', value: 'name' },
       { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
@@ -85,7 +88,7 @@ export function createDatasetPartRasterSourceComponent(
         (d) => d.type === 'metadata',
       ) as IMetadataView;
 
-      const raster = base.getData();
+      const raster = dataHelper.getData();
       return {
         name: base.getName(),
         bbox: metadata?.metadata?.bbox || raster?.bounds,
@@ -99,13 +102,17 @@ export function createDatasetPartVectorTileComponent(
   name: string,
   data?: Partial<VectorSourceSpecification>,
 ): IMapboxSourceView {
-  const base = createDatasetPartMapboxSourceComponent(name, data);
+  const base = createDatasetPartMapboxSourceComponent(name);
+  const dataHelper = createWithDataHelper<
+    Partial<VectorSourceSpecification> | undefined
+  >(data);
 
   return createNamedComponent('GeojsonSourceComponent', {
     ...base,
+    ...dataHelper,
     getMapboxSource: () => ({
       type: 'vector',
-      ...base.getData(),
+      ...dataHelper.getData(),
     }),
 
     getFieldsInfo: () => [
@@ -126,7 +133,7 @@ export function createDatasetPartVectorTileComponent(
         (d) => d.type === 'metadata',
       ) as IMetadataView;
 
-      const raster = base.getData();
+      const raster = dataHelper.getData();
       return {
         name: base.getName(),
         bbox: metadata?.metadata?.bbox || raster?.bounds,

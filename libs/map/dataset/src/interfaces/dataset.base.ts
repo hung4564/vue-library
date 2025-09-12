@@ -2,7 +2,7 @@
  * Base interface for the Dataset Composite pattern
  * This interface defines the common operations for both leaf and composite nodes
  */
-export interface IDataset<T = any> {
+export interface IDataset {
   get type(): string;
   get id(): string;
   /**
@@ -14,19 +14,6 @@ export interface IDataset<T = any> {
    */
   setName(name: string): void;
 
-  /**
-   * Get the data of the dataset
-   */
-  getData(): T;
-  /**
-   * Get the data of the dataset
-   */
-  setData(data: T): void;
-
-  /**
-   * Get the parent dataset
-   * @returns The parent dataset or undefined if this is a root dataset
-   */
   getParent(): IDataset | undefined;
 
   /**

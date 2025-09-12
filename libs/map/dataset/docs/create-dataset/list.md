@@ -88,7 +88,7 @@ groupList.add(subList1);
 
 ## Menu Customization
 
-You can define custom menus for list items (see [menu](./menu) for more details):
+You can define custom menus for list items (see [menu](./with-helper-menu) for more details):
 
 ```typescript
 list.addMenu(
@@ -105,7 +105,7 @@ list.addMenu(
 
 ## Event Handling
 
-List UI components can emit and listen to events (see the [event](./event) for available events):
+List UI components can emit and listen to events (see the [event](./with-helper-event) for available events):
 
 ```typescript
 list.emit('customEvent', data);

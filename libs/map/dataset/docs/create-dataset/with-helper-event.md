@@ -12,7 +12,7 @@ The event system allows dataset components (including custom leaves) to emit and
 
 ## API
 
-You can create an event system for your dataset component using `createDatasetEvent`. The returned object provides the following methods:
+You can create an event system for your dataset component using `createWithEventHelper`. The returned object provides the following methods:
 
 - `emit(eventName, data)`: Emit an event with optional data
 - `on(eventName, handler)`: Listen for an event
@@ -23,16 +23,16 @@ You can create an event system for your dataset component using `createDatasetEv
 You can type your event system for better type safety. Import the event type definition from the relevant file (e.g., `EventIListViewUI` for list view events).
 
 ```typescript
-import { createDatasetEvent } from '@hungpvq/vue-map-dataset';
+import { createWithEventHelper } from '@hungpvq/vue-map-dataset';
 import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
 
-const event = createDatasetEvent<EventIListViewUI>();
+const event = createWithEventHelper<EventIListViewUI>();
 ```
 
 ## Basic Usage Example
 
 ```typescript
-const event = createDatasetEvent();
+const event = createWithEventHelper();
 
 event.on('customEvent', (data) => {
   // Handle event
@@ -46,13 +46,13 @@ event.off('customEvent'); // Remove all handlers for 'customEvent'
 ## Example: Using Events in a Custom Leaf
 
 ```typescript
-import { createDatasetLeaf, createDatasetEvent } from '@hungpvq/vue-map-dataset';
+import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/vue-map-dataset';
 import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
 
-const event = createDatasetEvent<EventIListViewUI>();
+const event = createWithEventHelper<EventIListViewUI>();
 
 const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type',
   event,
 };

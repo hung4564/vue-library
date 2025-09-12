@@ -3,10 +3,8 @@ import { createDatasetLeaf } from '../dataset.base.function';
 import { findFirstLeafByType } from '../visitors';
 import type { IHighlightConfig, IHighlightView } from './types';
 
-export function createDatasetPartHighlightComponent<
-  T extends IHighlightConfig = IHighlightConfig,
->(data?: T): IHighlightView {
-  const base = createDatasetLeaf('', data);
+export function createDatasetPartHighlightComponent(): IHighlightView {
+  const base = createDatasetLeaf('');
 
   return createNamedComponent('HighlightComponent', {
     ...base,

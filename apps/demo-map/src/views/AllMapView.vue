@@ -25,7 +25,6 @@ import {
 import {
   ComponentManagementControl,
   createDataManagementMapboxComponent,
-  createDataset,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartHighlightComponent,
@@ -34,6 +33,7 @@ import {
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
   createDatasetPartSubListViewUiComponent,
+  createGroupDataset,
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   createLegend,
@@ -46,6 +46,7 @@ import {
   createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
+  createRootDataset,
   DatasetControl,
   findSiblingOrNearestLeaf,
   IdentifyControl,
@@ -91,12 +92,12 @@ function onMapLoaded(map: MapSimple) {
   addDataset(createExampleGroupLayer());
 }
 function createGroupList() {
-  const dataset = createDataset('Group test', null, true);
+  const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset('Group layer 1', null, true);
+  const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
@@ -125,7 +126,7 @@ function createGroupList() {
   ]);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  const groupLayer2 = createDataset('Group layer 2', null, true);
+  const groupLayer2 = createGroupDataset('Group layer 2');
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
   list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });
@@ -246,7 +247,7 @@ function createGroupList() {
   return dataset;
 }
 function createRasterDataset() {
-  const dataset_raster = createDataset('Group test', null, true);
+  const dataset_raster = createRootDataset('Group test');
   const source_raster = createDatasetPartRasterSourceComponent('source', {
     type: 'raster',
     tiles: [
@@ -265,7 +266,7 @@ function createRasterDataset() {
   ]);
   const list_raster = createDatasetPartListViewUiComponent('test raster');
   list_raster.color = '#0000FF';
-  const groupLayer_raster = createDataset('Group layer 1', null, true);
+  const groupLayer_raster = createGroupDataset('Group layer 1');
   dataset_raster.add(source_raster);
   groupLayer_raster.add(list_raster);
   groupLayer_raster.add(layerraster);
@@ -274,12 +275,12 @@ function createRasterDataset() {
   return dataset_raster;
 }
 function createDatasetLineString() {
-  const dataset = createDataset('Group DatasetLineString', null, true);
+  const dataset = createRootDataset('Group DatasetLineString');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset('Group layer 1', null, true);
+  const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test line string');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
@@ -328,12 +329,12 @@ function createDatasetLineString() {
   return dataset;
 }
 function createDatasetPoint() {
-  const dataset = createDataset('Group test', null, true);
+  const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset('Group layer 1', null, true);
+  const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test point');
   list1.color = getChartRandomColor();
   const layer1 = createMultiMapboxLayerComponent('layer area', [
@@ -483,12 +484,12 @@ function createDatasetMeasure(
   measurementType: string,
 ) {
   const result = handler.getResult();
-  const dataset = createDataset('Dataset Measure', null, true);
+  const dataset = createRootDataset('Dataset Measure');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: result.features || [],
   });
-  const groupLayer1 = createDataset('Group layer 1', null, true);
+  const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponentBuilder(
     'List Measure:' + measurementType,
   )
@@ -519,7 +520,7 @@ function createDatasetMeasure(
   return dataset;
 }
 function createExampleGroupLayer() {
-  const dataset = createDataset('Example Group layer', null, true);
+  const dataset = createRootDataset('Example Group layer');
 
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -543,7 +544,7 @@ function createExampleGroupLayer() {
     ],
   });
   dataset.add(source);
-  const groupLayer = createDataset('Group layer', null, true);
+  const groupLayer = createGroupDataset('Group layer');
   const list = createDatasetPartGroupSubListViewUiComponentBuilder(
     'Example Group list',
   )
@@ -555,7 +556,7 @@ function createExampleGroupLayer() {
   dataset.add(groupLayer);
   const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
   subList1.color = getChartRandomColor();
-  const groupSubLayer1 = createDataset('Group sub layer 1', null, true);
+  const groupSubLayer1 = createGroupDataset('Group sub layer 1');
   const layer1 = createMultiMapboxLayerComponent('sub layer 1 - point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
@@ -568,7 +569,7 @@ function createExampleGroupLayer() {
   subList2.color = getChartRandomColor();
   subList1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   subList2.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
-  const groupSubLayer2 = createDataset('Group sub layer 2', null, true);
+  const groupSubLayer2 = createGroupDataset('Group sub layer 2');
   const layer2 = createMultiMapboxLayerComponent('sub layer 2 - line', [
     new LayerSimpleMapboxBuild()
       .setStyleType('line')

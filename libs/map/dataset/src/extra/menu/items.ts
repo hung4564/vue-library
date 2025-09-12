@@ -2,7 +2,6 @@ import { fitBounds } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
 import type {
-  IActionForView,
   IDataManagementView,
   IDataset,
   IMapboxSourceView,
@@ -10,12 +9,13 @@ import type {
   MenuAction,
   MenuItemBottomOrExtra,
   MenuItemCustomComponentBottomOrExtra,
+  WithMenuHelper,
 } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
 
-export function createDatasetMenu<
+export function createWithMenuHelper<
   T extends IDataset = IDataset,
->(): IActionForView<T> {
+>(): WithMenuHelper<T> {
   const menus: MenuAction<T>[] = [];
   return {
     getMenus() {

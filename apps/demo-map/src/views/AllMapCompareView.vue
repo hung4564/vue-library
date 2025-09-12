@@ -19,11 +19,11 @@ import {
 import {
   ComponentManagementControl,
   createDataManagementMapboxComponent,
-  createDataset,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
+  createGroupDataset,
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   createLegend,
@@ -34,7 +34,7 @@ import {
   createMenuItemToggleShow,
   createMultiLegend,
   createMultiMapboxLayerComponent,
-  DatasetComposite,
+  createRootDataset,
   IdentifyControl,
   LayerControl,
   LayerHighlight,
@@ -42,17 +42,12 @@ import {
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { mdiDownload, mdiPencil } from '@mdi/js';
 import { ref } from 'vue';
 const mapRef = ref();
 
 function onMapLoaded(props: { id: string }) {
   const { addDataset } = useMapDataset(props.id);
-  const dataset_raster = createDataset(
-    'Group test',
-    null,
-    true,
-  ) as DatasetComposite;
+  const dataset_raster = createRootDataset('Group test');
   const source_raster = createDatasetPartRasterSourceComponent('source', {
     type: 'raster',
     tiles: [
@@ -71,27 +66,19 @@ function onMapLoaded(props: { id: string }) {
   ]);
   const list_raster = createDatasetPartListViewUiComponent('test raster');
   list_raster.color = '#0000FF';
-  const groupLayer_raster = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer_raster = createGroupDataset('Group layer 1');
   dataset_raster.add(source_raster);
   groupLayer_raster.add(list_raster);
   groupLayer_raster.add(layerraster);
   dataset_raster.add(groupLayer_raster);
   list_raster.addMenu(createMenuItemShowDetailInfoSource());
   list_raster.addMenu(createMenuItemToggleShow({ location: 'bottom' }));
-  const dataset = createDataset('Group test', null, true) as DatasetComposite;
+  const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [],
   });
-  const groupLayer1 = createDataset(
-    'Group layer 1',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test area');
   list1.color = '#0000FF';
   list1.legend = createMultiLegend([
@@ -120,11 +107,7 @@ function onMapLoaded(props: { id: string }) {
   ]);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  const groupLayer2 = createDataset(
-    'Group layer 2',
-    null,
-    true,
-  ) as DatasetComposite;
+  const groupLayer2 = createGroupDataset('Group layer 2');
   const list2 = createDatasetPartListViewUiComponent('test point');
   list2.color = '#ff0000';
   list2.legend = createLegend('color', { text: 'color-test', color: '#fff' });

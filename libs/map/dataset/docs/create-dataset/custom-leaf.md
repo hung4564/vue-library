@@ -17,7 +17,7 @@ A custom dataset leaf is a node in the dataset tree that does not have children 
 import { createDatasetLeaf } from '@hungpvq/vue-map-dataset';
 
 const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type', // Must be unique
 };
 ```
@@ -33,7 +33,7 @@ If your custom leaf defines the following methods, they will be called automatic
 
 ```typescript
 const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type',
   addToMap(map) {
     // Custom logic to add something to the map
@@ -53,12 +53,12 @@ import { createDataset, createDatasetLeaf } from '@hungpvq/vue-map-dataset';
 
 // Option 1: createDataset (default is leaf if isComposite is not true)
 const customLeaf = {
-  ...createDataset('My Custom Leaf', { foo: 'bar' }),
+  ...createDataset('My Custom Leaf'),
   type: 'my-custom-type',
 };
 // Option 2: createDatasetLeaf (returns an object with type: 'leaf', override it)
 const customLeaf2 = {
-  ...createDatasetLeaf('Another Leaf', { bar: 'baz' }),
+  ...createDatasetLeaf('Another Leaf'),
   type: 'another-custom-type',
 };
 
@@ -69,7 +69,6 @@ parentDataset.add(customLeaf2);
 **API of the returned leaf object:**
 
 - `getName()`, `setName(name)`
-- `getData()`, `setData(data)`
 - `getParent()`, `setParent(parent)`
 - `type: string` (must be unique for custom leaves)
 
@@ -103,7 +102,7 @@ You can use `createNamedComponent` to wrap your custom leaf. This is useful for 
 import { createNamedComponent, createDatasetLeaf } from '@hungpvq/vue-map-dataset';
 
 const baseLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type',
 };
 
@@ -114,15 +113,15 @@ const customLeaf = createNamedComponent('MyCustomLeafComponent', baseLeaf);
 
 ## Example: Adding a Menu to a Custom Leaf
 
-You can attach a menu to your custom leaf using `createDatasetMenu`. This allows you to define custom actions for your leaf.
+You can attach a menu to your custom leaf using `createWithMenuHelper`. This allows you to define custom actions for your leaf.
 
 ```typescript
-import { createDatasetLeaf, createDatasetMenu } from '@hungpvq/vue-map-dataset';
+import { createDatasetLeaf, createWithMenuHelper } from '@hungpvq/vue-map-dataset';
 
-const menu = createDatasetMenu();
+const menu = createWithMenuHelper();
 
 const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type',
   menu,
 };
@@ -140,16 +139,16 @@ customLeaf.menu.addMenu({
 
 ## Example: Adding an Event System to a Custom Leaf
 
-You can attach an event system to your custom leaf using `createDatasetEvent`. This allows your leaf to emit and listen for custom events.
+You can attach an event system to your custom leaf using `createWithEventHelper`. This allows your leaf to emit and listen for custom events.
 
 ```typescript
-import { createDatasetLeaf, createDatasetEvent } from '@hungpvq/vue-map-dataset';
+import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/vue-map-dataset';
 import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
 
-const event = createDatasetEvent<EventIListViewUI>();
+const event = createWithEventHelper<EventIListViewUI>();
 
 const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf', { foo: 'bar' }),
+  ...createDatasetLeaf('My Custom Leaf'),
   type: 'my-custom-type',
   event,
 };
@@ -159,8 +158,8 @@ customLeaf.event.on('customEvent', (data) => {
 });
 ```
 
-- The menu system allows you to define custom actions for your leaf (see [menu](./menu) for more details).
-- The event system allows your leaf to emit and listen for custom events (see the [event](./event) for available events).
+- The menu system allows you to define custom actions for your leaf (see [menu](./with-helper-menu) for more details).
+- The event system allows your leaf to emit and listen for custom events (see the [event](./with-helper-event) for available events).
 
 ## When to Use a Custom Leaf
 

@@ -1,4 +1,4 @@
-export interface WithEvent<Events extends Record<string, any> = any> {
+export interface WithEventHelper<Events extends Record<string, any> = any> {
   emit<K extends keyof Events>(event: K, data: Events[K]): void;
   on<K extends keyof Events>(
     event: K,

@@ -1,7 +1,7 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
-import { createDatasetMenu } from '../../extra/menu';
+import { createWithMenuHelper } from '../../extra';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -27,8 +27,8 @@ import {
 export function createDatasetPartIdentifyComponent<
   T extends IIdentifyView['config'],
 >(name: string, config: T) {
-  const base = createDatasetLeaf<T>(name, config);
-  const menu = createDatasetMenu();
+  const base = createDatasetLeaf(name);
+  const menu = createWithMenuHelper();
 
   return createNamedComponent('IdentifyComponent', {
     get config() {
@@ -48,7 +48,10 @@ export function createDatasetPartIdentifyComponent<
     },
   });
 }
-export function createIdentifyMapboxComponent(name: string, config?: any) {
+export function createIdentifyMapboxComponent(
+  name: string,
+  config: IIdentifyView['config'] = {},
+) {
   const datasetPartIdentify = createDatasetPartIdentifyComponent(name, config);
 
   const getFeatures = async (
@@ -131,10 +134,9 @@ export function createIdentifyMapboxComponent(name: string, config?: any) {
 export function createIdentifyMapboxMergedComponent(
   name: string,
   config?: any,
+  identifyGroupId = 'mapbox-group',
 ): IIdentifyViewWithMerge {
   const base = createDatasetPartIdentifyComponent(name, config);
-
-  const identifyGroupId = 'mapbox-group';
 
   return createNamedComponent('IdentifyMapboxMergedComponent', {
     ...base,
