@@ -1,13 +1,19 @@
+import type { LayerSpecification } from 'maplibre-gl';
+import { createWithDataHelper } from '../../extra';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 import { findFirstLeafByType } from '../visitors';
 import type { IHighlightView } from './types';
 
-export function createDatasetPartHighlightComponent(): IHighlightView {
+export function createDatasetPartHighlightComponent(
+  data?: Partial<LayerSpecification>,
+): IHighlightView {
   const base = createDatasetLeaf('');
+  const dataHelper = createWithDataHelper(data);
 
   return createNamedComponent('HighlightComponent', {
     ...base,
+    ...dataHelper,
     get type() {
       return 'highlight';
     },
@@ -20,6 +26,7 @@ export function createDatasetPartHighlightComponent(): IHighlightView {
       return {
         source: source_id,
         filter: feature ? ['==', 'id', feature?.id] : undefined,
+        ...dataHelper.getData(),
       };
     },
   });
