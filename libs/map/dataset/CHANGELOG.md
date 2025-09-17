@@ -1,3 +1,13 @@
+## 0.9.8 (2025-09-17)
+
+### 🚀 Features
+
+- add identify builder, support highlight show detail ([a854328](https://github.com/hung4564/vue-library/commit/a854328))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.7 (2025-09-17)
 
 ### 🚀 Features
