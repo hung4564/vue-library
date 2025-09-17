@@ -1,3 +1,18 @@
+## 0.9.7 (2025-09-17)
+
+### 🚀 Features
+
+- split data to helper ([dee2ac2](https://github.com/hung4564/vue-library/commit/dee2ac2))
+
+### 🩹 Fixes
+
+- legend ([d45a5ef](https://github.com/hung4564/vue-library/commit/d45a5ef))
+- build ([78a819c](https://github.com/hung4564/vue-library/commit/78a819c))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.6 (2025-08-28)
 
 ### 🩹 Fixes
