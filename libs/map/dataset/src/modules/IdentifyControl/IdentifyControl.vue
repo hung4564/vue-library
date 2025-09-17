@@ -26,7 +26,11 @@ import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../extra/menu';
-import type { IIdentifyView, MenuAction } from '../../interfaces/dataset.parts';
+import type {
+  IdentifyMultiResult,
+  IIdentifyView,
+  MenuAction,
+} from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
 import { handleMultiIdentify } from '../../model';
 import { useMapDataset } from '../../store';
@@ -118,7 +122,7 @@ function onBboxSelect(bbox: any) {
   onGetFeatures(bbox);
 }
 const result = reactive<{
-  items: { identify: IIdentifyView; features: any[] }[];
+  items: Grouped[];
   loading: boolean;
 }>({
   items: [],
@@ -134,14 +138,12 @@ const currentPoint = computed(() => {
 const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
-function onSelectFeatures(
-  features: { identify: IIdentifyView; features: any[] }[],
-) {
+function onSelectFeatures(features: IdentifyMultiResult[]) {
   logHelper(loggerIdentify, mapId.value, 'multi').debug(
     'onSelectFeatures',
     features,
   );
-  result.items = features;
+  result.items = groupItems(features);
   if (
     props.immediately &&
     features &&
@@ -247,6 +249,49 @@ function onMenuAction(identify: IIdentifyView, menu: MenuAction, item: any) {
 onMounted(() => {
   if (props.immediately) onUseMapClick();
 });
+interface Grouped {
+  id: string;
+  name: string;
+  items: (any & { identify: IIdentifyView })[];
+}
+function groupItems(items: IdentifyMultiResult[]): Grouped[] {
+  const groups: Grouped[] = [];
+  const groupExistingIds = new Map<string, Set<string | number>>();
+
+  for (const item of items) {
+    let group: any = {
+      id: item.identify.id,
+      name: item.identify.getName(),
+      items: [],
+    };
+    const group_identify = item.identify.group;
+    if (group_identify) {
+      group = groups.find((g) => g.id === group_identify.id);
+      if (!group) {
+        group = { id: group_identify.id, name: group_identify.name, items: [] };
+        groups.push(group);
+      }
+    } else {
+      groups.push(group);
+    }
+    let existingIds = groupExistingIds.get(group.id);
+    if (!existingIds) {
+      existingIds = new Set<string>();
+      groupExistingIds.set(group.id, existingIds);
+    }
+
+    // gộp features + add identify
+    for (const f of item.features) {
+      const fid = f.id;
+
+      if (!existingIds.has(fid)) {
+        group.items.push({ ...f, identify: item.identify });
+        existingIds.add(fid);
+      }
+    }
+  }
+  return groups;
+}
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -322,20 +367,20 @@ onMounted(() => {
             <template v-else>
               <div
                 v-for="item in result.items"
-                :key="item.identify.id"
+                :key="item.id"
                 class="identify-control-list-item"
               >
                 <div class="identify-control-list-item__container">
                   <div
                     class="identify-control-list-item__header"
-                    :title="item.identify.getName()"
+                    :title="item.name"
                   >
-                    {{ item.identify.getName() || '---' }}
+                    {{ item.name || '---' }}
                   </div>
                   <div class="identify-control-list-item__child-container">
                     <div
                       class="identify-control-child-item"
-                      v-for="child in item.features"
+                      v-for="child in item.items"
                       :key="child.id"
                       :title="child.name"
                     >
@@ -345,15 +390,13 @@ onMounted(() => {
                       <div class="identify-control-child-item__spacer"></div>
                       <div class="identify-control-child-item__action">
                         <template
-                          v-for="(menu, i) in item.identify.getMenus()"
+                          v-for="(menu, i) in child.identify.getMenus()"
                           :key="i"
                         >
                           <MenuItem
                             :item="menu"
-                            :data="child"
-                            :mapId="mapId"
                             @click="
-                              onMenuAction(item.identify, menu, child.data)
+                              onMenuAction(child.identify, menu, child.data)
                             "
                           />
                         </template>

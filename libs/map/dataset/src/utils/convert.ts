@@ -1,6 +1,6 @@
 import type { Feature } from 'geojson';
 
-export function convertFeatureToItem<T>(feature: Feature): T {
+export function convertFeatureToItem<T = any>(feature: Feature): T {
   return {
     id: feature.id,
     ...feature.properties,

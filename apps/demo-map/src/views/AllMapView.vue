@@ -28,14 +28,13 @@ import {
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartHighlightComponent,
+  createDatasetPartIdentifyComponentBuilder,
   createDatasetPartListViewUiComponent,
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
   createDatasetPartSubListViewUiComponent,
   createGroupDataset,
-  createIdentifyMapboxComponent,
-  createIdentifyMapboxMergedComponent,
   createLegend,
   createMenuItem,
   createMenuItemShowDetailForItem,
@@ -90,6 +89,8 @@ function onMapLoaded(map: MapSimple) {
   addDataset(createDatasetPoint());
   addDataset(createDatasetLineString());
   addDataset(createExampleGroupLayer());
+  addDataset(createDatasetGeojsonWithIdentify());
+  addDataset(createGroupIdentify());
 }
 function createGroupList() {
   const dataset = createRootDataset('Group test');
@@ -169,21 +170,30 @@ function createGroupList() {
       20.18022781865689,
     ],
   });
-  const identify = createIdentifyMapboxComponent('test identify');
-  const identify1 = createIdentifyMapboxMergedComponent('test identify 1');
-  const identify2 = createIdentifyMapboxMergedComponent('test identify 2');
-  identify.addMenus([
-    createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
-  ]);
-  identify1.addMenus([
-    createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
-  ]);
-  identify2.addMenus([
-    createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
-  ]);
+  const identify = createDatasetPartIdentifyComponentBuilder(
+    'identify in global',
+  )
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem(),
+    ])
+    .build();
+  const identify1 = createDatasetPartIdentifyComponentBuilder(
+    'identify merge in child 1',
+  )
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem(),
+    ])
+    .build();
+  const identify2 = createDatasetPartIdentifyComponentBuilder(
+    'identify merge in child 2',
+  )
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem(),
+    ])
+    .build();
   const group = { id: 'test', name: 'test' };
   list1.group = group;
   groupLayer1.add(identify1);
@@ -296,11 +306,12 @@ function createDatasetLineString() {
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
-  const identify = createIdentifyMapboxComponent('test identify');
-  identify.addMenus([
-    createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
-  ]);
+  const identify = createDatasetPartIdentifyComponentBuilder('test identify')
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem(),
+    ])
+    .build();
   dataset.add(identify);
   const dataManagement = createDataManagementMapboxComponent(
     'data management',
@@ -352,11 +363,12 @@ function createDatasetPoint() {
     createMenuItemShowDetailInfoSource(),
     createMenuItemStyleEdit(),
   ]);
-  const identify = createIdentifyMapboxComponent('test identify');
-  identify.addMenus([
-    createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
-  ]);
+  const identify = createDatasetPartIdentifyComponentBuilder('test identify')
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem(),
+    ])
+    .build();
   dataset.add(identify);
   const dataManagement = createDataManagementMapboxComponent(
     'data management',
@@ -377,6 +389,66 @@ function createDatasetPoint() {
   dataset.add(source);
   dataset.add(dataManagement);
   dataset.add(groupLayer1);
+  return dataset;
+}
+function createDatasetGeojsonWithIdentify() {
+  const dataset = createRootDataset('Geojson With Identify');
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '1',
+          name: 'feature geojson with identify',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.33907782961194, 21.179166900967587],
+              [105.33907782961194, 20.896827873223472],
+              [105.75969186796266, 20.896827873223472],
+              [105.75969186796266, 21.179166900967587],
+              [105.33907782961194, 21.179166900967587],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer = createGroupDataset('Group layer 1');
+  const list = createDatasetPartListViewUiComponent('Geojson With Identify');
+  list.color = getChartRandomColor();
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .build(),
+  ]);
+  const highlight = createDatasetPartHighlightComponent();
+  groupLayer.add(layer1);
+  groupLayer.add(highlight);
+  groupLayer.add(list);
+  list.addMenus([
+    createMenuItemToggleShow(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemStyleEdit(),
+  ]);
+  const identify = createDatasetPartIdentifyComponentBuilder(
+    'Geojson With Identify',
+  )
+    .addMenus([
+      createMenuItemToBoundActionForItem(),
+      createMenuItemShowDetailForItem([
+        { text: 'Id', value: 'id' },
+        { text: 'Name', value: 'name' },
+      ]),
+    ])
+    .build();
+  dataset.add(identify);
+  dataset.add(source);
+  dataset.add(groupLayer);
   return dataset;
 }
 function createMenuDownload() {
@@ -452,12 +524,16 @@ const actionMeasures: MeasureActionItem[] = [
     type: 'add-to-layer',
     show: (ctx) => !!ctx.measurementType,
     handle: (ctx) => {
-      const { addDataset } = storeDataset;
+      const { addDataset } = useMapDataset(mapId.value);
       const coordinates = ctx.coordinates;
       if (!coordinates || coordinates.length < 1) {
         return;
       }
-      addDataset(createDatasetMeasure(ctx.handler, ctx.measurementType || ''));
+      const dataset = createDatasetMeasure(
+        ctx.handler,
+        ctx.measurementType || '',
+      );
+      addDataset(dataset);
       ctx.clear();
     },
     disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
@@ -504,6 +580,7 @@ function createDatasetMeasure(
         },
       ]),
     )
+    .addMenus([createMenuItemToggleShow()])
     .build();
   const layers = [
     new LayerSimpleMapboxBuild()
@@ -514,7 +591,6 @@ function createDatasetMeasure(
   const layer1 = createMultiMapboxLayerComponent('Layer Measure', layers);
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
-  list1.addMenus([createMenuItemToggleShow()]);
   dataset.add(source);
   dataset.add(groupLayer1);
   return dataset;
@@ -550,8 +626,8 @@ function createExampleGroupLayer() {
   )
     .setColor(getChartRandomColor())
     .configInitShowChildren()
+    .addMenus([createMenuItemToggleShow({ location: 'bottom' })])
     .build();
-  list.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
   groupLayer.add(list);
   dataset.add(groupLayer);
   const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
@@ -580,6 +656,161 @@ function createExampleGroupLayer() {
   groupSubLayer2.add(layer2);
   list.add(groupSubLayer1);
   list.add(groupSubLayer2);
+  return dataset;
+}
+function createGroupIdentify() {
+  const dataset = createRootDataset('Geojson With Group Identify');
+  const source1 = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: 1,
+          name: 'feature 1 Group Identify',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.44444615897697, 20.899297758842522],
+              [105.44444615897697, 20.67343872335738],
+              [105.78642132314343, 20.67343872335738],
+              [105.78642132314343, 20.899297758842522],
+              [105.44444615897697, 20.899297758842522],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          id: 2,
+          name: 'feature 2 Group Identify',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.63135562387322, 20.797054008577902],
+              [105.63135562387322, 20.500520627293113],
+              [106.09655861537681, 20.500520627293113],
+              [106.09655861537681, 20.797054008577902],
+              [105.63135562387322, 20.797054008577902],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+
+  const group = { id: 'Group Identify', name: 'Group Identify' };
+  const identify1 = createDatasetPartIdentifyComponentBuilder(
+    'Group Identify 1',
+  )
+    .isUseMerge()
+    .setGroup(group)
+    .setConfigFields([
+      { text: 'Id', value: 'id' },
+      { text: 'Name', value: 'name' },
+    ])
+    .build();
+  const groupLayer1 = createGroupDataset('Geojson With Group Identify 1');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Geojson With Group Identify line',
+  )
+    .setColor('#0000FF')
+    .setGroup(group)
+    .build();
+  list1.color = '#0000FF';
+  const layer1 = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
+  ]);
+  groupLayer1.add(source1);
+  groupLayer1.add(layer1);
+  groupLayer1.add(list1);
+  groupLayer1.add(identify1);
+  const groupLayer2 = createGroupDataset('Geojson With Group Identify 2');
+  const identify2 = createDatasetPartIdentifyComponentBuilder(
+    'Group Identify 2',
+  )
+    .isUseMerge()
+    .setGroup(group)
+    .setConfigFields([
+      { text: 'Id', value: 'id' },
+      { text: 'Name', value: 'name' },
+    ])
+    .build();
+  const list2 = createDatasetPartListViewUiComponentBuilder(
+    'Geojson With Group Identify line',
+  )
+    .setColor('#ff0000')
+    .setGroup(group)
+    .build();
+  const layer2 = createMultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list2.color)
+      .build(),
+    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
+  ]);
+  const source2 = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: 3,
+          name: 'feature 3 Group Identify',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.71455307455238, 20.840388211189335],
+              [105.71455307455238, 20.72566421903626],
+              [106.03406129600307, 20.72566421903626],
+              [106.03406129600307, 20.840388211189335],
+              [105.71455307455238, 20.840388211189335],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          id: 4,
+          name: 'feature 4 Group Identify',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.74696486602863, 20.755977636405987],
+              [105.74696486602863, 20.61085136021447],
+              [105.89977425617587, 20.61085136021447],
+              [105.89977425617587, 20.755977636405987],
+              [105.74696486602863, 20.755977636405987],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const highlight = createDatasetPartHighlightComponent();
+  const highlight2 = createDatasetPartHighlightComponent();
+  groupLayer2.add(source2);
+  groupLayer2.add(layer2);
+  groupLayer2.add(list2);
+  groupLayer2.add(identify2);
+  groupLayer1.add(highlight);
+  groupLayer2.add(highlight2);
+  dataset.add(groupLayer1);
+  dataset.add(groupLayer2);
   return dataset;
 }
 </script>

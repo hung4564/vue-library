@@ -1,10 +1,12 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import {
+  addMenuBuilder,
   createMenuItemSetOpacity,
   createWithEventHelper,
   createWithMenuHelper,
+  type WithMenuBuilder,
 } from '../../extra';
-import type { IDataset, WithChildren } from '../../interfaces';
+import type { WithChildren } from '../../interfaces';
 import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
 import {
@@ -29,10 +31,10 @@ interface GroupSubBuilder extends ListViewUIBuilder {
   build(): IListViewUI & WithChildren;
 }
 
-function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
+function createBaseListViewUiBuilder(
   name: string,
   extra: Partial<IListViewUI> = {},
-): ListViewUIBuilder {
+): ListViewUIBuilder & WithMenuBuilder {
   const state: Partial<IListViewUI> = {
     config: {
       disabled_delete: false,
@@ -120,7 +122,7 @@ function createBaseListViewUiBuilder<T extends IDataset = IDataset>(
     },
   };
 
-  return builder;
+  return addMenuBuilder(builder);
 }
 
 function proxify<B extends object, E extends object>(
@@ -147,7 +149,7 @@ function proxify<B extends object, E extends object>(
 
 export function createDatasetPartListViewUiComponentBuilder(
   name: string,
-): ListViewUIBuilder {
+): ListViewUIBuilder & WithMenuBuilder {
   const base = createBaseListViewUiBuilder(name);
   const originBuild = base.build.bind(base);
 
@@ -165,7 +167,7 @@ export function createDatasetPartListViewUiComponentBuilder(
 
 export function createDatasetPartGroupSubListViewUiComponentBuilder(
   name: string,
-): GroupSubBuilder {
+): GroupSubBuilder & WithMenuBuilder {
   const base = createBaseListViewUiBuilder(name, {
     config: {
       disabled_delete: false,
@@ -192,12 +194,12 @@ export function createDatasetPartGroupSubListViewUiComponentBuilder(
 
   const proxy = proxify(base, extended) as GroupSubBuilder;
   (proxy as any).state = base.state;
-  return proxy;
+  return proxy as GroupSubBuilder & WithMenuBuilder;
 }
 
 export function createDatasetPartSubListViewUiComponentBuilder(
   name: string,
-): ListViewUIBuilder {
+): ListViewUIBuilder & WithMenuBuilder {
   const base = createBaseListViewUiBuilder(name, {
     get type(): string {
       return 'list-item';
@@ -215,5 +217,5 @@ export function createDatasetPartSubListViewUiComponentBuilder(
 
   const proxy = proxify(base, extended);
   (proxy as any).state = base.state;
-  return proxy;
+  return proxy as ListViewUIBuilder & WithMenuBuilder;
 }

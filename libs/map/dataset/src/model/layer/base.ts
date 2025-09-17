@@ -2,7 +2,7 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import {
   createWithDataHelper,
   createWithMenuHelper,
-  typeWithDataHelper,
+  type WithDataHelper,
 } from '../../extra';
 import type { IDataset, IMapboxLayerView } from '../../interfaces';
 import type { ComponentType } from '../../types';
@@ -12,7 +12,7 @@ import { createDatasetLeaf } from '../dataset.base.function';
 export function createDatasetPartMapboxLayerComponent<T = any>(
   name: string,
   data: T,
-): IMapboxLayerView & WithDataHelper & IDataset {
+): IMapboxLayerView & WithDataHelper<T> & IDataset {
   const base = createDatasetLeaf(name);
   const menu = createWithMenuHelper();
   const dataHelper = createWithDataHelper<T>(data);

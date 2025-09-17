@@ -10,10 +10,8 @@ import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { IIdentifyView, MenuAction } from '../../../interfaces';
 
-const props = defineProps<{
+defineProps<{
   item: MenuAction<IIdentifyView>;
-  data: IIdentifyView;
-  mapId: string;
 }>();
 </script>
 <style lang=""></style>

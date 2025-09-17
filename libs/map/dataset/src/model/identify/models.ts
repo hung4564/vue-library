@@ -1,7 +1,7 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
-import { createWithMenuHelper } from '../../extra';
+import { createWithMenuHelper, handleMenuActionClick } from '../../extra';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -24,13 +24,14 @@ import {
   mergePayload,
   splitResponse,
 } from './identifyMapboxMerged';
-export function createDatasetPartIdentifyComponent<
-  T extends IIdentifyView['config'],
->(name: string, config: T) {
+export function createDatasetPartIdentifyComponent(
+  name: string,
+  config: IIdentifyView['config'],
+): IIdentifyView {
   const base = createDatasetLeaf(name);
   const menu = createWithMenuHelper();
 
-  return createNamedComponent('IdentifyComponent', {
+  const dataset = createNamedComponent('IdentifyComponent', {
     get config() {
       return config || {};
     },
@@ -39,14 +40,53 @@ export function createDatasetPartIdentifyComponent<
     get type(): string {
       return 'identify';
     },
-    // Abstract method (phải được implement bởi component cụ thể)
     getFeatures(
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
     ): Promise<{ id: string; name: string; data: any }[]> {
-      throw new Error('Method not implemented.');
+      throw new Error('Method getFeatures not implemented.');
+    },
+    async getList<Data>(mapId: string, features: MapGeoJSONFeature[]) {
+      return features.map(convertFeatureToItem<Data>);
+    },
+    showDetail(mapId: string, feature: MapGeoJSONFeature) {
+      handleMenuActionClick(
+        [
+          [
+            'addComponent',
+            [
+              dataset,
+              mapId,
+              {
+                componentKey: 'layer-detail',
+                attr: {
+                  item: convertFeatureToItem(feature),
+                  fields: config.fields || [],
+                  view: dataset,
+                },
+                check: 'detail',
+              },
+            ],
+          ],
+          [
+            'highlight',
+            [
+              dataset,
+              mapId,
+              {
+                detail: convertFeatureToItem(feature),
+                key: 'detail',
+              },
+            ],
+          ],
+        ],
+        dataset,
+        mapId,
+        feature,
+      );
     },
   });
+  return dataset;
 }
 export function createIdentifyMapboxComponent(
   name: string,
@@ -89,15 +129,7 @@ export function createIdentifyMapboxComponent(
           features,
         );
         const ids = new Set<string>();
-        const dataManagement = findSiblingOrNearestLeaf(
-          datasetPartIdentify,
-          (dataset) => dataset.type == 'dataManagement',
-        ) as unknown as IDataManagementView;
 
-        logHelper(loggerIdentify, mapId, 'model').debug(
-          'dataManagement',
-          dataManagement,
-        );
         features.forEach((x) => {
           const id =
             x.properties?.[datasetPartIdentify.config.field_id || 'id'] ?? x.id;
@@ -112,16 +144,34 @@ export function createIdentifyMapboxComponent(
           resolve([]);
           return;
         }
-
-        dataManagement.getList([...idsGet], features).then((unique) => {
-          const result = unique.map((x, i) => ({
-            id: x[datasetPartIdentify.config.field_id || 'id'] ?? x.id ?? i,
-            name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
-            data: x,
-          }));
-          logHelper(loggerIdentify, mapId, 'model').debug('end', results);
-          resolve(result);
-        });
+        let handle: (() => Promise<any[]>) | undefined;
+        const dataManagement = findSiblingOrNearestLeaf(
+          datasetPartIdentify,
+          (dataset) => dataset.type == 'dataManagement',
+        ) as unknown as IDataManagementView;
+        if (dataManagement) {
+          logHelper(loggerIdentify, mapId, 'model').debug(
+            'dataManagement',
+            dataManagement,
+          );
+          handle = () => dataManagement.getList([...idsGet], features);
+        } else if (datasetPartIdentify.getList) {
+          logHelper(loggerIdentify, mapId, 'model').debug(
+            'use get list of identify',
+            datasetPartIdentify,
+          );
+          handle = () => datasetPartIdentify.getList!(mapId, features);
+        }
+        if (handle)
+          handle().then((unique) => {
+            const result = unique.map((x, i) => ({
+              id: x[datasetPartIdentify.config.field_id || 'id'] ?? x.id ?? i,
+              name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
+              data: x,
+            }));
+            logHelper(loggerIdentify, mapId, 'model').debug('end', results);
+            resolve(result);
+          });
       });
     });
   };
@@ -308,7 +358,7 @@ export async function handleMultiIdentifyGetFirst(
           feature: {
             id,
             name,
-            data: convertFeatureToItem(x),
+            data: x,
           },
         };
         logHelper(loggerIdentify, mapId, 'getFirst').debug('end', result);

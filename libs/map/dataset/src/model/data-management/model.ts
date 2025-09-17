@@ -3,6 +3,7 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
+import type { FieldFeatureDef } from '../../extra';
 import { handleMenuActionClick } from '../../extra/menu';
 import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
 import { isDatasetSourceMap } from '../../utils/check';
@@ -24,10 +25,7 @@ export function createDataManagementMapboxComponent<
     geometry: { type: string; coordinates: any[] };
     [key: string]: any;
   },
->(
-  name: string,
-  config: { fields?: { trans?: string; text?: string; value: string }[] } = {},
-) {
+>(name: string, config: { fields?: FieldFeatureDef[] } = {}) {
   const base = createDatasetPartDataManagementComponent<D>(name, config);
 
   let items: D[] = [];

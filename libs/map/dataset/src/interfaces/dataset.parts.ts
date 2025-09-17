@@ -8,7 +8,7 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { WithDataHelper } from '../extra';
+import type { FieldFeaturesDef, WithDataHelper } from '../extra';
 import type { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
@@ -109,53 +109,61 @@ export type IMapboxLayerView = IDatasetMap &
     getComponentUpdate(): ComponentType;
     updateValue(map: MapSimple, value: any): void;
   };
-export type IIdentifyViewBase<T extends IDataset = IDataset> = IDataset &
-  WithMenuHelper<T> & {
-    config: { field_name?: string; field_id?: string };
+export type IIdentifyViewBase = IDataset &
+  WithMenuHelper & {
+    config: {
+      field_name?: string;
+      field_id?: string;
+      fields?: FieldFeaturesDef;
+    };
+    group?: {
+      name: string;
+      id: string;
+    };
     getFeatures: (
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
     ) => Promise<{ id: string; name: string; data: any }[]>; // Feature's result type
+    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>; // Feature's result type
+    showDetail?: (mapId: string, feature: MapGeoJSONFeature) => void; // Feature's result type
   };
 
 // IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase
-export type IIdentifyViewWithoutMerge<T extends IDataset = IDataset> =
-  IIdentifyViewBase<T>;
+export type IIdentifyViewWithoutMerge = IIdentifyViewBase;
 
 // IIdentifyViewWithMerge kế thừa IIdentifyViewBase và thêm các method xử lý merge
-export type IIdentifyViewWithMerge<T extends IDataset = IDataset> =
-  IIdentifyViewBase<T> & {
-    identifyGroupId: string;
-    mergePayload(
-      identifies: IIdentifyView<T>[], // Dùng IIdentifyView thay cho IIdentifyViewBase
-      mapId: string,
-      pointOrBox?: PointLike | [PointLike, PointLike],
-    ): any; // Đảm bảo return kiểu hợp lý cho payload
+export type IIdentifyViewWithMerge = IIdentifyViewBase & {
+  identifyGroupId: string;
+  mergePayload(
+    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+    mapId: string,
+    pointOrBox?: PointLike | [PointLike, PointLike],
+  ): any; // Đảm bảo return kiểu hợp lý cho payload
 
-    splitResponse(
-      identifies: IIdentifyView<T>[], // Dùng IIdentifyView thay cho IIdentifyViewBase
-      payload: any, // Kiểu của payload từ merge
-      response: any, // Response từ getMergedFeatures
-    ): IdentifyResult[]; // Trả về array kết quả từng identify
+  splitResponse(
+    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+    payload: any, // Kiểu của payload từ merge
+    response: any, // Response từ getMergedFeatures
+  ): IdentifyResult[]; // Trả về array kết quả từng identify
 
-    getMergedFeatures(identifies: IIdentifyView<T>[], payload: any): any; // Trả về kết quả đã merge
-  };
+  getMergedFeatures(identifies: IIdentifyView[], payload: any): any; // Trả về kết quả đã merge
+};
+
+export type IdentifyMultiResult = {
+  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
+  features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
+};
 
 // Define kiểu trả về cho mỗi kết quả sau khi split
 export type IdentifyResult =
-  | {
-      identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-      features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
-    }
+  | IdentifyMultiResult
   | {
       identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
       layer: LayerSpecification;
-      feature: { id: string | number; name: string; data: any }; // Features của mỗi identify
+      feature: { id: string | number; name: string; data: MapGeoJSONFeature }; // Features của mỗi identify
     };
 // Union type cho IIdentifyView
-export type IIdentifyView<T extends IDataset = IDataset> =
-  | IIdentifyViewWithoutMerge<T>
-  | IIdentifyViewWithMerge<T>;
+export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 
 export type WithMenuHelper<T extends IDataset = IDataset> = {
   addMenu(menu: MenuAction<T>): void;

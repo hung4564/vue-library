@@ -7,5 +7,7 @@ export type IHighlightConfig = {
   filter?: any;
 };
 export type IHighlightView = IDataset & {
-  highlight: (feature?: GeoJSONFeature) => Partial<IHighlightConfig>;
+  highlight: (
+    feature?: GeoJSONFeature,
+  ) => Partial<IHighlightConfig> | undefined;
 };

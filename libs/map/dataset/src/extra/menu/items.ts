@@ -12,6 +12,9 @@ import type {
   WithMenuHelper,
 } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
+import { convertItemToFeature } from '../../utils/convert';
+import type { FieldFeaturesDef } from '../field';
+import { handleMenuActionClick } from './handle';
 
 export function createWithMenuHelper<
   T extends IDataset = IDataset,
@@ -108,13 +111,50 @@ export function createMenuItemToBoundActionForItem() {
     ],
   });
 }
-export function createMenuItemShowDetailForItem() {
+export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef = []) {
   return createMenuItem({
     type: 'item',
     name: 'Detail',
     id: 'show-detail',
     icon: mdiInformation,
     click: (layer, mapId, value) => {
+      if (fields && fields.length > 0) {
+        handleMenuActionClick(
+          [
+            [
+              'addComponent',
+              [
+                layer,
+                mapId,
+                {
+                  componentKey: 'layer-detail',
+                  attr: {
+                    item: value,
+                    fields: fields,
+                    view: layer,
+                  },
+                  check: 'detail',
+                },
+              ],
+            ],
+            [
+              'highlight',
+              [
+                layer,
+                mapId,
+                {
+                  detail: convertItemToFeature(value),
+                  key: 'detail',
+                },
+              ],
+            ],
+          ],
+          layer,
+          mapId,
+          value,
+        );
+        return;
+      }
       const dataManagement = findSiblingOrNearestLeaf(
         layer,
         (dataset) => dataset.type == 'dataManagement',

@@ -13,7 +13,7 @@ import {
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
@@ -24,6 +24,7 @@ import type {
 import { loggerIdentify } from '../../logger';
 import { handleMultiIdentifyGetFirst } from '../../model';
 import { useMapDataset } from '../../store';
+import { convertFeatureToItem } from '../../utils/convert';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
@@ -62,10 +63,8 @@ function onMapClick(e: MapMouseEvent) {
 }
 logHelper(loggerIdentify, mapId.value, 'getFirst').debug('init');
 const result = reactive<{
-  items: { identify: IIdentifyView & IDataset; features: any[] }[];
   loading: boolean;
 }>({
-  items: [],
   loading: false,
 });
 function onSelectFeatures(feature: IdentifyResult) {
@@ -80,7 +79,15 @@ function onSelectFeatures(feature: IdentifyResult) {
       feature,
       menu,
     );
-    if (menu) onMenuAction(feature.identify, menu as any, feature.feature.data);
+    if (menu)
+      onMenuAction(
+        feature.identify,
+        menu as any,
+        convertFeatureToItem(feature.feature.data),
+      );
+    else if (feature.identify.showDetail) {
+      feature.identify.showDetail(mapId.value, feature.feature.data);
+    }
   }
 }
 const cUsedIdentify = computed(() => {
@@ -117,6 +124,9 @@ function onMenuAction(
 }
 onMounted(() => {
   addEventClick();
+});
+onUnmounted(() => {
+  removeEventClick();
 });
 </script>
 <template>

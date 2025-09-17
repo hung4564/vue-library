@@ -1,7 +1,7 @@
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 import { findFirstLeafByType } from '../visitors';
-import type { IHighlightConfig, IHighlightView } from './types';
+import type { IHighlightView } from './types';
 
 export function createDatasetPartHighlightComponent(): IHighlightView {
   const base = createDatasetLeaf('');
@@ -20,7 +20,6 @@ export function createDatasetPartHighlightComponent(): IHighlightView {
       return {
         source: source_id,
         filter: feature ? ['==', 'id', feature?.id] : undefined,
-        ...base.getData(),
       };
     },
   });

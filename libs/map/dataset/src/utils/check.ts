@@ -52,9 +52,9 @@ export function isComposite(
   );
 }
 
-export function isIdentifyMergeView<T extends IDataset>(
-  view: IIdentifyView<T>,
-): view is IIdentifyViewWithMerge<T> {
+export function isIdentifyMergeView(
+  view: IIdentifyView,
+): view is IIdentifyViewWithMerge {
   return 'identifyGroupId' in view;
 }
 export function isDataManagementView(

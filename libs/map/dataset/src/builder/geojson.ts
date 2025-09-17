@@ -4,6 +4,7 @@ import type { GeoJSON } from 'geojson';
 import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
+  type FieldFeaturesDef,
 } from '../extra';
 import type { IDataset } from '../interfaces';
 import {
@@ -63,7 +64,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
 }
 function convertGeojsonToList(geojson: GeoJSON): {
   items: any[];
-  fields: { text: string; value: string }[];
+  fields: FieldFeaturesDef;
 } {
   const items: any[] = [];
   const fieldSet: Set<string> = new Set();

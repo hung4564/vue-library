@@ -2,7 +2,7 @@ export interface WithDataHelper<T = any> {
   getData(): T;
   setData(data: T): void;
 }
-export function createWithDataHelper<T>(data: T): WithDataHelper {
+export function createWithDataHelper<T>(data: T): WithDataHelper<T> {
   let _temp_data: T = data;
   return {
     getData(): T {
