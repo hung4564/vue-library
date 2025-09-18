@@ -1,3 +1,17 @@
+## 0.7.3 (2025-09-18)
+
+### 🩹 Fixes
+
+- button add type="button" ([c9a2d40](https://github.com/hung4564/vue-library/commit/c9a2d40))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.3
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.7.2 (2025-08-04)
 
 ### 🩹 Fixes
