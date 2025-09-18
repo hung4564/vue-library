@@ -1,3 +1,22 @@
+## 0.9.9 (2025-09-18)
+
+### 🚀 Features
+
+- **map-dataset:** add IComplexHighlightView and example createDatasetPartChangeColorHighlightComponent ([864e07d](https://github.com/hung4564/vue-library/commit/864e07d))
+
+### 🩹 Fixes
+
+- button add type="button" ([c9a2d40](https://github.com/hung4564/vue-library/commit/c9a2d40))
+- add data highlight for more config ([5f5e192](https://github.com/hung4564/vue-library/commit/5f5e192))
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.3
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.8 (2025-09-17)
 
 ### 🚀 Features

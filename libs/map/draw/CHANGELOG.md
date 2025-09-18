@@ -1,3 +1,9 @@
+## 0.7.3 (2025-09-18)
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.3
+
 ## 0.7.2 (2025-08-04)
 
 ### 🧱 Updated Dependencies
