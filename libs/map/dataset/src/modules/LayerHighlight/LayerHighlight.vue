@@ -1,6 +1,7 @@
-<template lang="">
+<template>
   <div></div>
 </template>
+
 <script setup lang="ts">
 import { mergeFilters, type MapSimple } from '@hungpvq/shared-map';
 import {
@@ -17,8 +18,13 @@ import type {
   LineLayerSpecification,
 } from 'maplibre-gl';
 import { computed, ref, toRaw, watch } from 'vue';
-import { findSiblingOrNearestLeaf, IHighlightView } from '../../model';
+import {
+  findSiblingOrNearestLeaf,
+  IHighlightView,
+  ISimpleHighlightView,
+} from '../../model';
 import { useMapDatasetHighlight } from '../../store/highlight';
+
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
@@ -26,11 +32,13 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 const sourceId = 'source-highlighted';
 const layerId = 'layer-highlighted';
 type LayerKey = 'point' | 'line' | 'polygon';
+
 const layerIds = ref<Record<LayerKey, string>>({
   point: `${layerId}-point`,
   line: `${layerId}-line`,
   polygon: `${layerId}-polygon`,
 });
+
 const layers = ref<
   Record<
     LayerKey,
@@ -68,9 +76,11 @@ const layers = ref<
     },
   },
 });
+
 const { mapId, callMap } = useMap(props, onInitMap, onRemoveMap);
 const { getFeatureHighlight, setFeatureHighlight, getDatesetHighlight } =
   useMapDatasetHighlight(mapId.value);
+
 function onInitMap(map: MapSimple) {
   map.addSource(sourceId, {
     type: 'geojson',
@@ -81,7 +91,6 @@ function onInitMap(map: MapSimple) {
   });
   (Object.keys(layerIds.value) as LayerKey[]).forEach((key) => {
     const layerId = layerIds.value[key];
-
     if (!map.getLayer(layerId)) {
       map.addLayer({
         ...((layers.value as any)[key] as Partial<LayerSpecification>),
@@ -91,7 +100,9 @@ function onInitMap(map: MapSimple) {
     }
   });
 }
+
 function onRemoveMap(map: MapSimple) {
+  highlightViewStopAnimation && highlightViewStopAnimation();
   Object.values(layerIds.value).forEach((id) => {
     if (map.getLayer(id)) {
       map.removeLayer(id);
@@ -101,12 +112,12 @@ function onRemoveMap(map: MapSimple) {
     map.removeSource(sourceId);
   }
 }
-const storeFeature = computed(() => {
-  return getFeatureHighlight();
-});
+
+const storeFeature = computed(() => getFeatureHighlight());
+
 const updateLayer = (
   map: MapSimple,
-  highlightView?: IHighlightView,
+  highlightView?: ISimpleHighlightView,
   geojsonData?: GeoJSONFeature,
 ) => {
   (Object.keys(layerIds.value) as LayerKey[]).forEach((key) => {
@@ -125,6 +136,7 @@ const updateLayer = (
     } as any);
   });
 };
+
 const updateSource = (map: MapSimple, geojsonData?: GeoJSONFeature) => {
   const source = map.getSource(sourceId) as GeoJSONSource;
   if (source) {
@@ -138,6 +150,8 @@ const updateSource = (map: MapSimple, geojsonData?: GeoJSONFeature) => {
 };
 
 const animationClearFrameId = ref<Record<string, any>>({});
+const animationFrameId = ref<Record<string, number | null>>({});
+
 const highlight = (map: MapSimple, durationMs = 5000) => {
   Object.values(layerIds.value).forEach((id) => {
     if (map.getLayer(id)) {
@@ -149,12 +163,16 @@ const highlight = (map: MapSimple, durationMs = 5000) => {
   if (durationMs > 0) {
     clearTimeout(animationClearFrameId.value[map.id]);
     animationClearFrameId.value[map.id] = setTimeout(() => {
-      clear(map);
+      stopAnimation(map);
     }, durationMs);
   }
 };
-const animationFrameId = ref<Record<string, number | null>>({});
+
+let highlightViewStopAnimation: (() => void) | undefined;
 function updateHighlight(geojsonData?: GeoJSONFeature) {
+  if (!geojsonData) {
+    return;
+  }
   const dataset = getDatesetHighlight();
   let highlightView: IHighlightView | undefined = undefined;
   if (dataset) {
@@ -163,12 +181,24 @@ function updateHighlight(geojsonData?: GeoJSONFeature) {
       (dataset) => dataset.type == 'highlight',
     ) as unknown as IHighlightView;
   }
+
   callMap((map: MapSimple) => {
-    updateLayer(map, highlightView, geojsonData);
-    if (!highlightView) {
+    highlightViewStopAnimation && highlightViewStopAnimation();
+    if (highlightView && 'handleHighlight' in highlightView) {
+      highlightViewStopAnimation = () => {
+        highlightView.stopAnimation(map);
+        clear();
+      };
+      highlightView.handleHighlight(map, geojsonData, 5000);
+    } else {
+      highlightViewStopAnimation = () => {
+        stopAnimation(map);
+        clear();
+      };
+      updateLayer(map, highlightView, geojsonData);
       updateSource(map, geojsonData);
+      if (geojsonData) highlight(map);
     }
-    if (geojsonData) highlight(map);
   });
 }
 
@@ -180,6 +210,7 @@ watch(
   { deep: true },
 );
 
+// ==== Animation ====
 let radius = 6;
 let grow = true;
 let dashOffset = 0;
@@ -187,47 +218,57 @@ let blinkAlpha = 0.4;
 let blinkDir = 1;
 
 function animate(map: MapSimple) {
+  // Circle pulse
   radius += grow ? 0.2 : -0.2;
   if (radius >= 12) grow = false;
   if (radius <= 6) grow = true;
   map.setPaintProperty(layerIds.value.point, 'circle-radius', radius);
 
+  // Line dash offset
   dashOffset += 0.1;
   dashOffset = +dashOffset.toFixed(1);
-  if (dashOffset >= 6) dashOffset = 0; // vòng lại (2 + 4 = 6)
-
-  const dashArray = [2, 4]; // đơn vị pixel hoặc tỉ lệ
-  const animatedDash = dashArray.map((val) => val + dashOffset);
+  if (dashOffset >= 6) dashOffset = 0;
+  const animatedDash = [2 + dashOffset, 4 + dashOffset];
   map.setPaintProperty(layerIds.value.line, 'line-dasharray', animatedDash);
 
+  // Polygon blink
   blinkAlpha += blinkDir * 0.05;
   if (blinkAlpha > 0.8) blinkDir = -1;
   if (blinkAlpha < 0.2) blinkDir = 1;
-
   map.setPaintProperty(layerIds.value.polygon, 'fill-opacity', blinkAlpha);
 
   animationFrameId.value[map.id] = requestAnimationFrame(() => animate(map));
 }
+
 function startAnimation(map: MapSimple) {
-  const id = animationFrameId.value[map.id];
-  if (id == null) {
+  radius = 6;
+  dashOffset = 0;
+  blinkAlpha = 0.4;
+  blinkDir = 1;
+  if (animationFrameId.value[map.id] == null) {
     animate(map);
   }
 }
+
 function stopAnimation(map: MapSimple) {
+  const source = map.getSource(sourceId) as GeoJSONSource;
+  if (source)
+    source.setData({
+      type: 'FeatureCollection',
+      features: [],
+    });
   const id = animationFrameId.value[map.id];
   if (id != null) {
     cancelAnimationFrame(id);
     animationFrameId.value[map.id] = null;
   }
+  if (animationClearFrameId.value[map.id]) {
+    clearTimeout(animationClearFrameId.value[map.id]);
+    animationClearFrameId.value[map.id] = null;
+  }
 }
-function clear(map: MapSimple) {
-  const source = map.getSource(sourceId) as GeoJSONSource;
-  source.setData({
-    type: 'FeatureCollection',
-    features: [],
-  });
+
+function clear() {
   setFeatureHighlight(undefined, '', undefined);
-  stopAnimation(map);
 }
 </script>

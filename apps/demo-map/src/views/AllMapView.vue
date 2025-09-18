@@ -25,6 +25,7 @@ import {
 import {
   ComponentManagementControl,
   createDataManagementMapboxComponent,
+  createDatasetPartChangeColorHighlightComponent,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartHighlightComponent,
@@ -80,7 +81,6 @@ const mapRef = ref();
 const { convertList } = useConvertToGeoJSON();
 const { convert } = useGeoConvertToFile();
 const mapId = ref(getUUIDv4());
-const storeDataset = useMapDataset(mapId.value);
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
   const { addDataset, setMapId } = useMapDataset(mapId.value);
@@ -801,8 +801,8 @@ function createGroupIdentify() {
       },
     ],
   });
-  const highlight = createDatasetPartHighlightComponent();
-  const highlight2 = createDatasetPartHighlightComponent();
+  const highlight = createDatasetPartChangeColorHighlightComponent();
+  const highlight2 = createDatasetPartChangeColorHighlightComponent();
   groupLayer2.add(source2);
   groupLayer2.add(layer2);
   groupLayer2.add(list2);

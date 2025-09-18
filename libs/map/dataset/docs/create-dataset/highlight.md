@@ -18,7 +18,14 @@ const highlight = createDatasetHighlightComponent('Highlight');
 
 ## API
 
-- `createDatasetHighlightComponent(name: string)`: Create a highlight component with custom highlight logic
+This library provides factory functions for creating highlight components to visually emphasize features on a Mapbox map.
+These components make it easy to define custom highlight logic, change colors, or apply other visual effects without repeating code.
+
+- `createDatasetHighlightComponent(data?: Partial<LayerSpecification>)`
+  Creates a basic highlight component with default highlight logic. Useful when you simply want to emphasize a set of features or layers on the map.
+
+- `createDatasetPartChangeColorHighlightComponent(data?: Partial<LayerSpecification>)`
+  Creates a highlight component with the ability to customize highlight colors for different parts of a dataset. Suitable when you need different highlight styles based on states, groups, or conditions.
 
 ## Best Practices
 
