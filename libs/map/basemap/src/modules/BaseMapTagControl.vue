@@ -3,6 +3,7 @@
     <template #btn>
       <MapControlGroupButton row v-if="current_baseMaps" size="24">
         <button
+          type="button"
           v-for="baseMap in c_baseMaps"
           :key="baseMap.id"
           class="px-2 py-1 clickable base-map-item"

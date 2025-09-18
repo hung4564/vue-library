@@ -1,5 +1,6 @@
 <template>
   <button
+    type="button"
     class="map-control-button"
     :style="bindStyle"
     :disabled="disabled"

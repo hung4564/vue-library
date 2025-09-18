@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <template>
-  <button>
+  <button type="button">
     <SidebarExpandedIcon v-if="expand" :size="16" />
     <SidebarCloseExpandedIcon v-else :size="16" />
   </button>

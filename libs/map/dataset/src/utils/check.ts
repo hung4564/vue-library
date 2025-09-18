@@ -1,3 +1,4 @@
+import type { WithDataHelper } from '../extra';
 import type { IDataset } from '../interfaces/dataset.base';
 import type {
   WithSetOpacity,
@@ -29,7 +30,7 @@ export function isDatasetSourceMap(
 // Type guard to check if a dataset implements IMapboxLayerView
 export function isMapboxLayerView(
   dataset: IDataset,
-): dataset is IDataset & IMapboxLayerView {
+): dataset is IDataset & IMapboxLayerView & WithDataHelper {
   return (
     'toggleShow' in dataset &&
     'setOpacity' in dataset &&

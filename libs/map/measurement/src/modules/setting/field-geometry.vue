@@ -85,6 +85,7 @@ const isCanAdd = computed(() => {
       </div>
       <div>
         <button
+          type="button"
           @click="onFlyTo"
           :disabled="!modelValue || modelValue.length < 1"
           class="setting-button"
@@ -98,6 +99,7 @@ const isCanAdd = computed(() => {
           />
         </button>
         <button
+          type="button"
           @click="onDownload"
           class="setting-button"
           :disabled="!modelValue || modelValue.length < 1"
@@ -109,7 +111,12 @@ const isCanAdd = computed(() => {
             :title="titleActionAddPoint"
           />
         </button>
-        <button @click="onAddItem" class="setting-button" v-if="isCanAdd">
+        <button
+          type="button"
+          @click="onAddItem"
+          class="setting-button"
+          v-if="isCanAdd"
+        >
           <SvgIcon :size="16" type="mdi" :path="path.add" />
         </button>
       </div>
@@ -140,7 +147,11 @@ const isCanAdd = computed(() => {
           />
         </div>
         <div class="">
-          <button @click="onDeleteItem(index)" class="setting-button">
+          <button
+            type="button"
+            @click="onDeleteItem(index)"
+            class="setting-button"
+          >
             <SvgIcon :size="16" type="mdi" :path="path.delete" />
           </button>
         </div>
@@ -172,7 +183,6 @@ const isCanAdd = computed(() => {
 
 .setting-button {
   background-color: transparent;
-  color: #fff;
   position: relative;
   cursor: pointer;
   display: inline-flex;

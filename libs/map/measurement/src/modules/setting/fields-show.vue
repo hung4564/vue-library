@@ -23,8 +23,6 @@ defineProps({
 </template>
 <style scoped>
 .label-field {
-  color: #fff;
-  caret-color: #fff;
   font-weight: 400;
   line-height: 1.25rem;
   letter-spacing: 0.0333333333em;

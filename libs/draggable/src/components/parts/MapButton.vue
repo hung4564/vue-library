@@ -1,5 +1,6 @@
 <template>
   <button
+    type="button"
     class="hungpvq-draggable-button"
     v-bind="$attrs"
     :style="bindStyle"

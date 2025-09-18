@@ -82,7 +82,6 @@ function setValue(value: { value: [number, number][] }) {
 <style scoped>
 .setting-container {
   padding: 8px;
-  color: #fff;
 }
 .field-container {
   padding: 12px;

@@ -89,6 +89,7 @@ const onAdd = () => {
                   </div>
                   <div class="crs-item-header__action">
                     <button
+                      type="button"
                       class="clickable"
                       v-if="!crs_item.default"
                       @click.stop="onRemove(crs_item)"
@@ -130,7 +131,11 @@ const onAdd = () => {
             </Collapse>
           </div>
           <div class="crs-item__add">
-            <button class="layer-item__button clickable" @click.stop="onAdd()">
+            <button
+              type="button"
+              lass="layer-item__button clickable"
+              @click.stop="onAdd()"
+            >
               <SvgIcon size="16" type="mdi" :path="path.plus" />
             </button>
           </div>
