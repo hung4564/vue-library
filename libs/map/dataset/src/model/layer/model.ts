@@ -133,7 +133,7 @@ export function createMultiMapboxLayerComponent(
             id: `${base.id}-${base.getData().length}`,
             source: (source as any).getSourceId(),
           };
-          map.addLayer(layer);
+          map.addLayer(layer, base.getData()[index - 1]?.id);
           base.getData().push(layer);
           break;
 

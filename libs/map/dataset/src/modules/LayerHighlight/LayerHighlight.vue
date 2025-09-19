@@ -163,7 +163,7 @@ const highlight = (map: MapSimple, durationMs = 5000) => {
   if (durationMs > 0) {
     clearTimeout(animationClearFrameId.value[map.id]);
     animationClearFrameId.value[map.id] = setTimeout(() => {
-      stopAnimation(map);
+      clear();
     }, durationMs);
   }
 };
