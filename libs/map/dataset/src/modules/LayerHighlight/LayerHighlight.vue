@@ -159,10 +159,11 @@ const highlight = (map: MapSimple, durationMs = 5000) => {
     }
   });
   startAnimation(map);
-
+  console.log('durationMs', durationMs);
   if (durationMs > 0) {
     clearTimeout(animationClearFrameId.value[map.id]);
     animationClearFrameId.value[map.id] = setTimeout(() => {
+      stopAnimation(map);
       clear();
     }, durationMs);
   }
