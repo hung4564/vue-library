@@ -1,6 +1,8 @@
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
+  FilterSpecification,
+  LayerFeatureStates,
   LayerSpecification as LayerMapbox,
   LineLayerSpecification,
   RasterLayerSpecification,
@@ -25,8 +27,13 @@ export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
   public color?: Color;
   public opacity?: number;
   public type: LayerStyleType = 'point';
+  public filter?: any = undefined;
   setColor(color: Color | undefined) {
     this.color = color;
+    return this;
+  }
+  setFilter(filter?: FilterSpecification) {
+    this.filter = filter;
     return this;
   }
   setStyleType(type: LayerStyleType) {
@@ -38,24 +45,40 @@ export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
     return this;
   }
   build(): Omit<LayerMapbox, 'id'> {
-    return getDefaultLayer(this.type, this.color, this.opacity);
+    return getDefaultLayer({
+      type: this.type,
+      color: this.color,
+      opacity: this.opacity,
+      filter: this.filter,
+    });
   }
 }
 
-export const getDefaultLayer = (
-  type: string,
-  color?: Color,
-  opacity?: number,
-): Omit<
+export const getDefaultLayer = ({
+  type,
+  color,
+  opacity,
+  filter,
+}: {
+  type: string;
+  color?: Color;
+  opacity?: number;
+  filter?: FilterSpecification;
+}): Omit<
   | LineLayerSpecification
   | FillLayerSpecification
   | CircleLayerSpecification
   | SymbolLayerSpecification,
   'id' | 'source'
 > => {
+  let layer:
+    | LineLayerSpecification
+    | FillLayerSpecification
+    | CircleLayerSpecification
+    | SymbolLayerSpecification;
   switch (type) {
     case 'point':
-      return {
+      layer = {
         layout: { visibility: 'visible' },
         type: 'circle',
         paint: {
@@ -63,10 +86,11 @@ export const getDefaultLayer = (
           'circle-radius': 6,
           'circle-opacity': opacity || 1,
         },
-      };
+      } as CircleLayerSpecification;
+      break;
 
     case 'line':
-      return {
+      layer = {
         layout: { visibility: 'visible' },
         type: 'line',
         paint: {
@@ -74,25 +98,32 @@ export const getDefaultLayer = (
           'line-width': 4,
           'line-opacity': opacity || 1,
         },
-      };
+      } as LineLayerSpecification;
+      break;
     case 'area':
-      return {
+      layer = {
         layout: { visibility: 'visible' },
         type: 'fill',
         paint: {
           'fill-color': color || getChartRandomColor(),
           'fill-opacity': opacity || 1,
         },
-      };
+      } as FillLayerSpecification;
+      break;
 
     case 'symbol':
-      return {
+      layer = {
         layout: { visibility: 'visible' },
         type: 'symbol',
         paint: {},
-      };
+      } as SymbolLayerSpecification;
+      break;
 
     default:
       throw new Error('Invalid type: ' + type);
   }
+  if (filter) {
+    layer.filter = filter;
+  }
+  return layer;
 };

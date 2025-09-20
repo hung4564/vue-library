@@ -153,15 +153,14 @@ export type IdentifyMultiResult = {
   identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
   features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
 };
+export type IdentifySingleResult = {
+  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
+  layer: LayerSpecification;
+  feature: { id: string | number; name: string; data: MapGeoJSONFeature }; // Features của mỗi identify
+};
 
 // Define kiểu trả về cho mỗi kết quả sau khi split
-export type IdentifyResult =
-  | IdentifyMultiResult
-  | {
-      identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-      layer: LayerSpecification;
-      feature: { id: string | number; name: string; data: MapGeoJSONFeature }; // Features của mỗi identify
-    };
+export type IdentifyResult = IdentifyMultiResult | IdentifySingleResult;
 // Union type cho IIdentifyView
 export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 

@@ -14,7 +14,7 @@ export type MapDatasetHighlightStore = {
 
 export const useMapDatasetHighlightStore = (mapId: string) =>
   defineStore<MapDatasetHighlightStore>(
-    ['map:core', mapId, 'store-highlight'],
+    ['map:core', mapId, 'highlight'],
     () => {
       logHelper(logger, mapId, 'store').debug('init');
       return {
@@ -36,7 +36,7 @@ export const useMapDatasetHighlight = (mapId: string) => {
   ) {
     if (!store) return;
 
-    logHelper(logger, mapId, 'store-highlight').debug('setFeatureHighlight', {
+    logHelper(logger, mapId, 'highlight').debug('setFeatureHighlight', {
       store,
       feature,
       source,

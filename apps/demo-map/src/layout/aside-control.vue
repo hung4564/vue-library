@@ -42,6 +42,9 @@
           <v-list-item>
             <RouterLink to="/measurement">measurement </RouterLink>
           </v-list-item>
+          <v-list-item>
+            <RouterLink to="/highlight">Dataset - Highlight </RouterLink>
+          </v-list-item>
         </v-list>
       </DraggableItemSideBar>
     </template>

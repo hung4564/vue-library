@@ -6,3 +6,7 @@ export const logger = loggerFactory
 export const loggerIdentify = loggerFactory
   .createLogger()
   .setNamespace('map:identify', 2);
+
+export const loggerHighlight = loggerFactory
+  .createLogger()
+  .setNamespace('map:highlight', 2);

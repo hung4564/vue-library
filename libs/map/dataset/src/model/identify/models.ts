@@ -6,6 +6,7 @@ import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
   IdentifyResult,
+  IdentifySingleResult,
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
@@ -290,7 +291,7 @@ export async function handleMultiIdentifyGetFirst(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
-): Promise<IdentifyResult> {
+): Promise<IdentifySingleResult> {
   const allLayerIds: string[] = [];
   const cache: Record<string, IIdentifyView> = {};
   identifies.forEach((identify) => {
