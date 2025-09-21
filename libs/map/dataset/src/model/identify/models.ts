@@ -10,6 +10,7 @@ import type {
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
+  MenuItemCommon,
 } from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
 import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
@@ -51,40 +52,38 @@ export function createDatasetPartIdentifyComponent(
       return features.map(convertFeatureToItem<Data>);
     },
     showDetail(mapId: string, feature: MapGeoJSONFeature) {
-      handleMenuActionClick(
+      const menus: MenuItemCommon<any>['click'] = [
         [
+          'highlight',
           [
-            'addComponent',
-            [
-              dataset,
-              mapId,
-              {
-                componentKey: 'layer-detail',
-                attr: {
-                  item: convertFeatureToItem(feature),
-                  fields: config.fields || [],
-                  view: dataset,
-                },
-                check: 'detail',
-              },
-            ],
-          ],
-          [
-            'highlight',
-            [
-              dataset,
-              mapId,
-              {
-                detail: convertFeatureToItem(feature),
-                key: 'detail',
-              },
-            ],
+            dataset,
+            mapId,
+            {
+              detail: convertFeatureToItem(feature),
+              key: 'detail',
+            },
           ],
         ],
-        dataset,
-        mapId,
-        feature,
-      );
+      ];
+      if (config.fields && config.fields.length > 0) {
+        menus.push([
+          'addComponent',
+          [
+            dataset,
+            mapId,
+            {
+              componentKey: 'layer-detail',
+              attr: {
+                item: convertFeatureToItem(feature),
+                fields: config.fields || [],
+                view: dataset,
+              },
+              check: 'detail',
+            },
+          ],
+        ]);
+      }
+      handleMenuActionClick(menus, dataset, mapId, feature);
     },
   });
   return dataset;
@@ -112,10 +111,12 @@ export function createIdentifyMapboxComponent(
       );
 
       const allLayerIds: string[] = Array.from(results.values()).flat(2);
-      logHelper(loggerIdentify, mapId, 'model').debug(
+      logHelper(loggerIdentify, mapId, 'dataset', datasetPartIdentify.id).debug(
         'start',
-        allLayerIds,
-        pointOrBox,
+        {
+          allLayerIds,
+          pointOrBox,
+        },
       );
       getMap(mapId, (map: MapSimple) => {
         const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
@@ -123,11 +124,6 @@ export function createIdentifyMapboxComponent(
           {
             layers: allLayerIds.filter((id) => map.getLayer(id)),
           },
-        );
-
-        logHelper(loggerIdentify, mapId, 'model').debug(
-          'getFeatureFormMap',
-          features,
         );
         const ids = new Set<string>();
 
@@ -140,7 +136,15 @@ export function createIdentifyMapboxComponent(
         });
 
         const idsGet = [...ids];
-        logHelper(loggerIdentify, mapId, 'model').debug('idsGet', idsGet);
+        logHelper(
+          loggerIdentify,
+          mapId,
+          'dataset',
+          datasetPartIdentify.id,
+        ).debug('getFeatureFormMap', {
+          features,
+          idsGet,
+        });
         if (!idsGet || idsGet.length < 1) {
           resolve([]);
           return;
@@ -151,16 +155,20 @@ export function createIdentifyMapboxComponent(
           (dataset) => dataset.type == 'dataManagement',
         ) as unknown as IDataManagementView;
         if (dataManagement) {
-          logHelper(loggerIdentify, mapId, 'model').debug(
-            'dataManagement',
-            dataManagement,
-          );
+          logHelper(
+            loggerIdentify,
+            mapId,
+            'dataset',
+            datasetPartIdentify.id,
+          ).debug('dataManagement', dataManagement);
           handle = () => dataManagement.getList([...idsGet], features);
         } else if (datasetPartIdentify.getList) {
-          logHelper(loggerIdentify, mapId, 'model').debug(
-            'use get list of identify',
-            datasetPartIdentify,
-          );
+          logHelper(
+            loggerIdentify,
+            mapId,
+            'dataset',
+            datasetPartIdentify.id,
+          ).debug('use get list of identify', datasetPartIdentify);
           handle = () => datasetPartIdentify.getList!(mapId, features);
         }
         if (handle)
@@ -170,7 +178,12 @@ export function createIdentifyMapboxComponent(
               name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
               data: x,
             }));
-            logHelper(loggerIdentify, mapId, 'model').debug('end', results);
+            logHelper(
+              loggerIdentify,
+              mapId,
+              'dataset',
+              datasetPartIdentify.id,
+            ).debug('end', { results });
             resolve(result);
           });
       });
@@ -241,11 +254,9 @@ export async function handleMultiIdentify(
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
 ): Promise<IdentifyResult[]> {
-  logHelper(loggerIdentify, mapId, 'multi').debug(
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
     'start',
-    identifies,
-    props.selectThreshold,
-    pointOrBox,
+    { identifies, config: props, pointOrBox },
   );
   const promises: Promise<IdentifyResult | IdentifyResult[]>[] = [];
   const groupMerge: Record<string, IIdentifyViewWithMerge[]> = {};
@@ -255,13 +266,15 @@ export async function handleMultiIdentify(
       [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
       [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
     ];
-    logHelper(loggerIdentify, mapId, 'multi').debug(
+    logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
       'convert',
-      point,
-      point.x,
-      point.y,
-      props.selectThreshold,
-      pointOrBox,
+      {
+        point,
+        x: point.x,
+        y: point.y,
+        config: props,
+        pointOrBox,
+      },
     );
   }
   identifies.forEach((identify) => {
@@ -281,8 +294,16 @@ export async function handleMultiIdentify(
       handleMergedIdentifyGroup(mergeIdentifies, mapId, pointOrBox),
     );
   }
+
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+    'handle',
+    { groupMerge },
+  );
   const result = await Promise.all(promises).then((res) => res.flat());
-  logHelper(loggerIdentify, mapId, 'getFirst').debug('end', result);
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+    'end',
+    { result },
+  );
   return result;
 }
 
@@ -311,11 +332,17 @@ export async function handleMultiIdentifyGetFirst(
     });
     allLayerIds.push(...layerIds);
   });
-  logHelper(loggerIdentify, mapId, 'getFirst').debug(
-    'start',
+  logHelper(
+    loggerIdentify,
+    mapId,
+    'FIRST',
+    'handleMultiIdentifyGetFirst',
+  ).debug('start', {
+    identifies,
     allLayerIds,
     pointOrBox,
-  );
+    config: props,
+  });
   return new Promise((resolve) => {
     getMap(mapId, (map: MapSimple) => {
       if (pointOrBox && isPointLike(pointOrBox)) {
@@ -324,14 +351,18 @@ export async function handleMultiIdentifyGetFirst(
           [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
           [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
         ];
-        logHelper(loggerIdentify, mapId, 'getFirst').debug(
-          'convert',
+        logHelper(
+          loggerIdentify,
+          mapId,
+          'FIRST',
+          'handleMultiIdentifyGetFirst',
+        ).debug('convert', {
           point,
-          point.x,
-          point.y,
-          props.selectThreshold,
+          x: point.x,
+          y: point.y,
+          selectThreshold: props.selectThreshold,
           pointOrBox,
-        );
+        });
       }
       const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         pointOrBox,
@@ -339,12 +370,16 @@ export async function handleMultiIdentifyGetFirst(
           layers: allLayerIds.filter((id) => map.getLayer(id)),
         },
       );
-      logHelper(loggerIdentify, mapId, 'getFirst').debug(
-        'current',
-        allLayerIds.filter((id) => map.getLayer(id)),
+      logHelper(
+        loggerIdentify,
+        mapId,
+        'FIRST',
+        'handleMultiIdentifyGetFirst',
+      ).debug('current', {
+        allLayerIds: allLayerIds.filter((id) => map.getLayer(id)),
         features,
         pointOrBox,
-      );
+      });
       if (features.length > 0) {
         const x = features[0];
         const datasetPartIdentify = cache[x.layer.id];
@@ -362,7 +397,12 @@ export async function handleMultiIdentifyGetFirst(
             data: x,
           },
         };
-        logHelper(loggerIdentify, mapId, 'getFirst').debug('end', result);
+        logHelper(
+          loggerIdentify,
+          mapId,
+          'FIRST',
+          'handleMultiIdentifyGetFirst',
+        ).debug('end', { result });
         resolve(result);
       }
     });

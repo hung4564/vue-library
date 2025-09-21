@@ -34,6 +34,10 @@ const router = createRouter({
       component: () => import('../views/dataset-highlight/example.vue'),
     },
     {
+      path: '/identify/',
+      component: () => import('../views/dataset-identify/example.vue'),
+    },
+    {
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
     },

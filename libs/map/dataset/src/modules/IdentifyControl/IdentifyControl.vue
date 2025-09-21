@@ -109,14 +109,20 @@ const {
 const origin = reactive({ latitude: 0, longitude: 0 });
 function onMapClick(e: MapMouseEvent) {
   if (isEventClickBox.value) return;
-  logHelper(loggerIdentify, mapId.value, 'multi').debug('onMapClick', e);
+  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
+    'onMapClick',
+    { event: e },
+  );
   origin.latitude = e.lngLat.lat;
   origin.longitude = e.lngLat.lng;
   onGetFeatures(e.point);
 }
 function onBboxSelect(bbox: any) {
   if (isEventClickActive.value) return;
-  logHelper(loggerIdentify, mapId.value, 'multi').debug('onBboxSelect', bbox);
+  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
+    'onBboxSelect',
+    bbox,
+  );
   onRemoveBox();
   if (!bbox) return;
   onGetFeatures(bbox);
@@ -139,7 +145,7 @@ const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
 function onSelectFeatures(features: IdentifyMultiResult[]) {
-  logHelper(loggerIdentify, mapId.value, 'multi').debug(
+  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
     'onSelectFeatures',
     features,
   );
@@ -163,9 +169,9 @@ function onSelectFeatures(features: IdentifyMultiResult[]) {
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
   result.loading = true;
   try {
-    logHelper(loggerIdentify, mapId.value, 'multi').debug(
+    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
       'onGetFeatures',
-      pointOrBox,
+      { pointOrBox, identifies: cUsedIdentify.value },
     );
     const startTime = Date.now();
     const features = await handleMultiIdentify(
@@ -177,9 +183,9 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
     if (elapsedTime < 500) {
       await new Promise((resolve) => setTimeout(resolve, 500 - elapsedTime));
     }
-    logHelper(loggerIdentify, mapId.value, 'multi').debug(
+    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
       'onGetFeatures',
-      features,
+      { features },
     );
     onSelectFeatures(
       features.filter(

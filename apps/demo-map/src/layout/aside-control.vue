@@ -45,6 +45,9 @@
           <v-list-item>
             <RouterLink to="/highlight">Dataset - Highlight </RouterLink>
           </v-list-item>
+          <v-list-item>
+            <RouterLink to="/identify">Dataset - Identify </RouterLink>
+          </v-list-item>
         </v-list>
       </DraggableItemSideBar>
     </template>

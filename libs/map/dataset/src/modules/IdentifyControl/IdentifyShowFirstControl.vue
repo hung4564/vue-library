@@ -51,41 +51,65 @@ function getViewFromStore() {
   views.value =
     getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
 }
-const {
-  add: addEventClick,
-  remove: removeEventClick,
-  isActive: isEventClickActive,
-} = useEventMap(mapId.value, new EventClick().setHandler(onMapClick));
+const { add: addEventClick, remove: removeEventClick } = useEventMap(
+  mapId.value,
+  new EventClick().setHandler(onMapClick),
+);
 
 function onMapClick(e: MapMouseEvent) {
-  logHelper(loggerIdentify, mapId.value, 'getFirst').debug('onMapClick', e);
+  logHelper(
+    loggerIdentify,
+    mapId.value,
+    'FIRST',
+    'IdentifyShowFirstControl',
+  ).debug('onMapClick', { event: e });
   onGetFeatures(e.point);
 }
-logHelper(loggerIdentify, mapId.value, 'getFirst').debug('init');
+logHelper(
+  loggerIdentify,
+  mapId.value,
+  'FIRST',
+  'IdentifyShowFirstControl',
+).debug('init');
 const result = reactive<{
   loading: boolean;
 }>({
   loading: false,
 });
 function onSelectFeatures(feature: IdentifyResult) {
-  logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
-    'onSelectFeatures',
-    feature,
-  );
+  logHelper(
+    loggerIdentify,
+    mapId.value,
+    'FIRST',
+    'IdentifyShowFirstControl',
+  ).debug('onSelectFeatures', { feature });
   if (feature && 'feature' in feature && feature.feature) {
     const menu = feature.identify.getMenu('show-detail');
-    logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
-      'onSelectFeatures',
-      feature,
-      menu,
-    );
-    if (menu)
+    logHelper(
+      loggerIdentify,
+      mapId.value,
+      'FIRST',
+      'IdentifyShowFirstControl',
+    ).debug('onSelectFeatures', { feature, menu });
+    if (menu) {
+      logHelper(
+        loggerIdentify,
+        mapId.value,
+        'FIRST',
+        'IdentifyShowFirstControl',
+      ).debug('onSelectFeatures', 'use menu');
       onMenuAction(
         feature.identify,
         menu as any,
         convertFeatureToItem(feature.feature.data),
       );
-    else if (feature.identify.showDetail) {
+    } else if (feature.identify.showDetail) {
+      logHelper(
+        loggerIdentify,
+        mapId.value,
+        'FIRST',
+        'IdentifyShowFirstControl',
+      ).debug('onSelectFeatures', 'use show detail');
       feature.identify.showDetail(mapId.value, feature.feature.data);
     }
   }
@@ -94,10 +118,12 @@ const cUsedIdentify = computed(() => {
   return views.value;
 });
 async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
-  logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
-    'onGetFeatures',
-    pointOrBox,
-  );
+  logHelper(
+    loggerIdentify,
+    mapId.value,
+    'FIRST',
+    'IdentifyShowFirstControl',
+  ).debug('onGetFeatures', { pointOrBox });
   result.loading = true;
   try {
     const feature = await handleMultiIdentifyGetFirst(
@@ -105,10 +131,12 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
       mapId.value,
       pointOrBox,
     );
-    logHelper(loggerIdentify, mapId.value, 'getFirst').debug(
-      'onGetFeatures',
-      feature,
-    );
+    logHelper(
+      loggerIdentify,
+      mapId.value,
+      'FIRST',
+      'IdentifyShowFirstControl',
+    ).debug('onGetFeatures', { feature });
     onSelectFeatures(feature);
   } finally {
     result.loading = false;
