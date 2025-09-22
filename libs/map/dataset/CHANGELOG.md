@@ -1,3 +1,17 @@
+## 0.9.11 (2025-09-22)
+
+### 🚀 Features
+
+- add custom highlight ([e33d638](https://github.com/hung4564/vue-library/commit/e33d638))
+
+### 🩹 Fixes
+
+- order identify ([e22d247](https://github.com/hung4564/vue-library/commit/e22d247))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.10 (2025-09-19)
 
 ### 🚀 Features
