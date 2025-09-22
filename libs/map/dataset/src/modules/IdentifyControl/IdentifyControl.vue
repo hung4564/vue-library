@@ -87,7 +87,9 @@ function updateList() {
   getViewFromStore();
 }
 function getViewFromStore() {
-  views.value = getAllComponentsByType<IIdentifyView>('identify') || [];
+  views.value = (
+    getAllComponentsByType<IIdentifyView>('identify') || []
+  ).reverse();
 }
 const hasViews = computed(() => {
   return views.value.length > 0;
