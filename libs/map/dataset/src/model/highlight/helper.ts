@@ -102,10 +102,10 @@ export function ensureHighlightLayers(
       feature && (feature.id || feature.properties.id) != null
         ? ['==', 'id', feature.id || feature.properties.id]
         : undefined;
-    const mergedFilter = mergeFilters(
+    const mergedFilter = mergeFilters([
       (baseLayer as any).filter,
-      highlightFilter,
-    );
+      dataset?.getData()?.filter || highlightFilter || {},
+    ]);
     if (!map.getLayer(id)) {
       const temp = {
         id,

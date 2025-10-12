@@ -24,51 +24,80 @@ export function handleMenuActionClick<T extends IDataset = IDataset>(
     return;
   }
   if (typeof click === 'function') {
-    // Trường hợp: hàm trực tiếp
     click(layer, mapId, value);
-  } else if (typeof click === 'string') {
-    // Trường hợp: key string
+    return;
+  }
+
+  // Trường hợp click là string key
+  if (typeof click === 'string') {
     const handler = UniversalRegistry.getMenuHandler(click, mapId);
-    handler?.(layer, mapId, value);
-  } else if (Array.isArray(click)) {
+    if (!handler)
+      throw new Error(
+        `[handleMenuActionClick] No handler found for key: ${click}`,
+      );
+    handler(layer, mapId, value);
+    return;
+  }
+
+  if (Array.isArray(click)) {
     for (const entry of click) {
       if (typeof entry === 'string') {
-        // Trường hợp: entry là key string
         const handler = UniversalRegistry.getMenuHandler(entry, mapId);
-        handler?.(layer, mapId, value);
-      } else if (Array.isArray(entry) && typeof entry[0] === 'string') {
-        // entry là tuple [key, transformer]
-        const [key, transformer] = entry;
-
-        let result: [T, string, any] | undefined;
-
-        if (Array.isArray(transformer)) {
-          // transformer là tuple sẵn [layer, mapId, value]
-          result = transformer as [T, string, any];
-        } else if (typeof transformer === 'function') {
-          // transformer là transformer function
-          result = transformer(layer, mapId, value);
-        }
-
-        if (!result) {
-          console.warn(
-            `[handleMenuAction] result for key: ${key}`,
-            layer,
-            mapId,
-            value,
+        if (!handler)
+          throw new Error(
+            `[handleMenuActionClick] No handler found for key: ${entry}`,
           );
-        } else {
-          const [customLayer, customMapId, customValue] = result;
-          const handler = UniversalRegistry.getMenuHandler(key, mapId);
-          if (handler) handler(customLayer, customMapId, customValue);
-          else
-            console.warn(`[handleMenuAction] No handler found for key: ${key}`);
-        }
-      } else {
-        console.warn('[handleMenuAction] Invalid entry in click array:', entry);
+        handler(layer, mapId, value);
+        continue;
       }
+
+      if (!Array.isArray(entry) || typeof entry[0] !== 'string') {
+        throw new Error(
+          '[handleMenuActionClick] Invalid entry in click array: ' +
+            JSON.stringify(entry),
+        );
+      }
+
+      const [key, transformer] = entry;
+
+      let result: [T, string, any] | undefined;
+
+      if (Array.isArray(transformer)) {
+        if (transformer.length !== 3) {
+          throw new Error(
+            `[handleMenuActionClick] Transformer tuple must have 3 elements [T, string, any] for key: ${key}`,
+          );
+        }
+        result = transformer as [T, string, any];
+      } else if (typeof transformer === 'function') {
+        result = transformer(layer, mapId, value);
+      } else {
+        throw new Error(
+          `[handleMenuActionClick] Invalid transformer for key: ${key}, must be tuple or function`,
+        );
+      }
+
+      if (!result) {
+        console.warn(
+          `[handleMenuActionClick] Transformer returned undefined for key: ${key}`,
+        );
+        continue;
+      }
+
+      const [customLayer, customMapId, customValue] = result;
+      const handler = UniversalRegistry.getMenuHandler(key, mapId);
+      if (!handler)
+        throw new Error(
+          `[handleMenuActionClick] No handler found for key: ${key}`,
+        );
+      handler(customLayer, customMapId, customValue);
     }
-  } else {
-    console.warn('[onMenuAction] Invalid menu click handler:', click);
+
+    return;
   }
+
+  // Nếu click không phải function, string hoặc array
+  throw new Error(
+    `[handleMenuActionClick] Invalid click type: ${typeof click}`,
+  );
 }

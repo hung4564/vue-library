@@ -4,8 +4,10 @@ import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
 import type { FieldFeatureDef } from '../../extra';
-import { handleMenuActionClick } from '../../extra/menu';
-import LayerDetail from '../../modules/LayerDetail/LayerDetail.vue';
+import {
+  createMenuClickBuilder,
+  handleMenuActionClick,
+} from '../../extra/menu';
 import { isDatasetSourceMap } from '../../utils/check';
 import {
   convertFeatureToItem,
@@ -48,40 +50,30 @@ export function createDataManagementMapboxComponent<
   };
 
   const showDetail = (mapId: string, detail: D) => {
-    handleMenuActionClick(
-      [
-        [
-          'addComponent',
-          [
-            dataComponent,
-            mapId,
-            {
-              componentKey: 'layer-detail',
-              attr: {
-                item: detail,
-                fields: config.fields,
-                view: dataComponent,
-              },
-              check: 'detail',
-            },
-          ],
-        ],
-        [
-          'highlight',
-          [
-            dataComponent,
-            mapId,
-            {
-              detail: convertItemToFeature(detail),
-              key: 'detail',
-            },
-          ],
-        ],
-      ],
-      dataComponent,
-      mapId,
-      detail,
-    );
+    const click = createMenuClickBuilder()
+      .addTupleStatic('addComponent', [
+        dataComponent,
+        mapId,
+        {
+          componentKey: 'layer-detail',
+          attr: {
+            item: detail,
+            fields: config.fields,
+            view: dataComponent,
+          },
+          check: 'detail',
+        },
+      ])
+      .addTupleStatic('highlight', [
+        dataComponent,
+        mapId,
+        {
+          detail: convertItemToFeature(detail),
+          key: 'detail',
+        },
+      ])
+      .build();
+    handleMenuActionClick(click, dataComponent, mapId, detail);
   };
 
   const dataComponent = createNamedComponent('DataManagementMapboxComponent', {

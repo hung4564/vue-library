@@ -1,22 +1,19 @@
 /**
- * Gộp 2 filter Maplibre bằng toán tử "all" hoặc "any"
- * @param filter1 - Filter thứ nhất
- * @param filter2 - Filter thứ hai
+ * Gộp nhiều filter Maplibre bằng toán tử "all" hoặc "any"
+ * @param filters - Mảng các filter (có thể null/undefined)
  * @param operator - 'all' | 'any' (mặc định: 'all')
  * @returns Filter mới đã gộp
  */
 export function mergeFilters(
-  filter1: any | null | undefined,
-  filter2: any | null | undefined,
+  filters: (any | null | undefined)[],
   operator: 'all' | 'any' = 'all',
 ): any | null {
-  const filters: any[] = [];
+  const validFilters = filters.filter(
+    (f): f is any[] => Array.isArray(f) && f.length > 0,
+  );
 
-  if (filter1 && Array.isArray(filter1)) filters.push(filter1);
-  if (filter2 && Array.isArray(filter2)) filters.push(filter2);
+  if (validFilters.length === 0) return null;
+  if (validFilters.length === 1) return validFilters[0];
 
-  if (filters.length === 0) return null;
-  if (filters.length === 1) return filters[0];
-
-  return [operator, ...filters];
+  return [operator, ...validFilters];
 }

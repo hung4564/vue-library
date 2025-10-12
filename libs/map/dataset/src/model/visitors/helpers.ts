@@ -139,7 +139,7 @@ export function runAllComponentsWithCheck<T extends IDataset = IDataset>(
 export function printTreeFromRoot(root: IDataset) {
   traverseTree(root, (node, level, path) => {
     const indent = '  '.repeat(level);
-    console.log(
+    console.info(
       `${indent}- ${path.join('.')} - ${node.type} - ${node.getName() || 'Unnamed Node'}`,
     );
   });
@@ -149,7 +149,7 @@ export function printTreeFromNode(leaf: IDataset) {
   const root = findRoot(leaf);
   traverseTree(root, (node, level, path) => {
     const indent = '  '.repeat(level);
-    console.log(
+    console.info(
       `${indent} - ${path.join('.')} ${node.type} - ${node.getName() || 'Unnamed Node'}`,
     );
   });

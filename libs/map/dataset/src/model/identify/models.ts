@@ -1,7 +1,11 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
-import { createWithMenuHelper, handleMenuActionClick } from '../../extra';
+import {
+  createMenuClickBuilder,
+  createWithMenuHelper,
+  handleMenuActionClick,
+} from '../../extra';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
   IDataManagementView,
@@ -52,37 +56,36 @@ export function createDatasetPartIdentifyComponent(
       return features.map(convertFeatureToItem<Data>);
     },
     showDetail(mapId: string, feature: MapGeoJSONFeature) {
-      const menus: MenuItemCommon<any>['click'] = [
+      const clickBuilder = createMenuClickBuilder().addTupleStatic(
+        'highlight',
         [
-          'highlight',
-          [
-            dataset,
-            mapId,
-            {
-              detail: convertFeatureToItem(feature),
-              key: 'detail',
-            },
-          ],
+          dataset,
+          mapId,
+          {
+            detail: convertFeatureToItem(feature),
+            key: 'detail',
+          },
         ],
-      ];
+      );
+
       if (config.fields && config.fields.length > 0) {
-        menus.push([
-          'addComponent',
-          [
-            dataset,
-            mapId,
-            {
-              componentKey: 'layer-detail',
-              attr: {
-                item: convertFeatureToItem(feature),
-                fields: config.fields || [],
-                view: dataset,
-              },
-              check: 'detail',
+        clickBuilder.addTupleStatic('addComponent', [
+          dataset,
+          mapId,
+          {
+            componentKey: 'layer-detail',
+            attr: {
+              item: convertFeatureToItem(feature),
+              fields: config.fields,
+              view: dataset,
             },
-          ],
+            check: 'detail',
+          },
         ]);
       }
+
+      // build ra MenuItemClick
+      const menus: MenuItemCommon<any>['click'] = clickBuilder.build();
       handleMenuActionClick(menus, dataset, mapId, feature);
     },
   });

@@ -167,3 +167,131 @@ function onLayerAction({ action, item }) {
 - Use descriptive names and icons for menu items
 - Combine built-in and custom actions for a rich user experience
 - Test menu actions for usability and performance
+
+---
+
+## Using `createMenuBuilder` for Flexible Menu Creation
+
+### Overview
+
+`createMenuBuilder` is a utility for programmatically building menu actions (`MenuAction`) with a clear, composable API. It is especially useful for advanced or dynamic menu setups, action chains, and when multiple menu configurations need to be created in code.
+
+### Basic API
+
+```typescript
+const builder = createMenuBuilder();
+const menuItem = builder
+  .item()
+  .setId('custom-action')
+  .setName('Download')
+  .setIcon(mdiDownload)
+  .setLocation('menu') // 'menu' | 'bottom' | 'extra' | 'prebottom'
+  .setClick((layer, mapId) => {
+    // Custom download logic
+  })
+  .build();
+
+list.addMenu(menuItem);
+```
+
+#### API Methods (for `.item()`)
+
+- `setId(id: string)`: Unique ID for updating/removing the menu.
+- `setName(name: string)`: Displayed label.
+- `setIcon(icon: string)`: Icon as SVG path or name.
+- `setLocation(loc: 'menu' | 'bottom' | 'extra' | 'prebottom')`: Where the menu appears.
+- `setClick(click)`: Handler function or command/action-chain.
+- `setComponentKey(key: string)`: Use a custom menu component.
+- `setAdditional(obj)`: Attach any extra props to the action object.
+- `build()`: Returns the menu object.
+
+#### Divider
+
+Add visual dividers between menu items:
+
+```typescript
+const divider = createMenuBuilder().divider().setLocation('menu').build();
+list.addMenu(divider);
+```
+
+### Advanced Example: Action Chains
+
+Create chained actions for advanced workflows using `createMenuClickBuilder`:
+
+```typescript
+import { createMenuBuilder, createMenuClickBuilder } from '@hungpvq/vue-map-dataset';
+
+const chainMenu = createMenuBuilder()
+  .item()
+  .setName('Detail & Zoom')
+  .setIcon(mdiInformation)
+  .setClick(
+    createMenuClickBuilder()
+      .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'detail-dialog', attr: { item: layer } }])
+      .addTupleStatic('fitBounds', [layer, mapId, {}])
+      .build(),
+  )
+  .build();
+
+list.addMenu(chainMenu);
+```
+
+### Tips
+
+- Combine with `createMenuClickBuilder` for multi-step or conditional actions.
+- Use `addMenus([ ... ])` to add several menu items at once after building them programmatically.
+
+### When to Use
+
+- When menu complexity goes beyond a static object definition.
+- For shared menu patterns or mass customization in dynamic dataset UIs.
+
+See the earlier sections for integration with UI and menu registration.
+
+### Using `createMenuClickBuilder` for Advanced Action Chains
+
+`createMenuClickBuilder` allows you to compose complex menu action chains that can trigger multiple commands, custom handlers, or tuple-based actions in sequence when a menu item is selected. This is powerful for workflows involving dialogs, side effects, and chained map interactions.
+
+#### Basic Usage
+
+```typescript
+import { createMenuClickBuilder } from '@hungpvq/vue-map-dataset';
+
+const menuClick = createMenuClickBuilder()
+  .addCommand('showDetail') // Add a command string (must be globally handled)
+  .addHandler((layer, mapId, value) => {
+    // Add a direct handler function
+    // Custom logic here
+  })
+  .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'dialog', attr: { item: layer } }]) // Add a tuple [key, static args]
+  .addTupleDynamic('fitBounds', (layer, mapId, value) => [layer, mapId, value]) // Add a tuple with dynamic argument
+  .build();
+```
+
+#### Available Methods
+
+- `.addCommand(cmd: string)`: Add a named command (resolved by UniversalRegistry handler).
+- `.addCommands(cmds: string[])`: Add multiple commands (all will be executed).
+- `.addHandler(fn)`: Add a direct handler (function signature: `(layer, mapId, value)`).
+- `.addTupleStatic(key: string, tuple: [layer, mapId, data])`: Add a tuple-action with static parameters (shortcut for common chained UI actions).
+- `.addTupleDynamic(key: string, fn)`: Add a tuple-action where arguments are computed at runtime by a function.
+- `.build()`: Compile the builder into a single `MenuItemClick` handler (function, string, or array depending on complexity).
+
+#### Example: Complex Action Chain
+
+```typescript
+const complexClick = createMenuClickBuilder()
+  .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'analysis-dialog', attr: { item: layer } }])
+  .addTupleStatic('highlight', [layer, mapId, { detail: layer.feature, key: 'analysis-detail' }])
+  .addHandler((layer) => console.log('Action done!', layer))
+  .build();
+
+const analysisMenu = createMenuBuilder().item().setName('Analyze & Highlight').setIcon(mdiFormatLineStyle).setClick(complexClick).build();
+```
+
+#### Notes
+
+- If only one action is added, `.build()` returns that action directly (function or string). Otherwise, it returns an array for handling as a chain.
+- Tuples allow integration with global action handlers (such as 'addComponent', 'fitBounds', etc).
+
+See the main documentation above for integration of these handlers in your dataset menu system.

@@ -21,12 +21,13 @@ export function createDatasetPartHighlightComponent(
     highlight: (feature) => {
       const source = findFirstLeafByType(base, 'source');
       const source_id = (source as any)?.getSourceId();
-      if (!feature?.id) {
+      const field_id = feature?.id || feature?.properties.id;
+      if (!field_id) {
         return undefined;
       }
       return {
         source: source_id,
-        filter: feature ? ['==', 'id', feature?.id] : undefined,
+        filter: field_id ? ['==', 'id', field_id] : undefined,
         ...dataHelper.getData(),
       };
     },
@@ -137,7 +138,13 @@ export function createDatasetPartCustomAnimateHighlightComponent<T>(
       map,
       layerIds: layerIds,
       layers: layersDefault,
-      dataset: { ...base, ...dataHelper },
+      dataset: {
+        ...base,
+        ...dataHelper,
+        get type() {
+          return 'highlight';
+        },
+      },
       feature,
     });
     _startAnimation(map, layerIds, durationMs, animateFn, createDefaultState());
