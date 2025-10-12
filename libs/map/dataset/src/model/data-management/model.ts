@@ -79,9 +79,8 @@ export function createDataManagementMapboxComponent<
   const dataComponent = createNamedComponent('DataManagementMapboxComponent', {
     ...base,
     addToMap,
-    removeFromMap: (map: MapSimple) => {
-      console.warn('removeFromMap not supported');
-    },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    removeFromMap: (map: MapSimple) => {},
     getList,
     setItems(newItems: D[]) {
       items = newItems;

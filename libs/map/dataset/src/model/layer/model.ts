@@ -61,6 +61,7 @@ export function createMultiMapboxLayerComponent(
         if (!map.getLayer(layer.id!)) {
           if (!(layer as any).source && source) {
             (layer as any).source = (source as any).getSourceId();
+            this.addDependsOn(source);
           }
           map.addLayer(layer as LayerSpecification, beforeId);
         }

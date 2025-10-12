@@ -1,7 +1,19 @@
 import type { IDataset, WithChildren } from '../interfaces';
 import { createBase } from './base';
 
-export function createDatasetComponent<T = any>(name: string): IDataset {
+function addDependsOnImpl(this: IDataset, input: string | IDataset): void {
+  const id = typeof input === 'string' ? input : input.id;
+  if (!id) return;
+  if (!this.dependsOn) this.dependsOn = [];
+  if (!this.dependsOn.includes(id)) this.dependsOn.push(id);
+}
+function removeDependsOnImpl(this: IDataset, input: string | IDataset): void {
+  const id = typeof input === 'string' ? input : input.id;
+  if (!id || !this.dependsOn) return;
+  this.dependsOn = this.dependsOn.filter((d) => d !== id);
+}
+
+export function createDatasetComponent(name: string): IDataset {
   let parent: ReturnType<typeof createDatasetComponent> | undefined;
 
   const base = createBase();
@@ -23,14 +35,18 @@ export function createDatasetComponent<T = any>(name: string): IDataset {
     getParent(): ReturnType<typeof createDatasetComponent> | undefined {
       return parent;
     },
+    addDependsOn: addDependsOnImpl,
+    removeDependsOn: removeDependsOnImpl,
   };
 }
-export function createDatasetLeaf<T = any>(name: string) {
-  const base = createDatasetComponent<T>(name);
+export function createDatasetLeaf(name: string) {
+  const base = createDatasetComponent(name);
 
   return {
     ...base,
     type: 'leaf',
+    addDependsOn: addDependsOnImpl,
+    removeDependsOn: removeDependsOnImpl,
   };
 }
 

@@ -21,6 +21,21 @@ export interface IDataset {
    * @param parent The parent dataset to set
    */
   setParent(parent?: IDataset): void;
+
+  /**
+   * Optional array of dataset IDs this dataset depends on
+   * Used to ensure dependency-aware add/remove order
+   */
+  dependsOn?: string[];
+
+  /**
+   * Add a dependency if not already present. Accepts a string id or an IDataset.
+   */
+  addDependsOn(input: string | IDataset): void;
+  /**
+   * Remove a dependency if present. Accepts a string id or an IDataset.
+   */
+  removeDependsOn(input: string | IDataset): void;
 }
 
 export interface WithChildren {

@@ -295,3 +295,5 @@ const analysisMenu = createMenuBuilder().item().setName('Analyze & Highlight').s
 - Tuples allow integration with global action handlers (such as 'addComponent', 'fitBounds', etc).
 
 See the main documentation above for integration of these handlers in your dataset menu system.
+
+---

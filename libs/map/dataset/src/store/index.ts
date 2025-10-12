@@ -43,11 +43,32 @@ export const useMapDataset = (propsMapId?: string) => {
     });
     store.datasetIds.value.push(layer.id);
     getMap(async (map: MapSimple) => {
+      // Track already added dependencies in this session to avoid duplicates.
+      const addedSet = new Set<string>();
+
       traverseTree(
         layer,
         (node) => {
-          if (isDatasetMap(node)) {
+          // If this node has dependencies (dependsOn: string[]), add each dependency FIRST.
+          if (Array.isArray(node.dependsOn)) {
+            for (const depId of node.dependsOn) {
+              if (!addedSet.has(depId)) {
+                const dep = store.datasets[depId];
+                if (isDatasetMap(dep)) {
+                  dep.addToMap(map); // add dependency dataset to map before current node
+                  addedSet.add(depId);
+                }
+              }
+            }
+          }
+          // Then add the node itself
+          if (
+            isDatasetMap(node) &&
+            typeof node.addToMap === 'function' &&
+            !addedSet.has(node.id)
+          ) {
             node.addToMap(map);
+            addedSet.add(node.id);
           }
         },
         {},
@@ -58,7 +79,7 @@ export const useMapDataset = (propsMapId?: string) => {
       dataset: layer,
     });
   }
-  function removeDataset(layer: IDataset) {
+  async function removeDataset(layer: IDataset) {
     if (!store) {
       return;
     }
@@ -67,16 +88,34 @@ export const useMapDataset = (propsMapId?: string) => {
       (id) => id !== layer.id,
     );
     getMap(async (map: MapSimple) => {
+      const removedSet = new Set<string>();
+
       traverseTree(
         layer,
         (node) => {
-          if (isDatasetMap(node)) {
+          // Remove this node from the map FIRST (before dependencies)
+          if (
+            isDatasetMap(node) &&
+            typeof node.removeFromMap === 'function' &&
+            !removedSet.has(node.id)
+          ) {
             node.removeFromMap(map);
+            removedSet.add(node.id);
+          }
+          // Then remove dependencies (if any)
+          if (Array.isArray(node.dependsOn)) {
+            for (const depId of node.dependsOn) {
+              if (!removedSet.has(depId)) {
+                const dep = store.datasets[depId];
+                if (isDatasetMap(dep)) {
+                  dep.removeFromMap(map);
+                  removedSet.add(depId);
+                }
+              }
+            }
           }
         },
-        {
-          direction: 'rtl',
-        },
+        { direction: 'rtl' },
       );
     });
     logHelper(logger, mapId, 'store').debug('removeDataset', {

@@ -18,6 +18,7 @@ import type { DatasetComposite } from '../model';
 export function isDatasetMap(
   dataset: IDataset,
 ): dataset is IDataset & IDatasetMap {
+  if (!dataset) return false;
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 
