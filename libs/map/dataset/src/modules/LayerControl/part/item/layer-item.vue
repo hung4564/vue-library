@@ -246,6 +246,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 4px;
 }
 
 .layer-item__info {
@@ -256,10 +257,6 @@ onMounted(() => {
 .layer-item__action {
   display: flex;
   align-items: center;
-}
-
-.layer-item__action {
-  padding-top: 4px;
 }
 
 .layer-item__icon {
@@ -293,6 +290,7 @@ onMounted(() => {
   display: flex;
   flex-grow: 0;
   align-items: center;
+  height: 100%;
 }
 
 .v-spacer {

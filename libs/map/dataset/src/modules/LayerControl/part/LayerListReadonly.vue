@@ -194,7 +194,6 @@ const { getComponent } = useUniversalRegistry(mapId.value);
 
 <style lang="scss">
 $light-grey: #ecf0f1;
-$grey: darken($light-grey, 15%);
 $blue: #004e98;
 $white: #fff;
 $black: #333;
@@ -236,10 +235,11 @@ $black: #333;
   &__divider {
     box-sizing: content-box;
     height: 2px;
-    background-color: $grey;
-    padding: 4px 0;
+    background-color: currentColor;
+    padding: 4px;
     background-clip: content-box;
     pointer-events: none;
+    min-height: 2px;
   }
 }
 </style>
