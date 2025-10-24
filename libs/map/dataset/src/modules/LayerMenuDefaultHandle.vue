@@ -5,12 +5,14 @@ import {
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import { UniversalRegistry } from '../registry';
 import {
-  ComponentItem,
-  useMapDatasetComponent,
-  useMapDatasetHighlight,
-} from '../store';
+  MenuClickAddComponent,
+  MenuClickFitBounds,
+  MenuClickHighlight,
+  MenuItemProps,
+} from '../extra';
+import { UniversalRegistry } from '../registry';
+import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
@@ -23,31 +25,24 @@ const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
   'addComponent',
-  (layer, mapId: string, component: ComponentItem) => {
-    addComponent(component);
+  ({ value }: MenuItemProps<MenuClickAddComponent>) => {
+    if (value) addComponent(value);
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
   'fitBounds',
-  (layer, mapId: string, geometry: any) => {
+  ({ value }: MenuItemProps<MenuClickFitBounds>) => {
     callMap((map) => {
-      fitBounds(map, geometry);
+      fitBounds(map, value);
     });
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
   'highlight',
-  (
-    layer,
-    mapId: string,
-    props: {
-      detail: any;
-      key: string;
-    },
-  ) => {
-    setFeatureHighlight(props.detail, props.key, layer);
+  ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
+    if (value) setFeatureHighlight(value.detail, value.key, layer);
   },
 );
 </script>

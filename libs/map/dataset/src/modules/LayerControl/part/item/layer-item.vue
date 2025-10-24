@@ -26,7 +26,7 @@
             :data="item"
             :disabled="loading"
             :mapId="mapId"
-            @click="onLayerAction(menu)"
+            @click="onLayerAction($event, menu)"
           />
         </template>
         <BaseButton
@@ -51,7 +51,7 @@
               :data="item"
               :disabled="loading"
               :mapId="mapId"
-              @click="onLayerAction(menu)"
+              @click="onLayerAction($event, menu)"
             />
           </template>
           <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
@@ -71,7 +71,7 @@
           :data="item"
           :disabled="loading"
           :mapId="mapId"
-          @click="onLayerAction(menu)"
+          @click="onLayerAction($event, menu)"
         />
       </template>
       <div class="v-spacer"></div>
@@ -81,7 +81,7 @@
           :data="item"
           :disabled="loading"
           :mapId="mapId"
-          @click="onLayerAction(menu)"
+          @click="onLayerAction($event, menu)"
         />
       </template>
       <BaseButton @click.stop="onToggleChildren()" v-if="isHasChildren">
@@ -197,8 +197,8 @@ const showBottom = computed(() => {
     (!props.item.config.disabled_opacity || extra_bottoms.value.length > 0)
   );
 });
-function onLayerAction(action: MenuAction<IListViewUI>) {
-  emit('click:action', { action, item: props.item });
+function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
+  emit('click:action', { event, action, item: props.item });
 }
 function handleContextClick(event: MouseEvent) {
   emit('click:content-menu', {

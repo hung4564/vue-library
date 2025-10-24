@@ -5,7 +5,9 @@ import { point as pointTurf } from '@turf/turf';
 import type { Feature } from 'geojson';
 import type { FieldFeatureDef } from '../../extra';
 import {
+  createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
+  createMenuClickHighlightBuilder,
   handleMenuActionClick,
 } from '../../extra/menu';
 import { isDatasetSourceMap } from '../../utils/check';
@@ -51,29 +53,29 @@ export function createDataManagementMapboxComponent<
 
   const showDetail = (mapId: string, detail: D) => {
     const click = createMenuClickBuilder()
-      .addTupleStatic('addComponent', [
-        dataComponent,
-        mapId,
-        {
-          componentKey: 'layer-detail',
-          attr: {
+      .addTupleStatic('addComponent', {
+        value: createMenuClickAddComponentBuilder()
+          .setComponentKey('layer-detail')
+          .setAttr({
             item: detail,
             fields: config.fields,
             view: dataComponent,
-          },
-          check: 'detail',
-        },
-      ])
-      .addTupleStatic('highlight', [
-        dataComponent,
-        mapId,
-        {
-          detail: convertItemToFeature(detail),
-          key: 'detail',
-        },
-      ])
+          })
+          .setCheck('detail')
+          .build(),
+      })
+      .addTupleStatic('highlight', {
+        value: createMenuClickHighlightBuilder()
+          .setDetail(convertItemToFeature(detail))
+          .setKey('detail')
+          .build(),
+      })
       .build();
-    handleMenuActionClick(click, dataComponent, mapId, detail);
+    handleMenuActionClick(click, {
+      layer: dataComponent,
+      mapId,
+      value: detail as any,
+    });
   };
 
   const dataComponent = createNamedComponent('DataManagementMapboxComponent', {

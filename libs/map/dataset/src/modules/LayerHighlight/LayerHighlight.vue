@@ -10,6 +10,7 @@ import {
   useMap,
   type WithMapPropType,
 } from '@hungpvq/vue-map-core';
+import type { Feature } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';
 import { onMounted, onUnmounted, shallowRef, watch } from 'vue';
 import type { IdentifySingleResult } from '../../interfaces';
@@ -77,7 +78,7 @@ function onRemoveMap(map: MapSimple) {
 
 const handleHighligh = shallowRef<HighlightHandle | undefined>();
 const handleDefault = useDefaultHighlight(props.color);
-function updateHighlight(geojsonData?: GeoJSONFeature) {
+function updateHighlight(geojsonData?: Feature | GeoJSONFeature) {
   const durationMs = props.durationMs;
   logHelper(loggerHighlight, mapId.value, 'LayerHighlight').debug(
     'updateHighlight',

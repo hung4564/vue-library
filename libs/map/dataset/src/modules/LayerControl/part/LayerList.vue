@@ -180,13 +180,20 @@ function closeContextMenu() {
   if (contextMenuRef.value) contextMenuRef.value.close();
 }
 function onLayerAction({
+  event,
   action,
   item,
 }: {
+  event: MouseEvent;
   action: MenuAction<IListViewUI>;
   item: IListViewUI;
 }) {
-  handleMenuAction(action, item, mapId.value, item);
+  handleMenuAction(action, {
+    event,
+    layer: item,
+    mapId: mapId.value,
+    value: item,
+  });
 }
 const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
@@ -242,7 +249,11 @@ const { getComponent } = useUniversalRegistry(mapId.value);
           v-for="(option, index) in menu_context.items"
           :key="index"
           @click.stop="
-            onLayerAction({ action: option, item: menu_context.view });
+            onLayerAction({
+              action: option,
+              item: menu_context.view,
+              event: $event,
+            });
             closeContextMenu();
           "
           class="layer-context-menu__item"

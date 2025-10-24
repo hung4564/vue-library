@@ -456,7 +456,7 @@ function createMenuDownload() {
     type: 'item',
     name: 'Download',
     icon: mdiDownload,
-    click: async (layer, mapId) => {
+    click: async ({ layer }) => {
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,
         (dataset) => dataset.type === 'dataManagement',
@@ -479,7 +479,7 @@ function createMenuDrawLayer() {
     type: 'item',
     name: 'Edit feature',
     icon: mdiPencil,
-    click: (layer, mapId) => {
+    click: ({ layer, mapId }) => {
       const { callDraw } = useMapDraw(mapId);
       const maybeDataManagement = findSiblingOrNearestLeaf(
         layer,

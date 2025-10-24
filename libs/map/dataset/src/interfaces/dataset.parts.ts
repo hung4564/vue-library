@@ -8,31 +8,12 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { FieldFeaturesDef, WithDataHelper } from '../extra';
+import type { FieldFeaturesDef, MenuItemClick, WithDataHelper } from '../extra';
 import type { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
 
-export type MenuItemHandle<T> = (layer: T, map_id: string, value?: any) => any;
-export type MenuItemClick<T> =
-  | string
-  | MenuItemHandle<T>
-  | string[]
-  | Array<
-      | string
-      | [
-          string,
-          (
-            | [T, string, any]
-            | ((
-                layer: T,
-                mapId: string,
-                value?: any,
-              ) => [T, string, any] | undefined)
-          ),
-        ]
-    >;
 /**
  * Menu Action Types
  * These types define the structure of menu items and actions in the dataset
@@ -53,14 +34,17 @@ export type MenuDivider = MenuCommon & {
 };
 
 /** Common properties for all menu items */
-export type MenuItemCommon<T> = MenuCommon & {
+export type MenuItemCommon<P = any, T = IDataset> = MenuCommon & {
   type: 'item';
   class?: string;
-  click: MenuItemClick<T>;
+  click: MenuItemClick<P, T>;
 };
 
 /** Menu item type for bottom or extra location */
-export type MenuItemBottomOrExtra<T> = MenuItemCommon<T> & {
+export type MenuItemBottomOrExtra<P = any, T = IDataset> = MenuItemCommon<
+  P,
+  T
+> & {
   type: 'item';
   location?: 'bottom' | 'extra';
   icon: string;
@@ -68,8 +52,8 @@ export type MenuItemBottomOrExtra<T> = MenuItemCommon<T> & {
 };
 
 /** Menu item type custom component for bottom or extra location */
-export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
-  MenuItemCommon<T>,
+export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
+  MenuItemCommon<P, T>,
   'click'
 > & {
   type: 'item';
@@ -78,17 +62,20 @@ export type MenuItemCustomComponentBottomOrExtra<T> = Omit<
 };
 
 /** Menu item type for menu location */
-export type MenuItemContentMenu<T> = MenuItemCommon<T> & {
+export type MenuItemContentMenu<P = any, T = IDataset> = MenuItemCommon<
+  P,
+  T
+> & {
   type: 'item';
   location: 'menu';
   name: string;
   icon?: string;
 };
-export type MenuAction<T = any> =
+export type MenuAction<P = any, T = IDataset> =
   | MenuDivider
-  | MenuItemBottomOrExtra<T>
-  | MenuItemContentMenu<T>
-  | MenuItemCustomComponentBottomOrExtra<T>;
+  | MenuItemBottomOrExtra<P, T>
+  | MenuItemContentMenu<P, T>
+  | MenuItemCustomComponentBottomOrExtra<P, T>;
 
 export type IMapboxSourceView = IDatasetMap &
   IDataset &

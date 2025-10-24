@@ -30,12 +30,16 @@ const router = createRouter({
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
-      path: '/highlight/',
+      path: '/dataset-highlight/',
       component: () => import('../views/dataset-highlight/example.vue'),
     },
     {
-      path: '/identify/',
+      path: '/dataset-identify/',
       component: () => import('../views/dataset-identify/example.vue'),
+    },
+    {
+      path: '/dataset-menu/',
+      component: () => import('../views/dataset-menu/example.vue'),
     },
     {
       path: '/measurement/',

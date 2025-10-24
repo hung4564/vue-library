@@ -15,8 +15,12 @@ import type {
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
 import { convertItemToFeature } from '../../utils/convert';
 import type { FieldFeaturesDef } from '../field';
-import { createMenuBuilder, createMenuClickBuilder } from './builder';
-import { handleMenuActionClick } from './handle';
+import {
+  createMenuBuilder,
+  createMenuClickAddComponentBuilder,
+  createMenuClickBuilder,
+  createMenuClickHighlightBuilder,
+} from './builder';
 
 export function createWithMenuHelper<
   T extends IDataset = IDataset,
@@ -73,7 +77,7 @@ export function createMenuItemToBoundActionForList(props?: { bbox?: BBox }) {
     .setLocation('extra')
     .setName('Fly to')
     .setIcon(mdiCrosshairsGps)
-    .setClick((layer, mapId) => {
+    .setClick(({ layer, mapId }) => {
       if (props?.bbox) {
         getMap(mapId, (map) => {
           fitBounds(map, props?.bbox);
@@ -93,33 +97,30 @@ export function createMenuItemToBoundActionForList(props?: { bbox?: BBox }) {
 }
 
 export function createMenuItemToBoundActionForItem() {
-  return createMenuBuilder() //  = kiểu layer, bạn thay đúng type nếu có
+  return createMenuBuilder() // = kiểu layer, bạn thay đúng type nếu có
     .item()
     .setLocation('menu')
     .setName('Fly to')
     .setIcon(mdiCrosshairsGps)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('fitBounds', (layer, mapId, value) => [
-          layer,
-          mapId,
-          value.geometry,
-        ])
-        .addTupleDynamic('highlight', (layer, mapId, value) => {
-          const { geometry, ...properties } = value;
-          return [
-            layer,
-            mapId,
-            {
-              detail: {
+        .addTupleDynamic('fitBounds', ({ value }) => ({
+          value: value?.geometry,
+        }))
+        .addTupleDynamic('highlight', ({ value }) => {
+          const { geometry, ...properties } = value || {};
+          return {
+            value: createMenuClickHighlightBuilder()
+              .setDetail({
                 type: 'Feature',
                 geometry,
                 properties,
-              },
-              key: 'identify',
-            },
-          ];
-        }),
+              })
+              .setKey('identify')
+              .build(),
+          };
+        })
+        .build(),
     )
     .build();
 }
@@ -130,100 +131,92 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef = []) {
     .setName('Detail')
     .setId('show-detail')
     .setIcon(mdiInformation)
-    .setClick((layer, mapId, value) => {
+    .setClick((props) => {
       if (fields && fields.length > 0) {
-        const click = createMenuClickBuilder()
-          .addTupleStatic('addComponent', [
-            layer,
-            mapId,
-            {
-              componentKey: 'layer-detail',
-              attr: {
+        return createMenuClickBuilder()
+          .addTupleDynamic('addComponent', ({ value }) => ({
+            value: createMenuClickAddComponentBuilder()
+              .setComponentKey('layer-detail')
+              .setAttr({
                 item: value,
                 fields,
-                view: layer,
-              },
-              check: 'detail',
-            },
-          ])
-          .addTupleStatic('highlight', [
-            layer,
-            mapId,
-            {
-              detail: convertItemToFeature(value),
-              key: 'detail',
-            },
-          ])
-          .build();
-        handleMenuActionClick(click, layer, mapId, value);
-        return;
+                view: props.layer,
+              })
+              .setCheck('detail')
+              .build(),
+          }))
+          .addTupleDynamic('highlight', ({ value }) => ({
+            value: createMenuClickHighlightBuilder()
+              .setDetail(convertItemToFeature(value))
+              .setKey('detail')
+              .build(),
+          }));
       }
-
       const dataManagement = findSiblingOrNearestLeaf(
-        layer,
+        props.layer,
         (dataset) => dataset.type == 'dataManagement',
       ) as unknown as IDataManagementView;
-      dataManagement?.showDetail(mapId, value);
+      dataManagement?.showDetail(props.mapId, props.value);
     })
     .build();
 }
 
-export function createMenuItemShowDetailInfoSource() {
+export function createMenuItemShowDetailInfoSource(
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+) {
   return createMenuBuilder()
     .item()
     .setName('Info')
     .setIcon(mdiInformation)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('addComponent', (layer, mapId) => {
+        .addTupleDynamic('addComponent', ({ layer }) => {
           const source = findSiblingOrNearestLeaf(
             layer,
             (dataset) => dataset.type === 'source',
           ) as IMapboxSourceView | null;
           if (source) {
-            return [
-              layer,
-              mapId,
-              {
-                componentKey: 'layer-detail',
-                attr: {
+            return {
+              value: createMenuClickAddComponentBuilder()
+                .setComponentKey('layer-detail')
+                .setAttr({
                   item: source.getDataInfo(),
                   fields: source.getFieldsInfo(),
                   view: layer,
-                },
-                check: 'detail',
-              },
-            ];
+                })
+                .setCheck('detail')
+                .build(),
+            };
           }
         })
         .build(),
     )
+    .setAdditional(menu)
     .build();
 }
-export function createMenuItemStyleEdit() {
+export function createMenuItemStyleEdit(
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+) {
   return createMenuBuilder()
     .item()
     .setName('Edit style')
     .setIcon(mdiFormatLineStyle)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('addComponent', (layer, mapId) => [
-          layer,
-          mapId,
-          {
-            componentKey: 'style-control',
-            attr: {
-              item: layer,
-            },
-          },
-        ])
+        .addTupleDynamic('addComponent', ({ layer }) => ({
+          value: createMenuClickAddComponentBuilder()
+            .setComponentKey('style-control')
+            .setAttr({ item: layer })
+            .build(),
+        }))
         .build(),
     )
+    .setAdditional(menu)
     .build();
 }
 
 export function createMenuItemToggleShow(
-  menu: Partial<MenuItemBottomOrExtra<IDataset>> = {},
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
 ) {
   return createMenuBuilder()
     .item()
@@ -235,7 +228,7 @@ export function createMenuItemToggleShow(
 }
 
 export function createMenuItemSetOpacity(
-  menu: Partial<MenuItemBottomOrExtra<IDataset>> = {},
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
 ) {
   return createMenuBuilder()
     .item()

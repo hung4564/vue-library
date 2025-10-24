@@ -1,103 +1,194 @@
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
 import { UniversalRegistry } from '../../registry';
+import { type createMenuClickBuilder, createMenuProps } from './builder';
+import type {
+  CommandHandlerMenu,
+  CommandHandlerMenuExecute,
+  MenuItemClick,
+  MenuItemClickCommon,
+  MenuItemHandle,
+  MenuItemProps,
+} from './types';
 
-export function handleMenuAction<T extends IDataset = IDataset>(
-  menu: MenuAction<T>,
-  layer: T,
-  mapId: string,
-  value: any,
-) {
+export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
   if (menu.type !== 'item') return;
 
-  const click = (menu as MenuItemCommon<T>).click;
+  const click = (menu as MenuItemCommon).click;
 
-  handleMenuActionClick(click, layer, mapId, value);
+  handleMenuActionClick(click, props);
+}
+const MAX_DEPTH = 5;
+const logger = loggerFactory.createLogger().setNamespace('menu');
+function logHelper(
+  logger: ReturnType<typeof loggerFactory.createLogger>,
+  ...namespaces: (string | number)[]
+) {
+  namespaces.forEach((namespace, i) => {
+    logger.setNamespace(namespace + '', 2 + i);
+  });
+  return logger;
 }
 
-export function handleMenuActionClick<T extends IDataset = IDataset>(
-  click: MenuItemCommon<T>['click'],
-  layer: T,
-  mapId: string,
-  value: any,
-) {
-  if (!click) {
-    return;
-  }
-  if (typeof click === 'function') {
-    click(layer, mapId, value);
-    return;
-  }
+export function createCommandHandler(
+  canHandle: CommandHandlerMenu['canHandle'],
+  execute: CommandHandlerMenu['execute'],
+): CommandHandlerMenu {
+  return { canHandle, execute };
+}
 
-  // Trường hợp click là string key
-  if (typeof click === 'string') {
-    const handler = UniversalRegistry.getMenuHandler(click, mapId);
-    if (!handler)
+/** Xử lý string action */
+export const StringCommandHandler = createCommandHandler(
+  (click): click is string => typeof click === 'string',
+  async (click, context) => {
+    const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
+    if (!handler) {
       throw new Error(
         `[handleMenuActionClick] No handler found for key: ${click}`,
       );
-    handler(layer, mapId, value);
+    }
+    await handler(context);
+  },
+);
+
+export const FunctionCommandHandler = createCommandHandler(
+  (click): click is (props: MenuItemProps) => any =>
+    typeof click === 'function',
+  async (click, context) => {
+    return await click(context);
+  },
+);
+
+export const BuilderCommandHandler = createCommandHandler(
+  (click): click is ReturnType<typeof createMenuClickBuilder> =>
+    click != null && typeof (click as any).build === 'function',
+  async (click, context) => {
+    const builtClick = (
+      click as ReturnType<typeof createMenuClickBuilder>
+    ).build();
+    await handleMenuActionClick(builtClick, context);
+  },
+);
+
+export const TupleCommandHandler = createCommandHandler(
+  (
+    entry,
+  ): entry is [
+    MenuItemClickCommon,
+    MenuItemHandle<any, any> | Partial<MenuItemProps>,
+  ] => Array.isArray(entry) && entry.length == 2,
+  async ([key, transformer], context) => {
+    let props: MenuItemProps<any, any> = context;
+    if (typeof transformer === 'function') {
+      const result = await transformer(context);
+      props = createMenuProps(context, result);
+    } else if (transformer) {
+      props = createMenuProps(context, transformer);
+    }
+    const commandHandlers: CommandHandlerMenu[] = [
+      BuilderCommandHandler,
+      StringCommandHandler,
+      FunctionCommandHandler,
+      TupleCommandHandler,
+      DirectCommandHandler,
+    ];
+
+    for (const handler of commandHandlers) {
+      if (handler.canHandle(key)) {
+        return handler.execute(key, props);
+      }
+    }
+  },
+);
+export const DirectCommandHandler = createCommandHandler(
+  (click): click is CommandHandlerMenuExecute =>
+    click != null && typeof (click as any).execute === 'function',
+  async (entry, context) => {
+    return entry.execute(entry, context);
+  },
+);
+
+/** Helper kiểm tra builder */
+function isMenuClickBuilder<P, T>(
+  val: any,
+): val is ReturnType<typeof createMenuClickBuilder<P, T>> {
+  return val != null && typeof val.build === 'function';
+}
+
+/** Helper normalize kết quả action */
+async function resolveActionResult<P, T>(
+  result: any,
+): Promise<MenuItemClick<P, T> | void> {
+  if (isMenuClickBuilder(result)) return result.build();
+  return undefined;
+}
+
+/** Hàm chính handleMenuActionClick */
+export async function handleMenuActionClick<P = any, T = IDataset>(
+  action: MenuItemClick<P, T>,
+  context: MenuItemProps<P, T>,
+  depth = 0,
+) {
+  if (!action) return;
+  if (depth > MAX_DEPTH) {
+    console.warn('[handleMenuActionClick] Max recursion depth reached.');
     return;
   }
 
-  if (Array.isArray(click)) {
-    for (const entry of click) {
-      if (typeof entry === 'string') {
-        const handler = UniversalRegistry.getMenuHandler(entry, mapId);
-        if (!handler)
-          throw new Error(
-            `[handleMenuActionClick] No handler found for key: ${entry}`,
-          );
-        handler(layer, mapId, value);
-        continue;
-      }
+  const actions = Array.isArray(action) ? action : [action];
 
-      if (!Array.isArray(entry) || typeof entry[0] !== 'string') {
-        throw new Error(
-          '[handleMenuActionClick] Invalid entry in click array: ' +
-            JSON.stringify(entry),
+  const commandHandlers: CommandHandlerMenu[] = [
+    BuilderCommandHandler,
+    StringCommandHandler,
+    FunctionCommandHandler,
+    TupleCommandHandler,
+    DirectCommandHandler,
+  ];
+  for (const [index, entry] of actions.entries()) {
+    logHelper(logger, 'handleMenuActionClick', depth).debug(
+      'Executing function action',
+      entry,
+    );
+    let handled = false;
+
+    for (const handler of commandHandlers) {
+      if (handler.canHandle(entry)) {
+        logHelper(logger, 'handleMenuActionClick', depth, index).debug(
+          `Context`,
+          {
+            context,
+            handler,
+          },
         );
-      }
+        const result = await handler.execute(entry, context);
+        logHelper(logger, 'handleMenuActionClick', depth, index).debug(
+          `Handler executed`,
+          {
+            handler: handler.constructor.name,
+            entry,
+          },
+        );
 
-      const [key, transformer] = entry;
+        const nextAction = await resolveActionResult(result);
 
-      let result: [T, string, any] | undefined;
-
-      if (Array.isArray(transformer)) {
-        if (transformer.length !== 3) {
-          throw new Error(
-            `[handleMenuActionClick] Transformer tuple must have 3 elements [T, string, any] for key: ${key}`,
+        if (nextAction) {
+          logHelper(logger, 'handleMenuActionClick', depth, index).debug(
+            `Recursing with next action`,
+            {
+              nextAction,
+              depth: depth + 1,
+            },
           );
+          await handleMenuActionClick(nextAction, context, depth + 1);
         }
-        result = transformer as [T, string, any];
-      } else if (typeof transformer === 'function') {
-        result = transformer(layer, mapId, value);
-      } else {
-        throw new Error(
-          `[handleMenuActionClick] Invalid transformer for key: ${key}, must be tuple or function`,
-        );
-      }
 
-      if (!result) {
-        console.warn(
-          `[handleMenuActionClick] Transformer returned undefined for key: ${key}`,
-        );
-        continue;
+        handled = true;
+        break;
       }
-
-      const [customLayer, customMapId, customValue] = result;
-      const handler = UniversalRegistry.getMenuHandler(key, mapId);
-      if (!handler)
-        throw new Error(
-          `[handleMenuActionClick] No handler found for key: ${key}`,
-        );
-      handler(customLayer, customMapId, customValue);
     }
 
-    return;
+    if (!handled) {
+      console.warn('[handleMenuActionClick] Unknown entry:', entry);
+    }
   }
-
-  // Nếu click không phải function, string hoặc array
-  throw new Error(
-    `[handleMenuActionClick] Invalid click type: ${typeof click}`,
-  );
 }

@@ -7,20 +7,22 @@ import { Base } from './base';
  * complex objects of a composition.
  */
 abstract class DatasetComponent<T = any> extends Base implements IDataset {
-  protected parent?: DatasetComponent;
+  protected parent?: IDataset;
   protected name: string;
   protected data?: T;
   abstract type: string;
+  dependsOn?: string[] = [];
+
   constructor(name: string, data?: T) {
     super();
     this.name = name;
     this.data = data;
   }
-  public setParent(parent?: DatasetComponent) {
+  public setParent(parent?: IDataset) {
     this.parent = parent;
   }
 
-  public getParent(): DatasetComponent | undefined {
+  public getParent(): IDataset | undefined {
     return this.parent;
   }
   /**
@@ -47,6 +49,20 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
   }
   setData(data: any) {
     this.data = data;
+  }
+
+  addDependsOn(input: string | IDataset): void {
+    const id = typeof input === 'string' ? input : input.id;
+    if (!this.dependsOn) this.dependsOn = [];
+    if (!this.dependsOn.includes(id)) {
+      this.dependsOn.push(id);
+    }
+  }
+
+  removeDependsOn(input: string | IDataset): void {
+    const id = typeof input === 'string' ? input : input.id;
+    if (!this.dependsOn) this.dependsOn = [];
+    this.dependsOn = this.dependsOn.filter((dep) => dep !== id);
   }
 }
 /**

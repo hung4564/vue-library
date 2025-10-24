@@ -1,5 +1,6 @@
 import { logHelper } from '@hungpvq/shared-map';
 import { defineStore } from '@hungpvq/shared-store';
+import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
@@ -7,7 +8,7 @@ import type { IDataset } from '../interfaces';
 import { logger } from '../logger';
 
 export type MapDatasetHighlightStore = {
-  feature: Ref<GeoJSONFeature | undefined>;
+  feature: Ref<Feature | GeoJSONFeature | undefined>;
   source: Ref<string | undefined>;
   dataset?: IDataset;
 };
@@ -30,7 +31,7 @@ export const useMapDatasetHighlight = (mapId: string) => {
     return store;
   }
   function setFeatureHighlight(
-    feature: GeoJSONFeature | undefined,
+    feature: Feature | GeoJSONFeature | undefined,
     source: string,
     dataset?: IDataset,
   ) {

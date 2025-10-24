@@ -20,7 +20,11 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
-import { handleMenuActionClick } from '../../extra/menu';
+import {
+  createMenuClickAddComponentBuilder,
+  createMenuClickBuilder,
+  handleMenuActionClick,
+} from '../../extra/menu';
 import type { IDataset } from '../../interfaces/dataset.base';
 import { useMapDataset } from '../../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -63,25 +67,18 @@ function getViewFromStore() {
 }
 function onShowDetail(view: IDataset) {
   handleMenuActionClick(
-    [
-      [
-        'addComponent',
-        [
-          view,
-          mapId.value,
-          {
-            componentKey: 'dataset-detail',
-            attr: {
-              dataset: view,
-            },
-            check: 'detail-dataset',
-          },
-        ],
-      ],
-    ],
-    view,
-    mapId.value,
-    view,
+    createMenuClickBuilder()
+      .addTupleStatic('addComponent', {
+        value: createMenuClickAddComponentBuilder()
+          .setComponentKey('dataset-detail')
+          .setAttr({
+            dataset: view,
+          })
+          .setCheck('detail-dataset')
+          .build(),
+      })
+      .build(),
+    { layer: view, mapId: mapId.value, value: view },
   );
 }
 function onRemove(view: IDataset) {

@@ -43,10 +43,15 @@
             <RouterLink to="/measurement">measurement </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/highlight">Dataset - Highlight </RouterLink>
+            <RouterLink to="/dataset-highlight"
+              >Dataset - Highlight
+            </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/identify">Dataset - Identify </RouterLink>
+            <RouterLink to="/dataset-identify">Dataset - Identify </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/dataset-menu">Dataset - Menu </RouterLink>
           </v-list-item>
         </v-list>
       </DraggableItemSideBar>

@@ -1,4 +1,5 @@
 import type { MapSimple } from '@hungpvq/shared-map';
+import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { WithDataHelper } from '../../extra';
 import type { IDataset } from '../../interfaces';
@@ -20,7 +21,7 @@ export type IHighlightView = ISimpleHighlightView | IComplexHighlightView;
 export type HighlightHandle = {
   startAnimation(props: {
     map: MapSimple;
-    feature?: GeoJSONFeature;
+    feature?: Feature | GeoJSONFeature;
     durationMs?: number;
   }): void;
   stopAnimation(map: MapSimple): void;

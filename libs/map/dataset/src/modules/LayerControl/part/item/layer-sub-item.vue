@@ -20,7 +20,7 @@
             :item="menu"
             :data="item"
             :mapId="mapId"
-            @click="onLayerAction(menu)"
+            @click="onLayerAction($event, menu)"
           />
         </template>
         <BaseButton
@@ -69,8 +69,8 @@ const content_menus = computed(() => {
     .filter((x) => x.location == 'menu')
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
-function onLayerAction(action: MenuAction<IListViewUI>) {
-  emit('click:action', { action, item: props.item });
+function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
+  emit('click:action', { event, action, item: props.item });
 }
 function handleContextClick(event: MouseEvent) {
   emit('click:content-menu', {

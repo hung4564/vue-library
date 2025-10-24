@@ -23,7 +23,8 @@ const items = shallowRef<{ level: number; path: number[]; node: IDataset }[]>(
 watch(
   () => props.dataset,
   (newVal) => {
-    traverseTree(props.dataset, (node, level, path) => {
+    items.value = [];
+    traverseTree(newVal, (node, level, path) => {
       items.value.push({
         node,
         level,

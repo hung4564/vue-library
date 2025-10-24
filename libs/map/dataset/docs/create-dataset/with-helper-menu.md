@@ -110,7 +110,7 @@ This function is used to trigger the action associated with a menu item. It is t
 **Signature:**
 
 ```typescript
-handleMenuAction(menu: MenuAction, layer: IDataset, mapId: string, value: any): void
+handleMenuAction(menu: MenuAction, {layer: IDataset, mapId: string, value: any}): void
 ```
 
 - `menu`: The menu action object (from your menu definition)
@@ -124,7 +124,7 @@ handleMenuAction(menu: MenuAction, layer: IDataset, mapId: string, value: any): 
 import { handleMenuAction } from '@hungpvq/vue-map-dataset';
 
 function onMenuClick(action, item, mapId) {
-  handleMenuAction(action, item, mapId, item);
+  handleMenuAction(action, { layer: item, mapId, value: item });
 }
 ```
 
@@ -156,7 +156,7 @@ handleMenuActionClick(menu.click, layer, mapId, value);
 
 ```typescript
 function onLayerAction({ action, item }) {
-  handleMenuAction(action, item, mapId, item);
+  handleMenuAction(action, { layer: item, mapId, value: item });
 }
 ```
 
@@ -227,8 +227,8 @@ const chainMenu = createMenuBuilder()
   .setIcon(mdiInformation)
   .setClick(
     createMenuClickBuilder()
-      .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'detail-dialog', attr: { item: layer } }])
-      .addTupleStatic('fitBounds', [layer, mapId, {}])
+      .addTupleStatic('addComponent', { layer, mapId, value: { componentKey: 'detail-dialog', attr: { item: layer } } })
+      .addTupleStatic('fitBounds', { layer, mapId, value: {} })
       .build(),
   )
   .build();
@@ -259,21 +259,21 @@ import { createMenuClickBuilder } from '@hungpvq/vue-map-dataset';
 
 const menuClick = createMenuClickBuilder()
   .addCommand('showDetail') // Add a command string (must be globally handled)
-  .addHandler((layer, mapId, value) => {
+  .addCommand(({ layer, mapId, value }) => {
     // Add a direct handler function
     // Custom logic here
   })
-  .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'dialog', attr: { item: layer } }]) // Add a tuple [key, static args]
-  .addTupleDynamic('fitBounds', (layer, mapId, value) => [layer, mapId, value]) // Add a tuple with dynamic argument
+  .addTupleStatic('addComponent', { layer, mapId, value: { componentKey: 'dialog', attr: { item: layer } } }) // Add a tuple [key, static args]
+  .addTupleDynamic('fitBounds', ({ layer, mapId, value }) => ({ layer, mapId, value })) // Add a tuple with dynamic argument
   .build();
 ```
 
 #### Available Methods
 
 - `.addCommand(cmd: string)`: Add a named command (resolved by UniversalRegistry handler).
+- `.addCommand(fn)`: Add a direct handler (function signature: `({layer, mapId, value})`).
 - `.addCommands(cmds: string[])`: Add multiple commands (all will be executed).
-- `.addHandler(fn)`: Add a direct handler (function signature: `(layer, mapId, value)`).
-- `.addTupleStatic(key: string, tuple: [layer, mapId, data])`: Add a tuple-action with static parameters (shortcut for common chained UI actions).
+- `.addTupleStatic(key: string, tuple: MenuItemProps)`: Add a tuple-action with static parameters (shortcut for common chained UI actions).
 - `.addTupleDynamic(key: string, fn)`: Add a tuple-action where arguments are computed at runtime by a function.
 - `.build()`: Compile the builder into a single `MenuItemClick` handler (function, string, or array depending on complexity).
 
@@ -281,9 +281,9 @@ const menuClick = createMenuClickBuilder()
 
 ```typescript
 const complexClick = createMenuClickBuilder()
-  .addTupleStatic('addComponent', [layer, mapId, { componentKey: 'analysis-dialog', attr: { item: layer } }])
-  .addTupleStatic('highlight', [layer, mapId, { detail: layer.feature, key: 'analysis-detail' }])
-  .addHandler((layer) => console.log('Action done!', layer))
+  .addTupleStatic('addComponent', { value: { componentKey: 'analysis-dialog', attr: { item: layer } } })
+  .addTupleStatic('highlight', { value: { detail: layer.feature, key: 'analysis-detail' } })
+  .addCommand(({ layer }: MenuItemProps) => console.log('Action done!', layer))
   .build();
 
 const analysisMenu = createMenuBuilder().item().setName('Analyze & Highlight').setIcon(mdiFormatLineStyle).setClick(complexClick).build();

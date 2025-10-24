@@ -63,7 +63,7 @@ function onMapClick(e: MapMouseEvent) {
     'FIRST',
     'IdentifyShowFirstControl',
   ).debug('onMapClick', { event: e });
-  onGetFeatures(e.point);
+  onGetFeatures(e);
 }
 logHelper(
   loggerIdentify,
@@ -76,7 +76,7 @@ const result = reactive<{
 }>({
   loading: false,
 });
-function onSelectFeatures(feature: IdentifyResult) {
+function onSelectFeatures(feature: IdentifyResult, event?: MapMouseEvent) {
   logHelper(
     loggerIdentify,
     mapId.value,
@@ -102,6 +102,7 @@ function onSelectFeatures(feature: IdentifyResult) {
         feature.identify,
         menu as any,
         convertFeatureToItem(feature.feature.data),
+        event,
       );
     } else if (feature.identify.showDetail) {
       logHelper(
@@ -117,7 +118,8 @@ function onSelectFeatures(feature: IdentifyResult) {
 const cUsedIdentify = computed(() => {
   return views.value;
 });
-async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
+async function onGetFeatures(e: MapMouseEvent) {
+  const pointOrBox = e.point;
   logHelper(
     loggerIdentify,
     mapId.value,
@@ -137,7 +139,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
       'FIRST',
       'IdentifyShowFirstControl',
     ).debug('onGetFeatures', { feature });
-    onSelectFeatures(feature);
+    onSelectFeatures(feature, e);
   } finally {
     result.loading = false;
   }
@@ -147,8 +149,14 @@ function onMenuAction(
   identify: IIdentifyView & IDataset,
   menu: MenuAction<IIdentifyView & IDataset>,
   item: any,
+  event?: MapMouseEvent | MouseEvent,
 ) {
-  handleMenuAction(menu, identify, mapId.value, item);
+  handleMenuAction(menu, {
+    event,
+    layer: identify,
+    mapId: mapId.value,
+    value: item,
+  });
 }
 onMounted(() => {
   addEventClick();

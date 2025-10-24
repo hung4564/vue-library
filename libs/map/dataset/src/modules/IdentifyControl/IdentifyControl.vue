@@ -117,7 +117,7 @@ function onMapClick(e: MapMouseEvent) {
   );
   origin.latitude = e.lngLat.lat;
   origin.longitude = e.lngLat.lng;
-  onGetFeatures(e.point);
+  onGetFeatures(e);
 }
 function onBboxSelect(bbox: any) {
   if (isEventClickActive.value) return;
@@ -146,7 +146,10 @@ const currentPoint = computed(() => {
 const hasSelectedPoint = computed(() => {
   return origin.latitude !== 0 || origin.longitude !== 0;
 });
-function onSelectFeatures(features: IdentifyMultiResult[]) {
+function onSelectFeatures(
+  event?: MapMouseEvent,
+  features: IdentifyMultiResult[] = [],
+) {
   logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
     'onSelectFeatures',
     features,
@@ -165,10 +168,12 @@ function onSelectFeatures(features: IdentifyMultiResult[]) {
         features[0].identify,
         menu as any,
         features[0].features[0].data,
+        event,
       );
   }
 }
-async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
+async function onGetFeatures(e: MapMouseEvent) {
+  const pointOrBox = e.point;
   result.loading = true;
   try {
     logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
@@ -190,6 +195,7 @@ async function onGetFeatures(pointOrBox?: PointLike | [PointLike, PointLike]) {
       { features },
     );
     onSelectFeatures(
+      e,
       features.filter(
         (item) => 'features' in item && item.features.length > 0,
       ) as any,
@@ -206,7 +212,7 @@ function toggleShow() {
 function close() {
   onRemoveIdentify();
   setFeatureHighlight(undefined, 'identify');
-  onSelectFeatures([]);
+  onSelectFeatures(undefined, []);
 }
 function onRemoveIdentify() {
   if (props.immediately) {
@@ -251,8 +257,18 @@ function onRemoveBox() {
   }, 500);
 }
 
-function onMenuAction(identify: IIdentifyView, menu: MenuAction, item: any) {
-  handleMenuAction(menu, identify, mapId.value, item);
+function onMenuAction(
+  identify: IIdentifyView,
+  menu: MenuAction,
+  item: any,
+  event?: MapMouseEvent | MouseEvent,
+) {
+  handleMenuAction(menu, {
+    event,
+    layer: identify,
+    mapId: mapId.value,
+    value: item,
+  });
 }
 onMounted(() => {
   if (props.immediately) onUseMapClick();
@@ -404,7 +420,12 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
                           <MenuItem
                             :item="menu"
                             @click="
-                              onMenuAction(child.identify, menu, child.data)
+                              onMenuAction(
+                                child.identify,
+                                menu,
+                                child.data,
+                                $event,
+                              )
                             "
                           />
                         </template>

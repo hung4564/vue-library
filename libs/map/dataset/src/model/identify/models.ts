@@ -2,7 +2,9 @@ import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import {
+  createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
+  createMenuClickHighlightBuilder,
   createWithMenuHelper,
   handleMenuActionClick,
 } from '../../extra';
@@ -56,37 +58,31 @@ export function createDatasetPartIdentifyComponent(
       return features.map(convertFeatureToItem<Data>);
     },
     showDetail(mapId: string, feature: MapGeoJSONFeature) {
-      const clickBuilder = createMenuClickBuilder().addTupleStatic(
+      const clickBuilder = createMenuClickBuilder().addTupleDynamic(
         'highlight',
-        [
-          dataset,
-          mapId,
-          {
-            detail: convertFeatureToItem(feature),
-            key: 'detail',
-          },
-        ],
+        () => ({
+          value: createMenuClickHighlightBuilder()
+            .setDetail(convertFeatureToItem(feature))
+            .setKey('detail')
+            .build(),
+        }),
       );
-
       if (config.fields && config.fields.length > 0) {
-        clickBuilder.addTupleStatic('addComponent', [
-          dataset,
-          mapId,
-          {
-            componentKey: 'layer-detail',
-            attr: {
+        clickBuilder.addTupleDynamic('addComponent', ({ layer }) => ({
+          value: createMenuClickAddComponentBuilder()
+            .setComponentKey('layer-detail')
+            .setAttr({
               item: convertFeatureToItem(feature),
               fields: config.fields,
-              view: dataset,
-            },
-            check: 'detail',
-          },
-        ]);
+              view: layer,
+            })
+            .setCheck('detail')
+            .build(),
+        }));
       }
-
       // build ra MenuItemClick
       const menus: MenuItemCommon<any>['click'] = clickBuilder.build();
-      handleMenuActionClick(menus, dataset, mapId, feature);
+      handleMenuActionClick(menus, { layer: dataset, mapId, value: feature });
     },
   });
   return dataset;

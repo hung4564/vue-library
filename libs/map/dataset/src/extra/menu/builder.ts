@@ -1,14 +1,15 @@
-import type {
-  IDataset,
-  MenuAction,
-  MenuItemClick,
-  MenuItemHandle,
-} from '../../interfaces';
+import type { Feature } from 'geojson';
+import type { IDataset, MenuAction } from '../../interfaces';
 
-export interface WithMenuBuilder<T = IDataset> {
-  addMenu(menu: MenuAction<T>): this;
-  addMenus(menusToAdd: MenuAction<T>[]): this;
-}
+import type {
+  CommandHandlerMenuExecute,
+  MenuItemClick,
+  MenuItemClickCommon,
+  MenuItemClickHandle,
+  MenuItemHandle,
+  MenuItemProps,
+  WithMenuBuilder,
+} from './types';
 
 export function addMenuBuilder<
   TBuilder extends { build: (...args: any[]) => any },
@@ -100,49 +101,154 @@ export function createMenuBuilder<T = IDataset>() {
   };
 }
 
-export function createMenuClickBuilder<T = IDataset>() {
+export function createMenuClickBuilder<P = any, T = any>() {
   const actions: any[] = [];
 
   return {
     // case 1: string
-    addCommand(cmd: string) {
+    addCommand(cmd: MenuItemClickCommon<P, T> | MenuItemClickHandle<P, T>) {
       actions.push(cmd);
       return this;
     },
 
     // case 2: string[]
-    addCommands(cmds: string[]) {
+    addCommands(
+      cmds: (MenuItemClickCommon<P, T> | MenuItemClickHandle<P, T>)[],
+    ) {
       actions.push(cmds);
       return this;
     },
 
-    // case 3: handler trực tiếp
-    addHandler(handler: MenuItemHandle<T>) {
-      actions.push(handler);
-      return this;
-    },
-
-    // case 4: tuple dạng [key, [T, string, any]]
-    addTupleStatic(key: string, tuple: [T, string, any]) {
+    // case 3: tuple dạng { layer: T, mapId: string, value?: any }
+    addTupleStatic(
+      key: MenuItemClickCommon<P, T>,
+      tuple: Partial<MenuItemProps>,
+    ) {
       actions.push([key, tuple]);
       return this;
     },
 
-    // case 5: tuple dạng [key, MenuItemHandle<T>]
-    addTupleDynamic(key: string, fn: MenuItemHandle<T>) {
+    // case 4: tuple dạng [key, MenuItemHandle<T>]
+    addTupleDynamic(key: MenuItemClickCommon<P, T>, fn: MenuItemHandle<P, T>) {
       actions.push([key, fn]);
       return this;
     },
 
     // build: nếu chỉ có 1 action thì return nó, còn lại thì array
-    build(): MenuItemClick<T> {
+    build<P, T>(): MenuItemClick<P, T> {
       if (
         actions.length === 1 &&
         (typeof actions[0] === 'string' || typeof actions[0] === 'function')
       ) {
-        return actions[0] as MenuItemClick<T>;
+        return actions[0] as MenuItemClick<P, T>;
       }
-      return actions as MenuItemClick<T>;
+      return actions as MenuItemClick<P, T>;
     },
   };
+}
+export function createMenuProps<P, T>(
+  base: Partial<MenuItemProps<P, T>>,
+  extra?: Partial<MenuItemProps<P, T>>,
+): MenuItemProps<P, T> {
+  return {
+    mapId: base.mapId!,
+    layer: base.layer!,
+    value: extra?.value ?? base.value,
+    meta: { ...base.meta, ...extra?.meta },
+    context: { ...base.context, ...extra?.context },
+  };
+}
+export interface MenuClickAddComponent {
+  componentKey: string;
+  attr?: Record<string, any>;
+  check?: string;
+}
+
+export function createMenuClickAddComponentBuilder(
+  initial?: Partial<MenuClickAddComponent>,
+) {
+  const config: Partial<MenuClickAddComponent> = { ...initial };
+
+  const builder = {
+    setComponentKey(key: string) {
+      config.componentKey = key;
+      return builder;
+    },
+    setAttr(attr: Record<string, any>) {
+      config.attr = attr;
+      return builder;
+    },
+    setCheck(check: string) {
+      config.check = check;
+      return builder;
+    },
+    build(): MenuClickAddComponent {
+      const { componentKey, attr, check } = config;
+      if (!componentKey) throw new Error('componentKey is required');
+      return { componentKey, attr, check };
+    },
+  };
+
+  return builder;
+}
+export interface MenuClickHighlight {
+  detail: Feature;
+  key: string;
+}
+
+export function createMenuClickHighlightBuilder(
+  initial?: Partial<MenuClickHighlight>,
+) {
+  const config: Partial<MenuClickHighlight> = { ...initial };
+
+  const builder = {
+    /** Thiết lập giá trị cho detail */
+    setDetail(detail: Feature) {
+      config.detail = detail;
+      return builder;
+    },
+
+    /** Thiết lập giá trị cho key */
+    setKey(key: string) {
+      config.key = key;
+      return builder;
+    },
+
+    /** Trả về object cuối cùng */
+    build(): MenuClickHighlight {
+      const { detail, key } = config;
+      if (!key) throw new Error('key is required');
+      if (detail === undefined) throw new Error('detail is required');
+      return { detail, key };
+    },
+  };
+
+  return builder;
+}
+
+export interface MenuClickFitBounds {
+  detail: Feature;
+}
+
+export function createMenuClickFitBoundsBuilder(
+  initial?: Partial<MenuClickFitBounds>,
+) {
+  const config: Partial<MenuClickFitBounds> = { ...initial };
+
+  const builder = {
+    /** Thiết lập giá trị cho detail */
+    setDetail(detail: Feature) {
+      config.detail = detail;
+      return builder;
+    },
+
+    /** Trả về object cuối cùng */
+    build(): MenuClickFitBounds {
+      const { detail } = config;
+      if (detail === undefined) throw new Error('detail is required');
+      return { detail };
+    },
+  };
+
+  return builder;
 }
