@@ -53,6 +53,9 @@
           <v-list-item>
             <RouterLink to="/dataset-menu">Dataset - Menu </RouterLink>
           </v-list-item>
+          <v-list-item>
+            <RouterLink to="/dataset-list">Dataset - List </RouterLink>
+          </v-list-item>
         </v-list>
       </DraggableItemSideBar>
     </template>
