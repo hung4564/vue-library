@@ -13,7 +13,7 @@ const actions: MeasureActionItem[] = [
     icon: mdiPlus,
     type: 'add-to-layer',
     handle: (data) => {
-      console.log('add to layer', data);
+      console.info('add to layer', data);
     },
     disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
     index: 0,

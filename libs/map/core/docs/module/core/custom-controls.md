@@ -24,7 +24,7 @@ const props = withDefaults(
 const { moduleContainerProps } = useMap(props);
 
 function handleClick() {
-  console.log('Custom control clicked!');
+  console.info('Custom control clicked!');
 }
 </script>
 

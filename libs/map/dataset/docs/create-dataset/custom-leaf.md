@@ -89,7 +89,7 @@ const myLeaf = {
   type: 'my-custom-type',
 };
 root.add(myLeaf);
-console.log(myLeaf.getData()); // { custom: 123 }
+console.info(myLeaf.getData()); // { custom: 123 }
 ```
 
 ---

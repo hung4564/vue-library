@@ -53,7 +53,7 @@ import '@hungpvq/vue-map-core/style.css';
 const mapId = ref(getUUIDv4());
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```
@@ -93,7 +93,7 @@ import '@hungpvq/vue-map-core/style.css';
 const mapId = ref(getUUIDv4());
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```
@@ -237,15 +237,15 @@ const initOptions = ref({
 });
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 
   // Add custom event listeners
   map.on('click', (e: any) => {
-    console.log('Map clicked:', e.lngLat);
+    console.info('Map clicked:', e.lngLat);
   });
 
   map.on('move', () => {
-    console.log('Map moved:', map.getCenter());
+    console.info('Map moved:', map.getCenter());
   });
 }
 </script>

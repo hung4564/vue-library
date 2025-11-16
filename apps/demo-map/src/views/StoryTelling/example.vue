@@ -103,8 +103,8 @@ const chapters = [
     actions: [
       createCustomAction(
         'log',
-        () => console.log('Chapter 9 started'),
-        () => console.log('Chapter 9 ended')
+        () => console.info('Chapter 9 started'),
+        () => console.info('Chapter 9 ended'),
       ),
     ],
   },
@@ -127,7 +127,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
     autoPlay: false,
     autoNext: true,
     loop: false,
-  }
+  },
 );
 </script>
 <template>

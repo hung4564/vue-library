@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import {
-  useConvertToGeoJSON,
-  useDownloadFile,
-  useGeoConvertToFile,
-} from '@hungpvq/shared-file';
 import { type MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
@@ -13,7 +8,6 @@ import {
   FullScreenControl,
   GeoLocateControl,
   getChartRandomColor,
-  getMap,
   GlobeControl,
   GotoControl,
   HomeControl,
@@ -24,7 +18,6 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  createDataManagementMapboxComponent,
   createDatasetPartChangeColorHighlightComponent,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
@@ -37,7 +30,6 @@ import {
   createDatasetPartSubListViewUiComponent,
   createGroupDataset,
   createLegend,
-  createMenuItem,
   createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
   createMenuItemStyleEdit,
@@ -48,23 +40,15 @@ import {
   createMultiMapboxLayerComponent,
   createRootDataset,
   DatasetControl,
-  findSiblingOrNearestLeaf,
   IdentifyControl,
   IdentifyShowFirstControl,
-  isDataManagementView,
-  isDatasetMap,
   LayerControl,
   LayerHighlight,
   LayerSimpleMapboxBuild,
   LayerStyleType,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import {
-  DrawControl,
-  DrawingType,
-  InspectControl,
-  useMapDraw,
-} from '@hungpvq/vue-map-draw';
+import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { LegendControl } from '@hungpvq/vue-map-legend';
 import {
   type MeasureActionItem,
@@ -72,14 +56,11 @@ import {
   type MeasurementHandleType,
 } from '@hungpvq/vue-map-measurement';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
-import { mdiDownload, mdiPencil, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import AsideControl from '../layout/aside-control.vue';
-const { downloadFile } = useDownloadFile();
 const mapRef = ref();
 
-const { convertList } = useConvertToGeoJSON();
-const { convert } = useGeoConvertToFile();
 const mapId = ref(getUUIDv4());
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
@@ -96,7 +77,46 @@ function createGroupList() {
   const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: [],
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '1',
+          name: 'feature 1',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [105.10817952195043, 21.050029106661356],
+              [105.10817952195043, 19.961732003782615],
+              [106.80427041351669, 19.961732003782615],
+              [106.80427041351669, 21.050029106661356],
+              [105.10817952195043, 21.050029106661356],
+            ],
+          ],
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          id: '2',
+          name: 'feature 2',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [105.82392138476081, 21.494059069396187],
+              [105.82392138476081, 20.15562313445362],
+              [107.54944851193875, 20.15562313445362],
+              [107.54944851193875, 21.494059069396187],
+              [105.82392138476081, 21.494059069396187],
+            ],
+          ],
+        },
+      },
+    ],
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test area');
@@ -152,8 +172,6 @@ function createGroupList() {
   list2.addMenus([
     createMenuItemToggleShow(),
     createMenuItemToBoundActionForList(),
-    createMenuDrawLayer(),
-    createMenuDownload(),
   ]);
   const metadataForList2 = createDatasetPartMetadataComponent(
     'metadata for list2',
@@ -175,7 +193,7 @@ function createGroupList() {
   )
     .addMenus([
       createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem(),
+      createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
     ])
     .build();
   const identify1 = createDatasetPartIdentifyComponentBuilder(
@@ -183,7 +201,13 @@ function createGroupList() {
   )
     .addMenus([
       createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem(),
+      createMenuItemShowDetailForItem([
+        { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+      ]),
     ])
     .build();
   const identify2 = createDatasetPartIdentifyComponentBuilder(
@@ -191,7 +215,13 @@ function createGroupList() {
   )
     .addMenus([
       createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem(),
+      createMenuItemShowDetailForItem([
+        { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+        { text: 'Name', value: 'name' },
+      ]),
     ])
     .build();
   const group = { id: 'test', name: 'test' };
@@ -202,54 +232,7 @@ function createGroupList() {
   groupLayer2.add(list2);
   groupLayer2.add(identify2);
   groupLayer2.add(metadataForList2);
-  const dataManagement = createDataManagementMapboxComponent(
-    'data management',
-    {
-      fields: [
-        { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-      ],
-    },
-  );
-  dataManagement.setItems([
-    {
-      id: '1',
-      name: 'feature 1',
-      geometry: {
-        coordinates: [
-          [
-            [105.10817952195043, 21.050029106661356],
-            [105.10817952195043, 19.961732003782615],
-            [106.80427041351669, 19.961732003782615],
-            [106.80427041351669, 21.050029106661356],
-            [105.10817952195043, 21.050029106661356],
-          ],
-        ],
-        type: 'Polygon',
-      },
-    },
-    {
-      id: '2',
-      name: 'feature 2',
-      geometry: {
-        coordinates: [
-          [
-            [105.82392138476081, 21.494059069396187],
-            [105.82392138476081, 20.15562313445362],
-            [107.54944851193875, 20.15562313445362],
-            [107.54944851193875, 21.494059069396187],
-            [105.82392138476081, 21.494059069396187],
-          ],
-        ],
-        type: 'Polygon',
-      },
-    },
-  ]);
   dataset.add(source);
-  dataset.add(dataManagement);
   dataset.add(groupLayer1);
   dataset.add(groupLayer2);
   dataset.add(identify);
@@ -288,7 +271,24 @@ function createDatasetLineString() {
   const dataset = createRootDataset('Group DatasetLineString');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: [],
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '2',
+          name: 'feature 2',
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [104.3289285884349, 21.35998263691249],
+            [105.11257582166496, 21.70421219227839],
+            [105.16699576841705, 21.35998263691249],
+            [104.89489603465671, 21.39038859819064],
+          ],
+        },
+      },
+    ],
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test line string');
@@ -309,33 +309,11 @@ function createDatasetLineString() {
   const identify = createDatasetPartIdentifyComponentBuilder('test identify')
     .addMenus([
       createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem(),
+      createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
     ])
     .build();
   dataset.add(identify);
-  const dataManagement = createDataManagementMapboxComponent(
-    'data management',
-    {
-      fields: [{ text: 'Name', value: 'name' }],
-    },
-  );
-  dataManagement.setItems([
-    {
-      id: '2',
-      name: 'feature 2',
-      geometry: {
-        coordinates: [
-          [104.3289285884349, 21.35998263691249],
-          [105.11257582166496, 21.70421219227839],
-          [105.16699576841705, 21.35998263691249],
-          [104.89489603465671, 21.39038859819064],
-        ],
-        type: 'LineString',
-      },
-    },
-  ]);
   dataset.add(source);
-  dataset.add(dataManagement);
   dataset.add(groupLayer1);
   return dataset;
 }
@@ -343,7 +321,19 @@ function createDatasetPoint() {
   const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: [],
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '2',
+          name: 'feature 2',
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [106.26447460804093, 20.9143362367018],
+        },
+      },
+    ],
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test point');
@@ -366,28 +356,11 @@ function createDatasetPoint() {
   const identify = createDatasetPartIdentifyComponentBuilder('test identify')
     .addMenus([
       createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem(),
+      createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
     ])
     .build();
   dataset.add(identify);
-  const dataManagement = createDataManagementMapboxComponent(
-    'data management',
-    {
-      fields: [{ text: 'Name', value: 'name' }],
-    },
-  );
-  dataManagement.setItems([
-    {
-      id: '2',
-      name: 'feature 2',
-      geometry: {
-        coordinates: [106.26447460804093, 20.9143362367018],
-        type: 'Point',
-      },
-    },
-  ]);
   dataset.add(source);
-  dataset.add(dataManagement);
   dataset.add(groupLayer1);
   return dataset;
 }
@@ -450,71 +423,6 @@ function createDatasetGeojsonWithIdentify() {
   dataset.add(source);
   dataset.add(groupLayer);
   return dataset;
-}
-function createMenuDownload() {
-  return createMenuItem({
-    type: 'item',
-    name: 'Download',
-    icon: mdiDownload,
-    click: async ({ layer }) => {
-      const maybeDataManagement = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type === 'dataManagement',
-      );
-
-      if (isDataManagementView(maybeDataManagement)) {
-        const data = await convert(
-          convertList((await maybeDataManagement.getList()) || []),
-          {
-            filename: 'download.geojson',
-          },
-        );
-        if (data) downloadFile(data, 'download.geojson');
-      }
-    },
-  });
-}
-function createMenuDrawLayer() {
-  return createMenuItem({
-    type: 'item',
-    name: 'Edit feature',
-    icon: mdiPencil,
-    click: ({ layer, mapId }) => {
-      const { callDraw } = useMapDraw(mapId);
-      const maybeDataManagement = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type === 'dataManagement',
-      );
-      if (isDataManagementView(maybeDataManagement)) {
-        callDraw({
-          cleanAfterDone: true,
-          draw_support: [
-            DrawingType.POINT,
-            DrawingType.POLYGON,
-            DrawingType.LINE_STRING,
-          ],
-          getFeatures:
-            maybeDataManagement.getFeatures &&
-            maybeDataManagement.getFeatures.bind(maybeDataManagement),
-          addFeatures:
-            maybeDataManagement.addFeatures &&
-            maybeDataManagement.addFeatures.bind(maybeDataManagement),
-          updateFeatures:
-            maybeDataManagement.updateFeatures &&
-            maybeDataManagement.updateFeatures.bind(maybeDataManagement),
-          deleteFeatures:
-            maybeDataManagement.deleteFeatures &&
-            maybeDataManagement.deleteFeatures.bind(maybeDataManagement),
-          reset: async () => {
-            getMap(mapId, (map) => {
-              if (isDatasetMap(maybeDataManagement))
-                maybeDataManagement.addToMap(map);
-            });
-          },
-        });
-      }
-    },
-  });
 }
 
 const actionMeasures: MeasureActionItem[] = [

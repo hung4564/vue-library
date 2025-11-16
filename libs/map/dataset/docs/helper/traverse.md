@@ -84,7 +84,7 @@ traverseTree(
 import { traverseTree } from './traverse';
 
 traverseTree(rootDataset, (node, level, path) => {
-  console.log('Visited node:', node.getName(), 'at level', level, 'path', path);
+  console.info('Visited node:', node.getName(), 'at level', level, 'path', path);
 });
 ```
 
@@ -96,7 +96,7 @@ import { traverseTree } from './traverse';
 traverseTree(
   rootDataset,
   (node, level) => {
-    console.log('Visited node:', node.getName(), 'at level', level);
+    console.info('Visited node:', node.getName(), 'at level', level);
   },
   { strategy: 'bfs' },
 );
@@ -107,13 +107,13 @@ traverseTree(
 ```typescript
 const visitor = {
   visitRoot(node) {
-    console.log('Root:', node.getName());
+    console.info('Root:', node.getName());
   },
   visitLeaf(node) {
-    console.log('Leaf:', node.getName());
+    console.info('Leaf:', node.getName());
   },
   visitComposite(node) {
-    console.log('Composite:', node.getName());
+    console.info('Composite:', node.getName());
   },
 };
 
@@ -210,7 +210,7 @@ import { applyToAllLeaves } from './helpers';
 const results = applyToAllLeaves(rootDataset, [(leaf) => leaf.getData(), (leaf) => leaf.type]);
 
 results.forEach((resultArray, nodeName) => {
-  console.log(nodeName, resultArray);
+  console.info(nodeName, resultArray);
 });
 ```
 
@@ -222,6 +222,6 @@ import { runAllComponentsWithCheck } from './helpers';
 const results = runAllComponentsWithCheck(rootDataset, (node) => node.type === 'layer', [(layer) => layer.getData()]);
 
 results.forEach((resultArray, nodeName) => {
-  console.log(nodeName, resultArray);
+  console.info(nodeName, resultArray);
 });
 ```

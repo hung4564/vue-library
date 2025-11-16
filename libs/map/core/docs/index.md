@@ -48,7 +48,7 @@ import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesContr
 const mapId = ref('map-core');
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

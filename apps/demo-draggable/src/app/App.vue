@@ -12,7 +12,7 @@ function init(id) {
   containerId.value = id;
 }
 function onChangeShow(value) {
-  console.log('onChangeShow', value);
+  console.info('onChangeShow', value);
 }
 </script>
 

@@ -39,7 +39,7 @@ const customBasemaps = ref([
 ]);
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

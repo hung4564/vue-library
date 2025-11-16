@@ -18,7 +18,6 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  createDataManagementMapboxComponent,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartMetadataComponent,
@@ -76,7 +75,46 @@ function onMapLoaded(props: { id: string }) {
   const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: [],
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '1',
+          name: 'feature 1',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [104.96327341667353, 19.549518287564368],
+              [104.96327341667353, 18.461221184685627],
+              [106.65936430823979, 18.461221184685627],
+              [106.65936430823979, 19.549518287564368],
+              [104.96327341667353, 19.549518287564368],
+            ],
+          ],
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          id: '2',
+          name: 'feature 2',
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [105.80782070639765, 20.18022781865689],
+              [105.80782070639765, 18.841791883714322],
+              [107.53334783357559, 18.841791883714322],
+              [107.53334783357559, 20.18022781865689],
+              [105.80782070639765, 20.18022781865689],
+            ],
+          ],
+        },
+      },
+    ],
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponent('test area');
@@ -114,13 +152,19 @@ function onMapLoaded(props: { id: string }) {
   const layer2 = createMultiMapboxLayerComponent('layer point', [
     new LayerSimpleMapboxBuild()
       .setStyleType('point')
-      .setColor(list2.color)
-      .setOpacity(list2.opacity)
+      .setFilter(['==', '$type', 'Point'])
+      .setColor(list1.color)
       .build(),
     new LayerSimpleMapboxBuild()
       .setStyleType('line')
-      .setColor(list2.color)
+      .setFilter(['==', '$type', 'LineString'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setFilter(['==', '$type', 'Polygon'])
       .setOpacity(0.5)
+      .setColor(list1.color)
       .build(),
   ]);
   list1.addMenus([
@@ -149,15 +193,15 @@ function onMapLoaded(props: { id: string }) {
   const identify2 = createIdentifyMapboxMergedComponent('test identify 2');
   identify.addMenus([
     createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
+    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
   ]);
   identify1.addMenus([
     createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
+    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
   ]);
   identify2.addMenus([
     createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
+    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
   ]);
   const group = { id: 'test', name: 'test' };
   list1.group = group;
@@ -167,54 +211,7 @@ function onMapLoaded(props: { id: string }) {
   groupLayer2.add(list2);
   groupLayer2.add(identify2);
   groupLayer2.add(metadataForList2);
-  const dataManagement = createDataManagementMapboxComponent(
-    'data management',
-    {
-      fields: [
-        { text: 'Name rat dai rat dai rat dai rat dai', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-        { text: 'Name', value: 'name' },
-      ],
-    },
-  );
-  dataManagement.setItems([
-    {
-      id: '1',
-      name: 'feature 1',
-      geometry: {
-        coordinates: [
-          [
-            [104.96327341667353, 19.549518287564368],
-            [104.96327341667353, 18.461221184685627],
-            [106.65936430823979, 18.461221184685627],
-            [106.65936430823979, 19.549518287564368],
-            [104.96327341667353, 19.549518287564368],
-          ],
-        ],
-        type: 'Polygon',
-      },
-    },
-    {
-      id: '2',
-      name: 'feature 2',
-      geometry: {
-        coordinates: [
-          [
-            [105.80782070639765, 20.18022781865689],
-            [105.80782070639765, 18.841791883714322],
-            [107.53334783357559, 18.841791883714322],
-            [107.53334783357559, 20.18022781865689],
-            [105.80782070639765, 20.18022781865689],
-          ],
-        ],
-        type: 'Polygon',
-      },
-    },
-  ]);
   dataset.add(source);
-  dataset.add(dataManagement);
   dataset.add(groupLayer1);
   dataset.add(groupLayer2);
   dataset.add(identify);

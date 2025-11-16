@@ -22,7 +22,7 @@ function handleClick() {
 }
 
 // Check map state
-console.log('mapId:', mapId.value);
+console.info('mapId:', mapId.value);
 </script>
 ```
 
@@ -94,7 +94,7 @@ const { isShow, toggle } = useShow();
 // Watch for map loading
 watch(mapIdRef, (id) => {
   if (id) {
-    console.log('Map is ready for interaction');
+    console.info('Map is ready for interaction');
     callMap((map: MapSimple) => {
       // Add custom layers, sources, etc.
     });

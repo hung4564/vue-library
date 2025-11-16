@@ -42,7 +42,7 @@ import { Map } from '@hungpvq/vue-map-core';
 import { LegendControl } from '@hungpvq/vue-map-legend';
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

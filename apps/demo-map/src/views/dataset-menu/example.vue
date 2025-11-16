@@ -102,7 +102,7 @@ function createDefaultSupportDataset() {
 UniversalRegistry.registerMenuHandler(
   'custom-menu-handle',
   (props: MenuItemProps) => {
-    console.log('custom-menu-handle in registry', props);
+    console.info('custom-menu-handle in registry', props);
   },
 );
 function createCustomChainSupportDataset() {
@@ -122,7 +122,7 @@ function createCustomChainSupportDataset() {
               console.info('custom chain execute', props);
               return createMenuClickBuilder().addCommand({
                 execute(click, props) {
-                  console.log('custom chain after execute', click, props);
+                  console.info('custom chain after execute', click, props);
                 },
               });
             },
@@ -137,7 +137,7 @@ function createCustomChainSupportDataset() {
             console.info('custom chain click', props);
             return createMenuClickBuilder().addCommand({
               execute(click, props) {
-                console.log('custom chain after click', click, props);
+                console.info('custom chain after click', click, props);
               },
             });
           })
@@ -174,7 +174,7 @@ function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              console.log('custom execute', click, props);
+              console.info('custom execute', click, props);
             },
           })
           .build(),
@@ -200,7 +200,7 @@ function createCustomSupportDataset() {
           .addTupleDynamic(
             {
               execute(click, props) {
-                console.log('custom execute', click, props);
+                console.info('custom execute', click, props);
               },
             },
             (props) => {
@@ -278,7 +278,7 @@ function createCustomMultiSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              console.log('custom execute', click, props);
+              console.info('custom execute', click, props);
             },
           })
           .addCommand('custom-menu-handle')
@@ -288,7 +288,7 @@ function createCustomMultiSupportDataset() {
           .addTupleDynamic(
             {
               execute(click, props) {
-                console.log('custom execute after transform', click, props);
+                console.info('custom execute after transform', click, props);
               },
             },
             (props) => {

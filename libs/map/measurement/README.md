@@ -52,7 +52,7 @@ const measurementActions: MeasureActionItem[] = [
     icon: mdiPlus,
     type: 'add-to-layer',
     handle: (data) => {
-      console.log('Add to layer:', data);
+      console.info('Add to layer:', data);
     },
     disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
     index: 0,
@@ -60,7 +60,7 @@ const measurementActions: MeasureActionItem[] = [
 ];
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

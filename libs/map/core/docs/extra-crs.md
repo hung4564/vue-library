@@ -48,9 +48,9 @@ import { useMapCrsStore } from '@hungpvq/vue-map-core';
 ```ts
 const store = useMapCrsStore(mapId);
 // Get current CRS
-console.log(store.crs);
+console.info(store.crs);
 // Get all CRS items
-console.log(store.items);
+console.info(store.items);
 // Set current CRS
 store.crs = '4326';
 ```

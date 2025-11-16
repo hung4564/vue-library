@@ -40,7 +40,7 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-legend/style.css';
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

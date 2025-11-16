@@ -35,9 +35,9 @@ import { useMapEventStore } from '@hungpvq/vue-map-core';
 ```ts
 const store = useMapEventStore(mapId);
 // Access current event
-console.log(store.current);
+console.info(store.current);
 // Access all event items
-console.log(store.items);
+console.info(store.items);
 ```
 
 ### 2. Using the Hook (`useEventMap`)
@@ -63,7 +63,7 @@ addEventClick();
 removeEventClick();
 
 // Check if the event is currently active
-console.log(isActive.value);
+console.info(isActive.value);
 ```
 
 ### 3. Available Events
@@ -110,7 +110,7 @@ const { add, remove } = useEventMap(
   mapId,
   new CustomEvent().setHandler((e) => {
     // Custom event logic here
-    console.log('Custom event triggered', e);
+    console.info('Custom event triggered', e);
   }),
 );
 

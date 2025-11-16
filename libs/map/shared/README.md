@@ -49,22 +49,22 @@ function handleMapClick(event: any) {
 
   // Format coordinate
   const formatted = formatCoordinate(point, 'DD');
-  console.log('Formatted coordinate:', formatted);
+  console.info('Formatted coordinate:', formatted);
 
   // Calculate distance from center
   const distance = calculateDistance(DEFAULT_CENTER, point);
-  console.log('Distance from center:', distance, 'meters');
+  console.info('Distance from center:', distance, 'meters');
 
   // Calculate bearing
   const bearing = calculateBearing(DEFAULT_CENTER, point);
-  console.log('Bearing:', bearing, 'degrees');
+  console.info('Bearing:', bearing, 'degrees');
 }
 
 // Transform coordinates
 function transformPoint() {
   const wgs84Point = [105.8342, 21.0285]; // Hanoi
   const utmPoint = transformCoordinate(wgs84Point, 'EPSG:4326', 'EPSG:32648');
-  console.log('UTM coordinate:', utmPoint);
+  console.info('UTM coordinate:', utmPoint);
 }
 </script>
 ```
@@ -94,9 +94,9 @@ function convertCoordinates() {
   // Chuyển sang Web Mercator
   const webMercatorPoint = convertBetweenSystems(wgs84Point, 'EPSG:4326', 'EPSG:3857');
 
-  console.log('WGS84:', wgs84Point);
-  console.log('UTM:', utmPoint);
-  console.log('Web Mercator:', webMercatorPoint);
+  console.info('WGS84:', wgs84Point);
+  console.info('UTM:', utmPoint);
+  console.info('Web Mercator:', webMercatorPoint);
 }
 </script>
 ```
@@ -118,21 +118,21 @@ function createMapBounds() {
     [106.0, 22.0], // Northeast
   ]);
 
-  console.log('Bounds center:', getBoundsCenter(bounds));
-  console.log('Bounds area:', getBoundsArea(bounds));
-  console.log('Is valid:', isBoundsValid(bounds));
+  console.info('Bounds center:', getBoundsCenter(bounds));
+  console.info('Bounds area:', getBoundsArea(bounds));
+  console.info('Is valid:', isBoundsValid(bounds));
 
   // Mở rộng bounds
   const expandedBounds = expandBounds(bounds, 0.1); // 10% buffer
-  console.log('Expanded bounds:', expandedBounds);
+  console.info('Expanded bounds:', expandedBounds);
 }
 
 // Tạo extent
 function createMapExtent() {
   const extent = createExtent(105.0, 20.0, 106.0, 22.0);
 
-  console.log('Extent center:', getExtentCenter(extent));
-  console.log('Is valid:', isExtentValid(extent));
+  console.info('Extent center:', getExtentCenter(extent));
+  console.info('Is valid:', isExtentValid(extent));
 }
 </script>
 ```
@@ -238,7 +238,7 @@ function useCustomProjection() {
   const point = [105.8342, 21.0285];
   const transformed = transformWithCustomProjection(point, 'EPSG:4326', 'CUSTOM:12345');
 
-  console.log('Custom projection result:', transformed);
+  console.info('Custom projection result:', transformed);
 }
 </script>
 ```
@@ -258,19 +258,19 @@ function performGeodesicCalculations() {
 
   // Khoảng cách geodesic
   const distance = calculateGeodesicDistance(point1, point2);
-  console.log('Geodesic distance:', distance, 'meters');
+  console.info('Geodesic distance:', distance, 'meters');
 
   // Bearing geodesic
   const bearing = calculateGeodesicBearing(point1, point2);
-  console.log('Geodesic bearing:', bearing, 'degrees');
+  console.info('Geodesic bearing:', bearing, 'degrees');
 
   // Điểm đích từ bearing và distance
   const destination = calculateGeodesicDestination(point1, bearing, 100000); // 100km
-  console.log('Destination point:', destination);
+  console.info('Destination point:', destination);
 
   // Điểm giữa
   const midpoint = calculateGeodesicMidpoint(point1, point2);
-  console.log('Midpoint:', midpoint);
+  console.info('Midpoint:', midpoint);
 }
 </script>
 ```
@@ -290,22 +290,22 @@ function workWithTiles() {
 
   // Tọa độ tile
   const tileCoords = getTileCoordinates(point, zoom);
-  console.log('Tile coordinates:', tileCoords);
+  console.info('Tile coordinates:', tileCoords);
 
   // Bounds của tile
   const tileBounds = getTileBounds(tileCoords, zoom);
-  console.log('Tile bounds:', tileBounds);
+  console.info('Tile bounds:', tileBounds);
 
   // URL của tile
   const tileURL = getTileURL(tileCoords, zoom, {
     baseURL: 'https://tile.openstreetmap.org',
     format: 'png',
   });
-  console.log('Tile URL:', tileURL);
+  console.info('Tile URL:', tileURL);
 
   // Kích thước tile
   const tileSize = getTileSize(zoom);
-  console.log('Tile size:', tileSize);
+  console.info('Tile size:', tileSize);
 }
 </script>
 ```
@@ -334,16 +334,16 @@ function performCalculations() {
 
   // Diện tích polygon
   const area = calculatePolygonArea(points);
-  console.log('Polygon area:', area, 'square meters');
+  console.info('Polygon area:', area, 'square meters');
 
   // Chu vi polygon
   const perimeter = calculatePolygonPerimeter(points);
-  console.log('Polygon perimeter:', perimeter, 'meters');
+  console.info('Polygon perimeter:', perimeter, 'meters');
 
   // Kiểm tra point trong polygon
   const testPoint: [number, number] = [105.5, 21.5];
   const isInside = isPointInPolygon(testPoint, points);
-  console.log('Point in polygon:', isInside);
+  console.info('Point in polygon:', isInside);
 }
 </script>
 ```
@@ -362,19 +362,19 @@ function formatCoordinates() {
 
   // Decimal degrees
   const dd = formatCoordinate(point, 'DD');
-  console.log('Decimal degrees:', dd);
+  console.info('Decimal degrees:', dd);
 
   // Degrees, minutes, seconds
   const dms = formatCoordinate(point, 'DMS');
-  console.log('DMS:', dms);
+  console.info('DMS:', dms);
 
   // UTM
   const utm = formatCoordinate(point, 'UTM');
-  console.log('UTM:', utm);
+  console.info('UTM:', utm);
 
   // Parse coordinate
   const parsed = parseCoordinate('105°50\'3.12"E, 21°1\'43.12"N');
-  console.log('Parsed coordinate:', parsed);
+  console.info('Parsed coordinate:', parsed);
 }
 </script>
 ```

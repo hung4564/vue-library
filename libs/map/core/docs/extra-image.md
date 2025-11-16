@@ -81,7 +81,7 @@ import { useMapImages } from '@hungpvq/vue-map-core';
 const { images, reload, toDataURL } = useMapImages('map1');
 
 // Access all images
-console.log(images.value);
+console.info(images.value);
 
 // Reload images when needed
 reload();

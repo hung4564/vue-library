@@ -63,10 +63,10 @@ const initOptions = ref({
 import { Map } from '@hungpvq/vue-map-core';
 
 function onMapLoaded(map) {
-  console.log('loaded', map);
+  console.info('loaded', map);
 }
 function onMapDestroy(map) {
-  console.log('destroy', map);
+  console.info('destroy', map);
 }
 </script>
 

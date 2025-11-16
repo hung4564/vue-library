@@ -14,7 +14,7 @@ const { currentBaseMap, setCurrent, baseMaps } = useBaseMap(mapId.value);
 // Get current basemap
 function getCurrent() {
   const current = currentBaseMap.value;
-  console.log('Current basemap:', current);
+  console.info('Current basemap:', current);
 }
 
 // Set new basemap
@@ -25,7 +25,7 @@ function changeBasemap(basemap: BaseMapItem) {
 // Get all available basemaps
 function getBasemaps() {
   const basemaps = baseMaps.value;
-  console.log('Available basemaps:', basemaps);
+  console.info('Available basemaps:', basemaps);
 }
 </script>
 ```

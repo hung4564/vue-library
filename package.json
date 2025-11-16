@@ -23,6 +23,7 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "map:dev": "nx serve demo-map",
+    "map:lint": "nx run-many --projects=tag:map --target=lint",
     "map:build": "nx run-many --projects=tag:map --target=lint,build",
     "map:release": "nx run-many --projects=tag:map --target=lint,build,nx-release-publish",
     "map-docs:build": "nx run-many --projects=demo-map --target=lint,build,publish-demo",

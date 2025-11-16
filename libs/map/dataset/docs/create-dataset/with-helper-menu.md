@@ -283,7 +283,7 @@ const menuClick = createMenuClickBuilder()
 const complexClick = createMenuClickBuilder()
   .addTupleStatic('addComponent', { value: { componentKey: 'analysis-dialog', attr: { item: layer } } })
   .addTupleStatic('highlight', { value: { detail: layer.feature, key: 'analysis-detail' } })
-  .addCommand(({ layer }: MenuItemProps) => console.log('Action done!', layer))
+  .addCommand(({ layer }: MenuItemProps) => console.info('Action done!', layer))
   .build();
 
 const analysisMenu = createMenuBuilder().item().setName('Analyze & Highlight').setIcon(mdiFormatLineStyle).setClick(complexClick).build();
