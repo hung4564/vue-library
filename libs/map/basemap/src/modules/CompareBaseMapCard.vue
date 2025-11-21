@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import {
   getMapCompareSetting,
-  getMapStore,
+  getMaps,
   InputSelect,
   MapImage,
   useMap,
@@ -55,9 +55,7 @@ const props = defineProps({
 });
 const { mapId } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
-const mapIds = ref<string[]>(
-  getMapStore(mapId.value)?.maps.map((x: { id: any }) => x.id) || [],
-);
+const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
 const current_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map(
     (x: { currentBaseMap: any }) => x.currentBaseMap,

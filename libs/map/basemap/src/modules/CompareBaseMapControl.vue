@@ -102,12 +102,11 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   getMapCompareSetting,
-  getMapStore,
+  getMaps,
   MapCard,
   MapControlButton,
   MapIcon,
@@ -145,9 +144,7 @@ const { mapId, moduleContainerProps } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
-const mapIds = ref<string[]>(
-  getMapStore(mapId.value)?.maps.map((x: MapSimple) => x.id) || [],
-);
+const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
 const mapStoreUseBaseMap = computed(() => {
   return mapIds.value.map((mapId) => {
     return useBaseMap(mapId);

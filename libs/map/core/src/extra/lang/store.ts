@@ -1,6 +1,6 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
 import { merge } from 'lodash';
+import { createMapScopedStore } from '../../store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
@@ -18,13 +18,13 @@ export type MapLocateStore = {
 };
 
 export const useMapLocaleStore = (mapId: string) =>
-  defineStore<MapLocateStore>(['map:core', mapId, MAP_STORE_KEY.LANG], () => {
+  createMapScopedStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       locale: {},
       localeDefault: {},
     };
-  })();
+  });
 export const useMapLocale = (mapId: string) => {
   const store = useMapLocaleStore(mapId);
 

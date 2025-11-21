@@ -1,6 +1,5 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
-import { useMapStore } from '@hungpvq/vue-map-core';
+import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { IDataset } from '../interfaces/dataset.base';
@@ -23,10 +22,10 @@ export type MapLayerStore = {
   datasetIds: Ref<string[]>;
 };
 export const useMapDatasetStore = (mapId: string) =>
-  defineStore<MapLayerStore>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<MapLayerStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return { datasets: {}, datasetIds: ref([]) };
-  })();
+  });
 
 export const useMapDataset = (propsMapId?: string) => {
   let mapId = propsMapId ?? '';

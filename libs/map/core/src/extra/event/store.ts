@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '../../store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { logger } from './logger';
 import { IEvent } from './types';
@@ -9,10 +9,10 @@ export type MapEventStore = {
   current: { [key: string]: IEvent | undefined };
 };
 export const useMapEventStore = (mapId: string) =>
-  defineStore<MapEventStore>(['map:core', mapId, MAP_STORE_KEY.EVENT], () => {
+  createMapScopedStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       items: [],
       current: {},
     };
-  })();
+  });

@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import { BaseMapAdapter, DefaultBaseMapAdapter } from '../adapter/base';
 import { logger } from '../logger';
 import { BaseMapStore } from '../types';
@@ -7,7 +7,7 @@ import { BaseMapStore } from '../types';
 const KEY = 'basemap';
 
 export const useMapBaseMapStore = (mapId: string) =>
-  defineStore<BaseMapStore>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<BaseMapStore>(mapId, KEY, () => {
     return {
       baseMaps: [],
       defaultBaseMap: '',
@@ -15,7 +15,7 @@ export const useMapBaseMapStore = (mapId: string) =>
       loading: false,
       adapter: new DefaultBaseMapAdapter(),
     };
-  })();
+  });
 
 export const useBaseMapAdapter = (mapId: string) => {
   const store = useMapBaseMapStore(mapId);

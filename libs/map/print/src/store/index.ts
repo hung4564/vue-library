@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import { logger } from '../logger';
 
 export const KEY = 'print';
@@ -16,10 +16,10 @@ export type MapPrintStore = {
 };
 
 export const useMapPrintStore = (mapId: string) =>
-  defineStore<MapPrintStore>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<MapPrintStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {};
-  })();
+  });
 
 export function useMapPrint(mapId: string) {
   const store = useMapPrintStore(mapId);

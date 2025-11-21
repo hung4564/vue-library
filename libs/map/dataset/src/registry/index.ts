@@ -1,14 +1,14 @@
 import { createStore } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Component } from 'vue';
 import { logger } from '../logger';
 const KEY = 'registry';
 export const useMapRegistryStore = (mapId: string) =>
-  defineStore<Map<string, RegistryItem>>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<Map<string, RegistryItem>>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return new Map<string, RegistryItem>();
-  })();
+  });
 
 export type RegistryItem = ((...args: any[]) => any) | Component;
 

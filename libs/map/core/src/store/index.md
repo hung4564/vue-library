@@ -9,11 +9,11 @@ category: Store
 ## Usage
 
 ```ts
-import { addStore, getMap, getStore } from '@hungpvq/vue-map-core';
+import { createMapScopedStore, destroyMapScopedStore, getMap, getStore } from '@hungpvq/vue-map-core';
 ```
 
 ## Create new store
 
 ```ts
-
+createMapScopedStore(mapId, MAP_STORE_KEY.MAP_COMPARE, () => ({}));
 ```

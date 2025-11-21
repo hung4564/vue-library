@@ -1,97 +1,139 @@
-import { createStore } from '@hungpvq/shared';
 import { logHelper, MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
 import { defineStore } from '@hungpvq/shared-store';
-import { MapStore } from '../types';
+import {
+  hasMapCollection,
+  hasMapInstance,
+  isMultiMapStore,
+  MapStore,
+} from '../types';
+import { MAP_STORE_KEY } from '../types/key';
 import { logger } from './logger';
+const MAP_CORE_STORE_ID = 'map:core';
 type MapRootStore = Record<string, MapStore>;
-const store = createStore<MapRootStore>('map:core', {});
-export function getMapStore(id: string) {
-  const map = store[id];
-  if (!map) {
-    return;
-    // throw 'Not found map for id ' + id;
-  }
-  return map;
+export const useMapGLobalStore = defineStore<MapRootStore>(
+  MAP_CORE_STORE_ID,
+  () => ({}),
+);
+
+type DefaultValue<T> = T | (() => T);
+type StoreCleanup = () => void | Promise<void>;
+type AddStoreOptions = {
+  cleanup?: StoreCleanup;
+};
+type MapStoreKey = (typeof MAP_STORE_KEY)[keyof typeof MAP_STORE_KEY];
+type MapScopedKey = MapStoreKey | (string & object);
+type MapStoreInternal = MapStore & {
+  __cleanup__?: Record<string, StoreCleanup[]>;
+};
+
+function storeLogger(mapId: string) {
+  return logHelper(logger, mapId, 'store');
 }
-export function addStore<T = any>(
+
+function getRootStore(): MapRootStore {
+  return useMapGLobalStore();
+}
+
+function ensureMapEntry(mapId: string): MapStore {
+  const root = getRootStore();
+  if (!root[mapId]) {
+    storeLogger(mapId).debug('ensureMapEntry: create new entry');
+    root[mapId] = {};
+  }
+  return root[mapId];
+}
+
+function resolveDefaultValue<T>(defaultValue?: DefaultValue<T>): T {
+  if (typeof defaultValue === 'function') {
+    return (defaultValue as () => T)();
+  }
+  if (defaultValue !== undefined) {
+    return defaultValue;
+  }
+  return {} as T;
+}
+
+function collectMapsFromStore(mapId: string): MapSimple[] {
+  const store = getMapStore(mapId);
+  if (!store) {
+    return [];
+  }
+  if (hasMapCollection(store)) {
+    return store.maps;
+  }
+  if (hasMapInstance(store)) {
+    return [store.map];
+  }
+  return [];
+}
+
+export function getMapStore(id: string) {
+  const entry = getRootStore()[id];
+  if (!entry) {
+    storeLogger(id).debug('getMapStore: entry not found');
+  }
+  return entry;
+}
+export function addStore<T = Record<string, unknown>>(
   mapId: string,
   key: string,
-  defaultValue?: T,
+  defaultValue?: DefaultValue<T>,
+  options?: AddStoreOptions,
 ) {
-  const temp = getMapStore(mapId);
-  if (!temp) {
-    return;
+  const temp = ensureMapEntry(mapId);
+  if (!(key in temp)) {
+    storeLogger(mapId).debug('addStore: initialize key', key);
+    temp[key] = resolveDefaultValue(defaultValue);
+  } else {
+    storeLogger(mapId).debug('addStore: reuse key', key);
   }
-  if (!temp[key]) temp[key] = defaultValue || {};
-  return temp[key];
+  if (options?.cleanup) {
+    registerCleanup(mapId, key, options.cleanup);
+  }
+  return temp[key] as T;
 }
 export function getStore<T = any>(mapId: string, key: string) {
   const temp = getMapStore(mapId);
-  return (temp?.[key] || {}) as T;
+  if (!temp || !(key in temp)) {
+    storeLogger(mapId).debug('getStore: missing key', key);
+    return undefined;
+  }
+  return temp[key] as T;
 }
-
-export { store };
 
 export function getIsMulti(id: string): boolean {
-  return !!getMapStore(id)?.isMulti;
+  return isMultiMapStore(getMapStore(id));
 }
 export function getMaps(id: string): MapSimple[] {
-  return getMapStore(id)?.maps;
+  return collectMapsFromStore(id);
 }
 
-export function getMap(id: string, cb?: MapFCOnUseMap) {
-  const map = getMapStore(id)?.map as MapSimple;
-  const maps = getMapStore(id)?.maps as MapSimple[];
-  if (maps) {
-    maps.forEach((map) => {
-      cb && cb(map);
-    });
-  }
-  if (!map) {
+export function getMap(
+  id: string,
+  cb?: MapFCOnUseMap,
+): MapSimple | MapSimple[] | undefined {
+  const maps = collectMapsFromStore(id);
+  if (!maps.length) {
+    logHelper(logger, id, 'store').warn('getMap: map instance not ready');
     return;
-    // throw 'Not found map for id ' + id;
   }
   if (cb) {
-    cb(map);
+    maps.forEach((mapInstance) => cb(mapInstance));
   }
+  return maps.length > 1 ? maps : maps[0];
 }
 
-export const useMapGLobalStore = defineStore('map:core', () => {
-  const store: Record<string, MapStore> = {};
-  return store;
-});
 export const useMapStore = (mapId: string) => {
-  const store = useMapGLobalStore();
-  function getMapStore() {
-    const map = store[mapId];
-    if (!map) {
-      return;
-      // throw 'Not found map for id ' + id;
-    }
-    return map;
-  }
   return {
     getIsMulti(): boolean {
-      return !!getMapStore()?.isMulti;
+      return !!getMapStore(mapId)?.isMulti;
     },
-    getMaps(): MapSimple[] {
-      return getMapStore()?.maps;
+    getMaps(): MapSimple[] | undefined {
+      const maps = collectMapsFromStore(mapId);
+      return maps.length ? maps : undefined;
     },
     getMap(cb?: MapFCOnUseMap) {
-      const map = getMapStore()?.map as MapSimple;
-      const maps = getMapStore()?.maps as MapSimple[];
-      if (maps) {
-        maps.forEach((map) => {
-          cb && cb(map);
-        });
-      }
-      if (!map) {
-        return;
-        // throw 'Not found map for id ' + id;
-      }
-      if (cb) {
-        cb(map);
-      }
+      return getMap(mapId, cb);
     },
   };
 };
@@ -100,20 +142,85 @@ export const useMapContainer = (mapId: string) => {
   return {
     initMaps(maps: MapSimple[]) {
       logHelper(logger, mapId, 'store').debug('init maps', maps);
-      store[mapId] = {
-        maps,
-        isMulti: maps.length > 1,
-      };
+      const mapStore = ensureMapEntry(mapId);
+      mapStore.maps = maps;
+      mapStore.isMulti = maps.length > 1;
+      delete mapStore.map;
     },
     initMap(map: MapSimple) {
       logHelper(logger, mapId, 'store').debug('init', map);
-      store[mapId] = {
-        map,
-      };
+      const mapStore = ensureMapEntry(mapId);
+      mapStore.map = map;
+      mapStore.isMulti = false;
+      delete mapStore.maps;
     },
     removeMap() {
       logHelper(logger, mapId, 'store').debug('removeMap');
+      runCleanup(mapId);
       delete store[mapId];
     },
   };
 };
+
+function registerCleanup(mapId: string, key: string, cleanup: StoreCleanup) {
+  const store = ensureMapEntry(mapId) as MapStoreInternal;
+  store.__cleanup__ ??= {};
+  store.__cleanup__[key] ??= [];
+  store.__cleanup__[key].push(cleanup);
+}
+
+function runCleanup(mapId: string, key?: string) {
+  const store = getMapStore(mapId) as MapStoreInternal | undefined;
+  const mapCleanups = store?.__cleanup__;
+  if (!mapCleanups) {
+    return;
+  }
+  const targetKeys = key ? [key] : Object.keys(mapCleanups);
+  targetKeys.forEach((cleanupKey) => {
+    const cleanups = mapCleanups[cleanupKey] ?? [];
+    delete mapCleanups[cleanupKey];
+    cleanups.forEach((cleanup) => {
+      try {
+        const maybePromise = cleanup();
+        if (
+          maybePromise &&
+          typeof (maybePromise as Promise<unknown>).catch === 'function'
+        ) {
+          (maybePromise as Promise<unknown>).catch((error) => {
+            storeLogger(mapId).error('cleanup rejected', {
+              key: cleanupKey,
+              error,
+            });
+          });
+        }
+      } catch (error) {
+        storeLogger(mapId).error('cleanup failed', {
+          key: cleanupKey,
+          error,
+        });
+      }
+    });
+  });
+  if (!Object.keys(mapCleanups).length && store) {
+    delete store.__cleanup__;
+  }
+}
+
+export type MapScopedStoreOptions = AddStoreOptions;
+
+export function createMapScopedStore<T>(
+  mapId: string,
+  key: MapScopedKey,
+  factory: () => T,
+  options?: MapScopedStoreOptions,
+) {
+  return addStore<T>(mapId, key, factory, options);
+}
+
+export function destroyMapScopedStore(mapId: string, key: MapScopedKey) {
+  const store = getMapStore(mapId);
+  if (store && key in store) {
+    delete store[key];
+    runCleanup(mapId, key);
+  }
+}

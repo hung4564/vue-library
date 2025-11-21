@@ -1,7 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
-import { useMapMittStore } from '@hungpvq/vue-map-core';
+import { createMapScopedStore, useMapMittStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { onMounted, onUnmounted } from 'vue';
 import { logger } from '../logger';
@@ -18,7 +17,7 @@ import {
 
 const KEY = 'draw';
 export const useMapDrawStore = (mapId: string) =>
-  defineStore<MapDrawStore>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<MapDrawStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       state: {
@@ -28,7 +27,7 @@ export const useMapDrawStore = (mapId: string) =>
       },
       action: {},
     };
-  })();
+  });
 export function useConfigDrawControl(
   mapId: string,
   config: {

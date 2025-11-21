@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '../../store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { logger } from './logger';
 import { type CrsItem, type MapCrsStore } from './types';
@@ -16,11 +16,11 @@ const item_init: CrsItem[] = [
 ];
 
 export const useMapCrsStore = (mapId: string) =>
-  defineStore<MapCrsStore>(['map:core', mapId, MAP_STORE_KEY.CRS], () => {
+  createMapScopedStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       crs: '4326',
       items: item_init.slice(),
       item: item_init[0],
     };
-  })();
+  });

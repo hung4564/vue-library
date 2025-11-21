@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { addStore, getStore } from '../../store';
+import { createMapScopedStore, getStore } from '../../store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
@@ -15,14 +15,18 @@ export type MapLocateStore = {
 
 export function initStoreMapCompare(mapId: string) {
   logHelper(logger, mapId, 'store').debug('init');
-  addStore<MapLocateStore>(mapId, MAP_STORE_KEY.MAP_COMPARE, {
-    setting: {
-      compare: true,
-      split: true,
-      sync: true,
-      vertical: false,
-    },
-  });
+  createMapScopedStore<MapLocateStore>(
+    mapId,
+    MAP_STORE_KEY.MAP_COMPARE,
+    () => ({
+      setting: {
+        compare: true,
+        split: true,
+        sync: true,
+        vertical: false,
+      },
+    }),
+  );
 }
 export function getMapCompare(mapId: string) {
   const store = getStore<MapLocateStore>(mapId, MAP_STORE_KEY.MAP_COMPARE);
