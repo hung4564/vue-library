@@ -6,7 +6,7 @@ import type {
   IIdentifyViewWithMerge,
   IMapboxLayerView,
 } from '../../interfaces';
-import { isDataManagementView, isMapboxLayerView } from '../../utils/check';
+import { isMapboxLayerView } from '../../utils/check';
 import {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
@@ -127,33 +127,11 @@ export async function getMergedFeatures(
         });
       });
 
-      // Loại bỏ các mục trùng lặp
       const deduplicated = removeDuplicates(collected);
 
-      // Tìm dataManagement
-      const anyIdentify = identifies[0];
-      const maybeDataManagement = findSiblingOrNearestLeaf(
-        anyIdentify,
-        (dataset) => dataset.type === 'dataManagement',
-      );
-
-      // Nếu không có dataManagement, trả về raw feature info
-      if (!isDataManagementView(maybeDataManagement)) {
-        const results = formatFeature(deduplicated, new Map());
-        resolve(results);
-        return;
-      }
-
-      // Sử dụng dataManagement để fetch dữ liệu
-      const dataManagement = maybeDataManagement;
-      dataManagement
-        .getList([...idSet], queriedFeatures)
-        .then((fetchedData) => {
-          const dataMap = buildDataMap(fetchedData);
-
-          const results = formatFeature(deduplicated, dataMap);
-          resolve(results);
-        });
+      const results = formatFeature(deduplicated, new Map());
+      resolve(results);
+      return;
     });
   });
 }

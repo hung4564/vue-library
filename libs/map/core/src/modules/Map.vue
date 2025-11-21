@@ -75,8 +75,8 @@ onMounted(() => {
       version: 8,
       metadata: {},
       sources: {},
-      sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-      glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
+      // sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
+      // glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
       layers: [],
     },
     ...initOptions,
@@ -400,7 +400,7 @@ function onDragLoadDone(e: any) {
 <style lang="scss">
 .context-menu {
   z-index: 900;
-  width: 150px;
+  width: 100%;
   border-bottom-width: 0px;
   padding: 0;
   margin: 0;

@@ -46,16 +46,16 @@ function findLeafInSubtreeBFS(
 
   return foundNode;
 }
-export function findSiblingOrNearestLeaf(
+export function findSiblingOrNearestLeaf<T = IDataset>(
   startNode: IDataset,
   check: (node: IDataset) => boolean,
-): IDataset | undefined {
+): T | undefined {
   let current: IDataset | undefined = startNode;
   let excludeNode: IDataset | null = null;
 
   while (current) {
     const found = findLeafInSubtreeBFS(current, check, excludeNode);
-    if (found) return found;
+    if (found) return found as T;
 
     excludeNode = current;
     current = current.getParent?.();

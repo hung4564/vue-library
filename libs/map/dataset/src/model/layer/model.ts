@@ -1,6 +1,8 @@
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
 import type { LayerSpecification } from 'maplibre-gl';
+import type { WithDataHelper } from '../../extra';
+import type { IDataset, IMapboxLayerView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { findFirstLeafByType } from '../visitors';
 import { createDatasetPartMapboxLayerComponent } from './base';
@@ -8,7 +10,7 @@ type BaseLayerSpec = Partial<Omit<LayerSpecification, 'id'>> & { id?: string };
 export function createMultiMapboxLayerComponent(
   name: string,
   data: BaseLayerSpec[] = [],
-) {
+): IMapboxLayerView & WithDataHelper<BaseLayerSpec[]> & IDataset {
   const base = createDatasetPartMapboxLayerComponent<BaseLayerSpec[]>(
     name,
     data,
@@ -47,6 +49,9 @@ export function createMultiMapboxLayerComponent(
 
     getAllLayerIds(): string[] {
       return base.getData().map((l) => l.id!);
+    },
+    getLayers(): LayerSpecification[] {
+      return base.getData() as LayerSpecification[];
     },
 
     getComponentUpdate() {

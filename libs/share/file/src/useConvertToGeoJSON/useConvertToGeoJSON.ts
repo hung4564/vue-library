@@ -10,7 +10,9 @@ export function useConvertToGeoJSON() {
     if (!isInputFeature(input)) {
       throw new Error('Invalid input: not an InputFeature');
     }
-
+    if (input.type == 'Feature' && input.geometry) {
+      return input as GeoJSON.Feature;
+    }
     const { geometry, ...properties } = input;
 
     const geo: GeoJSON.Geometry =

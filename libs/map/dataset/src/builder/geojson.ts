@@ -8,7 +8,6 @@ import {
 } from '../extra';
 import type { IDataset } from '../interfaces';
 import {
-  createDataManagementMapboxComponent,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createGroupDataset,
@@ -43,21 +42,16 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   groupLayer.add(layer);
   groupLayer.add(list);
   const dataConvert = convertGeojsonToList(data.geojson);
-  const dataManagement = createDataManagementMapboxComponent(data.name, {
-    fields: dataConvert.fields,
-  });
-  dataManagement.setItems(dataConvert.items);
   const identify = createIdentifyMapboxComponent(data.name);
   identify.addMenus([
     createMenuItemToBoundActionForItem(),
-    createMenuItemShowDetailForItem(),
+    createMenuItemShowDetailForItem(dataConvert.fields),
   ]);
-  const source = createDatasetPartGeojsonSourceComponent(data.name, {
-    type: 'FeatureCollection',
-    features: [],
-  });
+  const source = createDatasetPartGeojsonSourceComponent(
+    data.name,
+    data.geojson,
+  );
   dataset.add(source);
-  dataset.add(dataManagement);
   dataset.add(groupLayer);
   dataset.add(identify);
   return dataset;

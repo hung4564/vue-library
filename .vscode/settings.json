@@ -1,5 +1,12 @@
 {
-  "cSpell.words": ["Buildable", "hungpv", "hungpvq", "Mapbox", "mapboxgl"],
+  "cSpell.words": [
+    "basemap",
+    "Buildable",
+    "hungpv",
+    "hungpvq",
+    "Mapbox",
+    "mapboxgl"
+  ],
   "notebook.codeActionsOnSave": {},
   "editor.codeActionsOnSave": {
     "source.sortImports": "explicit"

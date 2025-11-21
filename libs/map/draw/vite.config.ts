@@ -52,6 +52,7 @@ export default defineConfig({
         '@hungpvq/content-menu',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        '@hungpvq/vue-draggable',
         'maplibre-gl',
         '@mapbox/mapbox-gl-draw',
         '@mdi/js',

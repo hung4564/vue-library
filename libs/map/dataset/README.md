@@ -125,7 +125,7 @@ function handleStyleChange(layerId: string, style: any) {
 }
 
 function handleIdentify(features: any[]) {
-  console.log('Identified features:', features);
+  console.info('Identified features:', features);
 }
 </script>
 ```
@@ -146,7 +146,7 @@ import { MultiIdentify } from '@hungpvq/vue-map-dataset';
 const identifyLayers = ref(['buildings', 'roads', 'parks']);
 
 function handleFeaturesIdentified(results: any[]) {
-  console.log('Identified features from multiple layers:', results);
+  console.info('Identified features from multiple layers:', results);
 }
 </script>
 ```
@@ -338,12 +338,12 @@ const filters = ref([
 ]);
 
 function handleDrawComplete(geometry: any) {
-  console.log('Draw completed:', geometry);
+  console.info('Draw completed:', geometry);
   // Apply spatial filter
 }
 
 function handleFilterChange(filters: any) {
-  console.log('Filters changed:', filters);
+  console.info('Filters changed:', filters);
   // Apply attribute filters
 }
 </script>

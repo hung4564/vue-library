@@ -1,16 +1,19 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import type { SourceSpecification } from 'maplibre-gl';
-import type { IDataset, IMapboxSourceView } from '../../interfaces';
+import { createWithDataHelper } from '../../extra';
+import type { IBaseMapboxSourceView } from '../../interfaces';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
-export function createDatasetPartMapboxSourceComponent(
+export function createDatasetPartMapboxSourceComponent<T>(
   name: string,
-): IDataset & IMapboxSourceView {
+  data: T,
+): IBaseMapboxSourceView {
   const base = createDatasetLeaf(name);
+  const dataHelper = createWithDataHelper<T>(data);
   return createNamedComponent('DatasetPartMapboxSourceComponent', {
     ...base,
-
+    ...dataHelper,
     get type() {
       return 'source';
     },

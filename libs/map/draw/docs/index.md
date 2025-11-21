@@ -47,14 +47,14 @@ import { DrawControl, DrawingType, type DrawOption } from '@hungpvq/vue-map-draw
 import '@hungpvq/vue-map-core/style.css';
 
 const drawOptions: DrawOption = {
-  draw_support: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
+  drawSupports: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
   async save(geojson: any) {
-    console.log('Save drawing:', geojson);
+    console.info('Save drawing:', geojson);
   },
 };
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```
@@ -79,7 +79,7 @@ import { Map, ZoomControl, HomeControl } from '@hungpvq/vue-map-core';
 import { DrawControl, InspectControl, DrawingType } from '@hungpvq/vue-map-draw';
 
 const drawOptions = {
-  draw_support: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
+  drawSupports: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
   async save(geojson) {
     // handle save
   },
@@ -91,7 +91,7 @@ const drawOptions = {
 
 ## 💡 Best Practices & Notes
 
-- Always provide a `draw_support` array in your `DrawOption` to specify which geometry types are enabled.
+- Always provide a `drawSupports` array in your `DrawOption` to specify which geometry types are enabled.
 - Use the `save` method in `DrawOption` to handle saving or processing drawn features.
 - The `DrawControl` is designed to be used inside a `<Map>` component from `@hungpvq/vue-map-core`.
 - The `InspectControl` is useful for debugging and analyzing map layers and features, especially during development or for admin tools.

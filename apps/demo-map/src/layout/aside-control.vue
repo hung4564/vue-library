@@ -37,9 +37,6 @@
             <RouterLink to="/basemap">BaseMap </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/draw">draw </RouterLink>
-          </v-list-item>
-          <v-list-item>
             <RouterLink to="/measurement">measurement </RouterLink>
           </v-list-item>
           <v-list-item>
@@ -55,6 +52,11 @@
           </v-list-item>
           <v-list-item>
             <RouterLink to="/dataset-list">Dataset - List </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/dataset-data-management"
+              >Dataset - Data management
+            </RouterLink>
           </v-list-item>
         </v-list>
       </DraggableItemSideBar>

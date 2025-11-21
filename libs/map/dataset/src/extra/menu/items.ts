@@ -3,7 +3,6 @@ import { getMap } from '@hungpvq/vue-map-core';
 import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
 import type { BBox } from 'geojson';
 import type {
-  IDataManagementView,
   IDataset,
   IMapboxSourceView,
   IMetadataView,
@@ -124,7 +123,7 @@ export function createMenuItemToBoundActionForItem() {
     )
     .build();
 }
-export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef = []) {
+export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
   return createMenuBuilder()
     .item()
     .setLocation('menu')
@@ -132,31 +131,24 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef = []) {
     .setId('show-detail')
     .setIcon(mdiInformation)
     .setClick((props) => {
-      if (fields && fields.length > 0) {
-        return createMenuClickBuilder()
-          .addTupleDynamic('addComponent', ({ value }) => ({
-            value: createMenuClickAddComponentBuilder()
-              .setComponentKey('layer-detail')
-              .setAttr({
-                item: value,
-                fields,
-                view: props.layer,
-              })
-              .setCheck('detail')
-              .build(),
-          }))
-          .addTupleDynamic('highlight', ({ value }) => ({
-            value: createMenuClickHighlightBuilder()
-              .setDetail(convertItemToFeature(value))
-              .setKey('detail')
-              .build(),
-          }));
-      }
-      const dataManagement = findSiblingOrNearestLeaf(
-        props.layer,
-        (dataset) => dataset.type == 'dataManagement',
-      ) as unknown as IDataManagementView;
-      dataManagement?.showDetail(props.mapId, props.value);
+      return createMenuClickBuilder()
+        .addTupleDynamic('addComponent', ({ value }) => ({
+          value: createMenuClickAddComponentBuilder()
+            .setComponentKey('layer-detail')
+            .setAttr({
+              item: value,
+              fields,
+              view: props.layer,
+            })
+            .setCheck('detail')
+            .build(),
+        }))
+        .addTupleDynamic('highlight', ({ value }) => ({
+          value: createMenuClickHighlightBuilder()
+            .setDetail(convertItemToFeature(value))
+            .setKey('detail')
+            .build(),
+        }));
     })
     .build();
 }

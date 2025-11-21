@@ -6,29 +6,31 @@ import type {
 } from '../interfaces/dataset.extra';
 import type { IDatasetMap } from '../interfaces/dataset.map';
 import type {
-  IDataManagementView,
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type { DatasetComposite } from '../model';
+import type { DatasetComposite, IDataManagementView } from '../model';
 
-// Type guard to check if a dataset implements IDatasetMap
-export function isDatasetMap(
+export function isDatasetMapHasAddToMap(
   dataset: IDataset,
 ): dataset is IDataset & IDatasetMap {
   if (!dataset) return false;
-  return 'removeFromMap' in dataset && 'addToMap' in dataset;
+  return 'addToMap' in dataset;
 }
-
+export function isDatasetMapHasRemoveFromMap(
+  dataset: IDataset,
+): dataset is IDataset & IDatasetMap {
+  if (!dataset) return false;
+  return 'removeFromMap' in dataset;
+}
 export function isDatasetSourceMap(
   dataset: IDataset,
 ): dataset is IDataset & IMapboxSourceView {
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 
-// Type guard to check if a dataset implements IMapboxLayerView
 export function isMapboxLayerView(
   dataset: IDataset,
 ): dataset is IDataset & IMapboxLayerView & WithDataHelper {
@@ -44,7 +46,6 @@ export function hasMoveLayer(
 ): dataset is IDataset & IMapboxLayerView {
   return 'moveLayer' in dataset && 'getBeforeId' in dataset;
 }
-// Type guard to check if a dataset implements IMapboxLayerView
 export function isComposite(
   dataset: IDataset,
 ): dataset is IDataset & DatasetComposite {
@@ -62,11 +63,7 @@ export function isIdentifyMergeView(
 export function isDataManagementView(
   dataset: any,
 ): dataset is IDataManagementView {
-  return (
-    dataset?.type === 'dataManagement' &&
-    typeof dataset.showDetail === 'function' &&
-    typeof dataset.getList === 'function'
-  );
+  return dataset?.type === 'data-management';
 }
 export function isDatasetHasMethod<T, K extends keyof any>(
   obj: unknown,

@@ -11,7 +11,11 @@ import {
   findAllComponentsByType,
   traverseTree,
 } from '../model/visitors';
-import { isComposite, isDatasetMap } from '../utils/check';
+import {
+  isComposite,
+  isDatasetMapHasAddToMap,
+  isDatasetMapHasRemoveFromMap,
+} from '../utils/check';
 
 const KEY = 'dataset';
 export type MapLayerStore = {
@@ -54,7 +58,7 @@ export const useMapDataset = (propsMapId?: string) => {
             for (const depId of node.dependsOn) {
               if (!addedSet.has(depId)) {
                 const dep = store.datasets[depId];
-                if (isDatasetMap(dep)) {
+                if (isDatasetMapHasAddToMap(dep)) {
                   dep.addToMap(map); // add dependency dataset to map before current node
                   addedSet.add(depId);
                 }
@@ -63,7 +67,7 @@ export const useMapDataset = (propsMapId?: string) => {
           }
           // Then add the node itself
           if (
-            isDatasetMap(node) &&
+            isDatasetMapHasAddToMap(node) &&
             typeof node.addToMap === 'function' &&
             !addedSet.has(node.id)
           ) {
@@ -94,11 +98,7 @@ export const useMapDataset = (propsMapId?: string) => {
         layer,
         (node) => {
           // Remove this node from the map FIRST (before dependencies)
-          if (
-            isDatasetMap(node) &&
-            typeof node.removeFromMap === 'function' &&
-            !removedSet.has(node.id)
-          ) {
+          if (isDatasetMapHasRemoveFromMap(node) && !removedSet.has(node.id)) {
             node.removeFromMap(map);
             removedSet.add(node.id);
           }
@@ -107,7 +107,7 @@ export const useMapDataset = (propsMapId?: string) => {
             for (const depId of node.dependsOn) {
               if (!removedSet.has(depId)) {
                 const dep = store.datasets[depId];
-                if (isDatasetMap(dep)) {
+                if (isDatasetMapHasRemoveFromMap(dep)) {
                   dep.removeFromMap(map);
                   removedSet.add(depId);
                 }
@@ -127,12 +127,12 @@ export const useMapDataset = (propsMapId?: string) => {
     logHelper(logger, mapId, 'store').debug('removeComponent', component);
     const parent = component.getParent() || component;
     getMap(async (map: MapSimple) => {
-      if (isDatasetMap(component)) {
+      if (isDatasetMapHasRemoveFromMap(component)) {
         component.removeFromMap(map);
       }
       applyToAllLeaves(parent, [
         (leaf) => {
-          if (isDatasetMap(leaf)) {
+          if (isDatasetMapHasRemoveFromMap(leaf)) {
             leaf.removeFromMap(map);
           }
         },

@@ -14,10 +14,6 @@ const router = createRouter({
       component: () => import('../views/legend.vue'),
     },
     {
-      path: '/draw/',
-      component: () => import('../views/Draw/example.vue'),
-    },
-    {
       path: '/inspect/',
       component: () => import('../views/Draw/inspect.vue'),
     },
@@ -44,6 +40,10 @@ const router = createRouter({
     {
       path: '/dataset-list/',
       component: () => import('../views/dataset-list/example.vue'),
+    },
+    {
+      path: '/dataset-data-management/',
+      component: () => import('../views/dataset-data-management/example.vue'),
     },
     {
       path: '/measurement/',

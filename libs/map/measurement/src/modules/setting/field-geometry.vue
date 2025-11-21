@@ -95,7 +95,7 @@ const isCanAdd = computed(() => {
             :size="16"
             type="mdi"
             :path="path.fillBound"
-            :title="titleActionDownload"
+            :title="titleActionFillBound"
           />
         </button>
         <button

@@ -27,8 +27,7 @@ import {
   type MapSourceDataEvent,
   type StyleSpecification,
 } from 'maplibre-gl';
-import { computed, ref, shallowRef } from 'vue';
-import { useMapDraw } from '../../store';
+import { ref, shallowRef } from 'vue';
 import { brightColor } from './colors';
 import {
   getSourcesFromMap,
@@ -84,7 +83,6 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onInit,
   onDestroy,
 );
-const { getDrawIsShow } = useMapDraw(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const showInspect = ref(props.showInspectDefault);
 setLocaleDefault({
@@ -243,9 +241,7 @@ function _inspectStyle(map: MapSimple) {
     backgroundColor: props.backgroundColor,
   });
 }
-const isDrawShow = computed(() => {
-  return getDrawIsShow();
-});
+const isDrawShow = ref(false);
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
