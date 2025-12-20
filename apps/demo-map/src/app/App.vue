@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { Devtools } from '@hungpvq/map-devtools';
 import { RouterView } from 'vue-router';
 </script>
 
 <template>
   <RouterView />
+  <Devtools />
 </template>
 
 <style scoped lang="css">

@@ -31,7 +31,8 @@
       "@hungpvq/vue-map-draw": ["libs/map/draw/src/index.ts"],
       "@hungpvq/vue-map-legend": ["libs/map/legend/src/index.ts"],
       "@hungpvq/vue-map-measurement": ["libs/map/measurement/src/index.ts"],
-      "@hungpvq/vue-map-print": ["libs/map/print/src/index.ts"]
+      "@hungpvq/vue-map-print": ["libs/map/print/src/index.ts"],
+      "@hungpvq/map-devtools": ["libs/map/devtools/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
