@@ -92,7 +92,7 @@ export function addStore<T = Record<string, unknown>>(
   }
   return temp[key] as T;
 }
-export function getStore<T = any>(mapId: string, key: string) {
+export function getStore<T>(mapId: string, key: string): T | undefined {
   const temp = getMapStore(mapId);
   if (!temp || !(key in temp)) {
     storeLogger(mapId).debug('getStore: missing key', key);

@@ -68,6 +68,10 @@ export const withMapProps = {
     type: Number,
     default: 0,
   },
+  top: Number,
+  bottom: Number,
+  left: Number,
+  right: Number,
 };
 const validPositions = [
   'top-left',
@@ -84,13 +88,16 @@ export interface WithMapPropType {
   position?: Position;
   controlVisible?: boolean;
   order?: number;
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
 }
 
-export const defaultMapProps: Required<WithMapPropType> = {
+export const defaultMapProps: Partial<WithMapPropType> = {
   mapId: '',
   dragId: '',
   btnWidth: 40,
   position: 'bottom-right',
   controlVisible: true,
-  order: 0,
 };
