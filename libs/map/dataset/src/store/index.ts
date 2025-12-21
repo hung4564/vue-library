@@ -4,17 +4,7 @@ import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { IDataset } from '../interfaces/dataset.base';
 import { logger } from '../logger';
-import type { IListViewUI } from '../model';
-import {
-  applyToAllLeaves,
-  findAllComponentsByType,
-  traverseTree,
-} from '../model/visitors';
-import {
-  isComposite,
-  isDatasetMapHasAddToMap,
-  isDatasetMapHasRemoveFromMap,
-} from '../utils/check';
+import { DatasetService } from '../services/dataset.service';
 
 const KEY = 'dataset';
 export type MapLayerStore = {
@@ -35,47 +25,8 @@ export const useMapDataset = (propsMapId?: string) => {
     if (!store) {
       return;
     }
-    const currentLists = getAllComponentsByType<IListViewUI>('list');
-    const allComponentsOfType = findAllComponentsByType(
-      layer,
-      'list',
-    ) as Array<IListViewUI>;
-    store.datasets[layer.id] = layer;
-    allComponentsOfType.forEach((list, i) => {
-      list.index = i + 1 + currentLists.length;
-    });
-    store.datasetIds.value.push(layer.id);
     getMap(async (map: MapSimple) => {
-      // Track already added dependencies in this session to avoid duplicates.
-      const addedSet = new Set<string>();
-
-      traverseTree(
-        layer,
-        (node) => {
-          // If this node has dependencies (dependsOn: string[]), add each dependency FIRST.
-          if (Array.isArray(node.dependsOn)) {
-            for (const depId of node.dependsOn) {
-              if (!addedSet.has(depId)) {
-                const dep = store.datasets[depId];
-                if (isDatasetMapHasAddToMap(dep)) {
-                  dep.addToMap(map); // add dependency dataset to map before current node
-                  addedSet.add(depId);
-                }
-              }
-            }
-          }
-          // Then add the node itself
-          if (
-            isDatasetMapHasAddToMap(node) &&
-            typeof node.addToMap === 'function' &&
-            !addedSet.has(node.id)
-          ) {
-            node.addToMap(map);
-            addedSet.add(node.id);
-          }
-        },
-        {},
-      );
+      await DatasetService.addDataset(store, map, layer);
     });
     logHelper(logger, mapId, 'store').debug('addDataset', {
       store,
@@ -86,36 +37,8 @@ export const useMapDataset = (propsMapId?: string) => {
     if (!store) {
       return;
     }
-    delete store.datasets[layer.id];
-    store.datasetIds.value = store.datasetIds.value.filter(
-      (id) => id !== layer.id,
-    );
     getMap(async (map: MapSimple) => {
-      const removedSet = new Set<string>();
-
-      traverseTree(
-        layer,
-        (node) => {
-          // Remove this node from the map FIRST (before dependencies)
-          if (isDatasetMapHasRemoveFromMap(node) && !removedSet.has(node.id)) {
-            node.removeFromMap(map);
-            removedSet.add(node.id);
-          }
-          // Then remove dependencies (if any)
-          if (Array.isArray(node.dependsOn)) {
-            for (const depId of node.dependsOn) {
-              if (!removedSet.has(depId)) {
-                const dep = store.datasets[depId];
-                if (isDatasetMapHasRemoveFromMap(dep)) {
-                  dep.removeFromMap(map);
-                  removedSet.add(depId);
-                }
-              }
-            }
-          }
-        },
-        { direction: 'rtl' },
-      );
+      await DatasetService.removeDataset(store, map, layer);
     });
     logHelper(logger, mapId, 'store').debug('removeDataset', {
       store,
@@ -124,23 +47,9 @@ export const useMapDataset = (propsMapId?: string) => {
   }
   function removeComponent(component: IDataset) {
     logHelper(logger, mapId, 'store').debug('removeComponent', component);
-    const parent = component.getParent() || component;
     getMap(async (map: MapSimple) => {
-      if (isDatasetMapHasRemoveFromMap(component)) {
-        component.removeFromMap(map);
-      }
-      applyToAllLeaves(parent, [
-        (leaf) => {
-          if (isDatasetMapHasRemoveFromMap(leaf)) {
-            leaf.removeFromMap(map);
-          }
-        },
-      ]);
+      DatasetService.removeComponent(map, component);
     });
-    // Remove component from parent
-    if (parent && isComposite(parent)) {
-      parent.remove(component);
-    }
   }
   function getStoreDataset() {
     return store;
@@ -149,12 +58,7 @@ export const useMapDataset = (propsMapId?: string) => {
     if (!store) {
       return [];
     }
-    const views: T[] = [];
-    (Object.values(store.datasets || {}) || []).forEach((dataset) => {
-      const allComponentsOfType = findAllComponentsByType(dataset, targetType);
-      views.push(...(allComponentsOfType as T[]));
-    });
-    return views;
+    return DatasetService.getAllComponentsByType<T>(store, targetType);
   }
 
   function getDatasetIds() {
