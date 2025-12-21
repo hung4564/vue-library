@@ -41,6 +41,12 @@ function isWebglSupported() {
   return false;
 }
 
+/**
+ * Hook to initialize and manage a MapLibre map instance.
+ *
+ * @param props - Configuration properties for the map.
+ * @returns An object containing the map instance, initialization status, and helper functions.
+ */
 export function useMapInstance(
   props: UseMapInstanceProps,
   emit: UseMapInstanceEmits,

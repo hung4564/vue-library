@@ -13,7 +13,18 @@ import {
   isDatasetMapHasRemoveFromMap,
 } from '../utils/check';
 
+/**
+ * Service for managing datasets and their lifecycle on the map.
+ * Decouples business logic from the Vue store.
+ */
 export class DatasetService {
+  /**
+   * Adds a dataset and its dependencies to the map.
+   *
+   * @param store - The dataset store.
+   * @param map - The map instance.
+   * @param layer - The dataset to add.
+   */
   static async addDataset(
     store: MapLayerStore,
     map: MapSimple,

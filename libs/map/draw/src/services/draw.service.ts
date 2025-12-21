@@ -4,7 +4,18 @@ import type { Feature, FeatureCollection } from 'geojson';
 import { logger } from '../logger';
 import { DrawSaveFc, DrawSaveFcParams, MapDrawStore } from '../types';
 
+/**
+ * Service for managing map drawing operations and data conversion.
+ */
 export class DrawService {
+  /**
+   * Updates the store state based on the type of feature modification.
+   *
+   * @param store - The draw store.
+   * @param type - The type of modification ('added', 'updated', 'deleted').
+   * @param feature - The feature being modified.
+   * @param mapId - The ID of the map.
+   */
   static setFeature(
     store: MapDrawStore,
     type: 'added' | 'updated' | 'deleted',
