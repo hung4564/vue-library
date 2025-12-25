@@ -31,7 +31,6 @@
     "@hungpvq/vue-draggable": "0.4.3",
     "@hungpvq/shared-log": ">=0.0.1",
     "@jamescoyle/vue-icon": "^0.1.2",
-    "@mdi/js": "^7.4.47",
-    "@hungpvq/shared-store": ">=0.0.1"
+    "@mdi/js": "^7.4.47"
   }
 }

@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
   height: 100%;
   text-align: center;
   overflow: hidden;
-  color: var(--card-color);
+  color: var(--map-card-text, var(--map-text-primary, #333));
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
   flex-direction: column;
   align-items: center;
@@ -227,8 +227,14 @@ onBeforeUnmount(() => {
 
 .base-map-control-setting-item__active {
   --v-primary-base: #1a73e8;
-  color: var(--v-primary-base, #1a73e8) !important;
-  caret-color: var(--v-primary-base, #1a73e8) !important;
+  color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
+  caret-color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
 }
 .clickable {
   cursor: pointer;

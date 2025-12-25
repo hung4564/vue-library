@@ -1,4 +1,17 @@
+import type { MapSimple } from '@hungpvq/shared-map';
 import { MapError, errorHandler } from '@hungpvq/vue-map-core';
+
+export interface LegendItem {
+  id: string;
+  title: string;
+  visible: boolean;
+}
+
+export interface LayerConfig {
+  id: string;
+  title?: string;
+  visible?: boolean;
+}
 
 /**
  * Service for managing legend operations.
@@ -7,7 +20,7 @@ export class LegendService {
   /**
    * Generate legend items from layer configurations.
    */
-  static generateLegendItems(layers: any[]): any[] {
+  static generateLegendItems(layers: LayerConfig[]): LegendItem[] {
     try {
       // Legend generation logic
       return layers.map((layer) => ({
@@ -26,7 +39,7 @@ export class LegendService {
    * Toggle layer visibility.
    */
   static async toggleLayerVisibility(
-    map: any,
+    map: MapSimple,
     layerId: string,
     visible: boolean,
   ): Promise<void> {
@@ -43,8 +56,10 @@ export class LegendService {
       const legendError = new MapError(
         `Failed to toggle layer visibility: ${layerId}`,
         'LEGEND_ERROR',
-        { layerId, visible, error: (error as Error).message },
-        true,
+        {
+          context: { layerId, visible },
+          cause: error,
+        },
       );
       errorHandler.handle(legendError);
       throw legendError;

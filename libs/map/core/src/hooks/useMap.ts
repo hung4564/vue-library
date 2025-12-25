@@ -3,13 +3,13 @@ import { computed, inject, onMounted, onUnmounted } from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
-  props: any = {},
+  props: WithMapPropType = {},
   onInit?: MapFCOnUseMap,
   onDestroy?: MapFCOnUseMap,
 ) => {
   const i_map_id = inject('$map.id');
   const c_mapId = computed(() => {
-    return props.mapId || i_map_id;
+    return (props.mapId || i_map_id) as string;
   });
   onMounted(() => {
     getMap(c_mapId.value, async (_map) => {

@@ -22,29 +22,34 @@ export function createBase() {
 }
 
 type PrototypeSource = string | Function;
+
 export function createNamedComponent<T extends object>(
   prototypeSource: PrototypeSource,
   data: T,
 ): T {
-  try {
-    let prototypeFn: Function;
+  let prototypeFn: Function;
 
+  if (typeof prototypeSource === 'function') {
+    prototypeFn = prototypeSource;
+  } else {
+    // Fallback for string source - avoid new Function for CSP compliance
+    prototypeFn = class Component {};
     if (typeof prototypeSource === 'string') {
-      prototypeFn = new Function(`return function ${prototypeSource}() {}`)();
-    } else if (typeof prototypeSource === 'function') {
-      prototypeFn = prototypeSource;
-    } else {
-      throw new Error('Invalid prototype source');
+      Object.defineProperty(prototypeFn, 'name', { value: prototypeSource });
     }
-
-    const obj = Object.create(prototypeFn.prototype);
-    return Object.assign(obj, withAutoLogger({ ...data }));
-  } catch {
-    // fallback nếu bị CSP hoặc lỗi syntax
-    return withAutoLogger({ ...data });
   }
+
+  const obj = Object.create(prototypeFn.prototype);
+  // Only apply logger in development mode
+  const isDev = import.meta.env.DEV;
+  return Object.assign(obj, isDev ? withAutoLogger({ ...data }) : { ...data });
 }
+
 export function withAutoLogger<T extends Record<string, any>>(obj: T): T {
+  // Skip logging in production for performance
+  if (!import.meta.env.DEV) {
+    return obj;
+  }
   const wrappedLogger = logger.setNamespace('dataset');
 
   function logStart(target: any, prop: string | symbol, args: any[]) {

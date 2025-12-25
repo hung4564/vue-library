@@ -171,7 +171,7 @@ const onShowAddStyle = (value: boolean) => {
 .tab-container {
   display: flex;
   border-bottom-width: thin;
-  border-bottom-color: #fff;
+  border-bottom-color: var(--map-divider-color, var(--map-border-color, #fff));
   border-bottom-style: solid;
   .tab-item {
     flex-grow: 1;

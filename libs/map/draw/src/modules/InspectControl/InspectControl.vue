@@ -268,13 +268,14 @@ const isDrawShow = ref(false);
   min-width: 200px;
 }
 .maplibregl-inspect_popup {
-  color: #333;
+  color: var(--map-inspect-text, var(--map-text-primary, #333));
   display: table;
   width: 100%;
 }
 
 .maplibregl-inspect_feature:not(:last-child) {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid
+    var(--map-inspect-border, var(--map-border-color, #ccc));
 }
 
 .maplibregl-inspect_layer:before {

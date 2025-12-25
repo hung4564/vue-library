@@ -339,13 +339,18 @@ function getRoundNum(num: number) {
     0px 3px 1px -2px rgb(0 0 0 / 20%),
     0px 2px 2px 0px rgb(0 0 0 / 14%),
     0px 1px 5px 0px rgb(0 0 0 / 12%);
-  background-color: hsla(0, 0%, 100%, 0.7529411764705882);
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   border-radius: 4px;
   font-size: 14px;
-  color: #333;
   padding: 4px;
 }
 .crs-select {
   background-color: transparent;
+  color: var(--map-card-text, var(--map-text-primary, #333));
+}
+.crs-select option {
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
 }
 </style>

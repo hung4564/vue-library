@@ -4,11 +4,17 @@ import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <RouterView />
-  <Devtools />
+  <div class="app map-theme-light">
+    <RouterView />
+    <Devtools />
+  </div>
 </template>
 
 <style scoped lang="css">
+.app {
+  width: 100%;
+  height: 100%;
+}
 header {
   line-height: 1.5;
   max-width: 100vw;

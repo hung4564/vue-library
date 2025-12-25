@@ -138,7 +138,7 @@ function onDragLoadDone(e: any) {
   }
 }
 @import 'maplibre-gl/dist/maplibre-gl.css';
-
+@import '../styles/themes.css';
 .draggable-container * {
   pointer-events: all;
 }
@@ -344,10 +344,8 @@ function onDragLoadDone(e: any) {
   border-bottom-width: 0px;
   padding: 0;
   margin: 0;
-  background-color: var(--card-background-color);
-  color: var(--card-color);
-  // Have to use the element so we can make use of `first-of-type` and
-  // `last-of-type`
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   li {
     display: flex;
     cursor: pointer;
@@ -356,5 +354,12 @@ function onDragLoadDone(e: any) {
     width: 100%;
     min-height: 40px;
   }
+}
+.hungpvq-draggable-card {
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
+  box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
+  border-radius: 4px;
+  overflow: hidden;
 }
 </style>

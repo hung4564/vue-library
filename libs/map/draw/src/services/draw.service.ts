@@ -86,7 +86,7 @@ export class DrawService {
     collection: FeatureCollection,
     mapId: string,
     callback?: DrawSaveFc,
-    context?: any,
+    context?: Record<string, unknown>,
   ) {
     try {
       logHelper(logger, mapId, 'DrawService').debug('save', {
@@ -113,17 +113,17 @@ export class DrawService {
       const updateFeature = action.updateFeature;
       if (deleteFeature && Object.values(result.deleted).length > 0) {
         Object.values(result.deleted).forEach((feature) => {
-          promises.push(deleteFeature(feature, context));
+          promises.push(deleteFeature(feature, (context || { mapId }) as any));
         });
       }
       if (addFeature && Object.values(result.added).length > 0) {
         Object.values(result.added).forEach((feature) => {
-          promises.push(addFeature(feature, context));
+          promises.push(addFeature(feature, (context || { mapId }) as any));
         });
       }
       if (updateFeature && Object.values(result.updated).length > 0) {
         Object.values(result.updated).forEach((feature) => {
-          promises.push(updateFeature(feature, context));
+          promises.push(updateFeature(feature, (context || { mapId }) as any));
         });
       }
       await Promise.all(promises);

@@ -38,18 +38,23 @@ export default {
 <style scoped lang="scss">
 .draggale-item {
   outline: thin;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+  box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.14),
     0 1px 3px 0 rgba(0, 0, 0, 0.12);
   display: flex;
   width: 100%;
   position: relative;
   .draggable-handle {
     flex-grow: 0;
-    background: var(--v-primary-base, #1a73e8);
+    background: var(
+      --map-list-item-active-bg,
+      var(--map-primary-color, #1a73e8)
+    );
   }
   .draggable-handle__icon {
     cursor: n-resize;
-    color: #fff;
+    color: var(--map-list-item-active-text, var(--map-text-inverse, #fff));
     width: 16px;
     height: 100%;
     display: flex;
@@ -64,7 +69,8 @@ export default {
   }
 }
 .draggale-item-active {
-  outline: 2px solid var(--v-primary-base, #1a73e8);
+  outline: 2px solid
+    var(--map-list-item-active-outline, var(--map-primary-color, #1a73e8));
 }
 </style>
 <style scoped>

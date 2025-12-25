@@ -444,7 +444,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
 <style>
 .boxdraw {
   border: dashed 2px black;
-  background-color: #ffffff30;
+  background-color: var(--map-identify-box-bg, rgba(255, 255, 255, 0.19));
 }
 </style>
 <style scoped lang="scss">
@@ -463,7 +463,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
     height: 100%;
 
     b {
-      color: var(--v-primary-base, #1a73e8);
+      color: var(--map-identify-primary, var(--map-primary-color, #1a73e8));
       padding-right: 4px;
       font-weight: bolder;
     }
@@ -508,7 +508,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
     margin-bottom: 4px;
 
     &__header {
-      color: var(--v-primary-base, #1a73e8);
+      color: var(--map-identify-primary, var(--map-primary-color, #1a73e8));
       font-weight: bolder;
       white-space: nowrap !important;
       overflow: hidden !important;
@@ -578,7 +578,8 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   &__loading {
     width: 24px;
     height: 24px;
-    border: 2px solid var(--v-primary-base, #1a73e8);
+    border: 2px solid
+      var(--map-identify-primary, var(--map-primary-color, #1a73e8));
     border-radius: 50%;
     border-right-color: transparent;
     animation: spin 1s linear infinite;

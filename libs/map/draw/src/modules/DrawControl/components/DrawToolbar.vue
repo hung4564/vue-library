@@ -139,7 +139,7 @@ const path = {
   justify-content: center;
 }
 .draft-item-count-badge {
-  background: #004e98;
-  color: white;
+  background: var(--map-draw-badge-bg, var(--map-primary-color, #004e98));
+  color: var(--map-draw-badge-text, var(--map-text-inverse, white));
 }
 </style>

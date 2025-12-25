@@ -6,7 +6,7 @@ import { Base } from './base';
  * The base DatasetComponent class declares common operations for both simple and
  * complex objects of a composition.
  */
-abstract class DatasetComponent<T = any> extends Base implements IDataset {
+abstract class DatasetComponent<T = unknown> extends Base implements IDataset {
   protected parent?: IDataset;
   protected name: string;
   protected data?: T;
@@ -69,7 +69,7 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
  * Leaf node in the Dataset Composite pattern
  * Represents a single dataset without children
  */
-export class DatasetLeaf<T = any> extends DatasetComponent<T> {
+export class DatasetLeaf<T = unknown> extends DatasetComponent<T> {
   get type(): string {
     return 'leaf';
   }

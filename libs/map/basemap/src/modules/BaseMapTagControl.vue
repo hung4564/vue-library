@@ -88,7 +88,10 @@ onBeforeUnmount(() => {
   padding: 4px 8px;
 }
 .base-map-item.active {
-  background-color: var(--v-primary-base, #1a73e8);
+  background-color: var(
+    --map-basemap-tag-bg,
+    var(--map-primary-color, #1a73e8)
+  );
   color: #fff;
   font-weight: bold;
 }

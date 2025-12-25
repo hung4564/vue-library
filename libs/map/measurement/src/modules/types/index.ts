@@ -1,17 +1,18 @@
 import { type CoordinatesNumber } from '@hungpvq/shared-map';
+import type { Feature, FeatureCollection } from 'geojson';
 
 export type IViewSetting = {
   coordinates?: CoordinatesNumber[];
-  features?: any;
-  value?: any;
-  format?: any;
-  features_label?: any;
+  features?: Feature[] | FeatureCollection;
+  value?: number | string;
+  format?: (value: number) => string;
+  features_label?: Feature[];
   fields?: IViewSettingField[];
 };
 export type IViewSettingField = {
   trans?: string;
   text?: string;
-  value?: any;
+  value?: number | string | boolean;
 };
 export interface IView {
   start: (_props?: any) => void;

@@ -194,7 +194,10 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
   .tab-divider {
     border-bottom-width: 1px;
     margin: 8px 12px;
-    border-bottom-color: #fff;
+    border-bottom-color: var(
+      --map-divider-color,
+      var(--map-border-color, #fff)
+    );
     border-bottom-style: solid;
   }
   .tab-group-label {
@@ -202,14 +205,14 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     flex-grow: 0 0 auto;
     .tab {
       border-bottom-width: 3px;
-      border-bottom-color: #fff;
+      border-bottom-color: var(--map-border-color, #fff);
       border-bottom-style: solid;
       padding: 12px;
       text-align: center;
       flex: 1 1 auto;
     }
     .tab-active {
-      border-bottom-color: var(--v-primary-base, #1a73e8);
+      border-bottom-color: var(--map-primary-color, #1a73e8);
     }
   }
   .tab-group-container {
@@ -225,7 +228,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
     flex: 0 0 auto;
     overflow: auto;
     border-right-width: thin;
-    border-right-color: #fff;
+    border-right-color: var(--map-border-color, #fff);
     border-right-style: solid;
     width: 30%;
     min-width: 150px;

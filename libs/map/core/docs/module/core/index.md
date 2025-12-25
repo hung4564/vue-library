@@ -142,6 +142,28 @@ function flyToHanoi() {
 </template>
 ```
 
+## Theming and Styling
+
+The map library supports extensive customization through CSS variables. All variables are prefixed with `--map-` to avoid conflicts.
+
+### Quick Start with Themes
+
+1.  **Import the base theme styles**:
+
+    ```typescript
+    import '@hungpvq/vue-map-core/src/styles/themes.css';
+    ```
+
+2.  **Apply a theme class** to your application container:
+    ```html
+    <!-- Dark Mode -->
+    <div class="map-theme-dark">
+      <map />
+    </div>
+    ```
+
+For a full list of available CSS variables and advanced customization options, see the [CSS Variables Reference](../../css-variables.md).
+
 ## Core Hooks
 
 For comprehensive documentation on core hooks including `useMap`, `useShow`, and advanced usage patterns, see [Core Hooks Guide](../../hook/index.md).

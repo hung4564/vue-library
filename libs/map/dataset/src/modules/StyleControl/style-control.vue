@@ -109,7 +109,7 @@ const { getComponent } = useUniversalRegistry(mapId.value);
     background-color: transparent;
     box-shadow: unset;
     .vc-input__label {
-      color: #fff;
+      color: var(--map-text-inverse, #fff);
     }
   }
   height: 100%;

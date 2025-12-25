@@ -58,11 +58,11 @@ const toggle = () => {
 }
 
 .devtools-toggle {
+  background-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #333;
-  color: white;
   border: none;
   cursor: pointer;
   font-size: 24px;
