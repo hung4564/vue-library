@@ -1,6 +1,8 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/shared-map';
+import { errorHandler } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
+import { DrawError } from '../errors';
 import { logger } from '../logger';
 import { DrawSaveFc, DrawSaveFcParams, MapDrawStore } from '../types';
 
@@ -86,53 +88,66 @@ export class DrawService {
     callback?: DrawSaveFc,
     context?: any,
   ) {
-    logHelper(logger, mapId, 'DrawService').debug('save', {
-      collection,
-      callback,
-    });
-    const action = store.config;
-
-    if (callback && !(callback instanceof Function)) {
-      throw new Error('Callback is not available');
-    }
-    if (!action) {
-      logHelper(logger, mapId, 'DrawService').debug('save', 'no callback');
-      return;
-    }
-    const result: DrawSaveFcParams = DrawService.convertData(store, collection);
-
-    const promises: Promise<Feature | void>[] = [];
-    const deleteFeature = action.deleteFeature;
-    const addFeature = action.addFeature;
-    const updateFeature = action.updateFeature;
-    if (deleteFeature && Object.values(result.deleted).length > 0) {
-      Object.values(result.deleted).forEach((feature) => {
-        promises.push(deleteFeature(feature, context));
+    try {
+      logHelper(logger, mapId, 'DrawService').debug('save', {
+        collection,
+        callback,
       });
-    }
-    if (addFeature && Object.values(result.added).length > 0) {
-      Object.values(result.added).forEach((feature) => {
-        promises.push(addFeature(feature, context));
-      });
-    }
-    if (updateFeature && Object.values(result.updated).length > 0) {
-      Object.values(result.updated).forEach((feature) => {
-        promises.push(updateFeature(feature, context));
-      });
-    }
-    await Promise.all(promises);
+      const action = store.config;
 
-    logHelper(logger, mapId, 'DrawService').debug('save', {
-      result,
-    });
-    callback && callback(result);
-    DrawService.clearDraw(store);
+      if (callback && !(callback instanceof Function)) {
+        throw new Error('Callback is not available');
+      }
+      if (!action) {
+        logHelper(logger, mapId, 'DrawService').debug('save', 'no callback');
+        return;
+      }
+      const result: DrawSaveFcParams = DrawService.convertData(
+        store,
+        collection,
+      );
+
+      const promises: Promise<Feature | void>[] = [];
+      const deleteFeature = action.deleteFeature;
+      const addFeature = action.addFeature;
+      const updateFeature = action.updateFeature;
+      if (deleteFeature && Object.values(result.deleted).length > 0) {
+        Object.values(result.deleted).forEach((feature) => {
+          promises.push(deleteFeature(feature, context));
+        });
+      }
+      if (addFeature && Object.values(result.added).length > 0) {
+        Object.values(result.added).forEach((feature) => {
+          promises.push(addFeature(feature, context));
+        });
+      }
+      if (updateFeature && Object.values(result.updated).length > 0) {
+        Object.values(result.updated).forEach((feature) => {
+          promises.push(updateFeature(feature, context));
+        });
+      }
+      await Promise.all(promises);
+
+      logHelper(logger, mapId, 'DrawService').debug('save', {
+        result,
+      });
+      callback && callback(result);
+      DrawService.clearDraw(store);
+    } catch (error) {
+      const drawError = new DrawError(`Failed to save draw features`, {
+        context: { mapId },
+        cause: error,
+        recoverable: true,
+      });
+      errorHandler.handle(drawError);
+      throw drawError;
+    }
   }
 
   static clearDraw(store: MapDrawStore) {
     const state = store.state;
     state.featuresAdded = {};
-    state.featuresAdded = {};
+    state.featuresUpdated = {};
     state.featuresDeleted = {};
   }
 }

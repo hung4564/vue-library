@@ -33,6 +33,7 @@ const props = defineProps({
 const emit = defineEmits<{
   (_e: 'map-loaded', _map: MapSimple): void;
   (_e: 'map-destroy', _map: MapSimple): void;
+  (_e: 'error', _error: Error): void;
 }>();
 
 const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);

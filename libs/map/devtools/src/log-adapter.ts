@@ -1,5 +1,4 @@
 import { LogAdapter, LogLevel } from '@hungpvq/shared-log';
-import { shallowRef } from 'vue';
 
 export interface LogEntry {
   id: string;
@@ -10,8 +9,6 @@ export interface LogEntry {
 }
 
 export class DevtoolLogAdapter implements LogAdapter {
-  // Use shallowRef for better performance with large arrays
-  public logs = shallowRef<LogEntry[]>([]);
   private buffer: LogEntry[] = [];
   private limit = 1000;
   private flushPending = false;
@@ -46,21 +43,26 @@ export class DevtoolLogAdapter implements LogAdapter {
       return;
     }
 
-    // Append buffer to logs
-    const newLogs = [...this.buffer, ...this.logs.value];
+    // Import devtoolState dynamically to avoid circular dependency
+    import('./store').then(({ devtoolState }) => {
+      // Append buffer to logs
+      const newLogs = [...this.buffer, ...devtoolState.logs];
 
-    // Trim if needed
-    if (newLogs.length > this.limit) {
-      newLogs.splice(0, this.limit);
-    }
+      // Trim if needed
+      if (newLogs.length > this.limit) {
+        newLogs.splice(this.limit);
+      }
 
-    this.logs.value = newLogs;
-    this.buffer = [];
-    this.flushPending = false;
+      devtoolState.logs = newLogs;
+      this.buffer = [];
+      this.flushPending = false;
+    });
   }
 
   clear() {
-    this.logs.value = [];
-    this.buffer = [];
+    import('./store').then(({ devtoolState }) => {
+      devtoolState.logs = [];
+      this.buffer = [];
+    });
   }
 }

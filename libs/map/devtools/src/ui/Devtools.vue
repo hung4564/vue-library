@@ -15,12 +15,19 @@
           >
             Logs
           </BaseButton>
+          <BaseButton
+            :active="state.activeTab === 'errors'"
+            @click="state.activeTab = 'errors'"
+          >
+            Errors
+          </BaseButton>
         </div>
         <BaseButton class="close-btn" @click="toggle">X</BaseButton>
       </div>
       <div class="devtools-content">
         <StoreViewer v-if="state.activeTab === 'store'" />
         <LogViewer v-if="state.activeTab === 'logs'" />
+        <ErrorViewer v-if="state.activeTab === 'errors'" />
       </div>
     </div>
     <button v-else class="devtools-toggle" @click="toggle">🛠️</button>
@@ -30,6 +37,7 @@
 <script setup lang="ts">
 import { BaseButton } from '@hungpvq/vue-map-core';
 import { devtoolState } from '../store';
+import ErrorViewer from './ErrorViewer.vue';
 import LogViewer from './LogViewer.vue';
 import StoreViewer from './StoreViewer.vue';
 

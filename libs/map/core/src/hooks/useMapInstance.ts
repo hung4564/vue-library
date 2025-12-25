@@ -2,6 +2,8 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import { MapInitializationError } from '../errors';
+import { errorHandler } from '../services/error-handler.service';
 import { useMapContainer } from '../store/store';
 
 if (!mapboxgl) {
@@ -23,6 +25,7 @@ export interface UseMapInstanceProps {
 export interface UseMapInstanceEmits {
   (e: 'map-loaded', map: MapSimple): void;
   (e: 'map-destroy', map: MapSimple): void;
+  (e: 'error', error: Error): void;
 }
 
 function isWebglSupported() {
@@ -59,30 +62,67 @@ export function useMapInstance(
   const store = useMapContainer(id.value);
 
   onMounted(() => {
-    if (!isSupport.value) return;
+    try {
+      if (!isSupport.value) {
+        throw new MapInitializationError(
+          'WebGL is not supported in this browser',
+          {
+            context: {
+              userAgent: navigator.userAgent,
+              mapId: id.value,
+            },
+          },
+        );
+      }
 
-    const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
-    const mapInstance = new mapboxgl.Map({
-      container: mapContainer.value!,
-      style: {
-        version: 8,
-        metadata: {},
-        sources: {},
-        layers: [],
-        sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-        glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
-      },
-      ...initOptions,
-    });
+      const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
+      const mapInstance = new mapboxgl.Map({
+        container: mapContainer.value!,
+        style: {
+          version: 8,
+          metadata: {},
+          sources: {},
+          layers: [],
+          sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
+          glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
+        },
+        ...initOptions,
+      });
 
-    map.value = mapInstance;
-    (mapInstance as any).id = id.value;
-    store.initMap(mapInstance as MapSimple);
+      map.value = mapInstance;
+      (mapInstance as any).id = id.value;
+      store.initMap(mapInstance as MapSimple);
 
-    mapInstance.once('load', () => {
-      emit('map-loaded', mapInstance as MapSimple);
-      loaded.value = true;
-    });
+      mapInstance.once('load', () => {
+        emit('map-loaded', mapInstance as MapSimple);
+        loaded.value = true;
+      });
+
+      mapInstance.on('error', (e) => {
+        const error = new MapInitializationError(
+          `Map error: ${e.error?.message || 'Unknown error'}`,
+          {
+            context: { mapId: id.value },
+            cause: e.error,
+          },
+        );
+        errorHandler.handle(error);
+        emit('error', error);
+      });
+    } catch (error) {
+      const mapError =
+        error instanceof MapInitializationError
+          ? error
+          : new MapInitializationError(
+              (error as Error).message || 'Failed to initialize map',
+              {
+                context: { mapId: id.value },
+                cause: error,
+              },
+            );
+      errorHandler.handle(mapError);
+      emit('error', mapError);
+    }
   });
 
   onUnmounted(() => {

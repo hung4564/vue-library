@@ -2,6 +2,7 @@ import { logHelper } from '@hungpvq/shared-map';
 import { useMapMittStore } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import { logger } from '../logger';
+import { BasemapService } from '../services';
 import { useMapBaseMapStore } from '../store';
 import {
   BaseMapItem,
@@ -34,11 +35,15 @@ export function useBaseMap(mapId: string) {
   async function setCurrent(baseMap: BaseMapItem) {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug('setCurrent', baseMap);
     if (state.loading) return;
-    state.current = baseMap;
-    emitter.emit(MittTypeBaseMapEventKey.setCurrent, state.current);
-    state.loading = true;
-    await state.adapter.setCurrent(mapId, baseMap);
-    state.loading = false;
+    try {
+      state.current = baseMap;
+      emitter.emit(MittTypeBaseMapEventKey.setCurrent, state.current);
+      state.loading = true;
+      await BasemapService.switchBasemap(mapId, state.adapter, baseMap);
+      state.loading = false;
+    } finally {
+      state.loading = false;
+    }
   }
   const baseMaps = ref<BaseMapItem[]>(state.baseMaps);
   const currentBaseMap = ref<BaseMapItem | undefined>(state.current);

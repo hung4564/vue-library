@@ -17,15 +17,17 @@
 <script setup lang="ts">
 import { BaseButton } from '@hungpvq/vue-map-core';
 import { computed, h, nextTick, ref, watch } from 'vue';
-import { devtoolLogAdapter } from '../store';
+import { devtoolState } from '../store';
 import GroupItem from './GroupItem.vue';
 import TreeItem from './TreeItem.vue';
 
-const logs = computed(() => devtoolLogAdapter.logs.value);
+const logs = computed(() => devtoolState.logs);
 const logListRef = ref<HTMLElement | null>(null);
 const autoScroll = ref(true);
 
-const clear = () => devtoolLogAdapter.clear();
+const clear = () => {
+  devtoolState.logs = [];
+};
 const formatTime = (ts: number) => new Date(ts).toLocaleTimeString();
 const isObject = (val: any) => val !== null && typeof val === 'object';
 const formatArg = (arg: any) => String(arg);

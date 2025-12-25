@@ -170,17 +170,22 @@ onBeforeUnmount(() => {
 <style scoped>
 .base-map-button__title {
   position: absolute;
-  padding-bottom: 4px;
+  padding: 4px;
   bottom: 0;
   width: 100%;
+  height: 100%;
   text-align: center;
   overflow: hidden;
   color: var(--card-color);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  flex-direction: column;
+  align-items: center;
+  display: flex;
 }
 
 .base-map-button__title > div {
   font-size: 0.6rem;
+  line-height: 0.75rem;
 }
 
 .base-map-button__content {
