@@ -200,9 +200,9 @@ $black: #333;
 
 .layer-context-menu {
   min-width: 150px;
-  background-color: $light-grey;
+  background-color: var(--map-layer-menu-bg, #ecf0f1);
   border-bottom-width: 0px;
-  box-shadow: 0 3px 6px 0 rgba($black, 0.2);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
 
   &--active {
     display: block;
@@ -210,7 +210,7 @@ $black: #333;
 
   &__item {
     display: flex;
-    color: $black;
+    color: var(--map-layer-menu-text, var(--map-text-primary, #333));
     cursor: pointer;
     padding: 5px 10px;
     align-items: center;
@@ -218,8 +218,11 @@ $black: #333;
     min-height: 50px;
 
     &:hover {
-      background-color: $blue;
-      color: $white;
+      background-color: var(
+        --map-layer-menu-hover-bg,
+        var(--map-primary-color, #004e98)
+      );
+      color: var(--map-layer-menu-hover-text, var(--map-text-inverse, #fff));
     }
   }
 

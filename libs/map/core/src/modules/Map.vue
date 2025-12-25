@@ -300,7 +300,7 @@ function onDragLoadDone(e: any) {
   width: 100%;
   height: 100%;
   position: relative;
-  background-color: #f7f5f2;
+  background-color: var(--map-background-color, #f7f5f2);
 }
 
 .not-support-map {
@@ -361,5 +361,8 @@ function onDragLoadDone(e: any) {
   box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
   border-radius: 4px;
   overflow: hidden;
+}
+.hungpvq-draggable-card button {
+  color: var(--map-card-text, var(--map-text-primary, #333));
 }
 </style>

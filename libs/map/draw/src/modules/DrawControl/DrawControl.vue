@@ -24,7 +24,7 @@ import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
 import StaticMode from './models/static-mode';
-import layers from './theme';
+import { getDrawStyles } from './theme';
 
 type DrawControlMapboxDrawControls = Omit<
   MapboxDrawOptions,
@@ -41,10 +41,14 @@ const props = withDefaults(
     ...defaultMapProps,
   },
 );
+const drawOptions = ref(props.drawOptions);
 const control = new MapboxDraw({
   displayControlsDefault: false,
   boxSelect: false,
-  styles: layers,
+  styles: getDrawStyles(
+    props.drawOptions?.primaryColor,
+    props.drawOptions?.activeColor,
+  ),
   ...props.drawControlOptions,
   modes: {
     ...MapboxDraw.modes,
@@ -52,7 +56,6 @@ const control = new MapboxDraw({
     ...props.drawControlOptions?.modes,
   },
 });
-const drawOptions = ref(props.drawOptions);
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const { setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({

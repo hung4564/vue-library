@@ -226,7 +226,6 @@ onBeforeUnmount(() => {
 }
 
 .base-map-control-setting-item__active {
-  --v-primary-base: #1a73e8;
   color: var(
     --map-basemap-active-color,
     var(--map-primary-color, #1a73e8)

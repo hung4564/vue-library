@@ -75,13 +75,14 @@ const toggle = () => {
   right: 50px;
   width: 600px;
   height: 400px;
-  background: white;
-  border: 1px solid #ccc;
+  background-color: var(--map-surface-color, #ffffff);
+  border: 1px solid var(--map-border-color, #ccc);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  color: var(--map-text-primary, #333);
 }
 
 .devtools-header {
@@ -89,8 +90,8 @@ const toggle = () => {
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  background-color: var(--map-surface-variant-color, #f5f5f5);
+  border-bottom: 1px solid var(--map-divider-color, #ddd);
 }
 
 .tabs {

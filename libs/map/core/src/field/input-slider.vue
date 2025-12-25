@@ -58,13 +58,13 @@ const backgroundSize = computed(() => {
   padding-left: 4px;
 }
 .input-slider__value > input:focus {
-  border: 1px solid #fff;
+  border: 1px solid var(--map-primary-color, #004e98);
 }
 .input-slider__value input {
   width: 100%;
   padding: 8px;
   display: block;
-  border: 1px solid #ccc;
+  border: 1px solid var(--map-border-color, #ccc);
   border-radius: 4px;
   color: inherit;
   box-sizing: border-box;
@@ -75,18 +75,12 @@ input[type='range'] {
   display: block;
   width: 100%;
   margin: 8px 0;
-  background: #3e3e3f;
-  background-image: -webkit-gradient(
-    linear,
-    20% 0%,
-    20% 100%,
-    color-stop(0%, #004e98),
-    color-stop(100%, #004e98)
+  background: var(--map-surface-variant-color, #3e3e3f);
+  background-image: linear-gradient(
+    to right,
+    var(--map-primary-color, #004e98) 0%,
+    var(--map-primary-color, #004e98) 100%
   );
-  background-image: -webkit-linear-gradient(left, #004e98 0%, #004e98 100%);
-  background-image: -moz-linear-gradient(left, #004e98 0%, #004e98 100%);
-  background-image: -o-linear-gradient(to right, #004e98 0%, #004e98 100%);
-  background-image: linear-gradient(to right, #004e98 0%, #004e98 100%);
   background-repeat: no-repeat;
 }
 input[type='range']:focus {
@@ -103,11 +97,11 @@ input[type='range']::-webkit-slider-runnable-track {
 }
 input[type='range']::-webkit-slider-thumb {
   box-shadow: none;
-  border: 4px solid #004e98;
+  border: 4px solid var(--map-primary-color, #004e98);
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #3e3e3f;
+  background: var(--map-surface-variant-color, #3e3e3f);
   cursor: pointer;
   margin-top: -6px;
 }
@@ -125,11 +119,11 @@ input[type='range']::-moz-range-track {
 }
 input[type='range']::-moz-range-thumb {
   box-shadow: none;
-  border: 4px solid #004e98;
+  border: 4px solid var(--map-primary-color, #004e98);
   height: 16px;
   width: 16px;
   border-radius: 2px;
-  background: #ffffff;
+  background: var(--map-surface-color, #ffffff);
   cursor: pointer;
 }
 input[type='range']::-ms-track {
@@ -154,11 +148,11 @@ input[type='range']::-ms-fill-upper {
 }
 input[type='range']::-ms-thumb {
   box-shadow: none;
-  border: 4px solid #004e98;
+  border: 4px solid var(--map-primary-color, #004e98);
   height: 16px;
   width: 16px;
   border-radius: 2px;
-  background: #ffffff;
+  background: var(--map-surface-color, #ffffff);
   cursor: pointer;
   height: 4px;
 }

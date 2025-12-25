@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
   width: 100%;
   text-align: center;
   overflow: hidden;
-  color: var(--card-color);
+  color: var(--map-card-text, var(--map-text-primary, #333));
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
 }
 
@@ -256,9 +256,14 @@ onBeforeUnmount(() => {
 }
 
 .base-map-control-setting-item__active {
-  --v-primary-base: #1a73e8;
-  color: var(--v-primary-base, #1a73e8) !important;
-  caret-color: var(--v-primary-base, #1a73e8) !important;
+  color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
+  caret-color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
 }
 .clickable {
   cursor: pointer;
@@ -309,7 +314,7 @@ onBeforeUnmount(() => {
 .tabs-container {
   display: flex;
   border-bottom-width: thin;
-  border-bottom-color: #fff;
+  border-bottom-color: var(--map-divider-color, #eeeeee);
   border-bottom-style: solid;
 }
 .tab-item {

@@ -77,6 +77,11 @@ Below is the list of specific variables for each component and their default val
 - `--map-inspect-text`: `var(--map-text-primary, #333)`
 - `--map-inspect-border`: `var(--map-border-color, #ccc)`
 
+### Draw - DrawControl (Advanced)
+
+- `primaryColor`: Initializer primary color for drawing layers.
+- `activeColor`: Initializer active/selected color for drawing layers.
+
 ### Draw - DrawToolbar
 
 - `--map-draw-badge-bg`: `var(--map-primary-color, #004e98)`

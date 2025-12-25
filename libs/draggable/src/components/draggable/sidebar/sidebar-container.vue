@@ -240,8 +240,8 @@ function selectSideBar(itemId: string) {
   height: 48px;
   width: 23px;
   display: flex;
-  background-color: var(--card-background-color);
-  color: var(--card-color);
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   align-items: center;
   justify-content: center;
   border-radius: 0px;

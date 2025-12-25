@@ -14,6 +14,8 @@ export type MapDrawConfig = {
   drawSupports: string[];
   callback?: DrawSaveFc;
   cleanAfterDone: boolean;
+  primaryColor?: string;
+  activeColor?: string;
 };
 export type MapDrawAction<P = any> = {
   addFeature: (
