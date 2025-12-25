@@ -58,16 +58,7 @@ const draggableTo = computed(() => {
 const btnTo = computed(() => {
   return `#${props.position}-${c_mapId.value}`;
 });
-function resolvePosition(
-  value: number | undefined,
-  direction: string,
-  fallback: number,
-  position: string,
-): number | undefined {
-  if (value != null) return value;
-  if (position.includes(direction)) return fallback;
-  return undefined;
-}
+
 interface BindPosition {
   top?: number;
   bottom?: number;
@@ -76,30 +67,27 @@ interface BindPosition {
   containerId: string;
 }
 const bindDrag = computed(() => {
-  const left = resolvePosition(
-    props.left,
-    'left',
-    18 + props.btnWidth,
-    props.position,
-  );
-  const right = resolvePosition(
-    props.right,
-    'right',
-    18 + props.btnWidth,
-    props.position,
-  );
-  const top = resolvePosition(props.top, 'top', 10, props.position);
-  const bottom = resolvePosition(props.bottom, 'bottom', 10, props.position);
-
-  const bind: BindPosition = {
+  const result: BindPosition = {
     containerId: c_containerId.value,
-    ...(left !== undefined && { left }),
-    ...(right !== undefined && { right }),
-    ...(top !== undefined && { top }),
-    ...(bottom !== undefined && { bottom }),
   };
 
-  return bind;
+  const configs = [
+    { key: 'left', fallback: 18 + props.btnWidth },
+    { key: 'right', fallback: 18 + props.btnWidth },
+    { key: 'top', fallback: 10 },
+    { key: 'bottom', fallback: 10 },
+  ] as const;
+
+  configs.forEach(({ key, fallback }) => {
+    const val = (props as any)[key];
+    if (val !== undefined) {
+      result[key] = val;
+    } else if (props.position.includes(key)) {
+      result[key] = fallback;
+    }
+  });
+
+  return result;
 });
 </script>
 

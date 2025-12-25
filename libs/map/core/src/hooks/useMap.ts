@@ -1,5 +1,5 @@
-import { MapFCOnUseMap } from '@hungpvq/shared-map';
-import { computed, inject, onMounted, onUnmounted } from 'vue';
+import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
+import { computed, inject, onMounted, onUnmounted, shallowRef } from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
@@ -11,8 +11,11 @@ export const useMap = (
   const c_mapId = computed(() => {
     return (props.mapId || i_map_id) as string;
   });
+  const mapInstance = shallowRef<MapSimple | MapSimple[] | undefined>();
+
   onMounted(() => {
     getMap(c_mapId.value, async (_map) => {
+      mapInstance.value = _map;
       if (onInit instanceof Function) {
         await onInit(_map);
       }
@@ -21,9 +24,7 @@ export const useMap = (
   onUnmounted(async () => {
     if (onDestroy instanceof Function) {
       getMap(c_mapId.value, async (_map) => {
-        if (onInit instanceof Function) {
-          await onDestroy(_map);
-        }
+        await onDestroy(_map);
       });
     }
   });
@@ -42,7 +43,12 @@ export const useMap = (
     left: props.left,
     right: props.right,
   };
-  return { callMap, mapId: c_mapId, moduleContainerProps };
+  return {
+    callMap,
+    mapId: c_mapId,
+    mapInstance,
+    moduleContainerProps,
+  };
 };
 
 export const withMapProps = {

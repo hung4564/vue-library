@@ -1,6 +1,6 @@
 import { logHelper } from '@hungpvq/shared-map';
 import { useMapMittStore } from '@hungpvq/vue-map-core';
-import { ref } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { logger } from '../logger';
 import { BasemapService } from '../services';
 import { useMapBaseMapStore } from '../store';
@@ -9,9 +9,11 @@ import {
   MittTypeBaseMap,
   MittTypeBaseMapEventKey,
 } from '../types';
+
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
   const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
+
   function setBaseMaps(baseMaps: BaseMapItem[]) {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
       'setBaseMaps',
@@ -20,6 +22,7 @@ export function useBaseMap(mapId: string) {
     state.baseMaps = baseMaps;
     emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);
   }
+
   function setDefaultBaseMap(defaultBaseMap?: string) {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
       'setDefaultBaseMap',
@@ -32,6 +35,7 @@ export function useBaseMap(mapId: string) {
     );
     if (!state.current && baseMap) setCurrent(baseMap);
   }
+
   async function setCurrent(baseMap: BaseMapItem) {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug('setCurrent', baseMap);
     if (state.loading) return;
@@ -45,8 +49,10 @@ export function useBaseMap(mapId: string) {
       state.loading = false;
     }
   }
+
   const baseMaps = ref<BaseMapItem[]>(state.baseMaps);
   const currentBaseMap = ref<BaseMapItem | undefined>(state.current);
+
   const updateBaseMapsHandler = (p_baseMaps: BaseMapItem[]) => {
     baseMaps.value = p_baseMaps;
     setDefaultBaseMap(state.defaultBaseMap);
@@ -55,8 +61,10 @@ export function useBaseMap(mapId: string) {
   const updateCurrentBaseMapHandler = (baseMap: BaseMapItem | undefined) => {
     currentBaseMap.value = baseMap;
   };
+
   emitter.on(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
   emitter.on(MittTypeBaseMapEventKey.setCurrent, updateCurrentBaseMapHandler);
+
   const remove = () => {
     emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
     emitter.off(
@@ -64,6 +72,11 @@ export function useBaseMap(mapId: string) {
       updateCurrentBaseMapHandler,
     );
   };
+
+  onUnmounted(() => {
+    remove();
+  });
+
   const init = (baseMaps: BaseMapItem[], defaultBaseMap?: string) => {
     logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
       'init',
@@ -73,6 +86,7 @@ export function useBaseMap(mapId: string) {
     setDefaultBaseMap(defaultBaseMap);
     setBaseMaps(baseMaps);
   };
+
   return {
     setBaseMaps,
     baseMaps,

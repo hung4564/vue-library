@@ -1,5 +1,6 @@
 import { logHelper, MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
 import { defineStore } from '@hungpvq/shared-store';
+import { useMapMittStore } from '../extra/mitt';
 import {
   hasMapCollection,
   hasMapInstance,
@@ -14,6 +15,10 @@ export const useMapGLobalStore = defineStore<MapRootStore>(
   MAP_CORE_STORE_ID,
   () => ({}),
 );
+
+export const MAP_CORE_EVENT = {
+  READY: 'ready',
+} as const;
 
 type DefaultValue<T> = T | (() => T);
 type StoreCleanup = () => void | Promise<void>;
@@ -113,14 +118,29 @@ export function getMap(
   cb?: MapFCOnUseMap,
 ): MapSimple | MapSimple[] | undefined {
   const maps = collectMapsFromStore(id);
-  if (!maps.length) {
-    logHelper(logger, id, 'store').warn('getMap: map instance not ready');
-    return;
+  if (maps.length) {
+    if (cb) {
+      maps.forEach((mapInstance) => cb(mapInstance));
+    }
+    return maps.length > 1 ? maps : maps[0];
   }
+
   if (cb) {
-    maps.forEach((mapInstance) => cb(mapInstance));
+    storeLogger(id).debug('getMap: waiting for map instance');
+    const emitter = useMapMittStore(id);
+    const handler = () => {
+      const readyMaps = collectMapsFromStore(id);
+      if (readyMaps.length) {
+        readyMaps.forEach((m) => cb(m));
+        emitter.off(MAP_CORE_EVENT.READY, handler);
+      }
+    };
+    emitter.on(MAP_CORE_EVENT.READY, handler);
+  } else {
+    storeLogger(id).debug('getMap: map instance not ready');
   }
-  return maps.length > 1 ? maps : maps[0];
+
+  return undefined;
 }
 
 export const useMapStore = (mapId: string) => {
@@ -146,6 +166,7 @@ export const useMapContainer = (mapId: string) => {
       mapStore.maps = maps;
       mapStore.isMulti = maps.length > 1;
       delete mapStore.map;
+      useMapMittStore(mapId).emit(MAP_CORE_EVENT.READY);
     },
     initMap(map: MapSimple) {
       logHelper(logger, mapId, 'store').debug('init', map);
@@ -153,6 +174,7 @@ export const useMapContainer = (mapId: string) => {
       mapStore.map = map;
       mapStore.isMulti = false;
       delete mapStore.maps;
+      useMapMittStore(mapId).emit(MAP_CORE_EVENT.READY);
     },
     removeMap() {
       logHelper(logger, mapId, 'store').debug('removeMap');
