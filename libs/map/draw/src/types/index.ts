@@ -17,7 +17,7 @@ export type MapDrawConfig = {
   primaryColor?: string;
   activeColor?: string;
 };
-export type MapDrawAction<P = any> = {
+export type MapDrawAction<P = GeoJsonProperties> = {
   addFeature: (
     feature: Feature<Geometry, P>,
     context: { mapId: string },
@@ -35,10 +35,10 @@ export type MapDrawAction<P = any> = {
     context: { mapId: string },
   ) => Promise<Feature<Geometry, P> | undefined>;
 };
-export type MapDrawOptionSimple<P = any> = MapDrawConfig &
+export type MapDrawOptionSimple<P = GeoJsonProperties> = MapDrawConfig &
   MapDrawAction<P> & {
     redraw: (mapId: string) => Promise<void> | void;
-    cancel?: (item?: Feature<Geometry, P>) => Promise<any> | any;
+    cancel?: (item?: Feature<Geometry, P>) => Promise<void> | void;
   };
 export type IDraftRecord<T = GeoJsonProperties> = {
   id: string | number;
@@ -51,8 +51,8 @@ export type MapDrawDraftOption = MapDrawOptionSimple & {
     show: boolean;
   };
   commit: () => Promise<void> | void;
-  discard: (item?: IDraftRecord<any>) => Promise<void> | void;
-  getDraftItems(): IDraftRecord<any>[];
+  discard: (item?: IDraftRecord) => Promise<void> | void;
+  getDraftItems(): IDraftRecord[];
 };
 export type MapDrawOption = MapDrawOptionSimple | MapDrawDraftOption;
 export type MapDrawStore = {

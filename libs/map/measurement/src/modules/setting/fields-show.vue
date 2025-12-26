@@ -1,13 +1,17 @@
-<script setup>
-defineProps({
-  fields: {
-    type: Array,
-    default: () => [{ text: 'Status', value: 'waiting...' }],
+<script setup lang="ts">
+import { IViewSettingField } from '../types';
+
+withDefaults(
+  defineProps<{
+    fields?: IViewSettingField[];
+  }>(),
+  {
+    fields: () => [{ text: 'Status', value: 'waiting...' }],
   },
-});
+);
 </script>
 
-<template lang="">
+<template>
   <div>
     <div
       class="field-container label-value"

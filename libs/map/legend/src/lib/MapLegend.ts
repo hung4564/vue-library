@@ -10,7 +10,7 @@ import Circle from './part/Circle';
 import Fill from './part/Fill';
 import Line from './part/Line';
 import Symbol from './part/Symbol';
-import { PropsLegendOption } from './types';
+import { LegendElement, PropsLegendOption } from './types';
 import { exprHandler } from './util';
 const cache: Record<string, string> = {};
 
@@ -22,6 +22,7 @@ type Layer =
 
 type LayerType = Layer['type']; // "fill" | "line" | "symbol" | "circle"
 
+export type { LegendElement } from './types';
 export const MapLegend = ({
   map,
   zoom,
@@ -31,7 +32,10 @@ export const MapLegend = ({
   zoom: number;
   layer: Layer;
 }) => {
-  const TYPE_MAP: Record<LayerType, (props: PropsLegendOption<any>) => any> = {
+  const TYPE_MAP: Record<
+    LayerType,
+    (props: PropsLegendOption<any>) => LegendElement | null
+  > = {
     circle: Circle,
     symbol: Symbol,
     line: Line,

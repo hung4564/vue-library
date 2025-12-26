@@ -1,87 +1,106 @@
 import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
-import type { Ref } from 'vue';
-import { ref } from 'vue';
+import { type Ref, ref } from 'vue';
 import type { IDataset } from '../interfaces/dataset.base';
 import { logger } from '../logger';
 import { DatasetService } from '../services/dataset.service';
 
 const KEY = 'dataset';
+
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
   datasetIds: Ref<string[]>;
 };
+
 export const useMapDatasetStore = (mapId: string) =>
   createMapScopedStore<MapLayerStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return { datasets: {}, datasetIds: ref([]) };
   });
 
-export const useMapDataset = (propsMapId?: string) => {
-  let mapId = propsMapId ?? '';
-  let store = useMapDatasetStore(mapId);
-  let { getMap } = useMapStore(mapId);
+export const useMapDataset = (initialMapId?: string) => {
+  const mapId = ref(initialMapId ?? '');
+
+  function getStore() {
+    if (!mapId.value) return undefined;
+    return useMapDatasetStore(mapId.value);
+  }
+
+  function getMapHelper() {
+    if (!mapId.value) return undefined;
+    return useMapStore(mapId.value).getMap;
+  }
+
   async function addDataset(layer: IDataset) {
-    if (!store) {
-      return;
-    }
+    const store = getStore();
+    const getMap = getMapHelper();
+    if (!store || !getMap) return;
+
     getMap(async (map: MapSimple) => {
       await DatasetService.addDataset(store, map, layer);
     });
-    logHelper(logger, mapId, 'store').debug('addDataset', {
+
+    logHelper(logger, mapId.value, 'store').debug('addDataset', {
       store,
       dataset: layer,
     });
   }
+
   async function removeDataset(layer: IDataset) {
-    if (!store) {
-      return;
-    }
+    const store = getStore();
+    const getMap = getMapHelper();
+    if (!store || !getMap) return;
+
     getMap(async (map: MapSimple) => {
       await DatasetService.removeDataset(store, map, layer);
     });
-    logHelper(logger, mapId, 'store').debug('removeDataset', {
+
+    logHelper(logger, mapId.value, 'store').debug('removeDataset', {
       store,
       dataset: layer,
     });
   }
+
   function removeComponent(component: IDataset) {
-    logHelper(logger, mapId, 'store').debug('removeComponent', component);
+    const getMap = getMapHelper();
+    if (!getMap) return;
+
+    logHelper(logger, mapId.value, 'store').debug('removeComponent', component);
     getMap(async (map: MapSimple) => {
       DatasetService.removeComponent(map, component);
     });
   }
-  function getStoreDataset() {
-    return store;
-  }
-  function getAllComponentsByType<T>(targetType: string) {
-    if (!store) {
-      return [];
-    }
+
+  function getAllComponentsByType<T extends IDataset>(targetType: string) {
+    const store = getStore();
+    if (!store) return [];
     return DatasetService.getAllComponentsByType<T>(store, targetType);
   }
 
   function getDatasetIds() {
-    return store.datasetIds;
+    const store = getStore();
+    return store?.datasetIds ?? ref([]);
   }
+
   function getDatasets() {
+    const store = getStore();
+    if (!store) return [];
     return store.datasetIds.value.map((id) => store.datasets[id]);
   }
+
   return {
     setMapId(pMapId: string) {
-      mapId = pMapId;
-      store = useMapDatasetStore(pMapId);
-      getMap = useMapStore(pMapId).getMap;
+      mapId.value = pMapId;
     },
-
     getDatasets,
     addDataset,
     getDatasetIds,
     removeComponent,
     removeDataset,
-    getStoreDataset,
+    getStoreDataset: getStore,
     getAllComponentsByType,
   };
 };
+
 export * from './component';
 export * from './highlight';

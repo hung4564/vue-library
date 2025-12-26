@@ -1,6 +1,7 @@
 import { CoordinatesNumber } from '@hungpvq/shared-map';
 import { CrsItem, formatCoordinate } from '@hungpvq/vue-map-core';
 import { point } from '@turf/turf';
+import type { Feature } from 'geojson';
 import { IViewSetting } from '../types';
 import { Measure } from './_measurement';
 
@@ -26,9 +27,9 @@ export class MeasurePoint extends Measure {
     this.value.push(coordinate);
   }
   getResult() {
-    const features: any[] = [];
-    const value: any = 0;
-    const features_label: any[] = [];
+    const features: Feature[] = [];
+    const value: number | string = 0;
+    const features_label: Feature[] = [];
     const result: IViewSetting = {
       features,
       value,
@@ -44,7 +45,7 @@ export class MeasurePoint extends Measure {
     const temp = formatCoordinate(
       { longitude: lng, latitude: lat },
       undefined,
-      false
+      false,
     );
     if (temp) result.value = `${temp.longitude}, ${temp.latitude}`;
     if (this.crs_items) {
@@ -62,7 +63,7 @@ export class MeasurePoint extends Measure {
             const point = formatCoordinate(
               { longitude: lng, latitude: lat },
               crs,
-              false
+              false,
             );
             if (point)
               result.fields?.push({

@@ -1,30 +1,50 @@
-<script setup lang="ts">
-const model = defineModel();
-const props = defineProps({
-  label: String,
-  items: { type: Array, default: () => [] },
-  itemValue: { type: String, default: 'value' },
-  itemText: { type: String, default: 'text' },
-  returnObject: Boolean,
-});
+<script setup lang="ts" generic="T">
+const model = defineModel<T | (T extends object ? T[keyof T] : T)>();
 
-function getValue(item: any) {
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    items?: T[];
+    itemValue?: T extends object ? keyof T : string;
+    itemText?: T extends object ? keyof T : string;
+    returnObject?: boolean;
+  }>(),
+  {
+    items: () => [] as T[],
+    itemValue: 'value' as any,
+    itemText: 'text' as any,
+    returnObject: false,
+  },
+);
+
+function getValue(item: T): T | (T extends object ? T[keyof T] : T) {
   if (typeof item === 'string' || props.returnObject) {
-    return item;
+    return item as any;
   }
-  return item[props.itemValue];
+  if (item && typeof item === 'object' && props.itemValue) {
+    return (item as any)[props.itemValue];
+  }
+  return item as any;
 }
-function getText(item: any) {
+
+function getText(item: T): string {
   if (typeof item === 'string') {
     return item;
   }
-  return item[props.itemText];
+  if (item && typeof item === 'object' && props.itemText) {
+    return String((item as any)[props.itemText]);
+  }
+  return String(item);
 }
-function getKey(item: any) {
-  if (typeof item === 'string') {
+
+function getKey(item: T): string | number {
+  if (typeof item === 'string' || typeof item === 'number') {
     return item;
   }
-  return item[props.itemValue];
+  if (item && typeof item === 'object' && props.itemValue) {
+    return String((item as any)[props.itemValue]);
+  }
+  return String(item);
 }
 </script>
 <template>
@@ -35,7 +55,7 @@ function getKey(item: any) {
     <div class="input-container">
       <select v-bind="$attrs" v-model="model" required>
         <option value="" disabled selected hidden>
-          {{ $attrs.placeholder }}
+          {{ $attrs.placeholder as string }}
         </option>
         <option
           :value="getValue(item)"

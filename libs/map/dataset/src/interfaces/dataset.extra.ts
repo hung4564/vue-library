@@ -16,7 +16,7 @@ export type WithSetOpacity = {
 };
 
 export function toggleShow(
-  this: IDataset & WithShow & Partial<WithEvent>,
+  this: IDataset & WithShow & Partial<WithEventHelper>,
   map: MapSimple,
   show: boolean,
 ) {
@@ -25,7 +25,7 @@ export function toggleShow(
 }
 
 export function setOpacity(
-  this: IDataset & WithOpacity & Partial<WithEvent>,
+  this: IDataset & WithOpacity & Partial<WithEventHelper>,
   map: MapSimple,
   opacity: number,
 ) {

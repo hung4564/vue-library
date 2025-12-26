@@ -4,20 +4,24 @@ import { useGeolocation } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
-import { LngLatLike, Marker } from 'maplibre-gl';
+import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+
 const { coords, error, resume, pause } = useGeolocation({
   immediate: false,
 });
+
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
+
 const { mapId, callMap, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
+
 setLocaleDefault({
   map: {
     action: {
@@ -26,6 +30,7 @@ setLocaleDefault({
     },
   },
 });
+
 const active = ref(false);
 const center = ref<LngLatLike>();
 const p_accuracy = ref(0);
@@ -33,10 +38,12 @@ let p_dotElement: HTMLElement,
   p_circleElement: HTMLElement,
   p_userLocationDotMarker = ref<Marker | undefined>(undefined),
   _accuracyCircleMarker = ref<Marker | undefined>(undefined);
+
 const iconGeolocate = computed(() => {
   if (error.value) return mdiCrosshairsOff;
   return mdiCrosshairsGps;
 });
+
 const tooltipGeolocate = computed(() => {
   const str = error.value
     ? error.value.message ||
@@ -44,6 +51,7 @@ const tooltipGeolocate = computed(() => {
     : trans.value('map.action.geolocate-control-find-my-location');
   return str;
 });
+
 watch(coords, (value) => {
   if (
     value.longitude == Number.POSITIVE_INFINITY ||
@@ -55,6 +63,7 @@ watch(coords, (value) => {
   p_accuracy.value = value.accuracy;
   if (center.value) onAddUi();
 });
+
 async function onClick() {
   callMap((map) => {
     if (!active.value) {
@@ -84,9 +93,11 @@ async function onClick() {
     onDestroy();
   });
 }
+
 tryOnUnmounted(() => {
   onDestroy();
 });
+
 function onDestroy() {
   callMap((map) => {
     map.off('zoom', onZoom);
@@ -98,6 +109,7 @@ function onDestroy() {
     _accuracyCircleMarker.value.remove();
   }
 }
+
 tryOnMounted(() => {
   if (!p_dotElement) {
     p_dotElement = DOMcreate('div', 'mapboxgl-user-location');
@@ -115,6 +127,7 @@ tryOnMounted(() => {
     );
   }
 });
+
 function onAddUi() {
   callMap((map) => {
     if (!p_userLocationDotMarker.value) {
@@ -144,6 +157,7 @@ function onAddUi() {
     updateCircleRadius(map);
   });
 }
+
 function updateCircleRadius(map: MapSimple) {
   if (!p_accuracy.value || p_accuracy.value <= 1) {
     p_circleElement.style.width = '1px';
@@ -158,9 +172,11 @@ function updateCircleRadius(map: MapSimple) {
   p_circleElement.style.width = `${circleDiameter}px`;
   p_circleElement.style.height = `${circleDiameter}px`;
 }
-function onZoom(map: any) {
-  updateCircleRadius(map.target);
+
+function onZoom(event: MapLibreEvent) {
+  updateCircleRadius(event.target as MapSimple);
 }
+
 const DOMcreate = function (
   tagName: string,
   className: string,
@@ -171,6 +187,7 @@ const DOMcreate = function (
   if (container) container.appendChild(el);
   return el;
 };
+
 function isOutOfMapMaxBounds(
   map: MapSimple,
   coordinates: GeolocationCoordinates,

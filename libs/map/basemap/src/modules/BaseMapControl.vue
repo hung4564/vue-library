@@ -150,7 +150,7 @@ const path = {
   layer: mdiLayersOutline,
 };
 const show = ref(false);
-function onClick(baseMap: any) {
+function onClick(baseMap: BaseMapItem) {
   logHelper(logger, mapId.value, 'control', 'BaseMapControl').debug(
     'onClick',
     baseMap,

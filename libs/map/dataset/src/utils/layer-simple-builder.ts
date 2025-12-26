@@ -27,7 +27,7 @@ export class LayerSimpleMapboxBuild implements ILayerMapboxBuild {
   public color?: Color;
   public opacity?: number;
   public type: LayerStyleType = 'point';
-  public filter?: any = undefined;
+  public filter?: FilterSpecification = undefined;
   setColor(color: Color | undefined) {
     this.color = color;
     return this;

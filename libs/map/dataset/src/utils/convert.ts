@@ -1,17 +1,21 @@
-import type { Feature } from 'geojson';
+import type { Feature, Geometry } from 'geojson';
 
-export function convertFeatureToItem<T = any>(feature: Feature): T {
+export function convertFeatureToItem<T = unknown>(feature: Feature): T {
   return {
     id: feature.id,
-    ...feature.properties,
+    ...(feature.properties || {}),
     geometry: feature.geometry,
   } as T;
 }
 
-export function convertItemToFeature(item: any): Feature {
-  const { geometry, ...properties } = item;
+export function convertItemToFeature(item: {
+  id?: string | number;
+  geometry: Geometry;
+  [key: string]: unknown;
+}): Feature {
+  const { geometry, id, ...properties } = item;
   return {
-    id: item.id,
+    id: id,
     type: 'Feature',
     geometry,
     properties,

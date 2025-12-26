@@ -26,6 +26,7 @@
     }
   },
   "peerDependencies": {
+    "maplibre-gl": "^5.4.0",
     "@hungpvq/shared-map": "0.7.2",
     "@hungpvq/vue-map-core": "0.7.3",
     "@hungpvq/vue-draggable": "0.4.3",

@@ -27,8 +27,11 @@ export class PrintService {
       const printError = new MapError(
         'Failed to generate print image',
         'PRINT_ERROR',
-        { mapId: (map as any).id, error: (error as Error).message },
-        true,
+        {
+          context: { mapId: map.id },
+          cause: error,
+          recoverable: true,
+        },
       );
       errorHandler.handle(printError);
       throw printError;
@@ -53,8 +56,11 @@ export class PrintService {
       const printError = new MapError(
         'Failed to download map image',
         'PRINT_ERROR',
-        { filename, error: (error as Error).message },
-        true,
+        {
+          context: { mapId: map.id },
+          cause: error,
+          recoverable: true,
+        },
       );
       errorHandler.handle(printError);
       throw printError;

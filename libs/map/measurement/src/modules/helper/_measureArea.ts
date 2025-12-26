@@ -1,5 +1,6 @@
-import { Measure, formatNumber } from './_measurement';
 import { area, centroid, lineString, point, polygon } from '@turf/turf';
+import { Feature } from 'geojson';
+import { Measure, formatNumber } from './_measurement';
 
 import { IViewSetting } from '../types';
 
@@ -11,9 +12,9 @@ export class MeasureArea extends Measure {
     return 'area';
   }
   getResult() {
-    const features: any[] = [];
+    const features: Feature[] = [];
     const value = 0;
-    const features_label: any[] = [];
+    const features_label: Feature[] = [];
     const result: IViewSetting = {
       features,
       value,

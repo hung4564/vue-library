@@ -22,6 +22,7 @@ import type { IDatasetMap } from './dataset.map';
 type MenuCommon = {
   order?: number;
   id?: string;
+  class?: string;
   disabled?: MaybeRefOrGetter<boolean>;
   hidden?: MaybeRefOrGetter<boolean>;
 };
@@ -35,7 +36,6 @@ export type MenuDivider = MenuCommon & {
 /** Common properties for all menu items */
 export type MenuItemCommon<P = any, T = IDataset> = MenuCommon & {
   type: 'item';
-  class?: string;
   click: MenuItemClick<P, T>;
 };
 

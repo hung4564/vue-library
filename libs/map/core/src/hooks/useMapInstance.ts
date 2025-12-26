@@ -1,5 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
+import { type MapSimple } from '@hungpvq/shared-map';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { MapInitializationError } from '../errors';
@@ -48,6 +48,7 @@ function isWebglSupported() {
  * Hook to initialize and manage a MapLibre map instance.
  *
  * @param props - Configuration properties for the map.
+ * @param emit - Emit function to communicate with the parent component.
  * @returns An object containing the map instance, initialization status, and helper functions.
  */
 export function useMapInstance(
@@ -89,12 +90,14 @@ export function useMapInstance(
         ...initOptions,
       });
 
+      const mapSimpleInstance = mapInstance as MapSimple;
+      mapSimpleInstance.id = id.value;
       map.value = mapInstance;
-      (mapInstance as any).id = id.value;
-      store.initMap(mapInstance as MapSimple);
+
+      store.initMap(mapSimpleInstance);
 
       mapInstance.once('load', () => {
-        emit('map-loaded', mapInstance as MapSimple);
+        emit('map-loaded', mapSimpleInstance);
         loaded.value = true;
       });
 
@@ -120,16 +123,17 @@ export function useMapInstance(
                 cause: error,
               },
             );
-      errorHandler.handle(mapError);
-      emit('error', mapError);
+      errorHandler.handle(mapError as Error);
+      emit('error', mapError as Error);
     }
   });
 
   onUnmounted(() => {
     loaded.value = false;
     if (map.value) {
-      map.value.remove();
-      emit('map-destroy', map.value as MapSimple);
+      const mapInstance = map.value;
+      mapInstance.remove();
+      emit('map-destroy', mapInstance as MapSimple);
     }
     map.value = undefined;
     store.removeMap();

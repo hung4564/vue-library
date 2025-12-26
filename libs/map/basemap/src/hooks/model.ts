@@ -1,26 +1,35 @@
 import type { MapSimple } from '@hungpvq/shared-map';
+import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import {
   BaseMapItem,
   BaseMapRasterItem,
   BaseMapVectorItem,
   IBaseMapLayer,
 } from '../types';
+
 type LoaderReturn = {
-  layers: any[];
-  sources: any;
+  layers: LayerSpecification[];
+  sources: Record<string, SourceSpecification>;
+  glyphs?: string;
+  sprite?: string;
 };
+
 export const BASEMAP_PREFIX = 'base_map_control_';
+
 export class BaseMapLayer implements IBaseMapLayer {
-  protected layers: any[];
-  protected sources: any;
+  protected layers: LayerSpecification[];
+  protected sources: Record<string, SourceSpecification>;
   protected _baseMap?: BaseMapItem = undefined;
+
   constructor() {
     this.layers = [];
     this.sources = {};
   }
+
   getBeforeId() {
-    return this.layers[0].id;
+    return this.layers[0]?.id;
   }
+
   async setBaseMap(baseMap: BaseMapItem) {
     if (this._baseMap && this._baseMap.id === baseMap.id) {
       return;
@@ -30,6 +39,7 @@ export class BaseMapLayer implements IBaseMapLayer {
     this.layers = layers;
     this.sources = sources;
   }
+
   addToMap(map: MapSimple, beforeId?: string) {
     for (const source_id in this.sources) {
       if (Object.hasOwnProperty.call(this.sources, source_id)) {
@@ -41,10 +51,11 @@ export class BaseMapLayer implements IBaseMapLayer {
     }
     this.layers.forEach((layer) => {
       if (!map.getLayer(layer.id)) {
-        map.addLayer(layer, beforeId);
+        map.addLayer(layer as any, beforeId);
       }
     });
   }
+
   removeFromMap(map: MapSimple) {
     this.layers.forEach((layer) => {
       if (map.getLayer(layer.id)) {
@@ -58,6 +69,7 @@ export class BaseMapLayer implements IBaseMapLayer {
     }
   }
 }
+
 function getLoader(type: string): (basemap: any) => Promise<LoaderReturn> {
   switch (type) {
     case 'vector':
@@ -74,51 +86,58 @@ function getLoader(type: string): (basemap: any) => Promise<LoaderReturn> {
 async function loadNoBaseMap(): Promise<LoaderReturn> {
   return { layers: [], sources: {} };
 }
-async function loadVector(item: BaseMapVectorItem) {
+
+async function loadVector(item: BaseMapVectorItem): Promise<LoaderReturn> {
   const res = await fetch(item.links[0]).then((res) => res.json());
 
-  const layers = [];
-  const sources: any = {};
+  const layers: LayerSpecification[] = [];
+  const sources: Record<string, SourceSpecification> = {};
+
   // Add sources
   for (const id in res.sources) {
     const sourceId = BASEMAP_PREFIX + id;
     sources[sourceId] = res.sources[id];
   }
+
   // Add layers
   for (const layer of res.layers) {
     const layerId = BASEMAP_PREFIX + layer.id;
     const sourceId = BASEMAP_PREFIX + layer.source;
 
     layers.push(
-      Object.assign(layer, {
+      Object.assign({}, layer, {
         id: layerId,
         source: sourceId,
         metadata: {
           ...layer.metadata,
           'maplibregl-legend:disable': true,
         },
-      })
+      }) as LayerSpecification,
     );
   }
+
   const glyphs = res.glyphs;
   const sprite = res.sprite;
   return { layers, sources, glyphs, sprite };
 }
+
 async function loadRaster(item: BaseMapRasterItem): Promise<LoaderReturn> {
   if (!item) throw new Error('Not found item');
 
   const layerId = `${BASEMAP_PREFIX}layer`;
   const sourceId = `${BASEMAP_PREFIX}source`;
-  const sources: any = {};
+  const sources: Record<string, SourceSpecification> = {};
+
   sources[sourceId] = {
     type: 'raster',
     tiles: item.links,
-    scheme: item.scheme || 'xyz',
+    scheme: (item.scheme as any) || 'xyz',
     maxzoom: item.maxzoom || 22,
     minzoom: item.minzoom || 0,
     tileSize: item.tileSize || 256,
   };
-  const layer = {
+
+  const layer: LayerSpecification = {
     id: layerId,
     type: 'raster',
     source: sourceId,

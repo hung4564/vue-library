@@ -51,18 +51,25 @@ export class CrosshairManager {
     if (this.width !== undefined && this.height !== undefined) {
       const canvas = document.createElementNS(
         'http://www.w3.org/2000/svg',
-        'svg'
+        'svg',
       );
       canvas.style.position = 'absolute';
       canvas.style.top = '0px';
       canvas.style.left = '0px';
-      (canvas.style as any)['pointer-events'] = 'none';
+      canvas.style.pointerEvents = 'none';
       canvas.setAttribute('width', `${this.width}px`);
       canvas.setAttribute('height', `${this.height}px`);
       const halfWidth = this.width / 2;
       const halfHeight = this.height / 2;
       this.yLine = canvas.appendChild(
-        this.createLine(halfWidth, 0, halfWidth, this.height, this.color, '2px')
+        this.createLine(
+          halfWidth,
+          0,
+          halfWidth,
+          this.height,
+          this.color,
+          '2px',
+        ),
       );
       this.xLine = canvas.appendChild(
         this.createLine(
@@ -71,8 +78,8 @@ export class CrosshairManager {
           this.width,
           halfHeight,
           this.color,
-          '2px'
-        )
+          '2px',
+        ),
       );
       container.appendChild(canvas);
       this.svgCanvas = canvas;
@@ -84,11 +91,11 @@ export class CrosshairManager {
     x2: number,
     y2: number,
     color: string,
-    w: string
+    w: string,
   ) {
     const aLine = document.createElementNS(
       'http://www.w3.org/2000/svg',
-      'line'
+      'line',
     );
     aLine.setAttribute('x1', x1 + '');
     aLine.setAttribute('y1', y1 + '');

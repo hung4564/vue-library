@@ -12,9 +12,9 @@ import {
 } from './types';
 
 export type MapLocateStore = {
-  locale: any;
-  localeDefault: any;
-  translate?: (key: string, params?: MapLangLocale) => string;
+  locale: MapLangLocale;
+  localeDefault: MapLangLocale;
+  translate?: MapTranslateFunction;
 };
 
 export const useMapLocaleStore = (mapId: string) =>
@@ -25,6 +25,7 @@ export const useMapLocaleStore = (mapId: string) =>
       localeDefault: {},
     };
   });
+
 export const useMapLocale = (mapId: string) => {
   const store = useMapLocaleStore(mapId);
 
@@ -53,8 +54,10 @@ export const useMapLocale = (mapId: string) => {
     const emitter = useMapMittStore<MittTypeMapLang>(mapId);
     emitter?.emit(MittTypeMapLangEventKey.setTranslate, translate);
   }
+
   function getMapLang() {
     return store;
   }
+
   return { getMapLang, setMapTranslate, setMapLocaleDefault, setMapLang };
 };

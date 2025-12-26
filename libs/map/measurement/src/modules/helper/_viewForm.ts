@@ -1,5 +1,5 @@
 import { type CoordinatesNumber } from '@hungpvq/shared-map';
-import { IViewSetting, IViewSettingField } from '../types';
+import { IViewProps, IViewSetting, IViewSettingField } from '../types';
 
 /* eslint-disable no-unused-vars */
 import { View } from './_view';
@@ -8,28 +8,32 @@ type FormViewSetting = {
   fields?: IViewSettingField[];
   maxLength?: number;
 };
-type FormViewStartProp = {
-  setting?: FormViewSetting;
-};
 type FormViewChangeSetting = (_setting?: FormViewSetting) => void;
 type FormViewChangeValue = (_coordinates?: CoordinatesNumber[]) => void;
-type FormViewViewFCProps = IViewSetting & {
-  fields?: any[];
+
+interface FormViewProps extends IViewProps {
   setting?: FormViewSetting;
-};
+}
+
+interface FormViewViewProps extends IViewProps, IViewSetting {
+  setting?: FormViewSetting;
+}
+
 export class FormView extends View {
   public onChangeSetting?: FormViewChangeSetting;
   public onChangeValue?: FormViewChangeValue;
-  start({ setting }: FormViewStartProp = {}) {
+  start(_props?: FormViewProps) {
+    const { setting } = (_props || {}) as FormViewProps;
     if (this.onChangeSetting) {
       this.onChangeSetting(setting);
     }
   }
-  view({
-    coordinates = [],
-    setting = {},
-    fields = [],
-  }: FormViewViewFCProps = {}) {
+  view(_props: FormViewViewProps) {
+    const {
+      coordinates = [],
+      setting = {},
+      fields = [],
+    } = _props as FormViewViewProps;
     if (this.onChangeValue) {
       this.onChangeValue(coordinates);
     }

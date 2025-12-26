@@ -52,10 +52,14 @@ export function withAutoLogger<T extends Record<string, any>>(obj: T): T {
   }
   const wrappedLogger = logger.setNamespace('dataset');
 
-  function logStart(target: any, prop: string | symbol, args: any[]) {
-    const ns = (target as any).type ?? 'unknown';
+  function logStart(
+    target: Record<string, any>,
+    prop: string | symbol,
+    args: any[],
+  ) {
+    const ns = target.type ?? 'unknown';
     wrappedLogger.setNamespace(`dataset:${ns}`, 1, true);
-    wrappedLogger.setNamespace(target.id, 2);
+    wrappedLogger.setNamespace(target.id ?? 'unknown-id', 2);
     const label = `${ns}.${String(prop)}`;
     const start = performance.now();
     wrappedLogger.groupCollapsed(`[${label}]`);
@@ -64,7 +68,7 @@ export function withAutoLogger<T extends Record<string, any>>(obj: T): T {
     return { start };
   }
 
-  function logEnd(start: any, status: 'ok' | 'error', data?: unknown) {
+  function logEnd(start: number, status: 'ok' | 'error', data?: unknown) {
     const duration = (performance.now() - start).toFixed(2);
     if (status === 'ok') wrappedLogger.debug('✓ Result:', data);
     else wrappedLogger.error('✗ Error:', data);
@@ -85,8 +89,7 @@ export function withAutoLogger<T extends Record<string, any>>(obj: T): T {
       if ((originalFn as any).__isLogged) return originalFn;
 
       const wrappedFn = function (this: any, ...args: any[]) {
-        logStart(target, prop, args);
-        const start = performance.now();
+        const { start } = logStart(target, prop, args);
 
         try {
           const result = originalFn.apply(this ?? target, args);

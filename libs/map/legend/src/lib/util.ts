@@ -3,7 +3,7 @@ import {
   latest,
   function as styleFunction,
 } from '@maplibre/maplibre-gl-style-spec';
-import type { Map as MapMaplibre } from 'maplibre-gl';
+import type { LayerSpecification, Map as MapMaplibre } from 'maplibre-gl';
 const PROP_MAP: [string, string?][] = [
   ['background'],
   ['circle'],
@@ -21,7 +21,13 @@ interface ExprHandlerOptions {
   zoom: number;
 }
 
-export function exprHandler({ zoom }: ExprHandlerOptions): any {
+export type ExprHandlerFn = (
+  layer: LayerSpecification,
+  type: string,
+  prop: string,
+) => string | number | boolean | null | any[];
+
+export function exprHandler({ zoom }: ExprHandlerOptions): ExprHandlerFn {
   function prefixFromProp(prop: string): string | null {
     const out = PROP_MAP.find((def) => {
       const type = def[0];
@@ -30,18 +36,19 @@ export function exprHandler({ zoom }: ExprHandlerOptions): any {
     return out ? out[1] || out[0] : null;
   }
 
-  return function (layer: any, type: string, prop: string): any {
+  return function (layer: LayerSpecification, type: string, prop: string): any {
     const prefix = prefixFromProp(prop);
     if (!prefix) return null;
-    const specItem = latest[`${type}_${prefix}`]?.[prop];
+    const specItem = (latest as any)[`${type}_${prefix}`]?.[prop];
     if (!specItem) return null;
     const dflt = specItem.default;
 
-    if (!layer[type]) {
+    const layerAny = layer as any;
+    if (!layerAny[type]) {
       return dflt;
     }
 
-    const input = layer[type][prop];
+    const input = layerAny[type][prop];
     if (typeof input === 'undefined') {
       return dflt;
     } else if (typeof input === 'object') {
@@ -50,12 +57,12 @@ export function exprHandler({ zoom }: ExprHandlerOptions): any {
         if (specItem.type === 'array') {
           return input;
         } else {
-          expr = expression.createExpression(input).value;
+          expr = (expression as any).createExpression(input).value;
         }
       } else {
-        expr = styleFunction.createFunction(input, specItem);
+        expr = (styleFunction as any).createFunction(input, specItem);
       }
-      if (!expr.evaluate) {
+      if (!expr || !expr.evaluate) {
         return null;
       }
 
@@ -69,10 +76,11 @@ export function exprHandler({ zoom }: ExprHandlerOptions): any {
 
 export function mapImageToDataURL(
   map: MapMaplibre,
-  icon: string
+  icon: string,
 ): string | undefined {
   if (!icon) return undefined;
-  const image = map.style.imageManager.images[icon];
+  const styleAny = map.style as any;
+  const image = styleAny.imageManager.images[icon];
   if (!image) return undefined;
 
   const canvasEl = document.createElement('canvas');
@@ -85,10 +93,10 @@ export function mapImageToDataURL(
     new ImageData(
       Uint8ClampedArray.from(image.data.data),
       image.data.width,
-      image.data.height
+      image.data.height,
     ),
     0,
-    0
+    0,
   );
 
   return canvasEl.toDataURL();
@@ -123,7 +131,7 @@ export const cache = {
 };
 
 function loadImageViaTag(
-  url: string
+  url: string,
 ): Promise<HTMLImageElement> & { cancel: () => void } {
   let cancelled = false;
   const promise = new Promise<HTMLImageElement>((resolve, reject) => {
@@ -150,7 +158,7 @@ function removeUrl(obj: Record<string, any>): Record<string, any> {
 
 function loadImageViaFetch(
   url: string,
-  init: RequestInit
+  init: RequestInit,
 ): Promise<HTMLImageElement> {
   return fetch(url, init)
     .then((res) => res.blob())
@@ -166,7 +174,7 @@ interface TransformRequestResult {
 
 export function loadImage(
   url: string,
-  options: { transformRequest: (url: string) => TransformRequestResult }
+  options: { transformRequest: (url: string) => TransformRequestResult },
 ): Promise<HTMLImageElement> {
   const fetchObj = { ...options.transformRequest(url) };
 
@@ -179,7 +187,7 @@ export function loadImage(
 
 export function loadJson<T = any>(
   url: string,
-  options: { transformRequest: (url: string) => TransformRequestResult }
+  options: { transformRequest: (url: string) => TransformRequestResult },
 ): Promise<T> {
   const fetchObj = { ...options.transformRequest(url) };
   return fetch(fetchObj.url, removeUrl(fetchObj)).then((res) => res.json());

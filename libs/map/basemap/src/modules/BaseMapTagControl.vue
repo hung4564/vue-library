@@ -69,7 +69,7 @@ watch(
     setDefaultBaseMap(value);
   },
 );
-function onClick(baseMap: any) {
+function onClick(baseMap: BaseMapItem) {
   logHelper(logger, mapId.value, 'control', 'BaseMapTagControl').debug(
     'onClick',
     baseMap,

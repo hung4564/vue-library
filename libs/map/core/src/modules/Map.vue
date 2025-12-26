@@ -8,32 +8,32 @@ import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { useMapInstance } from '../hooks/useMapInstance';
 
 const breakpoints = useBreakpoints({
-  mobile: 0, // optional
+  mobile: 0,
   tablet: 640,
   laptop: 1024,
   desktop: 1280,
 });
 
-const props = defineProps({
-  mapboxAccessToken: {
-    type: String,
-    default: '',
-  },
-  initOptions: {
-    type: Object,
-    default: () => ({
+const props = withDefaults(
+  defineProps<{
+    mapboxAccessToken?: string;
+    initOptions?: Partial<MapOptions>;
+    dragId?: string;
+    mapId?: string;
+  }>(),
+  {
+    mapboxAccessToken: '',
+    initOptions: () => ({
       attributionControl: false,
       zoomControl: false,
     }),
   },
-  dragId: { type: String },
-  mapId: { type: String },
-});
+);
 
 const emit = defineEmits<{
-  (_e: 'map-loaded', _map: MapSimple): void;
-  (_e: 'map-destroy', _map: MapSimple): void;
-  (_e: 'error', _error: Error): void;
+  (e: 'map-loaded', map: MapSimple): void;
+  (e: 'map-destroy', map: MapSimple): void;
+  (e: 'error', error: Error): void;
 }>();
 
 const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);
@@ -53,11 +53,14 @@ const rightTopTo = computed(() => {
 const leftTopTo = computed(() => {
   return `top-left-${id.value}`;
 });
+
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
+
 const isMobile = breakpoints.smallerOrEqual('tablet');
 const loadedDrag = ref(false);
-function onDragLoadDone(e: any) {
+
+function onDragLoadDone() {
   loadedDrag.value = true;
 }
 </script>

@@ -1,7 +1,9 @@
 import { FillLayerSpecification } from 'maplibre-gl';
-import { PropsLegendOption } from '../types';
+import { LegendElement, PropsLegendOption } from '../types';
 
-export default function Fill(props: PropsLegendOption<FillLayerSpecification>) {
+export default function Fill(
+  props: PropsLegendOption<FillLayerSpecification>,
+): LegendElement {
   const { image, expr, layer } = props;
   const imageKey = expr(layer, 'paint', 'fill-pattern') as string;
   const dataUrl = image(imageKey);

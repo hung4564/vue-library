@@ -1,9 +1,14 @@
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../mitt';
 import { useMapLocale } from './store';
-import { MittTypeMapLang, MittTypeMapLangEventKey } from './types';
+import {
+  MapLangLocale,
+  MapTranslateFunction,
+  MittTypeMapLang,
+  MittTypeMapLangEventKey,
+} from './types';
 
-const propCache = new Map<string, any>();
+const propCache = new Map<object, Map<string, string | undefined>>();
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
@@ -11,19 +16,22 @@ export function useLang(mapId: string) {
     useMapLocale(mapId);
   const storeLang = shallowRef(getMapLang());
   const emitter = useMapMittStore<MittTypeMapLang>(mapId);
+
   onMounted(() => {
     emitter.on(MittTypeMapLangEventKey.setLocale, update);
     emitter.on(MittTypeMapLangEventKey.setTranslate, update);
   });
+
   onUnmounted(() => {
     emitter.off(MittTypeMapLangEventKey.setLocale, update);
     emitter.off(MittTypeMapLangEventKey.setTranslate, update);
   });
+
   function update() {
     storeLang.value = getMapLang();
   }
 
-  function transLocal(key: string, params?: Record<string, any>) {
+  function transLocal(key: string, params?: MapLangLocale) {
     // If custom translate function exists, use it
     if (storeLang.value?.translate) {
       return storeLang.value.translate(key, params);
@@ -50,17 +58,15 @@ export function useLang(mapId: string) {
     return transLocal;
   });
 
-  function setLocale(locale: any) {
+  function setLocale(locale: MapLangLocale) {
     setMapLang(locale);
   }
 
-  function setLocaleDefault(locale: any) {
+  function setLocaleDefault(locale: MapLangLocale) {
     setMapLocaleDefault(locale);
   }
 
-  function setTranslate(
-    translate: (key: string, params?: Record<string, any>) => string,
-  ) {
+  function setTranslate(translate: MapTranslateFunction) {
     setMapTranslate(translate);
   }
 
@@ -68,7 +74,7 @@ export function useLang(mapId: string) {
 }
 
 function getProp(
-  object: any,
+  object: object | undefined,
   path: string | string[],
   defaultVal?: string,
 ): string | undefined {
@@ -88,20 +94,22 @@ function getProp(
   }
 
   const _path = Array.isArray(path) ? path : path.split('.').filter(Boolean);
-  let current = object;
+  let current: any = object;
   for (const segment of _path) {
     if (current && typeof current === 'object' && segment in current) {
       current = current[segment];
     } else {
+      objCache.set(pathStr, defaultVal);
       return defaultVal;
     }
   }
 
-  objCache.set(pathStr, current);
-  return current;
+  const result = typeof current === 'string' ? current : defaultVal;
+  objCache.set(pathStr, result);
+  return result;
 }
 
-function interpolate(text: string, params?: Record<string, any>): string {
+function interpolate(text: string, params?: MapLangLocale): string {
   if (!text) return '';
   if (!params) return text;
 

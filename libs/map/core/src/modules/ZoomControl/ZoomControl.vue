@@ -51,10 +51,12 @@ import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+
 const path = {
   plus: mdiPlus,
   minus: mdiMinus,
 };
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -68,6 +70,7 @@ const props = withDefaults(
     showZoom: true,
   },
 );
+
 const transform = ref('rotate(0deg)');
 const { callMap, mapId, moduleContainerProps } = useMap(
   props,
@@ -75,6 +78,7 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onDestroy,
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
+
 setLocaleDefault({
   map: {
     action: {
@@ -84,29 +88,38 @@ setLocaleDefault({
     },
   },
 });
-let bindSyncRotate: any = null;
+
+let bindSyncRotate: (() => void) | null = null;
+
 function onInit(_map: MapSimple) {
   bindSyncRotate = syncRotate.bind(null, _map);
   _map.on('rotate', bindSyncRotate);
 }
+
 function onDestroy(_map: MapSimple) {
-  _map.off('rotate', bindSyncRotate);
+  if (bindSyncRotate) {
+    _map.off('rotate', bindSyncRotate);
+  }
 }
-function onZoomIn(e: any) {
+
+function onZoomIn(e: MouseEvent) {
   callMap((map) => {
     map.zoomIn({}, { originalEvent: e });
   });
 }
-function onZoomOut(e: any) {
+
+function onZoomOut(e: MouseEvent) {
   callMap((map) => {
     map.zoomOut({}, { originalEvent: e });
   });
 }
+
 function onResetBearing() {
   callMap((map) => {
     map.easeTo({ bearing: 0, pitch: 0 });
   });
 }
+
 function syncRotate(_map: MapSimple) {
   const angle = _map.getBearing() * -1;
   transform.value = `rotate(${angle}deg)`;

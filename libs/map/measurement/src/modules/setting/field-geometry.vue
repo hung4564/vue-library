@@ -1,7 +1,6 @@
-<script setup>
-import FileSaver from 'file-saver';
-import { lineString, point, polygon } from '@turf/helpers';
-import { computed } from 'vue';
+<script setup lang="ts">
+import type { CoordinatesNumber } from '@hungpvq/shared-map';
+import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,
@@ -9,19 +8,23 @@ import {
   mdiPlus,
   mdiUploadOutline,
 } from '@mdi/js';
-import SvgIcon from '@jamescoyle/vue-icon';
-const props = defineProps({
-  modelValue: {
-    type: Array,
-    default: () => [[0, 0]],
-  },
-  maxLength: { type: Number, default: 0 },
-  title: String,
-  titleActionDownload: String,
-  titleActionFillBound: String,
-  titleActionAddPoint: String,
+import { lineString, point, polygon } from '@turf/helpers';
+import FileSaver from 'file-saver';
+import { computed } from 'vue';
+
+const props = defineProps<{
+  modelValue?: (CoordinatesNumber | [null, null])[];
+  maxLength?: number;
+  title?: string;
+  titleActionDownload?: string;
+  titleActionFillBound?: string;
+  titleActionAddPoint?: string;
+}>();
+
+const model = defineModel<(CoordinatesNumber | [null, null])[]>({
+  default: () => [[0, 0]],
 });
-const model = defineModel({ default: [[0, 0]] });
+
 const path = {
   add: mdiPlus,
   fillBound: mdiCrosshairsGps,
@@ -29,40 +32,55 @@ const path = {
   download: mdiDownloadOutline,
   upload: mdiUploadOutline,
 };
-const emit = defineEmits(['click:remove', 'click:fillbound']);
-const submit = (value) => {
-  model.value = value;
+
+const emit = defineEmits<{
+  (_e: 'click:remove', _index: number): void;
+  (_e: 'click:fillbound', _geometry: any): void; // turf geometry
+}>();
+
+const submit = (value: (CoordinatesNumber | [null, null])[] = []) => {
+  model.value = [...value];
 };
+
 const onAddItem = () => {
   if (!model.value) {
     model.value = [];
   }
-  model.value.push([null, null]);
+  model.value.push([null, null] as any);
 };
+
 const onUpdatePathItem = () => {
-  submit(model);
+  submit(model.value);
 };
-const onDeleteItem = (index) => {
+
+const onDeleteItem = (index: number) => {
   model.value.splice(index, 1);
   emit('click:remove', index);
-  submit(model);
+  submit(model.value);
 };
-const convertGeometry = (coordinates) => {
-  if (!coordinates || !coordinates.length) {
+
+const convertGeometry = (coordinates: (CoordinatesNumber | [null, null])[]) => {
+  const validCoords = coordinates.filter(
+    (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
+  );
+  if (!validCoords || !validCoords.length) {
     return;
   }
-  if (coordinates.length == 1) {
-    return point(coordinates[0]);
+  if (validCoords.length === 1) {
+    return point(validCoords[0]);
   }
-  if (coordinates.length == 2) {
-    return lineString(coordinates);
+  if (validCoords.length === 2) {
+    return lineString(validCoords);
   }
-  return polygon([[...coordinates, coordinates[0]]]);
+  return polygon([[...validCoords, validCoords[0]]]);
 };
+
 const onDownload = () => {
-  let geojson = {
+  const geom = convertGeometry(model.value);
+  if (!geom) return;
+  const geojson = {
     type: 'FeatureCollection',
-    features: [convertGeometry(model.value)],
+    features: [geom],
   };
   const blob = new window.Blob([JSON.stringify(geojson)], {
     type: 'text/plain;charset=utf-8',
@@ -70,11 +88,16 @@ const onDownload = () => {
 
   FileSaver.saveAs(blob, 'geojson.json');
 };
+
 const onFlyTo = () => {
-  emit('click:fillbound', convertGeometry(model.value));
+  const geom = convertGeometry(model.value);
+  if (geom) {
+    emit('click:fillbound', geom);
+  }
 };
+
 const isCanAdd = computed(() => {
-  return !props.maxLength || model.value.length < props.maxLength;
+  return !(props.maxLength ?? 0) || model.value.length < (props.maxLength ?? 0);
 });
 </script>
 <template>
@@ -108,7 +131,7 @@ const isCanAdd = computed(() => {
             :size="16"
             type="mdi"
             :path="path.download"
-            :title="titleActionAddPoint"
+            :title="titleActionDownload"
           />
         </button>
         <button
@@ -134,7 +157,7 @@ const isCanAdd = computed(() => {
             v-model="model[index][0]"
             type="number"
             step="any"
-            @change="onUpdatePathItem(index)"
+            @change="onUpdatePathItem()"
           />
         </div>
         <div class="">
@@ -143,7 +166,7 @@ const isCanAdd = computed(() => {
             v-model="model[index][1]"
             type="number"
             step="any"
-            @change="onUpdatePathItem(index)"
+            @change="onUpdatePathItem()"
           />
         </div>
         <div class="">

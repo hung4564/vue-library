@@ -13,7 +13,7 @@
               <map-image>
                 <div
                   class="base-map-item-image-container"
-                  :class="{ _vertical: setting.vertical }"
+                  :class="{ _vertical: setting?.vertical }"
                 >
                   <map-image
                     v-for="(current_baseMap, i) in current_baseMaps"
@@ -122,10 +122,11 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
-      baseMaps?: BaseMapItem[]; // Bạn có thể thay 'any[]' bằng kiểu cụ thể nếu biết
+      baseMaps?: BaseMapItem[];
       title?: string;
       defaultBaseMap?: string;
       controlIcon?: string;
@@ -133,7 +134,7 @@ const props = withDefaults(
   >(),
   {
     ...defaultMapProps,
-    baseMaps: () => defaultbasemap,
+    baseMaps: () => defaultbasemap as BaseMapItem[],
     title: '',
     defaultBaseMap: 'Open Street Map',
     controlIcon: '',
@@ -145,33 +146,43 @@ const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
 const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
+
 const mapStoreUseBaseMap = computed(() => {
-  return mapIds.value.map((mapId) => {
-    return useBaseMap(mapId);
+  return mapIds.value.map((id) => {
+    return useBaseMap(id);
   });
 });
+
 const current_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.currentBaseMap);
 });
+
 const c_items_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.baseMaps);
 });
+
 watch(
-  () => props.baseMaps as BaseMapItem[],
-  (value: BaseMapItem[]) => {
-    mapStoreUseBaseMap.value.forEach((c) => {
-      c.setBaseMaps(value);
-    });
+  () => props.baseMaps,
+  (value) => {
+    if (value) {
+      mapStoreUseBaseMap.value.forEach((c) => {
+        c.setBaseMaps(value);
+      });
+    }
   },
 );
+
 watch(
   () => props.defaultBaseMap,
   (value) => {
-    mapStoreUseBaseMap.value.forEach((c) => {
-      c.setDefaultBaseMap(value);
-    });
+    if (value) {
+      mapStoreUseBaseMap.value.forEach((c) => {
+        c.setDefaultBaseMap(value);
+      });
+    }
   },
 );
+
 setLocaleDefault({
   map: {
     basemap: {
@@ -180,26 +191,31 @@ setLocaleDefault({
     },
   },
 });
-const sizeBaseMap = computed(() => {
-  return 70;
-});
+
+const sizeBaseMap = computed(() => 70);
+
 const path = {
   layer: mdiLayersOutline,
 };
+
 const show = ref(false);
-function onClick(i: number, baseMap: any) {
+
+function onClick(i: number, baseMap: BaseMapItem) {
   mapStoreUseBaseMap.value[i].setCurrent(baseMap);
 }
+
 function onToggleList() {
   show.value = !show.value;
 }
+
 onMounted(() => {
   mapStoreUseBaseMap.value.forEach((c) => {
-    c.init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
+    c.init(props.baseMaps, props.defaultBaseMap);
   });
 });
+
 onBeforeUnmount(() => {
-  mapStoreUseBaseMap.value.map((x) => x.remove());
+  mapStoreUseBaseMap.value.forEach((x) => x.remove());
 });
 </script>
 <style scoped>

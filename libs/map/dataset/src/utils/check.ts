@@ -1,5 +1,5 @@
 import type { WithDataHelper } from '../extra';
-import type { IDataset } from '../interfaces/dataset.base';
+import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import type {
   WithSetOpacity,
   WithToggleShow,
@@ -11,7 +11,7 @@ import type {
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type { DatasetComposite, IDataManagementView } from '../model';
+import type { IDataManagementView } from '../model';
 
 export function isDatasetMapHasAddToMap(
   dataset: IDataset,
@@ -48,10 +48,11 @@ export function hasMoveLayer(
 }
 export function isComposite(
   dataset: IDataset,
-): dataset is IDataset & DatasetComposite {
+): dataset is IDataset & WithChildren {
   return (
     dataset.type === 'composite' ||
-    ('getChildren' in dataset && typeof dataset.getChildren === 'function')
+    ('getChildren' in dataset &&
+      typeof (dataset as any).getChildren === 'function')
   );
 }
 
@@ -61,25 +62,25 @@ export function isIdentifyMergeView(
   return 'identifyGroupId' in view;
 }
 export function isDataManagementView(
-  dataset: any,
+  dataset: unknown,
 ): dataset is IDataManagementView {
-  return dataset?.type === 'data-management';
+  return (dataset as IDataset)?.type === 'data-management';
 }
-export function isDatasetHasMethod<T, K extends keyof any>(
+export function isDatasetHasMethod<T, K extends string | number | symbol>(
   obj: unknown,
   methodName: K,
-): obj is T & Record<K, (...args: any[]) => any> {
+): obj is T & Record<K, (...args: unknown[]) => unknown> {
   return (
     typeof obj === 'object' &&
     obj !== null &&
-    typeof (obj as any)[methodName] === 'function'
+    typeof (obj as Record<string, unknown>)[methodName as string] === 'function'
   );
 }
 
-export function isHasToggleShow(dataset: any): dataset is WithToggleShow {
-  return 'toggleShow' in dataset;
+export function isHasToggleShow(dataset: unknown): dataset is WithToggleShow {
+  return !!dataset && typeof dataset === 'object' && 'toggleShow' in dataset;
 }
 
-export function isHasSetOpacity(dataset: any): dataset is WithSetOpacity {
-  return 'setOpacity' in dataset;
+export function isHasSetOpacity(dataset: unknown): dataset is WithSetOpacity {
+  return !!dataset && typeof dataset === 'object' && 'setOpacity' in dataset;
 }

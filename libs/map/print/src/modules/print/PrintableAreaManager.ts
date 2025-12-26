@@ -36,7 +36,7 @@ export class PrintableAreaManager {
     svg.style.position = 'absolute';
     svg.style.top = '0px';
     svg.style.left = '0px';
-    (svg.style as any)['pointer-events'] = 'none';
+    svg.style.pointerEvents = 'none';
     svg.setAttribute('width', `${clientWidth}px`);
     svg.setAttribute('height', `${clientHeight}px`);
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -95,7 +95,7 @@ export class PrintableAreaManager {
     this.svgCanvas.setAttribute('height', `${clientHeight}px`);
     this.svgPath.setAttribute(
       'd',
-      `M 0 0 L ${clientWidth} 0 L ${clientWidth} ${clientHeight} L 0 ${clientHeight} M ${startX} ${startY} L ${startX} ${endY} L ${endX} ${endY} L ${endX} ${startY}`
+      `M 0 0 L ${clientWidth} 0 L ${clientWidth} ${clientHeight} L 0 ${clientHeight} M ${startX} ${startY} L ${startX} ${endY} L ${endX} ${endY} L ${endX} ${startY}`,
     );
   }
   setOption(option: PrintOption) {

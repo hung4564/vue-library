@@ -24,7 +24,7 @@ export async function exportMapboxWithOptions(
     height: number;
     startX: number;
     startY: number;
-  }
+  },
 ): Promise<string> {
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
     container.style.width = toPixels(+options.width, 1);
@@ -42,7 +42,10 @@ export async function exportMapboxWithOptions(
 }
 
 export function waitMapLoadDone(map: MapSimple, max = 100) {
-  const check = (resolve: any, index = 1) => {
+  const check = (
+    resolve: (value: boolean | PromiseLike<boolean>) => void,
+    index = 1,
+  ) => {
     if (map.loaded()) resolve(true);
     else if (index === max) {
       resolve(true);
@@ -56,7 +59,7 @@ function toPixels(length: number, conversionFactor = 96) {
 }
 function getMapBoxCanvas(
   map: MapSimple,
-  callback: (container: HTMLElement) => void
+  callback: (container: HTMLElement) => void,
 ) {
   const hidden = document.createElement('div');
   hidden.style.position = 'fixed';

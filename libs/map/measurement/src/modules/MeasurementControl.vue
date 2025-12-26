@@ -303,6 +303,7 @@ const { add: addEventClick, remove: removeEventClick } = useEventMap(
   event,
 );
 function onInit(map: MapSimple) {
+  handler.setMapId(map.id!);
   imageHandle.addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
   imageHandle.addImage(map.id!, 'measurment-round', imageRounded, {
     content: [4, 4, 12, 12],
@@ -508,7 +509,14 @@ function toggleSetting() {
 }
 function onFlyTo() {
   callMap((map) => {
-    fitBounds(map, convertGeometry(coordinates.value));
+    if (!coordinates.value) {
+      return;
+    }
+    const geometry = convertGeometry(coordinates.value);
+    if (!geometry) {
+      return;
+    }
+    fitBounds(map, geometry);
   });
 }
 function reset(restart = true) {

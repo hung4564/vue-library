@@ -1,15 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type CoordinatesNumber } from '@hungpvq/shared-map';
-import { IView } from '../types';
-export const MeasurementHandle = function () {
-  let _action: any = null;
-  const _views: IView[] = [];
+import { IView, IViewProps } from '../types';
+import { Measure } from './_measurement';
 
-  // eslint-disable-next-line no-unused-vars
-  const withView = (wv: (_view: IView) => any) => {
+export const MeasurementHandle = function () {
+  let _action: Measure | null = null;
+  const _views: IView[] = [];
+  let _mapId = '';
+
+  const setMapId = (mapId: string) => {
+    _mapId = mapId;
+  };
+
+  const withView = (wv: (_view: IView) => void) => {
     for (let i = 0; i < _views.length; i++) wv(_views[i]);
   };
-  const setAction = (action: any) => {
+  const setAction = (action: Measure | null) => {
     _action = action;
   };
   const addView = (view: IView) => {
@@ -33,8 +38,10 @@ export const MeasurementHandle = function () {
       view.destroy();
     });
   };
-  const getResult = () => {
+  const getResult = (): IViewProps => {
+    if (!_action) return { mapId: _mapId };
     return {
+      mapId: _mapId,
       coordinates: _action.value,
       setting: _action.setting,
       ..._action.getResult(),
@@ -68,6 +75,7 @@ export const MeasurementHandle = function () {
     add,
     init,
     getResult,
+    setMapId,
   };
 };
 export type MeasurementHandleType = ReturnType<typeof MeasurementHandle>;

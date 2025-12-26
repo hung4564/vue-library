@@ -37,10 +37,10 @@ export class DatasetService {
         store,
         'list',
       );
-      const allComponentsOfType = findAllComponentsByType(
+      const allComponentsOfType = findAllComponentsByType<IListViewUI>(
         layer,
         'list',
-      ) as Array<IListViewUI>;
+      );
       store.datasets[layer.id] = layer;
       allComponentsOfType.forEach((list, i) => {
         list.index = i + 1 + currentLists.length;
@@ -148,11 +148,17 @@ export class DatasetService {
     }
   }
 
-  static getAllComponentsByType<T>(store: MapLayerStore, targetType: string) {
+  static getAllComponentsByType<T extends IDataset = IDataset>(
+    store: MapLayerStore,
+    targetType: string,
+  ): T[] {
     const views: T[] = [];
-    (Object.values(store.datasets || {}) || []).forEach((dataset) => {
-      const allComponentsOfType = findAllComponentsByType(dataset, targetType);
-      views.push(...(allComponentsOfType as T[]));
+    Object.values(store.datasets).forEach((dataset) => {
+      const allComponentsOfType = findAllComponentsByType<T>(
+        dataset,
+        targetType,
+      );
+      views.push(...allComponentsOfType);
     });
     return views;
   }

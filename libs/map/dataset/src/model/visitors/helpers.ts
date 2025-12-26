@@ -4,14 +4,15 @@ import { traverseTree } from './traverse';
 
 export function findRoot(node: IDataset): IDataset {
   let current = node;
-  let parent = current.getParent?.();
+  let parent = current.getParent();
 
   while (parent) {
     current = parent;
-    parent = current.getParent?.();
+    parent = current.getParent();
   }
   return current;
 }
+
 function findLeafInSubtreeBFS(
   node: IDataset,
   check: (node: IDataset) => boolean,
@@ -26,11 +27,7 @@ function findLeafInSubtreeBFS(
     (current) => {
       if (current === excludeNode) return;
 
-      const children =
-        'getChildren' in current &&
-        typeof (current as any).getChildren === 'function'
-          ? (current as any).getChildren()
-          : [];
+      const children = isComposite(current) ? current.getChildren() : [];
 
       if (children.length === 0 && check(current)) {
         foundNode = current;
@@ -40,13 +37,14 @@ function findLeafInSubtreeBFS(
     {
       strategy: 'bfs',
       direction: 'ltr',
-      check: () => foundNode !== null, // khi đã tìm thấy => dừng toàn bộ
+      check: () => foundNode !== null,
     },
   );
 
   return foundNode;
 }
-export function findSiblingOrNearestLeaf<T = IDataset>(
+
+export function findSiblingOrNearestLeaf<T extends IDataset = IDataset>(
   startNode: IDataset,
   check: (node: IDataset) => boolean,
 ): T | undefined {
@@ -58,33 +56,34 @@ export function findSiblingOrNearestLeaf<T = IDataset>(
     if (found) return found as T;
 
     excludeNode = current;
-    current = current.getParent?.();
+    current = current.getParent();
   }
 
   return undefined;
 }
 
-export function findFirstLeafByType(
+export function findFirstLeafByType<T extends IDataset = IDataset>(
   sourceLeaf: IDataset,
   targetType: string,
-): IDataset | undefined {
-  return findSiblingOrNearestLeaf(
+): T | undefined {
+  return findSiblingOrNearestLeaf<T>(
     sourceLeaf,
     (node) => node.type === targetType,
   );
 }
-export function findAllDatasetsMatching(
+
+export function findAllDatasetsMatching<T extends IDataset = IDataset>(
   startNode: IDataset,
   check: (node: IDataset) => boolean,
   excludeNode?: IDataset | null,
-): IDataset[] {
-  const result: IDataset[] = [];
+): T[] {
+  const result: T[] = [];
 
   traverseTree(
     startNode,
     (node) => {
       if (node === excludeNode) return;
-      if (check(node)) result.push(node);
+      if (check(node)) result.push(node as T);
     },
     {
       strategy: 'bfs',
@@ -96,21 +95,21 @@ export function findAllDatasetsMatching(
   return result;
 }
 
-export function findAllComponentsByType(
+export function findAllComponentsByType<T extends IDataset = IDataset>(
   rootDataset: IDataset,
   targetType: string,
-): IDataset[] {
-  return findAllDatasetsMatching(
+): T[] {
+  return findAllDatasetsMatching<T>(
     rootDataset,
     (node) => node.type === targetType,
   );
 }
 
-export function applyToAllLeaves(
+export function applyToAllLeaves<R = unknown>(
   rootDataset: IDataset,
-  functions: ((dataset: IDataset) => any)[] = [],
-): Map<string, any[]> {
-  const results: Map<string, any[]> = new Map();
+  functions: ((dataset: IDataset) => R)[] = [],
+): Map<string, R[]> {
+  const results: Map<string, R[]> = new Map();
   traverseTree(rootDataset, (node) => {
     if (isComposite(node)) {
       return;
@@ -121,12 +120,15 @@ export function applyToAllLeaves(
   return results;
 }
 
-export function runAllComponentsWithCheck<T extends IDataset = IDataset>(
+export function runAllComponentsWithCheck<
+  T extends IDataset = IDataset,
+  R = unknown,
+>(
   rootDataset: IDataset,
   typeCheckFunction: (dataset: IDataset) => dataset is T,
-  functions: ((dataset: T) => any)[] = [],
-): Map<string, any[]> {
-  const results: Map<string, any[]> = new Map();
+  functions: ((dataset: T) => R)[] = [],
+): Map<string, R[]> {
+  const results: Map<string, R[]> = new Map();
   traverseTree(rootDataset, (node) => {
     if (!typeCheckFunction(node)) {
       return;
@@ -136,6 +138,7 @@ export function runAllComponentsWithCheck<T extends IDataset = IDataset>(
   });
   return results;
 }
+
 export function printTreeFromRoot(root: IDataset) {
   traverseTree(root, (node, level, path) => {
     const indent = '  '.repeat(level);

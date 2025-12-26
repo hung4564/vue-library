@@ -6,7 +6,7 @@ import { logger } from '../logger';
  * Interface for error handling.
  */
 export interface ErrorHandler {
-  handle(error: Error, context?: Record<string, any>): void;
+  handle(error: Error, context?: Record<string, unknown>): void;
   onError(callback: (error: MapError) => void): () => void;
 }
 
@@ -22,7 +22,7 @@ export class MapErrorHandler implements ErrorHandler {
    * @param error - The error to handle
    * @param context - Additional context about the error
    */
-  handle(error: Error, context?: Record<string, any>): void {
+  handle(error: Error, context?: Record<string, unknown>): void {
     const mapError = this.normalizeError(error, context);
 
     // Log to console in dev
@@ -65,7 +65,7 @@ export class MapErrorHandler implements ErrorHandler {
    */
   private normalizeError(
     error: Error,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): MapError {
     if (error instanceof MapError) {
       // Merge additional context if provided
