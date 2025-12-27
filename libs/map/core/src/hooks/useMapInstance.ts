@@ -2,7 +2,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { type MapSimple } from '@hungpvq/shared-map';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { MapInitializationError } from '../errors';
+import { MapEventError, MapInitializationError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
 import { useMapContainer } from '../store/store';
 
@@ -102,7 +102,7 @@ export function useMapInstance(
       });
 
       mapInstance.on('error', (e) => {
-        const error = new MapInitializationError(
+        const error = new MapEventError(
           `Map error: ${e.error?.message || 'Unknown error'}`,
           {
             context: { mapId: id.value },

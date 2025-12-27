@@ -56,3 +56,18 @@ export class MapInitializationError extends MapError {
     });
   }
 }
+
+export class MapEventError extends MapError {
+  constructor(
+    message: string,
+    options?: {
+      context?: Record<string, any>;
+      cause?: unknown;
+    },
+  ) {
+    super(message, 'MAP_EVENT_ERROR', {
+      ...options,
+      recoverable: false,
+    });
+  }
+}
