@@ -6,10 +6,10 @@ import { IEvent } from '../types';
 export class Event<
     T extends keyof MapLayerEventType = 'click',
     IOption extends Record<string, any> = any,
-    ICallBack = (ev: MapLayerEventType[T]) => void
+    ICallBack = (ev: MapLayerEventType[T]) => void,
   >
   extends Base
-  implements IEvent<T, IOption, ICallBack>
+  implements IEvent<IOption, ICallBack>
 {
   public event_map_type: string;
   public type_select: string;

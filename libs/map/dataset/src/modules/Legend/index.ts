@@ -1,5 +1,5 @@
+import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { defineComponent, h, type PropType } from 'vue';
-import { useUniversalRegistry } from '../../registry';
 import type { ComponentType } from '../../types';
 import LayerLegendLinearGradient from './parts/linear-gradient.vue';
 import LayerLegendSingleColor from './parts/single-color.vue';
@@ -68,6 +68,7 @@ export const MultiLegend = defineComponent({
       type: Object as PropType<any>,
       default: undefined,
     },
+    mapId: String,
   },
   setup(props) {
     const { getComponent } = useUniversalRegistry();

@@ -2,13 +2,13 @@
   <div class="layer-item-container">
     <div class="layer-item__info">
       <div v-if="isHasIcon" class="layer-item__icon">
-        <component
+        <RegistryItem
           v-if="props.item.icon?.componentKey"
-          :is="getComponent(props.item.icon.componentKey)"
+          :componentKey="props.item.icon.componentKey"
           v-bind="props.item.icon.attr"
           :data="item"
           :mapId="mapId"
-        ></component>
+        ></RegistryItem>
       </div>
       <span
         class="layer-item__title"
@@ -101,12 +101,12 @@
     </div>
 
     <div v-if="isHasLegend && legendShow">
-      <component
+      <RegistryItem
         v-if="props.item.legend?.componentKey"
-        :is="getComponent(props.item.legend.componentKey)"
+        :componentKey="props.item.legend.componentKey"
         :data="item"
         v-bind="props.item.legend.attr"
-      ></component>
+      ></RegistryItem>
     </div>
     <div v-if="isHasChildren && childrenShow" class="layer-item__children">
       <LayerSubItem
@@ -119,7 +119,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { BaseButton, useShow } from '@hungpvq/vue-map-core';
+import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -135,7 +135,6 @@ import { computed, onMounted, ref } from 'vue';
 import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
 import { findAllComponentsByType } from '../../../../model';
-import { useUniversalRegistry } from '../../../../registry';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
@@ -143,7 +142,6 @@ const props = defineProps<{
   mapId: string;
   readonly: boolean;
 }>();
-const { getComponent } = useUniversalRegistry(props.mapId);
 const emit = defineEmits([
   'update:item',
   'click',

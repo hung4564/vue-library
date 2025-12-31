@@ -4,6 +4,7 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import {
   BaseButton,
   defaultMapProps,
+  RegistryItem,
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
@@ -28,7 +29,6 @@ import {
 import { handleMenuAction } from '../../../extra/menu';
 import type { MenuAction } from '../../../interfaces';
 import { IGroupListViewUI, IListViewUI, traverseTree } from '../../../model';
-import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
 import { hasMoveLayer } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
@@ -220,8 +220,6 @@ function onLayerAction({
     value: item,
   });
 }
-
-const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template>
   <div class="layer-control-container">
@@ -253,9 +251,10 @@ const { getComponent } = useUniversalRegistry(mapId.value);
             :isSelected="isSelected"
             :toggleSelect="() => toggleSelect(item)"
           >
-            <component
-              :is="getComponent(item.config?.componentKey, LayerItem)"
+            <RegistryItem
+              :componentKey="item.config?.componentKey"
               :item="item"
+              :defaultComponent="LayerItem"
               :is-selected="isSelected"
               @click="toggleSelect(item)"
               @click:remove="onRemoveLayer"
@@ -264,7 +263,7 @@ const { getComponent } = useUniversalRegistry(mapId.value);
               :map-id="mapId"
               :readonly="false"
             >
-            </component>
+            </RegistryItem>
           </slot>
         </template>
       </DraggableGroupList>

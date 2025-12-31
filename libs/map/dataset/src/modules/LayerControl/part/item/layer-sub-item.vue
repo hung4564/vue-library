@@ -2,13 +2,13 @@
   <div class="layer-sub-item-container">
     <div class="layer-sub-item__info">
       <div v-if="isHasIcon" class="layer-sub-item__icon">
-        <component
+        <RegistryItem
           v-if="props.item.icon?.componentKey"
-          :is="getComponent(props.item.icon.componentKey)"
+          :componentKey="props.item.icon.componentKey"
           v-bind="props.item.icon.attr"
           :data="item"
           :mapId="mapId"
-        ></component>
+        ></RegistryItem>
       </div>
       <span class="layer-sub-item__title" :title="item.getName()">
         <span>{{ item.getName() }}</span>
@@ -34,13 +34,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { BaseButton, RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
 import type { MenuAction } from '../../../../interfaces';
 import type { IListViewUI } from '../../../../model';
-import { useUniversalRegistry } from '../../../../registry';
 import LayerMenu from './menu/index.vue';
 
 const path = {
@@ -50,7 +49,6 @@ const props = defineProps<{
   item: IListViewUI;
   mapId: string;
 }>();
-const { getComponent } = useUniversalRegistry(props.mapId);
 const isHasIcon = computed(() => props.item && props.item.icon);
 const emit = defineEmits(['click:action', 'click:content-menu']);
 const button_menus = computed<MenuAction<any>[]>(() => {

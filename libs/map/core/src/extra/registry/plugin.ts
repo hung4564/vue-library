@@ -1,8 +1,8 @@
 import { createStore } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/shared-map';
-import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Component } from 'vue';
-import { logger } from '../logger';
+import { logger } from '../../logger';
+import { createMapScopedStore } from '../../store';
 
 const KEY = 'registry';
 export const useMapRegistryStore = (mapId: string) =>

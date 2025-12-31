@@ -4,6 +4,7 @@ import { onMounted, Ref, ref, shallowRef } from 'vue';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
+  RegistryItem,
   useLang,
   useMap,
   useShow,
@@ -13,7 +14,6 @@ import { copyByJson } from '@hungpvq/shared';
 import { MapSimple } from '@hungpvq/shared-map';
 import { IDataset, IMapboxLayerView } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model';
-import { useUniversalRegistry } from '../../registry';
 import { ComponentType } from '../../types';
 import { isMapboxLayerView } from '../../utils/check';
 import enLang from './lang/style-control.json';
@@ -79,8 +79,6 @@ const updateValue = () => {
     }
   }
 };
-
-const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template>
   <ModuleContainer v-bind="$attrs">
@@ -99,8 +97,8 @@ const { getComponent } = useUniversalRegistry(mapId.value);
           </span>
         </template>
         <div class="style-control">
-          <component
-            :is="getComponent(layer_map_component.componentKey)"
+          <RegistryItem
+            :componentKey="layer_map_component.componentKey"
             v-model="layer"
             @update-style="onUpdateStyle"
             :trans="trans"

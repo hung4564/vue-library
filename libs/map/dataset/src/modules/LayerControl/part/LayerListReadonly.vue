@@ -2,6 +2,7 @@
 import { ContextMenu } from '@hungpvq/content-menu';
 import {
   defaultMapProps,
+  RegistryItem,
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
@@ -17,7 +18,6 @@ import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
 import type { MenuAction } from '../../../interfaces';
 import type { IListViewUI } from '../../../model';
-import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
 import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
@@ -117,7 +117,6 @@ function onLayerAction({
     value: item,
   });
 }
-const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template lang="">
   <div class="layer-control-container">
@@ -128,15 +127,16 @@ const { getComponent } = useUniversalRegistry(mapId.value);
       <div v-for="(item, index) in treeLayer" :key="item.id || index">
         <RecursiveList :item="item" disabledDrag>
           <template #leaf="{ item }">
-            <component
-              :is="getComponent(item.config?.componentKey, LayerItem)"
+            <RegistryItem
+              :componentKey="item.config?.componentKey"
+              :defaultComponent="LayerItem"
               :item="item"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
               :mapId="mapId"
               readonly
             >
-            </component>
+            </RegistryItem>
           </template>
         </RecursiveList>
       </div>

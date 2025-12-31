@@ -1,20 +1,20 @@
 <template lang="">
-  <component
+  <RegistryItem
     v-for="item in components"
     :key="item.id"
-    :is="getComponent(item.componentKey)"
+    :componentKey="item.componentKey"
     v-bind="item.attr"
     @close="onRemoveComponent(item)"
-  ></component>
+  ></RegistryItem>
 </template>
 <script setup lang="ts">
 import {
   defaultMapProps,
+  RegistryItem,
   useMap,
   type WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { computed, getCurrentInstance, ref, watch } from 'vue';
-import { useUniversalRegistry } from '../../registry';
 import {
   type ComponentItem,
   useMapDatasetComponent,
@@ -23,7 +23,6 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const { mapId } = useMap(props);
-const { getComponent } = useUniversalRegistry(mapId.value);
 
 const instance = getCurrentInstance();
 const { getAllComponentIds, getStore, removeComponent } =
