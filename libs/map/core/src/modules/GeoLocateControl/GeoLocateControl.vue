@@ -6,8 +6,9 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
+import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -201,19 +202,34 @@ function isOutOfMapMaxBounds(
       coordinates.latitude > bounds.getNorth())
   );
 }
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapGeoLocateControl',
+  getState() {
+    const tooltipGeolocate = error.value
+      ? error.value.message ||
+        trans.value('map.action.geolocate-control-location-not-available')
+      : trans.value('map.action.geolocate-control-find-my-location');
+    return {
+      visible: true,
+      active: active.value,
+      title: tooltipGeolocate,
+      disabled: !!error.value,
+      icon: {
+        type: 'mdi',
+        path: error.value ? mdiCrosshairsOff : mdiCrosshairsGps,
+      },
+    };
+  },
+  onClick() {
+    onClick();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        :disabled="!!error"
-        :icon="iconGeolocate"
-        :tooltip="tooltipGeolocate"
-        :active="active"
-        @click.stop="onClick"
-      >
-        <SvgIcon :size="18" type="mdi" :path="iconGeolocate" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
     <slot />
   </ModuleContainer>

@@ -2,7 +2,7 @@
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import MapControlButton from '../../../../components/MapControlButton.vue';
+import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import { useLang } from '../../../../extra/lang';
 import { Collapse, InputSelect, InputText } from '../../../../field';
 import {
@@ -13,6 +13,7 @@ import {
   type WithMapPropType,
 } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useToolbarControl } from '../../../toolbar';
 import { useMapCrsItems } from '../../hooks';
 import { type CrsItem } from '../../types';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -55,16 +56,28 @@ const onAdd = () => {
   crs_items.value.push({ name: '', unit: 'degree', epsg: '' });
   setItems(crs_items.value);
 };
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapCrsControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.crs-control.title'),
+      icon: {
+        type: 'mdi',
+        path: mdiInboxOutline,
+      },
+    };
+  },
+  onClick() {
+    onToggleShow();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        @click.stop="onToggleShow"
-        :tooltip="trans('map.crs-control.title')"
-      >
-        <SvgIcon :size="18" type="mdi" :path="mdiInboxOutline" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
     <template #draggable="props">
       <DraggableItemPopup

@@ -2,39 +2,25 @@
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton>
-        <MapControlButton
-          v-if="showCompass"
-          @click="onResetBearing"
-          :title="trans('map.action.navigation-control-reset-bearing')"
-        >
-          <svg
-            height="22"
-            :style="{ transform: transform }"
-            viewBox="0 0 24 24"
-            width="22"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g fill="none" fill-rule="evenodd">
-              <path d="M0 0h24v24H0z"></path>
-              <path d="M12 3l4 8H8z" fill="#f44336"></path>
-              <path d="M12 21l-4-8h8z" fill="#9E9E9E"></path>
-            </g>
-          </svg>
-        </MapControlButton>
-        <MapControlButton
-          v-if="showZoom"
-          @click="onZoomIn"
-          :title="trans('map.action.navigation-control-zoom-in')"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.plus" />
-        </MapControlButton>
-        <MapControlButton
-          v-if="showZoom"
-          @click="onZoomOut"
-          :title="trans('map.action.navigation-control-zoom-out')"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.minus" />
-        </MapControlButton>
+        <template v-if="showCompass">
+          <MapCommonButton
+            v-if="state && state.mapCompass"
+            :option="state.mapCompass"
+            @click="navigationModule.onAction('mapCompass', $event)"
+          />
+        </template>
+        <template v-if="showZoom">
+          <MapCommonButton
+            v-if="state && state.mapZoomIn"
+            :option="state.mapZoomIn"
+            @click="navigationModule.onAction('mapZoomIn', $event)"
+          />
+          <MapCommonButton
+            v-if="state && state.mapZoomOut"
+            :option="state.mapZoomOut"
+            @click="navigationModule.onAction('mapZoomOut', $event)"
+          />
+        </template>
       </MapControlGroupButton>
     </template>
     <slot />
@@ -43,19 +29,18 @@
 
 <script setup lang="ts">
 import { MapSimple } from '@hungpvq/shared-map';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
-import MapControlButton from '../../components/MapControlButton.vue';
+import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import { useLang } from '../../extra';
+import {
+  createToolbarModule,
+  useLang,
+  useMapToolbarModule,
+  useToolbarModule,
+} from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-
-const path = {
-  plus: mdiPlus,
-  minus: mdiMinus,
-};
 
 const props = withDefaults(
   defineProps<
@@ -120,8 +105,49 @@ function onResetBearing() {
   });
 }
 
+const toolbar = useMapToolbarModule(mapId.value, props.controlLayout);
+const navigationModule = createToolbarModule({
+  moduleId: 'navigation',
+  moduleOrder: 0,
+  toolbar,
+  buttons: [
+    {
+      id: 'mapCompass',
+      getState: () => ({
+        visible: props.showCompass,
+        title: trans.value('map.action.navigation-control-reset-bearing'),
+        icon: {
+          type: 'compass',
+          transform: transform.value,
+        },
+      }),
+      onClick: () => onResetBearing(),
+    },
+    {
+      id: 'mapZoomIn',
+      getState: () => ({
+        visible: props.showZoom,
+        title: trans.value('map.action.navigation-control-zoom-in'),
+        icon: { path: mdiPlus, type: 'mdi' },
+      }),
+      onClick: (e) => onZoomIn(e),
+    },
+    {
+      id: 'mapZoomOut',
+      getState: () => ({
+        visible: props.showZoom,
+        title: trans.value('map.action.navigation-control-zoom-out'),
+        icon: { path: mdiMinus, type: 'mdi' },
+      }),
+      onClick: (e) => onZoomOut(e),
+    },
+  ],
+});
 function syncRotate(_map: MapSimple) {
   const angle = _map.getBearing() * -1;
   transform.value = `rotate(${angle}deg)`;
+  navigationModule.sync();
 }
+
+const { state } = useToolbarModule(navigationModule);
 </script>

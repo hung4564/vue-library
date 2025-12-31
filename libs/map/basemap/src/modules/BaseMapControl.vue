@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
   height: 100%;
   text-align: center;
   overflow: hidden;
-  color: var(--map-card-text, var(--map-text-primary, #333));
+  color: var(--map-text-inverse, #fff);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
   flex-direction: column;
   align-items: center;

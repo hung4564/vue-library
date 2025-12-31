@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/shared-map';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
-import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import MapCommonButton from '../../components/MapCommonButton.vue';
+import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
@@ -52,13 +51,28 @@ function onInit(_map: MapSimple) {
     i_center.value = _map.getCenter();
   }
 }
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapHomeControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.home.title'),
+      icon: {
+        type: 'mdi',
+        path: mdiHome,
+      },
+    };
+  },
+  onClick() {
+    onGoHome();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton @click="onGoHome" :tooltip="trans('map.home.title')">
-        <SvgIcon :size="18" type="mdi" :path="mdiHome" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
     <slot />
   </ModuleContainer>

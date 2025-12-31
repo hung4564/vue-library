@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
 import { ref } from 'vue';
-import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import MapCommonButton from '../../components/MapCommonButton.vue';
+import { useLang, useToolbarControl } from '../../extra';
 import { BaseButton, InputText } from '../../field';
 import {
   defaultMapProps,
@@ -77,16 +76,28 @@ const onSetSetting = () => {
     map.setStyle(style);
   });
 };
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapSettingControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.setting-control.title'),
+      icon: {
+        type: 'mdi',
+        path: mdiCog,
+      },
+    };
+  },
+  onClick() {
+    onToggleShow();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        @click.stop="onToggleShow()"
-        :tooltip="trans('map.setting-control.title')"
-      >
-        <SvgIcon :size="18" type="mdi" :path="mdiCog" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

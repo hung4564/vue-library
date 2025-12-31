@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useFullscreen } from '@hungpvq/shared-core';
 
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
-import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import { watch } from 'vue';
+import MapCommonButton from '../../components/MapCommonButton.vue';
+import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
@@ -41,26 +41,35 @@ function getMapContainer(el?: HTMLElement | null): HTMLElement {
   });
   return el!;
 }
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapFullscreen',
+  getState() {
+    const active = isFullscreen.value;
+    return {
+      visible: true,
+      active,
+      title: active
+        ? trans.value('map.action.fullscreen-control-exit')
+        : trans.value('map.action.fullscreen-control-enter'),
+      icon: {
+        type: 'mdi',
+        path: active ? path.exitFullscreen : path.fullscreen,
+      },
+    };
+  },
+
+  async onClick() {
+    await toggle();
+  },
+});
+watch(isFullscreen, () => control.sync());
 </script>
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        icon
-        :title="
-          !isFullscreen
-            ? trans('map.action.fullscreen-control-enter')
-            : trans('map.action.fullscreen-control-exit')
-        "
-        @click="toggle()"
-      >
-        <SvgIcon
-          :size="18"
-          type="mdi"
-          :path="isFullscreen ? path.exitFullscreen : path.fullscreen"
-        />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
     <slot />
   </ModuleContainer>

@@ -56,13 +56,14 @@ export function useMapInstance(
   emit: UseMapInstanceEmits,
 ) {
   const mapContainer = ref<HTMLDivElement>();
-  const isSupport = ref(isWebglSupported());
+  const isSupport = ref(true);
   const loaded = ref(false);
   const map = shallowRef<mapboxgl.Map | undefined>(undefined);
   const id = ref(props.mapId || getUUIDv4());
   const store = useMapContainer(id.value);
 
   onMounted(() => {
+    isSupport.value = isWebglSupported();
     try {
       if (!isSupport.value) {
         throw new MapInitializationError(

@@ -25,6 +25,9 @@
             <RouterLink to="/">Home </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/compare">Compare </RouterLink>
           </v-list-item>
           <v-list-item>
@@ -63,7 +66,7 @@
     </template>
   </ModuleContainer>
 </template>
-<script lang="ts">
+<script>
 import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {

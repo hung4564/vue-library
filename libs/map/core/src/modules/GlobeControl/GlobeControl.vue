@@ -3,8 +3,9 @@ import type { MapSimple } from '@hungpvq/shared-map';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
+import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -45,17 +46,29 @@ function onInit(_map: MapSimple) {
 function onDestroy(_map: MapSimple) {
   if (handleMap) _map.off('styledata', handleMap);
 }
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapGlobeControl',
+  getState() {
+    return {
+      visible: true,
+      active: currentProjection.value === 'globe',
+      title: trans.value('map.global-control.title'),
+      icon: {
+        type: 'mdi',
+        path: mdiWeb,
+      },
+    };
+  },
+  onClick() {
+    toggle();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        @click.stop="toggle"
-        :active="currentProjection === 'globe'"
-        :tooltip="trans('map.global-control.title')"
-      >
-        <SvgIcon :size="18" type="mdi" :path="mdiWeb" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
     <slot />
   </ModuleContainer>

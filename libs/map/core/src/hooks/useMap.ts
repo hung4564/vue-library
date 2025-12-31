@@ -37,6 +37,7 @@ export const useMap = (
     btnWidth: props.btnWidth,
     position: props.position,
     controlVisible: props.controlVisible,
+    controlLayout: props.controlLayout,
     order: props.order,
     top: props.top,
     bottom: props.bottom,
@@ -93,6 +94,7 @@ export interface WithMapPropType {
   btnWidth?: number;
   position?: Position;
   controlVisible?: boolean;
+  controlLayout?: 'standalone' | 'toolbar';
   order?: number;
   top?: number;
   bottom?: number;

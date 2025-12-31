@@ -1,6 +1,9 @@
 <template>
   <div class="module__container">
-    <Teleport v-if="controlVisible && hasSlotBtn" :to="btnTo">
+    <Teleport
+      v-if="controlVisible && hasSlotBtn && isStandaloneButton"
+      :to="btnTo"
+    >
       <slot name="btn" />
     </Teleport>
     <slot />
@@ -36,12 +39,20 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  controlLayout: {
+    type: String,
+    default: 'standalone',
+    validator(value: string) {
+      return ['toolbar', 'standalone'].indexOf(value) !== -1;
+    },
+  },
   top: Number,
   bottom: Number,
   left: Number,
   right: Number,
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
+const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
 const i_map_id = inject<string>('$map.id');

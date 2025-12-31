@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref } from 'vue';
-import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../../extra';
+import MapCommonButton from '../../components/MapCommonButton.vue';
+import { useLang, useToolbarControl } from '../../extra';
 import { BaseButton, InputText } from '../../field';
 import {
   defaultMapProps,
@@ -57,16 +56,28 @@ const onSetSetting = () => {
     if (setting.value.center) map.setCenter(setting.value.center);
   });
 };
+const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+  id: 'mapGotoControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.goto-control.title'),
+      icon: {
+        type: 'mdi',
+        path: mdiMapMarkerOutline,
+      },
+    };
+  },
+  onClick() {
+    onToggleShow();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        @click.stop="onToggleShow()"
-        :tooltip="trans('map.goto-control.title')"
-      >
-        <SvgIcon :size="18" type="mdi" :path="mdiMapMarkerOutline" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

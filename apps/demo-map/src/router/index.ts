@@ -10,6 +10,10 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/toolbar/',
+      component: () => import('../views/toolbar.vue'),
+    },
+    {
       path: '/legend/',
       component: () => import('../views/legend.vue'),
     },
