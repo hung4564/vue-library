@@ -471,7 +471,7 @@ function createDatasetMeasure(
   const dataset = createRootDataset('Dataset Measure');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: result.features || [],
+    features: result.features || ([] as any),
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponentBuilder(
@@ -484,7 +484,10 @@ function createDatasetMeasure(
       createMultiLegend([
         {
           type: 'text',
-          value: { text: 'Measure', value: result.format || result.value },
+          value: {
+            text: 'Measure',
+            value: (result.format || result.value || 0) + '',
+          },
         },
       ]),
     )

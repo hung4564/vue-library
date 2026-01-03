@@ -202,7 +202,7 @@ function isOutOfMapMaxBounds(
       coordinates.latitude > bounds.getNorth())
   );
 }
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGeoLocateControl',
   getState() {
     const tooltipGeolocate = error.value

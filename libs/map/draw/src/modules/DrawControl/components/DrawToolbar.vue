@@ -68,7 +68,7 @@ const path = {
         </MapControlButton>
         <MapControlButton
           :active="method === 'create'"
-          @click="(e) => emit('start-draw', e)"
+          @click="emit('start-draw', $event)"
         >
           <SvgIcon :size="18" type="mdi" :path="path.add" />
         </MapControlButton>

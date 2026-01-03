@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
   defaultMapProps,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
@@ -42,6 +42,7 @@ const print = ref({ show: false, loading: false });
 function onSaveAll(cb?: (image: string) => Promise<void>) {
   callMap(async (map) => {
     print.value.loading = true;
+    control.sync();
     try {
       let image = await exportMapbox(map);
       if (cb) {
@@ -49,6 +50,7 @@ function onSaveAll(cb?: (image: string) => Promise<void>) {
       } else await onDownload(image);
     } finally {
       print.value.loading = false;
+      control.sync();
     }
   });
 }
@@ -56,17 +58,29 @@ function onSaveAll(cb?: (image: string) => Promise<void>) {
 async function onDownload(data64: string) {
   saveAs(data64, `${props.fileName}.png`);
 }
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapHomeControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.print.title'),
+      icon: {
+        type: 'mdi',
+        path: path.print,
+      },
+      loading: print.value.loading,
+    };
+  },
+  onClick() {
+    onSaveAll(onDownload);
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        :tooltip="trans('map.print.title')"
-        @click.stop="onSaveAll(onDownload)"
-        :loading="print.loading"
-      >
-        <SvgIcon :size="18" type="mdi" :path="path.print" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
   </ModuleContainer>
 </template>

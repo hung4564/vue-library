@@ -26,7 +26,6 @@
     }
   },
   "peerDependencies": {
-    "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "@hungpvq/vue-map-core": "0.7.3",
     "@hungpvq/vue-draggable": "0.4.3",

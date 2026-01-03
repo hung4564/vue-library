@@ -9,6 +9,7 @@ export type MapControlButtonState = {
 } & MapControlButtonUIState;
 export type MapControlButtonUIState = {
   visible?: boolean;
+  loading?: boolean;
   title?: string;
   icon?:
     | {

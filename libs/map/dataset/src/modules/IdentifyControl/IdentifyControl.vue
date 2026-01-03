@@ -13,12 +13,13 @@ import {
   EventBboxRanger,
   EventBboxRangerHandle,
   EventClick,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useCoordinate,
   useEventMap,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
@@ -332,18 +333,34 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   }
   return groups;
 }
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapHomeControl',
+  getState() {
+    return {
+      visible: hasViews.value,
+      active: show.value,
+      title: trans.value('map.identify.title'),
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        :tooltip="trans('map.identify.title')"
-        @click.stop="toggleShow()"
-        :active="show"
-        v-if="hasViews"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="16" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
     <template #draggable="p">

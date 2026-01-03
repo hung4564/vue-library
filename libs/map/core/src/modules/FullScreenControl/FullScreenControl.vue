@@ -41,7 +41,7 @@ function getMapContainer(el?: HTMLElement | null): HTMLElement {
   });
   return el!;
 }
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapFullscreen',
   getState() {
     const active = isFullscreen.value;

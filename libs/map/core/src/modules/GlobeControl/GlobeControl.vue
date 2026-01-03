@@ -46,7 +46,7 @@ function onInit(_map: MapSimple) {
 function onDestroy(_map: MapSimple) {
   if (handleMap) _map.off('styledata', handleMap);
 }
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGlobeControl',
   getState() {
     return {

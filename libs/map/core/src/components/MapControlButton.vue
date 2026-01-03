@@ -7,6 +7,7 @@
     :title="tooltip || title"
     :width="groupSize"
     :disabled="disabled"
+    :loading="loading"
   >
     <slot>
       <MapIcon>

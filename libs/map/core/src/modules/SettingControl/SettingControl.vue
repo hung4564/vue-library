@@ -76,7 +76,7 @@ const onSetSetting = () => {
     map.setStyle(style);
   });
 };
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapSettingControl',
   getState() {
     return {

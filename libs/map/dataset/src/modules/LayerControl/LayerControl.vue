@@ -9,11 +9,12 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   defaultMapProps,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
+  useToolbarControl,
   WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
@@ -25,6 +26,7 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
+import { watch } from 'vue';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
@@ -95,18 +97,34 @@ const [showCreate, toggleShowCreate] = useShow();
 function openAddLayer() {
   toggleShowCreate();
 }
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapHomeControl',
+  getState() {
+    return {
+      visible: !show.value,
+      active: show.value,
+      title: trans.value('map.layer-control.title'),
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        v-if="!show"
-        :tooltip="trans('map.layer-control.title')"
-        @click.stop="toggleShow()"
-        :active="show"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

@@ -9,14 +9,14 @@ import {
   defaultMapProps,
   EventClick,
   EventMouseMove,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useEventMap,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { isEqual } from 'lodash';
 import {
@@ -171,6 +171,7 @@ function toggleInspect() {
     removeEventMouseMove();
   }
   callMap((map) => render(map));
+  control.sync();
 }
 const path = {
   map: mdiMap,
@@ -242,21 +243,32 @@ function _inspectStyle(map: MapSimple) {
   });
 }
 const isDrawShow = ref(false);
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapHomeControl',
+  getState() {
+    return {
+      visible: !isDrawShow.value,
+      title: trans.value('map.inspect-control.button'),
+      icon: {
+        type: 'mdi',
+        path: !showInspect.value ? path.map : path.inspect,
+      },
+    };
+  },
+  onClick() {
+    toggleInspect();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        :tooltip="trans('map.inspect-control.button')"
-        v-if="!isDrawShow"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon
-          :size="18"
-          type="mdi"
-          @click="toggleInspect()"
-          :path="!showInspect ? path.map : path.inspect"
-        />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
     <slot />
   </ModuleContainer>

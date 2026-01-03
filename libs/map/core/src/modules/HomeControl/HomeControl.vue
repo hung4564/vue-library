@@ -51,7 +51,7 @@ function onInit(_map: MapSimple) {
     i_center.value = _map.getCenter();
   }
 }
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapHomeControl',
   getState() {
     return {
@@ -71,7 +71,11 @@ const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
+      >
       </MapCommonButton>
     </template>
     <slot />

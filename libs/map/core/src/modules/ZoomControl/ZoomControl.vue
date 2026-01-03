@@ -6,19 +6,19 @@
           <MapCommonButton
             v-if="state && state.mapCompass"
             :option="state.mapCompass"
-            @click="navigationModule.onAction('mapCompass', $event)"
+            @click.stop="control.onAction('mapCompass', $event)"
           />
         </template>
         <template v-if="showZoom">
           <MapCommonButton
             v-if="state && state.mapZoomIn"
             :option="state.mapZoomIn"
-            @click="navigationModule.onAction('mapZoomIn', $event)"
+            @click.stop="control.onAction('mapZoomIn', $event)"
           />
           <MapCommonButton
             v-if="state && state.mapZoomOut"
             :option="state.mapZoomOut"
-            @click="navigationModule.onAction('mapZoomOut', $event)"
+            @click.stop="control.onAction('mapZoomOut', $event)"
           />
         </template>
       </MapControlGroupButton>
@@ -33,12 +33,7 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import {
-  createToolbarModule,
-  useLang,
-  useMapToolbarModule,
-  useToolbarModule,
-} from '../../extra';
+import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -104,12 +99,10 @@ function onResetBearing() {
     map.easeTo({ bearing: 0, pitch: 0 });
   });
 }
-
-const toolbar = useMapToolbarModule(mapId.value, props.controlLayout);
-const navigationModule = createToolbarModule({
-  moduleId: 'navigation',
+const { state, control } = useToolbarControl(mapId.value, props, {
+  kind: 'module',
+  moduleId: 'mapNavigationControl',
   moduleOrder: 0,
-  toolbar,
   buttons: [
     {
       id: 'mapCompass',
@@ -146,8 +139,6 @@ const navigationModule = createToolbarModule({
 function syncRotate(_map: MapSimple) {
   const angle = _map.getBearing() * -1;
   transform.value = `rotate(${angle}deg)`;
-  navigationModule.sync();
+  control.sync();
 }
-
-const { state } = useToolbarModule(navigationModule);
 </script>

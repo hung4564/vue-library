@@ -86,6 +86,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -165,6 +166,22 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   remove();
+});
+useToolbarControl(mapId.value, props, {
+  id: 'mapBaseMapControl',
+  getState() {
+    return {
+      visible: true,
+      title: props.title || trans.value('map.basemap.title'),
+      icon: {
+        type: 'mdi',
+        path: path.layer,
+      },
+    };
+  },
+  onClick() {
+    onToggleList();
+  },
 });
 </script>
 <style scoped>

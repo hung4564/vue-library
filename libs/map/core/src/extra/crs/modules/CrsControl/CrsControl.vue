@@ -56,7 +56,7 @@ const onAdd = () => {
   crs_items.value.push({ name: '', unit: 'degree', epsg: '' });
   setItems(crs_items.value);
 };
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapCrsControl',
   getState() {
     return {

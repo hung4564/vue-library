@@ -1,12 +1,12 @@
 <template lang="">
   <ModuleContainer v-bind="moduleContainerProps" :active="show">
     <template #btn>
-      <MapControlButton
-        @click.stop="toggleShow()"
-        :tooltip="trans('map.aside-control.title')"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="16" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">
@@ -71,14 +71,14 @@ import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   makeShowProps,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
+  useToolbarControl,
   withMapProps,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMenu } from '@mdi/js';
 import { RouterLink } from 'vue-router';
 export default {
@@ -86,11 +86,10 @@ export default {
   components: {
     VList,
     DraggableItemSideBar,
-    MapControlButton,
     ModuleContainer,
-    SvgIcon,
     VListItem,
     RouterLink,
+    MapCommonButton,
   },
   props: {
     ...withMapProps,
@@ -111,7 +110,26 @@ export default {
         },
       },
     });
+
+    const { state, control } = useToolbarControl(mapId.value, props, {
+      id: 'asideControl',
+      getState() {
+        return {
+          visible: true,
+          title: trans.value('map.aside-control.title'),
+          icon: {
+            type: 'mdi',
+            path: path.icon,
+          },
+        };
+      },
+      onClick() {
+        toggleShow();
+      },
+    });
     return {
+      state,
+      control,
       show,
       toggleShow,
       moduleContainerProps,

@@ -56,7 +56,7 @@ const onSetSetting = () => {
     if (setting.value.center) map.setCenter(setting.value.center);
   });
 };
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGotoControl',
   getState() {
     return {

@@ -17,6 +17,7 @@ const actions: MeasureActionItem[] = [
     },
     disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
     index: 0,
+    show: (ctx) => ctx.status == 'handle',
   },
 ];
 </script>

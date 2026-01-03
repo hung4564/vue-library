@@ -83,7 +83,7 @@ const groupedViews = computed(() => {
   }
   return groups;
 });
-const { state, control } = useToolbarControl(mapId.value, props.controlLayout, {
+const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapEventManagementControl',
   getState() {
     return {

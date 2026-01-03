@@ -1,20 +1,19 @@
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { WithMapPropType } from '../../hooks';
+import { MapControlButtonUIState, useMapToolbarModule } from './store';
 import {
-  MapControlButtonState,
-  MapControlButtonUIState,
-  useMapToolbarModule,
-} from './store';
+  AnyToolbarOptions,
+  AnyToolbarStrategy,
+  ControlStrategy,
+  ModuleStrategy,
+  Toolbar,
+  ToolbarModuleOptions,
+  ToolbarSingleOptions,
+  ToolbarStrategyDef,
+  WithToolbar,
+} from './types';
 
-type Toolbar = {
-  register(state: MapControlButtonState): void;
-  update(id: string, patch: Partial<MapControlButtonState>): void;
-  unregister(id: string): void;
-};
-export interface Subscribable<T> {
-  subscribe(fn: (state: T) => void): () => void;
-}
-type ToolbarButtonConfig = {
+export type ToolbarButtonConfig = {
   id: string;
   getState: () => MapControlButtonUIState;
   order?: number; // thứ tự trong group
@@ -32,9 +31,7 @@ export function createSubscribable<T>() {
   return { subscribe, notify };
 }
 export function createToolbarControl(
-  options: {
-    toolbar: Toolbar;
-  } & ToolbarButtonConfig,
+  options: ToolbarButtonConfig & WithToolbar,
 ) {
   const { id, toolbar, getState, onClick } = options;
   const { subscribe, notify } = createSubscribable<MapControlButtonUIState>();
@@ -72,12 +69,14 @@ export function createToolbarControl(
   return { id, mount, sync, unmount, onAction, getSnapshot, subscribe };
 }
 
-export function createToolbarModule(options: {
-  moduleId: string;
-  moduleOrder?: number;
-  toolbar: Toolbar;
-  buttons: ToolbarButtonConfig[];
-}) {
+export function createToolbarModule(
+  options: {
+    moduleId: string;
+    moduleOrder?: number;
+    toolbar: Toolbar;
+    buttons: ToolbarButtonConfig[];
+  } & WithToolbar,
+) {
   const { subscribe, notify } =
     createSubscribable<Record<string, MapControlButtonUIState>>();
   function mount() {
@@ -120,59 +119,92 @@ export function createToolbarModule(options: {
   }
   return { mount, sync, unmount, subscribe, onAction };
 }
-export function useToolbarModule(
-  control: Subscribable<Record<string, MapControlButtonUIState>> & {
-    mount: () => void;
-    unmount: () => void;
-  },
-) {
-  const state = ref<Record<string, MapControlButtonUIState>>({});
 
-  const unsubscribe = control.subscribe((s) => {
-    state.value = s;
-  });
-
-  onUnmounted(unsubscribe);
-
-  onMounted(control.mount);
-  onUnmounted(control.unmount);
+function createSingleStrategy(
+  options: ToolbarSingleOptions & WithToolbar,
+): ControlStrategy {
+  const { kind, ...rest } = options;
   return {
-    state,
+    ...createToolbarControl(rest),
   };
 }
 
-export function useInitToolbarControl(
-  control: Subscribable<MapControlButtonUIState> & {
-    mount: () => void;
-    unmount: () => void;
-  },
-) {
-  const state = ref<MapControlButtonUIState>();
-
-  const unsubscribe = control.subscribe((s) => {
-    state.value = s;
-  });
-
-  onUnmounted(unsubscribe);
-  onMounted(control.mount);
-  onUnmounted(control.unmount);
+function createModuleStrategy(
+  options: ToolbarModuleOptions & WithToolbar,
+): ModuleStrategy {
+  const { kind, ...rest } = options;
   return {
-    state,
+    moduleId: options.moduleId,
+    ...createToolbarModule(rest),
   };
 }
+const STRATEGIES = {
+  single: {
+    kind: 'single',
+    create: createSingleStrategy,
+  } as ToolbarStrategyDef<ToolbarSingleOptions, ControlStrategy>,
+  module: {
+    kind: 'module',
+    create: createModuleStrategy,
+  } as ToolbarStrategyDef<ToolbarModuleOptions, ModuleStrategy>,
+} as const;
+
+type ToolbarKind = keyof typeof STRATEGIES;
+
+export function useInitToolbarControl<T extends AnyToolbarStrategy>(
+  control: T,
+) {
+  type StateType = T extends ControlStrategy
+    ? MapControlButtonUIState
+    : Record<string, MapControlButtonUIState>;
+
+  const state = ref<StateType>();
+
+  let unsubscribe: (() => void) | undefined;
+
+  onMounted(() => {
+    unsubscribe = control.subscribe((s) => {
+      state.value = s as StateType;
+    });
+    control.mount();
+  });
+
+  onUnmounted(() => {
+    unsubscribe?.();
+    control.unmount();
+  });
+
+  return { state };
+}
+type ToolbarSingleOptionsControl = {
+  controlLayout: WithMapPropType['controlLayout'];
+};
 export function useToolbarControl(
   mapId: string,
-  controlLayout: WithMapPropType['controlLayout'],
-  options: ToolbarButtonConfig,
-) {
-  const toolbar = useMapToolbarModule(mapId, controlLayout);
+  opts: ToolbarSingleOptionsControl,
+  options: ToolbarModuleOptions,
+): { control: ModuleStrategy; state: Record<string, MapControlButtonUIState> };
+export function useToolbarControl(
+  mapId: string,
+  opts: ToolbarSingleOptionsControl,
+  options: ToolbarSingleOptions,
+): { control: ControlStrategy; state: MapControlButtonUIState };
+export function useToolbarControl(
+  mapId: string,
+  opts: ToolbarSingleOptionsControl,
+  options: AnyToolbarOptions,
+): { control: AnyToolbarStrategy; state: any } {
+  const toolbar = useMapToolbarModule(mapId, opts.controlLayout);
 
-  const control = createToolbarControl({ ...options, toolbar });
+  const kind: ToolbarKind = (options.kind ?? 'single') as ToolbarKind;
+  const strategy = STRATEGIES[kind];
+
+  // gắn toolbar và kind vào options
+  const optionsWithToolbar = { ...options, toolbar, kind } as any;
+
+  const control = strategy.create(optionsWithToolbar);
 
   const { state } = useInitToolbarControl(control);
 
-  return {
-    state,
-    control,
-  };
+  return { state, control };
 }

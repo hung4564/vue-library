@@ -4,6 +4,8 @@
     :class="{ active: option.active }"
     :disabled="option.disabled"
     v-bind="$attrs"
+    :loading="option.loading"
+    v-if="option.visible != false"
   >
     <template v-if="option.icon?.type === 'compass'">
       <svg
