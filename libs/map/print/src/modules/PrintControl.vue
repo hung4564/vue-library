@@ -28,7 +28,7 @@ const path = {
   close: mdiClose,
   save: mdiContentSaveOutline,
 };
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -59,11 +59,12 @@ async function onDownload(data64: string) {
   saveAs(data64, `${props.fileName}.png`);
 }
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapPrintControl',
   getState() {
     return {
       visible: true,
       title: trans.value('map.print.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: path.print,

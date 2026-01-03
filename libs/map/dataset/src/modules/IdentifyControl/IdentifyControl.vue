@@ -53,7 +53,7 @@ const props = withDefaults(
   >(),
   { ...defaultMapProps },
 );
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -334,12 +334,13 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   return groups;
 }
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapIdentifyControl',
   getState() {
     return {
       visible: hasViews.value,
       active: show.value,
       title: trans.value('map.identify.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: path.icon,

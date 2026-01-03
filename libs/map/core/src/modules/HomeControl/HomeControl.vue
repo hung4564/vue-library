@@ -23,7 +23,7 @@ const i_center = ref({
 });
 const i_zoom = ref(props.zoom || 0);
 
-const { callMap, mapId, moduleContainerProps } = useMap(props, onInit);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -57,6 +57,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     return {
       visible: true,
       title: trans.value('map.home.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: mdiHome,

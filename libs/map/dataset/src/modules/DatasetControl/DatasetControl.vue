@@ -31,7 +31,7 @@ import { useMapDataset } from '../../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -93,12 +93,13 @@ defineSlots<{
   default(): any;
 }>();
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapDatasetControl',
   getState() {
     return {
       visible: !show.value,
       active: show.value,
       title: trans.value('map.dataset-control.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: path.icon,

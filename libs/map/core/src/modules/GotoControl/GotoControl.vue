@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(props.show);
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
 setLocaleDefault({
@@ -62,6 +62,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     return {
       visible: true,
       title: trans.value('map.goto-control.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: mdiMapMarkerOutline,

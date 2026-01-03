@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<WithMapPropType & { type?: string }>(), {
   ...defaultMapProps,
   type: 'body',
 });
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -42,12 +42,13 @@ function getMapContainer(el?: HTMLElement | null): HTMLElement {
   return el!;
 }
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapFullscreen',
+  id: 'mapFullscreenControl',
   getState() {
     const active = isFullscreen.value;
     return {
       visible: true,
       active,
+      order: order.value,
       title: active
         ? trans.value('map.action.fullscreen-control-exit')
         : trans.value('map.action.fullscreen-control-enter'),

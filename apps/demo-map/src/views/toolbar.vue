@@ -3,18 +3,22 @@
     <AsideControl position="top-left" />
     <ToolbarControl position="top-right" />
     <GotoControl position="top-right" control-layout="toolbar" />
-    <MeasurementControl position="top-left" control-layout="toolbar" />
+    <MeasurementControl position="top-left" />
     <CrsControl />
     <GlobeControl />
     <SettingControl />
     <FullScreenControl />
     <EventManagementControl />
-    <ZoomControl control-layout="toolbar" />
+    <ZoomControl control-layout="toolbar" control-order="99" />
     <HomeControl control-layout="toolbar" />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
     <GeoLocateControl position="top-right" />
-    <LegendControl position="top-left" control-layout="toolbar" />
+    <LegendControl
+      position="top-left"
+      control-layout="toolbar"
+      control-order="5"
+    />
     <PrintControl position="top-left" control-layout="toolbar" />
     <PrintAdvancedControl position="top-left" control-layout="toolbar" />
   </Map>

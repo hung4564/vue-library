@@ -3,7 +3,7 @@ import { useBreakpoints } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
-import { computed, provide, ref } from 'vue';
+import { computed, provide, reactive, ref } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { useMapInstance } from '../hooks/useMapInstance';
 
@@ -63,6 +63,17 @@ const loadedDrag = ref(false);
 function onDragLoadDone() {
   loadedDrag.value = true;
 }
+type OrderKey = string;
+const orderCounters = reactive<Record<OrderKey, number>>({});
+
+function registerModuleOrder(key: OrderKey) {
+  if (orderCounters[key] === undefined) {
+    orderCounters[key] = 0;
+  }
+  return orderCounters[key]++;
+}
+
+provide('$map.registerModuleOrder', registerModuleOrder);
 </script>
 <template>
   <div v-if="!isSupport" class="">
@@ -227,9 +238,12 @@ function onDragLoadDone() {
   .right-bottom-container {
     bottom: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 0 10px 10px 0;
       float: right;
       clear: both;
@@ -239,9 +253,12 @@ function onDragLoadDone() {
   .left-bottom-container {
     bottom: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 0 0 10px 10px;
       float: left;
     }
@@ -250,9 +267,12 @@ function onDragLoadDone() {
   .left-top-container {
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 10px 0 0 10px;
       float: left;
     }
@@ -261,9 +281,12 @@ function onDragLoadDone() {
   .right-top-container {
     top: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 10px 10px 0 0;
       float: right;
     }

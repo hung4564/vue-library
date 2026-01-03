@@ -4,7 +4,9 @@
       v-if="controlVisible && hasSlotBtn && isStandaloneButton"
       :to="btnTo"
     >
-      <slot name="btn" />
+      <div class="btn-module-container" :style="{ order: order }">
+        <slot name="btn" />
+      </div>
     </Teleport>
     <slot />
     <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
@@ -18,12 +20,13 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, useSlots } from 'vue';
+import { computed, inject, onMounted, ref, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },
   dragId: { type: String, default: '' },
   btnWidth: { type: Number, default: 40 },
+  order: { type: Number, default: 0 },
   position: {
     type: String,
     default: 'bottom-right',

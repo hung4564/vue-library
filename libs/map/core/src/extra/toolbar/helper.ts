@@ -81,6 +81,7 @@ export function createToolbarModule(
     createSubscribable<Record<string, MapControlButtonUIState>>();
   function mount() {
     const states: Record<string, MapControlButtonUIState> = {};
+    console.log('test', { options });
     options.buttons.forEach((btn) => {
       const state = btn.getState();
       states[btn.id] = state;
@@ -178,6 +179,7 @@ export function useInitToolbarControl<T extends AnyToolbarStrategy>(
 }
 type ToolbarSingleOptionsControl = {
   controlLayout: WithMapPropType['controlLayout'];
+  controlOrder: WithMapPropType['controlOrder'];
 };
 export function useToolbarControl(
   mapId: string,

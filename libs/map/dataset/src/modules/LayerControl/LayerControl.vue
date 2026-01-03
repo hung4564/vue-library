@@ -52,7 +52,7 @@ defineSlots<{
   endList: (props: { mapId: string }) => any;
   default(): any;
 }>();
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -98,12 +98,13 @@ function openAddLayer() {
   toggleShowCreate();
 }
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapLayerControl',
   getState() {
     return {
       visible: !show.value,
       active: show.value,
       title: trans.value('map.layer-control.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: path.icon,

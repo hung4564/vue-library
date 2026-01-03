@@ -4,11 +4,7 @@ import { defaultMapProps, useMap, WithMapPropType } from '../../../..//hooks';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../../components/MapControlGroupButton.vue';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
-import {
-  MapControlButtonState,
-  useMapToolbar,
-  useMapToolbarStore,
-} from '../../store';
+import { MapControlButtonState, useMapToolbar } from '../../store';
 const props = withDefaults(
   defineProps<Omit<WithMapPropType, 'controlLayout' | 'controlVisible'>>(),
   {
@@ -18,11 +14,9 @@ const props = withDefaults(
 const { moduleContainerProps, mapId } = useMap(props);
 const buttons = ref<MapControlButtonState[]>([]);
 const store = useMapToolbar(mapId.value);
-const storeMao = useMapToolbarStore(mapId.value);
 onMounted(() => {
   const unsub = store.subscribe(() => {
     buttons.value = store.getAll();
-    console.log('test', { buttons: buttons.value, store, storeMao });
   });
   buttons.value = store.getAll();
 

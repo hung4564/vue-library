@@ -1,5 +1,5 @@
 import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
-import { computed, inject, onMounted, onUnmounted, shallowRef } from 'vue';
+import { computed, inject, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
@@ -13,6 +13,28 @@ export const useMap = (
   });
   const mapInstance = shallowRef<MapSimple | MapSimple[] | undefined>();
 
+  const registerOrder = inject<(key: string) => number>(
+    '$map.registerModuleOrder',
+  );
+
+  const autoOrder = ref<number>();
+  if (
+    (props.controlOrder === undefined || props.controlOrder == 0) &&
+    registerOrder
+  ) {
+    const key =
+      props.controlLayout === 'toolbar'
+        ? props.controlLayout
+        : `${props.position}`;
+    autoOrder.value = registerOrder(key);
+  }
+
+  const c_order = computed(() => {
+    if (props.controlOrder && +props.controlOrder > 0) {
+      return +props.controlOrder;
+    }
+    return (autoOrder.value ?? 1) * 10;
+  });
   onMounted(() => {
     getMap(c_mapId.value, async (_map) => {
       mapInstance.value = _map;
@@ -38,7 +60,7 @@ export const useMap = (
     position: props.position,
     controlVisible: props.controlVisible,
     controlLayout: props.controlLayout,
-    order: props.order,
+    order: c_order.value,
     top: props.top,
     bottom: props.bottom,
     left: props.left,
@@ -49,6 +71,7 @@ export const useMap = (
     mapId: c_mapId,
     mapInstance,
     moduleContainerProps,
+    order: c_order,
   };
 };
 
@@ -94,8 +117,8 @@ export interface WithMapPropType {
   btnWidth?: number;
   position?: Position;
   controlVisible?: boolean;
+  controlOrder?: number | string;
   controlLayout?: 'standalone' | 'toolbar';
-  order?: number;
   top?: number;
   bottom?: number;
   left?: number;

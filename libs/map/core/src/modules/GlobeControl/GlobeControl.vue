@@ -4,7 +4,6 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -13,7 +12,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const currentProjection = ref<string | undefined>('mercator');
 
-const { callMap, mapId, moduleContainerProps } = useMap(
+const { callMap, mapId, moduleContainerProps, order } = useMap(
   props,
   onInit,
   onDestroy,
@@ -53,6 +52,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       visible: true,
       active: currentProjection.value === 'globe',
       title: trans.value('map.global-control.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: mdiWeb,

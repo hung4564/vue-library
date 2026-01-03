@@ -49,7 +49,7 @@ const path = {
   save: mdiContentSaveOutline,
   setting: mdiCogOutline,
 };
-const { callMap, mapId, moduleContainerProps } = useMap(props, onInit);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -200,7 +200,7 @@ const items = [
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapPrintAdvancedControl',
-  moduleOrder: 0,
+  moduleOrder: order.value,
   kind: 'module',
   buttons: [
     {

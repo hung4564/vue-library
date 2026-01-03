@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(false);
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
@@ -81,11 +81,12 @@ watch(onlyRender, (newValue) => {
   }
 });
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapLegendControl',
   getState() {
     return {
       visible: true,
       title: trans.value('map.legend-control.title'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: mdiMapLegend,

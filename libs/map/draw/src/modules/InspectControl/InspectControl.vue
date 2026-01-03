@@ -78,7 +78,7 @@ const _popup = shallowRef(
     closeOnClick: false,
   }),
 );
-const { callMap, mapId, moduleContainerProps } = useMap(
+const { callMap, mapId, moduleContainerProps, order } = useMap(
   props,
   onInit,
   onDestroy,
@@ -244,11 +244,12 @@ function _inspectStyle(map: MapSimple) {
 }
 const isDrawShow = ref(false);
 const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
+  id: 'mapInspectControl',
   getState() {
     return {
       visible: !isDrawShow.value,
       title: trans.value('map.inspect-control.button'),
+      order: order.value,
       icon: {
         type: 'mdi',
         path: !showInspect.value ? path.map : path.inspect,

@@ -127,7 +127,7 @@ const setting = ref<{
 
 const handler = MeasurementHandle();
 
-const { callMap, mapId, moduleContainerProps } = useMap(
+const { callMap, mapId, moduleContainerProps, order } = useMap(
   props,
   onInit,
   onDestroy,
@@ -315,7 +315,7 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapMeasurementControl',
   kind: 'module',
-  moduleOrder: 1,
+  moduleOrder: order.value,
   buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
     toToolbarButton,
   ),

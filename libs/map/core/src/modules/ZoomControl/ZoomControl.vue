@@ -52,7 +52,7 @@ const props = withDefaults(
 );
 
 const transform = ref('rotate(0deg)');
-const { callMap, mapId, moduleContainerProps } = useMap(
+const { callMap, mapId, moduleContainerProps, order } = useMap(
   props,
   onInit,
   onDestroy,
@@ -102,7 +102,7 @@ function onResetBearing() {
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'module',
   moduleId: 'mapNavigationControl',
-  moduleOrder: 0,
+  moduleOrder: order.value,
   buttons: [
     {
       id: 'mapCompass',

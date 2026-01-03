@@ -2,12 +2,10 @@
 import { toValue, tryOnMounted, tryOnUnmounted } from '@hungpvq/shared';
 import { useGeolocation } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -20,7 +18,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 
-const { mapId, callMap, moduleContainerProps } = useMap(props);
+const { mapId, callMap, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
 setLocaleDefault({
@@ -39,19 +37,6 @@ let p_dotElement: HTMLElement,
   p_circleElement: HTMLElement,
   p_userLocationDotMarker = ref<Marker | undefined>(undefined),
   _accuracyCircleMarker = ref<Marker | undefined>(undefined);
-
-const iconGeolocate = computed(() => {
-  if (error.value) return mdiCrosshairsOff;
-  return mdiCrosshairsGps;
-});
-
-const tooltipGeolocate = computed(() => {
-  const str = error.value
-    ? error.value.message ||
-      trans.value('map.action.geolocate-control-location-not-available')
-    : trans.value('map.action.geolocate-control-find-my-location');
-  return str;
-});
 
 watch(coords, (value) => {
   if (
@@ -214,6 +199,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       active: active.value,
       title: tooltipGeolocate,
       disabled: !!error.value,
+      order: order.value,
       icon: {
         type: 'mdi',
         path: error.value ? mdiCrosshairsOff : mdiCrosshairsGps,

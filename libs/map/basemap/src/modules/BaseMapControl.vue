@@ -113,7 +113,7 @@ const props = withDefaults(
     controlIcon: '',
   },
 );
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const {
   setBaseMaps,
@@ -172,6 +172,7 @@ useToolbarControl(mapId.value, props, {
   getState() {
     return {
       visible: true,
+      order: order.value,
       title: props.title || trans.value('map.basemap.title'),
       icon: {
         type: 'mdi',
