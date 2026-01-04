@@ -31,7 +31,7 @@
     "@hungpvq/shared-map": "0.7.2",
     "@hungpvq/vue-map-core": "0.7.3",
     "@hungpvq/shared-log": ">=0.0.1",
-    "@hungpvq/vue-draggable": "0.4.3",
+    "@hungpvq/vue-draggable": "0.4.4",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mapbox/mapbox-gl-draw": ">=1.4.3",
     "@mdi/js": "^7.4.47",

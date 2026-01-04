@@ -1,3 +1,13 @@
+## 0.4.4 (2026-01-04)
+
+### 🩹 Fixes
+
+- button add type="button" ([c9a2d40](https://github.com/hung4564/vue-library/commit/c9a2d40))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.3 (2025-08-04)
 
 ### 🧱 Updated Dependencies
