@@ -1,3 +1,18 @@
+## 0.8.0 (2026-01-04)
+
+### 🩹 Fixes
+
+- change log to info ([5a8442a](https://github.com/hung4564/vue-library/commit/5a8442a))
+
+### 🧱 Updated Dependencies
+
+- Updated shared-map to 0.8.0
+- Updated map-core to 0.8.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.7.3 (2025-09-18)
 
 ### 🧱 Updated Dependencies
