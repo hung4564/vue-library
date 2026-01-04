@@ -18,7 +18,7 @@
     "@maplibre/maplibre-gl-style-spec": "^23.2.1",
     "@hungpvq/shared-map": "0.8.0",
     "@hungpvq/vue-draggable": "0.4.4",
-    "@hungpvq/vue-map-core": "0.7.3",
+    "@hungpvq/vue-map-core": "0.8.0",
     "@mdi/js": "^7.4.47"
   },
   "main": "./index.js",

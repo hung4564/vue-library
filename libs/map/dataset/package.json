@@ -26,7 +26,7 @@
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-map": "0.8.0",
     "@hungpvq/shared-core": ">=0.0.1",
-    "@hungpvq/vue-map-core": "0.7.3",
+    "@hungpvq/vue-map-core": "0.8.0",
     "@hungpvq/content-menu": "0.3.1",
     "@hungpvq/shared-log": ">=0.0.1",
     "@turf/turf": "^6.5.0",
