@@ -29,7 +29,7 @@
     "@mdi/js": "^7.4.47",
     "@hungpvq/vue-map-core": "0.7.3",
     "@hungpvq/vue-draggable": "0.4.4",
-    "@hungpvq/shared-map": "0.7.2",
+    "@hungpvq/shared-map": "0.8.0",
     "@hungpvq/shared-log": ">=0.0.1",
     "file-saver": "^2.0.5",
     "maplibre-gl": "^5.4.0"

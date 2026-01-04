@@ -1,3 +1,9 @@
+## 0.0.2 (2026-01-04)
+
+### 🧱 Updated Dependencies
+
+- Updated map-core to 0.7.3
+
 ## 0.0.1 (2026-01-04)
 
 ### 🩹 Fixes
