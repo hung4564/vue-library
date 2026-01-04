@@ -1,3 +1,18 @@
+## 0.10.0 (2026-01-04)
+
+### 🚀 Features
+
+- new menu handle ([0d134e1](https://github.com/hung4564/vue-library/commit/0d134e1))
+
+### 🩹 Fixes
+
+- change log to info ([5a8442a](https://github.com/hung4564/vue-library/commit/5a8442a))
+- style menu ([91164f3](https://github.com/hung4564/vue-library/commit/91164f3))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.9.13 (2026-01-04)
 
 ### 🚀 Features
