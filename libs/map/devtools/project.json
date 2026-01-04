@@ -1,17 +1,10 @@
 {
-  "name": "devtools",
+  "name": "map-devtools",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/devtools/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["map"],
   "targets": {
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/devtools/**/*.ts", "libs/devtools/**/*.vue"]
-      }
-    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
