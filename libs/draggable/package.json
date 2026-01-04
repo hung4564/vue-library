@@ -29,7 +29,7 @@
     "vue-material-design-icons": "^5.3.0",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-store": ">=0.0.1",
-    "@hungpvq/content-menu": "0.3.1",
+    "@hungpvq/content-menu": "~0.3.1",
     "vue-draggable-resizable": "^3.0.0",
     "lodash": "^4.17.21"
   }
