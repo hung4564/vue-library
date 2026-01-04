@@ -1,6 +1,6 @@
 import { loggerFactory } from '@hungpvq/shared-log';
+import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
-import { UniversalRegistry } from '../../registry';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
 import type {
   CommandHandlerMenu,

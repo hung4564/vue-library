@@ -86,6 +86,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -112,7 +113,7 @@ const props = withDefaults(
     controlIcon: '',
   },
 );
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const {
   setBaseMaps,
@@ -150,7 +151,7 @@ const path = {
   layer: mdiLayersOutline,
 };
 const show = ref(false);
-function onClick(baseMap: any) {
+function onClick(baseMap: BaseMapItem) {
   logHelper(logger, mapId.value, 'control', 'BaseMapControl').debug(
     'onClick',
     baseMap,
@@ -166,21 +167,43 @@ onMounted(() => {
 onBeforeUnmount(() => {
   remove();
 });
+useToolbarControl(mapId.value, props, {
+  id: 'mapBaseMapControl',
+  getState() {
+    return {
+      visible: true,
+      order: order.value,
+      title: props.title || trans.value('map.basemap.title'),
+      icon: {
+        type: 'mdi',
+        path: path.layer,
+      },
+    };
+  },
+  onClick() {
+    onToggleList();
+  },
+});
 </script>
 <style scoped>
 .base-map-button__title {
   position: absolute;
-  padding-bottom: 4px;
+  padding: 4px;
   bottom: 0;
   width: 100%;
+  height: 100%;
   text-align: center;
   overflow: hidden;
-  color: var(--card-color);
+  color: var(--map-text-inverse, #fff);
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  flex-direction: column;
+  align-items: center;
+  display: flex;
 }
 
 .base-map-button__title > div {
   font-size: 0.6rem;
+  line-height: 0.75rem;
 }
 
 .base-map-button__content {
@@ -221,9 +244,14 @@ onBeforeUnmount(() => {
 }
 
 .base-map-control-setting-item__active {
-  --v-primary-base: #1a73e8;
-  color: var(--v-primary-base, #1a73e8) !important;
-  caret-color: var(--v-primary-base, #1a73e8) !important;
+  color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
+  caret-color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
 }
 .clickable {
   cursor: pointer;

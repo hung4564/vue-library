@@ -5,190 +5,197 @@ export default {
 </script>
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
+import { fitBounds } from '@hungpvq/shared-map';
 import {
   defaultMapProps,
-  EventClick,
-  MapControlButton,
-  MapControlGroupButton,
   ModuleContainer,
-  useEventMap,
+  useLang,
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
-import MapboxDraw, {
-  DrawCreateEvent,
-  DrawDeleteEvent,
-  DrawUpdateEvent,
-} from '@mapbox/mapbox-gl-draw';
-import {
-  mdiClose,
-  mdiContentSave,
-  mdiDeleteOutline,
-  mdiDraw,
-  mdiPencil,
-  mdiPlus,
-} from '@mdi/js';
-import { MapMouseEvent } from 'maplibre-gl';
-import { computed, ref, watch } from 'vue';
+import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw';
+import { Feature, FeatureCollection } from 'geojson';
+import { computed, nextTick, ref } from 'vue';
 import { DrawingTypeName } from '..';
-import { useMapDraw } from '../../store';
-import type { DrawOption } from '../../types';
-import layers from './theme';
+import { isDraftOption } from '../../store';
+import { MapDrawConfig, MapDrawOption } from '../../types';
+import DrawDraftList from './components/DrawDraftList.vue';
+import DrawToolbar from './components/DrawToolbar.vue';
+import { useDrawDrafts } from './hooks/useDrawDrafts';
+import { useDrawEvents } from './hooks/useDrawEvents';
+import StaticMode from './models/static-mode';
+import { getDrawStyles } from './theme';
+
+type DrawControlMapboxDrawControls = Omit<
+  MapboxDrawOptions,
+  'displayControlsDefault'
+>;
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
-      drawOptions?: DrawOption;
+      drawOptions?: MapDrawOption;
+      drawControlOptions?: DrawControlMapboxDrawControls;
     }
   >(),
   {
     ...defaultMapProps,
-    drawOptions: undefined,
   },
 );
-const drawOptions = props.drawOptions as DrawOption;
-const { mapId, moduleContainerProps, callMap } = useMap(props);
-const {
-  initDrawControl,
-  activateDraw,
-  deactivateDraw,
-  callDraw,
-  cancelDraw,
-  checkAndCallDone,
-  draw,
-  getDrawAction,
-  getDrawControl,
-  getDrawIsActivated,
-  getDrawIsRegisterId,
-  getDrawIsShow,
-  getDrawSupport,
-  saveDraw,
-  setFeature,
-} = useMapDraw(mapId.value);
-const isShow = computed(() => {
-  return getDrawIsShow();
-});
-watch(isShow, (newValue) => {
-  callMap((map) => {
-    if (newValue) {
-      onSelectMethod('select');
-      map.on('draw.create', onDrawCreated);
-      map.on('draw.update', onDrawUpdated);
-      map.on('draw.delete', onDrawDeleted);
-      map.addControl(control as any);
-    } else {
-      map.off('draw.create', onDrawCreated);
-      map.off('draw.update', onDrawUpdated);
-      map.off('draw.delete', onDrawDeleted);
-      map.removeControl(control as any);
-    }
-  });
-});
-const { add: addEventClick, remove: removeEventClick } = useEventMap(
-  mapId.value,
-  new EventClick().setHandler(onMapClick),
-);
-let control = new MapboxDraw({
+const drawOptions = ref(props.drawOptions);
+const control = new MapboxDraw({
   displayControlsDefault: false,
   boxSelect: false,
-  styles: layers,
+  styles: getDrawStyles(
+    props.drawOptions?.primaryColor,
+    props.drawOptions?.activeColor,
+  ),
+  ...props.drawControlOptions,
+  modes: {
+    ...MapboxDraw.modes,
+    static: StaticMode,
+    ...props.drawControlOptions?.modes,
+  },
 });
-function onDrawCreated(event: DrawCreateEvent) {
-  for (const feature of event.features) {
-    setFeature('added', feature);
-  }
-  checkAndCallDone(register_id.value!);
+const { mapId, moduleContainerProps, callMap } = useMap(props);
+const { setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
+  map: {
+    'draw-control': {
+      draftList: {
+        title: 'Draft items',
+        field: {
+          id: 'Id',
+          type: 'Type',
+          action: '#',
+        },
+        type: {
+          created: 'Created',
+          updated: 'Updated',
+          deleted: 'Deleted',
+        },
+        action: {
+          fillBound: 'Fill bound',
+        },
+      },
+    },
+  },
+});
+const isShow = ref(false);
+function onStart(config: MapDrawOption) {
+  isShow.value = true;
+  drawOptions.value = props.drawOptions || config;
+  drawSupport.value = drawOptions.value.drawSupports || [];
+  callMap((map) => {
+    map.on('draw.create', onDrawCreated);
+    map.on('draw.update', onDrawUpdated);
+    map.on('draw.delete', onDrawDeleted);
+    if (!map.hasControl(control as any)) map.addControl(control as any);
+  });
   onSelectMethod('select');
 }
-function onDrawUpdated(event: DrawUpdateEvent) {
-  for (const feature of event.features) {
-    setFeature('updated', feature);
-  }
-  checkAndCallDone(register_id.value!);
-  onSelectMethod('select');
+function close() {
+  removeEventClick();
+  isDraw.value = false;
+  isShow.value = false;
+  callMap((map) => {
+    map.off('draw.create', onDrawCreated);
+    map.off('draw.update', onDrawUpdated);
+    map.off('draw.delete', onDrawDeleted);
+    if (map.hasControl(control as any)) map.removeControl(control as any);
+  });
 }
-function onDrawDeleted(event: DrawDeleteEvent) {
-  for (const feature of event.features) {
-    setFeature('deleted', feature);
-  }
-  checkAndCallDone(register_id.value!);
-  onSelectMethod('select');
-}
-initDrawControl(control);
-const path = {
-  add: mdiPlus,
-  delete: mdiDeleteOutline,
-  update: mdiPencil,
-  save: mdiContentSave,
-  discard: mdiClose,
-  close: mdiClose,
-  draw: mdiDraw,
-};
-const method = ref('');
-function onSelectMethod(value: 'select' | 'delete' | 'create') {
+
+const {
+  draftItems,
+  draftCounts,
+  showListDraftItem,
+  getCountDraftItem,
+  onCommit,
+  onDiscard,
+  onDiscardItem,
+  onShowListDraftItem,
+  save,
+} = useDrawDrafts(mapId.value, drawOptions, {
+  onStart,
+  onEnd: close,
+});
+
+const {
+  onDrawCreated,
+  onDrawUpdated,
+  onDrawDeleted,
+  addEventClick,
+  removeEventClick,
+  current_feature,
+  isDraw,
+  method,
+} = useDrawEvents(mapId.value, control, drawOptions, {
+  onSelectMethod,
+  redrawSource,
+  getContext,
+});
+
+function onSelectMethod(value: 'select' | 'delete') {
   removeEventClick();
   method.value = value;
   switch (value) {
     case 'select':
     case 'delete':
       addEventClick();
+      control?.changeMode('static');
       break;
     default:
       break;
   }
 }
-const register_id = computed(() => {
-  return getDrawIsRegisterId();
-});
 function onDraw(type: string) {
-  activateDraw(register_id.value!);
-  draw(register_id.value!, type);
+  current_feature.value = undefined;
+  control.changeMode(type);
+  isDraw.value = true;
 }
-const isActivated = computed(() => {
-  return getDrawIsActivated();
-});
-const drawSupport = computed(() => {
-  return getDrawSupport();
-});
-const isDraw = computed(() => {
-  return isActivated.value;
-});
-function onSave() {
-  saveDraw(register_id.value!);
-}
-function onCancel() {
-  cancelDraw();
-}
-function close() {
-  deactivateDraw();
-  removeEventClick();
-}
-async function onMapClick(e: MapMouseEvent) {
-  const action = getDrawAction();
-  const control = getDrawControl();
-  const features =
-    (await (action.getFeatures &&
-      action.getFeatures([e.lngLat.lng, e.lngLat.lat]))) || [];
-  switch (method.value) {
-    case 'select': {
-      const feature_ids = control?.add({ type: 'FeatureCollection', features });
-      if (feature_ids && feature_ids.length > 0) {
-        activateDraw(register_id.value!);
-        draw(register_id.value!, 'direct_select', undefined, {
-          featureId: feature_ids[0],
-        });
-      }
-      break;
-    }
+const drawSupport = ref<MapDrawConfig['drawSupports']>([]);
 
-    case 'delete': {
-      control?.delete(control.getSelectedIds());
-      action.deleteFeatures && action.deleteFeatures(features);
-      action.reset && action.reset();
-      break;
-    }
+async function onSave() {
+  onSelectMethod('select');
+  isDraw.value = false;
+  current_feature.value = undefined;
+  await save(control.getAll() as FeatureCollection, getContext());
+  await clearDraw();
+  await redrawSource();
+}
+
+function onCancel() {
+  isDraw.value = false;
+  const action = drawOptions.value;
+  action?.cancel && action?.cancel(current_feature.value);
+  clearDraw();
+  redrawSource();
+  current_feature.value = undefined;
+}
+async function redrawSource() {
+  const action = drawOptions.value;
+  if (!action) {
+    return;
+  }
+  getCountDraftItem();
+  if (!isDraftOption(drawOptions.value)) {
+    return action.redraw && action.redraw(mapId.value);
   }
 }
+function clearDraw() {
+  current_feature.value = undefined;
+  if (drawOptions.value?.cleanAfterDone) {
+    control?.deleteAll();
+  }
+  nextTick(() => {
+    onSelectMethod('select');
+  });
+}
+
+function getContext() {
+  return { mapId: mapId.value };
+}
+
 const contextMenuRef = ref<
   | {
       open(event: MouseEvent): void;
@@ -208,63 +215,38 @@ function closeContextMenu() {
   if (contextMenuRef.value) contextMenuRef.value.close();
 }
 function onStartDraw(e: MouseEvent) {
+  removeEventClick();
   if (drawSupport.value.length > 1) {
     if (contextMenuRef.value) contextMenuRef.value.open(e);
     return;
   }
-  onSelectMethod('create');
   onDraw(drawSupport.value[0]);
 }
-function onInitDraw() {
-  if (!drawOptions) {
-    return;
-  }
-  callDraw(drawOptions);
+
+function onFlyTo(value: Feature) {
+  callMap((map) => {
+    fitBounds(map, value);
+  });
 }
 </script>
 <template setup>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <div class="d-flex button-custom-container" v-if="isShow">
-        <MapControlGroupButton row v-if="isDraw">
-          <MapControlButton @click="onCancel()">
-            <SvgIcon :size="18" type="mdi" :path="path.discard" />
-          </MapControlButton>
-          <MapControlButton @click="onSave()">
-            <SvgIcon :size="18" type="mdi" :path="path.save" />
-          </MapControlButton>
-        </MapControlGroupButton>
-        <MapControlGroupButton row v-else>
-          <MapControlButton @click="close()">
-            <SvgIcon :size="18" type="mdi" :path="path.close" />
-          </MapControlButton>
-          <MapControlButton :active="method === 'create'" @click="onStartDraw">
-            <SvgIcon :size="18" type="mdi" :path="path.add" />
-          </MapControlButton>
-          <MapControlButton
-            :active="method === 'select'"
-            @click="onSelectMethod('select')"
-          >
-            <SvgIcon :size="18" type="mdi" :path="path.update" />
-          </MapControlButton>
-          <MapControlButton
-            :active="method === 'delete'"
-            @click="onSelectMethod('delete')"
-          >
-            <SvgIcon :size="18" type="mdi" :path="path.delete" />
-          </MapControlButton>
-        </MapControlGroupButton>
-      </div>
-      <div class="d-flex button-custom-container" v-else-if="drawOptions">
-        <MapControlButton>
-          <SvgIcon
-            :size="18"
-            type="mdi"
-            :path="path.draw"
-            @click="onInitDraw"
-          />
-        </MapControlButton>
-      </div>
+      <DrawToolbar
+        :drawOptions="drawOptions"
+        :isShow="isShow"
+        :isDraw="isDraw"
+        :method="method"
+        :draftCounts="draftCounts"
+        @cancel="onCancel"
+        @save="onSave"
+        @close="close"
+        @start-draw="onStartDraw"
+        @select-method="onSelectMethod"
+        @commit="onCommit"
+        @discard="onDiscard"
+        @show-list="onShowListDraftItem"
+      />
     </template>
 
     <ContextMenu ref="contextMenuRef">
@@ -273,7 +255,6 @@ function onInitDraw() {
           v-for="(option, index) in drawSupportItem"
           :key="index"
           @click.stop="
-            onSelectMethod('create');
             onDraw(option.id);
             closeContextMenu();
           "
@@ -283,5 +264,16 @@ function onInitDraw() {
         </li>
       </ul>
     </ContextMenu>
+
+    <template #draggable="props">
+      <DrawDraftList
+        v-bind="props"
+        v-model:show="showListDraftItem"
+        :draftItems="draftItems"
+        :mapId="mapId"
+        @fly-to="onFlyTo"
+        @discard-item="onDiscardItem"
+      />
+    </template>
   </ModuleContainer>
 </template>

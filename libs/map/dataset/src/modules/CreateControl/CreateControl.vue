@@ -1,10 +1,4 @@
-<script>
-export default {
-  name: 'create-layer-control',
-};
-</script>
-
-<script setup>
+<script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -13,19 +7,27 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { computed, onMounted, ref } from 'vue';
 import { useMapDataset } from '../../store';
-import { ConfigNo } from './config';
-import { LAYER_TYPES, LayerHelper } from './helper';
-const props = defineProps({
-  show: Boolean,
+import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
+
+defineOptions({
+  name: 'CreateLayerControl',
 });
+
+const props = defineProps<
+  WithMapPropType & {
+    show: boolean;
+  }
+>();
+
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { addDataset } = useMapDataset(mapId.value);
 const emit = defineEmits(['update:show']);
-const c_show = computed({
+const cShow = computed({
   get() {
     return props.show;
   },
@@ -33,65 +35,73 @@ const c_show = computed({
     emit('update:show', value);
   },
 });
+
 const initialState = {
-  type: 'geojson',
+  type: 'geojson' as LayerType,
 };
-const key_render = ref(1);
-const component_config = ref(() => ConfigNo);
+
+const keyRender = ref(1);
 const helper = new LayerHelper(initialState.type);
 const form = ref({
-  ...initialState,
-  config: { name: '', ...helper.default_value },
+  type: initialState.type,
+  config: { name: '', ...helper.default_value } as Record<string, any>,
 });
-const items_type = Object.keys(LAYER_TYPES).map((x) => ({
+
+const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
   value: x,
   text: LAYER_TYPES[x],
 }));
-function onChangeType(type) {
-  helper.setType(type);
-  component_config.value = helper.component;
+
+function onChangeType(type: unknown) {
+  if (typeof type !== 'string') return;
+  const layerType = type as LayerType;
+  helper.setType(layerType);
   form.value = {
+    type: layerType,
     config: {
       name: form.value.config.name,
       ...helper.default_value,
-    },
-    type: form.value.type,
+    } as Record<string, any>,
   };
 }
-function onAddLayer(form) {
+
+function onAddLayer() {
   const handle = helper.create;
   if (!handle) {
     return;
   }
-  if (!helper.validate(form.config)) {
+  if (!helper.validate(form.value.config)) {
     return;
   }
-  let layer = handle(form.config);
+  const layer = handle(form.value.config);
   addDataset(layer);
   reset();
-  c_show.value = false;
+  cShow.value = false;
 }
+
 function reset() {
   helper.setType(initialState.type);
   form.value = {
-    ...initialState,
-    config: { name: '', ...helper.default_value },
+    type: initialState.type,
+    config: { name: '', ...helper.default_value } as Record<string, any>,
   };
-  key_render.value++;
+  keyRender.value++;
 }
+
 function close() {
   reset();
 }
+
 onMounted(() => {
   onChangeType(form.value.type);
 });
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #draggable="props">
+    <template #draggable="p">
       <DraggableItemPopup
-        v-model:show="c_show"
-        v-bind="props"
+        v-model:show="cShow"
+        v-bind="p"
         :width="400"
         :height="300"
         @close="close"
@@ -100,21 +110,21 @@ onMounted(() => {
         <div class="create-control-container">
           <div class="form-container">
             <component
-              :is="component_config()"
+              :is="helper.component()"
               v-model="form.config"
               class="create-control-form"
-              :key="key_render"
+              :key="keyRender"
             >
               <div class="map-col-12">
-                <input-text
+                <InputText
                   v-model="form.config.name"
                   :label="trans('map.layer-control.field.name')"
                 />
               </div>
               <div class="map-col-12">
-                <input-select
+                <InputSelect
                   v-model="form.type"
-                  :items="items_type"
+                  :items="itemsType"
                   @update:model-value="onChangeType"
                   :label="trans('map.layer-control.field.type')"
                 />
@@ -122,9 +132,9 @@ onMounted(() => {
             </component>
           </div>
 
-          <base-button @click="onAddLayer(form)" class="btn-container">
+          <BaseButton @click="onAddLayer()" class="btn-container">
             {{ trans('map.layer-control.create-btn') }}
-          </base-button>
+          </BaseButton>
         </div>
       </DraggableItemPopup>
     </template>

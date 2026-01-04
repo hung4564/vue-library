@@ -49,6 +49,7 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        'maplibre-gl',
       ],
       output: {
         // Provide global variables to use in the UMD build

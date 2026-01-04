@@ -73,15 +73,14 @@ export default {
   background-color: unset !important;
 }
 .button-group-row-container ::deep(.map-control-button:not(:last-child)) {
-  border-right: thin solid rgba(0, 0, 0, 0.12);
+  border-right: thin solid var(--map-divider-color, rgba(0, 0, 0, 0.12));
 }
 .button-group-column-container ::deep(.map-control-button:not(:first-child)) {
-  border-top: thin solid rgba(0, 0, 0, 0.12);
+  border-top: thin solid var(--map-divider-color, rgba(0, 0, 0, 0.12));
 }
 .button-group-sheet {
-  background-color: #ffffff;
-  border-color: #ffffff;
-  color: rgba(0, 0, 0, 0.87);
+  background-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
+  border-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
   display: flex;
 }
 .button-group-sheet-column {

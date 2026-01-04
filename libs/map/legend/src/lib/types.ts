@@ -1,3 +1,5 @@
+import { ExprHandlerFn } from './util';
+
 export type LayerObjectKeys<Spec> = Extract<
   {
     [P in keyof Spec]: NonNullable<Spec[P]> extends object ? P : never;
@@ -11,18 +13,17 @@ export type LayerBranch<Spec, K extends LayerObjectKeys<Spec>> = NonNullable<
 export type ExprReturn<
   Spec,
   T extends LayerObjectKeys<Spec>,
-  K extends keyof LayerBranch<Spec, T>
+  K extends keyof LayerBranch<Spec, T>,
 > = NonNullable<LayerBranch<Spec, T>[K]>;
+
+export interface LegendElement {
+  element: string;
+  attributes: Record<string, any>;
+  children?: LegendElement[];
+}
+
 export type PropsLegendOption<Spec> = {
-  expr: <
-    Spec,
-    T extends LayerObjectKeys<Spec>,
-    K extends keyof LayerBranch<Spec, T>
-  >(
-    layer: Spec,
-    type: T,
-    key: K
-  ) => ExprReturn<Spec, T, K>;
+  expr: ExprHandlerFn;
   layer: Spec;
   image: (imageId: string) => string;
 };

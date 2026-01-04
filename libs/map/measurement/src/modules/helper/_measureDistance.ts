@@ -1,5 +1,6 @@
-import { Measure, formatNumber } from './_measurement';
 import { length, lineString, point } from '@turf/turf';
+import { Feature } from 'geojson';
+import { Measure, formatNumber } from './_measurement';
 
 import { IViewSetting } from '../types';
 
@@ -11,9 +12,9 @@ export class MeasureDistance extends Measure {
     return 'line';
   }
   getResult() {
-    const features: any[] = [];
-    const value: any = 0;
-    const features_label: any[] = [];
+    const features: Feature[] = [];
+    const value: number | string = 0;
+    const features_label: Feature[] = [];
     const result: IViewSetting = {
       features,
       value,
@@ -37,7 +38,7 @@ export class MeasureDistance extends Measure {
         properties: {
           is_label: true,
           text: formatDistanceText(
-            i < 1 ? 0 : length(lineString(array.slice(0, i + 1)))
+            i < 1 ? 0 : length(lineString(array.slice(0, i + 1))),
           ),
         },
         geometry: { type: 'Point', coordinates: x },

@@ -39,17 +39,33 @@ function onSetValue(value: string) {
 </script>
 <style scoped>
 .fill-canvas {
-  background-image: linear-gradient(
-      -45deg,
-      transparent 75%,
-      rgba(32, 43, 54, 0.9) 75%
-    ),
+  background-image:
+    linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.06) 75%),
+    linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.06) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.06) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0, 0, 0, 0.06) 25%, transparent 25%);
+  background-size: 12px 12px;
+  background-position:
+    0 0,
+    0 -6px,
+    6px 0,
+    -6px -6px;
+}
+.map-theme-dark .fill-canvas {
+  background-image:
+    linear-gradient(-45deg, transparent 75%, rgba(32, 43, 54, 0.9) 75%),
     linear-gradient(45deg, transparent 75%, rgba(32, 43, 54, 0.9) 75%),
     linear-gradient(45deg, rgba(32, 43, 54, 0.9) 25%, transparent 0),
     linear-gradient(-45deg, rgba(32, 43, 54, 0.9) 25%, transparent 25%);
-  background-position: 0 0, 0 -6px, 6px 0, -6px -6px;
+  background-position:
+    0 0,
+    0 -6px,
+    6px 0,
+    -6px -6px;
   background-size: 12px 12px;
 }
+</style>
+<style scoped>
 .fill-canvas {
   padding: 8px;
   width: 100%;

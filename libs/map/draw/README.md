@@ -45,14 +45,14 @@ import { DrawControl, DrawingType, type DrawOption } from '@hungpvq/vue-map-draw
 import '@hungpvq/vue-map-core/style.css';
 
 const drawOptions: DrawOption = {
-  draw_support: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
+  drawSupports: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
   async save(geojson: any) {
-    console.log('Save drawing:', geojson);
+    console.info('Save drawing:', geojson);
   },
 };
 
 function onMapLoaded(map: any) {
-  console.log('Map loaded:', map);
+  console.info('Map loaded:', map);
 }
 </script>
 ```

@@ -3,7 +3,11 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
-import { getChartRandomColor, Map } from '@hungpvq/vue-map-core';
+import {
+  getChartRandomColor,
+  Map,
+  UniversalRegistry,
+} from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   createDatasetPartGeojsonSourceComponent,
@@ -23,7 +27,6 @@ import {
   LayerSimpleMapboxBuild,
   MenuItemClick,
   MenuItemProps,
-  UniversalRegistry,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import {

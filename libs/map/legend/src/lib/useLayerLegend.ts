@@ -8,7 +8,7 @@ import type {
 import type { VNode } from 'vue';
 import { h } from 'vue';
 
-import { MapLegend } from './MapLegend';
+import { LegendElement, MapLegend } from './MapLegend';
 
 export function useLayerLegend() {
   function getLayerLegendVNode(
@@ -17,7 +17,7 @@ export function useLayerLegend() {
       | FillLayerSpecification
       | LineLayerSpecification
       | SymbolLayerSpecification
-      | CircleLayerSpecification
+      | CircleLayerSpecification,
   ): VNode | undefined {
     const zoom = map?.getZoom();
     const symbol = MapLegend({ map, zoom, layer });
@@ -45,7 +45,7 @@ export function useLayerLegend() {
                 'stroke-linejoin': 'round',
                 'stroke-width': '2',
               }),
-            ]
+            ],
           ),
         ];
       }
@@ -75,14 +75,14 @@ export function useLayerLegend() {
               }
             : {},
       },
-      symbolContent
+      symbolContent,
     );
     return h(
       'div',
       {
         class: 'legend-item-container',
       },
-      [td1]
+      [td1],
     );
   }
 
@@ -90,7 +90,7 @@ export function useLayerLegend() {
     getLayerLegendVNode,
   };
 }
-function renderElement(element: any) {
+function renderElement(element: LegendElement): VNode {
   const children = element.children?.map(renderElement) || [];
   return h(element.element, { ...element.attributes }, children);
 }

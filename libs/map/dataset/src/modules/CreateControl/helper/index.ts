@@ -1,41 +1,50 @@
+import type { IDataset } from '../../../interfaces';
+import { ConfigNo } from '../config';
+import type { ConfigHelper } from './_default';
 import {
   ConfigGeojsonHelper,
   ConfigRasterJsonHelper,
   ConfigRasterUrlHelper,
 } from './custom';
 
-import { ConfigNo } from '../config';
-
 export const LAYER_TYPES = {
   'raster-url': 'Raster url layer',
   'raster-json': 'Raster json layer',
   geojson: 'Geojson layer',
-};
+} as const;
+
 export type LayerType = keyof typeof LAYER_TYPES;
 
 export class LayerHelper {
-  helper!: any;
+  private helper: ConfigHelper<any>;
+
   constructor(type: LayerType) {
-    this.setType(type);
+    this.helper = HelperFactory.create(type);
   }
+
   public setType(type: LayerType) {
     this.helper = HelperFactory.create(type);
   }
-  get default_value(): any {
+
+  get default_value(): Record<string, unknown> {
     return this.helper.default_value;
   }
-  get create() {
+
+  get create(): (form: any) => IDataset {
     return this.helper.create;
   }
-  get component() {
-    return this.helper.component || ConfigNo;
+
+  get component(): () => any {
+    return this.helper.component || (() => ConfigNo);
   }
-  validate(form: any) {
+
+  validate(form: any): boolean {
     return this.helper.validate(form);
   }
 }
+
 const HelperFactory = {
-  create(type: LayerType) {
+  create(type: LayerType): ConfigHelper<any> {
     switch (type) {
       case 'raster-url':
         return new ConfigRasterUrlHelper();
@@ -43,7 +52,6 @@ const HelperFactory = {
         return new ConfigRasterJsonHelper();
       case 'geojson':
         return new ConfigGeojsonHelper();
-
       default:
         throw new Error('not support type: ' + type);
     }

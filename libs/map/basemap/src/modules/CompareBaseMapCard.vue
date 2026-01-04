@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div class="base-map-card">
     <div class="base-map-card__image">
       <map-image v-if="current_baseMaps">
@@ -39,43 +39,44 @@
 <script setup lang="ts">
 import {
   getMapCompareSetting,
-  getMapStore,
+  getMaps,
   InputSelect,
   MapImage,
   useMap,
 } from '@hungpvq/vue-map-core';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useBaseMap } from '../hooks';
-const props = defineProps({
-  mapId: { type: String, required: true },
-  title: {
-    type: String,
-    default: '',
-  },
-});
+import type { BaseMapItem } from '../types';
+
+const props = defineProps<{
+  mapId: string;
+  title?: string;
+}>();
+
 const { mapId } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
-const mapIds = ref<string[]>(
-  getMapStore(mapId.value)?.maps.map((x: { id: any }) => x.id) || [],
-);
-const current_baseMaps = computed(() => {
-  return mapStoreUseBaseMap.value.map(
-    (x: { currentBaseMap: any }) => x.currentBaseMap,
-  );
+const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
+
+const mapStoreUseBaseMap = computed(() => {
+  return mapIds.value.map((id) => {
+    return useBaseMap(id);
+  });
 });
+
+const current_baseMaps = computed(() => {
+  return mapStoreUseBaseMap.value.map((x) => x.currentBaseMap);
+});
+
 const c_items_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.baseMaps);
 });
-const mapStoreUseBaseMap = computed(() => {
-  return mapIds.value.map((mapId) => {
-    return useBaseMap(mapId);
-  });
-});
-const onChangeBaseMap = (i: number, base_map: any) => {
+
+const onChangeBaseMap = (i: number, base_map: BaseMapItem) => {
   mapStoreUseBaseMap.value[i].setCurrent(base_map);
 };
+
 onBeforeUnmount(() => {
-  return mapStoreUseBaseMap.value.map((x) => x.remove());
+  mapStoreUseBaseMap.value.forEach((x) => x.remove());
 });
 </script>
 <style lang="scss" scoped>

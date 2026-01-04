@@ -4,15 +4,15 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   InputCheckbox,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useEventListener,
   useLang,
   useMap,
   useShow,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 import { getLegendName, isSupportGenLayerLegend } from '../../check';
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(false);
-const { callMap, mapId, moduleContainerProps } = useMap(props);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
@@ -80,16 +80,29 @@ watch(onlyRender, (newValue) => {
     remove();
   }
 });
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapLegendControl',
+  getState() {
+    return {
+      visible: true,
+      title: trans.value('map.legend-control.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: mdiMapLegend,
+      },
+    };
+  },
+  onClick() {
+    onToggleShow();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        @click.stop="onToggleShow()"
-        :tooltip="trans('map.legend-control.title')"
-      >
-        <SvgIcon :size="18" type="mdi" :path="mdiMapLegend" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

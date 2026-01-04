@@ -1,6 +1,5 @@
 import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
-import type { IDrawHandler } from '@hungpvq/vue-map-core';
 import type { BBox } from 'geojson';
 import type {
   LayerSpecification,
@@ -23,6 +22,7 @@ import type { IDatasetMap } from './dataset.map';
 type MenuCommon = {
   order?: number;
   id?: string;
+  class?: string;
   disabled?: MaybeRefOrGetter<boolean>;
   hidden?: MaybeRefOrGetter<boolean>;
 };
@@ -36,7 +36,6 @@ export type MenuDivider = MenuCommon & {
 /** Common properties for all menu items */
 export type MenuItemCommon<P = any, T = IDataset> = MenuCommon & {
   type: 'item';
-  class?: string;
   click: MenuItemClick<P, T>;
 };
 
@@ -77,21 +76,29 @@ export type MenuAction<P = any, T = IDataset> =
   | MenuItemContentMenu<P, T>
   | MenuItemCustomComponentBottomOrExtra<P, T>;
 
-export type IMapboxSourceView = IDatasetMap &
-  IDataset &
-  WithDataHelper & {
+export type IBaseMapboxSourceView = IDatasetMap &
+  WithDataHelper &
+  IDataset & {
     getMapboxSource: () => SourceSpecification & { id?: string };
     updateData?(map: MapSimple, data: any): void;
     getFieldsInfo(): IFieldInfo[];
     getDataInfo(): any;
     getSourceId(): string;
   };
+export type IMapboxSourceView = IBaseMapboxSourceView & {
+  getMapboxSource: () => SourceSpecification & { id?: string };
+  updateData?(map: MapSimple, data: any): void;
+  getFieldsInfo(): IFieldInfo[];
+  getDataInfo(): any;
+  getSourceId(): string;
+};
 
 export type IMapboxLayerView = IDatasetMap &
   WithToggleShow &
   WithSetOpacity & {
-    getBeforeId(): string;
+    getBeforeId(): string | undefined;
     getAllLayerIds(): string[];
+    getLayers(): LayerSpecification[];
     moveLayer(map: MapSimple, beforeId: string): void;
     getComponentUpdate(): ComponentType;
     updateValue(map: MapSimple, value: any): void;
@@ -167,12 +174,6 @@ export type WithMenuHelper<T extends IDataset = IDataset> = {
 export type IMetadataView = {
   metadata?: { loading?: boolean; bbox?: BBox };
 };
-
-export type IDataManagementView<D = any> = IDataset & {
-  showDetail(mapId: string, detail: D): void;
-  getList(): Promise<D[]>;
-  getList(ids: string[], features: MapGeoJSONFeature[]): Promise<D[]>;
-} & IDrawHandler;
 
 export type IFieldInfo = {
   trans?: string;

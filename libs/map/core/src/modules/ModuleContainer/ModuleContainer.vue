@@ -1,7 +1,12 @@
 <template>
   <div class="module__container">
-    <Teleport v-if="controlVisible && hasSlotBtn" :to="btnTo">
-      <slot name="btn" />
+    <Teleport
+      v-if="controlVisible && hasSlotBtn && isStandaloneButton"
+      :to="btnTo"
+    >
+      <div class="btn-module-container" :style="{ order: order }">
+        <slot name="btn" />
+      </div>
     </Teleport>
     <slot />
     <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
@@ -15,12 +20,13 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, useSlots } from 'vue';
+import { computed, inject, onMounted, ref, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },
   dragId: { type: String, default: '' },
   btnWidth: { type: Number, default: 40 },
+  order: { type: Number, default: 0 },
   position: {
     type: String,
     default: 'bottom-right',
@@ -36,12 +42,20 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  controlLayout: {
+    type: String,
+    default: 'standalone',
+    validator(value: string) {
+      return ['toolbar', 'standalone'].indexOf(value) !== -1;
+    },
+  },
   top: Number,
   bottom: Number,
   left: Number,
   right: Number,
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
+const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
 const i_map_id = inject<string>('$map.id');
@@ -58,16 +72,7 @@ const draggableTo = computed(() => {
 const btnTo = computed(() => {
   return `#${props.position}-${c_mapId.value}`;
 });
-function resolvePosition(
-  value: number | undefined,
-  direction: string,
-  fallback: number,
-  position: string,
-): number | undefined {
-  if (value != null) return value;
-  if (position.includes(direction)) return fallback;
-  return undefined;
-}
+
 interface BindPosition {
   top?: number;
   bottom?: number;
@@ -76,30 +81,27 @@ interface BindPosition {
   containerId: string;
 }
 const bindDrag = computed(() => {
-  const left = resolvePosition(
-    props.left,
-    'left',
-    18 + props.btnWidth,
-    props.position,
-  );
-  const right = resolvePosition(
-    props.right,
-    'right',
-    18 + props.btnWidth,
-    props.position,
-  );
-  const top = resolvePosition(props.top, 'top', 10, props.position);
-  const bottom = resolvePosition(props.bottom, 'bottom', 10, props.position);
-
-  const bind: BindPosition = {
+  const result: BindPosition = {
     containerId: c_containerId.value,
-    ...(left !== undefined && { left }),
-    ...(right !== undefined && { right }),
-    ...(top !== undefined && { top }),
-    ...(bottom !== undefined && { bottom }),
   };
 
-  return bind;
+  const configs = [
+    { key: 'left', fallback: 18 + props.btnWidth },
+    { key: 'right', fallback: 18 + props.btnWidth },
+    { key: 'top', fallback: 10 },
+    { key: 'bottom', fallback: 10 },
+  ] as const;
+
+  configs.forEach(({ key, fallback }) => {
+    const val = (props as any)[key];
+    if (val !== undefined) {
+      result[key] = val;
+    } else if (props.position.includes(key)) {
+      result[key] = fallback;
+    }
+  });
+
+  return result;
 });
 </script>
 

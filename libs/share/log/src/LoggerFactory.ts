@@ -58,20 +58,12 @@ export class LoggerFactory {
     }
   }
 
-  /**
-   * === Adapter Management ===
-   */
-
-  setAdapters(adapters: LogAdapter[]) {
-    this.adapters = adapters;
-  }
-
   addAdapter(adapter: LogAdapter) {
     this.adapters.push(adapter);
   }
 
   clearAdapters() {
-    this.adapters = [];
+    this.adapters.length = 0;
   }
 
   getAdapters(): LogAdapter[] {

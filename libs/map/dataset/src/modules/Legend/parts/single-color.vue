@@ -55,6 +55,6 @@ export default {
   flex-shrink: 0;
   height: 20px;
   border-radius: 5px;
-  border: 1px solid #d3d3d3;
+  border: 1px solid var(--map-border-color, #d3d3d3);
 }
 </style>

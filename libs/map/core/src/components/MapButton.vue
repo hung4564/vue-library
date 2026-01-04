@@ -52,7 +52,8 @@ export default {
   cursor: pointer;
   pointer-events: all;
   border-style: none;
-  background-color: #ffffff;
+  background-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   font-size: 0.625rem;
   align-items: center;
   display: inline-flex;
@@ -88,16 +89,19 @@ export default {
     transition-property: opacity;
   }
   &-active {
-    color: #004e98;
+    color: var(--map-button-active-color, var(--map-primary-color, #004e98));
   }
   &-disabled {
     cursor: default;
     pointer-events: none;
-    color: rgba(0, 0, 0, 0.25);
+    color: var(
+      --map-button-disabled-color,
+      var(--map-disabled-color, rgba(0, 0, 0, 0.25))
+    );
   }
 }
 .map-control-button:hover {
-  background-color: #f5f5f5;
+  background-color: var(--map-button-hover-bg, var(--map-hover-color, #f5f5f5));
 }
 .spin {
   animation: 2s linear 0s infinite normal none running spin;

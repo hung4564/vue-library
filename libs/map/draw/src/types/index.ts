@@ -1,5 +1,5 @@
-import type { IDrawHandler } from '@hungpvq/vue-map-core';
-import type { Feature, GeoJSON } from 'geojson';
+import type { Feature, GeoJSON, GeoJsonProperties, Geometry } from 'geojson';
+
 // #region store
 export type DrawSaveFcParams = {
   added: Record<string, Feature>;
@@ -8,51 +8,66 @@ export type DrawSaveFcParams = {
   geojson: GeoJSON;
 };
 export type DrawSaveFc = (params: DrawSaveFcParams) => void;
-export type MapDrawStore = {
-  state: {
-    activated: boolean;
-    register_id?: string;
-    show: boolean;
-    draw_support: string[];
-    cleanAfterDone: boolean;
-  };
-  control: any;
-  callback?: DrawSaveFc;
-  featuresAdded: Record<string, boolean>;
-  featuresUpdated: Record<string, boolean>;
-  featuresDeleted: Record<string, Feature>;
-  action: {
-    addFeatures?: (features: Feature[]) => Promise<boolean | void>;
-    updateFeatures?: (features: Feature[]) => Promise<boolean | void>;
-    deleteFeatures?: (features: Feature[]) => Promise<boolean | void>;
-    getFeatures?: (point: [number, number]) => Promise<Feature[]>;
-    reset?: () => Promise<boolean | void>;
-    save?: (geojson?: GeoJSON) => Promise<boolean | void>;
-    close?: () => void;
-  };
-};
 // #endregion store
 
-// #region draw
-export type IDrawOption = {
-  draw_support: string[];
-  handler: IDrawHandler;
+export type MapDrawConfig = {
+  drawSupports: string[];
+  callback?: DrawSaveFc;
+  cleanAfterDone: boolean;
+  primaryColor?: string;
+  activeColor?: string;
 };
-
-export type ILayerDrawView = {
-  draw_support: string[];
-  handler: IDrawHandler;
+export type MapDrawAction<P = GeoJsonProperties> = {
+  addFeature: (
+    feature: Feature<Geometry, P>,
+    context: { mapId: string },
+  ) => Promise<void | Feature | undefined>;
+  updateFeature: (
+    feature: Feature<Geometry, P>,
+    context: { mapId: string },
+  ) => Promise<void | Feature | undefined>;
+  deleteFeature: (
+    feature: Feature<Geometry, P>,
+    context: { mapId: string },
+  ) => Promise<void | Feature | undefined>;
+  selectFeature: (
+    props: { point: [number, number] },
+    context: { mapId: string },
+  ) => Promise<Feature<Geometry, P> | undefined>;
 };
-
-export type DrawOption = {
-  draw_support: ILayerDrawView['draw_support'];
-  addFeatures?: IDrawHandler['addFeatures'];
-  getFeatures?: IDrawHandler['getFeatures'];
-  updateFeatures?: IDrawHandler['updateFeatures'];
-  deleteFeatures?: IDrawHandler['deleteFeatures'];
-  reset?: () => Promise<void>;
-  save?: (geojson?: GeoJSON) => Promise<void>;
-  cleanAfterDone?: boolean;
+export type MapDrawOptionSimple<P = GeoJsonProperties> = MapDrawConfig &
+  MapDrawAction<P> & {
+    redraw: (mapId: string) => Promise<void> | void;
+    cancel?: (item?: Feature<Geometry, P>) => Promise<void> | void;
+  };
+export type IDraftRecord<T = GeoJsonProperties> = {
+  id: string | number;
+  original?: Feature<Geometry, T>;
+  modified?: Feature<Geometry, T>;
+  status: 'created' | 'updated' | 'deleted';
 };
-
-// #endregion draw
+export type MapDrawDraftOption = MapDrawOptionSimple & {
+  draft: {
+    show: boolean;
+  };
+  commit: () => Promise<void> | void;
+  discard: (item?: IDraftRecord) => Promise<void> | void;
+  getDraftItems(): IDraftRecord[];
+};
+export type MapDrawOption = MapDrawOptionSimple | MapDrawDraftOption;
+export type MapDrawStore = {
+  config?: MapDrawOption;
+  state: {
+    featuresAdded: Record<string, boolean>;
+    featuresUpdated: Record<string, boolean>;
+    featuresDeleted: Record<string, Feature>;
+  };
+};
+export const MAP_DRAW_EVENT = {
+  START: 'map:start',
+  END: 'map:end',
+} as const;
+export type MapDrawEvent = {
+  [MAP_DRAW_EVENT.START]: MapDrawOption;
+  [MAP_DRAW_EVENT.END]: void;
+};

@@ -1,19 +1,34 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
-import { GeoJSONSource } from 'maplibre-gl';
+import {
+  GeoJSONSource,
+  GeoJSONSourceSpecification,
+  LayerSpecification,
+  SourceSpecification,
+} from 'maplibre-gl';
+import { IViewProps } from '../types';
 import { View } from './_view';
 
 export class MapView extends View {
   protected map: MapSimple;
-  protected source: any;
-  protected layers: any[] = [];
+  protected source!: {
+    id: string;
+    data: GeoJSONSourceSpecification;
+  };
+  protected layers: LayerSpecification[] = [];
   public onStart?: () => void;
   public onReset?: () => void;
-  constructor(map: any) {
+  constructor(map: MapSimple) {
     super();
     this.map = map;
   }
-  init(layers: any[], source: any) {
+  init(
+    layers: (Pick<LayerSpecification, 'type'> & Record<string, any>)[],
+    source: {
+      id?: string;
+      data: GeoJSONSourceSpecification;
+    },
+  ) {
     if (!source.id) {
       source.id = `measurment-control-${getUUIDv4()}`;
     }
@@ -29,13 +44,13 @@ export class MapView extends View {
       if (!layer.source) {
         layer.source = source.id;
       }
-      this.map.addLayer(layer);
+      this.map.addLayer(layer as LayerSpecification);
     });
-    this.source = source;
-    this.layers = layers;
+    this.source = source as any;
+    this.layers = layers as LayerSpecification[];
     return this;
   }
-  start() {
+  start(_props?: IViewProps) {
     if (this.onStart) {
       this.onStart();
     }
@@ -65,21 +80,21 @@ export class MapView extends View {
       if (this.map.getLayer(layerId)) {
         this.map.removeLayer(layerId);
       }
-
-      if (this.map.getSource(layerId)) {
-        this.map.removeSource(layerId);
-      }
     });
     if (this.map.getSource(this.source.id)) {
       this.map.removeSource(this.source.id);
     }
   }
-  view({ features = [], features_label = [] } = {}) {
+  view(_props: IViewProps) {
+    const { features, features_label = [] } = _props;
     const source = this.map.getSource(this.source.id);
     if (source) {
+      const featureList = Array.isArray(features)
+        ? features
+        : features?.features || [];
       (source as GeoJSONSource).setData({
         type: 'FeatureCollection',
-        features: [...features, ...features_label],
+        features: [...featureList, ...features_label],
       });
     }
   }

@@ -1,4 +1,5 @@
-import { Map } from 'maplibre-gl';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { FilterSpecification, Map } from 'maplibre-gl';
 
 export type MapSimple = Map & {
   id: string;
@@ -17,3 +18,5 @@ export type Coordinates = {
   y: number;
 };
 export type CoordinatesNumber = [number, number];
+
+export type { Feature, FeatureCollection, FilterSpecification, Geometry };

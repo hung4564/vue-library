@@ -12,7 +12,7 @@
       <div class="draggable-group__children">
         <template
           v-for="(child, index) in item.children"
-          :key="child.id || index"
+          :key="(child as any).id || index"
         >
           <RecursiveList
             :item="child"
@@ -20,8 +20,8 @@
             :is-group="isGroup"
             :is-leaf="isLeaf"
           >
-            <template #group-extra-data="{ item }">
-              <slot name="group-extra-data" :item="item" />
+            <template #group-extra-data="{ item: groupItem }">
+              <slot name="group-extra-data" :item="groupItem" />
             </template>
             <template #leaf="{ item: leafItem }">
               <slot name="leaf" :item="leafItem" />
@@ -35,7 +35,7 @@
   <ListItem :item="item" :disabled-drag="disabledDrag" v-else>
     <slot name="leaf" :item="item">
       <div class="leaf-item">
-        <span class="leaf-item__title" :title="item.name">
+        <span class="leaf-item__title" :title="(item as any).name">
           {{ item.name }}
         </span>
       </div>
@@ -43,43 +43,38 @@
   </ListItem>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'RecursiveList',
-};
-</script>
 <script setup lang="ts">
-import { PropType } from 'vue';
-import { Item, TreeItem } from '../../utils/tree';
+import { VNode } from 'vue';
+import { GroupTree, Item, TreeItem } from '../../utils/tree';
 import ListGroupItem from './ListGroupItem.vue';
 import ListItem from './ListItem.vue';
+
+defineOptions({
+  name: 'RecursiveList',
+});
 
 type IsGroupFn = (item: TreeItem) => boolean;
 type IsLeafFn = (item: TreeItem) => boolean;
 
-const props = defineProps({
-  item: {
-    type: Object as PropType<TreeItem>,
-    required: true,
+withDefaults(
+  defineProps<{
+    item: TreeItem;
+    disabledDrag?: boolean;
+    isGroup?: IsGroupFn;
+    isLeaf?: IsLeafFn;
+  }>(),
+  {
+    disabledDrag: false,
+    isGroup: (item: TreeItem): item is GroupTree =>
+      Array.isArray(item.children),
+    isLeaf: (item: TreeItem): item is Item => !Array.isArray(item.children),
   },
-  disabledDrag: {
-    type: Boolean,
-    default: false,
-  },
-  isGroup: {
-    type: Function as PropType<IsGroupFn>,
-    default: (item: TreeItem) => Array.isArray(item.children),
-  },
-  isLeaf: {
-    type: Function as PropType<IsLeafFn>,
-    default: (item: TreeItem) => !Array.isArray(item.children),
-  },
-});
+);
 
 defineSlots<{
-  group(props: { item: TreeItem }): any;
-  leaf(props: { item: Item }): any;
-  'group-extra-data'(props: { item: TreeItem }): any;
+  group(props: { item: TreeItem }): VNode[];
+  leaf(props: { item: Item }): VNode[];
+  'group-extra-data'(props: { item: TreeItem }): VNode[];
 }>();
 </script>
 

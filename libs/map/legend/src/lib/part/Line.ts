@@ -1,10 +1,12 @@
 import { LineLayerSpecification } from 'maplibre-gl';
-import { PropsLegendOption } from '../types';
+import { LegendElement, PropsLegendOption } from '../types';
 
-export default function Line(props: PropsLegendOption<LineLayerSpecification>) {
+export default function Line(
+  props: PropsLegendOption<LineLayerSpecification>,
+): LegendElement {
   const { layer, image, expr } = props;
   const linePatternDataUrl = image(
-    expr(layer, 'paint', 'line-pattern') as string
+    expr(layer, 'paint', 'line-pattern') as string,
   );
 
   const style = {
@@ -13,7 +15,7 @@ export default function Line(props: PropsLegendOption<LineLayerSpecification>) {
       : expr(layer, 'paint', 'line-color'),
     strokeWidth: Math.max(
       2,
-      Math.min(expr(layer, 'paint', 'line-width') as number, 8)
+      Math.min(expr(layer, 'paint', 'line-width') as number, 8),
     ),
     strokeOpacity: expr(layer, 'paint', 'line-opacity'),
     strokeDasharray: expr(layer, 'paint', 'line-dasharray'),

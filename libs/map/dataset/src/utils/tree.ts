@@ -1,3 +1,20 @@
+export type Item = Record<string, unknown> & {
+  id: string;
+  group?: Group;
+};
+export type Group = Record<string, unknown> & {
+  id: string;
+  name: string;
+};
+export type GroupTree = Record<string, unknown> & {
+  id: string;
+  name: string;
+  isGroup: true;
+  show: boolean;
+  children: Item[];
+};
+export type TreeItem = Item | GroupTree;
+
 export function convertListToTree(value: Item[]): TreeItem[] {
   const treeLayer: TreeItem[] = [];
   if (!value || value.length == 0) {
@@ -20,7 +37,7 @@ export function convertListToTree(value: Item[]): TreeItem[] {
   return treeLayer;
 }
 function createDefaultGroup(group: Group | GroupTree) {
-  let temp = {
+  let temp: GroupTree = {
     id: `group-${new Date().getTime()}`,
     name: 'New Group',
     isGroup: true,
@@ -28,25 +45,5 @@ function createDefaultGroup(group: Group | GroupTree) {
     children: [],
   };
   temp = Object.assign({}, temp, group);
-  return temp as GroupTree;
+  return temp;
 }
-
-export type Item = {
-  id: string;
-  group?: Group;
-  [key: string]: any;
-};
-export type Group = {
-  id: string;
-  name: string;
-  [key: string]: any;
-};
-type GroupTree = {
-  id: string;
-  name: string;
-  isGroup: true;
-  show: boolean;
-  children: Item[];
-  [key: string]: any;
-};
-export type TreeItem = Item | GroupTree;

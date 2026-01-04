@@ -7,17 +7,17 @@ export default {
 <script setup lang="ts">
 import {
   defaultMapProps,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
+  useToolbarControl,
   WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
 
 import { DraggableItemFloat } from '@hungpvq/vue-draggable';
-import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -25,12 +25,13 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
+import { watch } from 'vue';
 import LayerListReadonly from './part/LayerListReadonly.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -47,18 +48,35 @@ const path = {
   layer: { create: mdiPlus },
 };
 const [show, toggleShow] = useShow(props.show);
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapLayerInfoControl',
+  getState() {
+    return {
+      visible: !show.value,
+      active: show.value,
+      title: trans.value('map.layer-info-control.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        v-if="!show"
-        :tooltip="trans('map.layer-info-control.title')"
-        @click.stop="toggleShow()"
-        :active="show"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

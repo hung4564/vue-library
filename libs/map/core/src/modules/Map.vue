@@ -1,102 +1,42 @@
 <script setup lang="ts">
-import { getUUIDv4 } from '@hungpvq/shared';
 import { useBreakpoints } from '@hungpvq/shared-core';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
-import mapboxgl, { MapOptions } from 'maplibre-gl';
-import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
+import { MapOptions } from 'maplibre-gl';
+import { computed, provide, reactive, ref } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
-import { useMapContainer } from '../store/store';
-if (!mapboxgl) {
-  throw new Error('mapboxgl is not installed.');
-}
+import { useMapInstance } from '../hooks/useMapInstance';
+
 const breakpoints = useBreakpoints({
-  mobile: 0, // optional
+  mobile: 0,
   tablet: 640,
   laptop: 1024,
   desktop: 1280,
 });
-const DEFAULTOPTION: Partial<MapOptions> = {
-  center: [105.19084739818732, 15.827971829957548],
-  zoom: 5.297175623863693,
-  maxZoom: 22,
-};
-const props = defineProps({
-  mapboxAccessToken: {
-    type: String,
-    default: '',
-  },
-  initOptions: {
-    type: Object,
-    default: () => ({
+
+const props = withDefaults(
+  defineProps<{
+    mapboxAccessToken?: string;
+    initOptions?: Partial<MapOptions>;
+    dragId?: string;
+    mapId?: string;
+  }>(),
+  {
+    mapboxAccessToken: '',
+    initOptions: () => ({
       attributionControl: false,
       zoomControl: false,
     }),
   },
-  dragId: { type: String },
-  mapId: { type: String },
-});
+);
+
 const emit = defineEmits<{
-  (_e: 'map-loaded', _map: MapSimple): void;
-  (_e: 'map-destroy', _map: MapSimple): void;
+  (e: 'map-loaded', map: MapSimple): void;
+  (e: 'map-destroy', map: MapSimple): void;
+  (e: 'error', error: Error): void;
 }>();
-function isWebglSupported() {
-  if (window.WebGLRenderingContext) {
-    const canvas = document.createElement('canvas');
-    try {
-      // Note that { failIfMajorPerformanceCaveat: true } can be passed as a second argument
-      // to canvas.getContext(), causing the check to fail if hardware rendering is not available. See
-      // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
-      // for more details.
-      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
-      if (context && typeof context.getParameter == 'function') {
-        return true;
-      }
-    } catch (e) {
-      // WebGL is supported, but disabled
-    }
-    return false;
-  }
-  // WebGL not supported
-  return false;
-}
-const mapContainer = ref<HTMLDivElement>();
-const isSupport = ref(isWebglSupported());
-const loaded = ref(false);
-let map: mapboxgl.Map | undefined = undefined;
-const id = ref(props.mapId || getUUIDv4());
-const store = useMapContainer(id.value);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-onMounted(() => {
-  const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
-  map = new mapboxgl.Map({
-    container: mapContainer.value!,
-    style: {
-      version: 8,
-      metadata: {},
-      sources: {},
-      sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-      glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
-      layers: [],
-    },
-    ...initOptions,
-  });
-  (map as any).id = id.value;
-  store.initMap(map as MapSimple);
-  map.once('load', () => {
-    emit('map-loaded', map! as MapSimple);
-    loaded.value = true;
-  });
-});
-onUnmounted(() => {
-  loaded.value = false;
-  if (map) {
-    map.remove();
-    emit('map-destroy', map as MapSimple);
-  }
-  map = undefined;
-  store.removeMap();
-});
+
+const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);
 
 const draggableTo = computed(() => {
   return `map-draggable-${id.value}`;
@@ -113,13 +53,27 @@ const rightTopTo = computed(() => {
 const leftTopTo = computed(() => {
   return `top-left-${id.value}`;
 });
+
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
+
 const isMobile = breakpoints.smallerOrEqual('tablet');
 const loadedDrag = ref(false);
-function onDragLoadDone(e: any) {
+
+function onDragLoadDone() {
   loadedDrag.value = true;
 }
+type OrderKey = string;
+const orderCounters = reactive<Record<OrderKey, number>>({});
+
+function registerModuleOrder(key: OrderKey) {
+  if (orderCounters[key] === undefined) {
+    orderCounters[key] = 0;
+  }
+  return orderCounters[key]++;
+}
+
+provide('$map.registerModuleOrder', registerModuleOrder);
 </script>
 <template>
   <div v-if="!isSupport" class="">
@@ -198,7 +152,7 @@ function onDragLoadDone(e: any) {
   }
 }
 @import 'maplibre-gl/dist/maplibre-gl.css';
-
+@import '../styles/themes.css';
 .draggable-container * {
   pointer-events: all;
 }
@@ -284,9 +238,12 @@ function onDragLoadDone(e: any) {
   .right-bottom-container {
     bottom: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 0 10px 10px 0;
       float: right;
       clear: both;
@@ -296,9 +253,12 @@ function onDragLoadDone(e: any) {
   .left-bottom-container {
     bottom: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 0 0 10px 10px;
       float: left;
     }
@@ -307,9 +267,12 @@ function onDragLoadDone(e: any) {
   .left-top-container {
     top: 0;
     left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 10px 0 0 10px;
       float: left;
     }
@@ -318,9 +281,12 @@ function onDragLoadDone(e: any) {
   .right-top-container {
     top: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 
-    & > .button-container,
-    & > .button-custom-container {
+    & > .btn-module-container > .button-container,
+    & > .btn-module-container > .button-custom-container {
       margin: 10px 10px 0 0;
       float: right;
     }
@@ -360,7 +326,7 @@ function onDragLoadDone(e: any) {
   width: 100%;
   height: 100%;
   position: relative;
-  background-color: #f7f5f2;
+  background-color: var(--map-background-color, #f7f5f2);
 }
 
 .not-support-map {
@@ -400,14 +366,12 @@ function onDragLoadDone(e: any) {
 <style lang="scss">
 .context-menu {
   z-index: 900;
-  width: 150px;
+  width: 100%;
   border-bottom-width: 0px;
   padding: 0;
   margin: 0;
-  background-color: var(--card-background-color);
-  color: var(--card-color);
-  // Have to use the element so we can make use of `first-of-type` and
-  // `last-of-type`
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
   li {
     display: flex;
     cursor: pointer;
@@ -416,5 +380,15 @@ function onDragLoadDone(e: any) {
     width: 100%;
     min-height: 40px;
   }
+}
+.hungpvq-draggable-card {
+  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
+  color: var(--map-card-text, var(--map-text-primary, #333));
+  box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
+  border-radius: 4px;
+  overflow: hidden;
+}
+.hungpvq-draggable-card button {
+  color: var(--map-card-text, var(--map-text-primary, #333));
 }
 </style>

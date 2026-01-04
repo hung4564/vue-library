@@ -1,6 +1,5 @@
 import { logHelper, MapSimple } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
-import { useMapStore } from '../../store/store';
+import { createMapScopedStore, useMapStore } from '../../store';
 import { MAP_STORE_KEY } from '../../types/key';
 import { addImageForMap } from './helpers';
 import { logger } from './logger';
@@ -18,10 +17,10 @@ export type MapImageStore = {
   >;
 };
 export const useMapImageStore = (mapId: string) =>
-  defineStore<MapImageStore>(['map:core', mapId, MAP_STORE_KEY.IMAGE], () => {
+  createMapScopedStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return { images: {} };
-  })();
+  });
 export const useMapImage = (mapId: string) => {
   const store = useMapImageStore(mapId);
   const storeMap = useMapStore(mapId);

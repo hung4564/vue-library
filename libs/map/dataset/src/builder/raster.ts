@@ -12,8 +12,8 @@ export type RasterUrlDatasetOption = {
   name: string;
   tiles: string[];
   bounds?: RasterSourceSpecification['bounds'];
-  maxZoom?: number;
-  minZoom?: number;
+  maxzoom?: number;
+  minzoom?: number;
 };
 export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
   const dataset_raster = createRootDataset(data.name);
@@ -21,8 +21,8 @@ export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
   const source_raster = createDatasetPartRasterSourceComponent(data.name, {
     type: 'raster',
     tiles: data.tiles,
-    maxzoom: data.maxZoom,
-    minzoom: data.minZoom,
+    maxzoom: data.maxzoom,
+    minzoom: data.minzoom,
     bounds: data.bounds,
   });
   const layerraster = createMultiMapboxLayerComponent(data.name, [

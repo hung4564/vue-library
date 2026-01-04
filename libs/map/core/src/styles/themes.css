@@ -1,0 +1,84 @@
+/*
+  Map Core Themes
+  All variables use the --map- prefix for scoping.
+*/
+
+:root,
+.map-theme-light {
+  /* Brand / Primary */
+  --map-primary-color: #004e98;
+  --map-primary-hover-color: #003a72;
+  --map-on-primary-color: #ffffff;
+
+  /* Surfaces & Backgrounds */
+  --map-surface-color: #ffffff;
+  --map-surface-variant-color: #f5f5f5;
+  --map-background-color: #f7f5f2;
+
+  /* Text Colors */
+  --map-text-primary: #333333;
+  --map-text-secondary: #666666;
+  --map-text-inverse: #ffffff;
+
+  /* Borders & Outlines */
+  --map-border-color: #cccccc;
+  --map-divider-color: #eeeeee;
+
+  /* States */
+  --map-disabled-color: rgba(0, 0, 0, 0.25);
+  --map-hover-color: #f5f5f5;
+
+  --map-card-bg: #ffffffe6;
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #000;
+}
+
+/* Dark Theme */
+.map-theme-dark {
+  --map-primary-color: #4da3ff;
+  --map-primary-hover-color: #80bfff;
+  --map-on-primary-color: #00264d;
+
+  --map-surface-color: #1e1e1e;
+  --map-surface-variant-color: #2d2d2d;
+  --map-background-color: #121212;
+
+  --map-text-primary: #e0e0e0;
+  --map-text-secondary: #aaaaaa;
+  --map-text-inverse: #121212;
+
+  --map-border-color: #444444;
+  --map-divider-color: #333333;
+
+  --map-disabled-color: rgba(255, 255, 255, 0.3);
+  --map-hover-color: #383838;
+
+  --map-card-bg: rgba(32, 43, 54, 0.9);
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #fff;
+}
+
+/* Vibrant / Premium Theme */
+.map-theme-vibrant {
+  --map-primary-color: #6200ee;
+  --map-primary-hover-color: #3700b3;
+  --map-on-primary-color: #ffffff;
+
+  --map-surface-color: #ffffff;
+  --map-surface-variant-color: #f3e5f5;
+  --map-background-color: #f5f5f5;
+
+  --map-text-primary: #1a0229;
+  --map-text-secondary: #4a148c;
+  --map-text-inverse: #ffffff;
+
+  --map-border-color: #e1bee7;
+  --map-divider-color: #f3e5f5;
+
+  --map-disabled-color: rgba(98, 0, 238, 0.1);
+  --map-hover-color: #ede7f6;
+
+  --map-card-bg: #ffffffe6;
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #000;
+}

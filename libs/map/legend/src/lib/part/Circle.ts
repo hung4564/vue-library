@@ -1,14 +1,14 @@
 import { CircleLayerSpecification } from 'maplibre-gl';
-import { PropsLegendOption } from '../types';
+import { LegendElement, PropsLegendOption } from '../types';
 export default function Circle(
-  props: PropsLegendOption<CircleLayerSpecification>
-) {
+  props: PropsLegendOption<CircleLayerSpecification>,
+): LegendElement {
   const { expr, layer } = props;
 
   const radius = Math.min(expr(layer, 'paint', 'circle-radius') as number, 8);
   const strokeWidth = Math.min(
     expr(layer, 'paint', 'circle-stroke-width') as number,
-    4
+    4,
   );
   const fillColor = expr(layer, 'paint', 'circle-color');
   const fillOpacity = expr(layer, 'paint', 'circle-opacity');

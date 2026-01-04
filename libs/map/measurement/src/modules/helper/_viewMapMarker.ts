@@ -1,25 +1,23 @@
-/* eslint-disable no-unused-vars */
-
-import type { Color, CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
+import { type Color, CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
 import { Marker } from 'maplibre-gl';
-import { IViewSetting } from '../types';
+import { IViewProps, IViewSetting } from '../types';
 import { View } from './_view';
 
 type onDragMarker = (
   coordinates: CoordinatesNumber[],
   coordinate: CoordinatesNumber,
   index: number,
-  marker: Marker
+  marker: Marker,
 ) => void;
 type onRightClickMarker = (
   coordinate: CoordinatesNumber,
   index: number,
-  marker: Marker
+  marker: Marker,
 ) => void;
 export class MapMarkerView extends View {
   protected map: MapSimple;
   protected markers: Marker[] = [];
-  protected bindEvent: Record<string, any> = {};
+  protected bindEvent: Record<number, Record<string, any>> = {};
   protected color: Color = '#fff';
   public onDragMarker?: onDragMarker;
   public onRightClickMarker?: onRightClickMarker;
@@ -32,7 +30,8 @@ export class MapMarkerView extends View {
     this.color = color;
     return this;
   }
-  view({ coordinates = [] }: IViewSetting = {}) {
+  view(_props: IViewProps) {
+    const { coordinates = [] } = _props as IViewSetting;
     const draggable = !!this.onDragMarker;
     if (coordinates.length < this.markers.length) {
       while (coordinates.length < this.markers.length) {
@@ -55,7 +54,7 @@ export class MapMarkerView extends View {
         .addTo(this.map);
       if (draggable) {
         if (this.bindEvent[index]['dragend']) {
-          marker.off('dragend', this.bindEvent[index]['dragend']);
+          marker.off('dragend', this.bindEvent[index]['dragend'] as any);
         }
         this.bindEvent[index]['dragend'] = () => {
           const lngLat = marker.getLngLat();
@@ -65,14 +64,16 @@ export class MapMarkerView extends View {
           if (this.onDragMarker)
             this.onDragMarker(new_coordinates, new_coordinate, index, marker);
         };
-        marker.on('dragend', this.bindEvent[index]['dragend']);
+        marker.on('dragend', this.bindEvent[index]['dragend'] as any);
       }
       const element = marker.getElement();
       if (this.onRightClickMarker) {
         if (this.bindEvent[index]['contextmenu']) {
           element.removeEventListener(
             'contextmenu',
-            this.bindEvent[index]['contextmenu']
+            this.bindEvent[index][
+              'contextmenu'
+            ] as EventListenerOrEventListenerObject,
           );
         }
         this.bindEvent[index]['contextmenu'] = (event: MouseEvent) => {
@@ -84,7 +85,9 @@ export class MapMarkerView extends View {
 
         element.addEventListener(
           'contextmenu',
-          this.bindEvent[index]['contextmenu']
+          this.bindEvent[index][
+            'contextmenu'
+          ] as EventListenerOrEventListenerObject,
         );
       }
     });

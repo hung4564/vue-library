@@ -3,15 +3,17 @@ import { Ref, ref } from 'vue';
 
 export function useShow(
   init = false,
-  // eslint-disable-next-line no-unused-vars
+  cbWhenToggle?: (value: boolean) => void,
 ): [Ref<boolean>, (value?: boolean | string) => void] {
   const show = ref(init);
   function toggleShow(value?: boolean | string) {
     if (value != null) {
       show.value = !!value;
+      cbWhenToggle?.(show.value);
       return;
     }
     show.value = !show.value;
+    cbWhenToggle?.(show.value);
   }
   return [show, toggleShow];
 }

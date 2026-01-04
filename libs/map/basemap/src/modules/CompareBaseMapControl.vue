@@ -13,7 +13,7 @@
               <map-image>
                 <div
                   class="base-map-item-image-container"
-                  :class="{ _vertical: setting.vertical }"
+                  :class="{ _vertical: setting?.vertical }"
                 >
                   <map-image
                     v-for="(current_baseMap, i) in current_baseMaps"
@@ -102,12 +102,11 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { MapSimple } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   getMapCompareSetting,
-  getMapStore,
+  getMaps,
   MapCard,
   MapControlButton,
   MapIcon,
@@ -123,10 +122,11 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import type { BaseMapItem } from '../types';
 import defaultbasemap from './basemap';
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
-      baseMaps?: BaseMapItem[]; // Bạn có thể thay 'any[]' bằng kiểu cụ thể nếu biết
+      baseMaps?: BaseMapItem[];
       title?: string;
       defaultBaseMap?: string;
       controlIcon?: string;
@@ -134,7 +134,7 @@ const props = withDefaults(
   >(),
   {
     ...defaultMapProps,
-    baseMaps: () => defaultbasemap,
+    baseMaps: () => defaultbasemap as BaseMapItem[],
     title: '',
     defaultBaseMap: 'Open Street Map',
     controlIcon: '',
@@ -145,36 +145,44 @@ const { mapId, moduleContainerProps } = useMap(props);
 const setting = getMapCompareSetting(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const currentTab = ref(0);
-const mapIds = ref<string[]>(
-  getMapStore(mapId.value)?.maps.map((x: MapSimple) => x.id) || [],
-);
+const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
+
 const mapStoreUseBaseMap = computed(() => {
-  return mapIds.value.map((mapId) => {
-    return useBaseMap(mapId);
+  return mapIds.value.map((id) => {
+    return useBaseMap(id);
   });
 });
+
 const current_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.currentBaseMap);
 });
+
 const c_items_baseMaps = computed(() => {
   return mapStoreUseBaseMap.value.map((x) => x.baseMaps);
 });
+
 watch(
-  () => props.baseMaps as BaseMapItem[],
-  (value: BaseMapItem[]) => {
-    mapStoreUseBaseMap.value.forEach((c) => {
-      c.setBaseMaps(value);
-    });
+  () => props.baseMaps,
+  (value) => {
+    if (value) {
+      mapStoreUseBaseMap.value.forEach((c) => {
+        c.setBaseMaps(value);
+      });
+    }
   },
 );
+
 watch(
   () => props.defaultBaseMap,
   (value) => {
-    mapStoreUseBaseMap.value.forEach((c) => {
-      c.setDefaultBaseMap(value);
-    });
+    if (value) {
+      mapStoreUseBaseMap.value.forEach((c) => {
+        c.setDefaultBaseMap(value);
+      });
+    }
   },
 );
+
 setLocaleDefault({
   map: {
     basemap: {
@@ -183,26 +191,31 @@ setLocaleDefault({
     },
   },
 });
-const sizeBaseMap = computed(() => {
-  return 70;
-});
+
+const sizeBaseMap = computed(() => 70);
+
 const path = {
   layer: mdiLayersOutline,
 };
+
 const show = ref(false);
-function onClick(i: number, baseMap: any) {
+
+function onClick(i: number, baseMap: BaseMapItem) {
   mapStoreUseBaseMap.value[i].setCurrent(baseMap);
 }
+
 function onToggleList() {
   show.value = !show.value;
 }
+
 onMounted(() => {
   mapStoreUseBaseMap.value.forEach((c) => {
-    c.init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
+    c.init(props.baseMaps, props.defaultBaseMap);
   });
 });
+
 onBeforeUnmount(() => {
-  mapStoreUseBaseMap.value.map((x) => x.remove());
+  mapStoreUseBaseMap.value.forEach((x) => x.remove());
 });
 </script>
 <style scoped>
@@ -213,7 +226,7 @@ onBeforeUnmount(() => {
   width: 100%;
   text-align: center;
   overflow: hidden;
-  color: var(--card-color);
+  color: var(--map-card-text, var(--map-text-primary, #333));
   background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
 }
 
@@ -259,9 +272,14 @@ onBeforeUnmount(() => {
 }
 
 .base-map-control-setting-item__active {
-  --v-primary-base: #1a73e8;
-  color: var(--v-primary-base, #1a73e8) !important;
-  caret-color: var(--v-primary-base, #1a73e8) !important;
+  color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
+  caret-color: var(
+    --map-basemap-active-color,
+    var(--map-primary-color, #1a73e8)
+  ) !important;
 }
 .clickable {
   cursor: pointer;
@@ -312,7 +330,7 @@ onBeforeUnmount(() => {
 .tabs-container {
   display: flex;
   border-bottom-width: thin;
-  border-bottom-color: #fff;
+  border-bottom-color: var(--map-divider-color, #eeeeee);
   border-bottom-style: solid;
 }
 .tab-item {

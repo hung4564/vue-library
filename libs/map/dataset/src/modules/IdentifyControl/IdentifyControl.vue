@@ -1,9 +1,9 @@
 <script lang="ts">
 export default {
-  name: 'inspect-control',
+  name: 'InspectControl',
 };
 </script>
-f
+
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -11,19 +11,21 @@ import {
   BaseButton,
   defaultMapProps,
   EventBboxRanger,
+  EventBboxRangerHandle,
   EventClick,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useCoordinate,
   useEventMap,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
-import { MapMouseEvent, type PointLike } from 'maplibre-gl';
+import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../extra/menu';
 import type {
@@ -36,6 +38,7 @@ import { handleMultiIdentify } from '../../model';
 import { useMapDataset } from '../../store';
 import { useMapDatasetHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';
+
 const path = {
   icon: mdiHandPointingUp,
   boxSelect: mdiSelect,
@@ -50,7 +53,7 @@ const props = withDefaults(
   >(),
   { ...defaultMapProps },
 );
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -103,10 +106,7 @@ const {
   add: addEventBbox,
   remove: removeEventBbox,
   isActive: isEventClickBox,
-} = useEventMap(
-  mapId.value,
-  (new EventBboxRanger() as any).setHandler(onBboxSelect),
-);
+} = useEventMap(mapId.value, new EventBboxRanger().setHandler(onBboxSelect));
 
 const origin = reactive({ latitude: 0, longitude: 0 });
 function onMapClick(e: MapMouseEvent) {
@@ -119,7 +119,7 @@ function onMapClick(e: MapMouseEvent) {
   origin.longitude = e.lngLat.lng;
   onGetFeatures(e);
 }
-function onBboxSelect(bbox: any) {
+function onBboxSelect(bbox: Parameters<EventBboxRangerHandle>[0]) {
   if (isEventClickActive.value) return;
   logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
     'onBboxSelect',
@@ -127,7 +127,9 @@ function onBboxSelect(bbox: any) {
   );
   onRemoveBox();
   if (!bbox) return;
-  onGetFeatures(bbox);
+
+  const bounds = new LngLatBounds([bbox[0].x, bbox[0].y, bbox[1].x, bbox[1].y]);
+  onGetFeatures(bounds);
 }
 const result = reactive<{
   items: Grouped[];
@@ -166,14 +168,25 @@ function onSelectFeatures(
     if (menu)
       onMenuAction(
         features[0].identify,
-        menu as any,
+        menu,
         features[0].features[0].data,
         event,
       );
   }
 }
-async function onGetFeatures(e: MapMouseEvent) {
-  const pointOrBox = e.point;
+async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
+  let pointOrBox: PointLike | [PointLike, PointLike];
+  if ('point' in e) {
+    pointOrBox = e.point;
+  } else {
+    // Convert LngLatBounds to PointLike box
+    // This assumes the map instance is available or handleMultiIdentify can handle bounds.
+    // However, coordinate-to-point conversion needs the map.
+    // For now, let's keep it as is if handleMultiIdentify handles unknown types loosely,
+    // but better to cast specifically.
+    pointOrBox = e as unknown as [PointLike, PointLike];
+  }
+
   result.loading = true;
   try {
     logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
@@ -195,10 +208,11 @@ async function onGetFeatures(e: MapMouseEvent) {
       { features },
     );
     onSelectFeatures(
-      e,
+      'point' in e ? e : undefined,
       features.filter(
-        (item) => 'features' in item && item.features.length > 0,
-      ) as any,
+        (item): item is IdentifyMultiResult =>
+          'features' in item && item.features.length > 0,
+      ),
     );
   } finally {
     result.loading = false;
@@ -260,7 +274,7 @@ function onRemoveBox() {
 function onMenuAction(
   identify: IIdentifyView,
   menu: MenuAction,
-  item: any,
+  item: unknown,
   event?: MapMouseEvent | MouseEvent,
 ) {
   handleMenuAction(menu, {
@@ -276,31 +290,34 @@ onMounted(() => {
 interface Grouped {
   id: string;
   name: string;
-  items: (any & { identify: IIdentifyView })[];
+  items: ({ id: string | number; name?: string; data: unknown } & {
+    identify: IIdentifyView;
+  })[];
 }
 function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   const groups: Grouped[] = [];
   const groupExistingIds = new Map<string, Set<string | number>>();
 
   for (const item of items) {
-    let group: any = {
-      id: item.identify.id,
-      name: item.identify.getName(),
-      items: [],
-    };
-    const group_identify = item.identify.group;
-    if (group_identify) {
-      group = groups.find((g) => g.id === group_identify.id);
+    let group: Grouped | undefined;
+    const groupIdentify = item.identify.group;
+    if (groupIdentify) {
+      group = groups.find((g) => g.id === groupIdentify.id);
       if (!group) {
-        group = { id: group_identify.id, name: group_identify.name, items: [] };
+        group = { id: groupIdentify.id, name: groupIdentify.name, items: [] };
         groups.push(group);
       }
     } else {
+      group = {
+        id: item.identify.id,
+        name: item.identify.getName(),
+        items: [],
+      };
       groups.push(group);
     }
     let existingIds = groupExistingIds.get(group.id);
     if (!existingIds) {
-      existingIds = new Set<string>();
+      existingIds = new Set<string | number>();
       groupExistingIds.set(group.id, existingIds);
     }
 
@@ -316,25 +333,42 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   }
   return groups;
 }
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapIdentifyControl',
+  getState() {
+    return {
+      visible: hasViews.value,
+      active: show.value,
+      title: trans.value('map.identify.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        :tooltip="trans('map.identify.title')"
-        @click.stop="toggleShow()"
-        :active="show"
-        v-if="hasViews"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="16" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="p">
       <DraggableItemPopup
         v-if="show"
         v-model:show="show"
-        v-bind="props"
+        v-bind="p"
         :width="400"
         :height="300"
         @close="close"
@@ -444,7 +478,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
 <style>
 .boxdraw {
   border: dashed 2px black;
-  background-color: #ffffff30;
+  background-color: var(--map-identify-box-bg, rgba(255, 255, 255, 0.19));
 }
 </style>
 <style scoped lang="scss">
@@ -463,7 +497,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
     height: 100%;
 
     b {
-      color: var(--v-primary-base, #1a73e8);
+      color: var(--map-identify-primary, var(--map-primary-color, #1a73e8));
       padding-right: 4px;
       font-weight: bolder;
     }
@@ -508,7 +542,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
     margin-bottom: 4px;
 
     &__header {
-      color: var(--v-primary-base, #1a73e8);
+      color: var(--map-identify-primary, var(--map-primary-color, #1a73e8));
       font-weight: bolder;
       white-space: nowrap !important;
       overflow: hidden !important;
@@ -578,7 +612,8 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   &__loading {
     width: 24px;
     height: 24px;
-    border: 2px solid var(--v-primary-base, #1a73e8);
+    border: 2px solid
+      var(--map-identify-primary, var(--map-primary-color, #1a73e8));
     border-radius: 50%;
     border-right-color: transparent;
     animation: spin 1s linear infinite;

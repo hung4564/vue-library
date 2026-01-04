@@ -10,7 +10,6 @@ import {
 } from '../../extra';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type {
-  IDataManagementView,
   IdentifyResult,
   IdentifySingleResult,
   IIdentifyView,
@@ -23,10 +22,7 @@ import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { convertFeatureToItem } from '../../utils/convert';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import {
-  findSiblingOrNearestLeaf,
-  runAllComponentsWithCheck,
-} from '../visitors';
+import { runAllComponentsWithCheck } from '../visitors';
 import {
   getMergedFeatures,
   mergePayload,
@@ -149,19 +145,7 @@ export function createIdentifyMapboxComponent(
           return;
         }
         let handle: (() => Promise<any[]>) | undefined;
-        const dataManagement = findSiblingOrNearestLeaf(
-          datasetPartIdentify,
-          (dataset) => dataset.type == 'dataManagement',
-        ) as unknown as IDataManagementView;
-        if (dataManagement) {
-          logHelper(
-            loggerIdentify,
-            mapId,
-            'dataset',
-            datasetPartIdentify.id,
-          ).debug('dataManagement', dataManagement);
-          handle = () => dataManagement.getList([...idsGet], features);
-        } else if (datasetPartIdentify.getList) {
+        if (datasetPartIdentify.getList) {
           logHelper(
             loggerIdentify,
             mapId,

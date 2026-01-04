@@ -1,4 +1,5 @@
 import { bearing, bearingToAzimuth, lineString, point } from '@turf/turf';
+import type { Feature } from 'geojson';
 
 import { type CoordinatesNumber } from '@hungpvq/shared-map';
 import { IViewSetting } from '../types';
@@ -21,12 +22,12 @@ export class MeasureAzimuth extends Measure {
     this.value.push(coordinate);
   }
   getResult() {
-    const features: any[] = [];
+    const features: Feature[] = [];
     const value = 0;
-    const features_label: any[] = [];
+    const features_label: Feature[] = [];
     const result: IViewSetting = {
       features,
-      value,
+      value: value as number | string,
       features_label,
     };
     if (!this.coordinates || this.coordinates.length < 1) {

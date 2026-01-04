@@ -1,12 +1,12 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
 
-import { IView, IViewSetting } from '../types';
+import { IView, IViewProps, IViewSetting } from '../types';
 
 export class View implements IView {
-  start(_props?: any) {
+  start(_props?: IViewProps) {
     return;
   }
-  view(_setting: any) {
+  view(_props: IViewProps) {
     return;
   }
   reset() {

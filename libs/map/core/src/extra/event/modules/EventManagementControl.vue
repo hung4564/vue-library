@@ -9,6 +9,7 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import {
   defaultMapProps,
@@ -20,6 +21,7 @@ import {
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang';
 import { useMapMittStore } from '../../mitt';
+import { useToolbarControl } from '../../toolbar';
 import { useEventMapItems } from '../hook/useEventMapItems';
 import { MapEventStore } from '../store';
 import {
@@ -81,18 +83,27 @@ const groupedViews = computed(() => {
   }
   return groups;
 });
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapEventManagementControl',
+  getState() {
+    return {
+      title: trans.value('map.event-control.title'),
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        v-if="!show"
-        @click.stop="toggleShow()"
-        :active="show"
-        :tooltip="trans('map.event-control.title')"
-      >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

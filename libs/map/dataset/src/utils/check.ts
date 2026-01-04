@@ -1,34 +1,36 @@
 import type { WithDataHelper } from '../extra';
-import type { IDataset } from '../interfaces/dataset.base';
+import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import type {
   WithSetOpacity,
   WithToggleShow,
 } from '../interfaces/dataset.extra';
 import type { IDatasetMap } from '../interfaces/dataset.map';
 import type {
-  IDataManagementView,
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type { DatasetComposite } from '../model';
+import type { IDataManagementView } from '../model';
 
-// Type guard to check if a dataset implements IDatasetMap
-export function isDatasetMap(
+export function isDatasetMapHasAddToMap(
   dataset: IDataset,
 ): dataset is IDataset & IDatasetMap {
   if (!dataset) return false;
-  return 'removeFromMap' in dataset && 'addToMap' in dataset;
+  return 'addToMap' in dataset;
 }
-
+export function isDatasetMapHasRemoveFromMap(
+  dataset: IDataset,
+): dataset is IDataset & IDatasetMap {
+  if (!dataset) return false;
+  return 'removeFromMap' in dataset;
+}
 export function isDatasetSourceMap(
   dataset: IDataset,
 ): dataset is IDataset & IMapboxSourceView {
   return 'removeFromMap' in dataset && 'addToMap' in dataset;
 }
 
-// Type guard to check if a dataset implements IMapboxLayerView
 export function isMapboxLayerView(
   dataset: IDataset,
 ): dataset is IDataset & IMapboxLayerView & WithDataHelper {
@@ -44,13 +46,13 @@ export function hasMoveLayer(
 ): dataset is IDataset & IMapboxLayerView {
   return 'moveLayer' in dataset && 'getBeforeId' in dataset;
 }
-// Type guard to check if a dataset implements IMapboxLayerView
 export function isComposite(
   dataset: IDataset,
-): dataset is IDataset & DatasetComposite {
+): dataset is IDataset & WithChildren {
   return (
     dataset.type === 'composite' ||
-    ('getChildren' in dataset && typeof dataset.getChildren === 'function')
+    ('getChildren' in dataset &&
+      typeof (dataset as any).getChildren === 'function')
   );
 }
 
@@ -60,29 +62,25 @@ export function isIdentifyMergeView(
   return 'identifyGroupId' in view;
 }
 export function isDataManagementView(
-  dataset: any,
+  dataset: unknown,
 ): dataset is IDataManagementView {
-  return (
-    dataset?.type === 'dataManagement' &&
-    typeof dataset.showDetail === 'function' &&
-    typeof dataset.getList === 'function'
-  );
+  return (dataset as IDataset)?.type === 'data-management';
 }
-export function isDatasetHasMethod<T, K extends keyof any>(
+export function isDatasetHasMethod<T, K extends string | number | symbol>(
   obj: unknown,
   methodName: K,
-): obj is T & Record<K, (...args: any[]) => any> {
+): obj is T & Record<K, (...args: unknown[]) => unknown> {
   return (
     typeof obj === 'object' &&
     obj !== null &&
-    typeof (obj as any)[methodName] === 'function'
+    typeof (obj as Record<string, unknown>)[methodName as string] === 'function'
   );
 }
 
-export function isHasToggleShow(dataset: any): dataset is WithToggleShow {
-  return 'toggleShow' in dataset;
+export function isHasToggleShow(dataset: unknown): dataset is WithToggleShow {
+  return !!dataset && typeof dataset === 'object' && 'toggleShow' in dataset;
 }
 
-export function isHasSetOpacity(dataset: any): dataset is WithSetOpacity {
-  return 'setOpacity' in dataset;
+export function isHasSetOpacity(dataset: unknown): dataset is WithSetOpacity {
+  return !!dataset && typeof dataset === 'object' && 'setOpacity' in dataset;
 }

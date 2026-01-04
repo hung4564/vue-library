@@ -27,7 +27,6 @@ VueLibrary is a monorepo containing Vue.js libraries designed to build interacti
 
 - **[@hungpvq/vue-draggable](./libs/draggable/)** - Draggable components
 - **[@hungpvq/content-menu](./libs/content-menu/)** - Context menu
-- **[@hungpvq/router](./libs/router/)** - Router utilities
 
 ### 🔧 Shared Libraries
 
@@ -129,7 +128,6 @@ import '@hungpvq/vue-map-core/style.css';
 
 - **[Documentation](./docs/)** - Detailed documentation
 - **[Demos](./apps/)** - Demo applications
-- **[API Reference](./deploy/docs/)** - API reference
 
 ## 🏗️ Development
 
@@ -138,8 +136,7 @@ import '@hungpvq/vue-map-core/style.css';
 ```bash
 # Development
 npm run docs:dev          # Run docs development server
-npm run map:build         # Build map libraries
-npm run share:build       # Build shared libraries
+npm run map:dev           # Build map libraries
 
 # Testing
 npm run lint              # Lint code
@@ -158,18 +155,7 @@ vue-library/
 ├── libs/                 # Libraries
 │   ├── map/             # Map-related libraries
 │   ├── share/           # Shared utilities
-│   └── ui/              # UI components
-├── docs/                # Documentation
-└── deploy/              # Built documentation
 ```
-
-## 🤝 Contributing
-
-All contributions are welcome! Please read the [Contributing Guide](./CONTRIBUTING.md) for more details.
-
-## 📄 License
-
-MIT License - see [LICENSE](./LICENSE) for more details.
 
 ## 👨‍💻 Author
 
@@ -181,3 +167,26 @@ MIT License - see [LICENSE](./LICENSE) for more details.
 
 - **Issues**: [GitHub Issues](https://github.com/hung4564/vue-library/issues)
 - **Repository**: [GitHub Repository](https://github.com/hung4564/vue-library)
+
+## Idea
+
+- [x] Introduce a new `dataset` type: **`data-management`**
+
+  - This dataset type supports **CRUD operations** (create, read, update, delete).
+
+- [ ] Provide templates for `data-management` datasets:
+
+  - [ ] **Local template** – handles local data sources in:
+    - [x] **GeoJSON format**, or
+    - [ ] **List-based format** (which may or may not be convertible to GeoJSON).
+  - [ ] **API template** – handles data through remote APIs, supporting responses in:
+    - [x] **GeoJSON format**, or
+    - [ ] **List-based format** (which may or may not be convertible to GeoJSON).
+
+- [ ] Extend **DrawControl**
+  - [] with a **Draft mechanism**:
+    - [x] Enables temporary drawing and editing before committing changes.
+    - [x] Allows **external customization** to adapt Draft behavior to different workflows or integrations.
+  - [ ] support default draw
+    - draw normal
+    - download

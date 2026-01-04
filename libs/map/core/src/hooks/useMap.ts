@@ -1,18 +1,43 @@
-import { MapFCOnUseMap } from '@hungpvq/shared-map';
-import { computed, inject, onMounted, onUnmounted } from 'vue';
+import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
+import { computed, inject, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { getMap } from '../store/store';
 
 export const useMap = (
-  props: any = {},
+  props: WithMapPropType = {},
   onInit?: MapFCOnUseMap,
   onDestroy?: MapFCOnUseMap,
 ) => {
   const i_map_id = inject('$map.id');
   const c_mapId = computed(() => {
-    return props.mapId || i_map_id;
+    return (props.mapId || i_map_id) as string;
+  });
+  const mapInstance = shallowRef<MapSimple | MapSimple[] | undefined>();
+
+  const registerOrder = inject<(key: string) => number>(
+    '$map.registerModuleOrder',
+  );
+
+  const autoOrder = ref<number>();
+  if (
+    (props.controlOrder === undefined || props.controlOrder == 0) &&
+    registerOrder
+  ) {
+    const key =
+      props.controlLayout === 'toolbar'
+        ? props.controlLayout
+        : `${props.position}`;
+    autoOrder.value = registerOrder(key);
+  }
+
+  const c_order = computed(() => {
+    if (props.controlOrder && +props.controlOrder > 0) {
+      return +props.controlOrder;
+    }
+    return (autoOrder.value ?? 1) * 10;
   });
   onMounted(() => {
     getMap(c_mapId.value, async (_map) => {
+      mapInstance.value = _map;
       if (onInit instanceof Function) {
         await onInit(_map);
       }
@@ -21,9 +46,7 @@ export const useMap = (
   onUnmounted(async () => {
     if (onDestroy instanceof Function) {
       getMap(c_mapId.value, async (_map) => {
-        if (onInit instanceof Function) {
-          await onDestroy(_map);
-        }
+        await onDestroy(_map);
       });
     }
   });
@@ -36,13 +59,20 @@ export const useMap = (
     btnWidth: props.btnWidth,
     position: props.position,
     controlVisible: props.controlVisible,
-    order: props.order,
+    controlLayout: props.controlLayout,
+    order: c_order.value,
     top: props.top,
     bottom: props.bottom,
     left: props.left,
     right: props.right,
   };
-  return { callMap, mapId: c_mapId, moduleContainerProps };
+  return {
+    callMap,
+    mapId: c_mapId,
+    mapInstance,
+    moduleContainerProps,
+    order: c_order,
+  };
 };
 
 export const withMapProps = {
@@ -68,6 +98,10 @@ export const withMapProps = {
     type: Number,
     default: 0,
   },
+  top: Number,
+  bottom: Number,
+  left: Number,
+  right: Number,
 };
 const validPositions = [
   'top-left',
@@ -83,14 +117,18 @@ export interface WithMapPropType {
   btnWidth?: number;
   position?: Position;
   controlVisible?: boolean;
-  order?: number;
+  controlOrder?: number | string;
+  controlLayout?: 'standalone' | 'toolbar';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
 }
 
-export const defaultMapProps: Required<WithMapPropType> = {
+export const defaultMapProps: Partial<WithMapPropType> = {
   mapId: '',
   dragId: '',
   btnWidth: 40,
   position: 'bottom-right',
   controlVisible: true,
-  order: 0,
 };

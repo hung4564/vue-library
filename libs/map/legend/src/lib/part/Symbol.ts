@@ -1,11 +1,11 @@
 import { SymbolLayerSpecification } from 'maplibre-gl';
-import { PropsLegendOption } from '../types';
+import { LegendElement, PropsLegendOption } from '../types';
 
 function renderIconSymbol({
   expr,
   layer,
   image,
-}: PropsLegendOption<SymbolLayerSpecification>) {
+}: PropsLegendOption<SymbolLayerSpecification>): LegendElement | null {
   const imgKey = expr(layer, 'layout', 'icon-image') as string;
 
   if (!imgKey) {
@@ -34,7 +34,7 @@ function renderIconSymbol({
 function renderTextSymbol({
   expr,
   layer,
-}: PropsLegendOption<SymbolLayerSpecification>) {
+}: PropsLegendOption<SymbolLayerSpecification>): LegendElement {
   const textColor = expr(layer, 'paint', 'text-color');
   const textOpacity = expr(layer, 'paint', 'text-opacity');
   const textHaloColor = expr(layer, 'paint', 'text-halo-color');
@@ -83,7 +83,7 @@ function renderTextSymbol({
 }
 
 export default function Symbol(
-  props: PropsLegendOption<SymbolLayerSpecification>
-) {
+  props: PropsLegendOption<SymbolLayerSpecification>,
+): LegendElement | null {
   return renderIconSymbol(props) || renderTextSymbol(props);
 }

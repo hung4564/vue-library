@@ -1,4 +1,4 @@
-import type { IDataset } from '../interfaces/dataset.base';
+import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import type { IDatasetVisitor } from '../interfaces/dataset.visitor';
 import { Base } from './base';
 
@@ -6,7 +6,7 @@ import { Base } from './base';
  * The base DatasetComponent class declares common operations for both simple and
  * complex objects of a composition.
  */
-abstract class DatasetComponent<T = any> extends Base implements IDataset {
+abstract class DatasetComponent<T = unknown> extends Base implements IDataset {
   protected parent?: IDataset;
   protected name: string;
   protected data?: T;
@@ -31,7 +31,7 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
    * @param visitor The visitor to accept
    * @returns The result of the visitor's visit
    */
-  accept(visitor: IDatasetVisitor): any {
+  accept(visitor: IDatasetVisitor): unknown {
     // By default, leaf nodes are visited as leaves
     return visitor.visitLeaf(this);
   }
@@ -44,10 +44,10 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
     this.name = name;
   }
 
-  getData(): any {
+  getData(): T | undefined {
     return this.data;
   }
-  setData(data: any) {
+  setData(data: T) {
     this.data = data;
   }
 
@@ -69,7 +69,7 @@ abstract class DatasetComponent<T = any> extends Base implements IDataset {
  * Leaf node in the Dataset Composite pattern
  * Represents a single dataset without children
  */
-export class DatasetLeaf<T = any> extends DatasetComponent<T> {
+export class DatasetLeaf<T = unknown> extends DatasetComponent<T> {
   get type(): string {
     return 'leaf';
   }
@@ -83,7 +83,7 @@ export class DatasetLeaf<T = any> extends DatasetComponent<T> {
    * @param visitor The visitor to accept
    * @returns The result of the visitor's visit
    */
-  override accept(visitor: IDatasetVisitor): any {
+  override accept(visitor: IDatasetVisitor): unknown {
     return visitor.visitLeaf(this);
   }
 }
@@ -91,7 +91,10 @@ export class DatasetLeaf<T = any> extends DatasetComponent<T> {
  * Composite node in the Dataset Composite pattern
  * Represents a dataset that can contain other datasets
  */
-export class DatasetComposite extends DatasetComponent {
+export class DatasetComposite
+  extends DatasetComponent<unknown>
+  implements WithChildren
+{
   get type(): string {
     return 'composite';
   }
@@ -132,19 +135,19 @@ export class DatasetComposite extends DatasetComponent {
  * @param isComposite Whether to create a composite node
  * @returns A new dataset instance
  */
-export function createDataset(
+export function createDataset<T = unknown>(
   name: string,
-  data?: any,
+  data?: T,
   isComposite?: false,
-): DatasetLeaf;
+): DatasetLeaf<T>;
 export function createDataset(
   name: string,
-  data?: any,
+  data?: unknown,
   isComposite?: true,
 ): DatasetComposite;
-export function createDataset(
+export function createDataset<T = unknown>(
   name: string,
-  data?: any,
+  data?: T,
   isComposite = false,
 ): IDataset {
   if (isComposite) {

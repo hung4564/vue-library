@@ -2,6 +2,7 @@
 import { ContextMenu } from '@hungpvq/content-menu';
 import {
   defaultMapProps,
+  RegistryItem,
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
@@ -17,7 +18,6 @@ import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
 import { handleMenuAction } from '../../../extra/menu';
 import type { MenuAction } from '../../../interfaces';
 import type { IListViewUI } from '../../../model';
-import { useUniversalRegistry } from '../../../registry';
 import { useMapDataset } from '../../../store';
 import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
@@ -117,7 +117,6 @@ function onLayerAction({
     value: item,
   });
 }
-const { getComponent } = useUniversalRegistry(mapId.value);
 </script>
 <template lang="">
   <div class="layer-control-container">
@@ -128,15 +127,16 @@ const { getComponent } = useUniversalRegistry(mapId.value);
       <div v-for="(item, index) in treeLayer" :key="item.id || index">
         <RecursiveList :item="item" disabledDrag>
           <template #leaf="{ item }">
-            <component
-              :is="getComponent(item.config?.componentKey, LayerItem)"
+            <RegistryItem
+              :componentKey="item.config?.componentKey"
+              :defaultComponent="LayerItem"
               :item="item"
               @click:content-menu="handleContextClick"
               @click:action="onLayerAction"
               :mapId="mapId"
               readonly
             >
-            </component>
+            </RegistryItem>
           </template>
         </RecursiveList>
       </div>
@@ -200,9 +200,9 @@ $black: #333;
 
 .layer-context-menu {
   min-width: 150px;
-  background-color: $light-grey;
+  background-color: var(--map-layer-menu-bg, #ecf0f1);
   border-bottom-width: 0px;
-  box-shadow: 0 3px 6px 0 rgba($black, 0.2);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
 
   &--active {
     display: block;
@@ -210,7 +210,7 @@ $black: #333;
 
   &__item {
     display: flex;
-    color: $black;
+    color: var(--map-layer-menu-text, var(--map-text-primary, #333));
     cursor: pointer;
     padding: 5px 10px;
     align-items: center;
@@ -218,8 +218,11 @@ $black: #333;
     min-height: 50px;
 
     &:hover {
-      background-color: $blue;
-      color: $white;
+      background-color: var(
+        --map-layer-menu-hover-bg,
+        var(--map-primary-color, #004e98)
+      );
+      color: var(--map-layer-menu-hover-text, var(--map-text-inverse, #fff));
     }
   }
 

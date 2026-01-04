@@ -8,7 +8,7 @@ import {
 } from '@hungpvq/vue-map-draw';
 import AsideControl from '../../layout/aside-control.vue';
 const drawOptions: DrawOption = {
-  draw_support: [DrawingType.POINT],
+  drawSupports: [DrawingType.POINT],
   async save(geojson) {
     console.info('save', geojson);
   },

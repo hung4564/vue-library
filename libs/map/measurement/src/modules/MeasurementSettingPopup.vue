@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { fitBounds } from '@hungpvq/shared-map';
+import { CoordinatesNumber, fitBounds } from '@hungpvq/shared-map';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -36,6 +36,7 @@ import {
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
 import { IViewSettingField } from './types';
@@ -43,7 +44,7 @@ const emit = defineEmits(['update:modelValue']);
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
-      modelValue?: [number, number][]; // hoặc cụ thể hơn nếu bạn có kiểu
+      modelValue?: (CoordinatesNumber | [null, null])[];
       maxLength?: number;
       fields?: IViewSettingField[];
       popUpPosition?: {
@@ -68,15 +69,17 @@ const props = withDefaults(
 );
 const { callMap, moduleContainerProps, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
-const model = defineModel({ default: [[0, 0]] });
+const model = defineModel<(CoordinatesNumber | [null, null])[]>({
+  default: [[0, 0]],
+});
 const c_show = defineModel('show', { default: false });
-const onFlyTo = (geometry: any) => {
+const onFlyTo = (geometry: Geometry | Feature | FeatureCollection) => {
   callMap((map) => {
     fitBounds(map, geometry);
   });
 };
-function setValue(value: { value: [number, number][] }) {
-  emit('update:modelValue', value.value);
+function setValue(value: (CoordinatesNumber | [null, null])[]) {
+  emit('update:modelValue', value);
 }
 </script>
 <style scoped>

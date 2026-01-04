@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { Ref } from 'vue';
@@ -14,17 +14,14 @@ export type MapDatasetHighlightStore = {
 };
 
 export const useMapDatasetHighlightStore = (mapId: string) =>
-  defineStore<MapDatasetHighlightStore>(
-    ['map:core', mapId, 'highlight'],
-    () => {
-      logHelper(logger, mapId, 'store').debug('init');
-      return {
-        feature: ref(undefined),
-        source: ref(undefined),
-        dataset: undefined,
-      };
-    },
-  )();
+  createMapScopedStore<MapDatasetHighlightStore>(mapId, 'highlight', () => {
+    logHelper(logger, mapId, 'store').debug('init');
+    return {
+      feature: ref(undefined),
+      source: ref(undefined),
+      dataset: undefined,
+    };
+  });
 export const useMapDatasetHighlight = (mapId: string) => {
   const store = useMapDatasetHighlightStore(mapId);
   function getStore() {

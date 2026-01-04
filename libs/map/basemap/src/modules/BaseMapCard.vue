@@ -27,13 +27,11 @@ import { InputSelect, MapImage, useLang, useMap } from '@hungpvq/vue-map-core';
 import { onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-const props = defineProps({
-  mapId: { type: String, required: true },
-  title: {
-    type: String,
-    default: '',
-  },
-});
+import { BaseMapItem } from '../types';
+const props = defineProps<{
+  mapId: string;
+  title?: string;
+}>();
 const { mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
 const {
@@ -42,7 +40,7 @@ const {
   currentBaseMap: current_baseMaps,
   remove,
 } = useBaseMap(mapId.value);
-const onChangeBaseMap = (base_map: any) => {
+const onChangeBaseMap = (base_map: BaseMapItem) => {
   logHelper(logger, mapId.value, 'control', 'BaseMapCard').debug(
     'onClick',
     base_map,

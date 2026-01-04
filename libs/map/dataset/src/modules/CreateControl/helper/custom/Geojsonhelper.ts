@@ -3,17 +3,19 @@ import { createGeoJsonDataset } from '../../../../builder';
 import { GeojsonUpload } from '../../config';
 import { ConfigHelper } from '../_default';
 
-export class ConfigGeojsonHelper extends ConfigHelper {
-  get component() {
+export class ConfigGeojsonHelper extends ConfigHelper<GeojsonDatasetOption> {
+  override get component() {
     return () => GeojsonUpload;
   }
-  get default_value(): any {
+
+  override get default_value(): Omit<GeojsonDatasetOption, 'name'> {
     return {
       type: 'point',
-      geojson: null,
+      geojson: null as any,
     };
   }
-  validate(form: any) {
+
+  override validate(form: GeojsonDatasetOption & { name?: string }) {
     if (!form.name) {
       return false;
     }
@@ -25,8 +27,9 @@ export class ConfigGeojsonHelper extends ConfigHelper {
     }
     return true;
   }
-  get create() {
-    return (form: GeojsonDatasetOption) => {
+
+  override get create() {
+    return (form: GeojsonDatasetOption & { name: string }) => {
       return createGeoJsonDataset({
         ...form,
       });

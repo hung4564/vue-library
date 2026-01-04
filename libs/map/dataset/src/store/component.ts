@@ -1,5 +1,5 @@
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
+import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
@@ -24,7 +24,7 @@ function generateId(prefix = 'component'): string {
 }
 
 export const useMapDatasetComponentStore = (mapId: string) =>
-  defineStore<MapDatasetComponentStore>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<MapDatasetComponentStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     const components: ComponentItem[] = [];
     const componentIds = ref<string[]>([]);
@@ -32,7 +32,7 @@ export const useMapDatasetComponentStore = (mapId: string) =>
       components,
       componentIds,
     };
-  })();
+  });
 
 export const useMapDatasetComponent = (mapId: string) => {
   const store = useMapDatasetComponentStore(mapId);

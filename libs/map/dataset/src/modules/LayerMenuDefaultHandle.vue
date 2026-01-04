@@ -2,6 +2,7 @@
 import { fitBounds } from '@hungpvq/shared-map';
 import {
   defaultMapProps,
+  UniversalRegistry,
   useMap,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
@@ -11,7 +12,6 @@ import {
   MenuClickHighlight,
   MenuItemProps,
 } from '../extra';
-import { UniversalRegistry } from '../registry';
 import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -34,7 +34,7 @@ UniversalRegistry.registerMenuHandlerForMap(
   'fitBounds',
   ({ value }: MenuItemProps<MenuClickFitBounds>) => {
     callMap((map) => {
-      fitBounds(map, value);
+      fitBounds(map, value?.detail);
     });
   },
 );

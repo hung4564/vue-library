@@ -5,14 +5,14 @@ import {
   defaultMapProps,
   InputSelect,
   InputText,
-  MapControlButton,
+  MapCommonButton,
   MapControlGroupButton,
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
   WithMapPropType,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,
   mdiCogOutline,
@@ -49,7 +49,7 @@ const path = {
   save: mdiContentSaveOutline,
   setting: mdiCogOutline,
 };
-const { callMap, mapId, moduleContainerProps } = useMap(props, onInit);
+const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -90,6 +90,7 @@ function onInit() {
 function onSaveAll(cb?: (image: string) => Promise<void>) {
   callMap(async (map) => {
     print.value.loading = true;
+    control.sync();
     try {
       let image = await exportMapbox(map);
       if (cb) {
@@ -97,6 +98,7 @@ function onSaveAll(cb?: (image: string) => Promise<void>) {
       } else await onDownload(image);
     } finally {
       print.value.loading = false;
+      control.sync();
     }
   });
 }
@@ -105,6 +107,7 @@ async function onSave(cb?: (image: string) => Promise<void>) {
     if (!printableArea) return;
     try {
       print.value.loading = true;
+      control.sync();
       let image = await exportMapboxWithOptions(
         map,
         printableArea.getCutSize(),
@@ -116,6 +119,7 @@ async function onSave(cb?: (image: string) => Promise<void>) {
       }
     } finally {
       print.value.loading = false;
+      control.sync();
     }
   });
 }
@@ -124,12 +128,14 @@ function onClosePrint() {
   print.value.show = false;
   toggleCrosshair(print.value.show);
   togglePrintableArea(print.value.show, print.value.setting);
+  control.sync();
 }
 
 function onShowPrint(options: PrintOption) {
   print.value.show = true;
   toggleCrosshair(print.value.show);
   togglePrintableArea(print.value.show, options);
+  control.sync();
 }
 async function onDownload(data64: string) {
   saveAs(data64, `${props.fileName}.png`);
@@ -180,50 +186,106 @@ function onMapResize() {
 }
 function toggleSetting() {
   print.value.setting_show = !print.value.setting_show;
+  control.sync();
 }
 function onChangeSetting() {
   if (printableArea) {
     printableArea.setOption(print.value.setting);
   }
 }
+const items = [
+  { value: 'landscape', text: 'Landscape' },
+  { value: 'portrait', text: 'Portrait' },
+];
+
+const { state, control } = useToolbarControl(mapId.value, props, {
+  moduleId: 'mapPrintAdvancedControl',
+  moduleOrder: order.value,
+  kind: 'module',
+  buttons: [
+    {
+      id: 'mapPrintShow',
+      getState: () => ({
+        visible: !print.value.show,
+        title: trans.value('map.print.title'),
+        icon: {
+          type: 'mdi',
+          path: path.print,
+        },
+      }),
+      onClick: () => onShowPrint(print.value.setting),
+    },
+    {
+      id: 'mapPrintSave',
+      getState: () => ({
+        visible: print.value.show,
+        title: trans.value('map.print.actions.save'),
+        icon: {
+          type: 'mdi',
+          path: path.save,
+        },
+        loading: print.value.loading,
+      }),
+      onClick: () => onSave(),
+    },
+    {
+      id: 'mapPrintClose',
+      getState: () => ({
+        visible: print.value.show,
+        title: trans.value('map.print.actions.clear'),
+        icon: {
+          type: 'mdi',
+          path: path.close,
+        },
+        loading: print.value.loading,
+      }),
+      onClick: () => onClosePrint(),
+    },
+    {
+      id: 'mapPrintSetting',
+      getState: () => ({
+        visible: true,
+        active: print.value.setting_show,
+        title: trans.value('map.print.actions.setting'),
+        icon: {
+          type: 'mdi',
+          path: path.setting,
+        },
+        loading: print.value.loading,
+      }),
+      onClick: () => toggleSetting(),
+    },
+  ],
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton row>
-        <MapControlButton
-          v-if="!print.show"
-          :active="print.show"
-          :tooltip="trans('map.print.title')"
-          @click.stop="onShowPrint(print.setting)"
-          :loading="print.loading"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.print" />
-        </MapControlButton>
-        <template v-else>
-          <MapControlButton
-            :disabled="print.loading"
-            :loading="print.loading"
-            :tooltip="trans('map.print.actions.save')"
-            @click="onSave()"
-          >
-            <SvgIcon :size="18" type="mdi" :path="path.save" />
-          </MapControlButton>
-          <MapControlButton
-            :disabled="print.loading"
-            :tooltip="trans('map.print.actions.clear')"
-            @click="onClosePrint()"
-          >
-            <SvgIcon :size="18" type="mdi" :path="path.close" />
-          </MapControlButton>
+        <template v-if="!print.show">
+          <MapCommonButton
+            v-if="state && state.mapPrintShow"
+            :option="state.mapPrintShow"
+            @click="control.onAction('mapPrintShow', $event)"
+          />
         </template>
-        <MapControlButton
-          :tooltip="trans('map.print.actions.setting')"
-          @click="toggleSetting()"
-          :active="print.setting_show"
-        >
-          <SvgIcon :size="18" type="mdi" :path="path.setting" />
-        </MapControlButton>
+        <template v-else>
+          <MapCommonButton
+            v-if="state && state.mapPrintSave"
+            :option="state.mapPrintSave"
+            @click="control.onAction('mapPrintSave', $event)"
+          />
+          <MapCommonButton
+            v-if="state && state.mapPrintClose"
+            :option="state.mapPrintClose"
+            @click="control.onAction('mapPrintClose', $event)"
+          />
+        </template>
+        <MapCommonButton
+          v-if="state && state.mapPrintSetting"
+          :option="state.mapPrintSetting"
+          @click="control.onAction('mapPrintSetting', $event)"
+        />
       </MapControlGroupButton>
     </template>
 
@@ -246,10 +308,7 @@ function onChangeSetting() {
           <div>
             <input-select
               v-model="print.setting.orientation"
-              :items="[
-                { value: 'landscape', text: 'Landscape' },
-                { value: 'portrait', text: 'Portrait' },
-              ]"
+              :items="items"
               :label="trans('map.print.field.orientation')"
               @change="onChangeSetting()"
             />

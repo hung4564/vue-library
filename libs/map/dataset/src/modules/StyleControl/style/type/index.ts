@@ -26,7 +26,7 @@ export * from './default';
 
 export function convertTabWithDefaultConfig(
   tabs: Tab[],
-  default_config = CONFIG_TABS
+  default_config = CONFIG_TABS,
 ) {
   return tabs.map((x) => {
     if (x.type === 'divider') {
@@ -36,16 +36,16 @@ export function convertTabWithDefaultConfig(
       {},
       default_config.default,
       default_config[x.type] || {},
-      x
+      x,
     );
     if (!default_config[x.type]) {
-      console.log('type', 'missing', x.type);
+      console.info('type', 'missing', x.type);
     }
     res.props = merge(
       {},
       res.props,
       (CONFIG_TABS[x.type] || {}).props,
-      x.props
+      x.props,
     );
     return res;
   });

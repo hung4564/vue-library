@@ -10,12 +10,12 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/legend/',
-      component: () => import('../views/legend.vue'),
+      path: '/toolbar/',
+      component: () => import('../views/toolbar.vue'),
     },
     {
-      path: '/draw/',
-      component: () => import('../views/Draw/example.vue'),
+      path: '/legend/',
+      component: () => import('../views/legend.vue'),
     },
     {
       path: '/inspect/',
@@ -44,6 +44,10 @@ const router = createRouter({
     {
       path: '/dataset-list/',
       component: () => import('../views/dataset-list/example.vue'),
+    },
+    {
+      path: '/dataset-data-management/',
+      component: () => import('../views/dataset-data-management/example.vue'),
     },
     {
       path: '/measurement/',

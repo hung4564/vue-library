@@ -9,11 +9,12 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   defaultMapProps,
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
   useShow,
+  useToolbarControl,
   WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
@@ -30,7 +31,7 @@ import { useMapDataset } from '../../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
   map: {
@@ -91,18 +92,35 @@ defineSlots<{
   item(props: { item: IDataset }): any;
   default(): any;
 }>();
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapDatasetControl',
+  getState() {
+    return {
+      visible: !show.value,
+      active: show.value,
+      title: trans.value('map.dataset-control.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    toggleShow();
+  },
+});
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton
-        v-if="!show"
-        @click.stop="toggleShow()"
-        :active="show"
-        :tooltip="trans('map.dataset-control.title')"
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
       >
-        <SvgIcon size="14" type="mdi" :path="path.icon" />
-      </MapControlButton>
+      </MapCommonButton>
     </template>
 
     <template #draggable="props">

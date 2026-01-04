@@ -2,7 +2,6 @@ import type { Feature } from 'geojson';
 import type { IDataset, MenuAction } from '../../interfaces';
 
 import type {
-  CommandHandlerMenuExecute,
   MenuItemClick,
   MenuItemClickCommon,
   MenuItemClickHandle,

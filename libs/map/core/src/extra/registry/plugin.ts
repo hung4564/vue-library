@@ -1,14 +1,15 @@
 import { createStore } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/shared-map';
-import { defineStore } from '@hungpvq/shared-store';
 import type { Component } from 'vue';
-import { logger } from '../logger';
+import { logger } from '../../logger';
+import { createMapScopedStore } from '../../store';
+
 const KEY = 'registry';
 export const useMapRegistryStore = (mapId: string) =>
-  defineStore<Map<string, RegistryItem>>(['map:core', mapId, KEY], () => {
+  createMapScopedStore<Map<string, RegistryItem>>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return new Map<string, RegistryItem>();
-  })();
+  });
 
 export type RegistryItem = ((...args: any[]) => any) | Component;
 
@@ -110,45 +111,40 @@ export class UniversalRegistry {
   }
 
   /** Lấy method: map-specific trước, rồi global */
-  static getMethod(
+  static getMethod<T extends (...args: any[]) => any = (...args: any[]) => any>(
     key: string,
     mapId?: string,
-  ): ((...args: any[]) => any) | undefined {
+  ): T | undefined {
     const namespacedKey = this.NAMESPACES.METHOD + key;
 
     // 1. Tìm trong map-specific trước
     if (mapId) {
       const mapRegistry = useMapRegistryStore(mapId);
       if (mapRegistry.has(namespacedKey)) {
-        return mapRegistry.get(namespacedKey) as (...args: any[]) => any;
+        return mapRegistry.get(namespacedKey) as T;
       }
     }
 
     // 2. Fallback to global
-    return this.globalRegistry.get(namespacedKey) as
-      | ((...args: any[]) => any)
-      | undefined;
+    return this.globalRegistry.get(namespacedKey) as T | undefined;
   }
 
   /** Lấy menu handler: map-specific trước, rồi global */
-  static getMenuHandler(
-    key: string,
-    mapId?: string,
-  ): ((...args: any[]) => any) | undefined {
+  static getMenuHandler<
+    T extends (...args: any[]) => any = (...args: any[]) => any,
+  >(key: string, mapId?: string): T | undefined {
     const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
 
     // 1. Tìm trong map-specific trước
     if (mapId) {
       const mapRegistry = useMapRegistryStore(mapId);
       if (mapRegistry.has(namespacedKey)) {
-        return mapRegistry.get(namespacedKey) as (...args: any[]) => any;
+        return mapRegistry.get(namespacedKey) as T;
       }
     }
 
     // 2. Fallback to global
-    return this.globalRegistry.get(namespacedKey) as
-      | ((...args: any[]) => any)
-      | undefined;
+    return this.globalRegistry.get(namespacedKey) as T | undefined;
   }
 
   // ===== BACKWARD COMPATIBILITY =====
@@ -215,18 +211,18 @@ export function useUniversalRegistry(mapId?: string) {
       return UniversalRegistry.getComponent(key, mapId) || defaultValue;
     },
     // Lấy method với priority: map-specific > global
-    getMethod(
+    getMethod<T extends (...args: any[]) => any = (...args: any[]) => any>(
       key: string,
-      defaultValue?: (...args: any[]) => any,
-    ): ((...args: any[]) => any) | undefined {
-      return UniversalRegistry.getMethod(key, mapId) || defaultValue;
+      defaultValue?: T,
+    ): T | undefined {
+      return UniversalRegistry.getMethod<T>(key, mapId) || defaultValue;
     },
     // Lấy menu handler với priority: map-specific > global
-    getMenuHandler(
+    getMenuHandler<T extends (...args: any[]) => any = (...args: any[]) => any>(
       key: string,
-      defaultValue?: (...args: any[]) => any,
-    ): ((...args: any[]) => any) | undefined {
-      return UniversalRegistry.getMenuHandler(key, mapId) || defaultValue;
+      defaultValue?: T,
+    ): T | undefined {
+      return UniversalRegistry.getMenuHandler<T>(key, mapId) || defaultValue;
     },
     // Utility methods
     getKeysForMap(

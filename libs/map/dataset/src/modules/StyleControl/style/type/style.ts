@@ -4,14 +4,14 @@ interface ITabCommon<L> {
   trans?: string;
   text?: string;
   type: string;
-  format?: any;
+  format?: (value: any) => any;
   component?: {
-    content?: () => any;
-    label?: any;
+    content?: () => unknown;
+    label?: unknown;
   };
   props?: {
-    content?: any;
-    label?: any;
+    content?: unknown;
+    label?: unknown;
   };
   key: string;
   part?: 'paint' | 'layout';

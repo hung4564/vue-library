@@ -1,3 +1,4 @@
+import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { LayerItemIcon } from '../extra';
 import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShow from '../extra/component/toggle-show.vue';
@@ -11,7 +12,6 @@ import {
 } from '../modules/Legend';
 import StyleControl from '../modules/StyleControl/style-control.vue';
 import MultiStyle from '../modules/StyleControl/style/multi-style.vue';
-import { UniversalRegistry } from '../registry';
 
 export function createDatasetRegistryPlugin() {
   return {

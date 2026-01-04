@@ -186,7 +186,7 @@ function convertTreeToList(tree: TreeItem[]): Item[] {
           ...cur.children.map((x) => {
             x.group = { id: cur.id, name: cur.name };
             return x;
-          })
+          }),
         );
       }
     } else {
@@ -214,14 +214,14 @@ function addNewGroup(name: string) {
       .map((layerGroup) => {
         if ('isGroup' in layerGroup && layerGroup.isGroup) {
           layerGroup.children = layerGroup.children.filter(
-            (layer) => !currentSelectId.value.includes(layer.id)
+            (layer) => !currentSelectId.value.includes(layer.id),
           );
         }
         return layerGroup;
       });
     // add select item to group
     children = currentSelectId.value.map(
-      (x) => currentSelectLayerObject.value[x]
+      (x) => currentSelectLayerObject.value[x],
     );
     currentSelectId.value = [];
     currentSelectLayerObject.value = {};

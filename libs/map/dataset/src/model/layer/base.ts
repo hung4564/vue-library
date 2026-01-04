@@ -6,7 +6,6 @@ import {
 } from '../../extra';
 import type { IDataset, IMapboxLayerView } from '../../interfaces';
 import type { ComponentType } from '../../types';
-import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
 
 export function createDatasetPartMapboxLayerComponent<T = any>(
@@ -16,14 +15,16 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
   const base = createDatasetLeaf(name);
   const menu = createWithMenuHelper();
   const dataHelper = createWithDataHelper<T>(data);
-  return createNamedComponent('DatasetPartMapboxLayerComponent', {
+  return {
     ...base,
     ...menu,
     ...dataHelper,
     get type() {
       return 'layer';
     },
-
+    getLayers() {
+      throw new Error('Method not implemented.');
+    },
     getBeforeId(): string {
       throw new Error('Method not implemented.');
     },
@@ -51,5 +52,5 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
     getComponentUpdate(): ComponentType {
       throw new Error('Method not implemented.');
     },
-  });
+  };
 }
