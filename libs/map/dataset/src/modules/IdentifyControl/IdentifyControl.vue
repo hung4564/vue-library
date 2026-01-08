@@ -97,6 +97,9 @@ function getViewFromStore() {
 const hasViews = computed(() => {
   return views.value.length > 0;
 });
+watch(hasViews, () => {
+  control.sync();
+});
 const {
   add: addEventClick,
   remove: removeEventClick,
