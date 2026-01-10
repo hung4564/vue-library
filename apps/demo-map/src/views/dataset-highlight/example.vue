@@ -3,7 +3,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
-import { getChartRandomColor, Map } from '@hungpvq/vue-map-core';
+import { getChartRandomColor, Map, ZoomControl } from '@hungpvq/vue-map-core';
 import {
   createDatasetPartChangeColorHighlightComponent,
   createDatasetPartGeojsonSourceComponent,
@@ -28,6 +28,10 @@ function onMapLoaded(map: MapSimple) {
   addDataset(createDefaultHighlight());
   addDataset(createChangeColorHighlight());
   addDataset(createCustomHighlight());
+  addDataset(createHighlightWithPropertyName());
+  addDataset(createCustomAnimateWithFilterFunction());
+  addDataset(createDefaultHighlightWithFilterFunction());
+  addDataset(createCustomAnimateWithFieldName());
 }
 function createDefaultHighlight() {
   const dataset = createRootDataset('Default Highlight');
@@ -40,7 +44,7 @@ function createDefaultHighlight() {
           id: '1',
         },
         geometry: {
-          coordinates: [105.78920149543677, 20.943262714981614],
+          coordinates: [105.7892014954, 20.943262715],
           type: 'Point',
         },
       },
@@ -51,11 +55,11 @@ function createDefaultHighlight() {
         },
         geometry: {
           coordinates: [
-            [105.78040532029263, 20.727462654482267],
-            [106.1036647594259, 20.92477770068014],
-            [105.95632882584783, 20.915534338697114],
-            [105.77050849523124, 20.859033309679518],
-            [105.65066203209409, 20.86930774910546],
+            [105.7804053203, 20.7274626545],
+            [106.1036647594, 20.9247777007],
+            [105.9563288258, 20.9155343387],
+            [105.7705084952, 20.8590333097],
+            [105.6506620321, 20.8693077491],
           ],
           type: 'LineString',
         },
@@ -68,11 +72,11 @@ function createDefaultHighlight() {
         geometry: {
           coordinates: [
             [
-              [105.94753265070807, 20.636940420905717],
-              [106.12125710970412, 20.636940420905717],
-              [106.12125710970412, 20.719235591893252],
-              [105.94753265070807, 20.719235591893252],
-              [105.94753265070807, 20.636940420905717],
+              [105.9475326507, 20.6369404209],
+              [106.1212571097, 20.6369404209],
+              [106.1212571097, 20.7192355919],
+              [105.9475326507, 20.7192355919],
+              [105.9475326507, 20.6369404209],
             ],
           ],
           type: 'Polygon',
@@ -124,7 +128,7 @@ function createChangeColorHighlight() {
           id: '1',
         },
         geometry: {
-          coordinates: [105.61081556232403, 21.1273787080941],
+          coordinates: [105.6108155623, 21.1273787081],
           type: 'Point',
         },
       },
@@ -135,10 +139,10 @@ function createChangeColorHighlight() {
         },
         geometry: {
           coordinates: [
-            [105.30150956880232, 21.095550797627837],
-            [105.17381764730067, 21.015268525753356],
-            [105.28107422536527, 20.976007744738553],
-            [105.37124457052539, 21.06345663819846],
+            [105.3015095688, 21.0955507976],
+            [105.1738176473, 21.0152685258],
+            [105.2810742254, 20.9760077447],
+            [105.3712445705, 21.0634566382],
           ],
           type: 'LineString',
         },
@@ -151,11 +155,11 @@ function createChangeColorHighlight() {
         geometry: {
           coordinates: [
             [
-              [105.2320616024889, 21.22764784321741],
-              [105.2320616024889, 21.140078834531636],
-              [105.47045239753209, 21.140078834531636],
-              [105.47045239753209, 21.22764784321741],
-              [105.2320616024889, 21.22764784321741],
+              [105.2320616025, 21.2276478432],
+              [105.2320616025, 21.1400788345],
+              [105.4704523975, 21.1400788345],
+              [105.4704523975, 21.2276478432],
+              [105.2320616025, 21.2276478432],
             ],
           ],
           type: 'Polygon',
@@ -209,7 +213,7 @@ function createCustomHighlight() {
           id: '1',
         },
         geometry: {
-          coordinates: [106.11280363142981, 21.189130192154835],
+          coordinates: [106.1128036314, 21.1891301922],
           type: 'Point',
         },
       },
@@ -220,10 +224,10 @@ function createCustomHighlight() {
         },
         geometry: {
           coordinates: [
-            [106.22854873674976, 21.214260501931676],
-            [106.3443667241857, 21.218473535343747],
-            [106.3499660515746, 21.161870647222116],
-            [106.25106784879875, 21.134618864235406],
+            [106.2285487367, 21.2142605019],
+            [106.3443667242, 21.2184735353],
+            [106.3499660516, 21.1618706472],
+            [106.2510678488, 21.1346188642],
           ],
           type: 'LineString',
         },
@@ -236,11 +240,11 @@ function createCustomHighlight() {
         geometry: {
           coordinates: [
             [
-              [106.03635668869845, 21.352515361338718],
-              [106.03635668869845, 21.31484519090337],
-              [106.18474278754854, 21.31484519090337],
-              [106.18474278754854, 21.352515361338718],
-              [106.03635668869845, 21.352515361338718],
+              [106.0363566887, 21.3525153613],
+              [106.0363566887, 21.3148451909],
+              [106.1847427875, 21.3148451909],
+              [106.1847427875, 21.3525153613],
+              [106.0363566887, 21.3525153613],
             ],
           ],
           type: 'Polygon',
@@ -281,6 +285,437 @@ function createCustomHighlight() {
   dataset.add(groupLayer1);
   return dataset;
 }
+function createHighlightWithPropertyName() {
+  const dataset = createRootDataset('Highlight with Property Name');
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          code: 'P001',
+          name: 'Point 1',
+        },
+        geometry: {
+          coordinates: [105.8892014954, 20.743262715],
+          type: 'Point',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          code: 'L002',
+          name: 'Line 2',
+        },
+        geometry: {
+          coordinates: [
+            [105.7804053203, 20.5274626545],
+            [106.0036647594, 20.7247777007],
+            [105.8563288258, 20.7155343387],
+          ],
+          type: 'LineString',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          code: 'A003',
+          name: 'Area 3',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.8475326507, 20.4369404209],
+              [106.0212571097, 20.4369404209],
+              [106.0212571097, 20.5192355919],
+              [105.8475326507, 20.5192355919],
+              [105.8475326507, 20.4369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer1 = createGroupDataset('Group layer 1');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Highlight by property "code"',
+  )
+    .setColor(getChartRandomColor())
+    .configDisabledOpacity()
+    .configInitShowLegend()
+    .addMenus([createMenuItemToggleShow()])
+    .build();
+  const layer1 = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setFilter(['==', '$type', 'Point'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setFilter(['==', '$type', 'LineString'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setFilter(['==', '$type', 'Polygon'])
+      .setOpacity(0.5)
+      .setColor(list1.color)
+      .build(),
+  ]);
+  // Ví dụ: Sử dụng property name 'code' thay vì 'id'
+  const highlight = createDatasetPartHighlightComponent(undefined, {
+    filterCreator: 'code', // Sử dụng property 'code' để filter
+  });
+  groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
+  groupLayer1.add(list1);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  return dataset;
+}
+function createCustomAnimateWithFilterFunction() {
+  const dataset = createRootDataset('Custom Animate with Filter Function');
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          code: 'ANIM001',
+          type: 'important',
+          status: 'active',
+          priority: 1,
+        },
+        geometry: {
+          coordinates: [106.1892014954, 20.943262715],
+          type: 'Point',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          code: 'ANIM002',
+          type: 'important',
+          status: 'active',
+          priority: 2,
+        },
+        geometry: {
+          coordinates: [
+            [106.0804053203, 20.7274626545],
+            [106.2036647594, 20.9247777007],
+            [106.0563288258, 20.9155343387],
+          ],
+          type: 'LineString',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          code: 'ANIM003',
+          type: 'normal',
+          status: 'inactive',
+          priority: 3,
+        },
+        geometry: {
+          coordinates: [
+            [
+              [106.1475326507, 20.6369404209],
+              [106.3212571097, 20.6369404209],
+              [106.3212571097, 20.7192355919],
+              [106.1475326507, 20.7192355919],
+              [106.1475326507, 20.6369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          code: 'ANIM004',
+          type: 'important',
+          status: 'active',
+          priority: 1,
+        },
+        geometry: {
+          coordinates: [
+            [
+              [106.2475326507, 20.7369404209],
+              [106.4212571097, 20.7369404209],
+              [106.4212571097, 20.8192355919],
+              [106.2475326507, 20.8192355919],
+              [106.2475326507, 20.7369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer1 = createGroupDataset('Group layer 1');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Custom animate with filter function',
+  )
+    .setColor('#00FF00')
+    .configDisabledOpacity()
+    .configInitShowLegend()
+    .addMenus([createMenuItemToggleShow()])
+    .build();
+  const layer1 = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setFilter(['==', '$type', 'Point'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setFilter(['==', '$type', 'LineString'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setFilter(['==', '$type', 'Polygon'])
+      .setOpacity(0.5)
+      .setColor(list1.color)
+      .build(),
+  ]);
+  // Ví dụ: Sử dụng filterCreator dạng function để tạo filter phức tạp
+  // Chỉ highlight các feature có type='important' VÀ status='active' VÀ priority <= 2
+  const highlight = createDatasetCustomHighlightComponent(undefined, {
+    filterCreator: () => {
+      return [
+        'all',
+        ['==', 'type', 'important'],
+        ['==', 'status', 'active'],
+        ['<=', 'priority', 2],
+      ];
+    },
+  });
+  groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
+  groupLayer1.add(list1);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  return dataset;
+}
+function createDefaultHighlightWithFilterFunction() {
+  const dataset = createRootDataset('Default Highlight with Filter Function');
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          category: 'building',
+          status: 'active',
+          priority: 'high',
+          code: 'BLD001',
+        },
+        geometry: {
+          coordinates: [105.8892014954, 20.843262715],
+          type: 'Point',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          category: 'road',
+          status: 'active',
+          priority: 'medium',
+          code: 'ROD002',
+        },
+        geometry: {
+          coordinates: [
+            [105.7804053203, 20.6274626545],
+            [106.0036647594, 20.8247777007],
+            [105.8563288258, 20.8155343387],
+          ],
+          type: 'LineString',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          category: 'park',
+          status: 'inactive',
+          priority: 'low',
+          code: 'PRK003',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.8475326507, 20.5369404209],
+              [106.0212571097, 20.5369404209],
+              [106.0212571097, 20.6192355919],
+              [105.8475326507, 20.6192355919],
+              [105.8475326507, 20.5369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          category: 'building',
+          status: 'active',
+          priority: 'high',
+          code: 'BLD004',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [105.9475326507, 20.6369404209],
+              [106.1212571097, 20.6369404209],
+              [106.1212571097, 20.7192355919],
+              [105.9475326507, 20.7192355919],
+              [105.9475326507, 20.6369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer1 = createGroupDataset('Group layer 1');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Default highlight with filter function',
+  )
+    .setColor('#FF6600')
+    .configDisabledOpacity()
+    .configInitShowLegend()
+    .addMenus([createMenuItemToggleShow()])
+    .build();
+  const layer1 = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setFilter(['==', '$type', 'Point'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setFilter(['==', '$type', 'LineString'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setFilter(['==', '$type', 'Polygon'])
+      .setOpacity(0.5)
+      .setColor(list1.color)
+      .build(),
+  ]);
+  // Ví dụ: Default highlight với filterCreator dạng function
+  // Chỉ highlight các feature có category='building' VÀ status='active' VÀ priority='high'
+  const highlight = createDatasetPartHighlightComponent(undefined, {
+    filterCreator: () => {
+      return [
+        'all',
+        ['==', 'category', 'building'],
+        ['==', 'status', 'active'],
+        ['==', 'priority', 'high'],
+      ];
+    },
+  });
+  groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
+  groupLayer1.add(list1);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  return dataset;
+}
+function createCustomAnimateWithFieldName() {
+  const dataset = createRootDataset('Custom Animate with Field Name');
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          productCode: 'PRD001',
+          name: 'Product A',
+        },
+        geometry: {
+          coordinates: [106.0892014954, 20.943262715],
+          type: 'Point',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          productCode: 'PRD002',
+          name: 'Product B',
+        },
+        geometry: {
+          coordinates: [
+            [105.9804053203, 20.7274626545],
+            [106.2036647594, 20.9247777007],
+            [106.0563288258, 20.9155343387],
+          ],
+          type: 'LineString',
+        },
+      },
+      {
+        type: 'Feature',
+        properties: {
+          productCode: 'PRD003',
+          name: 'Product C',
+        },
+        geometry: {
+          coordinates: [
+            [
+              [106.1475326507, 20.6369404209],
+              [106.3212571097, 20.6369404209],
+              [106.3212571097, 20.7192355919],
+              [106.1475326507, 20.7192355919],
+              [106.1475326507, 20.6369404209],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  });
+  const groupLayer1 = createGroupDataset('Group layer 1');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Custom animate with field name',
+  )
+    .setColor('#9900FF')
+    .configDisabledOpacity()
+    .configInitShowLegend()
+    .addMenus([createMenuItemToggleShow()])
+    .build();
+  const layer1 = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setFilter(['==', '$type', 'Point'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('line')
+      .setFilter(['==', '$type', 'LineString'])
+      .setColor(list1.color)
+      .build(),
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setFilter(['==', '$type', 'Polygon'])
+      .setOpacity(0.5)
+      .setColor(list1.color)
+      .build(),
+  ]);
+  // Ví dụ: Custom animate highlight với filterCreator dạng field name (string)
+  // Sử dụng property 'productCode' để filter thay vì 'id'
+  const highlight = createDatasetCustomHighlightComponent(undefined, {
+    filterCreator: 'productCode', // Sử dụng property 'productCode' để filter
+  });
+  groupLayer1.add(layer1);
+  groupLayer1.add(highlight);
+  groupLayer1.add(list1);
+  dataset.add(source);
+  dataset.add(groupLayer1);
+  return dataset;
+}
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
@@ -292,6 +727,7 @@ function createCustomHighlight() {
       </template>
     </LayerControl>
     <LayerHighlight enableClick />
+    <ZoomControl />
   </Map>
 </template>
 

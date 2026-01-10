@@ -3,14 +3,24 @@ import type { GeoJSONFeature, LayerSpecification } from 'maplibre-gl';
 import { createWithDataHelper } from '../../extra';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';
-import { findFirstLeafByType } from '../visitors';
-import { type HighlightAnimState, useHighlightAnimation } from './helper';
+import {
+  type HighlightAnimState,
+  type HighlightFilterCreator,
+  useHighlightAnimation,
+} from './helper';
 import type { IHighlightView } from './types';
+
+export type { HighlightFilterCreator };
+
 export function createDatasetPartHighlightComponent(
   data?: Partial<LayerSpecification>,
+  options?: {
+    filterCreator?: HighlightFilterCreator;
+  },
 ): IHighlightView {
   const base = createDatasetLeaf('');
   const dataHelper = createWithDataHelper(data);
+  const filterCreator = options?.filterCreator;
 
   return createNamedComponent('HighlightComponent', {
     ...base,
@@ -18,18 +28,8 @@ export function createDatasetPartHighlightComponent(
     get type() {
       return 'highlight';
     },
-    highlight: (feature) => {
-      const source = findFirstLeafByType(base, 'source');
-      const source_id = (source as any)?.getSourceId();
-      const field_id = feature?.id || feature?.properties.id;
-      if (!field_id) {
-        return undefined;
-      }
-      return {
-        source: source_id,
-        filter: field_id ? ['==', 'id', field_id] : undefined,
-        ...dataHelper.getData(),
-      };
+    getFilterCreator() {
+      return filterCreator;
     },
   });
 }
@@ -81,6 +81,9 @@ export function createDatasetPartCustomAnimateHighlightComponent<T>(
   }) => void,
   createDefaultState: () => Partial<HighlightAnimState & T>,
   data?: Partial<LayerSpecification>,
+  options?: {
+    filterCreator?: HighlightFilterCreator;
+  },
 ): IHighlightView {
   const base = createDatasetLeaf('');
   const dataHelper = createWithDataHelper(data);
@@ -146,6 +149,7 @@ export function createDatasetPartCustomAnimateHighlightComponent<T>(
         },
       },
       feature,
+      filterCreator: options?.filterCreator,
     });
     _startAnimation(map, layerIds, durationMs, animateFn, createDefaultState());
   }

@@ -3,6 +3,7 @@ import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { WithDataHelper } from '../../extra';
 import type { IDataset } from '../../interfaces';
+import type { HighlightFilterCreator } from './helper';
 
 export type IHighlightConfig = {
   source?: string;
@@ -11,9 +12,7 @@ export type IHighlightConfig = {
 };
 export type ISimpleHighlightView = IDataset &
   WithDataHelper & {
-    highlight: (
-      feature?: GeoJSONFeature,
-    ) => Partial<IHighlightConfig> | undefined;
+    getFilterCreator?: () => HighlightFilterCreator | undefined;
   };
 export type IComplexHighlightView = IDataset & WithDataHelper & HighlightHandle;
 export type IHighlightView = ISimpleHighlightView | IComplexHighlightView;
@@ -26,4 +25,5 @@ export type HighlightHandle = {
   }): void;
   stopAnimation(map: MapSimple): void;
   setOnDone(map: MapSimple, cb: () => void): void;
+  getFilterCreator?: () => HighlightFilterCreator | undefined;
 };

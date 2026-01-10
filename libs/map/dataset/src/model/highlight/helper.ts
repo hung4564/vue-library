@@ -1,6 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/shared-map';
 import { logHelper, mergeFilters } from '@hungpvq/shared-map';
+import type { Feature } from 'geojson';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
@@ -13,6 +14,43 @@ import { findFirstLeafByType } from '..';
 import type { WithDataHelper } from '../../extra';
 import type { IDataset } from '../../interfaces';
 import { loggerHighlight } from '../../logger';
+
+export type HighlightFilterCreator =
+  | string
+  | ((feature?: GeoJSONFeature | Feature) => any[] | undefined);
+
+export function createHighlightFilter(
+  feature: GeoJSONFeature | Feature | undefined,
+  filterCreator?: HighlightFilterCreator,
+): any[] | undefined {
+  if (!feature) return undefined;
+
+  if (!filterCreator) {
+    // Default behavior: use id (feature.id or feature.properties.id)
+    const field_id = feature?.id || (feature as any)?.properties?.id;
+    return field_id ? ['==', 'id', field_id] : undefined;
+  }
+
+  if (typeof filterCreator === 'string') {
+    // If it's a string, use it as property field name
+    // Special case for 'id': use feature.id or feature.properties.id with ['==', 'id', value]
+    if (filterCreator === 'id') {
+      const field_id = feature?.id || (feature as any)?.properties?.id;
+      return field_id ? ['==', 'id', field_id] : undefined;
+    }
+    // For other properties, use ['get', propertyName] syntax
+    const fieldValue = (feature as any)?.properties?.[filterCreator];
+    if (fieldValue == null) return undefined;
+    return ['==', filterCreator, fieldValue];
+  }
+
+  if (typeof filterCreator === 'function') {
+    // If it's a function, call it with the feature
+    return filterCreator(feature);
+  }
+
+  return undefined;
+}
 
 type LayerKey = 'point' | 'line' | 'polygon';
 // highlightLayers.ts
@@ -94,35 +132,32 @@ export function ensureHighlightLayers(
   dataset: WithDataHelper | undefined,
   sourceId: string,
   feature?: GeoJSONFeature,
+  filterCreator?: HighlightFilterCreator,
 ) {
   (Object.keys(layerIds) as (keyof typeof layerIds)[]).forEach((key) => {
     const id = layerIds[key];
     const baseLayer = layersDefault[key];
-    const highlightFilter =
-      feature && (feature.id || feature.properties.id) != null
-        ? ['==', 'id', feature.id || feature.properties.id]
-        : undefined;
+    const highlightFilter = createHighlightFilter(feature, filterCreator);
     const mergedFilter = mergeFilters([
       (baseLayer as any).filter,
       dataset?.getData()?.filter || highlightFilter || {},
     ]);
-    if (!map.getLayer(id)) {
-      const temp = {
-        id,
-        source: sourceId,
-        ...baseLayer,
-        ...dataset?.getData(),
-        filter: mergedFilter,
-      } as LayerSpecification;
-      logHelper(loggerHighlight, map.id, 'useHighlightAnimation').debug(
-        'highlight',
-        'layer',
-        { layer: temp, filter: mergedFilter, feature },
-      );
-      map.addLayer(temp);
-    } else {
-      map.setFilter(id, mergedFilter);
+    if (map.getLayer(id)) {
+      map.removeLayer(id);
     }
+    const temp = {
+      id,
+      source: sourceId,
+      ...baseLayer,
+      ...dataset?.getData(),
+      filter: mergedFilter,
+    } as LayerSpecification;
+    logHelper(loggerHighlight, map.id, 'useHighlightAnimation').debug(
+      'highlight',
+      'layer',
+      { layer: temp, filter: mergedFilter, feature, highlightFilter },
+    );
+    map.addLayer(temp);
   });
 }
 
@@ -240,15 +275,25 @@ export function useHighlightAnimation<T = any>() {
     map,
     feature,
     layers,
+    filterCreator,
   }: {
     dataset?: IDataset & WithDataHelper;
     map: MapSimple;
     feature?: GeoJSONFeature;
     layerIds: Record<string, string>;
     layers: Record<string, Partial<LayerSpecification>>;
+    filterCreator?: HighlightFilterCreator;
   }) {
     const sourceId = ensureHighlightSource(dataset, map, feature);
-    ensureHighlightLayers(map, layerIds, layers, dataset, sourceId, feature);
+    ensureHighlightLayers(
+      map,
+      layerIds,
+      layers,
+      dataset,
+      sourceId,
+      feature,
+      filterCreator,
+    );
   }
   function setOnDone(map: MapSimple, cb: () => void) {
     const id = (map as any).id || 'default';

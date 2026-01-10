@@ -1,22 +1,16 @@
 {
   "name": "map-devtools",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/devtools/src",
+  "sourceRoot": "libs/map/devtools/src",
   "projectType": "library",
-  "tags": ["map"],
   "targets": {
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+    "ts-check": {
+      "executor": "nx:run-commands",
       "options": {
-        "jestConfig": "libs/devtools/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
       }
     }
   }

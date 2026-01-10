@@ -1,12 +1,16 @@
 import type { MapSimple } from '@hungpvq/shared-map';
 import {
   createDatasetPartCustomAnimateHighlightComponent,
+  type HighlightFilterCreator,
   type IHighlightView,
 } from '@hungpvq/vue-map-dataset';
 import type { LayerSpecification } from 'maplibre-gl';
 
 export function createDatasetCustomHighlightComponent(
   data?: Partial<LayerSpecification>,
+  options?: {
+    filterCreator?: HighlightFilterCreator;
+  },
 ): IHighlightView {
   function animateFn({
     layerIds,
@@ -41,5 +45,6 @@ export function createDatasetCustomHighlightComponent(
       startTime: performance.now(),
     }),
     data,
+    options,
   );
 }

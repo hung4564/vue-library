@@ -10,7 +10,7 @@ import { ref, shallowRef } from 'vue';
 import type { WithDataHelper } from '../../extra';
 import type { IDataset } from '../../interfaces';
 import { loggerHighlight } from '../../logger';
-import type { HighlightHandle } from '../../model';
+import type { HighlightHandle, IHighlightView } from '../../model';
 import {
   createDefaultHighlightLayers,
   defaultAnimate,
@@ -18,7 +18,7 @@ import {
 } from '../../model/highlight/helper';
 
 export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
-  setDataset(p_dataset?: IDataset & WithDataHelper): void;
+  setDataset(p_dataset?: IHighlightView): void;
 } {
   const {
     startAnimation: _startAnimation,
@@ -26,9 +26,7 @@ export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
     initAnimation: _initAnimation,
     setOnDone,
   } = useHighlightAnimation();
-  const dataset = shallowRef<(IDataset & WithDataHelper) | undefined>(
-    undefined,
-  );
+  const dataset = shallowRef<IHighlightView | undefined>(undefined);
   const layerId = 'layer-highlighted';
   type LayerKey = 'point' | 'line' | 'polygon';
   const layerIds = ref<Record<LayerKey, string>>({
@@ -47,7 +45,7 @@ export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
       >
     >
   >(createDefaultHighlightLayers(color));
-  function setDataset(p_dataset?: IDataset & WithDataHelper) {
+  function setDataset(p_dataset?: IHighlightView) {
     dataset.value = p_dataset;
   }
   function startAnimation({
@@ -75,6 +73,7 @@ export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
       layers: toValue(layers.value) as any,
       dataset: dataset.value,
       feature,
+      filterCreator: dataset.value?.getFilterCreator?.(),
     });
     logHelper(loggerHighlight, map.id, 'useDefaultHighlight').debug(
       'startAnimation',
