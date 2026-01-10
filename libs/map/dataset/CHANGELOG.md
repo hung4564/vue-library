@@ -1,3 +1,13 @@
+## 0.10.2 (2026-01-10)
+
+### 🩹 Fixes
+
+- add props filterCreator ([0e15c3f](https://github.com/hung4564/vue-library/commit/0e15c3f))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.10.1 (2026-01-08)
 
 ### 🩹 Fixes
