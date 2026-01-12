@@ -1,0 +1,21 @@
+{
+  "name": "@hungpvq/map-core",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
+    }
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "mitt": "^3.0.0",
+    "proj4": "^2.11.0",
+    "maplibre-gl": "^5.4.0",
+    "@hungpvq/shared-log": ">=0.0.1"
+  }
+}

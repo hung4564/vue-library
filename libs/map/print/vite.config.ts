@@ -46,7 +46,7 @@ export default defineConfig({
         'vue',
         '@hungpvq/shared',
         '@hungpvq/shared-core',
-        '@hungpvq/shared-map',
+        '@hungpvq/map-core',
         '@hungpvq/vue-map-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',

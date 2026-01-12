@@ -1,4 +1,4 @@
-import { fitBounds } from '@hungpvq/shared-map';
+import { fitBounds } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/vue-map-core';
 import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
 import type { BBox } from 'geojson';

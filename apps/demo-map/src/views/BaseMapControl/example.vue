@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,

@@ -1,7 +1,7 @@
-import { logHelper, MapSimple } from '@hungpvq/shared-map';
+import { logHelper, MapSimple } from '@hungpvq/map-core';
 import { createMapScopedStore, useMapStore } from '../../store';
-import { MAP_STORE_KEY } from '../../types/key';
-import { addImageForMap } from './helpers';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
+import { addImageForMap } from '@hungpvq/map-core';
 import { logger } from './logger';
 
 export type MapImageStore = {

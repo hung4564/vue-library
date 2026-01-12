@@ -1,5 +1,5 @@
-import type { Color } from '@hungpvq/shared-map';
-import { getChartRandomColor } from '@hungpvq/vue-map-core';
+import type { Color } from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
 import {
   createMenuItemShowDetailForItem,

@@ -5,7 +5,7 @@ import {
   MapCompareSetting,
   MittTypeMapCompare,
   MittTypeMapCompareEventKey,
-} from '../types';
+} from '@hungpvq/map-core';
 
 export const useMapCompareSetting = (
   mapId: string,

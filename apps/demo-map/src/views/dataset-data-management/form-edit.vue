@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -32,7 +33,6 @@ import {
   ModuleContainer,
   useMap,
   useShow,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 const props = withDefaults(defineProps<WithMapPropType>(), {

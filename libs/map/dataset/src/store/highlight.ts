@@ -1,4 +1,4 @@
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';

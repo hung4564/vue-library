@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type CrsItem, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
@@ -10,12 +11,10 @@ import {
   useMap,
   useShow,
   WithShowProps,
-  type WithMapPropType,
 } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useToolbarControl } from '../../../toolbar';
 import { useMapCrsItems } from '../../hooks';
-import { type CrsItem } from '../../types';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });

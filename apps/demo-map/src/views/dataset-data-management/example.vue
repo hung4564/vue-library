@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { MapSimple } from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   useConvertToGeoJSON,
@@ -6,14 +8,8 @@ import {
   useGeoConvertToFile,
 } from '@hungpvq/shared-file';
 import { loggerFactory } from '@hungpvq/shared-log';
-import type { MapSimple } from '@hungpvq/shared-map';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
-import {
-  EventManagementControl,
-  getChartRandomColor,
-  getMap,
-  Map,
-} from '@hungpvq/vue-map-core';
+import { EventManagementControl, getMap, Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   createDatasetParDraftDataManagementGeojsonLocalComponent,

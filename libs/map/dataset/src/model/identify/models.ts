@@ -1,4 +1,4 @@
-import { logHelper, type MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/vue-map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import {

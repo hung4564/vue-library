@@ -5,14 +5,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { logHelper } from '@hungpvq/shared-map';
+import {
+  EventBboxRanger,
+  EventBboxRangerHandle,
+  EventClick,
+  logHelper,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   defaultMapProps,
-  EventBboxRanger,
-  EventBboxRangerHandle,
-  EventClick,
   MapCommonButton,
   ModuleContainer,
   useCoordinate,
@@ -20,7 +23,6 @@ import {
   useLang,
   useMap,
   useToolbarControl,
-  WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';

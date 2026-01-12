@@ -26,10 +26,10 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/shared-map": "~0.8.0",
     "@hungpvq/vue-map-core": "~0.8.0",
     "@hungpvq/vue-draggable": "~0.4.4",
     "@hungpvq/shared-log": ">=0.0.1",
+    "@hungpvq/map-core": ">=0.0.1",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "@turf/turf": "^6.5.0",

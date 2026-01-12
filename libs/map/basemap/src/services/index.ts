@@ -1,1 +1,2 @@
-export * from './basemap.service';
+// Re-export BasemapService from @hungpvq/map-core
+export { BasemapService } from '@hungpvq/map-core';

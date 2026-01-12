@@ -28,13 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import { MapSimple } from '@hungpvq/shared-map';
+import { MapSimple, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const props = withDefaults(

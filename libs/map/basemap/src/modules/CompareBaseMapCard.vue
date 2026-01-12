@@ -46,7 +46,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useBaseMap } from '../hooks';
-import type { BaseMapItem } from '../types';
+import type { BaseMapItem } from '@hungpvq/map-core';
 
 const props = defineProps<{
   mapId: string;

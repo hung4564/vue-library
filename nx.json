@@ -79,6 +79,7 @@
   "release": {
     "projectsRelationship": "independent",
     "version": {
+      "preVersionCommand": "npx nx run-many -t build",
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true
     },
@@ -98,7 +99,8 @@
       "libs/ui/*",
       "libs/map/*",
       "libs/*",
-      "shared-store"
+      "shared-store",
+      "@hungpvq/map-core"
     ]
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -11,7 +11,6 @@ import {
   useMap,
   useShow,
   useToolbarControl,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';

@@ -18,7 +18,7 @@
   </Map>
 </template>
 <script setup lang="ts">
-import { MapSimple } from '@hungpvq/shared-map';
+import { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
   FullScreenControl,

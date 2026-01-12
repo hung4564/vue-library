@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -13,7 +14,6 @@ import {
   useMap,
   useShow,
   useToolbarControl,
-  WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
 

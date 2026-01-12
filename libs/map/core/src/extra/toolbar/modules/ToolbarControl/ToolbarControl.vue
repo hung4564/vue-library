@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { defaultMapProps, useMap, WithMapPropType } from '../../../..//hooks';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { defaultMapProps, useMap } from '../../../../hooks';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../../components/MapControlGroupButton.vue';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
   defineProps<

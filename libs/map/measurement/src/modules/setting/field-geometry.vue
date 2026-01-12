@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CoordinatesNumber } from '@hungpvq/shared-map';
+import type { CoordinatesNumber } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,

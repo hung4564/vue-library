@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -6,12 +7,11 @@ import {
   useLang,
   useMap,
   useToolbarControl,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
-import { exportMapbox } from './print';
+import { exportMapbox } from '@hungpvq/map-core';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

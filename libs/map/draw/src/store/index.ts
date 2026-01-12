@@ -1,5 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore, useMapMittStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { onMounted, onUnmounted } from 'vue';

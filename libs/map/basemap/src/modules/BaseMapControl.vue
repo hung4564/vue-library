@@ -75,7 +75,7 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -87,14 +87,13 @@ import {
   useLang,
   useMap,
   useToolbarControl,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import type { BaseMapItem } from '../types';
+import type { BaseMapItem } from '@hungpvq/map-core';
 import defaultbasemap from './basemap';
 const props = withDefaults(
   defineProps<

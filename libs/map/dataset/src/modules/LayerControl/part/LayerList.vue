@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   BaseButton,
   defaultMapProps,
   RegistryItem,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {

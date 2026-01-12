@@ -10,6 +10,10 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/map-core/',
+      component: () => import('../views/map-core.vue'),
+    },
+    {
       path: '/toolbar/',
       component: () => import('../views/toolbar.vue'),
     },

@@ -1,5 +1,5 @@
 import { createStore } from '@hungpvq/shared';
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import type { Component } from 'vue';
 import { logger } from '../../logger';
 import { createMapScopedStore } from '../../store';

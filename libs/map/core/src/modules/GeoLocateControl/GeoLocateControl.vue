@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import type { MapSimple } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { toValue, tryOnMounted, tryOnUnmounted } from '@hungpvq/shared';
 import { useGeolocation } from '@hungpvq/shared-core';
-import type { MapSimple } from '@hungpvq/shared-map';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
 import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const { coords, error, resume, pause } = useGeolocation({

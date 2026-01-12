@@ -1,38 +1,12 @@
-import { MapSimple } from '@hungpvq/shared-map';
+import type { BaseMapItem, IBaseMapLayer, MapSimple } from '@hungpvq/map-core';
+import { BaseMapAdapter, BaseMapLayer } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/vue-map-core';
-import { BaseMapLayer } from '../hooks/model';
-import { BaseMapItem, IBaseMapLayer } from '../types';
 
-export abstract class BaseMapAdapter {
-  protected current?: BaseMapItem;
-  protected layer?: IBaseMapLayer;
-
-  public getCurrent(): BaseMapItem | undefined {
-    return this.current;
-  }
-
-  public async setCurrent(mapId: string, baseMap: BaseMapItem) {
-    this.current = baseMap;
-    await this.onApplyBaseMap(mapId, baseMap);
-  }
-
-  public getIndexDefault(
-    baseMaps: BaseMapItem[],
-    defaultBaseMap: string,
-  ): BaseMapItem | undefined {
-    return (
-      baseMaps.find((b) => b.default || b.title === defaultBaseMap) ??
-      baseMaps[0]
-    );
-  }
-
-  protected abstract onApplyBaseMap(
-    mapId: string,
-    baseMap: BaseMapItem,
-  ): Promise<void>;
-}
+// Re-export BaseMapAdapter from @hungpvq/map-core
+export { BaseMapAdapter } from '@hungpvq/map-core';
 
 export class DefaultBaseMapAdapter extends BaseMapAdapter {
+  protected layer?: IBaseMapLayer;
   protected async onApplyBaseMap(mapId: string, item: BaseMapItem) {
     if (!item) return;
     let layer = this.layer;

@@ -1,4 +1,4 @@
-import { logHelper, type MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
 import type { IDataset } from '../interfaces/dataset.base';

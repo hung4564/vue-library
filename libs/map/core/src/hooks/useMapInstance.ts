@@ -1,8 +1,8 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { type MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { MapEventError, MapInitializationError } from '../errors';
+import { MapEventError, MapInitializationError } from '@hungpvq/map-core';
 import { errorHandler } from '../services/error-handler.service';
 import { useMapContainer } from '../store/store';
 

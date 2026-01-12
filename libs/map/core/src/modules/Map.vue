@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBreakpoints } from '@hungpvq/shared-core';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
 import { computed, provide, reactive, ref } from 'vue';

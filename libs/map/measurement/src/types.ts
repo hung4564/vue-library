@@ -1,8 +1,22 @@
-import { CoordinatesNumber } from '@hungpvq/shared-map';
+/**
+ * Vue-specific measurement types
+ * Framework-agnostic types are available directly from @hungpvq/map-core
+ */
+
+import type {
+  CoordinatesNumber,
+  MeasureActionItem as MeasureActionItemCore,
+} from '@hungpvq/map-core';
 import { MeasurementHandleType } from './modules/helper';
 
-export type MeasureActionItem = {
-  title: string;
+/**
+ * Vue-specific MeasureActionItem type
+ * Extends the core type with Vue-specific MeasurementHandleType
+ */
+export type MeasureActionItem = Omit<
+  MeasureActionItemCore,
+  'handle' | 'show'
+> & {
   handle: (data: {
     handler: MeasurementHandleType;
     measurementType?: string;
@@ -11,14 +25,12 @@ export type MeasureActionItem = {
     reset: () => void;
     onFlyTo: () => void;
   }) => void;
-  icon: any;
-  type: string;
   show?: (data: {
     handler: MeasurementHandleType;
     measurementType?: string;
     status: 'select' | 'handle';
   }) => boolean;
-  isActive?: () => boolean;
-  disabled?: (data: { coordinates?: CoordinatesNumber[] }) => boolean;
-  index?: number;
 };
+
+// Re-export Vue-specific types from modules/types
+export type { IView, IViewProps } from './modules/types';

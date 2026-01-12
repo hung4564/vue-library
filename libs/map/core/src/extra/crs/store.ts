@@ -1,8 +1,8 @@
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore } from '../../store';
-import { MAP_STORE_KEY } from '../../types/key';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { logger } from './logger';
-import { type CrsItem, type MapCrsStore } from './types';
+import { type CrsItem, type MapCrsStore } from '@hungpvq/map-core';
 
 const item_init: CrsItem[] = [
   { name: 'WGS 84', epsg: '4326', default: true, unit: 'degree' },

@@ -1,13 +1,13 @@
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore, getStore } from '../../store';
-import { MAP_STORE_KEY } from '../../types/key';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {
   MapCompareSetting,
   MittTypeMapCompareEventKey,
   type MittTypeMapCompare,
-} from './types';
+} from '@hungpvq/map-core';
 
 export type MapLocateStore = {
   setting: MapCompareSetting;

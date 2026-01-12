@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { StyleImage } from 'maplibre-gl';
 import { onBeforeUnmount, onMounted, shallowRef } from 'vue';
 import { getMap } from '../../../store';

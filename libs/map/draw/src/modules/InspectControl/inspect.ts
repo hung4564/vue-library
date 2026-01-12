@@ -1,4 +1,4 @@
-import { MapSimple } from '@hungpvq/shared-map';
+import { MapSimple } from '@hungpvq/map-core';
 import { StyleSpecification } from 'maplibre-gl';
 
 export type InspectStyleSpecification = StyleSpecification & {

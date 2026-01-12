@@ -1,4 +1,4 @@
-import { MapSimple } from '@hungpvq/shared-map';
+import { MapSimple } from '@hungpvq/map-core';
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';

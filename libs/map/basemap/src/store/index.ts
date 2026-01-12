@@ -1,8 +1,13 @@
-import { logHelper } from '@hungpvq/shared-map';
+import type { BaseMapStore as BaseMapStoreCore } from '@hungpvq/map-core';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import { BaseMapAdapter, DefaultBaseMapAdapter } from '../adapter/base';
 import { logger } from '../logger';
-import { BaseMapStore } from '../types';
+
+// Vue-specific BaseMapStore type
+export type BaseMapStore = Omit<BaseMapStoreCore, 'adapter'> & {
+  adapter: BaseMapAdapter;
+};
 
 const KEY = 'basemap';
 

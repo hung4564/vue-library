@@ -49,6 +49,7 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        '@hungpvq/map-core',
         'maplibre-gl',
       ],
       output: {

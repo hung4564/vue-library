@@ -8,13 +8,15 @@ const { add: addEventClick, remove: removeEventClick } = useEventMap(mapId.value
 
 ## Model
 
+**Import event models directly from `@hungpvq/map-core`:**
+
 ```ts
-import { EventClick, EventBboxSelect } from '@hungpvq/vue-map-core';
+import { EventClick, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
 ```
 
-- EventClick
-- EventBboxSelect
-- EventMouseMove
+- `EventClick` - Click event handler
+- `EventBboxRanger` (alias: `EventBboxSelect`) - Bounding box selection handler
+- `EventMouseMove` - Mouse move event handler
 
 ---
 
@@ -48,7 +50,7 @@ The `useEventMap` hook provides a convenient way to add, remove, and check the s
 
 ```ts
 import { useEventMap } from '@hungpvq/vue-map-core';
-import { EventClick } from '@hungpvq/vue-map-core';
+import { EventClick } from '@hungpvq/map-core';
 ```
 
 **Usage:**
@@ -73,14 +75,14 @@ You can use several built-in event models provided by the library:
 **Import:**
 
 ```ts
-import { EventClick, EventBboxSelect, EventMouseMove } from '@hungpvq/vue-map-core';
+import { EventClick, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
 ```
 
 **Available Events:**
 
-- `EventClick`
-- `EventBboxSelect`
-- `EventMouseMove`
+- `EventClick` - Click event handler
+- `EventBboxRanger` - Bounding box selection handler (can be imported as `EventBboxSelect` for backward compatibility)
+- `EventMouseMove` - Mouse move event handler
 
 Each event can be instantiated and assigned a handler function using `.setHandler(fn)`.
 
@@ -91,7 +93,7 @@ You can create your own custom event by extending the base event class or by fol
 **Example:**
 
 ```ts
-import { IEvent } from '@hungpvq/vue-map-core';
+import { IEvent } from '@hungpvq/map-core';
 
 class CustomEvent implements IEvent {
   id = 'custom-event';
@@ -123,5 +125,5 @@ add();
 
 - Use `useMapEventStore` for direct access to the event store (current event, event list).
 - Use `useEventMap` for adding, removing, and checking the status of events in a component-friendly way.
-- Use built-in events like `EventClick`, `EventBboxSelect`, and `EventMouseMove` for common interactions.
+- Use built-in events like `EventClick`, `EventBboxRanger`, and `EventMouseMove` from `@hungpvq/map-core` for common interactions.
 - Create custom events by implementing the `IEvent` interface or extending a base event class, and register them with the hook.

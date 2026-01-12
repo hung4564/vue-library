@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { useFullscreen } from '@hungpvq/shared-core';
 
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
   fullscreen: mdiFullscreen,

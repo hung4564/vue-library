@@ -1,4 +1,4 @@
-import { MapError } from '@hungpvq/vue-map-core';
+import { MapError } from '@hungpvq/map-core';
 
 export class DatasetError extends MapError {
   constructor(

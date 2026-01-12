@@ -1,19 +1,14 @@
-import { logHelper } from '@hungpvq/shared-map';
+/**
+ * Vue-specific print store
+ * Framework-agnostic types are available directly from @hungpvq/map-core
+ */
+
+import type { MapPrintStore, PrintOption } from '@hungpvq/map-core';
+import { logHelper } from '@hungpvq/map-core';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import { logger } from '../logger';
 
 export const KEY = 'print';
-export type PrintOption = {
-  ratio: number;
-  orientation: 'portrait' | 'landscape';
-  format: 'pdf' | 'png' | 'jpg';
-};
-export type MapPrintStore = {
-  show?: (props: PrintOption) => void;
-  close?: () => void;
-  save?: (cb?: (image: string) => Promise<void>) => void;
-  saveAll?: (cb?: (image: string) => Promise<void>) => void;
-};
 
 export const useMapPrintStore = (mapId: string) =>
   createMapScopedStore<MapPrintStore>(mapId, KEY, () => {

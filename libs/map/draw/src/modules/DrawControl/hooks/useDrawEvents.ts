@@ -1,4 +1,5 @@
-import { EventClick, useEventMap } from '@hungpvq/vue-map-core';
+import { EventClick } from '@hungpvq/map-core';
+import { useEventMap } from '@hungpvq/vue-map-core';
 import MapboxDraw, {
   DrawCreateEvent,
   DrawDeleteEvent,

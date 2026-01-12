@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
 import type { LngLatLike, PointLike } from 'maplibre-gl';
 

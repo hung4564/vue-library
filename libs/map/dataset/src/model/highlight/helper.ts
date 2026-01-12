@@ -1,6 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
-import { logHelper, mergeFilters } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
+import { logHelper, mergeFilters } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
 import type {
   CircleLayerSpecification,

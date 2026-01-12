@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { BBox } from 'geojson';
 import type {
   LayerSpecification,

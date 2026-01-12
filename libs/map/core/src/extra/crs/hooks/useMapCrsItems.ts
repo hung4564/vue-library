@@ -1,9 +1,13 @@
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapCrsStore } from '../store';
-import { CrsItem, MittTypeMapCrs, MittTypeMapCrsEventKey } from '../types';
+import {
+  CrsItem,
+  MittTypeMapCrs,
+  MittTypeMapCrsEventKey,
+} from '@hungpvq/map-core';
 
 export const useMapCrsItems = (
   mapId: string,

@@ -27,14 +27,17 @@
 </template>
 
 <script setup lang="ts">
-import { CoordinatesNumber, fitBounds } from '@hungpvq/shared-map';
+import {
+  CoordinatesNumber,
+  fitBounds,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
   useLang,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import FieldGeometry from './setting/field-geometry.vue';

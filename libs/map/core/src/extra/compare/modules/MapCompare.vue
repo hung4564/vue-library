@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useBreakpoints } from '@hungpvq/shared-core';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
 import { debounce } from 'lodash';
@@ -23,8 +23,8 @@ import {
   MapCompareSetting,
   MittTypeMapCompare,
   MittTypeMapCompareEventKey,
-} from '../types';
-import { MapCompareSwiper, MapCompareSwiperVertical } from './helper';
+} from '@hungpvq/map-core';
+import { MapCompareSwiper, MapCompareSwiperVertical } from '@hungpvq/map-core';
 const breakpoints = useBreakpoints({
   mobile: 0, // optional
   tablet: 640,

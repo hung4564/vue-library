@@ -11,7 +11,7 @@ import {
 } from '@hungpvq/vue-map-core';
 
 import { copyByJson } from '@hungpvq/shared';
-import { MapSimple } from '@hungpvq/shared-map';
+import { MapSimple } from '@hungpvq/map-core';
 import { IDataset, IMapboxLayerView } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model';
 import { ComponentType } from '../../types';

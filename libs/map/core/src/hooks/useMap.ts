@@ -1,4 +1,5 @@
-import { MapFCOnUseMap, MapSimple } from '@hungpvq/shared-map';
+import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
+import type { WithMapPropType, Position } from '@hungpvq/map-core';
 import { computed, inject, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { getMap } from '../store/store';
 
@@ -83,11 +84,7 @@ export const withMapProps = {
     type: String,
     default: 'bottom-right',
     validator(value: string) {
-      return (
-        ['top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(
-          value,
-        ) !== -1
-      );
+      return validPositions.indexOf(value as Position) !== -1;
     },
   },
   controlVisible: {
@@ -103,27 +100,17 @@ export const withMapProps = {
   left: Number,
   right: Number,
 };
-const validPositions = [
+
+// WithMapPropType is available directly from @hungpvq/map-core
+// Import it directly: import type { WithMapPropType } from '@hungpvq/map-core';
+
+// Valid positions array for validator (Vue-specific)
+const validPositions: Position[] = [
   'top-left',
   'top-right',
   'bottom-left',
   'bottom-right',
-] as const;
-type Position = (typeof validPositions)[number];
-
-export interface WithMapPropType {
-  mapId?: string;
-  dragId?: string;
-  btnWidth?: number;
-  position?: Position;
-  controlVisible?: boolean;
-  controlOrder?: number | string;
-  controlLayout?: 'standalone' | 'toolbar';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-}
+];
 
 export const defaultMapProps: Partial<WithMapPropType> = {
   mapId: '',

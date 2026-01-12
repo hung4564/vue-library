@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
@@ -6,13 +7,7 @@ import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useToolbarControl } from '../../extra';
 import { BaseButton, InputText } from '../../field';
-import {
-  defaultMapProps,
-  useMap,
-  useShow,
-  WithShowProps,
-  type WithMapPropType,
-} from '../../hooks';
+import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,

@@ -1,4 +1,4 @@
-import type { Color } from '@hungpvq/shared-map';
+import type { Color } from '@hungpvq/map-core';
 import type { WithEventHelper } from '../../extra';
 import type { IDataset, WithMenuHelper } from '../../interfaces';
 import type {

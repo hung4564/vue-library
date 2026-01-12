@@ -1,11 +1,12 @@
 <script lang="ts" setup>
+import { type WithMapPropType } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
 import { debounce } from 'lodash';
 import { computed, nextTick, ref } from 'vue';
-import { defaultMapProps, useMap, type WithMapPropType } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks';
 
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
   useCoordinate,
   useMapCrsCurrent,

@@ -1,12 +1,12 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
   GeoJSONSource,
   GeoJSONSourceSpecification,
   LayerSpecification,
   SourceSpecification,
 } from 'maplibre-gl';
-import { IViewProps } from '../types';
+import type { IViewProps } from '../types';
 import { View } from './_view';
 
 export class MapView extends View {

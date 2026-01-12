@@ -1,5 +1,5 @@
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { LayerSpecification } from 'maplibre-gl';
 import type { WithDataHelper } from '../../extra';
 import type { IDataset, IMapboxLayerView } from '../../interfaces';

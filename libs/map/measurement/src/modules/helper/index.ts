@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 
 export * from './_measureArea';
 export * from './_measureAzimuth';

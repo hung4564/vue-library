@@ -5,6 +5,12 @@ export default {
 </script>
 
 <script setup lang="ts">
+import {
+  MittTypeMapEventEventKey,
+  type IEvent,
+  type MittTypeMapEvent,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarSearch } from '@mdi/js';
@@ -15,7 +21,6 @@ import {
   defaultMapProps,
   useMap,
   useShow,
-  WithMapPropType,
   WithShowProps,
 } from '../../../hooks';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
@@ -24,11 +29,6 @@ import { useMapMittStore } from '../../mitt';
 import { useToolbarControl } from '../../toolbar';
 import { useEventMapItems } from '../hook/useEventMapItems';
 import { MapEventStore } from '../store';
-import {
-  MittTypeMapEventEventKey,
-  type IEvent,
-  type MittTypeMapEvent,
-} from '../types';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });

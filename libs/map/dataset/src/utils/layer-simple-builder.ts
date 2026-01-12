@@ -9,8 +9,8 @@ import type {
   SymbolLayerSpecification,
 } from 'maplibre-gl';
 
-import type { Color } from '@hungpvq/shared-map';
-import { getChartRandomColor } from '@hungpvq/vue-map-core';
+import type { Color } from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
 export interface ILayerMapboxBuild {
   build(): Omit<LayerMapbox, 'id' | 'source'>;
 }

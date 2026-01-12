@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -7,7 +8,6 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { computed, onMounted, ref } from 'vue';
 import { useMapDataset } from '../../store';

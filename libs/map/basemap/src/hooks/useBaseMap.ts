@@ -1,14 +1,13 @@
-import { logHelper } from '@hungpvq/shared-map';
+import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core';
+import {
+  BasemapService,
+  logHelper,
+  MittTypeBaseMapEventKey,
+} from '@hungpvq/map-core';
 import { useMapMittStore } from '@hungpvq/vue-map-core';
 import { onUnmounted, ref } from 'vue';
 import { logger } from '../logger';
-import { BasemapService } from '../services';
 import { useMapBaseMapStore } from '../store';
-import {
-  BaseMapItem,
-  MittTypeBaseMap,
-  MittTypeBaseMapEventKey,
-} from '../types';
 
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
@@ -29,9 +28,10 @@ export function useBaseMap(mapId: string) {
       defaultBaseMap,
     );
     state.defaultBaseMap = defaultBaseMap || '';
-    const baseMap = state.adapter.getIndexDefault(
+    const baseMap = BasemapService.getDefaultBasemap(
       state.baseMaps,
       state.defaultBaseMap,
+      state.adapter,
     );
     if (!state.current && baseMap) setCurrent(baseMap);
   }

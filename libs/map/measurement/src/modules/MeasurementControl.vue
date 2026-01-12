@@ -39,19 +39,19 @@ import { nextTick, ref, watch } from 'vue';
 
 import {
   CoordinatesNumber,
+  EventClick,
   MapSimple,
+  WithMapPropType,
   convertGeometry,
   fitBounds,
   logHelper,
-} from '@hungpvq/shared-map';
+} from '@hungpvq/map-core';
 
 import {
-  EventClick,
   MapCommonButton,
   MapControlGroupButton,
   ModuleContainer,
   ToolbarButtonConfig,
-  WithMapPropType,
   defaultMapProps,
   useEventMap,
   useLang,

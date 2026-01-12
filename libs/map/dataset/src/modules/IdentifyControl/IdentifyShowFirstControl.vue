@@ -4,14 +4,8 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { logHelper } from '@hungpvq/shared-map';
-import {
-  defaultMapProps,
-  EventClick,
-  useEventMap,
-  useMap,
-  WithMapPropType,
-} from '@hungpvq/vue-map-core';
+import { EventClick, logHelper, WithMapPropType } from '@hungpvq/map-core';
+import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import { MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { handleMenuAction } from '../../extra/menu';

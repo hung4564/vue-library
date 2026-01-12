@@ -21,18 +21,17 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
   defaultMapProps,
   MapControlGroupButton,
   ModuleContainer,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import type { BaseMapItem } from '../types';
+import type { BaseMapItem } from '@hungpvq/map-core';
 import defaultbasemap from './basemap';
 const props = withDefaults(
   defineProps<

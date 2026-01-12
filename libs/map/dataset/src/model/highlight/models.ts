@@ -1,4 +1,4 @@
-import { type MapSimple } from '@hungpvq/shared-map';
+import { type MapSimple } from '@hungpvq/map-core';
 import type { GeoJSONFeature, LayerSpecification } from 'maplibre-gl';
 import { createWithDataHelper } from '../../extra';
 import { createNamedComponent } from '../base';

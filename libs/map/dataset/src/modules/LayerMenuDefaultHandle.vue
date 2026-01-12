@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { fitBounds } from '@hungpvq/shared-map';
+import { fitBounds, WithMapPropType } from '@hungpvq/map-core';
 import {
   defaultMapProps,
   UniversalRegistry,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import {
   MenuClickAddComponent,

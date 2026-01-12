@@ -1,7 +1,7 @@
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { merge } from 'lodash';
 import { createMapScopedStore } from '../../store';
-import { MAP_STORE_KEY } from '../../types/key';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {
@@ -9,13 +9,9 @@ import {
   MapTranslateFunction,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
-} from './types';
+} from '@hungpvq/map-core';
 
-export type MapLocateStore = {
-  locale: MapLangLocale;
-  localeDefault: MapLangLocale;
-  translate?: MapTranslateFunction;
-};
+// MapLocateStore is exported from @hungpvq/map-core
 
 export const useMapLocaleStore = (mapId: string) =>
   createMapScopedStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG, () => {

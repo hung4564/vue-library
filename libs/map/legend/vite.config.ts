@@ -45,7 +45,7 @@ export default defineConfig({
       // External packages that should not be bundled into your library.
       external: [
         '@hungpvq/shared-core',
-        '@hungpvq/shared-map',
+        '@hungpvq/map-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/vue-map-core',
         'maplibre-gl',

@@ -6,7 +6,7 @@ import {
   MapTranslateFunction,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
-} from './types';
+} from '@hungpvq/map-core';
 
 const propCache = new Map<object, Map<string, string | undefined>>();
 

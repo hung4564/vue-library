@@ -22,12 +22,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { logHelper } from '@hungpvq/shared-map';
+import { logHelper } from '@hungpvq/map-core';
 import { InputSelect, MapImage, useLang, useMap } from '@hungpvq/vue-map-core';
 import { onBeforeUnmount } from 'vue';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import { BaseMapItem } from '../types';
+import type { BaseMapItem } from '@hungpvq/map-core';
 const props = defineProps<{
   mapId: string;
   title?: string;

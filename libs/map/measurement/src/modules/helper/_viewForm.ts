@@ -1,5 +1,6 @@
-import { type CoordinatesNumber } from '@hungpvq/shared-map';
-import { IViewProps, IViewSetting, IViewSettingField } from '../types';
+import { type CoordinatesNumber } from '@hungpvq/map-core';
+import type { IViewSetting, IViewSettingField } from '@hungpvq/map-core';
+import type { IViewProps } from '../types';
 
 /* eslint-disable no-unused-vars */
 import { View } from './_view';

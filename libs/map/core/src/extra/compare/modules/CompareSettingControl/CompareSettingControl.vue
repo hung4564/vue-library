@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
@@ -9,7 +10,6 @@ import {
   useMap,
   useShow,
   WithShowProps,
-  type WithMapPropType,
 } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../../lang';

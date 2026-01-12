@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -11,7 +12,6 @@ import {
   useLang,
   useMap,
   useToolbarControl,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import {
   mdiClose,
@@ -21,13 +21,10 @@ import {
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref } from 'vue';
-import { useMapPrint, type PrintOption } from '../store';
-import {
-  CrosshairManager,
-  exportMapbox,
-  exportMapboxWithOptions,
-  PrintableAreaManager,
-} from './print';
+import type { PrintOption } from '@hungpvq/map-core';
+import { exportMapbox, exportMapboxWithOptions } from '@hungpvq/map-core';
+import { useMapPrint } from '../store';
+import { CrosshairManager, PrintableAreaManager } from './print';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

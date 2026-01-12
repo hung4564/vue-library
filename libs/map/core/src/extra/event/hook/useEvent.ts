@@ -1,4 +1,10 @@
-import { logHelper, MapSimple } from '@hungpvq/shared-map';
+import {
+  type AnyIEvent,
+  logHelper,
+  MapSimple,
+  MittTypeMapEvent,
+  MittTypeMapEventEventKey,
+} from '@hungpvq/map-core';
 import { MapEventType } from 'maplibre-gl';
 import {
   computed,
@@ -12,7 +18,6 @@ import { getMap } from '../../../store';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
-import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 
 export function useComponentName() {
   const instance = getCurrentInstance();
@@ -20,7 +25,11 @@ export function useComponentName() {
   return name;
 }
 
-export function useEventMap(mapId: string, event: IEvent, immediate = false) {
+export function useEventMap(
+  mapId: string,
+  event: AnyIEvent,
+  immediate = false,
+) {
   const { add, remove, isActive } = setEventMap(mapId, event);
   onBeforeUnmount(() => {
     remove();
@@ -32,7 +41,7 @@ export function useEventMap(mapId: string, event: IEvent, immediate = false) {
   }
   return { add, remove, isActive };
 }
-function setEventMap(mapId: string, event: IEvent) {
+function setEventMap(mapId: string, event: AnyIEvent) {
   const name = useComponentName();
   event.from = event.from || name;
   const store = useMapEventStore(mapId);
@@ -63,10 +72,10 @@ function setEventMap(mapId: string, event: IEvent) {
     emitter.emit(MittTypeMapEventEventKey.remove, event);
     emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
   };
-  function updateCurrent(value: IEvent | undefined | null) {
+  function updateCurrent(value: AnyIEvent | undefined | null) {
     current.value = value;
   }
-  const current = shallowRef<IEvent | undefined | null>();
+  const current = shallowRef<AnyIEvent | undefined | null>();
   const isActive = computed(() => {
     return !!current.value && current.value.id === event.id;
   });

@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { WithDataHelper } from '../../extra';

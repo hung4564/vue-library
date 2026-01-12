@@ -1,5 +1,5 @@
 import { toValue } from '@hungpvq/shared';
-import { logHelper, type MapSimple } from '@hungpvq/shared-map';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,

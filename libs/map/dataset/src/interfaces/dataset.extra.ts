@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { WithEventHelper } from '../extra';
 import type { IDataset } from './dataset.base';
 

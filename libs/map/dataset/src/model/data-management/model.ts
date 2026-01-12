@@ -1,5 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/vue-map-core';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/turf';

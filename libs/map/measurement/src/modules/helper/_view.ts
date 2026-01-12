@@ -1,6 +1,7 @@
 /* eslint-disable  @typescript-eslint/no-unused-vars */
 
-import { IView, IViewProps, IViewSetting } from '../types';
+import type { IViewSetting } from '@hungpvq/map-core';
+import type { IView, IViewProps } from '../types';
 
 export class View implements IView {
   start(_props?: IViewProps) {

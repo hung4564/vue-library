@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import {
-  defaultMapProps,
-  RegistryItem,
-  useMap,
-  WithMapPropType,
-} from '@hungpvq/vue-map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,

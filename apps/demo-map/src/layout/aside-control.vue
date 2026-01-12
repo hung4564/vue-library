@@ -25,6 +25,9 @@
             <RouterLink to="/">Home </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/map-core">Map - Core </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
           </v-list-item>
           <v-list-item>

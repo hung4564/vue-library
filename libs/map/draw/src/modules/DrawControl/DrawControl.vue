@@ -5,13 +5,12 @@ export default {
 </script>
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import { fitBounds } from '@hungpvq/shared-map';
+import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   defaultMapProps,
   ModuleContainer,
   useLang,
   useMap,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw';
 import { Feature, FeatureCollection } from 'geojson';

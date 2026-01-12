@@ -8,7 +8,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import { useMap } from '@hungpvq/vue-map-core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import type { IDataset } from '../../interfaces';

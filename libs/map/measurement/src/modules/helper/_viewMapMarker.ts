@@ -1,6 +1,7 @@
-import { type Color, CoordinatesNumber, MapSimple } from '@hungpvq/shared-map';
+import { type Color, CoordinatesNumber, MapSimple } from '@hungpvq/map-core';
 import { Marker } from 'maplibre-gl';
-import { IViewProps, IViewSetting } from '../types';
+import type { IViewSetting } from '@hungpvq/map-core';
+import type { IViewProps } from '../types';
 import { View } from './_view';
 
 type onDragMarker = (

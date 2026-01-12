@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import { type MapSimple } from '@hungpvq/shared-map';
+import { type MapSimple } from '@hungpvq/map-core';
 import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { getChartRandomColor } from '@hungpvq/map-core';
 import {
   CrsControl,
   EventManagementControl,
   FullScreenControl,
   GeoLocateControl,
-  getChartRandomColor,
   GlobeControl,
   GotoControl,
   HomeControl,

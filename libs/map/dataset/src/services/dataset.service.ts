@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import { errorHandler } from '@hungpvq/vue-map-core';
 import { DatasetError } from '../errors';
 import type { IDataset } from '../interfaces/dataset.base';

@@ -1,25 +1,20 @@
-import { type CoordinatesNumber } from '@hungpvq/shared-map';
-import type { Feature, FeatureCollection } from 'geojson';
+/**
+ * Vue-specific measurement view types
+ * Framework-agnostic types are available directly from @hungpvq/map-core
+ */
 
-export type IViewSetting = {
-  coordinates?: CoordinatesNumber[];
-  features?: Feature[] | FeatureCollection;
-  value?: number | string;
-  format?: string | ((value: number) => string);
-  features_label?: Feature[];
-  fields?: IViewSettingField[];
-  setting?: any;
-};
-export type IViewSettingField = {
-  trans?: string;
-  text?: string;
-  value?: number | string | boolean;
-};
+import type { IViewSetting } from '@hungpvq/map-core';
 
+/**
+ * Vue-specific view props
+ */
 export interface IViewProps extends IViewSetting {
   mapId: string;
 }
 
+/**
+ * Vue-specific view interface
+ */
 export interface IView {
   start: (_props?: IViewProps) => void;
   view: (_props: IViewProps) => void;

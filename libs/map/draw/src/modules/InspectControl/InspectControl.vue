@@ -4,18 +4,20 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/shared-map';
 import {
-  defaultMapProps,
   EventClick,
   EventMouseMove,
+  WithMapPropType,
+  type MapSimple,
+} from '@hungpvq/map-core';
+import {
+  defaultMapProps,
   MapCommonButton,
   ModuleContainer,
   useEventMap,
   useLang,
   useMap,
   useToolbarControl,
-  WithMapPropType,
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { isEqual } from 'lodash';

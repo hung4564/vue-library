@@ -1,6 +1,5 @@
-import { type CoordinatesNumber } from '@hungpvq/shared-map';
-import { IView, IViewProps } from '../types';
-import { Measure } from './_measurement';
+import { type CoordinatesNumber, Measure } from '@hungpvq/map-core';
+import type { IView, IViewProps } from '../types';
 
 export const MeasurementHandle = function () {
   let _action: Measure | null = null;

@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 import { useMapGLobalStore } from '../store/store';
-import { MapStore } from '../types';
+import type { MapStore } from '@hungpvq/map-core';
 
 /**
  * Hook to access the global state of a map instance.

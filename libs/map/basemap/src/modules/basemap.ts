@@ -1,4 +1,4 @@
-import { BaseMapItem } from '../types';
+import type { BaseMapItem } from '@hungpvq/map-core';
 
 const basemap: BaseMapItem[] = [
   {

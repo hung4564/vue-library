@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -15,7 +16,6 @@ import {
   useMap,
   useShow,
   useToolbarControl,
-  WithMapPropType,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';

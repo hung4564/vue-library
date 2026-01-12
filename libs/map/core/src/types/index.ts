@@ -1,6 +1,9 @@
 import type { Emitter, EventType } from 'mitt';
 
-export * from './store';
+/**
+ * Framework-agnostic types are available directly from @hungpvq/map-core
+ * This file only contains Vue-specific types
+ */
 
 export const MITT_KEY = 'mitt';
 

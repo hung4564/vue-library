@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/shared-map';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { SourceSpecification } from 'maplibre-gl';
 import { createWithDataHelper } from '../../extra';
 import type { IBaseMapboxSourceView } from '../../interfaces';

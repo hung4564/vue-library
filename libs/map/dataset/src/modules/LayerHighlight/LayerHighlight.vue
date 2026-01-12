@@ -2,14 +2,13 @@
   <div></div>
 </template>
 <script setup lang="ts">
-import { logHelper, type MapSimple } from '@hungpvq/shared-map';
 import {
-  defaultMapProps,
   EventClick,
-  useEventMap,
-  useMap,
+  logHelper,
+  type MapSimple,
   type WithMapPropType,
-} from '@hungpvq/vue-map-core';
+} from '@hungpvq/map-core';
+import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';
 import { onMounted, onUnmounted, shallowRef, watch } from 'vue';

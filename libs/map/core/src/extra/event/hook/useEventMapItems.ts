@@ -1,16 +1,20 @@
-import { logHelper } from '@hungpvq/shared-map';
+import {
+  type AnyIEvent,
+  logHelper,
+  MittTypeMapEvent,
+  MittTypeMapEventEventKey,
+} from '@hungpvq/map-core';
 import { onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
-import { IEvent, MittTypeMapEvent, MittTypeMapEventEventKey } from '../types';
 
 export const useEventMapItems = (
   mapId: string,
   {
     onChange,
   }: {
-    onChange?: (p_item: IEvent[]) => void;
+    onChange?: (p_item: AnyIEvent[]) => void;
   } = {},
 ) => {
   const store = useMapEventStore(mapId);
@@ -23,7 +27,7 @@ export const useEventMapItems = (
 
   const items = shallowRef(getEvents());
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
-  function updateItems(p_items: IEvent[]) {
+  function updateItems(p_items: AnyIEvent[]) {
     items.value = p_items;
     logHelper(logger, mapId, 'hook', 'useEventMapItems').debug(
       'updateItems',

@@ -1,31 +1,12 @@
-import { logHelper } from '@hungpvq/shared-map';
-import { WithMapPropType } from '../../hooks';
+import {
+  logHelper,
+  MAP_STORE_KEY,
+  type MapControlButtonState,
+  type MapControlButtonUIState,
+} from '@hungpvq/map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { createMapScopedStore } from '../../store';
-import { MAP_STORE_KEY } from '../../types/key';
 import { logger } from './logger';
-export type MapControlButtonState = {
-  id: string;
-  action: (e: MouseEvent) => void;
-} & MapControlButtonUIState;
-export type MapControlButtonUIState = {
-  visible?: boolean;
-  loading?: boolean;
-  title?: string;
-  icon?:
-    | {
-        type: 'mdi';
-        path: string;
-      }
-    | {
-        type: 'compass';
-        transform: string;
-      };
-  active?: boolean;
-  disabled?: boolean;
-  group?: string; // ví dụ: 'navigation'
-  order?: number; // thứ tự trong group
-  priority?: number; // thứ tự giữa các group
-};
 export type MapControlButtonInstance = {
   id: string;
   mount(): void;
