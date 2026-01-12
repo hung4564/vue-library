@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import { logger } from '../logger';
 import type { ComponentType } from '../types';
 
-const KEY = 'dataset-component';
+const KEY = 'dataset-component' as const;
 
 export type ComponentItem = {
   id: string;
@@ -24,7 +24,7 @@ function generateId(prefix = 'component'): string {
 }
 
 export const useMapDatasetComponentStore = (mapId: string) =>
-  createMapScopedStore<MapDatasetComponentStore>(mapId, KEY, () => {
+  createMapScopedStore<MapDatasetComponentStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
     const components: ComponentItem[] = [];
     const componentIds = ref<string[]>([]);

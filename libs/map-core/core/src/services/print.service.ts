@@ -21,7 +21,7 @@ export class PrintService {
    */
   static async generatePrintImage(
     map: MapSimple,
-    options: PrintOptions = {},
+    _options: PrintOptions = {},
   ): Promise<string> {
     try {
       return await exportMapbox(map);

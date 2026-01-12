@@ -16,11 +16,11 @@ export class MeasureDistance extends Measure {
     return 'Measure Distance';
   }
 
-  get type(): string {
+  override get type(): string {
     return 'line';
   }
 
-  getResult(): IViewSetting {
+  override getResult(): IViewSetting {
     const features: Feature[] = [];
     const value: number | string = 0;
     const features_label: Feature[] = [];

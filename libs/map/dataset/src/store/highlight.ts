@@ -13,8 +13,10 @@ export type MapDatasetHighlightStore = {
   dataset?: IDataset;
 };
 
+const KEY = 'highlight' as const;
+
 export const useMapDatasetHighlightStore = (mapId: string) =>
-  createMapScopedStore<MapDatasetHighlightStore>(mapId, 'highlight', () => {
+  createMapScopedStore<MapDatasetHighlightStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       feature: ref(undefined),

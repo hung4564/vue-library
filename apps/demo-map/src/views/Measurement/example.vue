@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  MeasureActionItem,
-  MeasurementControl,
-} from '@hungpvq/vue-map-measurement';
+import { MeasureActionItem, MeasurementControl } from '@hungpvq/vue-map-core';
 import { mdiPlus } from '@mdi/js';
 import AsideControl from '../../layout/aside-control.vue';
 const actions: MeasureActionItem[] = [

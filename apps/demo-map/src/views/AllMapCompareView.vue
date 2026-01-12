@@ -2,7 +2,7 @@
 import {
   CompareBaseMapCard,
   CompareBaseMapControl,
-} from '@hungpvq/vue-map-basemap';
+} from '@hungpvq/vue-map-core';
 import {
   CompareSettingCard,
   CompareSettingControl,
@@ -40,7 +40,7 @@ import {
   LayerSimpleMapboxBuild,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 const mapRef = ref();
 

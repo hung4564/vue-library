@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
 import {
+  BaseMapControl,
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
@@ -10,12 +10,11 @@ import {
   HomeControl,
   Map,
   MapCard,
+  MeasurementControl,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
-  store,
 } from '@hungpvq/vue-map-core';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
 import * as turf from '@turf/turf';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';
@@ -38,6 +37,7 @@ function onMapLoaded(_map: MapSimple) {
         type: 'geojson',
         data: {
           type: 'Feature',
+          properties: {},
           geometry: {
             type: 'LineString',
             coordinates: [],
@@ -191,6 +191,7 @@ function updateTrail(coord: [number, number]) {
     if (source) {
       source.setData({
         type: 'Feature',
+        properties: {},
         geometry: {
           type: 'LineString',
           coordinates: trailCoords,

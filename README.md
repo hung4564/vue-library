@@ -91,10 +91,10 @@ npm install @hungpvq/shared-store
 
 <script setup>
 import { Map } from '@hungpvq/vue-map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintControl } from '@hungpvq/vue-map-print';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { PrintControl } from '@hungpvq/vue-map-core';
 import '@hungpvq/vue-map-core/style.css';
 </script>
 ```
@@ -115,10 +115,10 @@ import '@hungpvq/vue-map-core/style.css';
 
 <script setup>
 import { Map } from '@hungpvq/vue-map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintAdvancedControl } from '@hungpvq/vue-map-print';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { PrintAdvancedControl } from '@hungpvq/vue-map-core';
 import { DatasetControl, LayerControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
 </script>

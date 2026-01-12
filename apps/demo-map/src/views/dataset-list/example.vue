@@ -2,7 +2,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { MapSimple } from '@hungpvq/map-core';
-import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,

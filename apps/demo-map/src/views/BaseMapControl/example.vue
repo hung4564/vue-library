@@ -4,7 +4,7 @@ import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-} from '@hungpvq/vue-map-basemap';
+} from '@hungpvq/vue-map-core';
 import { Map, MapCard } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';

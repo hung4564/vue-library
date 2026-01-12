@@ -16,9 +16,9 @@ import {
   MapDrawStore,
 } from '../types';
 
-const KEY = 'draw';
+const KEY = 'draw' as const;
 export const useMapDrawStore = (mapId: string) =>
-  createMapScopedStore<MapDrawStore>(mapId, KEY, () => {
+  createMapScopedStore<MapDrawStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       state: {

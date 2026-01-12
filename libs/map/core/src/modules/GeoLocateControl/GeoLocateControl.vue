@@ -215,7 +215,11 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapCommonButton v-if="state" :option="state" @click="control.onAction">
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
+      >
       </MapCommonButton>
     </template>
     <slot />

@@ -5,7 +5,7 @@ import type { IDataset } from '../interfaces/dataset.base';
 import { logger } from '../logger';
 import { DatasetService } from '../services/dataset.service';
 
-const KEY = 'dataset';
+const KEY = 'dataset' as const;
 
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
@@ -13,7 +13,7 @@ export type MapLayerStore = {
 };
 
 export const useMapDatasetStore = (mapId: string) =>
-  createMapScopedStore<MapLayerStore>(mapId, KEY, () => {
+  createMapScopedStore<MapLayerStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return { datasets: {}, datasetIds: ref([]) };
   });

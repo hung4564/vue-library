@@ -8,7 +8,7 @@ import {
   useGeoConvertToFile,
 } from '@hungpvq/shared-file';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-core';
 import { EventManagementControl, getMap, Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,

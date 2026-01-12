@@ -11,10 +11,15 @@ import {
   MittTypeMapLangEventKey,
 } from '@hungpvq/map-core';
 
-// MapLocateStore is exported from @hungpvq/map-core
+// MapLangStore type definition
+export type MapLangStore = {
+  locale: MapLangLocale;
+  localeDefault: MapLangLocale;
+  translate?: MapTranslateFunction;
+};
 
 export const useMapLocaleStore = (mapId: string) =>
-  createMapScopedStore<MapLocateStore>(mapId, MAP_STORE_KEY.LANG, () => {
+  createMapScopedStore<MapLangStore>(mapId, MAP_STORE_KEY.LANG, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
       locale: {},

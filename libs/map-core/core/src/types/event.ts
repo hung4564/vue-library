@@ -2,7 +2,7 @@
  * Framework-agnostic event types
  */
 
-import type { Coordinates, MapSimple } from './index';
+import type { Coordinates } from './index';
 
 /**
  * Options for click events

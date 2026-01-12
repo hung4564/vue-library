@@ -23,11 +23,11 @@ export class MeasurePoint extends Measure {
     return 'Measure Point';
   }
 
-  get type(): string {
+  override get type(): string {
     return 'point';
   }
 
-  get setting() {
+  override get setting() {
     return { maxLength: 1 };
   }
 
@@ -36,14 +36,14 @@ export class MeasurePoint extends Measure {
    *
    * @param coordinate - Coordinate to add
    */
-  add(coordinate: CoordinatesNumber): void {
+  override add(coordinate: CoordinatesNumber): void {
     if (this.value.length > 0) {
       this.value = [];
     }
     this.value.push(coordinate);
   }
 
-  getResult(): IViewSetting {
+  override getResult(): IViewSetting {
     const features: Feature[] = [];
     const value: number | string = 0;
     const features_label: Feature[] = [];

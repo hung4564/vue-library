@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   FullScreenControl,
   GlobeControl,
@@ -31,7 +31,7 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
-import { useLayerLegend } from '@hungpvq/vue-map-legend';
+import { useLayerLegend } from '@hungpvq/vue-map-core';
 import { shallowRef } from 'vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);

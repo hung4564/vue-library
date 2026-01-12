@@ -79,7 +79,16 @@ export function createMenuItemToBoundActionForList(props?: { bbox?: BBox }) {
     .setClick(({ layer, mapId }) => {
       if (props?.bbox) {
         getMap(mapId, (map) => {
-          fitBounds(map, props?.bbox);
+          if (props?.bbox) {
+            // Convert BBox [minLng, minLat, maxLng, maxLat] to [[minLng, minLat], [maxLng, maxLat]]
+            const bbox = props.bbox;
+            if (bbox.length >= 4) {
+              fitBounds(map, [
+                [bbox[0], bbox[1]],
+                [bbox[2], bbox[3]],
+              ]);
+            }
+          }
         });
         return;
       }
@@ -89,7 +98,14 @@ export function createMenuItemToBoundActionForList(props?: { bbox?: BBox }) {
       ) as IMetadataView;
 
       getMap(mapId, (map) => {
-        fitBounds(map, metadata?.metadata?.bbox);
+        const bbox = metadata?.metadata?.bbox;
+        if (bbox && bbox.length >= 4) {
+          // Convert BBox [minLng, minLat, maxLng, maxLat] to [[minLng, minLat], [maxLng, maxLat]]
+          fitBounds(map, [
+            [bbox[0], bbox[1]],
+            [bbox[2], bbox[3]],
+          ]);
+        }
       });
     })
     .build();

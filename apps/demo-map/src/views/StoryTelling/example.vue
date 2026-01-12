@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
   FullScreenControl,
@@ -14,7 +14,7 @@ import {
   SettingControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import {
   createCustomAction,

@@ -24,7 +24,7 @@
   </Map>
 </template>
 <script setup lang="ts">
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
   EventManagementControl,
@@ -39,9 +39,9 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import { LegendControl } from '@hungpvq/vue-map-legend';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
+import { LegendControl } from '@hungpvq/vue-map-core';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
 </script>
 <style>

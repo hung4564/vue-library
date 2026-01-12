@@ -147,10 +147,9 @@ import '@hungpvq/vue-map-dataset/style.css';
 <script setup lang="ts">
 import { Map, ZoomControl, HomeControl } from '@hungpvq/vue-map-core';
 import { LayerControl, LayerInfoControl, IdentifyControl, IdentifyShowFirstControl } from '@hungpvq/vue-map-dataset';
-import { BaseMapCard } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard } from '@hungpvq/vue-map-core';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
-import '@hungpvq/vue-map-basemap/style.css';
 
 function onMapLoaded(map: any) {
   // Initialize your datasets here

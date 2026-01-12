@@ -55,7 +55,7 @@ import '@hungpvq/vue-map-dataset/style.css';
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
 import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
-import { BaseMapCard } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard } from '@hungpvq/vue-map-core';
 </script>
 ```
 

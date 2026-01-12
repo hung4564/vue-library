@@ -15,11 +15,11 @@ export class MeasureAzimuth extends Measure {
     return 'Measure Azimuth';
   }
 
-  get type(): string {
+  override get type(): string {
     return 'line';
   }
 
-  get setting() {
+  override get setting() {
     return { maxLength: 2 };
   }
 
@@ -28,14 +28,14 @@ export class MeasureAzimuth extends Measure {
    *
    * @param coordinate - Coordinate to add
    */
-  add(coordinate: CoordinatesNumber): void {
+  override add(coordinate: CoordinatesNumber): void {
     if (this.value.length > 1) {
       this.value = this.value.slice(0, 1);
     }
     this.value.push(coordinate);
   }
 
-  getResult(): IViewSetting {
+  override getResult(): IViewSetting {
     const features: Feature[] = [];
     const value = 0;
     const features_label: Feature[] = [];

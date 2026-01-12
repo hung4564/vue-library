@@ -4,10 +4,6 @@ const path = require('path');
 // Danh sách các symlink cần tạo
 const links = [
   {
-    source: path.resolve(__dirname, '../libs/map/basemap/docs'),
-    target: path.resolve(__dirname, '../docs/pages/map/basemap'),
-  },
-  {
     source: path.resolve(__dirname, '../libs/map/core/docs'),
     target: path.resolve(__dirname, '../docs/pages/map/core'),
   },

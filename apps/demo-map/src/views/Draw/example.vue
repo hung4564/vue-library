@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/vue-map-core';
 import {
   DrawControl,

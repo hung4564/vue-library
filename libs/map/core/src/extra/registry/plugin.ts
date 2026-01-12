@@ -4,9 +4,9 @@ import type { Component } from 'vue';
 import { logger } from '../../logger';
 import { createMapScopedStore } from '../../store';
 
-const KEY = 'registry';
+const KEY = 'registry' as const;
 export const useMapRegistryStore = (mapId: string) =>
-  createMapScopedStore<Map<string, RegistryItem>>(mapId, KEY, () => {
+  createMapScopedStore<Map<string, RegistryItem>>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return new Map<string, RegistryItem>();
   });

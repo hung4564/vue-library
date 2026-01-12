@@ -16,11 +16,11 @@ export class MeasureArea extends Measure {
     return 'Measure Area';
   }
 
-  get type(): string {
+  override get type(): string {
     return 'area';
   }
 
-  getResult(): IViewSetting {
+  override getResult(): IViewSetting {
     const features: Feature[] = [];
     const value = 0;
     const features_label: Feature[] = [];

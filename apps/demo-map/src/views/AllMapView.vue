@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
 import { type MapSimple } from '@hungpvq/map-core';
-import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapCard, BaseMapControl } from '@hungpvq/vue-map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
 import {
   CrsControl,
@@ -49,13 +49,13 @@ import {
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
-import { LegendControl } from '@hungpvq/vue-map-legend';
+import { LegendControl } from '@hungpvq/vue-map-core';
 import {
   type MeasureActionItem,
   MeasurementControl,
   type MeasurementHandleType,
-} from '@hungpvq/vue-map-measurement';
-import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-print';
+} from '@hungpvq/vue-map-core';
+import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-core';
 import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import AsideControl from '../layout/aside-control.vue';

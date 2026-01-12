@@ -26,6 +26,7 @@ let proj4ModulePromise: Promise<Proj4Function | undefined> | undefined;
  * Note: This will attempt to load proj4 on first call. If proj4 is not available,
  * it will return undefined and the transformation will be skipped.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getProj4(): Proj4Function | undefined {
   if (proj4Fn) {
     return proj4Fn;

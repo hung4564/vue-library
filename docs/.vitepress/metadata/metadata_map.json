@@ -106,49 +106,49 @@
     {
       "name": "Getting start",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/",
+      "docs": "/map/core/basemap/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/module/",
+      "docs": "/map/core/basemap/module/",
       "order": 5.1
     },
     {
       "name": "Getting start",
       "package": "Map - Measurement",
-      "docs": "/map/measurement/",
+      "docs": "/map/core/measurement/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Measurement",
-      "docs": "/map/measurement/module/",
+      "docs": "/map/core/measurement/module/",
       "order": 5.2
     },
     {
       "name": "Getting start",
       "package": "Map - Print",
-      "docs": "/map/print/",
+      "docs": "/map/core/print/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Print",
-      "docs": "/map/print/module/",
+      "docs": "/map/core/print/module/",
       "order": 5.2
     },
     {
       "name": "Getting start",
       "package": "Map - Legend",
-      "docs": "/map/legend/",
+      "docs": "/map/core/legend/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Legend",
-      "docs": "/map/legend/module/",
+      "docs": "/map/core/legend/module/",
       "order": 5.2
     },
     {

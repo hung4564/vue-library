@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import type { MapControlButtonState, WithMapPropType } from '@hungpvq/map-core';
 import { defaultMapProps, useMap } from '../../../../hooks';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../../components/MapControlGroupButton.vue';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
-import { MapControlButtonState, useMapToolbar } from '../../store';
+import { useMapToolbar } from '../../store';
 const props = withDefaults(
   defineProps<Omit<WithMapPropType, 'controlLayout' | 'controlVisible'>>(),
   {
