@@ -48,6 +48,15 @@ export const MittTypeMapEventEventKey = {
 export type AnyIEvent = IEvent<Record<string, unknown>, (ev: any) => void>;
 
 /**
+ * Event store type
+ * Framework-specific stores should use this type for their state
+ */
+export type MapEventStore = {
+  items: AnyIEvent[];
+  current: { [key: string]: AnyIEvent | undefined };
+};
+
+/**
  * Event types for Mitt event emitter
  */
 export type MittTypeMapEvent = {

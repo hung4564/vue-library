@@ -1,6 +1,6 @@
 import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core';
 import {
-  BasemapService,
+  BasemapManager,
   logHelper,
   MittTypeBaseMapEventKey,
 } from '@hungpvq/map-core';
@@ -13,49 +13,26 @@ export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
   const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
 
-  function setBaseMaps(baseMaps: BaseMapItem[]) {
-    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
-      'setBaseMaps',
-      baseMaps,
-    );
-    state.baseMaps = baseMaps;
-    emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);
-  }
+  // Create BasemapManager instance (core is single source of truth)
+  const manager = new BasemapManager(
+    mapId,
+    state,
+    state.adapter,
+    emitter,
+    (mapIdParam, level, message, data) => {
+      logHelper(logger, mapIdParam, 'hook', 'useBaseMap')[level](message, data);
+    },
+  );
 
-  function setDefaultBaseMap(defaultBaseMap?: string) {
-    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
-      'setDefaultBaseMap',
-      defaultBaseMap,
-    );
-    state.defaultBaseMap = defaultBaseMap || '';
-    const baseMap = BasemapService.getDefaultBasemap(
-      state.baseMaps,
-      state.defaultBaseMap,
-      state.adapter,
-    );
-    if (!state.current && baseMap) setCurrent(baseMap);
-  }
+  // Vue reactive state - mirror from core state
+  const baseMaps = ref<BaseMapItem[]>(manager.getBaseMaps());
+  const currentBaseMap = ref<BaseMapItem | undefined>(manager.getCurrent());
 
-  async function setCurrent(baseMap: BaseMapItem) {
-    logHelper(logger, mapId, 'hook', 'useBaseMap').debug('setCurrent', baseMap);
-    if (state.loading) return;
-    try {
-      state.current = baseMap;
-      emitter.emit(MittTypeBaseMapEventKey.setCurrent, state.current);
-      state.loading = true;
-      await BasemapService.switchBasemap(mapId, state.adapter, baseMap);
-      state.loading = false;
-    } finally {
-      state.loading = false;
-    }
-  }
-
-  const baseMaps = ref<BaseMapItem[]>(state.baseMaps);
-  const currentBaseMap = ref<BaseMapItem | undefined>(state.current);
-
+  // Subscribe to events and mirror state
   const updateBaseMapsHandler = (p_baseMaps: BaseMapItem[]) => {
     baseMaps.value = p_baseMaps;
-    setDefaultBaseMap(state.defaultBaseMap);
+    // Re-apply default if needed
+    manager.setDefaultBaseMap(state.defaultBaseMap);
   };
 
   const updateCurrentBaseMapHandler = (baseMap: BaseMapItem | undefined) => {
@@ -77,23 +54,20 @@ export function useBaseMap(mapId: string) {
     remove();
   });
 
-  const init = (baseMaps: BaseMapItem[], defaultBaseMap?: string) => {
-    logHelper(logger, mapId, 'hook', 'useBaseMap').debug(
-      'init',
-      baseMaps,
-      defaultBaseMap,
-    );
-    setDefaultBaseMap(defaultBaseMap);
-    setBaseMaps(baseMaps);
-  };
-
   return {
-    setBaseMaps,
+    // Vue reactive state (mirrored from core)
     baseMaps,
-    setDefaultBaseMap,
-    setCurrent,
     currentBaseMap,
+
+    // Methods that delegate to core manager
+    setBaseMaps: (items: BaseMapItem[]) => manager.setBaseMaps(items),
+    setDefaultBaseMap: (defaultBaseMap?: string) =>
+      manager.setDefaultBaseMap(defaultBaseMap),
+    setCurrent: (baseMap: BaseMapItem) => manager.setCurrent(baseMap),
+    init: (baseMaps: BaseMapItem[], defaultBaseMap?: string) =>
+      manager.init(baseMaps, defaultBaseMap),
+
+    // Cleanup
     remove,
-    init,
   };
 }

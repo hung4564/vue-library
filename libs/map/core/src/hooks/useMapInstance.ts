@@ -1,20 +1,18 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/map-core';
+import {
+  MapInitializationError,
+  MapInitializer,
+  type MapEventCallbacks,
+} from '@hungpvq/map-core';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { MapEventError, MapInitializationError } from '@hungpvq/map-core';
 import { errorHandler } from '../services/error-handler.service';
 import { useMapContainer } from '../store/store';
 
 if (!mapboxgl) {
   throw new Error('mapboxgl is not installed.');
 }
-
-const DEFAULTOPTION: Partial<MapOptions> = {
-  center: [105.19084739818732, 15.827971829957548],
-  zoom: 5.297175623863693,
-  maxZoom: 22,
-};
 
 export interface UseMapInstanceProps {
   mapId?: string;
@@ -26,22 +24,6 @@ export interface UseMapInstanceEmits {
   (e: 'map-loaded', map: MapSimple): void;
   (e: 'map-destroy', map: MapSimple): void;
   (e: 'error', error: Error): void;
-}
-
-function isWebglSupported() {
-  if (window.WebGLRenderingContext) {
-    const canvas = document.createElement('canvas');
-    try {
-      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
-      if (context && typeof context.getParameter == 'function') {
-        return true;
-      }
-    } catch (e) {
-      // WebGL is supported, but disabled
-    }
-    return false;
-  }
-  return false;
 }
 
 /**
@@ -63,31 +45,21 @@ export function useMapInstance(
   const store = useMapContainer(id.value);
 
   onMounted(() => {
-    isSupport.value = isWebglSupported();
     try {
-      if (!isSupport.value) {
-        throw new MapInitializationError(
-          'WebGL is not supported in this browser',
-          {
-            context: {
-              userAgent: navigator.userAgent,
-              mapId: id.value,
-            },
-          },
-        );
-      }
+      // Use MapInitializer from map-core to validate WebGL support
+      MapInitializer.validateWebglSupport(id.value);
+      isSupport.value = true;
 
-      const initOptions = Object.assign({}, DEFAULTOPTION, props.initOptions);
+      // Use MapInitializer to create default options and style
+      const initOptions = MapInitializer.createDefaultOptions(
+        props.initOptions,
+      );
+      const mapStyle = MapInitializer.createMapStyle(initOptions.style);
+
+      // Create map instance
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.value!,
-        style: {
-          version: 8,
-          metadata: {},
-          sources: {},
-          layers: [],
-          sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-          glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
-        },
+        style: mapStyle,
         ...initOptions,
       });
 
@@ -95,25 +67,24 @@ export function useMapInstance(
       mapSimpleInstance.id = id.value;
       map.value = mapInstance;
 
+      // Initialize in store
       store.initMap(mapSimpleInstance);
 
-      mapInstance.once('load', () => {
-        emit('map-loaded', mapSimpleInstance);
-        loaded.value = true;
-      });
+      // Setup map events using MapInitializer
+      const callbacks: MapEventCallbacks = {
+        onLoad: (map) => {
+          emit('map-loaded', map);
+          loaded.value = true;
+        },
+        onError: (error) => {
+          errorHandler.handle(error);
+          emit('error', error);
+        },
+      };
 
-      mapInstance.on('error', (e) => {
-        const error = new MapEventError(
-          `Map error: ${e.error?.message || 'Unknown error'}`,
-          {
-            context: { mapId: id.value },
-            cause: e.error,
-          },
-        );
-        errorHandler.handle(error);
-        emit('error', error);
-      });
+      MapInitializer.setupMapEvents(mapSimpleInstance, callbacks);
     } catch (error) {
+      isSupport.value = false;
       const mapError =
         error instanceof MapInitializationError
           ? error
@@ -132,9 +103,10 @@ export function useMapInstance(
   onUnmounted(() => {
     loaded.value = false;
     if (map.value) {
-      const mapInstance = map.value;
-      mapInstance.remove();
-      emit('map-destroy', mapInstance as MapSimple);
+      const mapInstance = map.value as MapSimple;
+      // Use MapInitializer to cleanup map
+      MapInitializer.cleanupMap(mapInstance);
+      emit('map-destroy', mapInstance);
     }
     map.value = undefined;
     store.removeMap();

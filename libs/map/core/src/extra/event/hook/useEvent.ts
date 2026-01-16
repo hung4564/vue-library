@@ -1,5 +1,6 @@
 import {
   type AnyIEvent,
+  EventManager,
   logHelper,
   MapSimple,
   MittTypeMapEvent,
@@ -30,55 +31,61 @@ export function useEventMap(
   event: AnyIEvent,
   immediate = false,
 ) {
-  const { add, remove, isActive } = setEventMap(mapId, event);
+  const store = useMapEventStore(mapId);
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const componentName = useComponentName();
+
+  // Create EventManager instance (core is single source of truth)
+  const manager = new EventManager(
+    mapId,
+    store,
+    emitter,
+    (mapIdParam, level, message, data) => {
+      logHelper(logger, mapIdParam, 'hook', 'useEventMap')[level](
+        message,
+        data,
+      );
+    },
+  );
+
+  // Vue reactive state - mirror from core state
+  const current = shallowRef<AnyIEvent | undefined | null>(
+    manager.getCurrent(event.id),
+  );
+  const isActive = computed(() => manager.isActive(event.id));
+
+  // Subscribe to events and mirror state
+  const updateCurrentHandler = (value: AnyIEvent | undefined | null) => {
+    current.value = value;
+  };
+
+  onMounted(() => {
+    emitter.on(MittTypeMapEventEventKey.setCurrent, updateCurrentHandler);
+  });
+
+  onUnmounted(() => {
+    emitter.off(MittTypeMapEventEventKey.setCurrent, updateCurrentHandler);
+  });
+
+  // Methods that delegate to core manager
+  const add = () => {
+    manager.add(event, componentName);
+  };
+
+  const remove = () => {
+    manager.remove(event);
+  };
+
   onBeforeUnmount(() => {
     remove();
   });
+
   if (immediate) {
     onMounted(() => {
       add();
     });
   }
-  return { add, remove, isActive };
-}
-function setEventMap(mapId: string, event: AnyIEvent) {
-  const name = useComponentName();
-  event.from = event.from || name;
-  const store = useMapEventStore(mapId);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
-  onMounted(() => {
-    emitter.on(MittTypeMapEventEventKey.setCurrent, updateCurrent);
-  });
-  onUnmounted(() => {
-    emitter.off(MittTypeMapEventEventKey.setCurrent, updateCurrent);
-  });
-  const add = () => {
-    logHelper(logger, mapId, 'hook', 'useEventMap').debug('add', event);
-    store.items.unshift(event);
-    emitter.emit(MittTypeMapEventEventKey.add, event);
-    emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
-  };
-  const remove = () => {
-    logHelper(logger, mapId, 'hook', 'useEventMap').debug('remove', event);
-    if (!store || !store.items || store.items.length < 1) {
-      return;
-    }
-    const events = store.items;
-    const event_index = events.findIndex((x) => x.id === event.id);
-    if (event_index < 0) {
-      return;
-    }
-    store.items.splice(event_index, 1);
-    emitter.emit(MittTypeMapEventEventKey.remove, event);
-    emitter.emit(MittTypeMapEventEventKey.setItems, store.items);
-  };
-  function updateCurrent(value: AnyIEvent | undefined | null) {
-    current.value = value;
-  }
-  const current = shallowRef<AnyIEvent | undefined | null>();
-  const isActive = computed(() => {
-    return !!current.value && current.value.id === event.id;
-  });
+
   return { add, remove, isActive };
 }
 

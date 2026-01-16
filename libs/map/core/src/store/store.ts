@@ -2,14 +2,13 @@
  * Vue-specific store implementation using MapStoreManager from @hungpvq/map-core
  */
 
+import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
-  MAP_CORE_EVENT,
+  MAP_STORE_KEY,
   MapStoreManager,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
-import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { VueMapStoreAdapter } from './vue-adapter';
 export { useMapGLobalStore } from './global-store';
 
