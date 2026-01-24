@@ -101,6 +101,7 @@ onBeforeUnmount(() => {
 
 .clickable {
   position: relative;
+  pointer-events: all;
 }
 
 .clickable:hover::before {

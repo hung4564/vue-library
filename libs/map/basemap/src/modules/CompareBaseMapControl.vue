@@ -325,6 +325,9 @@ onBeforeUnmount(() => {
 .base-map-item-image-container._vertical {
   flex-direction: column;
 }
+.base-map-button__container {
+  pointer-events: all;
+}
 </style>
 <style scoped>
 .tabs-container {

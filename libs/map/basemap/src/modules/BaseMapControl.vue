@@ -7,7 +7,7 @@
             class="clickable base-map-button__container"
             height="70px"
             width="70px"
-            @click="onToggleList"
+            @click.stop="onToggleList"
           >
             <div class="base-map-button__content">
               <map-image :src="current_baseMaps.thumbnail">
@@ -186,6 +186,9 @@ useToolbarControl(mapId.value, props, {
 });
 </script>
 <style scoped>
+.base-map-button__container {
+  pointer-events: all;
+}
 .base-map-button__title {
   position: absolute;
   padding: 4px;
