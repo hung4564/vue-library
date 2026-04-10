@@ -32,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { MapControlButtonUIState } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { MapControlButtonUIState } from '../extra';
 import MapControlButton from './MapControlButton.vue';
 defineProps<{ option: MapControlButtonUIState }>();
 defineOptions({

@@ -12,7 +12,7 @@
             <div class="base-map-button__content">
               <map-image :src="current_baseMaps.thumbnail">
                 <div class="base-map-button__title">
-                  <map-icon dark small v-if="controlIcon">
+                  <map-icon v-if="controlIcon">
                     {{ controlIcon }}
                   </map-icon>
                   <SvgIcon type="mdi" :path="path.layer" v-else />
@@ -76,20 +76,27 @@
 </template>
 <script lang="ts" setup>
 import type { BaseMapItem } from '@hungpvq/map-core';
-import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  INIT_BASEMAPS,
+  logHelper,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { MapCard, MapImage, MapIcon } from '../../../components';
-import { MapControlButton } from '../../../components';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../../extra/lang';
-import { useToolbarControl } from '../../../extra/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {
+  MapCard,
+  MapControlButton,
+  MapIcon,
+  MapImage,
+} from '../../../components';
+import { useLang } from '../../../extra/lang';
+import { useToolbarControl } from '../../../extra/toolbar';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { ModuleContainer } from '../../../modules';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import defaultbasemaps from './basemap';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -101,7 +108,7 @@ const props = withDefaults(
   >(),
   {
     ...defaultMapProps,
-    baseMaps: () => defaultbasemaps,
+    baseMaps: () => INIT_BASEMAPS,
     title: '',
     defaultBaseMap: 'Open Street Map',
     controlIcon: '',
@@ -179,102 +186,3 @@ useToolbarControl(mapId.value, props, {
   },
 });
 </script>
-<style scoped>
-.base-map-button__title {
-  position: absolute;
-  padding: 4px;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  overflow: hidden;
-  color: var(--map-text-inverse, #fff);
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
-  flex-direction: column;
-  align-items: center;
-  display: flex;
-}
-
-.base-map-button__title > div {
-  font-size: 0.6rem;
-  line-height: 0.75rem;
-}
-
-.base-map-button__content {
-  padding: 2px;
-}
-
-.base-map-control-setting {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-}
-
-.base-map-control-setting-item {
-  padding: 8px 4px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: unset;
-}
-
-.base-map-control-setting-item .map-card {
-  box-shadow: unset;
-}
-
-.base-map-control-setting-item__title {
-  font-size: 0.75rem !important;
-  font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.0333333333em !important;
-  font-family: 'Roboto', sans-serif !important;
-
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-
-  width: 100%;
-}
-
-.base-map-control-setting-item__active {
-  color: var(
-    --map-basemap-active-color,
-    var(--map-primary-color, #1a73e8)
-  ) !important;
-  caret-color: var(
-    --map-basemap-active-color,
-    var(--map-primary-color, #1a73e8)
-  ) !important;
-}
-.clickable {
-  cursor: pointer;
-}
-
-.clickable {
-  position: relative;
-}
-
-.clickable:hover::before {
-  opacity: 0.04;
-}
-
-.clickable:before {
-  background-color: currentColor;
-  bottom: 0;
-  content: '';
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-}
-
-.clickable[disabled='disabled'] {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.25;
-}
-</style>

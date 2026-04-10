@@ -22,14 +22,17 @@
 </template>
 <script lang="ts" setup>
 import type { BaseMapItem } from '@hungpvq/map-core';
-import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
-import { defaultMapProps, useMap } from '../../../hooks';
-import { MapControlGroupButton } from '../../../components';
-import { ModuleContainer } from '../../../modules';
+import {
+  INIT_BASEMAPS,
+  logHelper,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { MapControlGroupButton } from '../../../components';
+import { defaultMapProps, useMap } from '../../../hooks';
+import { ModuleContainer } from '../../../modules';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import defaultbasemaps from './basemap';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -39,7 +42,7 @@ const props = withDefaults(
   >(),
   {
     ...defaultMapProps,
-    baseMaps: () => defaultbasemaps,
+    baseMaps: () => INIT_BASEMAPS,
     defaultBaseMap: 'Open Street Map',
   },
 );
@@ -79,46 +82,3 @@ onBeforeUnmount(() => {
   remove();
 });
 </script>
-<style scoped>
-.base-map-item {
-  padding: 4px 8px;
-}
-.base-map-item.active {
-  background-color: var(
-    --map-basemap-tag-bg,
-    var(--map-primary-color, #1a73e8)
-  );
-  color: #fff;
-  font-weight: bold;
-}
-.clickable {
-  cursor: pointer;
-}
-
-.clickable {
-  position: relative;
-}
-
-.clickable:hover::before {
-  opacity: 0.04;
-}
-
-.clickable:before {
-  background-color: currentColor;
-  bottom: 0;
-  content: '';
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-}
-
-.clickable[disabled='disabled'] {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.25;
-}
-</style>

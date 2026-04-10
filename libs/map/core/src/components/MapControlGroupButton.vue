@@ -67,23 +67,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.button-group-container ::deep(.map-control-button) {
-  background-color: unset !important;
-}
-.button-group-row-container ::deep(.map-control-button:not(:last-child)) {
-  border-right: thin solid var(--map-divider-color, rgba(0, 0, 0, 0.12));
-}
-.button-group-column-container ::deep(.map-control-button:not(:first-child)) {
-  border-top: thin solid var(--map-divider-color, rgba(0, 0, 0, 0.12));
-}
-.button-group-sheet {
-  background-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
-  border-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
-  display: flex;
-}
-.button-group-sheet-column {
-  flex-direction: column;
-}
-</style>

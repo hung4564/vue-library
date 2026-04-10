@@ -37,6 +37,23 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx/react/router-plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "startTargetName": "start",
+        "watchDepsTargetName": "watch-deps",
+        "buildDepsTargetName": "build-deps",
+        "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
     }
   ],
   "nxCloudAccessToken": "YWEwOTkwNDMtYzIyZi00NThkLWI3NTItYmNiZmU5NDNiNjgxfHJlYWQtd3JpdGU=",
@@ -100,7 +117,26 @@
       "libs/map/*",
       "libs/*",
       "shared-store",
-      "@hungpvq/map-core"
+      "@hungpvq/map-core",
+      "@hungpvq/react-draggable"
     ]
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true,
+        "style": "css",
+        "linter": "eslint",
+        "bundler": "vite"
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint",
+        "unitTestRunner": "none"
+      }
+    }
   }
 }

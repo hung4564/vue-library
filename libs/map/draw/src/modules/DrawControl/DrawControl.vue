@@ -5,7 +5,12 @@ export default {
 </script>
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/content-menu';
-import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  Feature,
+  FeatureCollection,
+  fitBounds,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import {
   defaultMapProps,
   ModuleContainer,
@@ -13,7 +18,6 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw';
-import { Feature, FeatureCollection } from 'geojson';
 import { computed, nextTick, ref } from 'vue';
 import { DrawingTypeName } from '..';
 import { isDraftOption } from '../../store';

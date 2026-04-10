@@ -145,7 +145,9 @@ export class BasemapManager {
       this.logger(this.mapId, 'debug', 'init', { baseMaps, defaultBaseMap });
     }
 
-    this.setDefaultBaseMap(defaultBaseMap);
+    // 1. Đặt baseMaps trước - cần có baseMaps để tìm map thỏa mãn defaultBaseMap
     this.setBaseMaps(baseMaps);
+    // 2. setDefaultBaseMap phải gọi sau setBaseMaps - dùng store.baseMaps đã có
+    this.setDefaultBaseMap(defaultBaseMap);
   }
 }

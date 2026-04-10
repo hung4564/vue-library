@@ -61,9 +61,3 @@ export default {
   computed: {},
 };
 </script>
-
-<style scoped>
-.button-container {
-  position: relative;
-}
-</style>

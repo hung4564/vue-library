@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { BaseButton, useLang } from '@hungpvq/vue-map-core';
+import { Feature } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import { BaseButton, useLang } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
-import { Feature } from 'geojson';
 import { IDraftRecord } from '../../../types';
 
 const props = defineProps<{

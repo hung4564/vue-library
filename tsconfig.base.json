@@ -18,6 +18,8 @@
       "@hungpvq/content-menu": ["libs/content-menu/src/index.ts"],
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
       "@hungpvq/map-devtools": ["libs/map/devtools/src/index.ts"],
+      "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
+      "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],
       "@hungpvq/router": ["libs/router/src/index.ts"],
       "@hungpvq/shared": ["libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],

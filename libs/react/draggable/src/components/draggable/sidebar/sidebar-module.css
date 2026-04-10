@@ -1,0 +1,4 @@
+.module-sidebar__container {
+  display: none;
+  pointer-events: none;
+}

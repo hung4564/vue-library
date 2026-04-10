@@ -1,11 +1,10 @@
-import { App } from 'vue';
 import { GlobalStoreService } from '../store';
 const STORE_KEY = Symbol('@hungpvq/store');
 export function createStoreRegistryPlugin() {
   const store = GlobalStoreService.getInstance();
 
   return {
-    install(app: App) {
+    install(app: any) {
       app.provide(STORE_KEY, store);
     },
   };

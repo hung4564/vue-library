@@ -102,8 +102,11 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import type { BaseMapItem } from '@hungpvq/map-core';
-import { type WithMapPropType } from '@hungpvq/map-core';
+import {
+  type BaseMapItem,
+  type WithMapPropType,
+  INIT_BASEMAPS,
+} from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks';
 import {
@@ -120,7 +123,6 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
-import defaultbasemaps from './basemap';
 
 const props = withDefaults(
   defineProps<
@@ -133,7 +135,7 @@ const props = withDefaults(
   >(),
   {
     ...defaultMapProps,
-    baseMaps: () => defaultbasemaps,
+    baseMaps: () => INIT_BASEMAPS,
     title: '',
     defaultBaseMap: 'Open Street Map',
     controlIcon: '',

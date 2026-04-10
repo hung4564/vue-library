@@ -22,15 +22,15 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { BaseMapItem } from '@hungpvq/map-core';
 import { logHelper } from '@hungpvq/map-core';
-import { MapImage } from '../../../components';
-import { InputSelect } from '../../../field';
-import { useLang } from '../../../extra/lang';
-import { useMap } from '../../../hooks';
 import { onBeforeUnmount } from 'vue';
+import { MapImage } from '../../../components';
+import { useLang } from '../../../extra/lang';
+import { InputSelect } from '../../../field';
+import { useMap } from '../../../hooks';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
-import type { BaseMapItem } from '@hungpvq/map-core';
 const props = defineProps<{
   mapId: string;
   title?: string;
@@ -54,23 +54,3 @@ onBeforeUnmount(() => {
   remove();
 });
 </script>
-<style lang="scss" scoped>
-.base-map-card {
-  display: flex;
-  padding: 10px;
-  gap: 10px;
-  .base-map-card__image {
-    width: 70px;
-    height: 70px;
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-  .base-map-card__content {
-    flex-grow: 1;
-    padding: 4px 0px;
-    & > *:not(:first-child) {
-      padding-top: 4px;
-    }
-  }
-}
-</style>

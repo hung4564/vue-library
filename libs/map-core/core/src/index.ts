@@ -17,4 +17,7 @@ export * from './model';
 export * from './types';
 
 // Export store
+export * from './basemap';
 export * from './store';
+
+import './style/index.scss';

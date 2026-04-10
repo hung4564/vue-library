@@ -104,19 +104,3 @@ const bindDrag = computed(() => {
   return result;
 });
 </script>
-
-<style scoped>
-.module__container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-</style>
-<style>
-.module__container > *:not(.module__container) {
-  pointer-events: all;
-}
-</style>
