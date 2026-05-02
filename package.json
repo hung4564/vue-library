@@ -24,7 +24,7 @@
     "docs:preview": "vitepress preview docs",
     "draggable:dev-vue": "nx serve demo-draggable",
     "draggable:dev-react": "nx start react-demo-draggable",
-    "map:dev-vue": "nx serve demo-map",
+    "map:dev-vue": "nx serve vue-demo-map",
     "map:dev-react": "nx serve react-demo-map",
     "map:lint": "nx run-many --projects=tag:map --target=lint,typecheck,ts-check",
     "map:build": "nx run-many --projects=tag:map --target=lint,build",

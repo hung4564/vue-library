@@ -26,7 +26,7 @@ VueLibrary is a monorepo containing Vue.js libraries designed to build interacti
 ### 🎯 UI Libraries
 
 - **[@hungpvq/vue-draggable](./libs/draggable/)** - Draggable components
-- **[@hungpvq/content-menu](./libs/content-menu/)** - Context menu
+- **[@hungpvq/vue-content-menu](./libs/content-menu/)** - Context menu
 
 ### 🔧 Shared Libraries
 
@@ -66,7 +66,7 @@ npm install @hungpvq/vue-map-legend
 
 # UI libraries
 npm install @hungpvq/vue-draggable
-npm install @hungpvq/content-menu
+npm install @hungpvq/vue-content-menu
 
 # Shared libraries
 npm install @hungpvq/shared
