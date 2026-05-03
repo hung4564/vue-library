@@ -8,7 +8,7 @@ const smWidth = breakpointsTailwind.sm;
 
 const reactiveStuff = ref<keyof typeof breakpointsTailwind>('sm');
 const isGreaterThanBreakpoint = breakpoints.greaterOrEqual(
-  () => reactiveStuff.value
+  () => reactiveStuff.value,
 );
 
 const current = breakpoints.current();

@@ -20,7 +20,7 @@ watch(
       layout.value = DefaultLayout;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 <template lang="">

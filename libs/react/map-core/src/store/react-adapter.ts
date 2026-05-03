@@ -32,6 +32,7 @@ export class ReactMapStoreAdapter implements IMapStoreAdapter {
   getEventEmitter<
     T extends Record<EventType, unknown> = Record<EventType, unknown>,
   >(mapId: string): Emitter<T> {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     return useMapMittStore<T>(mapId);
   }
 

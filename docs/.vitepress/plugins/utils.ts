@@ -8,5 +8,5 @@ export const stringify = reactify((input: any) =>
     condenseFlow: true,
     noCompatMode: true,
     quotingType: "'",
-  })
+  }),
 );

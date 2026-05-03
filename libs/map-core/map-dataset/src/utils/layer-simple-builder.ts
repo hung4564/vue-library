@@ -2,7 +2,6 @@ import type {
   CircleLayerSpecification,
   FillLayerSpecification,
   FilterSpecification,
-  LayerFeatureStates,
   LayerSpecification as LayerMapbox,
   LineLayerSpecification,
   RasterLayerSpecification,
@@ -11,6 +10,7 @@ import type {
 
 import type { Color } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
+
 export interface ILayerMapboxBuild {
   build(): Omit<LayerMapbox, 'id' | 'source'>;
 }

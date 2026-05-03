@@ -1,4 +1,4 @@
-import type { IDataset } from '../../../interfaces';
+import type { IDataset } from '@hungpvq/map-dataset';
 import { ConfigNo } from '../config';
 import type { ConfigHelper } from './_default';
 import {

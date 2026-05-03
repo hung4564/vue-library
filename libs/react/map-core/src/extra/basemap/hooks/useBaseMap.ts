@@ -23,15 +23,15 @@ export function useBaseMap(mapId: string) {
       (mapIdParam, level, message, data) => {
         logHelper(logger, mapIdParam, 'hook', 'useBaseMap')[level](
           message,
-          data
+          data,
         );
-      }
+      },
     );
   }
   const manager = managerRef.current;
 
   const [baseMaps, setBaseMapsState] = useState<BaseMapItem[]>(
-    manager.getBaseMaps()
+    manager.getBaseMaps(),
   );
   const [currentBaseMap, setCurrentBaseMapState] = useState<
     BaseMapItem | undefined
@@ -46,7 +46,7 @@ export function useBaseMap(mapId: string) {
     (baseMap: BaseMapItem | undefined) => {
       setCurrentBaseMapState(baseMap);
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function useBaseMap(mapId: string) {
       emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
       emitter.off(
         MittTypeBaseMapEventKey.setCurrent,
-        updateCurrentBaseMapHandler
+        updateCurrentBaseMapHandler,
       );
     };
   }, [emitter, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
@@ -65,7 +65,7 @@ export function useBaseMap(mapId: string) {
     emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
     emitter.off(
       MittTypeBaseMapEventKey.setCurrent,
-      updateCurrentBaseMapHandler
+      updateCurrentBaseMapHandler,
     );
   }, [emitter, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
 

@@ -1,5 +1,5 @@
-import type { GeojsonDatasetOption } from '../../../../builder';
-import { createGeoJsonDataset } from '../../../../builder';
+import type { GeojsonDatasetOption } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset';
 import { GeojsonUpload } from '../../config';
 import { ConfigHelper } from '../_default';
 

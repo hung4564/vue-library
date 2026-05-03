@@ -1,4 +1,4 @@
-import type { IDataset } from '../../../interfaces';
+import type { IDataset } from '@hungpvq/map-dataset';
 
 export abstract class ConfigHelper<F = Record<string, unknown>> {
   abstract get default_value(): Omit<F, 'name'>;

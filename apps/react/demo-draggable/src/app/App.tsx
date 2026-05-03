@@ -30,7 +30,9 @@ function App() {
           <div style={{ height: '100vh', padding: '20px' }}>
             <h2>Right Sidebar 1</h2>
             <p>This is the first right sidebar</p>
-            <p>You can switch between multiple sidebars using the menu button</p>
+            <p>
+              You can switch between multiple sidebars using the menu button
+            </p>
           </div>
         </DraggableItemSideBar>
 
@@ -119,7 +121,8 @@ function App() {
               <div style={{ height: '100vh', padding: '20px' }}>
                 <h3>Popup 2</h3>
                 <p>
-                  This popup is rendered outside the container using React Portal
+                  This popup is rendered outside the container using React
+                  Portal
                 </p>
                 <p>It still uses the same container for state management</p>
               </div>

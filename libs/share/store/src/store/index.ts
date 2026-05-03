@@ -39,7 +39,7 @@ export class GlobalStoreService {
 
   private notifyListeners(path: string | string[]) {
     const pathKey = Array.isArray(path) ? path.join('.') : path;
-    
+
     // Notify exact path listeners
     const exactListeners = this.listeners.get(path);
     if (exactListeners) {
@@ -65,11 +65,11 @@ export class GlobalStoreService {
    */
   public subscribe(path: string | string[], listener: Listener): () => void {
     const pathKey = Array.isArray(path) ? path.join('.') : path;
-    
+
     if (!this.listeners.has(path)) {
       this.listeners.set(path, new Set());
     }
-    
+
     this.listeners.get(path)!.add(listener);
 
     // Return unsubscribe function

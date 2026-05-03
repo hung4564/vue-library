@@ -82,8 +82,8 @@ export function APCAcontrast(text: RGB, background: RGB) {
       SAPC < loClip
         ? 0.0
         : SAPC < loConThresh
-        ? SAPC - SAPC * loConFactor * loConOffset
-        : SAPC - loConOffset;
+          ? SAPC - SAPC * loConFactor * loConOffset
+          : SAPC - loConOffset;
   } else {
     // For reverse polarity, light text on dark
     // WoB should always return negative value.
@@ -94,8 +94,8 @@ export function APCAcontrast(text: RGB, background: RGB) {
       SAPC > -loClip
         ? 0.0
         : SAPC > -loConThresh
-        ? SAPC - SAPC * loConFactor * loConOffset
-        : SAPC + loConOffset;
+          ? SAPC - SAPC * loConFactor * loConOffset
+          : SAPC + loConOffset;
   }
 
   return outputContrast * 100;

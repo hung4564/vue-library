@@ -49,7 +49,7 @@ export function useIntersectionObserver(
     | MaybeRefOrGetter<MaybeElement[]>
     | MaybeComputedElementRef[],
   callback: IntersectionObserverCallback,
-  options: UseIntersectionObserverOptions = {}
+  options: UseIntersectionObserverOptions = {},
 ): UseIntersectionObserverReturn {
   const {
     root,
@@ -60,7 +60,7 @@ export function useIntersectionObserver(
   } = options;
 
   const isSupported = useSupported(
-    () => window && 'IntersectionObserver' in window
+    () => window && 'IntersectionObserver' in window,
   );
   const targets = computed(() => {
     const _target = toValue(target);
@@ -94,7 +94,7 @@ export function useIntersectionObserver(
             cleanup = noop;
           };
         },
-        { immediate, flush: 'post' }
+        { immediate, flush: 'post' },
       )
     : noop;
 

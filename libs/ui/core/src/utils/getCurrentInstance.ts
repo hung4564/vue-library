@@ -11,7 +11,7 @@ export function getCurrentInstance(name: string, message?: string) {
     throw new Error(
       `[Vuetify] ${name} ${
         message || 'must be called from inside a setup function'
-      }`
+      }`,
     );
   }
 

@@ -1,19 +1,20 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import {
-  addMenuBuilder,
-  createMenuItemSetOpacity,
-  createWithEventHelper,
-  createWithMenuHelper,
-  type WithMenuBuilder,
-} from '../../extra';
-import type { WithChildren } from '../../interfaces';
-import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
-import { createNamedComponent } from '../base';
+import type {
+  EventIListViewUI,
+  IListViewUI,
+  WithChildren,
+} from '@hungpvq/map-dataset';
 import {
   addDatasetWithChildren,
+  addMenuBuilder,
   createDatasetLeaf,
-} from '../dataset.base.function';
-import type { EventIListViewUI, IListViewUI } from './types';
+  createNamedComponent,
+  createWithEventHelper,
+  setOpacity,
+  toggleShow,
+  type WithMenuBuilder,
+} from '@hungpvq/map-dataset';
+import { createMenuItemSetOpacity, createWithMenuHelper } from '../../extra';
 export interface ListViewUIBuilder {
   state: Partial<IListViewUI>;
   setColor(color: IListViewUI['color']): this;

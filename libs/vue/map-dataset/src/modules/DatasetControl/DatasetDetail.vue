@@ -5,11 +5,11 @@ export default {
 </script>
 
 <script setup lang="ts">
+import type { IDataset } from '@hungpvq/map-dataset';
+import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { ModuleContainer } from '@hungpvq/vue-map-core';
 import { shallowRef, watch } from 'vue';
-import type { IDataset } from '../../interfaces';
-import { traverseTree } from '../../model';
 const props = defineProps<{ dataset: IDataset }>();
 const emit = defineEmits(['close']);
 function onUpdateShow(val: boolean) {

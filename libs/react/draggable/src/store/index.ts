@@ -1,5 +1,4 @@
-import { defineStore } from '@hungpvq/shared-store';
-import { GlobalStoreService } from '@hungpvq/shared-store';
+import { defineStore, GlobalStoreService } from '@hungpvq/shared-store';
 import {
   ContainerStore,
   ContainerStoreAction,
@@ -28,13 +27,20 @@ export const useDragStore = defineStore('drag:core', () => {
 function notifyStoreChange(path?: string | string[]) {
   const storeService = GlobalStoreService.getInstance();
   // Re-set the store to trigger subscriptions
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const currentStore = useDragStore();
   // Trigger notification by setting the store again
   // This will call notifyListeners internally
   storeService.set('drag:core', currentStore);
-  
+
   // Also notify specific container path if provided
-  if (path && Array.isArray(path) && path.length >= 3 && path[0] === 'drag:core' && path[1] === 'container') {
+  if (
+    path &&
+    Array.isArray(path) &&
+    path.length >= 3 &&
+    path[0] === 'drag:core' &&
+    path[1] === 'container'
+  ) {
     // Notify the container path
     const containerPath = path.slice(0, 3);
     const containerValue = storeService.get(containerPath);
@@ -223,7 +229,7 @@ export const useDragComponent = () => {
 };
 
 // Export reactive hooks
-export { useStoreReactive, useContainerReactive } from './useStoreReactive';
+export { useContainerReactive, useStoreReactive } from './useStoreReactive';
 
 export const useDragContainer = (containerId: string) => {
   const store = useDragStore();

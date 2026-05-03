@@ -1,17 +1,18 @@
-import type { WithDataHelper } from '../extra';
 import type { IDataset, WithChildren } from '../interfaces/dataset.base';
-import type {
-  WithSetOpacity,
-  WithToggleShow,
-} from '../interfaces/dataset.extra';
-import type { IDatasetMap } from '../interfaces/dataset.map';
 import type {
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
+import type {
+  WithSetOpacity,
+  WithToggleShow,
+} from '../interfaces/dataset.extra';
+
 import type { IDataManagementView } from '../model';
+import type { IDatasetMap } from '../interfaces/dataset.map';
+import type { WithDataHelper } from '../extra';
 
 export function isDatasetMapHasAddToMap(
   dataset: IDataset,

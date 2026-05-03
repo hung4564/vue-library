@@ -4,11 +4,11 @@ import { getCurrentInstance } from './getCurrentInstance';
 
 export function injectSelf<T>(
   key: InjectionKey<T> | string,
-  vm?: ComponentInternalInstance
+  vm?: ComponentInternalInstance,
 ): T | undefined;
 export function injectSelf(
   key: InjectionKey<any> | string,
-  vm = getCurrentInstance('injectSelf')
+  vm = getCurrentInstance('injectSelf'),
 ) {
   const { provides } = vm;
 

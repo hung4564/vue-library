@@ -1,16 +1,14 @@
-import { getMap } from '@hungpvq/vue-map-core';
-import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import type {
   IDataset,
-  IdentifyResult,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
-} from '../../interfaces';
-import { isMapboxLayerView } from '../../utils/check';
-import {
-  findSiblingOrNearestLeaf,
-  runAllComponentsWithCheck,
-} from '../visitors';
+  IdentifyResult,
+} from '@hungpvq/map-dataset';
+import { runAllComponentsWithCheck } from '@hungpvq/map-dataset';
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+
+import { isMapboxLayerView } from '@hungpvq/map-dataset';
+import { getMap } from '@hungpvq/vue-map-core';
 
 // Tách hàm để loại bỏ các mục trùng lặp
 function removeDuplicates(

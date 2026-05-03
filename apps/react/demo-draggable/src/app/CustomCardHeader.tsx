@@ -12,7 +12,9 @@ export function CustomCardHeader({
 }) {
   return (
     <MapHeader
-      title={<span style={{ color: '#667eea', fontWeight: 'bold' }}>{title}</span>}
+      title={
+        <span style={{ color: '#667eea', fontWeight: 'bold' }}>{title}</span>
+      }
       preTitle={preTitle}
       extraBtn={extraBtn}
     />

@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { ContextMenu } from '@hungpvq/vue-content-menu';
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import type { MenuAction } from '@hungpvq/map-dataset';
+import {
+  handleMenuAction,
+  hasMoveLayer,
+  IGroupListViewUI,
+  IListViewUI,
+  traverseTree,
+} from '@hungpvq/map-dataset';
+import { ContextMenu } from '@hungpvq/vue-content-menu';
 import {
   BaseButton,
   defaultMapProps,
@@ -25,11 +33,7 @@ import {
   VNode,
   watch,
 } from 'vue';
-import { handleMenuAction } from '../../../extra/menu';
-import type { MenuAction } from '../../../interfaces';
-import { IGroupListViewUI, IListViewUI, traverseTree } from '../../../model';
 import { useMapDataset } from '../../../store';
-import { hasMoveLayer } from '../../../utils/check';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';

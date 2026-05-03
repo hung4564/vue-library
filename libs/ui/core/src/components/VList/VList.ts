@@ -19,7 +19,7 @@ const VList = defineComponent({
           class: ['v-list', sizeClasses.value, props.class],
           style: [sizeStyles.value, props.style],
         },
-        ctx.slots.default && ctx.slots.default()
+        ctx.slots.default && ctx.slots.default(),
       );
   },
 });

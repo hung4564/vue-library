@@ -1,28 +1,29 @@
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
-import { getMap } from '@hungpvq/vue-map-core';
-import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
-import {
-  createMenuClickAddComponentBuilder,
-  createMenuClickBuilder,
-  createMenuClickHighlightBuilder,
-  createWithMenuHelper,
-  handleMenuActionClick,
-} from '../../extra';
-import type { IDataset } from '../../interfaces/dataset.base';
 import type {
+  IDataset,
   IdentifyResult,
   IdentifySingleResult,
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   MenuItemCommon,
-} from '../../interfaces/dataset.parts';
+} from '@hungpvq/map-dataset';
+import {
+  convertFeatureToItem,
+  createDatasetLeaf,
+  createMenuClickAddComponentBuilder,
+  createMenuClickBuilder,
+  createMenuClickHighlightBuilder,
+  createNamedComponent,
+  handleMenuActionClick,
+  isIdentifyMergeView,
+  isMapboxLayerView,
+  runAllComponentsWithCheck,
+} from '@hungpvq/map-dataset';
+import { getMap } from '@hungpvq/vue-map-core';
+import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
+import { createWithMenuHelper } from '../../extra';
 import { loggerIdentify } from '../../logger';
-import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
-import { convertFeatureToItem } from '../../utils/convert';
-import { createNamedComponent } from '../base';
-import { createDatasetLeaf } from '../dataset.base.function';
-import { runAllComponentsWithCheck } from '../visitors';
 import {
   getMergedFeatures,
   mergePayload,

@@ -36,10 +36,10 @@ export interface IEvent<
  * @template ICallBack - Callback function type
  */
 export class Event<
-    T extends keyof MapLayerEventType = 'click',
-    IOption extends Record<string, unknown> = Record<string, unknown>,
-    ICallBack = (ev: MapLayerEventType[T]) => void,
-  >
+  T extends keyof MapLayerEventType = 'click',
+  IOption extends Record<string, unknown> = Record<string, unknown>,
+  ICallBack = (ev: MapLayerEventType[T]) => void,
+>
   extends Base
   implements IEvent<IOption, ICallBack>
 {

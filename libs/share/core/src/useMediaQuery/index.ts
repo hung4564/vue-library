@@ -15,14 +15,14 @@ import { useSupported } from '../useSupported';
  */
 export function useMediaQuery(
   query: MaybeRefOrGetter<string>,
-  options: ConfigurableWindow = {}
+  options: ConfigurableWindow = {},
 ) {
   const { window = defaultWindow } = options;
   const isSupported = useSupported(
     () =>
       window &&
       'matchMedia' in window &&
-      typeof window.matchMedia === 'function'
+      typeof window.matchMedia === 'function',
   );
 
   let mediaQuery: MediaQueryList | undefined;

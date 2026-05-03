@@ -10,12 +10,15 @@ import {
   useShow,
 } from '@hungpvq/vue-map-core';
 
-import { copyByJson } from '@hungpvq/shared';
 import { MapSimple } from '@hungpvq/map-core';
-import { IDataset, IMapboxLayerView } from '../../interfaces';
-import { findSiblingOrNearestLeaf } from '../../model';
-import { ComponentType } from '../../types';
-import { isMapboxLayerView } from '../../utils/check';
+import {
+  ComponentType,
+  findSiblingOrNearestLeaf,
+  IDataset,
+  IMapboxLayerView,
+  isMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import { copyByJson } from '@hungpvq/shared';
 import enLang from './lang/style-control.json';
 import circleStyleLang from './lang/style/circle-style.json';
 import fillStyleLang from './lang/style/fill-style.json';

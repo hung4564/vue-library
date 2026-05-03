@@ -22,7 +22,7 @@ export interface UseTimeoutFnOptions {
 export function useTimeoutFn<CallbackFn extends AnyFn>(
   cb: CallbackFn,
   interval: MaybeRefOrGetter<number>,
-  options: UseTimeoutFnOptions = {}
+  options: UseTimeoutFnOptions = {},
 ): Stoppable<Parameters<CallbackFn> | []> {
   const { immediate = true } = options;
 

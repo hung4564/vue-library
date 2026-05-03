@@ -1,6 +1,3 @@
-import type { MaybeRefOrGetter } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/map-core';
-import type { BBox } from 'geojson';
 import type {
   LayerSpecification,
   MapGeoJSONFeature,
@@ -8,9 +5,13 @@ import type {
   SourceSpecification,
 } from 'maplibre-gl';
 import type { FieldFeaturesDef, MenuItemClick, WithDataHelper } from '../extra';
-import type { ComponentType } from '../types';
-import type { IDataset } from './dataset.base';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
+
+import type { MapSimple } from '@hungpvq/map-core';
+import type { MaybeRefOrGetter } from '@hungpvq/shared';
+import type { BBox } from 'geojson';
+import { ComponentType } from '../types';
+import type { IDataset } from './dataset.base';
 import type { IDatasetMap } from './dataset.map';
 
 /**

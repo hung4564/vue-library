@@ -1,17 +1,13 @@
-import { getUUIDv4 } from '@hungpvq/shared';
-import type { MapSimple } from '@hungpvq/map-core';
-import { getMap } from '@hungpvq/vue-map-core';
-import booleanIntersects from '@turf/boolean-intersects';
-import { point as pointTurf } from '@turf/turf';
+import {
+  createNamedComponent,
+  findSiblingOrNearestLeaf,
+} from '@hungpvq/map-dataset';
 import type {
   Feature,
   FeatureCollection,
   GeoJsonProperties,
   Geometry,
 } from 'geojson';
-import { createNamedComponent, findSiblingOrNearestLeaf } from '..';
-import type { IMapboxSourceView } from '../../interfaces';
-import { isDatasetSourceMap } from '../../utils/check';
 import {
   createDatasetPartDataManagementComponent,
   createDatasetPartDataManagementDraftComponent,
@@ -23,9 +19,17 @@ import type {
   IDataManagerHook,
   IDataManagerProps,
   IDataMapper,
-  Identifiable,
   IDraftDataManagementView,
+  Identifiable,
 } from './types';
+
+import type { MapSimple } from '@hungpvq/map-core';
+import type { IMapboxSourceView } from '@hungpvq/map-dataset';
+import { isDatasetSourceMap } from '@hungpvq/map-dataset';
+import { getUUIDv4 } from '@hungpvq/shared';
+import { getMap } from '@hungpvq/vue-map-core';
+import booleanIntersects from '@turf/boolean-intersects';
+import { point as pointTurf } from '@turf/turf';
 export function listToFeatureMapper<
   E extends Identifiable = Record<string, any>,
 >(): IDataMapper<E, E> {

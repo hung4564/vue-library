@@ -48,13 +48,13 @@ export interface UseClipboardReturn<Optional> {
 // #endregion type
 
 export function useClipboard(
-  options?: UseClipboardOptions<undefined>
+  options?: UseClipboardOptions<undefined>,
 ): UseClipboardReturn<false>;
 export function useClipboard(
-  options: UseClipboardOptions<MaybeRefOrGetter<string>>
+  options: UseClipboardOptions<MaybeRefOrGetter<string>>,
 ): UseClipboardReturn<true>;
 export function useClipboard(
-  options: UseClipboardOptions<MaybeRefOrGetter<string> | undefined> = {}
+  options: UseClipboardOptions<MaybeRefOrGetter<string> | undefined> = {},
 ): UseClipboardReturn<boolean> {
   const {
     navigator = defaultNavigator,
@@ -65,7 +65,7 @@ export function useClipboard(
   } = options;
 
   const isClipboardApiSupported = useSupported(
-    () => navigator && 'clipboard' in navigator
+    () => navigator && 'clipboard' in navigator,
   );
   const permissionRead = usePermission('clipboard-read');
   const permissionWrite = usePermission('clipboard-write');

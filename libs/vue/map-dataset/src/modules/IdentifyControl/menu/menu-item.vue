@@ -6,9 +6,9 @@
   </BaseButton>
 </template>
 <script setup lang="ts">
+import type { IIdentifyView, MenuAction } from '@hungpvq/map-dataset';
 import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import type { IIdentifyView, MenuAction } from '../../../interfaces';
 
 defineProps<{
   item: MenuAction<IIdentifyView>;

@@ -12,6 +12,12 @@ import {
   logHelper,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import type {
+  IdentifyMultiResult,
+  IIdentifyView,
+  MenuAction,
+} from '@hungpvq/map-dataset';
+import { handleMenuAction, handleMultiIdentify } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -29,14 +35,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { handleMenuAction } from '../../extra/menu';
-import type {
-  IdentifyMultiResult,
-  IIdentifyView,
-  MenuAction,
-} from '../../interfaces/dataset.parts';
 import { loggerIdentify } from '../../logger';
-import { handleMultiIdentify } from '../../model';
 import { useMapDataset } from '../../store';
 import { useMapDatasetHighlight } from '../../store/highlight';
 import MenuItem from './menu/index.vue';

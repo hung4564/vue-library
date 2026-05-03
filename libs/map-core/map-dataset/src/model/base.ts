@@ -21,13 +21,13 @@ export function createBase() {
   };
 }
 
-type PrototypeSource = string | Function;
+type PrototypeSource = string | any;
 
 export function createNamedComponent<T extends object>(
   prototypeSource: PrototypeSource,
   data: T,
 ): T {
-  let prototypeFn: Function;
+  let prototypeFn: any;
 
   if (typeof prototypeSource === 'function') {
     prototypeFn = prototypeSource;

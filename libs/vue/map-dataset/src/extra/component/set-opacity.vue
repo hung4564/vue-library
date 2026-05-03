@@ -9,12 +9,15 @@
 </template>
 <script lang="ts" setup>
 import type { MapSimple } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
+import {
+  isHasSetOpacity,
+  runAllComponentsWithCheck,
+  WithSetOpacity,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import { useMap } from '@hungpvq/vue-map-core';
 import { onMounted, onUnmounted, ref } from 'vue';
-import type { IDataset } from '../../interfaces';
-import { WithSetOpacity } from '../../interfaces/dataset.extra';
-import { runAllComponentsWithCheck, type IListViewUI } from '../../model';
-import { isHasSetOpacity } from '../../utils/check';
 import LayerItemSlider from './layer-item-slider.vue';
 import { WithLayerItemActionType } from './types';
 

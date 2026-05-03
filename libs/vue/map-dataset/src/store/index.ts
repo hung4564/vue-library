@@ -1,7 +1,7 @@
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
-import type { IDataset } from '../interfaces/dataset.base';
 import { logger } from '../logger';
 import { DatasetService } from '../services/dataset.service';
 

@@ -44,8 +44,8 @@ const props = defineProps(
       ...makeRoundedProps(),
       ...makeTagProps({ tag: 'button' }),
     },
-    'VBtn'
-  )()
+    'VBtn',
+  )(),
 );
 defineSlots<{ default: () => any }>();
 const emit = defineEmits({

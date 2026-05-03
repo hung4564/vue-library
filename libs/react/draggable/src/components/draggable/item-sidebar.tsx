@@ -42,28 +42,24 @@ export function DraggableItemSideBar({
     },
   );
   const c_location =
-    propLocation != null
-      ? propLocation
-      : right
-        ? 'right'
-        : 'left';
-  const { location, itemId } = useInitSidebar(
-    containerId,
-    show,
-    setShow,
-    {
-      title,
-      type: 'item-sidebar',
-      location: c_location,
-    },
-  );
+    propLocation != null ? propLocation : right ? 'right' : 'left';
+  const { location, itemId } = useInitSidebar(containerId, show, setShow, {
+    title,
+    type: 'item-sidebar',
+    location: c_location,
+  });
   useInitAction(containerId, itemId, {
     open,
     close,
   });
 
   return (
-    <SidebarModule containerId={containerId} location={location} itemId={itemId} title={title}>
+    <SidebarModule
+      containerId={containerId}
+      location={location}
+      itemId={itemId}
+      title={title}
+    >
       {children}
     </SidebarModule>
   );

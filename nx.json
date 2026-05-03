@@ -118,7 +118,9 @@
       "libs/*",
       "shared-store",
       "@hungpvq/map-core",
-      "@hungpvq/react-draggable"
+      "@hungpvq/react-draggable",
+      "@hungpvq/react-map-dataset",
+      "@hungpvq/map-dataset"
     ]
   },
   "generators": {

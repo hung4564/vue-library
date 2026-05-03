@@ -17,5 +17,5 @@ export type ErrorHandler = (error: any) => Promise<any>;
  */
 export type Executor<MiddlewareFn> = (
   middleware: MiddlewareFn,
-  next: NextFn
+  next: NextFn,
 ) => Promise<any>;

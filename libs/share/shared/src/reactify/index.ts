@@ -36,15 +36,15 @@ export interface ReactifyOptions<T extends boolean> {
  */
 export function reactify<T extends AnyFn, K extends boolean = true>(
   fn: T,
-  options?: ReactifyOptions<K>
+  options?: ReactifyOptions<K>,
 ): Reactified<T, K> {
   const unrefFn = options?.computedGetter === false ? unref : toValue;
   return function (this: any, ...args: any[]) {
     return computed(() =>
       fn.apply(
         this,
-        args.map((i) => unrefFn(i))
-      )
+        args.map((i) => unrefFn(i)),
+      ),
     );
   } as any;
 }
@@ -58,5 +58,5 @@ export const stringify = reactify((input: any) =>
     condenseFlow: true,
     noCompatMode: true,
     quotingType: "'",
-  })
+  }),
 );

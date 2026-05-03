@@ -22,7 +22,7 @@ export const rand = (min: number, max: number) => {
 };
 export const hasOwn = <T extends object, K extends keyof T>(
   val: T,
-  key: K
+  key: K,
 ): key is K => Object.prototype.hasOwnProperty.call(val, key);
 
 export const isIOS = /* #__PURE__ */ getIsIOS();

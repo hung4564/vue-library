@@ -16,7 +16,7 @@ export type FunctionArgs<Args extends any[] = any[], Return = void> = (
 
 export interface FunctionWrapperOptions<
   Args extends any[] = any[],
-  This = any
+  This = any,
 > {
   fn: FunctionArgs<Args, This>;
   args: Args;
@@ -26,10 +26,10 @@ export interface FunctionWrapperOptions<
 export type EventFilter<
   Args extends any[] = any[],
   This = any,
-  Invoke extends AnyFn = AnyFn
+  Invoke extends AnyFn = AnyFn,
 > = (
   invoke: Invoke,
-  options: FunctionWrapperOptions<Args, This>
+  options: FunctionWrapperOptions<Args, This>,
 ) => ReturnType<Invoke> | Promisify<ReturnType<Invoke>>;
 
 export interface ConfigurableEventFilter {
@@ -56,13 +56,13 @@ export interface DebounceFilterOptions {
  */
 export function createFilterWrapper<T extends AnyFn>(
   filter: EventFilter,
-  fn: T
+  fn: T,
 ) {
   function wrapper(this: any, ...args: ArgumentsType<T>) {
     return new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
       // make sure it's a promise
       Promise.resolve(
-        filter(() => fn.apply(this, args), { fn, thisArg: this, args })
+        filter(() => fn.apply(this, args), { fn, thisArg: this, args }),
       )
         .then(resolve)
         .catch(reject);
@@ -81,7 +81,7 @@ export const bypassFilter: EventFilter = (invoke) => {
  */
 export function debounceFilter(
   ms: MaybeRefOrGetter<number>,
-  options: DebounceFilterOptions = {}
+  options: DebounceFilterOptions = {},
 ) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let maxTimer: ReturnType<typeof setTimeout> | undefined | null;
@@ -162,7 +162,7 @@ export function throttleFilter(
   ms: MaybeRefOrGetter<number>,
   trailing?: boolean,
   leading?: boolean,
-  rejectOnCancel?: boolean
+  rejectOnCancel?: boolean,
 ): EventFilter;
 export function throttleFilter(options: ThrottleFilterOptions): EventFilter;
 export function throttleFilter(...args: any[]) {
@@ -212,12 +212,15 @@ export function throttleFilter(...args: any[]) {
     } else if (trailing) {
       lastValue = new Promise((resolve, reject) => {
         lastRejector = rejectOnCancel ? reject : resolve;
-        timer = setTimeout(() => {
-          lastExec = Date.now();
-          isLeading = true;
-          resolve(invoke());
-          clear();
-        }, Math.max(0, duration - elapsed));
+        timer = setTimeout(
+          () => {
+            lastExec = Date.now();
+            isLeading = true;
+            resolve(invoke());
+            clear();
+          },
+          Math.max(0, duration - elapsed),
+        );
       });
     }
 
@@ -238,7 +241,7 @@ export function throttleFilter(...args: any[]) {
  *
  */
 export function pausableFilter(
-  extendFilter: EventFilter = bypassFilter
+  extendFilter: EventFilter = bypassFilter,
 ): Pausable & { eventFilter: EventFilter } {
   const isActive = ref(true);
 

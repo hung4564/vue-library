@@ -45,7 +45,10 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
       ref,
       () => ({
         open(e: React.MouseEvent | MouseEvent) {
-          const ev = 'nativeEvent' in e ? (e as React.MouseEvent).nativeEvent : (e as MouseEvent);
+          const ev =
+            'nativeEvent' in e
+              ? (e as React.MouseEvent).nativeEvent
+              : (e as MouseEvent);
           lastOpenEventRef.current = ev;
           setIsOpen(true);
         },
@@ -75,10 +78,8 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
       const h = menu.offsetHeight || 100;
       const pageX = ev?.clientX ?? 0;
       const pageY = ev?.clientY ?? 0;
-      const left =
-        pageX + w >= window.innerWidth ? pageX - w + 10 : pageX - 10;
-      const top =
-        pageY + h >= window.innerHeight ? pageY - h + 10 : pageY - 10;
+      const left = pageX + w >= window.innerWidth ? pageX - w + 10 : pageX - 10;
+      const top = pageY + h >= window.innerHeight ? pageY - h + 10 : pageY - 10;
       setStylePosition({ left: `${left}px`, top: `${top}px` });
     }, [isOpen, isMobile]);
 

@@ -58,8 +58,8 @@ const downloadFile = async () => {
     fileFormat.value === 'geojson'
       ? 'geojson'
       : fileFormat.value === 'shapefile'
-      ? 'zip'
-      : fileFormat.value
+        ? 'zip'
+        : fileFormat.value
   }`;
   downloadStatus.value = 'Downloading...';
   const blob = await convert(geojsonData.value, {

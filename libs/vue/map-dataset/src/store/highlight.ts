@@ -1,10 +1,10 @@
 import { logHelper } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature } from 'maplibre-gl';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { IDataset } from '../interfaces';
 import { logger } from '../logger';
 
 export type MapDatasetHighlightStore = {

@@ -33,7 +33,8 @@
     "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-rnd": "^10.0.0"
+    "react-rnd": "^10.0.0",
+    "@vitejs/plugin-react": "^4.2.0"
   },
   "peerDependenciesMeta": {
     "react": {

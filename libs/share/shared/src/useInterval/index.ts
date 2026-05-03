@@ -31,15 +31,15 @@ export interface UseIntervalControls {
 
 export function useInterval(
   interval?: MaybeRefOrGetter<number>,
-  options?: UseIntervalOptions<false>
+  options?: UseIntervalOptions<false>,
 ): Ref<number>;
 export function useInterval(
   interval: MaybeRefOrGetter<number>,
-  options: UseIntervalOptions<true>
+  options: UseIntervalOptions<true>,
 ): UseIntervalControls & Pausable;
 export function useInterval(
   interval: MaybeRefOrGetter<number> = 1000,
-  options: UseIntervalOptions<boolean> = {}
+  options: UseIntervalOptions<boolean> = {},
 ) {
   const {
     controls: exposeControls = false,
@@ -60,7 +60,7 @@ export function useInterval(
         }
       : update,
     interval,
-    { immediate }
+    { immediate },
   );
 
   if (exposeControls) {

@@ -11,7 +11,7 @@ export function createMiddleware(key: string, fn: MiddlewareFn) {
 }
 
 export function getMiddleware(
-  key: string | MiddlewareFn | undefined
+  key: string | MiddlewareFn | undefined,
 ): MiddlewareFn | undefined {
   if (typeof key == 'string') return store['middleware'][key];
   return key;

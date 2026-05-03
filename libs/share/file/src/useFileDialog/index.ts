@@ -45,7 +45,7 @@ export interface UseFileDialogReturn {
 }
 
 export function useFileDialog(
-  options: UseFileDialogOptions = {}
+  options: UseFileDialogOptions = {},
 ): UseFileDialogReturn {
   const { document = defaultDocument } = options;
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset';
 import { BaseButton, InputSelect, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, nextTick, ref, watch } from 'vue';
-import { LayerSimpleMapboxBuild } from '../../../utils/layer-simple-builder';
 import SingleStyle from './single-style.vue';
 defineExpose({
   SvgIcon,

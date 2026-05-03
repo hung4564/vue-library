@@ -44,8 +44,8 @@
 </template>
 
 <script setup lang="ts">
+import { GroupTree, Item, TreeItem } from '@hungpvq/map-dataset';
 import { VNode } from 'vue';
-import { GroupTree, Item, TreeItem } from '../../utils/tree';
 import ListGroupItem from './ListGroupItem.vue';
 import ListItem from './ListItem.vue';
 

@@ -8,10 +8,9 @@
   />
 </template>
 <script setup lang="ts">
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
-import type { MenuAction } from '../../../../../interfaces';
-import type { IListViewUI } from '../../../../../model';
 import MenuDivider from './menu-divider.vue';
 import MenuItem from './menu-item.vue';
 const props = defineProps<{

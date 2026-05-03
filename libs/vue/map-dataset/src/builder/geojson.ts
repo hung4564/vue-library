@@ -1,24 +1,22 @@
 import type { Color } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
-import type { GeoJSON } from 'geojson';
-import {
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-  type FieldFeaturesDef,
-} from '../extra';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '@hungpvq/map-dataset';
 import {
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponent,
   createGroupDataset,
-  createIdentifyMapboxComponent,
   createMultiMapboxLayerComponent,
   createRootDataset,
-} from '../model';
-import {
   LayerSimpleMapboxBuild,
+  type FieldFeaturesDef,
   type LayerStyleType,
-} from '../utils/layer-simple-builder';
+} from '@hungpvq/map-dataset';
+import type { GeoJSON } from 'geojson';
+import {
+  createMenuItemShowDetailForItem,
+  createMenuItemToBoundActionForItem,
+} from '../extra';
+import { createIdentifyMapboxComponent } from '../model';
 export type GeojsonDatasetOption = {
   name: string;
   geojson: GeoJSON;

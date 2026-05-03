@@ -45,7 +45,7 @@ export interface UseTimestampOptions<Controls extends boolean> {
  */
 export function useTimestamp(options?: UseTimestampOptions<false>): Ref<number>;
 export function useTimestamp(
-  options: UseTimestampOptions<true>
+  options: UseTimestampOptions<true>,
 ): { timestamp: Ref<number> } & Pausable;
 export function useTimestamp(options: UseTimestampOptions<boolean> = {}) {
   const {

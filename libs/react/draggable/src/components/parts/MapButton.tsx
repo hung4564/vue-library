@@ -32,7 +32,13 @@ export function MapButton({
     .join(' ');
 
   return (
-    <button type="button" className={classes} style={bindStyle} disabled={disabled} {...props}>
+    <button
+      type="button"
+      className={classes}
+      style={bindStyle}
+      disabled={disabled}
+      {...props}
+    >
       <span className="hungpvq-draggable-button__content">{children}</span>
     </button>
   );

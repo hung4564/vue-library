@@ -28,9 +28,11 @@ export interface OnClickOutsideOptions extends ConfigurableWindow {
 export type OnClickOutsideHandler<
   T extends { detectIframe: OnClickOutsideOptions['detectIframe'] } = {
     detectIframe: false;
-  }
+  },
 > = (
-  evt: T['detectIframe'] extends true ? PointerEvent | FocusEvent : PointerEvent
+  evt: T['detectIframe'] extends true
+    ? PointerEvent | FocusEvent
+    : PointerEvent,
 ) => void;
 
 let _iOSWorkaround = false;
@@ -38,7 +40,7 @@ let _iOSWorkaround = false;
 export function onClickOutside<T extends OnClickOutsideOptions>(
   target: MaybeElementRef,
   handler: OnClickOutsideHandler<{ detectIframe: T['detectIframe'] }>,
-  options: T = {} as T
+  options: T = {} as T,
 ) {
   const {
     window = defaultWindow,
@@ -52,7 +54,7 @@ export function onClickOutside<T extends OnClickOutsideOptions>(
   if (isIOS && !_iOSWorkaround) {
     _iOSWorkaround = true;
     Array.from(window.document.body.children).forEach((el) =>
-      el.addEventListener('click', noop)
+      el.addEventListener('click', noop),
     );
     window.document.documentElement.addEventListener('click', noop);
   }
@@ -63,7 +65,7 @@ export function onClickOutside<T extends OnClickOutsideOptions>(
     return ignore.some((target) => {
       if (typeof target === 'string') {
         return Array.from(window.document.querySelectorAll(target)).some(
-          (el) => el === event.target || event.composedPath().includes(el)
+          (el) => el === event.target || event.composedPath().includes(el),
         );
       } else {
         const el = unrefElement(target);
@@ -97,7 +99,7 @@ export function onClickOutside<T extends OnClickOutsideOptions>(
         shouldListen =
           !shouldIgnore(e) && !!(el && !e.composedPath().includes(el));
       },
-      { passive: true }
+      { passive: true },
     ),
     detectIframe &&
       useEventListener(window, 'blur', (event) => {

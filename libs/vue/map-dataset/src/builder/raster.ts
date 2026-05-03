@@ -1,12 +1,12 @@
-import type { RasterSourceSpecification } from 'maplibre-gl';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '@hungpvq/map-dataset';
 import {
   createDatasetPartListViewUiComponent,
   createDatasetPartRasterSourceComponent,
   createGroupDataset,
   createMultiMapboxLayerComponent,
   createRootDataset,
-} from '../model';
+} from '@hungpvq/map-dataset';
+import type { RasterSourceSpecification } from 'maplibre-gl';
 
 export type RasterUrlDatasetOption = {
   name: string;

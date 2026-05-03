@@ -21,7 +21,7 @@ export const useBaseMapAdapter = (mapId: string) => {
   return {
     setBaseMapAdapter(
       mapId: string,
-      adapter: (mapId: string) => BaseMapAdapter
+      adapter: (mapId: string) => BaseMapAdapter,
     ) {
       logHelper(logger, mapId, 'store').debug('setBaseMapAdapter', adapter);
       store.adapter = adapter(mapId);

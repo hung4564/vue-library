@@ -2,8 +2,8 @@
   <component :is="component" :item="item" v-bind="$attrs" />
 </template>
 <script setup lang="ts">
+import type { MenuAction } from '@hungpvq/map-dataset';
 import { computed } from 'vue';
-import type { MenuAction } from '../../../interfaces/dataset.parts';
 import MenuDivider from './menu-divider.vue';
 import MenuItem from './menu-item.vue';
 const props = defineProps<{

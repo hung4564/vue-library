@@ -1,5 +1,4 @@
-import type { MenuAction } from '../../interfaces';
-import type { IListViewUI } from '../../model';
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 
 export interface WithLayerItemActionType {
   item: MenuAction<IListViewUI>;

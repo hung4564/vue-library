@@ -34,12 +34,11 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
-import type { MenuAction } from '../../../../interfaces';
-import type { IListViewUI } from '../../../../model';
 import LayerMenu from './menu/index.vue';
 
 const path = {

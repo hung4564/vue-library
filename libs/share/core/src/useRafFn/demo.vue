@@ -10,7 +10,7 @@ const { pause, resume } = useRafFn(
     deltaMs.value = delta;
     count.value += 1;
   },
-  { fpsLimit }
+  { fpsLimit },
 );
 </script>
 

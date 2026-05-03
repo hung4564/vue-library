@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { fitBounds, WithMapPropType } from '@hungpvq/map-core';
 import {
-  defaultMapProps,
-  UniversalRegistry,
-  useMap,
-} from '@hungpvq/vue-map-core';
-import {
   MenuClickAddComponent,
   MenuClickFitBounds,
   MenuClickHighlight,
   MenuItemProps,
-} from '../extra';
+} from '@hungpvq/map-dataset';
+import {
+  defaultMapProps,
+  UniversalRegistry,
+  useMap,
+} from '@hungpvq/vue-map-core';
 import { useMapDatasetComponent, useMapDatasetHighlight } from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {

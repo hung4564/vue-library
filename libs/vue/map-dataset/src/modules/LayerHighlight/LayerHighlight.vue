@@ -8,17 +8,20 @@ import {
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import type {
+  HighlightHandle,
+  IdentifySingleResult,
+  IHighlightView,
+} from '@hungpvq/map-dataset';
+import {
+  findSiblingOrNearestLeaf,
+  handleMultiIdentifyGetFirst,
+} from '@hungpvq/map-dataset';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';
 import { onMounted, onUnmounted, shallowRef, watch } from 'vue';
-import type { IdentifySingleResult } from '../../interfaces';
 import { loggerHighlight } from '../../logger';
-import type { HighlightHandle, IHighlightView } from '../../model';
-import {
-  findSiblingOrNearestLeaf,
-  handleMultiIdentifyGetFirst,
-} from '../../model';
 import { useMapDataset } from '../../store';
 import { useMapDatasetHighlight } from '../../store/highlight';
 import { useDefaultHighlight } from './helper';

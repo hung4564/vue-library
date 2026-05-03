@@ -23,7 +23,7 @@ export type UnRefElementReturn<T extends MaybeElement = MaybeElement> =
  * @param elRef
  */
 export function unrefElement<T extends MaybeElement>(
-  elRef: MaybeComputedElementRef<T>
+  elRef: MaybeComputedElementRef<T>,
 ): UnRefElementReturn<T> {
   const plain = toValue(elRef);
   return (plain as VueInstance)?.$el ?? plain;

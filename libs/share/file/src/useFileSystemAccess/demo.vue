@@ -27,7 +27,7 @@ const str = stringify(
     fileMIME: res.fileMIME,
     fileSize: res.fileSize,
     fileLastModified: res.fileLastModified,
-  })
+  }),
 );
 
 async function onSave() {

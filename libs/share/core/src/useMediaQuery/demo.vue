@@ -11,8 +11,8 @@ const code = computed(() =>
     reactive({
       isLargeScreen,
       prefersDark,
-    })
-  )
+    }),
+  ),
 );
 </script>
 

@@ -6,6 +6,12 @@ export default {
 
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
+import {
+  createMenuClickAddComponentBuilder,
+  createMenuClickBuilder,
+  handleMenuActionClick,
+} from '@hungpvq/map-dataset';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -21,12 +27,6 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
-import {
-  createMenuClickAddComponentBuilder,
-  createMenuClickBuilder,
-  handleMenuActionClick,
-} from '../../extra/menu';
-import type { IDataset } from '../../interfaces/dataset.base';
 import { useMapDataset } from '../../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,

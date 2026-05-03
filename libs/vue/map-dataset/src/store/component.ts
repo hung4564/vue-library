@@ -1,10 +1,9 @@
 import { logHelper } from '@hungpvq/map-core';
+import type { ComponentType } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
-import type { ComponentType } from '../types';
-
 const KEY = 'dataset-component' as const;
 
 export type ComponentItem = {

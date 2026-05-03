@@ -119,6 +119,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import { findAllComponentsByType } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -132,9 +134,6 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { computed, onMounted, ref } from 'vue';
-import type { MenuAction } from '../../../../interfaces';
-import type { IListViewUI } from '../../../../model';
-import { findAllComponentsByType } from '../../../../model';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{

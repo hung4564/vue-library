@@ -36,7 +36,7 @@ export interface GeneralEventListener<E = Event> {
 export function useEventListener<E extends keyof WindowEventMap>(
   event: Arrayable<E>,
   listener: Arrayable<(this: Window, ev: WindowEventMap[E]) => any>,
-  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>
+  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn;
 
 /**
@@ -53,7 +53,7 @@ export function useEventListener<E extends keyof WindowEventMap>(
   target: Window,
   event: Arrayable<E>,
   listener: Arrayable<(this: Window, ev: WindowEventMap[E]) => any>,
-  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>
+  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn;
 
 /**
@@ -70,7 +70,7 @@ export function useEventListener<E extends keyof DocumentEventMap>(
   target: DocumentOrShadowRoot,
   event: Arrayable<E>,
   listener: Arrayable<(this: Document, ev: DocumentEventMap[E]) => any>,
-  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>
+  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn;
 
 /**
@@ -87,7 +87,7 @@ export function useEventListener<E extends keyof HTMLElementEventMap>(
   target: MaybeRefOrGetter<HTMLElement | null | undefined>,
   event: Arrayable<E>,
   listener: (this: HTMLElement, ev: HTMLElementEventMap[E]) => any,
-  options?: boolean | AddEventListenerOptions
+  options?: boolean | AddEventListenerOptions,
 ): () => void;
 
 /**
@@ -104,7 +104,7 @@ export function useEventListener<Names extends string, EventType = Event>(
   target: InferEventTarget<Names>,
   event: Arrayable<Names>,
   listener: Arrayable<GeneralEventListener<EventType>>,
-  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>
+  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn;
 
 /**
@@ -121,7 +121,7 @@ export function useEventListener<EventType = Event>(
   target: MaybeRefOrGetter<EventTarget | null | undefined>,
   event: Arrayable<string>,
   listener: Arrayable<GeneralEventListener<EventType>>,
-  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>
+  options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn;
 
 export function useEventListener(...args: any[]) {
@@ -170,12 +170,12 @@ export function useEventListener(...args: any[]) {
         ...(events as string[]).flatMap((event) => {
           // eslint-disable-next-line @typescript-eslint/ban-types
           return (listeners as Function[]).map((listener) =>
-            register(el, event, listener, optionsClone)
+            register(el, event, listener, optionsClone),
           );
-        })
+        }),
       );
     },
-    { immediate: true, flush: 'post' }
+    { immediate: true, flush: 'post' },
   );
 
   const stop = () => {

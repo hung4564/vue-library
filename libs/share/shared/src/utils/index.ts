@@ -32,7 +32,7 @@ export interface SingletonPromiseReturn<T> {
  * ```
  */
 export function createSingletonPromise<T>(
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): SingletonPromiseReturn<T> {
   let _promise: Promise<T> | undefined;
 
@@ -68,7 +68,7 @@ export interface Stoppable<StartFnArgs extends any[] = any[]> {
 export function promiseTimeout(
   ms: number,
   throwOnTimeout = false,
-  reason = 'Timeout'
+  reason = 'Timeout',
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (throwOnTimeout) setTimeout(() => reject(reason), ms);
@@ -85,11 +85,11 @@ export function increaseWithUnit(target: number, delta: number): number;
 export function increaseWithUnit(target: string, delta: number): string;
 export function increaseWithUnit(
   target: string | number,
-  delta: number
+  delta: number,
 ): string | number;
 export function increaseWithUnit(
   target: string | number,
-  delta: number
+  delta: number,
 ): string | number {
   if (typeof target === 'number') return target + delta;
   const value = target.match(/^-?\d+\.?\d*/)?.[0] || '';

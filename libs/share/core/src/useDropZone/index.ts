@@ -24,7 +24,7 @@ export interface UseDropZoneOptions {
 
 export function useDropZone(
   target: MaybeRefOrGetter<HTMLElement | null | undefined>,
-  options: UseDropZoneOptions | UseDropZoneOptions['onDrop'] = {}
+  options: UseDropZoneOptions | UseDropZoneOptions['onDrop'] = {},
 ): UseDropZoneReturn {
   const isOverDropZone = ref(false);
   const files = shallowRef<File[] | null>(null);
@@ -49,8 +49,8 @@ export function useDropZone(
           typeof dataTypes === 'function'
             ? dataTypes(types)
             : dataTypes
-            ? dataTypes.some((item) => types.includes(item))
-            : true;
+              ? dataTypes.some((item) => types.includes(item))
+              : true;
         if (!isDataTypeIncluded) return;
       }
       event.preventDefault();

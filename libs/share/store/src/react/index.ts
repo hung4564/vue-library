@@ -69,7 +69,7 @@ export function defineStoreReact<T>(
   setup: () => T,
 ): () => T {
   const store = GlobalStoreService.getInstance();
-  
+
   if (!store.has(id)) {
     const storeValue = setup();
     store.set(id, storeValue);

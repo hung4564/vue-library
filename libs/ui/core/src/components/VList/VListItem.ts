@@ -16,7 +16,7 @@ const VListItem = defineComponent({
           class: ['v-list-item', props.class],
           style: props.style,
         },
-        ctx.slots.default && ctx.slots.default()
+        ctx.slots.default && ctx.slots.default(),
       );
   },
 });

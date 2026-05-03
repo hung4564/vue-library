@@ -2,8 +2,7 @@
   <div class="menu-divider"></div>
 </template>
 <script setup lang="ts">
-import type { MenuAction } from '../../../../../interfaces';
-import type { IListViewUI } from '../../../../../model';
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 defineProps<{
   item: MenuAction<IListViewUI>;
   data: IListViewUI;

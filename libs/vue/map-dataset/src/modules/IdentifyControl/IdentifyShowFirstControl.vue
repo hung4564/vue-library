@@ -5,20 +5,22 @@ export default {
 </script>
 <script setup lang="ts">
 import { EventClick, logHelper, WithMapPropType } from '@hungpvq/map-core';
-import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
-import { MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { handleMenuAction } from '../../extra/menu';
-import type { IDataset } from '../../interfaces/dataset.base';
 import type {
+  IDataset,
   IdentifyResult,
   IIdentifyView,
   MenuAction,
-} from '../../interfaces/dataset.parts';
+} from '@hungpvq/map-dataset';
+import {
+  convertFeatureToItem,
+  handleMenuAction,
+  handleMultiIdentifyGetFirst,
+} from '@hungpvq/map-dataset';
+import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
+import { MapMouseEvent, type PointLike } from 'maplibre-gl';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { loggerIdentify } from '../../logger';
-import { handleMultiIdentifyGetFirst } from '../../model';
 import { useMapDataset } from '../../store';
-import { convertFeatureToItem } from '../../utils/convert';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });

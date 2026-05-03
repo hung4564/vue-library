@@ -23,13 +23,16 @@
 </template>
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
+import type { IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
+import {
+  IListViewUI,
+  isMapboxLayerView,
+  runAllComponentsWithCheck,
+} from '@hungpvq/map-dataset';
 import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, ref } from 'vue';
-import type { IDataset, IMapboxLayerView } from '../../../interfaces';
-import { IListViewUI, runAllComponentsWithCheck } from '../../../model';
-import { isMapboxLayerView } from '../../../utils/check';
 
 const allLayerShow = ref(true);
 const allLayerMultiShow = ref([true, true]);

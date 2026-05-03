@@ -12,12 +12,15 @@ export interface CompareBaseMapCardProps {
   title?: string;
 }
 
-export function CompareBaseMapCard({ mapId, title = '' }: CompareBaseMapCardProps) {
+export function CompareBaseMapCard({
+  mapId,
+  title = '',
+}: CompareBaseMapCardProps) {
   const { mapId: resolvedMapId } = useMap({ mapId });
   const setting = getMapCompareSetting(resolvedMapId);
   const mapIds = useMemo(
     () => getMaps(resolvedMapId).map((x) => x.id),
-    [resolvedMapId]
+    [resolvedMapId],
   );
 
   const mapId0 = mapIds[0] ?? resolvedMapId;
@@ -33,31 +36,31 @@ export function CompareBaseMapCard({ mapId, title = '' }: CompareBaseMapCardProp
     () =>
       [useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3].slice(
         0,
-        mapIds.length
+        mapIds.length,
       ),
-    [mapIds.length, useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3]
+    [mapIds.length, useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3],
   );
 
   const current_baseMaps = useMemo(
     () => mapStoreUseBaseMap.map((x) => x.currentBaseMap),
-    [mapStoreUseBaseMap]
+    [mapStoreUseBaseMap],
   );
 
   const c_items_baseMaps = useMemo(
     () => mapStoreUseBaseMap.map((x) => x.baseMaps),
-    [mapStoreUseBaseMap]
+    [mapStoreUseBaseMap],
   );
 
   const onChangeBaseMap = useCallback(
     (i: number, value: BaseMapItem | string | number) => {
       const baseMap = c_items_baseMaps[i]?.find(
-        (b) => String(b.id) === String(value)
+        (b) => String(b.id) === String(value),
       );
       if (baseMap) {
         mapStoreUseBaseMap[i].setCurrent(baseMap);
       }
     },
-    [c_items_baseMaps, mapStoreUseBaseMap]
+    [c_items_baseMaps, mapStoreUseBaseMap],
   );
 
   useEffect(() => {
@@ -84,7 +87,7 @@ export function CompareBaseMapCard({ mapId, title = '' }: CompareBaseMapCardProp
                       src={item.thumbnail}
                       className="base-map-item-image"
                     />
-                  )
+                  ),
               )}
             </div>
           </MapImage>

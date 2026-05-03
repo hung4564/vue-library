@@ -1,7 +1,3 @@
-import { fitBounds } from '@hungpvq/map-core';
-import { getMap } from '@hungpvq/vue-map-core';
-import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
-import type { BBox } from 'geojson';
 import type {
   IDataset,
   IMapboxSourceView,
@@ -10,16 +6,23 @@ import type {
   MenuItemBottomOrExtra,
   MenuItemCustomComponentBottomOrExtra,
   WithMenuHelper,
-} from '../../interfaces';
-import { findSiblingOrNearestLeaf } from '../../model/visitors';
-import { convertItemToFeature } from '../../utils/convert';
-import type { FieldFeaturesDef } from '../field';
+} from '@hungpvq/map-dataset';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   createMenuClickHighlightBuilder,
-} from './builder';
+} from '@hungpvq/map-dataset';
+import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
+
+import { fitBounds } from '@hungpvq/map-core';
+import type { FieldFeaturesDef } from '@hungpvq/map-dataset';
+import {
+  convertItemToFeature,
+  findSiblingOrNearestLeaf,
+} from '@hungpvq/map-dataset';
+import { getMap } from '@hungpvq/vue-map-core';
+import type { BBox } from 'geojson';
 
 export function createWithMenuHelper<
   T extends IDataset = IDataset,

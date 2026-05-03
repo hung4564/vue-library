@@ -1,19 +1,16 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import { errorHandler } from '@hungpvq/vue-map-core';
-import { DatasetError } from '../errors';
-import type { IDataset } from '../interfaces/dataset.base';
-import type { IListViewUI } from '../model';
+import type { IDataset, IListViewUI } from '@hungpvq/map-dataset';
 import {
   applyToAllLeaves,
+  DatasetError,
   findAllComponentsByType,
-  traverseTree,
-} from '../model/visitors';
-import type { MapLayerStore } from '../store';
-import {
   isComposite,
   isDatasetMapHasAddToMap,
   isDatasetMapHasRemoveFromMap,
-} from '../utils/check';
+  traverseTree,
+} from '@hungpvq/map-dataset';
+import { errorHandler } from '@hungpvq/vue-map-core';
+import type { MapLayerStore } from '../store';
 
 /**
  * Service for managing datasets and their lifecycle on the map.

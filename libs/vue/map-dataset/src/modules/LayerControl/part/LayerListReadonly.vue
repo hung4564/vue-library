@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { ContextMenu } from '@hungpvq/vue-content-menu';
 import { type WithMapPropType } from '@hungpvq/map-core';
+import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import {
+  convertListToTree,
+  handleMenuAction,
+  TreeItem,
+} from '@hungpvq/map-dataset';
+import { ContextMenu } from '@hungpvq/vue-content-menu';
 import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -11,11 +17,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
-import { handleMenuAction } from '../../../extra/menu';
-import type { MenuAction } from '../../../interfaces';
-import type { IListViewUI } from '../../../model';
 import { useMapDataset } from '../../../store';
-import { convertListToTree, TreeItem } from '../../../utils/tree';
 import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';
 

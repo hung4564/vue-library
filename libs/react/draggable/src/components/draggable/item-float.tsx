@@ -1,9 +1,4 @@
-import {
-  ComponentType,
-  CSSProperties,
-  ReactNode,
-  useMemo,
-} from 'react';
+import { ComponentType, CSSProperties, ReactNode, useMemo } from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   useComponent,

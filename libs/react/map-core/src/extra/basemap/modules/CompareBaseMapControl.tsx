@@ -1,8 +1,5 @@
 import type { BaseMapItem } from '@hungpvq/map-core';
-import {
-  INIT_BASEMAPS,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+import { INIT_BASEMAPS, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiLayersOutline } from '@mdi/js';
@@ -49,10 +46,7 @@ export function CompareBaseMapControl({
   const { trans, setLocaleDefault } = useLang(mapId);
   const setting = getMapCompareSetting(mapId);
   const [currentTab, setCurrentTab] = useState(0);
-  const mapIds = useMemo(
-    () => getMaps(mapId).map((x) => x.id),
-    [mapId]
-  );
+  const mapIds = useMemo(() => getMaps(mapId).map((x) => x.id), [mapId]);
 
   // Support up to 4 compare maps - hooks must be called unconditionally
   const mapId0 = mapIds[0] ?? mapId;
@@ -65,18 +59,22 @@ export function CompareBaseMapControl({
   const useBaseMap3 = useBaseMap(mapId3);
 
   const mapStoreUseBaseMap = useMemo(
-    () => [useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3].slice(0, mapIds.length),
-    [mapIds.length, useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3]
+    () =>
+      [useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3].slice(
+        0,
+        mapIds.length,
+      ),
+    [mapIds.length, useBaseMap0, useBaseMap1, useBaseMap2, useBaseMap3],
   );
 
   const current_baseMaps = useMemo(
     () => mapStoreUseBaseMap.map((x) => x.currentBaseMap),
-    [mapStoreUseBaseMap]
+    [mapStoreUseBaseMap],
   );
 
   const c_items_baseMaps = useMemo(
     () => mapStoreUseBaseMap.map((x) => x.baseMaps),
-    [mapStoreUseBaseMap]
+    [mapStoreUseBaseMap],
   );
 
   useEffect(() => {
@@ -99,7 +97,7 @@ export function CompareBaseMapControl({
   useEffect(() => {
     if (props.defaultBaseMap) {
       mapStoreUseBaseMap.forEach((c) =>
-        c.setDefaultBaseMap(props.defaultBaseMap)
+        c.setDefaultBaseMap(props.defaultBaseMap),
       );
     }
   }, [props.defaultBaseMap]);
@@ -110,7 +108,7 @@ export function CompareBaseMapControl({
     (i: number, baseMap: BaseMapItem) => {
       mapStoreUseBaseMap[i].setCurrent(baseMap);
     },
-    [mapStoreUseBaseMap]
+    [mapStoreUseBaseMap],
   );
 
   const onToggleList = useCallback(() => {
@@ -187,14 +185,7 @@ export function CompareBaseMapControl({
         </div>
       </DraggableItemPopup>
     ),
-    [
-      show,
-      c_items_baseMaps,
-      current_baseMaps,
-      currentTab,
-      trans,
-      onClick,
-    ]
+    [show, c_items_baseMaps, current_baseMaps, currentTab, trans, onClick],
   );
 
   const current_baseMaps_for_display = current_baseMaps.filter(Boolean);

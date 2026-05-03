@@ -1,10 +1,10 @@
+import type { IIdentifyView } from '@hungpvq/map-dataset';
 import {
   addFieldBuilder,
   addMenuBuilder,
   type WithFieldBuilder,
   type WithMenuBuilder,
-} from '../../extra';
-import type { IIdentifyView } from '../../interfaces';
+} from '@hungpvq/map-dataset';
 import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,

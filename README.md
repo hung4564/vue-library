@@ -171,11 +171,9 @@ vue-library/
 ## Idea
 
 - [x] Introduce a new `dataset` type: **`data-management`**
-
   - This dataset type supports **CRUD operations** (create, read, update, delete).
 
 - [ ] Provide templates for `data-management` datasets:
-
   - [ ] **Local template** – handles local data sources in:
     - [x] **GeoJSON format**, or
     - [ ] **List-based format** (which may or may not be convertible to GeoJSON).

@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
+      "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],
       "@hungpvq/router": ["libs/router/src/index.ts"],

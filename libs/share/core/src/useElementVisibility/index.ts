@@ -9,14 +9,15 @@ import type { UseIntersectionObserverOptions } from '../useIntersectionObserver'
 import { useIntersectionObserver } from '../useIntersectionObserver';
 
 export interface UseElementVisibilityOptions
-  extends ConfigurableWindow,
+  extends
+    ConfigurableWindow,
     Pick<UseIntersectionObserverOptions, 'threshold'> {
   scrollTarget?: MaybeRefOrGetter<HTMLElement | undefined | null>;
 }
 
 export function useElementVisibility(
   element: MaybeComputedElementRef,
-  options: UseElementVisibilityOptions = {}
+  options: UseElementVisibilityOptions = {},
 ) {
   const { window = defaultWindow, scrollTarget, threshold = 0 } = options;
   const elementIsVisible = ref(false);
@@ -40,7 +41,7 @@ export function useElementVisibility(
       root: scrollTarget,
       window,
       threshold,
-    }
+    },
   );
 
   return elementIsVisible;

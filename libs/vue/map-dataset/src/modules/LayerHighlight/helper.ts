@@ -1,5 +1,16 @@
-import { toValue } from '@hungpvq/shared';
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import type {
+  HighlightHandle,
+  IDataset,
+  IHighlightView,
+  WithDataHelper,
+} from '@hungpvq/map-dataset';
+import {
+  createDefaultHighlightLayers,
+  defaultAnimate,
+  useHighlightAnimation,
+} from '@hungpvq/map-dataset';
+import { toValue } from '@hungpvq/shared';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
@@ -7,15 +18,7 @@ import type {
   LineLayerSpecification,
 } from 'maplibre-gl';
 import { ref, shallowRef } from 'vue';
-import type { WithDataHelper } from '../../extra';
-import type { IDataset } from '../../interfaces';
 import { loggerHighlight } from '../../logger';
-import type { HighlightHandle, IHighlightView } from '../../model';
-import {
-  createDefaultHighlightLayers,
-  defaultAnimate,
-  useHighlightAnimation,
-} from '../../model/highlight/helper';
 
 export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
   setDataset(p_dataset?: IHighlightView): void;

@@ -1,0 +1,14 @@
+{
+  "name": "@hungpvq/map-dataset",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@hungpvq/map-core": ">=0.0.1",
+    "mitt": "^3.0.1",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-log": ">=0.0.1",
+    "maplibre-gl": "^5.4.0"
+  }
+}

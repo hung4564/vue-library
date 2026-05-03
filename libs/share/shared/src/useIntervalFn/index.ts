@@ -30,7 +30,7 @@ export interface UseIntervalFnOptions {
 export function useIntervalFn(
   cb: Fn,
   interval: MaybeRefOrGetter<number> = 1000,
-  options: UseIntervalFnOptions = {}
+  options: UseIntervalFnOptions = {},
 ): Pausable {
   const { immediate = true, immediateCallback = false } = options;
 

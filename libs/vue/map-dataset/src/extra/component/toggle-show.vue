@@ -20,14 +20,18 @@
 </template>
 <script setup lang="ts">
 import { MapSimple } from '@hungpvq/map-core';
+import type { WithToggleShow } from '@hungpvq/map-dataset';
+import {
+  IDataset,
+  IMapboxLayerView,
+  isHasToggleShow,
+  isMapboxLayerView,
+  runAllComponentsWithCheck,
+} from '@hungpvq/map-dataset';
 import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { IDataset, IMapboxLayerView } from '../../interfaces';
-import type { WithToggleShow } from '../../interfaces/dataset.extra';
-import { runAllComponentsWithCheck } from '../../model/visitors';
-import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
 import { WithLayerItemActionType } from './types';
 
 const path = {

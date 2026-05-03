@@ -1,5 +1,5 @@
+import type { IDataset } from '@hungpvq/map-dataset';
 import type { Feature, Geometry } from 'geojson';
-import type { IDataset } from '../../interfaces';
 export type ID = string | number;
 export type Identifiable = {
   id?: ID;

@@ -1,5 +1,5 @@
+// import { UniversalRegistry } from '@hungpvq/map-core';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
 import type {
@@ -38,18 +38,18 @@ export function createCommandHandler(
 }
 
 /** Xử lý string action */
-export const StringCommandHandler = createCommandHandler(
-  (click): click is string => typeof click === 'string',
-  async (click, context) => {
-    const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
-    if (!handler) {
-      throw new Error(
-        `[handleMenuActionClick] No handler found for key: ${click}`,
-      );
-    }
-    await handler(context);
-  },
-);
+// export const StringCommandHandler = createCommandHandler(
+//   (click): click is string => typeof click === 'string',
+//   async (click, context) => {
+//     const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
+//     if (!handler) {
+//       throw new Error(
+//         `[handleMenuActionClick] No handler found for key: ${click}`,
+//       );
+//     }
+//     await handler(context);
+//   },
+// );
 
 export const FunctionCommandHandler = createCommandHandler(
   (click): click is (props: MenuItemProps) => any =>
@@ -87,7 +87,7 @@ export const TupleCommandHandler = createCommandHandler(
     }
     const commandHandlers: CommandHandlerMenu[] = [
       BuilderCommandHandler,
-      StringCommandHandler,
+      // StringCommandHandler,
       FunctionCommandHandler,
       TupleCommandHandler,
       DirectCommandHandler,
@@ -139,7 +139,7 @@ export async function handleMenuActionClick<P = any, T = IDataset>(
 
   const commandHandlers: CommandHandlerMenu[] = [
     BuilderCommandHandler,
-    StringCommandHandler,
+    // StringCommandHandler,
     FunctionCommandHandler,
     TupleCommandHandler,
     DirectCommandHandler,

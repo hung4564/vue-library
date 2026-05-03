@@ -20,5 +20,5 @@ export const makeComponentProps = propsFactory(
       default: null,
     },
   },
-  'component'
+  'component',
 );
