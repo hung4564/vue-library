@@ -58,24 +58,3 @@ const groupedButtons = computed(() => {
     <slot />
   </ModuleContainer>
 </template>
-
-<style>
-.button-group-container .button-group-container .button-group-sheet {
-  border: unset;
-  box-shadow: unset;
-}
-.button-group-container .button-group-container:not(:first-child) {
-  position: relative;
-  margin-left: 3px;
-  padding-left: 3px;
-}
-.button-group-container .button-group-container:not(:first-child)::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 1px;
-  background-color: var(--map-toolbar-divider, rgba(0, 0, 0, 0.12));
-}
-</style>

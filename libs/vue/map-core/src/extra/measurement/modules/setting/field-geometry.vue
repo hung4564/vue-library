@@ -101,9 +101,9 @@ const isCanAdd = computed(() => {
 });
 </script>
 <template>
-  <div class="field-container">
-    <div class="label-container">
-      <div class="label-field">
+  <div class="map-measurement-geometry">
+    <div class="map-measurement-geometry__header">
+      <div class="map-measurement-geometry__title">
         {{ title }}
       </div>
       <div>
@@ -111,7 +111,7 @@ const isCanAdd = computed(() => {
           type="button"
           @click="onFlyTo"
           :disabled="!modelValue || modelValue.length < 1"
-          class="setting-button"
+          class="map-measurement-geometry__btn"
           :title="titleActionFillBound"
         >
           <SvgIcon
@@ -124,7 +124,7 @@ const isCanAdd = computed(() => {
         <button
           type="button"
           @click="onDownload"
-          class="setting-button"
+          class="map-measurement-geometry__btn"
           :disabled="!modelValue || modelValue.length < 1"
         >
           <SvgIcon
@@ -137,23 +137,23 @@ const isCanAdd = computed(() => {
         <button
           type="button"
           @click="onAddItem"
-          class="setting-button"
+          class="map-measurement-geometry__btn"
           v-if="isCanAdd"
         >
           <SvgIcon :size="16" type="mdi" :path="path.add" />
         </button>
       </div>
     </div>
-    <div class="geometry-list-container">
+    <div class="map-measurement-geometry__list">
       <div
-        class="geometry-list-item"
+        class="map-measurement-geometry__item"
         v-for="(item, index) in modelValue"
         :key="index"
       >
         <div>#{{ index + 1 }}</div>
         <div class="">
           <input
-            class="setting-input"
+            class="map-measurement-geometry__input"
             v-model="model[index][0]"
             type="number"
             step="any"
@@ -162,7 +162,7 @@ const isCanAdd = computed(() => {
         </div>
         <div class="">
           <input
-            class="setting-input"
+            class="map-measurement-geometry__input"
             v-model="model[index][1]"
             type="number"
             step="any"
@@ -173,7 +173,7 @@ const isCanAdd = computed(() => {
           <button
             type="button"
             @click="onDeleteItem(index)"
-            class="setting-button"
+            class="map-measurement-geometry__btn"
           >
             <SvgIcon :size="16" type="mdi" :path="path.delete" />
           </button>
@@ -182,61 +182,3 @@ const isCanAdd = computed(() => {
     </div>
   </div>
 </template>
-<style scoped>
-.label-container {
-  display: flex;
-}
-
-.label-container .label-field {
-  flex-grow: 1;
-}
-
-.geometry-list-item {
-  display: flex;
-  align-items: center;
-  margin-right: -4px;
-  margin-left: -4px;
-}
-
-.geometry-list-item > div {
-  padding: 4px;
-  color: inherit;
-  background-color: transparent;
-}
-
-.setting-button {
-  background-color: transparent;
-  position: relative;
-  cursor: pointer;
-  display: inline-flex;
-  overflow: hidden;
-  vertical-align: middle;
-  box-shadow: none;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  line-height: 24px;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
-}
-
-.setting-input {
-  padding: 8px;
-  display: block;
-  border: none;
-  border-bottom: 1px solid #ccc;
-  color: inherit;
-  width: 100%;
-  background-color: transparent;
-}
-
-button:disabled,
-button[disabled] {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-</style>

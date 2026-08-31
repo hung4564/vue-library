@@ -1,6 +1,6 @@
 import React from 'react';
-import { SketchPicker, ColorResult } from 'react-color';
-import './input-colorPicker.css';
+import { ColorResult, SketchPicker } from 'react-color';
+import '../types/react-color.d.ts';
 
 export interface InputColorPickerProps {
   label?: string;
@@ -8,6 +8,7 @@ export interface InputColorPickerProps {
   value?: string;
   onChange?: (value: string) => void;
   onColorChange?: (color: ColorResult) => void;
+  className?: string;
 }
 
 export function InputColorPicker({
@@ -24,7 +25,7 @@ export function InputColorPicker({
   };
 
   return (
-    <div className="form-group">
+    <div className={`form-group ${className}`.trim()}>
       {label && <label>{label}</label>}
       <div className="input-container">
         <SketchPicker color={value} onChange={onSetValue} disabled={disabled} />

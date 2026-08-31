@@ -24,4 +24,3 @@ const resolvedComponent = computed(() => {
   return getComponent(props.componentKey) ?? props.defaultComponent;
 });
 </script>
-<style lang=""></style>

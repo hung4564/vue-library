@@ -1,29 +1,27 @@
 import React from 'react';
-import './input-select.css';
 
 export interface SelectItem {
-  value: any;
+  value: string | number;
   text: string;
 }
 
-export interface InputSelectProps<T = any> extends Omit<
-  React.SelectHTMLAttributes<HTMLSelectElement>,
-  'onChange'
-> {
+export interface InputSelectProps<T = SelectItem>
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'value'> {
   label?: string;
-  items?: T[] | SelectItem[];
+  items?: T[];
   itemValue?: keyof T | string;
   itemText?: keyof T | string;
   returnObject?: boolean;
-  value?: T | (T extends object ? T[keyof T] : T) | string;
-  onChange?: (value: T | (T extends object ? T[keyof T] : T) | string) => void;
+  placeholder?: string;
+  value?: string | number;
+  onChange?: (value: T | string | number) => void;
 }
 
-export function InputSelect<T = any>({
+export function InputSelect<T = SelectItem>({
   label,
   items = [],
-  itemValue = 'value' as any,
-  itemText = 'text' as any,
+  itemValue = 'value' as keyof T,
+  itemText = 'text' as keyof T,
   returnObject = false,
   value,
   onChange,
@@ -31,22 +29,25 @@ export function InputSelect<T = any>({
   className = '',
   ...props
 }: InputSelectProps<T>) {
-  function getValue(item: T): T | (T extends object ? T[keyof T] : T) | string {
-    if (typeof item === 'string' || returnObject) {
-      return item as any;
+  function getValue(item: T): string | number | T {
+    if (returnObject) {
+      return item;
+    }
+    if (typeof item === 'string' || typeof item === 'number') {
+      return item;
     }
     if (item && typeof item === 'object' && itemValue) {
-      return (item as any)[itemValue];
+      return (item as Record<string, string | number>)[itemValue as string];
     }
-    return item as any;
+    return String(item);
   }
 
   function getText(item: T): string {
-    if (typeof item === 'string') {
-      return item;
+    if (typeof item === 'string' || typeof item === 'number') {
+      return String(item);
     }
     if (item && typeof item === 'object' && itemText) {
-      return String((item as any)[itemText]);
+      return String((item as Record<string, unknown>)[itemText as string]);
     }
     return String(item);
   }
@@ -56,20 +57,17 @@ export function InputSelect<T = any>({
       return item;
     }
     if (item && typeof item === 'object' && itemValue) {
-      return String((item as any)[itemValue]);
+      return String((item as Record<string, unknown>)[itemValue as string]);
     }
     return index;
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
-    const selectedItem = items.find(
-      (item) => String(getValue(item)) === selectedValue,
-    );
-    if (selectedItem) {
-      onChange?.(getValue(selectedItem));
+    const selectedItem = items.find((item) => String(getValue(item)) === selectedValue);
+    if (selectedItem !== undefined) {
+      onChange?.(getValue(selectedItem) as T | string | number);
     }
-    props.onChange?.(e);
   };
 
   return (

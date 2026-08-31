@@ -1,6 +1,6 @@
 .base-map-button__title {
   position: absolute;
-  padding: 4px;
+  padding: var(--map-padding-compact, 4px);
   bottom: 0;
   width: 100%;
   height: 100%;
@@ -14,8 +14,8 @@
 }
 
 .base-map-button__title > div {
-  font-size: 0.6rem;
-  line-height: 0.75rem;
+  font-size: var(--map-font-size-xs, 10px);
+  line-height: var(--map-line-height-tight, 1.25);
 }
 
 .base-map-button__content {
@@ -29,7 +29,7 @@
 }
 
 .base-map-control-setting-item {
-  padding: 8px 4px;
+  padding: var(--map-space-md, 8px) var(--map-space-xs, 4px);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -42,11 +42,11 @@
 }
 
 .base-map-control-setting-item__title {
-  font-size: 0.75rem !important;
-  font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.0333333333em !important;
-  font-family: 'Roboto', sans-serif !important;
+  font-size: var(--map-font-size-sm, 12px) !important;
+  font-weight: var(--map-font-weight-normal, 400);
+  line-height: var(--map-line-height, 1.4);
+  letter-spacing: 0.02em;
+  font-family: var(--map-font-family, inherit) !important;
 
   white-space: nowrap !important;
   overflow: hidden !important;
@@ -67,7 +67,7 @@
 }
 
 .base-map-item {
-  padding: 4px 8px;
+  padding: var(--map-padding-chip, 4px 8px);
 }
 .base-map-item.active {
   background-color: var(
@@ -80,19 +80,54 @@
 
 .base-map-card {
   display: flex;
-  padding: 10px;
-  gap: 10px;
-  .base-map-card__image {
-    width: 70px;
-    height: 70px;
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-  .base-map-card__content {
-    flex-grow: 1;
-    padding: 4px 0px;
-    & > *:not(:first-child) {
-      padding-top: 4px;
-    }
-  }
+  padding: var(--map-padding-item, 12px);
+  gap: var(--map-space-md, 8px);
+}
+
+.base-map-card__image {
+  width: 70px;
+  height: 70px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.base-map-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+  flex: 1 1 auto;
+  padding: var(--map-space-xs, 4px) 0;
+}
+
+.base-map-card__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.base-map-card__item > div {
+  flex: 1 1 auto;
+}
+
+.base-map-card__item > div:first-child {
+  flex: 0 0 auto;
+}
+
+.base-map-item-image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.base-map-item-image-container .base-map-item-image {
+  flex: 1 1 auto;
+}
+
+.base-map-item-image-container._vertical {
+  flex-direction: column;
 }

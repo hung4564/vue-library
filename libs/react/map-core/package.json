@@ -33,13 +33,15 @@
     "@hungpvq/shared-log": ">=0.0.1",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.2.0",
+    "@turf/helpers": "^7.3.2",
     "lodash": "^4.17.21",
     "maplibre-gl": "^5.4.0",
     "mitt": "^3.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-color": "^2.19.3",
-    "@vitejs/plugin-react": "^4.2.0"
+    "@vitejs/plugin-react": "^4.2.0",
+    "file-saver": "^2.0.5"
   },
   "peerDependenciesMeta": {
     "react": {

@@ -6,7 +6,10 @@ import { SidebarModule } from './sidebar/sidebar-module';
 
 export interface DraggableItemSideBarProps {
   show?: boolean;
+  /** Plain title used in sidebar switch menu */
   title?: string;
+  /** Custom title node portaled into sidebar header (matches Vue #title slot) */
+  titleNode?: ReactNode;
   containerId?: string;
   componentCard?: ComponentType<any>;
   componentCardHeader?: ComponentType<any>;
@@ -22,6 +25,7 @@ export interface DraggableItemSideBarProps {
 export function DraggableItemSideBar({
   show: propShow,
   title = '',
+  titleNode,
   containerId: propContainerId,
   componentCard,
   componentCardHeader,
@@ -58,7 +62,7 @@ export function DraggableItemSideBar({
       containerId={containerId}
       location={location}
       itemId={itemId}
-      title={title}
+      title={titleNode ?? title}
     >
       {children}
     </SidebarModule>

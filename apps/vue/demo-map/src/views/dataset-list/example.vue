@@ -47,7 +47,7 @@ function createCustomDefaultListDataset() {
 function createListWithMenuDataset() {
   const dataset = createRootDataset('Default custom simple');
   const list1 = createDatasetPartListViewUiComponentBuilder(
-    'Custom simple list',
+    'Custom menu list',
   )
     .configDisabledDelete()
     .addMenus([

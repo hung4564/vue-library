@@ -29,31 +29,3 @@ function onSetValue(item) {
     </div>
   </div>
 </template>
-<style scoped>
-.input-container {
-  display: flex;
-  border: 1px solid grey;
-  border-radius: 15px;
-  width: 100%;
-}
-.item-choose {
-  cursor: pointer;
-  padding: 15px;
-  border-radius: 15px;
-  align-items: center;
-  height: 22px;
-  color: #fff;
-  font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.0333333333em;
-  font-size: 0.75rem;
-  flex-grow: 1;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.item-choose-active {
-  color: var(--v-primary-base, #1a73e8);
-}
-</style>

@@ -67,23 +67,29 @@ export function ZoomControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function onZoomIn(e: React.MouseEvent) {
-    callMap((map) => {
-      map.zoomIn({}, { originalEvent: e.nativeEvent });
-    });
-  }
+  const onZoomIn = useCallback(
+    (e: React.MouseEvent) => {
+      callMap((map) => {
+        map.zoomIn({}, { originalEvent: e.nativeEvent });
+      });
+    },
+    [callMap],
+  );
 
-  function onZoomOut(e: React.MouseEvent) {
-    callMap((map) => {
-      map.zoomOut({}, { originalEvent: e.nativeEvent });
-    });
-  }
+  const onZoomOut = useCallback(
+    (e: React.MouseEvent) => {
+      callMap((map) => {
+        map.zoomOut({}, { originalEvent: e.nativeEvent });
+      });
+    },
+    [callMap],
+  );
 
-  function onResetBearing() {
+  const onResetBearing = useCallback(() => {
     callMap((map) => {
       map.easeTo({ bearing: 0, pitch: 0 });
     });
-  }
+  }, [callMap]);
 
   const compassButton = useMemo(
     () => ({
@@ -92,7 +98,7 @@ export function ZoomControl({
         visible: showCompass,
         title: trans('map.action.navigation-control-reset-bearing'),
         icon: {
-          type: 'compass',
+          type: 'compass' as const,
           transform: transform,
         },
       }),
@@ -107,9 +113,9 @@ export function ZoomControl({
       getState: () => ({
         visible: showZoom,
         title: trans('map.action.navigation-control-zoom-in'),
-        icon: { path: mdiPlus, type: 'mdi' },
+        icon: { path: mdiPlus, type: 'mdi' as const },
       }),
-      onClick: (e?: React.MouseEvent) => onZoomIn(e!),
+      onClick: (e: MouseEvent) => onZoomIn(e as unknown as React.MouseEvent),
     }),
     [showZoom, trans, onZoomIn],
   );
@@ -120,9 +126,9 @@ export function ZoomControl({
       getState: () => ({
         visible: showZoom,
         title: trans('map.action.navigation-control-zoom-out'),
-        icon: { path: mdiMinus, type: 'mdi' },
+        icon: { path: mdiMinus, type: 'mdi' as const },
       }),
-      onClick: (e?: React.MouseEvent) => onZoomOut(e!),
+      onClick: (e: MouseEvent) => onZoomOut(e as unknown as React.MouseEvent),
     }),
     [showZoom, trans, onZoomOut],
   );
@@ -137,7 +143,7 @@ export function ZoomControl({
     [order, compassButton, zoomInButton, zoomOutButton],
   );
 
-  const { state, control } = useToolbarControl(
+  const { control } = useToolbarControl(
     mapId,
     mergedProps,
     toolbarConfig,
@@ -167,7 +173,7 @@ export function ZoomControl({
               option={zoomInState}
               onClick={(e) => {
                 e.stopPropagation();
-                zoomInButton.onClick?.(e);
+                zoomInButton.onClick?.(e.nativeEvent);
                 control.sync();
               }}
             />
@@ -177,7 +183,7 @@ export function ZoomControl({
               option={zoomOutState}
               onClick={(e) => {
                 e.stopPropagation();
-                zoomOutButton.onClick?.(e);
+                zoomOutButton.onClick?.(e.nativeEvent);
                 control.sync();
               }}
             />

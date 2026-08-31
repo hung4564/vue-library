@@ -10,7 +10,7 @@ import type {
   WithToggleShow,
 } from '../interfaces/dataset.extra';
 
-import type { IDataManagementView } from '../model';
+import type { IDataManagementView } from '../model/data-management/types';
 import type { IDatasetMap } from '../interfaces/dataset.map';
 import type { WithDataHelper } from '../extra';
 

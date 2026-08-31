@@ -56,9 +56,16 @@ export function useMapInstance(
       );
       const mapStyle = MapInitializer.createMapStyle(initOptions.style);
 
+      const container = mapContainer.value;
+      if (!container) {
+        throw new MapInitializationError('Map container is not available', {
+          context: { mapId: id.value },
+        });
+      }
+
       // Create map instance
       const mapInstance = new mapboxgl.Map({
-        container: mapContainer.value!,
+        container,
         style: mapStyle,
         ...initOptions,
       });

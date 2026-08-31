@@ -6,23 +6,16 @@ import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
   MAP_STORE_KEY,
   MapStoreManager,
+  registerMapAccessor,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
 import { VueMapStoreAdapter } from './vue-adapter';
 export { useMapGLobalStore } from './global-store';
 
-// MAP_CORE_EVENT is available directly from @hungpvq/map-core
-
-/**
- * Store adapter instance
- */
 const storeAdapter = new VueMapStoreAdapter();
-
-/**
- * Store manager instance
- */
 const storeManager = new MapStoreManager(storeAdapter);
+registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
 
 /**
  * Get map store by ID

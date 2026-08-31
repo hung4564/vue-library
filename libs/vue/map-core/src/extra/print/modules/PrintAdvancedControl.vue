@@ -288,7 +288,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         v-model:show="print.setting_show"
         :title="trans('map.print.setting.title')"
       >
-        <div class="setting-container">
+        <div class="map-print-advanced-setting">
           <div>
             <input-text
               v-model="print.setting.ratio"
@@ -304,9 +304,9 @@ const { state, control } = useToolbarControl(mapId.value, props, {
               @change="onChangeSetting()"
             />
           </div>
-          <div class="grow"></div>
+          <div class="map-print-advanced-setting__grow"></div>
           <base-button
-            class="btn-container"
+            class="map-print-advanced-setting__apply"
             @click="onSave()"
             v-if="print.show"
           >
@@ -317,24 +317,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     </template>
   </ModuleContainer>
 </template>
-<style scoped>
-.setting-container {
-  padding: 8px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.setting-field-container > div {
-  padding: 4px;
-}
-.setting-container .grow {
-  flex: 1;
-}
-.setting-container .btn-container {
-  flex-grow: 0;
-  padding: 8px;
-}
-</style>

@@ -1,0 +1,25 @@
+{
+  "extends": ["plugin:@nx/react", "../../../.eslintrc.base.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "ignoredDependencies": [
+              "@vitejs/plugin-react",
+              "sortablejs"
+            ],
+            "ignoredFiles": [
+              "{projectRoot}/eslint.config.{js,cjs,mjs}",
+              "{projectRoot}/vite.config.{js,ts,mjs,mts}"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

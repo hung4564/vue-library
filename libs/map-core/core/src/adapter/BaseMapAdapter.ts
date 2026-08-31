@@ -43,10 +43,18 @@ export abstract class BaseMapAdapter {
     baseMaps: BaseMapItem[],
     defaultBaseMap: string,
   ): BaseMapItem | undefined {
-    return (
-      baseMaps.find((b) => b.default || b.title === defaultBaseMap) ??
-      baseMaps[0]
-    );
+    if (defaultBaseMap) {
+      const byTitle = baseMaps.find((b) => b.title === defaultBaseMap);
+      if (byTitle) return byTitle;
+
+      const byId = baseMaps.find((b) => String(b.id) === defaultBaseMap);
+      if (byId) return byId;
+    }
+
+    const flaggedDefault = baseMaps.find((b) => b.default);
+    if (flaggedDefault) return flaggedDefault;
+
+    return baseMaps[0];
   }
 
   /**

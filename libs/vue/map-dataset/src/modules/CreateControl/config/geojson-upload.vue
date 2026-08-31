@@ -42,4 +42,3 @@ function onChangeFile(file) {
   });
 }
 </script>
-<style></style>

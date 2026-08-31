@@ -47,9 +47,7 @@ export class BaseMapLayer implements IBaseMapLayer {
    * @param baseMap - The basemap item to set
    */
   async setBaseMap(baseMap: BaseMapItem): Promise<void> {
-    if (this._baseMap && this._baseMap.id === baseMap.id) {
-      return;
-    }
+    // Always reload after removeFromMap — early-return by id left empty layers on map
     this._baseMap = baseMap;
     const { sources, layers } = await getLoader(baseMap.type)(baseMap);
     this.layers = layers;

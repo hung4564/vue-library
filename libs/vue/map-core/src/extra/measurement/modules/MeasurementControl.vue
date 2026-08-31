@@ -1,7 +1,7 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlGroupButton row>
+      <MapControlGroupButton row class="map-measurement-control">
         <template v-for="(btn, id) in state">
           <MapCommonButton
             :key="id"
@@ -40,6 +40,7 @@ import { nextTick, ref, watch } from 'vue';
 import {
   CoordinatesNumber,
   EventClick,
+  FormView,
   MapSimple,
   WithMapPropType,
   convertGeometry,
@@ -79,7 +80,6 @@ import { MeasureActionItem } from '../types';
 import { MapMarkerView, MapView, MeasurementHandle } from './helper';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 
-import { FormView } from './helper/_viewForm';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 

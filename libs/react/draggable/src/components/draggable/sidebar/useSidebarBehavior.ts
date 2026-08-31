@@ -5,11 +5,13 @@ import { useSidebarTransition } from './useSidebarTransition';
 export function useSidebarBehavior(
   props: {
     location: LocationSideBar;
+    show?: boolean,
+    expand?: boolean
   },
   containerId: string,
 ) {
-  const { show, setShow } = useShow(props, null);
-  const { expand, toggle } = useExpand(props, null, true);
+  const { show, setShow } = useShow(props);
+  const { expand, toggle } = useExpand(props, undefined, true);
   const { isVertical, titleTo, contentTo } = useSidebarTransition(
     props,
     containerId,

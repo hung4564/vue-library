@@ -59,14 +59,8 @@ const { setting, updateSetting } = useMapCompareSetting(mapId.value);
         v-model:show="show"
         :title="trans('map.setting-control.title')"
       >
-        <div class="setting-container">
-          <div class="setting-field-container">
-            <!-- <div>
-              <InputCheckbox
-                :label="trans('map.setting-control.field.compare')"
-                v-model="setting.compare"
-              />
-            </div> -->
+        <div class="map-compare-setting">
+          <div class="map-compare-setting__fields">
             <div>
               <InputCheckbox
                 :label="trans('map.setting-control.field.split')"
@@ -95,33 +89,3 @@ const { setting, updateSetting } = useMapCompareSetting(mapId.value);
     <slot />
   </ModuleContainer>
 </template>
-<style>
-.setting-container {
-  padding: 8px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.setting-field-container > div {
-  padding: 4px;
-}
-.setting-container .setting-field-container {
-  height: 100%;
-  padding: 8px;
-  flex-grow: 1;
-  overflow: auto;
-}
-.setting-container .btn-container {
-  flex-grow: 0;
-  padding: 8px;
-}
-.setting-center-container {
-  display: flex;
-}
-.setting-center-container > *:not(:last-child) {
-  padding-right: 4px;
-}
-</style>

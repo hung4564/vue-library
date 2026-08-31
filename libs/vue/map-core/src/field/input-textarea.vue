@@ -14,20 +14,3 @@ defineProps({
     </div>
   </div>
 </template>
-<style scoped>
-.input-container > textarea {
-  width: 100%;
-  padding: 8px;
-  display: block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: inherit;
-  box-sizing: border-box;
-  background-color: transparent;
-  outline: none;
-  resize: vertical;
-}
-.input-container > input:focus {
-  border: 1px solid #fff;
-}
-</style>

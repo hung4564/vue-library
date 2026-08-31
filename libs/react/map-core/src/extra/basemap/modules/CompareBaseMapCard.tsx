@@ -109,49 +109,6 @@ export function CompareBaseMapCard({
           </div>
         ))}
       </div>
-      <style>{`
-        .base-map-card {
-          display: flex;
-          padding: 10px;
-          gap: 10px;
-        }
-        .base-map-card__image {
-          width: 70px;
-          height: 70px;
-          flex-grow: 0;
-          flex-shrink: 0;
-        }
-        .base-map-item-image-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-        }
-        .base-map-item-image-container._vertical {
-          flex-direction: column;
-        }
-        .base-map-card__item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          width: 100%;
-          flex: 1 1 auto;
-        }
-        .base-map-card__item div {
-          flex: 1 1 auto;
-        }
-        .base-map-card__item div:first-child {
-          flex: 0 0 auto;
-        }
-        .base-map-card__content {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          flex: 1 1 auto;
-        }
-      `}</style>
     </div>
   );
 }

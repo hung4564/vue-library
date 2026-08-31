@@ -116,7 +116,7 @@ export function useMapInstance(
       setMap(undefined);
       store.removeMap();
     };
-  }, []); // Only run on mount
+  }, [props.mapId]); // eslint-disable-line react-hooks/exhaustive-deps -- intentional mapId-only mount; remounting on callbacks/options would recreate the map
 
   return {
     mapContainer: mapContainerRef,

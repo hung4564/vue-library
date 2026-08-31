@@ -77,36 +77,3 @@ function handleContextClick(event: MouseEvent) {
   });
 }
 </script>
-<style lang="scss" scoped>
-.layer-sub-item {
-  &__info {
-    width: 100%;
-    display: flex;
-    align-items: center;
-  }
-  &__icon {
-    flex-grow: 0;
-    flex-shrink: 0;
-    width: 25px;
-    display: flex;
-    align-items: center;
-  }
-  &__title {
-    display: inline-block;
-    text-align: left;
-    flex-grow: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.75rem !important;
-    font-weight: 400;
-    line-height: 1.25rem;
-    letter-spacing: 0.0333333333em !important;
-  }
-  &__title-action {
-    display: flex;
-    flex: 0;
-    align-items: center;
-  }
-}
-</style>

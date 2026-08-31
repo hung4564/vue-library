@@ -1,42 +1,37 @@
 import {
   BaseMapControl,
+  CrsControl,
+  EventManagementControl,
   FullScreenControl,
   GeoLocateControl,
   GlobeControl,
+  GotoControl,
   HomeControl,
   Map,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-import { useState } from 'react';
-import styles from '../app/app.module.css';
+import { MapPageShell } from '../components/MapPageShell';
+import { AsideControl } from '../layout/AsideControl';
 
 export function MapCorePage() {
-  const [mapId] = useState('demo-map-' + Date.now());
-  console.log('test');
-  function onMapLoaded(map: any) {
-    console.info('Map loaded:', map);
-  }
-
-  function onMapError(error: Error) {
-    console.error('Map error:', error);
-  }
-
   return (
-    <div className={styles.container}>
-      <div className={styles.mapWrapper}>
-        <Map mapId={mapId} onMapLoaded={onMapLoaded} onError={onMapError}>
-          <GlobeControl />
-          <SettingControl />
-          <FullScreenControl />
-          <ZoomControl />
-          <HomeControl />
-          <GeoLocateControl position="top-right" />
-          <MouseCoordinatesControl />
-          <BaseMapControl position="bottom-left" />
-        </Map>
-      </div>
-    </div>
+    <MapPageShell>
+      <Map>
+        <AsideControl position="top-left" />
+        <GotoControl position="top-right" />
+        <CrsControl />
+        <GlobeControl />
+        <SettingControl />
+        <FullScreenControl />
+        <EventManagementControl />
+        <ZoomControl />
+        <HomeControl />
+        <BaseMapControl position="bottom-left" />
+        <GeoLocateControl position="top-right" />
+        <MouseCoordinatesControl />
+      </Map>
+    </MapPageShell>
   );
 }

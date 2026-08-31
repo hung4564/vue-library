@@ -36,6 +36,7 @@ export default defineConfig(() => ({
         'react',
         'react-dom',
         'react/jsx-runtime',
+        '@hungpvq/draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-store',
         '@hungpvq/vue-content-menu',

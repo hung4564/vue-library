@@ -64,14 +64,3 @@ watch(
     </template>
   </ModuleContainer>
 </template>
-<style scoped>
-.dataset-list-item {
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  gap: 8px;
-}
-.dataset-list {
-  padding: 8px;
-}
-</style>

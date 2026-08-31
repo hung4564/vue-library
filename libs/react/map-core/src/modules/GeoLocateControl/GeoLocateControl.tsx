@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';

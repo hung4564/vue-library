@@ -7,8 +7,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import './ContextMenu.css';
-
 export interface ContextMenuRef {
   open: (e: React.MouseEvent | MouseEvent) => void;
   close: () => void;

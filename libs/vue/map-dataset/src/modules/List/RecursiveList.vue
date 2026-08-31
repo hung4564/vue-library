@@ -77,24 +77,3 @@ defineSlots<{
   'group-extra-data'(props: { item: TreeItem }): VNode[];
 }>();
 </script>
-
-<style scoped>
-.leaf-item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.leaf-item__title {
-  flex-grow: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.draggable-group__children {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-</style>

@@ -35,15 +35,3 @@ function onSetValue(value: number, index: number) {
   emit('update:modelValue', form.value);
 }
 </script>
-<style scoped>
-.input-array-index {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.input-array-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-</style>

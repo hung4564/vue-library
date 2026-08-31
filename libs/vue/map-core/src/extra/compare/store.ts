@@ -1,31 +1,24 @@
-import { logHelper } from '@hungpvq/map-core';
-import { createMapScopedStore, getStore } from '../../store';
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
-import { useMapMittStore } from '../mitt';
-import { logger } from './logger';
 import {
-  MapCompareSetting,
+  logHelper,
+  MAP_STORE_KEY,
+  createDefaultCompareStore,
+  type MapCompareSetting,
+  type MapCompareStore,
   MittTypeMapCompareEventKey,
   type MittTypeMapCompare,
 } from '@hungpvq/map-core';
+import { createMapScopedStore, getStore } from '../../store';
+import { useMapMittStore } from '../mitt';
+import { logger } from './logger';
 
-export type MapLocateStore = {
-  setting: MapCompareSetting;
-};
+export type MapLocateStore = MapCompareStore;
 
 export function initStoreMapCompare(mapId: string) {
   logHelper(logger, mapId, 'store').debug('init');
   createMapScopedStore<MapLocateStore>(
     mapId,
     MAP_STORE_KEY.MAP_COMPARE,
-    () => ({
-      setting: {
-        compare: true,
-        split: true,
-        sync: true,
-        vertical: false,
-      },
-    }),
+    () => createDefaultCompareStore(),
   );
 }
 export function getMapCompare(mapId: string) {

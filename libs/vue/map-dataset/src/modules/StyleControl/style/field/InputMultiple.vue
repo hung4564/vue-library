@@ -49,19 +49,3 @@ function onAdd() {
   emit('update:modelValue', form.value);
 }
 </script>
-<style scoped>
-.input-array-index {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.input-array-item {
-  display: flex;
-  gap: 4px;
-  align-content: center;
-}
-.input-array-item__action {
-  display: flex;
-  align-content: center;
-}
-</style>

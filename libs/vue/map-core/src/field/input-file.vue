@@ -48,19 +48,3 @@ export default {
     </div>
   </div>
 </template>
-<style scoped>
-.input-container > input {
-  width: 100%;
-  padding: 8px;
-  display: block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: inherit;
-  box-sizing: border-box;
-  background-color: transparent;
-  outline: none;
-}
-.input-container > input:focus {
-  border: 1px solid #fff;
-}
-</style>

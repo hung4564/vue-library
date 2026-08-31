@@ -1,6 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useState, useEffect, useMemo } from 'react';
 import { useDragContainer, useDragItem, useDragStore } from '../store';
+import { useStoreReactive } from '../store/useStoreReactive';
 import { InitOption } from '../types';
 import { checkIsFirst, checkIsLast } from '../utils/array';
 
@@ -47,6 +48,7 @@ export function useInitItem(
 }
 
 export function useContainerOrder(containerId: string, itemId: string) {
+  useStoreReactive();
   const store = useDragItem(containerId);
   const items = store.getItems();
   const itemShows = store.getItemsShow();

@@ -12,5 +12,3 @@ const props = defineProps<{
 const { getItemAction } = useDragContainer(props.containerId);
 const title = getItemAction(props.item).title || props.item;
 </script>
-
-<style scoped></style>

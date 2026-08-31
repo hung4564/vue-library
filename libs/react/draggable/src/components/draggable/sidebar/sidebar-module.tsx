@@ -1,10 +1,8 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useStoreReactive } from '../../../store';
 import { LocationSideBar } from '../../../types';
-import './sidebar-module.css';
-
 export interface SidebarModuleProps {
   containerId: string;
   itemId: string;
@@ -20,7 +18,6 @@ export function SidebarModule({
   title,
   children,
 }: SidebarModuleProps) {
-  // Re-render when store changes (e.g. registerSideBarShow) so isCurrentShow is up-to-date
   useStoreReactive();
   const { getShowForLocation } = useSideBarContainer(containerId);
   const titleTo = useMemo(
@@ -40,15 +37,45 @@ export function SidebarModule({
     );
   }, [containerId, itemId, location, getShowForLocation]);
 
-  if (!isCurrentShow) return null;
+  const [portalTargets, setPortalTargets] = useState<{
+    title?: HTMLElement;
+    content?: HTMLElement;
+  }>({});
 
-  const titleElement = document.getElementById(titleTo);
-  const contentElement = document.getElementById(contentTo);
+  useLayoutEffect(() => {
+    if (!isCurrentShow) {
+      setPortalTargets({});
+      return;
+    }
+
+    const resolveTargets = () => {
+      setPortalTargets({
+        title: document.getElementById(titleTo) ?? undefined,
+        content: document.getElementById(contentTo) ?? undefined,
+      });
+    };
+
+    resolveTargets();
+
+    if (
+      !document.getElementById(titleTo) ||
+      !document.getElementById(contentTo)
+    ) {
+      const frameId = requestAnimationFrame(resolveTargets);
+      return () => cancelAnimationFrame(frameId);
+    }
+  }, [isCurrentShow, titleTo, contentTo]);
+
+  if (!isCurrentShow) return null;
 
   return (
     <div className="module-sidebar__container">
-      {title && titleElement && createPortal(title, titleElement)}
-      {children && contentElement && createPortal(children, contentElement)}
+      {title &&
+        portalTargets.title &&
+        createPortal(title, portalTargets.title)}
+      {children &&
+        portalTargets.content &&
+        createPortal(children, portalTargets.content)}
     </div>
   );
 }

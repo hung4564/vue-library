@@ -1,7 +1,7 @@
 import React from 'react';
-import './input-textarea.css';
 
-export interface InputTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface InputTextareaProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'value'> {
   label?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -16,7 +16,6 @@ export function InputTextarea({
 }: InputTextareaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange?.(e.target.value);
-    props.onChange?.(e);
   };
 
   return (

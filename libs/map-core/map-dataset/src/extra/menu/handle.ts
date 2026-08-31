@@ -1,4 +1,5 @@
 // import { UniversalRegistry } from '@hungpvq/map-core';
+import { methodRegistry } from '@hungpvq/map-core';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
@@ -37,19 +38,20 @@ export function createCommandHandler(
   return { canHandle, execute };
 }
 
-/** Xử lý string action */
-// export const StringCommandHandler = createCommandHandler(
-//   (click): click is string => typeof click === 'string',
-//   async (click, context) => {
-//     const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
-//     if (!handler) {
-//       throw new Error(
-//         `[handleMenuActionClick] No handler found for key: ${click}`,
-//       );
-//     }
-//     await handler(context);
-//   },
-// );
+/** Xử lý string action → methodRegistry (map-scoped rồi global) */
+export const StringCommandHandler = createCommandHandler(
+  (click): click is string => typeof click === 'string',
+  async (click, context) => {
+    const handler = methodRegistry.getMenuHandler(click, context.mapId);
+    if (!handler) {
+      console.warn(
+        `[handleMenuActionClick] No handler found for key: ${click}`,
+      );
+      return;
+    }
+    await handler(context);
+  },
+);
 
 export const FunctionCommandHandler = createCommandHandler(
   (click): click is (props: MenuItemProps) => any =>
@@ -87,7 +89,7 @@ export const TupleCommandHandler = createCommandHandler(
     }
     const commandHandlers: CommandHandlerMenu[] = [
       BuilderCommandHandler,
-      // StringCommandHandler,
+      StringCommandHandler,
       FunctionCommandHandler,
       TupleCommandHandler,
       DirectCommandHandler,
@@ -139,7 +141,7 @@ export async function handleMenuActionClick<P = any, T = IDataset>(
 
   const commandHandlers: CommandHandlerMenu[] = [
     BuilderCommandHandler,
-    // StringCommandHandler,
+    StringCommandHandler,
     FunctionCommandHandler,
     TupleCommandHandler,
     DirectCommandHandler,

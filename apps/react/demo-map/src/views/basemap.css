@@ -1,0 +1,8 @@
+.base-map-card-demo {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  height: 90px;
+  z-index: 5;
+}

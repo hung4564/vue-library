@@ -20,8 +20,6 @@
   "module": "./index.mjs",
   "typings": "./index.d.ts",
   "peerDependencies": {
-    "@turf/turf": "^6.5.0",
-    "@turf/boolean-intersects": "^6.5.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "@hungpvq/vue-draggable": "~0.4.4",

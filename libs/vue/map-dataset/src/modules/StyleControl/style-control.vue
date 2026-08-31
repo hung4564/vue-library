@@ -112,17 +112,3 @@ const updateValue = () => {
     </template>
   </ModuleContainer>
 </template>
-<style lang="scss">
-.style-control {
-  .vc-sketch {
-    width: calc(100% - 20px);
-    background-color: transparent;
-    box-shadow: unset;
-    .vc-input__label {
-      color: var(--map-text-inverse, #fff);
-    }
-  }
-  height: 100%;
-  overflow: hidden;
-}
-</style>

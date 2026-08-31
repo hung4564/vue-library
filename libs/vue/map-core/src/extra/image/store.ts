@@ -1,25 +1,20 @@
-import { logHelper, MapSimple } from '@hungpvq/map-core';
+import {
+  logHelper,
+  MapSimple,
+  MAP_STORE_KEY,
+  addImageForMap,
+  createDefaultImageStore,
+  type MapImageStore,
+} from '@hungpvq/map-core';
 import { createMapScopedStore, useMapStore } from '../../store';
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
-import { addImageForMap } from '@hungpvq/map-core';
 import { logger } from './logger';
 
-export type MapImageStore = {
-  images: Record<
-    string,
-    {
-      path: string;
-      id: string;
-      name: string;
-      is_sprite: boolean;
-      category: 'custom' | string;
-    }
-  >;
-};
+export type { MapImageStore };
+
 export const useMapImageStore = (mapId: string) =>
   createMapScopedStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE, () => {
     logHelper(logger, mapId, 'store').debug('init');
-    return { images: {} };
+    return createDefaultImageStore();
   });
 export const useMapImage = (mapId: string) => {
   const store = useMapImageStore(mapId);

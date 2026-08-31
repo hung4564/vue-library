@@ -3,7 +3,6 @@ import { debounce } from 'lodash';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer } from '../../store';
-import './draggable-container.css';
 import { SidebarContainer } from './sidebar/sidebar-container';
 
 type ResultShow = {
@@ -16,6 +15,7 @@ type ResultShow = {
 
 export interface DraggableContainerProps {
   containerId?: string;
+  className?: string;
   children?: ReactNode;
   onInit?: (id: string) => void;
   onDestroy?: (id: string) => void;
@@ -24,6 +24,7 @@ export interface DraggableContainerProps {
 
 export function DraggableContainer({
   containerId: propContainerId,
+  className,
   children,
   onInit,
   onDestroy,
@@ -86,7 +87,11 @@ export function DraggableContainer({
 
   return (
     <ContainerProvider containerId={containerId}>
-      <div className="draggable-container" ref={boxRef} id={containerId}>
+      <div
+        className={['draggable-container', className].filter(Boolean).join(' ')}
+        ref={boxRef}
+        id={containerId}
+      >
         {initDone && (
           <>
             <SidebarContainer location="left" />

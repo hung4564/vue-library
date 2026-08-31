@@ -68,27 +68,3 @@ function getKey(item: T): string | number {
     </div>
   </div>
 </template>
-<style scoped>
-.input-container option:not(:disabled) {
-  background-color: transparent;
-  color: black;
-}
-.input-container > select {
-  width: 100%;
-  padding: 8px;
-  display: block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: inherit;
-  box-sizing: border-box;
-  background-color: transparent;
-  outline: none;
-  position: relative;
-}
-.input-container > select:focus {
-  border: 1px solid #fff;
-}
-.input-container > select:invalid {
-  color: gray;
-}
-</style>

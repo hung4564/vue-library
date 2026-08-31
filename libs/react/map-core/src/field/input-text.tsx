@@ -1,7 +1,7 @@
 import React from 'react';
-import './input-text.css';
 
-export interface InputTextProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputTextProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
   label?: string;
   disabled?: boolean;
   value?: string;
@@ -18,7 +18,6 @@ export function InputText({
 }: InputTextProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.value);
-    props.onChange?.(e);
   };
 
   return (

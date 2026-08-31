@@ -10,7 +10,7 @@ import {
   MapIcon,
   MapImage,
 } from '../../../components';
-import { useLang } from '../../useLang';
+import { useLang } from '../../lang';
 import { getMaps } from '../../../store/store';
 import { getMapCompareSetting } from '../../compare';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -42,7 +42,7 @@ export function CompareBaseMapControl({
     defaultBaseMap,
     controlIcon,
   };
-  const { mapId, moduleContainerProps } = useMap(props);
+  const { mapId, moduleContainerProps, mapInstance } = useMap(props);
   const { trans, setLocaleDefault } = useLang(mapId);
   const setting = getMapCompareSetting(mapId);
   const [currentTab, setCurrentTab] = useState(0);
@@ -89,9 +89,12 @@ export function CompareBaseMapControl({
   }, [setLocaleDefault]);
 
   useEffect(() => {
-    if (props.baseMaps) {
-      mapStoreUseBaseMap.forEach((c) => c.setBaseMaps(props.baseMaps!));
+    const baseMaps = props.baseMaps;
+    if (baseMaps) {
+      mapStoreUseBaseMap.forEach((c) => c.setBaseMaps(baseMaps));
     }
+    // Intentionally sync when baseMaps prop changes; store handles are stable per mapId
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.baseMaps]);
 
   useEffect(() => {
@@ -100,6 +103,8 @@ export function CompareBaseMapControl({
         c.setDefaultBaseMap(props.defaultBaseMap),
       );
     }
+    // Intentionally sync when defaultBaseMap prop changes; store handles are stable per mapId
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultBaseMap]);
 
   const [show, setShow] = useState(false);
@@ -116,13 +121,15 @@ export function CompareBaseMapControl({
   }, []);
 
   useEffect(() => {
+    if (!mapInstance) return;
     mapStoreUseBaseMap.forEach((c) => {
       c.init(props.baseMaps, props.defaultBaseMap);
     });
     return () => {
       mapStoreUseBaseMap.forEach((x) => x.remove());
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
+  }, [mapInstance]);
 
   const draggableContent = useCallback(
     (bindDrag: BindPosition) => (
@@ -140,19 +147,19 @@ export function CompareBaseMapControl({
         bottom={bindDrag.bottom}
         right={bindDrag.right}
       >
-        <div className="control-container">
-          <div className="tabs-container">
+        <div className="map-compare-basemap-panel">
+          <div className="map-compare-basemap-tabs">
             {c_items_baseMaps.map((_, i) => (
               <div
                 key={i}
-                className={`tab-item ${currentTab === i ? '_active' : ''}`}
+                className={`map-compare-basemap-tab ${currentTab === i ? '_active' : ''}`}
                 onClick={() => setCurrentTab(i)}
               >
                 #{i + 1}
               </div>
             ))}
           </div>
-          <div className="basemap-container">
+          <div className="map-compare-basemap-list">
             <div className="base-map-control-setting">
               {c_items_baseMaps[currentTab]?.map((baseMap) => (
                 <div
@@ -191,41 +198,45 @@ export function CompareBaseMapControl({
   const current_baseMaps_for_display = current_baseMaps.filter(Boolean);
 
   const btnContent = current_baseMaps_for_display.length ? (
-    <MapControlButton tooltip={title} onClick={onToggleList}>
-      <MapCard
-        className="clickable base-map-button__container"
-        height="70px"
-        width="70px"
-      >
-        <div className="base-map-button__content">
-          <MapImage>
-            <div
-              className={`base-map-item-image-container ${
-                setting?.vertical ? '_vertical' : ''
-              }`}
-            >
-              {current_baseMaps_for_display.map((item, i) => (
-                <MapImage
-                  key={i}
-                  src={item?.thumbnail}
-                  className="base-map-item-image"
-                />
-              ))}
-            </div>
-            <div className="base-map-button__title">
-              {controlIcon ? (
-                <MapIcon dark small>
-                  {controlIcon}
-                </MapIcon>
-              ) : (
-                <Icon path={mdiLayersOutline} size={1} />
-              )}
-              <div>{title || trans('map.basemap.title')}</div>
-            </div>
-          </MapImage>
-        </div>
-      </MapCard>
-    </MapControlButton>
+    <MapControlButton
+      tooltip={title}
+      contentButton={
+        <MapCard
+          className="clickable base-map-button__container"
+          height="70px"
+          width="70px"
+          onClick={onToggleList}
+        >
+          <div className="base-map-button__content">
+            <MapImage>
+              <div
+                className={`base-map-item-image-container ${
+                  setting?.vertical ? '_vertical' : ''
+                }`}
+              >
+                {current_baseMaps_for_display.map((item, i) => (
+                  <MapImage
+                    key={i}
+                    src={item?.thumbnail}
+                    className="base-map-item-image"
+                  />
+                ))}
+              </div>
+              <div className="base-map-button__title">
+                {controlIcon ? (
+                  <MapIcon className="map-icon-dark map-icon-small">
+                    {controlIcon}
+                  </MapIcon>
+                ) : (
+                  <Icon path={mdiLayersOutline} size={1} />
+                )}
+                <div>{title || trans('map.basemap.title')}</div>
+              </div>
+            </MapImage>
+          </div>
+        </MapCard>
+      }
+    />
   ) : null;
 
   return (
@@ -234,72 +245,6 @@ export function CompareBaseMapControl({
       btnWidth={70}
       btn={btnContent}
       draggable={draggableContent}
-    >
-      <style>{`
-        .base-map-button__title {
-          position: absolute;
-          padding-bottom: 4px;
-          bottom: 0;
-          width: 100%;
-          text-align: center;
-          overflow: hidden;
-          color: var(--map-card-text, var(--map-text-primary, #333));
-          background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
-        }
-        .base-map-button__title > div {
-          font-size: 0.6rem;
-        }
-        .base-map-button__content {
-          padding: 2px;
-        }
-        .base-map-control-setting {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-evenly;
-        }
-        .base-map-control-setting-item__title {
-          font-size: 0.75rem !important;
-          white-space: nowrap !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-          width: 100%;
-        }
-        .base-map-control-setting-item__active {
-          color: var(--map-basemap-active-color, var(--map-primary-color, #1a73e8)) !important;
-        }
-        .tabs-container {
-          display: flex;
-          border-bottom-width: thin;
-          border-bottom-color: var(--map-divider-color, #eeeeee);
-          border-bottom-style: solid;
-        }
-        .tab-item {
-          flex-grow: 1;
-          padding: 8px 16px;
-          text-align: center;
-        }
-        .basemap-container {
-          overflow: auto;
-          flex: 1 1 auto;
-        }
-        .control-container {
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          height: 100%;
-        }
-        .base-map-item-image-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-        }
-        .base-map-item-image-container._vertical {
-          flex-direction: column;
-        }
-      `}</style>
-    </ModuleContainer>
+    />
   );
 }

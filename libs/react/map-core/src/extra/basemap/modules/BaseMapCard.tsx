@@ -4,7 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 import { MapImage } from '../../../components';
 import { InputSelect } from '../../../field';
 import { useMap } from '../../../hooks/useMap';
-import { useLang } from '../../useLang';
+import { useLang } from '../../lang';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
 
@@ -60,8 +60,6 @@ export function BaseMapCard({ mapId, title = '' }: BaseMapCardProps) {
           />
         </div>
       </div>
-      <style>{`
-      `}</style>
     </div>
   );
 }

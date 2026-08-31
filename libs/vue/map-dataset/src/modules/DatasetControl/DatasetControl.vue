@@ -153,28 +153,3 @@ watch(show, () => control.sync());
     <slot />
   </ModuleContainer>
 </template>
-
-<style scoped lang="scss">
-.dataset-control {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  .dataset-item {
-    .dataset-item__title {
-      display: inline-block;
-      text-align: left;
-      flex-grow: 1;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    .dataset-item__title-action {
-      display: flex;
-      flex-grow: 0;
-      align-items: center;
-    }
-    display: flex;
-    min-height: 30px;
-    padding: 4px 8px;
-  }
-}
-</style>

@@ -49,19 +49,19 @@
         :title="trans('map.basemap.setting')"
         :width="sizeBaseMap * 3 + 24"
       >
-        <div class="control-container">
-          <div class="tabs-container">
+        <div class="map-compare-basemap-panel">
+          <div class="map-compare-basemap-tabs">
             <div
               v-for="(baseMaps, i) in c_items_baseMaps"
               :key="i"
-              class="tab-item"
+              class="map-compare-basemap-tab"
               :class="{ _active: currentTab == i }"
               @click="currentTab = i"
             >
               #{{ i + 1 }}
             </div>
           </div>
-          <div class="basemap-container">
+          <div class="map-compare-basemap-list">
             <div class="base-map-control-setting">
               <div
                 v-for="baseMap in c_items_baseMaps[currentTab].value"
@@ -219,139 +219,3 @@ onBeforeUnmount(() => {
   mapStoreUseBaseMap.value.forEach((x) => x.remove());
 });
 </script>
-<style scoped>
-.base-map-button__title {
-  position: absolute;
-  padding-bottom: 4px;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  overflow: hidden;
-  color: var(--map-card-text, var(--map-text-primary, #333));
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
-}
-
-.base-map-button__title > div {
-  font-size: 0.6rem;
-}
-
-.base-map-button__content {
-  padding: 2px;
-}
-
-.base-map-control-setting {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-}
-
-.base-map-control-setting-item {
-  padding: 8px 4px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: unset;
-}
-
-.base-map-control-setting-item .map-card {
-  box-shadow: unset;
-}
-
-.base-map-control-setting-item__title {
-  font-size: 0.75rem !important;
-  font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.0333333333em !important;
-  font-family: 'Roboto', sans-serif !important;
-
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-
-  width: 100%;
-}
-
-.base-map-control-setting-item__active {
-  color: var(
-    --map-basemap-active-color,
-    var(--map-primary-color, #1a73e8)
-  ) !important;
-  caret-color: var(
-    --map-basemap-active-color,
-    var(--map-primary-color, #1a73e8)
-  ) !important;
-}
-.clickable {
-  cursor: pointer;
-}
-
-.clickable {
-  position: relative;
-}
-
-.clickable:hover::before {
-  opacity: 0.04;
-}
-
-.clickable:before {
-  background-color: currentColor;
-  bottom: 0;
-  content: '';
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-}
-
-.clickable[disabled='disabled'] {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.25;
-}
-.base-map-item-image-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-}
-.base-map-item-image-container .base-map-item-image {
-  flex: 1 1 auto;
-}
-.base-map-item-image-container._vertical {
-  flex-direction: column;
-}
-</style>
-<style scoped>
-.tabs-container {
-  display: flex;
-  border-bottom-width: thin;
-  border-bottom-color: var(--map-divider-color, #eeeeee);
-  border-bottom-style: solid;
-}
-.tab-item {
-  flex-grow: 1;
-  padding: 8px 16px;
-  text-align: center;
-}
-</style>
-<style scoped>
-.basemap-container {
-  overflow: auto;
-  flex: 1 1 auto;
-}
-.control-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-}
-.tabs-container {
-  flex: 0 0 auto;
-}
-</style>

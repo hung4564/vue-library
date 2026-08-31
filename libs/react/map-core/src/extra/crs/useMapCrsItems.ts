@@ -3,7 +3,7 @@
  * Full implementation would be in extra/crs (not migrated yet)
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useMapMittStore } from '../../store/mitt-store';
 import { useMapCrsStore } from './store';
 import {
@@ -23,6 +23,8 @@ export const useMapCrsItems = (
   const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
   const store = useMapCrsStore(mapId);
   const [items, setItemsState] = useState<CrsItem[]>(store.items);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   function setItems(p_items: CrsItem[]) {
     store.items = p_items;
@@ -30,17 +32,17 @@ export const useMapCrsItems = (
     setItemsState([...p_items]);
   }
 
-  function updateItems(p_items: CrsItem[]) {
+  const updateItems = useCallback((p_items: CrsItem[]) => {
     setItemsState(p_items);
-    onChange && onChange(p_items);
-  }
+    onChangeRef.current?.(p_items);
+  }, []);
 
   useEffect(() => {
     emitter.on(MittTypeMapCrsEventKey.setItems, updateItems);
     return () => {
       emitter.off(MittTypeMapCrsEventKey.setItems, updateItems);
     };
-  }, [emitter, onChange]);
+  }, [emitter, updateItems]);
 
   return { items, setItems };
 };
@@ -56,25 +58,27 @@ export const useMapCrsCurrent = (
   const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
   const store = useMapCrsStore(mapId);
   const [item, setItemState] = useState<CrsItem | undefined | null>(store.item);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   function setItem(crs: string | undefined | null) {
     store.crs = crs || '4326';
-    const crsItem = store.items.find((x) => x.epsg == crs);
+    const crsItem = store.items.find((x: CrsItem) => x.epsg === crs);
     store.item = crsItem;
     emitter.emit(MittTypeMapCrsEventKey.setCurrent, crsItem);
   }
 
-  function updateItem(p_item: CrsItem | undefined | null) {
+  const updateItem = useCallback((p_item: CrsItem | undefined | null) => {
     setItemState(p_item);
-    onChange && onChange(p_item);
-  }
+    onChangeRef.current?.(p_item);
+  }, []);
 
   useEffect(() => {
     emitter.on(MittTypeMapCrsEventKey.setCurrent, updateItem);
     return () => {
       emitter.off(MittTypeMapCrsEventKey.setCurrent, updateItem);
     };
-  }, [emitter, onChange]);
+  }, [emitter, updateItem]);
 
   const isCrsDegree = useMemo(() => {
     return item?.unit === 'degree';

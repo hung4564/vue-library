@@ -27,30 +27,3 @@ const props = defineProps({
 });
 const value = computed(() => (props.item ? props.item[props.field.value] : ''));
 </script>
-<style scoped>
-.grid-row {
-  display: flex;
-  gap: 16px;
-  padding: 8px 16px;
-  width: 100%;
-  align-items: center;
-  min-height: 40px;
-}
-.grid-row-full > * {
-  flex: 1;
-}
-.label-cell {
-  flex: 0 0 100px;
-  white-space: nowrap;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.value-cell {
-  flex: 1;
-  white-space: normal;
-  word-break: break-word;
-  min-width: 0;
-}
-</style>

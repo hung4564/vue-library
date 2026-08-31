@@ -1,17 +1,21 @@
-import type { ErrorHandlerOptions, MapError } from '@hungpvq/map-core';
+import type { MapError } from '@hungpvq/map-core';
 import { MapErrorHandler, logHelper } from '@hungpvq/map-core';
 import { logger } from '../store/logger';
 
-/**
- * Error handler instance for map operations
- */
 export const errorHandler = new MapErrorHandler({
-  logger: logHelper(logger, 'error-handler', 'service'),
+  logError: (error: MapError) => {
+    logHelper(logger, 'global', 'ErrorHandler').error('Error occurred', {
+      code: error.code,
+      message: error.message,
+      context: error.context,
+      stack: error.stack,
+    });
+  },
+  logToService: (error: MapError) => {
+    console.warn('Error logging service not configured:', error);
+  },
 });
 
-/**
- * Handle error with options
- */
-export function handleError(error: Error, options?: ErrorHandlerOptions): void {
-  errorHandler.handle(error, options);
+export function handleError(error: Error, context?: Record<string, unknown>): void {
+  errorHandler.handle(error, context);
 }

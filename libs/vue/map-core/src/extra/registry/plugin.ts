@@ -1,10 +1,10 @@
-import { logHelper } from '@hungpvq/map-core';
+import { logHelper, MAP_STORE_KEY, methodRegistry } from '@hungpvq/map-core';
 import { createStore } from '@hungpvq/shared';
 import type { Component } from 'vue';
 import { logger } from '../../logger';
 import { createMapScopedStore } from '../../store';
 
-const KEY = 'registry' as const;
+const KEY = MAP_STORE_KEY.REGISTRY;
 export const useMapRegistryStore = (mapId: string) =>
   createMapScopedStore<Map<string, RegistryItem>>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
@@ -39,12 +39,14 @@ export class UniversalRegistry {
   static registerMethod(key: string, fn: (...args: any[]) => any) {
     const namespacedKey = this.NAMESPACES.METHOD + key;
     this.globalRegistry.set(namespacedKey, fn);
+    methodRegistry.registerMethod(key, fn);
   }
 
   /** Đăng ký menu handler toàn cục */
   static registerMenuHandler(key: string, fn: (...args: any[]) => any) {
     const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
     this.globalRegistry.set(namespacedKey, fn);
+    methodRegistry.registerMenuHandler(key, fn);
   }
 
   // ===== MAP-SPECIFIC REGISTRATION =====
@@ -73,6 +75,7 @@ export class UniversalRegistry {
   ) {
     const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
     this.registerForMap(mapId, namespacedKey, fn);
+    methodRegistry.registerMenuHandlerForMap(mapId, key, fn);
   }
 
   // ===== INTERNAL HELPER =====

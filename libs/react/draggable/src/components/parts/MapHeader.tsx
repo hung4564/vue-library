@@ -1,6 +1,4 @@
 import { ReactNode } from 'react';
-import './MapHeader.css';
-
 export interface MapHeaderProps {
   children?: ReactNode;
   preTitle?: ReactNode;
@@ -14,7 +12,7 @@ export function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
       <hr className="map-divider" />
       <div className="draggable-header">
         <div className="draggable-header__content">
-          {preTitle && <div>{preTitle}</div>}
+          {preTitle}
           <div className="draggable-header__title">{title}</div>
           <div className="map-spacer"></div>
           {extraBtn}

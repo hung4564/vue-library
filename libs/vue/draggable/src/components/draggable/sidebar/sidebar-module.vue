@@ -44,10 +44,3 @@ const isCurrentShow = computed(() => {
   );
 });
 </script>
-
-<style scoped>
-.module-sidebar__container {
-  display: none;
-  pointer-events: none;
-}
-</style>

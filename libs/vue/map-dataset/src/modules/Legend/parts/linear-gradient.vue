@@ -1,5 +1,5 @@
 <template>
-  <div class="legend-item">
+  <div class="legend-item legend-item--column">
     <div class="legend-text">{{ item.text }}:</div>
     <div class="legend-value-container">
       <div class="legend-value" v-for="(item, i) in items" :key="i">
@@ -34,40 +34,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.legend-text {
-  font-size: 0.875rem;
-  flex-grow: 0;
-  font-weight: bold;
-  padding-right: 8px;
-}
-.legend-item {
-  display: flex;
-  padding: 4px;
-  flex-direction: column;
-}
-.legend-value-container {
-  display: table;
-  width: 100%;
-}
-.legend-item-color {
-  width: 100%;
-  height: 20px;
-  border-radius: 5px;
-  border: 1px solid lightgray;
-}
-.legend-value {
-  font-size: 0.875rem;
-  display: table-cell;
-  padding-bottom: 8px;
-}
-.legend-value {
-  text-align: center;
-}
-.legend-value:last-child {
-  text-align: right;
-}
-.legend-value:first-child {
-  text-align: left;
-}
-</style>

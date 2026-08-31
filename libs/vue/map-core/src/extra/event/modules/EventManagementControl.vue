@@ -12,11 +12,9 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import MapCommonButton from '../../../components/MapCommonButton.vue';
-import MapControlButton from '../../../components/MapControlButton.vue';
 import {
   defaultMapProps,
   useMap,
@@ -117,18 +115,21 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         :title="trans('map.event-control.title')"
       >
         <template #title> {{ trans('map.event-control.title') }} </template>
-        <div class="event-group-container">
+        <div class="map-event-control">
           <div
             v-for="(group, type) in groupedViews"
             :key="type"
-            class="event-group"
+            class="map-event-control__group"
           >
-            <h2 class="group-title">{{ type }}</h2>
-            <ul class="event-list">
+            <h2 class="map-event-control__group-title">{{ type }}</h2>
+            <ul class="map-event-control__list">
               <li
                 v-for="event in group"
                 :key="event.id"
-                :class="['event-item', { active: isActive(current, event) }]"
+                :class="[
+                  'map-event-control__item',
+                  { 'is-active': isActive(current, event) },
+                ]"
               >
                 <div>
                   <strong>{{ trans('map.event-control.field.id') }}:</strong>
@@ -142,13 +143,13 @@ const { state, control } = useToolbarControl(mapId.value, props, {
                   <strong>{{ trans('map.event-control.field.from') }}:</strong>
                   {{ event.from || 'N/A' }}
                 </div>
-                <div class="status">
+                <div class="map-event-control__status">
                   <span
                     v-if="isActive(current, event)"
-                    class="status-icon active"
+                    class="map-event-control__status-icon is-active"
                     >✔ Đang kích hoạt</span
                   >
-                  <span v-else class="status-icon inactive"
+                  <span v-else class="map-event-control__status-icon is-inactive"
                     >✖ Không kích hoạt</span
                   >
                 </div>
@@ -161,46 +162,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     <slot />
   </ModuleContainer>
 </template>
-<style scoped>
-.event-group-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 8px;
-}
-
-.group-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.event-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.event-item {
-  border: 1px solid #ccc;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.event-item.active {
-  border-color: var(--v-primary-base, #1a73e8);
-}
-
-.status {
-  margin-top: 6px;
-  font-size: 14px;
-}
-.status-icon.active {
-  color: var(--v-primary-base, #1a73e8);
-}
-.status-icon {
-  font-weight: bold;
-}
-</style>

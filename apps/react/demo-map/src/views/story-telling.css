@@ -1,0 +1,43 @@
+.story-panel {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  max-width: 280px;
+  font-size: 14px;
+}
+
+.story-panel h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.story-panel ul {
+  margin: 8px 0;
+  padding-left: 18px;
+}
+
+.story-panel li.active {
+  color: #004e98;
+  font-weight: 600;
+}
+
+.story-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.story-panel__actions button {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.story-panel__actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

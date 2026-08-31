@@ -17,6 +17,8 @@
     "proj4": "^2.11.0",
     "maplibre-gl": "^5.4.0",
     "@hungpvq/shared-log": ">=0.0.1",
-    "@turf/turf": "^6.5.0"
+    "@turf/turf": "^6.5.0",
+    "@maplibre/maplibre-gl-style-spec": "^23.2.1",
+    "file-saver": "^2.0.5"
   }
 }

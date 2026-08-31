@@ -124,3 +124,8 @@ export * from './print';
  * Re-export legend types
  */
 export * from './legend';
+
+/**
+ * Re-export image types
+ */
+export * from './image';

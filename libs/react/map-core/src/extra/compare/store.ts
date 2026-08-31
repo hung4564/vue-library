@@ -1,31 +1,24 @@
 import {
   logHelper,
   MAP_STORE_KEY,
-  MapCompareSetting,
+  createDefaultCompareStore,
+  type MapCompareSetting,
+  type MapCompareStore,
   MittTypeMapCompareEventKey,
   type MittTypeMapCompare,
 } from '@hungpvq/map-core';
-import { logger } from '../../store';
-import { createMapScopedStore, getStore } from '../../store/store';
-import { useMapMittStore } from '../mitt';
+import { createMapScopedStore, getStore } from '../../store';
+import { getMapMittStore } from '../../store/mitt-store';
+import { loggerFactory } from '@hungpvq/shared-log';
 
-export type MapLocateStore = {
-  setting: MapCompareSetting;
-};
+const logger = loggerFactory.createLogger().setNamespace('map:compare', 2);
+
+export type MapLocateStore = MapCompareStore;
 
 export function initStoreMapCompare(mapId: string) {
   logHelper(logger, mapId, 'store').debug('init');
-  createMapScopedStore<MapLocateStore>(
-    mapId,
-    MAP_STORE_KEY.MAP_COMPARE,
-    () => ({
-      setting: {
-        compare: true,
-        split: true,
-        sync: true,
-        vertical: false,
-      },
-    }),
+  createMapScopedStore<MapLocateStore>(mapId, MAP_STORE_KEY.MAP_COMPARE, () =>
+    createDefaultCompareStore(),
   );
 }
 
@@ -39,19 +32,16 @@ export function getMapCompare(mapId: string) {
 }
 
 export function getMapCompareSetting(mapId: string) {
-  const store = getMapCompare(mapId);
-  return store?.setting;
+  return getMapCompare(mapId)?.setting;
 }
 
 export function updateMapCompareSetting(
   mapId: string,
   setting: MapCompareSetting,
 ) {
-  logHelper(logger, mapId, 'store').debug('updateMapCompareSetting', setting);
   const store = getMapCompare(mapId);
   if (store) store.setting = { ...store.setting, ...setting };
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const emitter = useMapMittStore<MittTypeMapCompare>(mapId);
+  const emitter = getMapMittStore<MittTypeMapCompare>(mapId);
   emitter.emit(MittTypeMapCompareEventKey.set, {
     ...store?.setting,
     ...setting,

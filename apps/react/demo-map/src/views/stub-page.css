@@ -1,0 +1,20 @@
+.stub-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.stub-banner code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 4px;
+  border-radius: 3px;
+}

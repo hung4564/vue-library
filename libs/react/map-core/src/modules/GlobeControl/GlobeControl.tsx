@@ -8,6 +8,11 @@ import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 import type { MapControlButtonUIState } from '@hungpvq/map-core';
 
+function getProjectionType(map: MapSimple): string | undefined {
+  const type = map.getProjection()?.type;
+  return typeof type === 'string' ? type : undefined;
+}
+
 export function GlobeControl(props: WithMapPropType) {
   const mergedProps = { ...defaultMapProps, ...props };
   const [currentProjection, setCurrentProjection] = useState<
@@ -16,7 +21,7 @@ export function GlobeControl(props: WithMapPropType) {
 
   const onInit = useCallback((_map: MapSimple) => {
     const handleMap = () => {
-      setCurrentProjection(_map.getProjection()?.type as any);
+      setCurrentProjection(getProjectionType(_map));
     };
     _map.on('styledata', handleMap);
     return () => {
@@ -53,7 +58,7 @@ export function GlobeControl(props: WithMapPropType) {
       } else {
         map.setProjection({ type: 'mercator' });
       }
-      setCurrentProjection(map.getProjection()?.type as any);
+      setCurrentProjection(getProjectionType(map));
     });
   }
 

@@ -21,26 +21,3 @@ const path = {
   copy: mdiContentCopy,
 };
 </script>
-<style scoped>
-.row-container {
-  padding: 8px 16px;
-  position: relative;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  min-height: 40px;
-}
-
-.btn-copy {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-  display: none;
-}
-
-.row-container:hover .btn-copy {
-  display: block;
-}
-</style>

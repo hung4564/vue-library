@@ -15,10 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@hungpvq/draggable": ["libs/draggable/core/src/index.ts"],
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
       "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],
+      "@hungpvq/react-map-dataset": ["libs/react/map-dataset/src/index.ts"],
       "@hungpvq/router": ["libs/router/src/index.ts"],
       "@hungpvq/shared": ["libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],

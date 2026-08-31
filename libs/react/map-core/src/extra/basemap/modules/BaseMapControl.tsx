@@ -7,7 +7,7 @@ import {
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiLayersOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   MapCard,
   MapControlButton,
@@ -17,8 +17,8 @@ import {
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../useLang';
-import { useToolbarControl } from '../../useToolbarControl';
+import { useLang } from '../../lang';
+import { useToolbarControl } from '../../toolbar';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
 
@@ -46,7 +46,7 @@ export function BaseMapControl({
     defaultBaseMap,
     controlIcon,
   };
-  const { mapId, moduleContainerProps, order } = useMap(props);
+  const { mapId, moduleContainerProps, order, mapInstance } = useMap(props);
   const { trans, setLocaleDefault } = useLang(mapId);
   const {
     setBaseMaps,
@@ -94,19 +94,23 @@ export function BaseMapControl({
     setShow((s) => !s);
   }, []);
 
+  // Init once when map is ready (matches Vue onMounted); do not re-init on every render
   useEffect(() => {
+    if (!mapInstance) return;
     init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
     return () => remove();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
+  }, [mapInstance]);
 
   useToolbarControl(mapId, props, {
+    kind: 'single',
     id: 'mapBaseMapControl',
     getState: () => ({
       visible: true,
       order,
       title: title || trans('map.basemap.title'),
       icon: {
-        type: 'mdi',
+        type: 'mdi' as const,
         path: mdiLayersOutline,
       },
     }),
@@ -167,26 +171,30 @@ export function BaseMapControl({
     c_baseMaps.length > 0 ? c_baseMaps : (props.baseMaps as BaseMapItem[]);
   const displayBaseMap = current_baseMaps ?? getDefaultBaseMap(baseMapsSource);
   const btnContent = (
-    <MapControlButton tooltip={title} onClick={onToggleList} size={70}>
-      <MapCard
-        className="clickable base-map-button__container"
-        height="70px"
-        width="70px"
-      >
-        <div className="base-map-button__content">
-          <MapImage src={displayBaseMap.thumbnail}>
-            <div className="base-map-button__title">
-              {controlIcon ? (
-                <MapIcon>{controlIcon}</MapIcon>
-              ) : (
-                <Icon path={mdiLayersOutline} size={1} />
-              )}
-              <div>{title || trans('map.basemap.title')}</div>
-            </div>
-          </MapImage>
-        </div>
-      </MapCard>
-    </MapControlButton>
+    <MapControlButton
+      tooltip={title}
+      contentButton={
+        <MapCard
+          className="clickable base-map-button__container"
+          height="70px"
+          width="70px"
+          onClick={onToggleList}
+        >
+          <div className="base-map-button__content">
+            <MapImage src={displayBaseMap.thumbnail}>
+              <div className="base-map-button__title">
+                {controlIcon ? (
+                  <MapIcon>{controlIcon}</MapIcon>
+                ) : (
+                  <Icon path={mdiLayersOutline} size={1} />
+                )}
+                <div>{title || trans('map.basemap.title')}</div>
+              </div>
+            </MapImage>
+          </div>
+        </MapCard>
+      }
+    />
   );
 
   return (

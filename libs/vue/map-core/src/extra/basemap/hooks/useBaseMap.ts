@@ -31,8 +31,6 @@ export function useBaseMap(mapId: string) {
   // Subscribe to events and mirror state
   const updateBaseMapsHandler = (p_baseMaps: BaseMapItem[]) => {
     baseMaps.value = p_baseMaps;
-    // Re-apply default if needed
-    manager.setDefaultBaseMap(state.defaultBaseMap);
   };
 
   const updateCurrentBaseMapHandler = (baseMap: BaseMapItem | undefined) => {

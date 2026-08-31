@@ -50,7 +50,10 @@ function getProj4(): Proj4Function | undefined {
         // Use dynamic import (ES modules)
         // Note: This requires proj4 to be installed as a peer dependency
         const proj4Module = await import('proj4');
-        proj4Fn = (proj4Module.default || proj4Module) as Proj4Function;
+        const mod = proj4Module as unknown as Proj4Function & {
+          default?: Proj4Function;
+        };
+        proj4Fn = (mod.default ?? mod) as Proj4Function;
         return proj4Fn;
       } catch {
         // proj4 is not available

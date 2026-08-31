@@ -44,10 +44,12 @@ export default defineConfig({
       // External packages that should not be bundled into your library.
       external: [
         'vue',
+        '@hungpvq/draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-core',
         '@hungpvq/shared-store',
         '@hungpvq/vue-content-menu',
+        'vue-draggable-resizable',
         'lodash',
       ],
       output: {

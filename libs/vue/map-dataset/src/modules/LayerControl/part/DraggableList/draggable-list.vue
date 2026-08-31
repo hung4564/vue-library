@@ -31,7 +31,7 @@
               item-key="id"
               :animation="200"
               :move="checkMove"
-              class="draggable-group-container"
+              class="draggable-group__children"
             >
               <template #item="{ element: child, index: indexChild }">
                 <div class="draggable__item">
@@ -262,25 +262,3 @@ function createDefaultGroup(group: any) {
 }
 defineExpose({ update, addNewGroup });
 </script>
-
-<style scoped>
-.flip-list-move {
-  transition: transform 0.5s;
-}
-:deep(.no-move) {
-  transition: transform 0s;
-}
-:deep(.sortable-ghost) {
-  opacity: 0.2;
-  background: var(--v-primary-base, #1a73e8);
-}
-.draggable-handle {
-  cursor: all-scroll;
-}
-.draggable-group-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-</style>

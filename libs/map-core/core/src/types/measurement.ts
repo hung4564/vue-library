@@ -28,10 +28,38 @@ export type IViewSettingField = {
 };
 
 /**
- * Measurement handler type
- * Framework-specific implementations should provide this type
+ * View props passed to measurement views
  */
-export type MeasurementHandleType = any;
+export interface IViewProps extends IViewSetting {
+  mapId: string;
+}
+
+/**
+ * Measurement view interface
+ */
+export interface IView {
+  start: (_props?: IViewProps) => void;
+  view: (_props: IViewProps) => void;
+  reset: () => void;
+  destroy: () => void;
+}
+
+/**
+ * Measurement handler type
+ */
+export type MeasurementHandleType = {
+  readonly type: string | null;
+  readonly action: unknown;
+  setAction: (action: unknown) => void;
+  addView: (view: IView) => void;
+  start: () => void;
+  reset: () => void;
+  destroy: () => void;
+  add: (point: CoordinatesNumber) => void;
+  init: (points?: CoordinatesNumber[]) => void;
+  getResult: () => IViewProps;
+  setMapId: (mapId: string) => void;
+};
 
 /**
  * Measurement action item

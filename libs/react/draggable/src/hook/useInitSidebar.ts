@@ -41,8 +41,14 @@ export function useInitSidebar(
   }, []);
 
   useEffect(() => {
-    if (show) store.registerSideBarShow(itemId, show);
-  }, [show]);
+    // Match Vue: only push show→true into the store.
+    // Calling registerSideBarShow(id, false) here races with sidebar switching:
+    // selectSideBar(newId) sets store.show=newId then old item's show→false
+    // would clear the newly selected sidebar.
+    if (show) {
+      store.registerSideBarShow(itemId, show);
+    }
+  }, [show, itemId]);
 
   const location = useMemo(() => {
     return optionDefault.location;

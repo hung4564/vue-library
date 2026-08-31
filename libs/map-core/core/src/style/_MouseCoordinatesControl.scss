@@ -2,24 +2,22 @@
   .coordinates-part {
     order: 1;
   }
-  .mouse-coordinates-container {
-    flex-direction: column;
-    gap: 8px;
-    & > div {
-      flex-grow: 0 !important;
-      margin: 0 !important;
-    }
-  }
 
   .mouse-coordinates-container {
     flex-direction: column;
     justify-content: right;
     align-items: flex-end;
+    gap: var(--map-space-md, 8px);
+
+    & > div {
+      flex-grow: 0 !important;
+      margin: 0 !important;
+    }
 
     .mouse-coordinates,
     .crs-coordinates {
       flex-grow: 0;
-      margin-top: 8px;
+      margin-top: var(--map-space-md, 8px);
       margin-right: 0;
 
       select {
@@ -41,73 +39,50 @@
     .zoom-coordinates {
       display: flex;
       justify-content: center;
+      align-items: center;
     }
   }
 }
 
-.icon-clickable {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding-left: 8px;
-}
-
-.icon-clickable:hover,
-.icon-clickable:focus {
-  filter: brightness(1.1);
-}
-
-.icon-clickable:active {
-  filter: brightness(0.8);
-}
-
 .mouse-coordinates-container {
   display: flex;
+  align-items: center;
   letter-spacing: 0.5px;
   pointer-events: all;
 
   .icon {
     display: flex;
     align-items: center;
+    line-height: 0;
+
+    svg {
+      display: block;
+    }
   }
 
   & > div {
     flex-grow: 1;
     display: flex;
-    padding-right: 8px;
-    padding-left: 8px;
-    margin-right: 8px;
+    align-items: center;
+    padding-right: var(--map-space-md, 8px);
+    padding-left: var(--map-space-md, 8px);
+    margin-right: var(--map-space-md, 8px);
   }
 
   .crs-coordinates {
-    select {
-      border-style: none;
-      background: transparent;
-      appearance: none;
-      /* for Firefox */
-      -moz-appearance: none;
-      /* for Chrome */
-      -webkit-appearance: none;
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    select::-ms-expand {
-      display: none;
-    }
-
     display: flex;
-    padding-right: 8px;
-    padding-left: 8px;
-    margin-right: 8px;
+    align-items: center;
+    padding-right: var(--map-space-md, 8px);
+    padding-left: var(--map-space-md, 8px);
+    margin-right: var(--map-space-md, 8px);
   }
 
   .mouse-coordinates-zoom,
   .mouse-coordinates-point {
     flex-grow: 0;
     display: flex;
+    align-items: center;
+    line-height: var(--map-line-height, 1.4);
   }
 
   .scale-custom {
@@ -116,103 +91,52 @@
     align-items: center;
     justify-content: center;
     min-width: 75px;
+    line-height: var(--map-line-height, 1.4);
   }
 }
+
 .mouse-coordinates-part {
   box-shadow:
     0px 3px 1px -2px rgb(0 0 0 / 20%),
     0px 2px 2px 0px rgb(0 0 0 / 14%),
     0px 1px 5px 0px rgb(0 0 0 / 12%);
-  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
-  color: var(--map-card-text, var(--map-text-primary, #333));
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 4px;
-}
-.crs-select {
-  background-color: transparent;
-  color: var(--map-card-text, var(--map-text-primary, #333));
-}
-.crs-select option {
-  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
-  color: var(--map-card-text, var(--map-text-primary, #333));
-}
-.mouse-coordinates-container {
-  display: flex;
-  letter-spacing: 0.5px;
-  pointer-events: all;
-}
-
-.mouse-coordinates-container .icon {
+  background-color: var(--map-surface-color, #ffffff);
+  color: var(--map-text-primary, #333);
+  border-radius: var(--map-radius-sm, 4px);
+  font-size: var(--map-font-size-md, 14px);
+  line-height: var(--map-line-height, 1.4);
+  padding: var(--map-padding-compact, 4px);
   display: flex;
   align-items: center;
 }
 
-.mouse-coordinates-container > div {
-  flex-grow: 1;
-  display: flex;
-  padding-right: 8px;
-  padding-left: 8px;
-  margin-right: 8px;
-}
-
-.mouse-coordinates-container .crs-coordinates select {
+/* Markup uses .crs-select (not .crs-coordinates select) — keep UA chrome off so Vue/React match */
+.crs-select {
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
   border-style: none;
-  background: transparent;
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
+  vertical-align: middle;
 }
 
-.mouse-coordinates-container .crs-coordinates select:focus {
+.crs-select:focus {
   outline: none;
 }
 
-.mouse-coordinates-container .crs-coordinates select::-ms-expand {
+.crs-select::-ms-expand {
   display: none;
 }
 
-.mouse-coordinates-container .crs-coordinates {
-  display: flex;
-  padding-right: 8px;
-  padding-left: 8px;
-  margin-right: 8px;
-}
-
-.mouse-coordinates-container .mouse-coordinates-zoom,
-.mouse-coordinates-container .mouse-coordinates-point {
-  flex-grow: 0;
-  display: flex;
-}
-
-.mouse-coordinates-container .scale-custom {
-  flex-grow: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 75px;
-}
-
-.mouse-coordinates-part {
-  box-shadow:
-    0px 3px 1px -2px rgb(0 0 0 / 20%),
-    0px 2px 2px 0px rgb(0 0 0 / 14%),
-    0px 1px 5px 0px rgb(0 0 0 / 12%);
-  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
-  color: var(--map-card-text, var(--map-text-primary, #333));
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 4px;
-}
-
-.crs-select {
-  background-color: transparent;
-  color: var(--map-card-text, var(--map-text-primary, #333));
-}
-
 .crs-select option {
-  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
-  color: var(--map-card-text, var(--map-text-primary, #333));
+  background-color: var(--map-surface-color, #ffffff);
+  color: var(--map-text-primary, #333);
 }
 
 .selectable {
@@ -225,6 +149,16 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  padding-left: var(--map-space-md, 8px);
+}
+
+.icon-clickable:hover,
+.icon-clickable:focus {
+  filter: brightness(1.1);
+}
+
+.icon-clickable:active {
+  filter: brightness(0.8);
 }
 
 .icon-clickable:hover::before {

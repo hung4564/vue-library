@@ -56,6 +56,13 @@ export type MapEventStore = {
   current: { [key: string]: AnyIEvent | undefined };
 };
 
+export function createDefaultEventStore(): MapEventStore {
+  return {
+    items: [],
+    current: {},
+  };
+}
+
 /**
  * Event types for Mitt event emitter
  */

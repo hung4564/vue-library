@@ -114,6 +114,8 @@
         :key="item.id"
         :item="item"
         :mapId="mapId"
+        @click:action="emit('click:action', $event)"
+        @click:content-menu="emit('click:content-menu', $event)"
       ></LayerSubItem>
     </div>
   </div>
@@ -224,80 +226,3 @@ onMounted(() => {
   children.value = allComponentsOfType.sort((a, b) => b.index - a.index) || [];
 });
 </script>
-
-<style scoped>
-.spin {
-  animation: 2s linear 0s infinite normal none running spin;
-}
-
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.layer-item-container {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-}
-
-.layer-item__info {
-  width: 100%;
-}
-
-.layer-item__info,
-.layer-item__action {
-  display: flex;
-  align-items: center;
-}
-
-.layer-item__icon {
-  flex-grow: 0;
-  flex-shrink: 0;
-  width: 25px;
-  display: flex;
-  align-items: center;
-}
-
-.layer-item__icon > div {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.layer-item__title {
-  display: inline-block;
-  text-align: left;
-  flex-grow: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.75rem !important;
-  font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.0333333333em !important;
-}
-
-.layer-item__title-action {
-  display: flex;
-  flex-grow: 0;
-  align-items: center;
-  height: 100%;
-}
-
-.v-spacer {
-  flex: 1 1 auto;
-}
-.layer-item__children {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
-</style>

@@ -116,24 +116,3 @@ function createDefaultGroup(group: any) {
 }
 defineExpose({ update });
 </script>
-<style scoped>
-.flip-list-move {
-  transition: transform 0.5s;
-}
-:deep(.no-move) {
-  transition: transform 0s;
-}
-:deep(.sortable-ghost) {
-  opacity: 0.2;
-  background: var(--v-primary-base, #1a73e8);
-}
-.draggable-handle {
-  cursor: all-scroll;
-}
-.draggable-group-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-</style>

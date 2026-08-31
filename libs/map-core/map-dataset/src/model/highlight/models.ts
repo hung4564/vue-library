@@ -6,6 +6,7 @@ import { createDatasetLeaf } from '../dataset.base.function';
 import {
   type HighlightAnimState,
   type HighlightFilterCreator,
+  type HighlightLayerIds,
   useHighlightAnimation,
 } from './helper';
 import type { IHighlightView } from './types';
@@ -42,7 +43,7 @@ export function createDatasetPartChangeColorHighlightComponent(
     map,
   }: {
     map: MapSimple;
-    layerIds: Record<string, string>;
+    layerIds: HighlightLayerIds;
     state: { startTime: number };
   }) {
     const t = (performance.now() - state.startTime) / 1000; // giây
@@ -76,7 +77,7 @@ export function createDatasetPartChangeColorHighlightComponent(
 export function createDatasetPartCustomAnimateHighlightComponent<T>(
   animateFn: (ctx: {
     map: MapSimple;
-    layerIds: Record<string, string>;
+    layerIds: HighlightLayerIds;
     state: HighlightAnimState & T;
   }) => void,
   createDefaultState: () => Partial<HighlightAnimState & T>,

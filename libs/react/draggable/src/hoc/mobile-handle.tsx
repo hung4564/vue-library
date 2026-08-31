@@ -6,18 +6,16 @@ export function WithMobileHandle<T extends ComponentType<any>>(
   Component: T,
   ComponentMobile: ComponentType<any>,
 ) {
-  return function WithMobileHandleComponent(
-    props: ComponentProps<T> & { containerId?: string },
-  ) {
+  type Props = ComponentProps<T> & { containerId?: string };
+
+  return function WithMobileHandleComponent(props: Props) {
     const containerId = useContainerId(props.containerId);
     // Subscribe to store so we re-render when isMobile changes (setParentProps in DraggableContainer)
     useStoreReactive();
     const store = useDragIsMobile(containerId);
     const isMobile = store.getIsMobile();
+    const Active = (isMobile ? ComponentMobile : Component) as ComponentType<Props>;
 
-    if (isMobile) {
-      return <ComponentMobile {...props} />;
-    }
-    return <Component {...props} />;
+    return <Active {...props} />;
   };
 }

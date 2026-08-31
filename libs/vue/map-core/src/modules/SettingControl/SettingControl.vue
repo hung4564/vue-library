@@ -109,13 +109,13 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         v-model:show="show"
         :title="trans('map.setting-control.title')"
       >
-        <div class="setting-container">
-          <div class="setting-field-container">
+        <div class="map-setting-control">
+          <div class="map-setting-control__fields">
             <div>
-              <label>
+              <label class="map-setting-control__center-label">
                 {{ trans('map.setting-control.field.center') }}
               </label>
-              <div class="setting-center-container">
+              <div class="map-setting-control__center">
                 <InputText
                   v-model="setting.center[0]"
                   type="number"
@@ -148,7 +148,10 @@ const { state, control } = useToolbarControl(mapId.value, props, {
             </div>
           </div>
 
-          <base-button class="btn-container" @click="onSetSetting()">
+          <base-button
+            class="map-setting-control__apply"
+            @click="onSetSetting()"
+          >
             {{ trans('map.setting-control.btn.apply') }}
           </base-button>
         </div>
@@ -157,33 +160,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     <slot />
   </ModuleContainer>
 </template>
-<style>
-.setting-container {
-  padding: 8px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.setting-field-container > div {
-  padding: 4px;
-}
-.setting-container .setting-field-container {
-  height: 100%;
-  padding: 8px;
-  flex-grow: 1;
-  overflow: auto;
-}
-.setting-container .btn-container {
-  flex-grow: 0;
-  padding: 8px;
-}
-.setting-center-container {
-  display: flex;
-}
-.setting-center-container > *:not(:last-child) {
-  padding-right: 4px;
-}
-</style>

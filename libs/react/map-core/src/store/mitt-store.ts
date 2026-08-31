@@ -3,10 +3,9 @@
  * Creates event emitters for map instances
  */
 
-import { logHelper } from '@hungpvq/map-core';
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
 import mitt from 'mitt';
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { logger } from './logger';
 import { createMapScopedStore } from './store-utils';
 
@@ -15,7 +14,7 @@ const loggerEvent = logger.setNamespace('map:' + MAP_STORE_KEY.MITT, 2);
 /**
  * Get or create mitt event emitter for a map ID
  */
-export function useMapMittStore<
+export function getMapMittStore<
   T extends Record<EventType, unknown> = Record<EventType, unknown>,
 >(mapId: string): Emitter<T> {
   return createMapScopedStore<Emitter<T>>(mapId, MAP_STORE_KEY.MITT, () => {
@@ -27,3 +26,6 @@ export function useMapMittStore<
     return eventHandle;
   });
 }
+
+/** @deprecated Prefer getMapMittStore outside React components */
+export const useMapMittStore = getMapMittStore;

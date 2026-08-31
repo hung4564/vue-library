@@ -3,6 +3,36 @@
   height: 100%;
   position: relative;
   background-color: var(--map-background-color, #f7f5f2);
+  font-family: var(
+    --map-font-family,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif
+  );
+  font-size: var(--map-font-size-base, 14px);
+  line-height: var(--map-line-height, 1.4);
+  font-weight: var(--map-font-weight-normal, 400);
+  color: var(--map-text-primary, #333);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.map-container button,
+.map-container input,
+.map-container select,
+.map-container textarea {
+  font: inherit;
+}
+
+.module__container {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .not-support-map {
@@ -50,18 +80,40 @@
   li {
     display: flex;
     cursor: pointer;
-    padding: 5px 10px;
+    padding: var(--map-space-sm, 6px) var(--map-space-md, 8px);
     align-items: center;
     width: 100%;
     min-height: 40px;
   }
 }
 .hungpvq-draggable-card {
-  background-color: var(--map-card-bg, var(--map-surface-color, #ffffff));
-  color: var(--map-card-text, var(--map-text-primary, #333));
+  background-color: var(--map-card-bg, var(--card-background-color, rgba(32, 43, 54, 0.9)));
+  color: var(--map-card-text, var(--card-color, #fff));
   box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
-  border-radius: 4px;
+  border-radius: var(--map-radius-sm, 4px);
   overflow: hidden;
+  font-family: var(
+    --map-font-family,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif
+  );
+  font-size: var(--map-font-size-base, 14px);
+  line-height: var(--map-line-height, 1.4);
+  font-weight: var(--map-font-weight-normal, 400);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.hungpvq-draggable-card button,
+.hungpvq-draggable-card input,
+.hungpvq-draggable-card select,
+.hungpvq-draggable-card textarea {
+  font: inherit;
 }
 .hungpvq-draggable-card button {
   color: var(--map-card-text, var(--map-text-primary, #333));

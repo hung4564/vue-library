@@ -16,4 +16,3 @@ const form = defineModel();
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);
 </script>
-<style></style>

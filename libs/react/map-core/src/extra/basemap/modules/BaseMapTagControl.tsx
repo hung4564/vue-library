@@ -27,7 +27,7 @@ export function BaseMapTagControl({
     baseMaps,
     defaultBaseMap,
   };
-  const { mapId, moduleContainerProps } = useMap(props);
+  const { mapId, moduleContainerProps, mapInstance } = useMap(props);
   const {
     setBaseMaps,
     baseMaps: c_baseMaps,
@@ -58,9 +58,11 @@ export function BaseMapTagControl({
   );
 
   useEffect(() => {
+    if (!mapInstance) return;
     init(props.baseMaps, props.defaultBaseMap);
     return () => remove();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
+  }, [mapInstance]);
 
   const btnContent = current_baseMaps ? (
     <MapControlGroupButton row size={24}>
@@ -82,9 +84,6 @@ export function BaseMapTagControl({
   ) : null;
 
   return (
-    <ModuleContainer {...moduleContainerProps} btnWidth={24} btn={btnContent}>
-      <style>{`
-      `}</style>
-    </ModuleContainer>
+    <ModuleContainer {...moduleContainerProps} btnWidth={24} btn={btnContent} />
   );
 }

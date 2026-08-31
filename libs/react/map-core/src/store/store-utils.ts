@@ -1,38 +1,25 @@
-/**
- * Store utility functions
- * Separated to avoid circular dependencies
- */
-
-import { MAP_STORE_KEY, type AddStoreOptions } from '@hungpvq/map-core';
+import type { AddStoreOptions, MapStoreManager } from '@hungpvq/map-core';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
 
 export type MapScopedStoreOptions = AddStoreOptions;
 
 type MapStoreKey = (typeof MAP_STORE_KEY)[keyof typeof MAP_STORE_KEY];
 export type MapScopedKey = MapStoreKey | (string & object);
 
-/**
- * Store manager reference - will be set by store.ts
- */
-let storeManagerRef: any = null;
+let storeManagerRef: MapStoreManager | null = null;
 
-/**
- * Set store manager reference (called from store.ts)
- */
-export function setStoreManager(manager: any) {
+export function setStoreManager(manager: MapStoreManager) {
   storeManagerRef = manager;
 }
 
-/**
- * Create scoped store
- */
 export function createMapScopedStore<T>(
   mapId: string,
   key: MapScopedKey,
   factory: () => T,
   options?: MapScopedStoreOptions,
-) {
+): T {
   if (!storeManagerRef) {
     throw new Error('Store manager not initialized');
   }
-  return storeManagerRef.addStore<T>(mapId, key as string, factory, options);
+  return storeManagerRef.addStore(mapId, key as string, factory, options);
 }

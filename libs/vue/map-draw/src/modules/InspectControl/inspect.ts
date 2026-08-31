@@ -8,12 +8,26 @@ export type InspectStyleSpecification = StyleSpecification & {
 export function isInspectStyle(style: InspectStyleSpecification) {
   return style.metadata && style.metadata['maplibregl-inspect:inspect'];
 }
+type SourceCacheLike = {
+  _source: {
+    vectorLayerIds?: string[];
+    type?: string;
+  };
+};
+
 export function getSourcesFromMap(map: MapSimple) {
   const sources: Record<string, string[]> = {};
-  //NOTE: This heavily depends on the internal API of Maplibre GL
-  //so this breaks between Maplibre GL JS releases
-  Object.keys(map.style.sourceCaches).forEach((sourceId) => {
-    const sourceCache = map.style.sourceCaches[sourceId] || {
+  // NOTE: This heavily depends on the internal API of Maplibre GL
+  // so this breaks between Maplibre GL JS releases
+  const sourceCaches = (
+    map.style as unknown as { sourceCaches?: Record<string, SourceCacheLike> }
+  ).sourceCaches;
+  if (!sourceCaches) {
+    return sources;
+  }
+
+  Object.keys(sourceCaches).forEach((sourceId) => {
+    const sourceCache = sourceCaches[sourceId] || {
       _source: {},
     };
     const layerIds = sourceCache._source.vectorLayerIds;

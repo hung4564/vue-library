@@ -33,6 +33,7 @@ function findLeafInSubtreeBFS(
         foundNode = current;
         return false;
       }
+      return;
     },
     {
       strategy: 'bfs',

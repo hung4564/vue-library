@@ -1,9 +1,8 @@
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import type {
   HighlightHandle,
-  IDataset,
+  HighlightLayerIds,
   IHighlightView,
-  WithDataHelper,
 } from '@hungpvq/map-dataset';
 import {
   createDefaultHighlightLayers,
@@ -72,7 +71,7 @@ export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
     );
     _initAnimation({
       map,
-      layerIds: toValue(layerIds) as Record<string, string>,
+      layerIds: toValue(layerIds) as HighlightLayerIds,
       layers: toValue(layers.value) as any,
       dataset: dataset.value,
       feature,

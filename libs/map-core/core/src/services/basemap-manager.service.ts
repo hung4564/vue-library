@@ -93,8 +93,15 @@ export class BasemapManager {
       this.adapter,
     );
 
-    // Set current if not already set
-    if (!this.store.current && baseMap) {
+    if (!baseMap) return;
+
+    const shouldApply =
+      !this.store.current ||
+      (!!defaultBaseMap &&
+        (this.store.current.id !== baseMap.id ||
+          this.store.current.title !== baseMap.title));
+
+    if (shouldApply) {
       this.setCurrent(baseMap);
     }
   }

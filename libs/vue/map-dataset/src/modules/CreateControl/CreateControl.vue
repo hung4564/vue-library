@@ -140,27 +140,3 @@ onMounted(() => {
     </template>
   </ModuleContainer>
 </template>
-<style scoped>
-.create-control-container {
-  padding: 8px 0;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.create-control-form {
-  flex-grow: 1;
-  overflow: auto;
-}
-
-.create-control-container .form-container {
-  overflow: auto;
-  height: 100%;
-  padding: 8px;
-}
-.create-control-container .btn-container {
-  padding: 8px;
-}
-</style>

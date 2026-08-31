@@ -20,7 +20,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, useSlots } from 'vue';
+import { computed, inject, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },

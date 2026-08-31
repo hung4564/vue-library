@@ -54,10 +54,3 @@ onUnmounted(() => {
   props.data.off('changeOpacity', updateValue);
 });
 </script>
-
-<style scoped>
-.layer-item__opacity {
-  flex: 1 1 auto;
-  max-width: 50%;
-}
-</style>

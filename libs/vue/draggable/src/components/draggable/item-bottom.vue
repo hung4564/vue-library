@@ -103,29 +103,3 @@ const c_style = computed(() => {
     </component>
   </div>
 </template>
-
-<style scoped>
-.draggable-bottom .map-divider {
-  flex-grow: 0;
-}
-
-.popup-mobile-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-}
-
-.draggable-bottom {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.draggable-bottom-content {
-  flex-grow: 1;
-  overflow: auto;
-}
-</style>

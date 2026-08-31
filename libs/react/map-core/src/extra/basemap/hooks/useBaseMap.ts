@@ -39,7 +39,6 @@ export function useBaseMap(mapId: string) {
 
   const updateBaseMapsHandler = useCallback((p_baseMaps: BaseMapItem[]) => {
     setBaseMapsState(p_baseMaps);
-    // Handler chỉ cập nhật React state - setDefaultBaseMap đã được gọi trong init ngay sau setBaseMaps
   }, []);
 
   const updateCurrentBaseMapHandler = useCallback(
@@ -50,6 +49,10 @@ export function useBaseMap(mapId: string) {
   );
 
   useEffect(() => {
+    // Sync from store in case another hook instance already updated it
+    setBaseMapsState(manager.getBaseMaps());
+    setCurrentBaseMapState(manager.getCurrent());
+
     emitter.on(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
     emitter.on(MittTypeBaseMapEventKey.setCurrent, updateCurrentBaseMapHandler);
     return () => {
@@ -59,8 +62,25 @@ export function useBaseMap(mapId: string) {
         updateCurrentBaseMapHandler,
       );
     };
-  }, [emitter, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
+  }, [emitter, manager, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
 
+  const setBaseMaps = useCallback(
+    (items: BaseMapItem[]) => manager.setBaseMaps(items),
+    [manager],
+  );
+  const setDefaultBaseMap = useCallback(
+    (defaultBaseMap?: string) => manager.setDefaultBaseMap(defaultBaseMap),
+    [manager],
+  );
+  const setCurrent = useCallback(
+    (baseMap: BaseMapItem) => manager.setCurrent(baseMap),
+    [manager],
+  );
+  const init = useCallback(
+    (items: BaseMapItem[], defaultBaseMap?: string) =>
+      manager.init(items, defaultBaseMap),
+    [manager],
+  );
   const remove = useCallback(() => {
     emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
     emitter.off(
@@ -72,14 +92,10 @@ export function useBaseMap(mapId: string) {
   return {
     baseMaps,
     currentBaseMap,
-
-    setBaseMaps: (items: BaseMapItem[]) => manager.setBaseMaps(items),
-    setDefaultBaseMap: (defaultBaseMap?: string) =>
-      manager.setDefaultBaseMap(defaultBaseMap),
-    setCurrent: (baseMap: BaseMapItem) => manager.setCurrent(baseMap),
-    init: (baseMaps: BaseMapItem[], defaultBaseMap?: string) =>
-      manager.init(baseMaps, defaultBaseMap),
-
+    setBaseMaps,
+    setDefaultBaseMap,
+    setCurrent,
+    init,
     remove,
   };
 }

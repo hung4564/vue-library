@@ -20,8 +20,6 @@ import {
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
 import { MapButton } from '../parts/MapButton';
-import './item-popup.css';
-
 const STICKS_TO_RND: Record<string, string> = {
   t: 'top',
   r: 'right',
@@ -211,6 +209,11 @@ export function DraggableItemPopup({
       return;
     }
 
+    if (containerWidth <= 0 || containerHeight <= 0) {
+      setInitDone(false);
+      return;
+    }
+
     let x = 0;
     let y = 0;
 
@@ -220,10 +223,10 @@ export function DraggableItemPopup({
     if (top != null) {
       y = top;
     }
-    if (right) {
+    if (right != null) {
       x = containerWidth - right - p_width;
     }
-    if (bottom) {
+    if (bottom != null) {
       y = containerHeight - bottom - p_height;
     }
     if (center || centerX) {

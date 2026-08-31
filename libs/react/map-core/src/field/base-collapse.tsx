@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@mdi/react';
 import { mdiMenuDown, mdiMenuUp } from '@mdi/js';
-import './base-collapse.css';
 
 export interface BaseCollapseProps {
   selected?: boolean;
@@ -10,6 +9,7 @@ export interface BaseCollapseProps {
   onClose?: () => void;
   header?: React.ReactNode;
   children?: React.ReactNode;
+  className?: string;
 }
 
 export function BaseCollapse({
@@ -61,9 +61,9 @@ export function BaseCollapse({
         <div className="collapse-header__title">{header}</div>
         <div className="collapse-header__icon">
           {active ? (
-            <Icon size={14} path={mdiMenuUp} />
+            <Icon path={mdiMenuUp} size="14px" />
           ) : (
-            <Icon size={14} path={mdiMenuDown} />
+            <Icon path={mdiMenuDown} size="14px" />
           )}
         </div>
       </div>

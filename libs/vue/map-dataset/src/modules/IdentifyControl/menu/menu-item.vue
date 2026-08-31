@@ -14,4 +14,3 @@ defineProps<{
   item: MenuAction<IIdentifyView>;
 }>();
 </script>
-<style lang=""></style>

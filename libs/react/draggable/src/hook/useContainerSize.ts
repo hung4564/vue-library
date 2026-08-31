@@ -1,21 +1,13 @@
-import { useState, useEffect } from 'react';
 import { useDragContainer } from '../store';
 import { useContainerReactive } from '../store/useStoreReactive';
 
 export function useContainerSize(containerId: string) {
   const store = useDragContainer(containerId);
-  // Use reactive hook to trigger re-renders when container size changes
+  // Re-render when the container is measured or resized (matches Vue computed()).
   useContainerReactive(containerId);
 
-  const [containerWidth, setContainerWidth] = useState(() => store.getWidth());
-  const [containerHeight, setContainerHeight] = useState(() =>
-    store.getHeight(),
-  );
-
-  useEffect(() => {
-    setContainerWidth(store.getWidth());
-    setContainerHeight(store.getHeight());
-  }, [store]);
-
-  return { containerWidth, containerHeight };
+  return {
+    containerWidth: store.getWidth(),
+    containerHeight: store.getHeight(),
+  };
 }

@@ -1,0 +1,313 @@
+/*
+  Shared field / form control styles (Vue + React).
+  Prefer --map-* tokens; flatten nesting.
+*/
+
+/* ---------- Field action button (.map-control__button) ---------- */
+.map-control__button {
+  display: inline-flex;
+  min-width: 20px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  box-shadow: unset;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+}
+
+.map-control__button svg {
+  flex-shrink: 0;
+}
+
+.map-control__button .spin {
+  width: 14px;
+  height: 14px;
+}
+
+.map-control__button-active {
+  color: var(--map-accent-color, #1a73e8) !important;
+}
+
+.map-control__button-disabled {
+  pointer-events: none;
+  cursor: none;
+  opacity: 0.8;
+}
+
+/* ---------- Collapse ---------- */
+.collapse .collapse-header {
+  padding: var(--map-padding-section, 12px);
+  display: flex;
+  position: relative;
+  border-bottom-width: 1px;
+  border-bottom-color: #fff;
+  border-bottom-style: solid;
+}
+
+.collapse-header__title {
+  flex-grow: 1;
+}
+
+.collapse-header__icon {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-header__icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.collapse .collapse-header > .collapse-header__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapse .collapse-header h3 {
+  font-size: 0.938em;
+  font-weight: bold;
+}
+
+.collapse .collapse-header::before {
+  transition: all 0.2s;
+  position: absolute;
+  font-size: 0.4em;
+  top: calc(50% - 0.4em);
+  left: 20px;
+  transform: rotate(-90deg);
+}
+
+.collapse.is-active .collapse-header::before {
+  transform: rotate(0deg);
+}
+
+.collapse .collapse-content-box {
+  min-height: 20px;
+  transition: all 0.2s;
+  border-bottom-width: 1px;
+  border-bottom-color: #fff;
+  border-bottom-style: solid;
+}
+
+/* ---------- Shared text / textarea / select / file inputs ---------- */
+.input-container > input,
+.input-container > textarea,
+.input-container > select {
+  width: 100%;
+  padding: var(--map-padding-input, 8px);
+  display: block;
+  border: 1px solid var(--map-border-color, #ccc);
+  border-radius: var(--map-radius-sm, 4px);
+  color: inherit;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: none;
+  font: inherit;
+}
+
+.input-container > textarea {
+  resize: vertical;
+}
+
+.input-container > select {
+  position: relative;
+}
+
+.input-container > input:focus,
+.input-container > textarea:focus,
+.input-container > select:focus {
+  border: 1px solid var(--map-primary-color, #fff);
+}
+
+.input-container option:not(:disabled) {
+  background-color: transparent;
+  color: black;
+}
+
+.input-container > select:invalid {
+  color: gray;
+}
+
+/* ---------- Slider ---------- */
+.input-container:has(.input-slider__value) {
+  display: flex;
+}
+
+.input-slider__value {
+  flex-grow: 0;
+  max-width: 100px;
+  padding-left: var(--map-space-xs, 4px);
+}
+
+.input-slider__value > input:focus {
+  border: 1px solid var(--map-primary-color, #004e98);
+}
+
+.input-slider__value input {
+  width: 100%;
+  padding: var(--map-padding-input, 8px);
+  display: block;
+  border: 1px solid var(--map-border-color, #ccc);
+  border-radius: var(--map-radius-sm, 4px);
+  color: inherit;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: none;
+  font: inherit;
+}
+
+input[type='range'] {
+  display: block;
+  width: 100%;
+  margin: var(--map-space-md, 8px) 0;
+  background: var(--map-surface-variant-color, #3e3e3f);
+  background-image: linear-gradient(
+    to right,
+    var(--map-primary-color, #004e98) 0%,
+    var(--map-primary-color, #004e98) 100%
+  );
+  background-repeat: no-repeat;
+}
+
+input[type='range']:focus {
+  outline: none;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0px;
+  border: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  box-shadow: none;
+  border: 4px solid var(--map-primary-color, #004e98);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--map-surface-variant-color, #3e3e3f);
+  cursor: pointer;
+  margin-top: -6px;
+}
+
+input[type='range']:focus::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0px;
+  border: none;
+}
+
+input[type='range']::-moz-range-thumb {
+  box-shadow: none;
+  border: 4px solid var(--map-primary-color, #004e98);
+  height: 16px;
+  width: 16px;
+  border-radius: 2px;
+  background: var(--map-surface-color, #ffffff);
+  cursor: pointer;
+}
+
+input[type='range']::-ms-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+input[type='range']::-ms-fill-lower {
+  background: transparent;
+  border: none;
+  border-radius: 0px;
+  box-shadow: none;
+}
+
+input[type='range']::-ms-fill-upper {
+  background: transparent;
+  border: none;
+  border-radius: 0px;
+  box-shadow: none;
+}
+
+input[type='range']::-ms-thumb {
+  box-shadow: none;
+  border: 4px solid var(--map-primary-color, #004e98);
+  height: 16px;
+  width: 16px;
+  border-radius: 2px;
+  background: var(--map-surface-color, #ffffff);
+  cursor: pointer;
+  height: 4px;
+}
+
+input[type='range']:focus::-ms-fill-lower {
+  background: transparent;
+}
+
+input[type='range']:focus::-ms-fill-upper {
+  background: transparent;
+}
+
+/* ---------- Choose (segmented) ---------- */
+.input-container:has(.item-choose) {
+  display: flex;
+  border: 1px solid var(--map-border-color, grey);
+  border-radius: var(--map-radius-md, 8px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.item-choose {
+  cursor: pointer;
+  padding: var(--map-padding-section, 12px);
+  border-radius: var(--map-radius-md, 8px);
+  align-items: center;
+  min-height: 22px;
+  color: #fff;
+  font-weight: var(--map-font-weight-normal, 400);
+  line-height: var(--map-line-height, 1.4);
+  font-size: var(--map-font-size-sm, 12px);
+  flex-grow: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-choose-active {
+  color: var(--map-accent-color, #1a73e8);
+}
+
+/* ---------- Checkbox ---------- */
+.form-checkbox {
+  display: flex;
+}
+
+.form-checkbox label {
+  padding-left: var(--map-space-md, 8px);
+}

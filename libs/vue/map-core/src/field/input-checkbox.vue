@@ -13,11 +13,3 @@ defineProps({
   disabled: Boolean,
 });
 </script>
-<style scoped>
-.form-checkbox {
-  display: flex;
-}
-.form-checkbox label {
-  padding-left: 8px;
-}
-</style>

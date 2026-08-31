@@ -149,7 +149,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
           <div class="crs-item__add">
             <button
               type="button"
-              lass="layer-item__button clickable"
+              class="layer-item__button clickable"
               @click.stop="onAdd()"
             >
               <SvgIcon size="16" type="mdi" :path="path.plus" />
@@ -162,71 +162,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     <slot />
   </ModuleContainer>
 </template>
-<style scoped>
-.crs-container {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-}
-.crs-item-header {
-  display: flex;
-  flex-grow: 1;
-}
-.grow {
-  flex: 1;
-  overflow: auto;
-}
-.crs-item-header__title {
-  flex-grow: 1;
-}
-.crs-item-header__action {
-  flex-grow: 0;
-}
-.crs-item {
-  padding: 4px 16px;
-}
-.crs-item .form-group {
-  padding-bottom: 4px;
-}
-.crs-item__add {
-  padding: 8px;
-}
-.crs-item__add .layer-item__button {
-  padding: 8px;
-  width: 100%;
-  background: transparent;
-}
-.crs-item-header__action button {
-  background-color: transparent;
-}
-.clickable {
-  cursor: pointer;
-}
-
-.clickable {
-  position: relative;
-}
-
-.clickable:hover::before {
-  opacity: 0.04;
-}
-
-.clickable:before {
-  background-color: currentColor;
-  bottom: 0;
-  content: '';
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-}
-
-.clickable[disabled='disabled'] {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.25;
-}
-</style>

@@ -42,15 +42,3 @@ function onOpen(id: string) {
   getItemAction(id).open?.();
 }
 </script>
-
-<style scoped>
-.show-status {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.side-title {
-  text-transform: capitalize;
-  font-weight: bold;
-}
-</style>

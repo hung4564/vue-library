@@ -1,65 +1,70 @@
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { MapContext } from '../context/MapContext';
 import { getMap } from '../store/store';
-import { useMapContext } from '../context/MapContext';
 
 export const useMap = (
   props: WithMapPropType = {},
   onInit?: MapFCOnUseMap,
   onDestroy?: MapFCOnUseMap,
 ) => {
-  const context = useMapContext();
+  // Optional like Vue inject — BaseMapCard can run outside <Map> with mapId prop
+  const context = useContext(MapContext);
   const mapId = useMemo(() => {
-    return props.mapId || context.mapId || '';
-  }, [props.mapId, context.mapId]);
+    return props.mapId || context?.mapId || '';
+  }, [props.mapId, context?.mapId]);
 
   const [mapInstance, setMapInstance] = useState<
     MapSimple | MapSimple[] | undefined
   >(undefined);
 
-  const registerOrder = context.registerModuleOrder;
+  const registerOrder = context?.registerModuleOrder;
   const autoOrderRef = useRef<number | undefined>(undefined);
+  const onInitRef = useRef(onInit);
+  const onDestroyRef = useRef(onDestroy);
+  onInitRef.current = onInit;
+  onDestroyRef.current = onDestroy;
 
-  // Calculate auto order on mount
+  // Register order synchronously during render (matches Vue setup)
+  if (
+    autoOrderRef.current === undefined &&
+    (props.controlOrder === undefined || props.controlOrder === 0) &&
+    registerOrder
+  ) {
+    const key =
+      props.controlLayout === 'toolbar'
+        ? props.controlLayout
+        : `${props.position}`;
+    autoOrderRef.current = registerOrder(key);
+  }
+
+  const order =
+    props.controlOrder && +props.controlOrder > 0
+      ? +props.controlOrder
+      : (autoOrderRef.current ?? 1) * 10;
+
   useEffect(() => {
-    if (
-      (props.controlOrder === undefined || props.controlOrder === 0) &&
-      registerOrder
-    ) {
-      const key =
-        props.controlLayout === 'toolbar'
-          ? props.controlLayout
-          : `${props.position}`;
-      autoOrderRef.current = registerOrder(key);
-    }
-  }, [props.controlOrder, props.controlLayout, props.position, registerOrder]);
-
-  const order = useMemo(() => {
-    if (props.controlOrder && +props.controlOrder > 0) {
-      return +props.controlOrder;
-    }
-    return (autoOrderRef.current ?? 1) * 10;
-  }, [props.controlOrder, autoOrderRef.current]);
-
-  useEffect(() => {
+    if (!mapId) return;
     getMap(mapId, async (_map) => {
       setMapInstance(_map);
-      if (onInit instanceof Function) {
-        await onInit(_map);
+      const init = onInitRef.current;
+      if (init instanceof Function) {
+        await init(_map);
       }
     });
   }, [mapId]);
 
   useEffect(() => {
     return () => {
-      if (onDestroy instanceof Function) {
+      const destroy = onDestroyRef.current;
+      if (destroy instanceof Function && mapId) {
         getMap(mapId, async (_map) => {
-          await onDestroy(_map);
+          await destroy(_map);
         });
       }
     };
-  }, [mapId, onDestroy]);
+  }, [mapId]);
 
   function callMap(cb: MapFCOnUseMap) {
     return getMap(mapId, cb);
@@ -68,7 +73,7 @@ export const useMap = (
   const moduleContainerProps = useMemo(
     () => ({
       mapId: props.mapId,
-      dragId: props.dragId,
+      dragId: props.dragId || context?.dragId,
       btnWidth: props.btnWidth,
       position: props.position,
       controlVisible: props.controlVisible,
@@ -91,6 +96,7 @@ export const useMap = (
       props.left,
       props.right,
       order,
+      context?.dragId,
     ],
   );
 

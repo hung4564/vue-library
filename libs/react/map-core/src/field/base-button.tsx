@@ -1,5 +1,4 @@
 import React from 'react';
-import './base-button.css';
 
 export interface BaseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;

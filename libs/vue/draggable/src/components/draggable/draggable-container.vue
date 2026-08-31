@@ -108,32 +108,3 @@ function onResize() {
     <slot v-if="p_container_id && init_done" :containerId="containerId" />
   </div>
 </template>
-
-<style scoped>
-.draggable-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-}
-</style>
-<style>
-@import 'vue-draggable-resizable/style.css';
-.map-divider {
-  margin: 0;
-  display: block;
-  flex: 1 1 0px;
-  max-width: 100%;
-  height: 0px;
-  max-height: 0px;
-  border: solid;
-  border-width: thin 0 0 0;
-  transition: inherit;
-  border-color: #fff;
-  opacity: 0.3;
-}
-:root {
-  --card-background-color: rgba(32, 43, 54, 0.9);
-  --card-highlight-background-color: rgba(26, 115, 232);
-  --card-color: #fff;
-}
-</style>

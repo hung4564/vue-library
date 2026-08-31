@@ -18,7 +18,6 @@ import { LocationSideBar } from '../../../types';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { MapButton } from '../../parts/MapButton';
 import { MapSidebarToggle } from '../../parts/MapSidebarToggle';
-import './sidebar-container.css';
 import { useSidebarBehavior } from './useSidebarBehavior';
 
 export interface SidebarContainerProps {

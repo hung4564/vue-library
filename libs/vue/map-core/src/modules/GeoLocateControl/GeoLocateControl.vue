@@ -225,11 +225,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     <slot />
   </ModuleContainer>
 </template>
-<style>
-.mapboxgl-user-location-accuracy-circle {
-  background-color: #1da1f233;
-  border-radius: 100%;
-  height: 1px;
-  width: 1px;
-}
-</style>

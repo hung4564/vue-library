@@ -14,4 +14,3 @@ const props = defineProps<{
   item: MenuAction<IListViewUI>;
 }>();
 </script>
-<style lang=""></style>

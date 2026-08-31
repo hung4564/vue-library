@@ -1,6 +1,4 @@
 import { HTMLAttributes, ReactNode, useMemo } from 'react';
-import './MapCard.css';
-
 export interface MapCardProps extends HTMLAttributes<HTMLDivElement> {
   height?: string | number;
   width?: string | number;

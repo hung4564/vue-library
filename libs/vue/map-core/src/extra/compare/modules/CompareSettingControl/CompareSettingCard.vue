@@ -28,40 +28,29 @@ setLocaleDefault({
 const { setting, updateSetting } = useMapCompareSetting(mapId.value);
 </script>
 <template>
-  <div class="setting-field-container">
-    <!-- <div>
-      <InputCheckbox
-        :label="trans('map.setting-control.field.compare')"
-        v-model="setting.compare"
-      />
-    </div> -->
-    <div>
-      <InputCheckbox
-        :label="trans('map.setting-control.field.split')"
-        v-model="setting.split"
-        @change="updateSetting()"
-      />
-    </div>
-    <div>
-      <InputCheckbox
-        :label="trans('map.setting-control.field.vertical')"
-        v-model="setting.vertical"
-        @change="updateSetting()"
-      />
-    </div>
-    <div>
-      <InputCheckbox
-        :label="trans('map.setting-control.field.sync')"
-        v-model="setting.sync"
-        @change="updateSetting()"
-      />
+  <div class="map-compare-setting">
+    <div class="map-compare-setting__fields">
+      <div>
+        <InputCheckbox
+          :label="trans('map.setting-control.field.split')"
+          v-model="setting.split"
+          @change="updateSetting()"
+        />
+      </div>
+      <div>
+        <InputCheckbox
+          :label="trans('map.setting-control.field.vertical')"
+          v-model="setting.vertical"
+          @change="updateSetting()"
+        />
+      </div>
+      <div>
+        <InputCheckbox
+          :label="trans('map.setting-control.field.sync')"
+          v-model="setting.sync"
+          @change="updateSetting()"
+        />
+      </div>
     </div>
   </div>
 </template>
-<style scoped>
-.setting-field-container {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-}
-</style>

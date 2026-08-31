@@ -4,11 +4,22 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
   "dependencies": {
     "@hungpvq/map-core": ">=0.0.1",
     "mitt": "^3.0.1",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-log": ">=0.0.1",
-    "maplibre-gl": "^5.4.0"
+    "maplibre-gl": "^5.4.0",
+    "@mdi/js": "^7.4.47"
   }
 }

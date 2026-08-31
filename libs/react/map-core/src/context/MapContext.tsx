@@ -11,7 +11,7 @@ export interface MapContextValue {
   registerModuleOrder?: (key: string) => number;
 }
 
-const MapContext = createContext<MapContextValue | null>(null);
+export const MapContext = createContext<MapContextValue | null>(null);
 
 /**
  * Hook to access map context

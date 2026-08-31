@@ -5,15 +5,12 @@
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
   MapStoreManager,
+  registerMapAccessor,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
 import { ReactMapStoreAdapter } from './react-adapter';
-import {
-  setStoreManager,
-  createMapScopedStore,
-  type MapScopedKey,
-} from './store-utils';
+import { setStoreManager, type MapScopedKey } from './store-utils';
 export {
   getMapGlobalStore,
   useMapGlobalStore,
@@ -38,6 +35,7 @@ const storeManager = new MapStoreManager(storeAdapter);
 
 // Set store manager reference for store-utils
 setStoreManager(storeManager);
+registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
 
 /**
  * Get map store by ID

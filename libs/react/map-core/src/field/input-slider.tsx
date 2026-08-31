@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import './input-slider.css';
 
 export interface InputSliderProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

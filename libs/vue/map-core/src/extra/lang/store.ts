@@ -1,7 +1,5 @@
-import { logHelper } from '@hungpvq/map-core';
-import { merge } from 'lodash';
+import { logHelper, MAP_STORE_KEY, deepMergeLocale, createDefaultLangStore } from '@hungpvq/map-core';
 import { createMapScopedStore } from '../../store';
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {
@@ -9,22 +7,15 @@ import {
   MapTranslateFunction,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
+  type MapLocateStore,
 } from '@hungpvq/map-core';
 
-// MapLangStore type definition
-export type MapLangStore = {
-  locale: MapLangLocale;
-  localeDefault: MapLangLocale;
-  translate?: MapTranslateFunction;
-};
+export type MapLangStore = MapLocateStore;
 
 export const useMapLocaleStore = (mapId: string) =>
   createMapScopedStore<MapLangStore>(mapId, MAP_STORE_KEY.LANG, () => {
     logHelper(logger, mapId, 'store').debug('init');
-    return {
-      locale: {},
-      localeDefault: {},
-    };
+    return createDefaultLangStore();
   });
 
 export const useMapLocale = (mapId: string) => {
@@ -34,7 +25,7 @@ export const useMapLocale = (mapId: string) => {
     logHelper(logger, mapId, 'store').debug('setMapLang', locale);
 
     if (store) {
-      store.locale = merge({}, store.locale, locale);
+      store.locale = deepMergeLocale(store.locale, locale);
     }
     const emitter = useMapMittStore<MittTypeMapLang>(mapId);
     emitter?.emit(MittTypeMapLangEventKey.setLocale, locale);
@@ -42,7 +33,7 @@ export const useMapLocale = (mapId: string) => {
 
   function setMapLocaleDefault(locale: MapLangLocale) {
     if (store) {
-      store.localeDefault = merge({}, store.localeDefault, locale);
+      store.localeDefault = deepMergeLocale(store.localeDefault, locale);
     }
   }
 

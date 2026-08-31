@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="layer-item__icon-content">
     <SvgIcon
       size="14"
       type="mdi"
@@ -29,4 +29,3 @@ const path = {
   layer: mdiLayers,
 };
 </script>
-<style></style>

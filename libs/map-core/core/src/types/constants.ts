@@ -9,4 +9,7 @@ export const MAP_STORE_KEY = {
   MAP_COMPARE: 'map-compare',
   LANG: 'lang',
   CRS: 'crs',
+  PRINT: 'print',
+  REGISTRY: 'registry',
+  BASEMAP: 'basemap',
 } as const;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
+import '@hungpvq/map-core';
 import { useBreakpoints } from '@hungpvq/shared-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
@@ -31,9 +32,9 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'map-loaded', map: MapSimple): void;
-  (e: 'map-destroy', map: MapSimple): void;
-  (e: 'error', error: Error): void;
+  (_e: 'map-loaded', _map: MapSimple): void;
+  (_e: 'map-destroy', _map: MapSimple): void;
+  (_e: 'error', _error: Error): void;
 }>();
 
 const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);

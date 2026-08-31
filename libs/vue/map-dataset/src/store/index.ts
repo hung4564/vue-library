@@ -3,7 +3,7 @@ import type { IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
 import { logger } from '../logger';
-import { DatasetService } from '../services/dataset.service';
+import { DatasetService } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset' as const;
 

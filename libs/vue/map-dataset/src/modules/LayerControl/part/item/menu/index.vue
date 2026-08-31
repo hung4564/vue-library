@@ -30,4 +30,3 @@ const component = computed(() => {
   return MenuItem;
 });
 </script>
-<style lang=""></style>

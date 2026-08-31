@@ -1,6 +1,4 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
-import './MapButton.css';
-
 export interface MapButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   height?: number;
   width?: number;

@@ -26,7 +26,7 @@ setLocaleDefault({
     },
   },
 });
-const { isFullscreen, enter, exit, toggle } = useFullscreen(
+const { isFullscreen, toggle } = useFullscreen(
   props.type == 'body' ? document.querySelector('body') : getMapContainer(),
 );
 function getMapContainer(el?: HTMLElement | null): HTMLElement {

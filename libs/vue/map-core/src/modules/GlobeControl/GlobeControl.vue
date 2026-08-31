@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { type WithMapPropType } from '@hungpvq/map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';

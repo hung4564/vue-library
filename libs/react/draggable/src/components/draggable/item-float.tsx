@@ -11,8 +11,6 @@ import {
   useShow,
 } from '../../hook';
 import { MapButton } from '../parts/MapButton';
-import './item-float.css';
-
 export interface DraggableItemFloatProps {
   show?: boolean;
   expand?: boolean;

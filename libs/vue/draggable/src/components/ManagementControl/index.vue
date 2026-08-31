@@ -49,18 +49,3 @@ const { width, height, items, itemShows, sideBar } = useManagement(
     </div>
   </div>
 </template>
-<style scoped>
-.management-info-line {
-  display: flex;
-  gap: 8px;
-}
-.management-info-line label {
-  font-weight: bold;
-}
-.management-info-container {
-  display: flex;
-  padding: 4px;
-  gap: 4px;
-  flex-direction: column;
-}
-</style>

@@ -20,4 +20,11 @@ export * from './types';
 export * from './basemap';
 export * from './store';
 
+// Export extra modules
+export * from './legend';
+export * from './print';
+export * from './toolbar';
+export * from './mitt';
+export * from './registry';
+
 import './style/index.scss';

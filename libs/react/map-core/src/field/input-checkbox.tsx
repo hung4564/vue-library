@@ -1,7 +1,7 @@
 import React from 'react';
-import './input-checkbox.css';
 
-export interface InputCheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputCheckboxProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'checked'> {
   label?: string;
   disabled?: boolean;
   checked?: boolean;
@@ -18,7 +18,6 @@ export function InputCheckbox({
 }: InputCheckboxProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.checked);
-    props.onChange?.(e);
   };
 
   return (

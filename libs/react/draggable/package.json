@@ -26,6 +26,7 @@
     }
   },
   "peerDependencies": {
+    "@hungpvq/draggable": ">=0.0.1",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-store": ">=0.0.1",
     "@mdi/js": "^7.4.47",

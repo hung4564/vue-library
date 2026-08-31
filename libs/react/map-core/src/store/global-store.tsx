@@ -42,5 +42,5 @@ export function MapGlobalStoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 }

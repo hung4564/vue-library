@@ -18,7 +18,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
     type: props.type || 'body',
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { mapId, moduleContainerProps, order } = useMap(mergedProps);
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {

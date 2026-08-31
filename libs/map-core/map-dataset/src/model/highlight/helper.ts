@@ -127,7 +127,7 @@ export function ensureHighlightSource(
 // highlightLayers.ts
 export function ensureHighlightLayers(
   map: MapSimple,
-  layerIds: Record<string, string>,
+  layerIds: HighlightLayerIds,
   layersDefault: Record<string, Partial<LayerSpecification>>,
   dataset: WithDataHelper | undefined,
   sourceId: string,
@@ -164,11 +164,22 @@ export function ensureHighlightLayers(
 export type HighlightAnimState = {
   frameId: number | null;
   timeoutId: any;
+  radius?: number;
+  grow?: boolean;
+  dashOffset?: number;
+  blinkAlpha?: number;
+  blinkDir?: number;
   [key: string]: any;
+};
+
+export type HighlightLayerIds = {
+  point: string;
+  line: string;
+  polygon: string;
 };
 export function defaultAnimate(props: {
   map: MapSimple;
-  layerIds: Record<string, string>;
+  layerIds: HighlightLayerIds;
   state: HighlightAnimState;
 }) {
   const { map, layerIds, state } = props;
@@ -211,11 +222,11 @@ export function useHighlightAnimation<T = any>() {
   > = {};
   function startAnimation(
     map: MapSimple,
-    layerIds: Record<string, string>,
+    layerIds: HighlightLayerIds,
     durationMs = 5000,
     animateFn: (props: {
       map: MapSimple;
-      layerIds: Record<string, string>;
+      layerIds: HighlightLayerIds;
       state: HighlightAnimState & T;
     }) => void = defaultAnimate,
     initialState: Record<string, any> = {},
@@ -254,7 +265,7 @@ export function useHighlightAnimation<T = any>() {
 
   function stopAnimation(
     map: MapSimple,
-    layerIds: Record<string, string>,
+    layerIds: HighlightLayerIds,
     cancelled = true,
   ) {
     const id = (map as any).id || 'default';
@@ -280,7 +291,7 @@ export function useHighlightAnimation<T = any>() {
     dataset?: IDataset & WithDataHelper;
     map: MapSimple;
     feature?: GeoJSONFeature;
-    layerIds: Record<string, string>;
+    layerIds: HighlightLayerIds;
     layers: Record<string, Partial<LayerSpecification>>;
     filterCreator?: HighlightFilterCreator;
   }) {

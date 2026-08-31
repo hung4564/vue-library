@@ -57,9 +57,9 @@ export function withAutoLogger<T extends Record<string, any>>(obj: T): T {
     prop: string | symbol,
     args: any[],
   ) {
-    const ns = target.type ?? 'unknown';
+    const ns = target['type'] ?? 'unknown';
     wrappedLogger.setNamespace(`dataset:${ns}`, 1, true);
-    wrappedLogger.setNamespace(target.id ?? 'unknown-id', 2);
+    wrappedLogger.setNamespace(target['id'] ?? 'unknown-id', 2);
     const label = `${ns}.${String(prop)}`;
     const start = performance.now();
     wrappedLogger.groupCollapsed(`[${label}]`);

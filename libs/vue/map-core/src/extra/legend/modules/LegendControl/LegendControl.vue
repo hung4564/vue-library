@@ -114,20 +114,20 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         v-model:show="show"
         :title="trans('map.legend-control.title')"
       >
-        <div class="legend-control-container">
-          <div class="legend-control">
+        <div class="map-legend-control">
+          <div class="map-legend-control__list">
             <div
               v-for="(legendVNode, index) in legends"
               :key="index"
-              class="legend-control-item"
+              class="map-legend-control__item"
             >
-              <div class="legend-control-item__icon">
+              <div class="map-legend-control__icon">
                 <component :is="legendVNode.icon" />
               </div>
               <span>{{ legendVNode.name }}</span>
             </div>
           </div>
-          <div class="legend-action">
+          <div class="map-legend-control__action">
             <InputCheckbox
               :label="trans('map.legend-control.onlyRendered')"
               v-model="onlyRender"
@@ -139,46 +139,3 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     <slot />
   </ModuleContainer>
 </template>
-<style></style>
-
-<style scoped>
-.legend-control {
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1 1 auto;
-  overflow: auto;
-}
-.legend-control-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.legend-control-item__icon {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-}
-:deep(.legend-item-container) {
-  width: 17px;
-  height: 17px;
-}
-:deep(.legend-item) {
-  width: 17px;
-  height: 17px;
-}
-.legend-control-container {
-  padding: 8px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.legend-action {
-  flex: 0 0 auto;
-  padding: 8px;
-}
-</style>

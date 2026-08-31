@@ -95,19 +95,3 @@ function getShow(index: number) {
   return props.data.shows[index];
 }
 </script>
-<style>
-._active {
-  position: relative;
-}
-._active::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--v-primary-base, #1a73e8);
-  opacity: 0.5;
-  z-index: -1;
-}
-.toggle-buttons-container span {
-  font-size: 0.7rem;
-}
-</style>

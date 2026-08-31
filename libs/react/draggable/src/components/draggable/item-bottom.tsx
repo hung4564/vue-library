@@ -11,8 +11,6 @@ import {
   useShow,
 } from '../../hook';
 import { MapButton } from '../parts/MapButton';
-import './item-bottom.css';
-
 export interface DraggableItemBottomProps {
   show?: boolean;
   expand?: boolean;

@@ -1,0 +1,32 @@
+.aside-control__title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-list {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.v-list-item {
+  padding: 1rem 0.5rem !important;
+}
+
+.v-list-item > * {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.v-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.v-list-item:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}

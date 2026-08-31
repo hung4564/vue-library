@@ -169,7 +169,7 @@ export function createMultiMapboxLayerComponent(
               filter: [
                 '==',
                 ['get', 'id'],
-                geojsonData?.properties?.id || null,
+                geojsonData?.properties?.['id'] || null,
               ],
               paint: {
                 'line-color': '#004E98',
@@ -183,7 +183,7 @@ export function createMultiMapboxLayerComponent(
         map.setFilter(base.id + '-hightLight', [
           '==',
           ['get', 'id'],
-          geojsonData?.properties?.id || null,
+          geojsonData?.properties?.['id'] || null,
         ]);
       }
       map.moveLayer(base.id + '-hightLight');

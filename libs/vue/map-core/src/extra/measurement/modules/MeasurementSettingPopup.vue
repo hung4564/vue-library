@@ -7,7 +7,7 @@
         v-model:show="c_show"
         :title="trans('map.measurement.setting.title')"
       >
-        <div class="setting-container">
+        <div class="map-measurement-setting">
           <MeasurementSettingFields :fields="fields" />
           <FieldGeometry
             @update:modelValue="setValue"
@@ -30,6 +30,7 @@
 import {
   CoordinatesNumber,
   fitBounds,
+  IViewSettingField,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -39,7 +40,6 @@ import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
-import { IViewSettingField } from './types';
 const emit = defineEmits(['update:modelValue']);
 const props = withDefaults(
   defineProps<
@@ -82,11 +82,3 @@ function setValue(value: (CoordinatesNumber | [null, null])[]) {
   emit('update:modelValue', value);
 }
 </script>
-<style scoped>
-.setting-container {
-  padding: 8px;
-}
-.field-container {
-  padding: 12px;
-}
-</style>

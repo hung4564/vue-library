@@ -43,7 +43,7 @@ export class ReactMapStoreAdapter implements IMapStoreAdapter {
     mapId: string,
     level: 'debug' | 'info' | 'warn' | 'error',
     message: string,
-    data?: any,
+    data?: unknown,
   ) => {
     const loggerInstance = logHelper(logger, mapId, 'store');
     loggerInstance[level](message, data);

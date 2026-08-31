@@ -1,8 +1,10 @@
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
+import '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/react-draggable';
 import { MapOptions } from 'maplibre-gl';
-import React, { useMemo, useState } from 'react';
 import { MapContextProvider } from '../context/MapContext';
+import { ActionControl } from '../extra/event';
 import { useBreakpoints } from '../hooks/useBreakpoints';
 import { useMapInstance } from '../hooks/useMapInstance';
 
@@ -56,21 +58,16 @@ export function Map({
   const leftTopTo = useMemo(() => `top-left-${id}`, [id]);
 
   const isMobile = breakpoints.smallerOrEqual('tablet');
-  const [orderCounters, setOrderCounters] = useState<Record<string, number>>(
-    {},
-  );
+  const orderCountersRef = useRef<Record<string, number>>({});
+  const [loadedDrag, setLoadedDrag] = useState(false);
 
-  function registerModuleOrder(key: string): number {
-    setOrderCounters((prev) => {
-      const newCounters = { ...prev };
-      if (newCounters[key] === undefined) {
-        newCounters[key] = 0;
-      }
-      const order = newCounters[key]++;
-      return newCounters;
-    });
-    return orderCounters[key] ?? 0;
-  }
+  // Sync counter like Vue — must return the incremented value immediately
+  const registerModuleOrder = useCallback((key: string): number => {
+    if (orderCountersRef.current[key] === undefined) {
+      orderCountersRef.current[key] = 0;
+    }
+    return orderCountersRef.current[key]++;
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -78,7 +75,7 @@ export function Map({
       dragId: dragId || draggableTo,
       registerModuleOrder,
     }),
-    [id, dragId, draggableTo],
+    [id, dragId, draggableTo, registerModuleOrder],
   );
 
   if (!isSupport) {
@@ -110,15 +107,17 @@ export function Map({
               <div className="right-top-container" id={rightTopTo} />
               <div className="left-top-container" id={leftTopTo} />
               {loaded && (
-                <div className="drag-container">
-                  <DraggableContainer containerId={draggableTo} />
-                </div>
+                <DraggableContainer
+                  className="drag-container"
+                  containerId={draggableTo}
+                  onInit={() => setLoadedDrag(true)}
+                />
               )}
             </>
           )}
           {/* Render children after map is loaded */}
-          {loaded && children}
-          {/* ActionControl would go here - from extra, skip for now */}
+          {loaded && loadedDrag && children}
+          {loaded && loadedDrag && <ActionControl mapId={id} />}
         </div>
       </div>
     </MapContextProvider>

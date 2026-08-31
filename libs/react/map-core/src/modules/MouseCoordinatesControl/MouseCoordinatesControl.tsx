@@ -2,6 +2,7 @@ import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { debounce } from 'lodash';
+import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   useCoordinate,
@@ -10,6 +11,34 @@ import {
 } from '../../extra/crs';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+
+function getDecimalRoundNum(d: number) {
+  const multiplier = Math.pow(10, Math.ceil(-Math.log(d) / Math.LN10));
+  return Math.round(d * multiplier) / multiplier;
+}
+
+function getRoundNum(num: number) {
+  const pow10 = Math.pow(10, `${Math.floor(num)}`.length - 1);
+  let d = num / pow10;
+  d =
+    d >= 10
+      ? 10
+      : d >= 5
+        ? 5
+        : d >= 3
+          ? 3
+          : d >= 2
+            ? 2
+            : d >= 1
+              ? 1
+              : getDecimalRoundNum(d);
+  return pow10 * d;
+}
+
+function setScale(container: HTMLElement, maxDistance: number, unit: string) {
+  const distance = getRoundNum(maxDistance);
+  if (container) container.innerHTML = `${distance}&nbsp;${unit}`;
+}
 
 export interface MouseCoordinatesControlProps extends WithMapPropType {
   hideZoom?: boolean;
@@ -27,7 +56,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     hideScale: props.hideScale || false,
     hideCoordinates: props.hideCoordinates || false,
   };
-  const scaleRef = useRef<HTMLDivElement>(null);
+  const scaleRef = useRef<HTMLDivElement | null>(null);
   const [currentPoint, setCurrentPoint] = useState('');
   const [lngLat, setLngLat] = useState({ latitude: 0, longitude: 0 });
   const [currentZoom, setCurrentZoom] = useState(0);
@@ -44,18 +73,13 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
   >(null);
   const isDMSRef = useRef(isDMS);
   const lngLatRef = useRef(lngLat);
+  const hideScaleRef = useRef(mergedProps.hideScale);
+  hideScaleRef.current = mergedProps.hideScale;
+  isDMSRef.current = isDMS;
+  lngLatRef.current = lngLat;
 
-  // Update refs when state changes
-  useEffect(() => {
-    isDMSRef.current = isDMS;
-  }, [isDMS]);
-
-  useEffect(() => {
-    lngLatRef.current = lngLat;
-  }, [lngLat]);
-
-  function updateScale(map: MapSimple, container: HTMLElement) {
-    if (mergedProps.hideScale || !container) return;
+  const updateScale = useCallback((map: MapSimple, container: HTMLElement) => {
+    if (hideScaleRef.current || !container) return;
     const maxWidth = 100;
     const y = map.getContainer().clientHeight / 2;
     const left = map.unproject([0, y]);
@@ -66,40 +90,58 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     } else {
       setScale(container, maxMeters, 'm');
     }
-  }
+  }, []);
 
-  const onMouseMove = useCallback(
-    debounce((e: any) => {
-      const point = [e.lngLat.lng, e.lngLat.lat];
-      const newLngLat = { latitude: point[1], longitude: point[0] };
-      setLngLat(newLngLat);
-      // Format will be updated via useEffect when lngLat changes
-      if (formatCoordinateRef.current) {
-        const formatted = formatCoordinateRef.current(
-          newLngLat,
-          isDMSRef.current,
-        );
-        setCurrentPoint(formatted.longitude + ', &nbsp;' + formatted.latitude);
+  const syncScale = useCallback(
+    (map?: MapSimple) => {
+      const scaleEl = scaleRef.current;
+      if (!scaleEl || hideScaleRef.current) return;
+      if (map) {
+        updateScale(map, scaleEl);
+        return;
       }
-    }, 15),
+      callMapRef.current?.((m) => updateScale(m, scaleEl));
+    },
+    [updateScale],
+  );
+
+  /** Portal mounts the scale node after onInit — update as soon as the element exists. */
+  const setScaleEl = useCallback(
+    (el: HTMLDivElement | null) => {
+      scaleRef.current = el;
+      if (el) syncScale();
+    },
+    [syncScale],
+  );
+
+  const onMouseMove = useMemo(
+    () =>
+      debounce((e: MapMouseEvent) => {
+        const point = [e.lngLat.lng, e.lngLat.lat];
+        const newLngLat = { latitude: point[1], longitude: point[0] };
+        setLngLat(newLngLat);
+        if (formatCoordinateRef.current) {
+          const formatted = formatCoordinateRef.current(
+            newLngLat,
+            isDMSRef.current,
+          );
+          setCurrentPoint(
+            formatted.longitude + ', &nbsp;' + formatted.latitude,
+          );
+        }
+      }, 15),
     [],
   );
 
   const onZoomEnd = useCallback(() => {
-    if (callMapRef.current) {
-      callMapRef.current((map) => {
-        setCurrentZoom(+map.getZoom().toFixed(2));
-      });
-    }
+    callMapRef.current?.((map) => {
+      setCurrentZoom(+map.getZoom().toFixed(2));
+    });
   }, []);
 
   const onMapMove = useCallback(() => {
-    if (callMapRef.current) {
-      callMapRef.current((map) => {
-        updateScale(map, scaleRef.current!);
-      });
-    }
-  }, []);
+    syncScale();
+  }, [syncScale]);
 
   const onInit = useCallback(
     (map: MapSimple) => {
@@ -110,7 +152,6 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
       const center = map.getCenter();
       const centerLngLat = { latitude: center.lat, longitude: center.lng };
       setLngLat(centerLngLat);
-      // Format initial coordinates using ref
       if (formatCoordinateRef.current) {
         const point = formatCoordinateRef.current(
           centerLngLat,
@@ -118,12 +159,11 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
         );
         setCurrentPoint(point.longitude + ', &nbsp;' + point.latitude);
       }
-      // Use setTimeout to ensure DOM is ready for scale update
-      setTimeout(() => {
-        updateScale(map, scaleRef.current!);
-      }, 0);
+      syncScale(map);
+      // Portal may not have mounted yet; retry after paint like Vue nextTick.
+      requestAnimationFrame(() => syncScale(map));
     },
-    [onZoomEnd, onMouseMove, onMapMove],
+    [onZoomEnd, onMouseMove, onMapMove, syncScale],
   );
 
   const onDestroy = useCallback(
@@ -140,8 +180,8 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     onInit,
     onDestroy,
   );
+  callMapRef.current = callMap;
 
-  // Now we can use mapId for CRS hooks
   const { format: formatCoordinate } = useCoordinate(mapId);
   const { items: crsItems } = useMapCrsItems(mapId);
 
@@ -157,7 +197,6 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
 
   const crs = useMemo(() => item?.epsg, [item?.epsg]);
 
-  // Update formatCoordinateRef
   useEffect(() => {
     formatCoordinateRef.current = formatCoordinate;
   }, [formatCoordinate]);
@@ -172,51 +211,16 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     }
   }, []);
 
-  // Update ref when changePixelValue changes
   useEffect(() => {
     changePixelValueRef.current = changePixelValue;
   }, [changePixelValue]);
 
-  // Update current point when isDMS or lngLat changes
   useEffect(() => {
     changePixelValue();
   }, [isDMS, lngLat, changePixelValue]);
 
-  // Update callMapRef after useMap
-  useEffect(() => {
-    callMapRef.current = callMap;
-  }, [callMap]);
-
   function changeDisplayTypePixelValue() {
     setIsDMS((prev) => !prev);
-  }
-
-  function setScale(container: HTMLElement, maxDistance: number, unit: string) {
-    const distance = getRoundNum(maxDistance);
-    if (container) container.innerHTML = `${distance}&nbsp;${unit}`;
-  }
-
-  function getDecimalRoundNum(d: number) {
-    const multiplier = Math.pow(10, Math.ceil(-Math.log(d) / Math.LN10));
-    return Math.round(d * multiplier) / multiplier;
-  }
-
-  function getRoundNum(num: number) {
-    const pow10 = Math.pow(10, `${Math.floor(num)}`.length - 1);
-    let d = num / pow10;
-    d =
-      d >= 10
-        ? 10
-        : d >= 5
-          ? 5
-          : d >= 3
-            ? 3
-            : d >= 2
-              ? 2
-              : d >= 1
-                ? 1
-                : getDecimalRoundNum(d);
-    return pow10 * d;
   }
 
   return (
@@ -271,9 +275,9 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
                   value={crs || '4326'}
                   onChange={(e) => setItem(e.target.value)}
                 >
-                  {crsItems.map((item) => (
-                    <option key={item.epsg} value={item.epsg}>
-                      {item.name || item.epsg}
+                  {crsItems.map((crsItem) => (
+                    <option key={crsItem.epsg} value={crsItem.epsg}>
+                      {crsItem.name || crsItem.epsg}
                     </option>
                   ))}
                 </select>
@@ -282,7 +286,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
           )}
           {!mergedProps.hideScale && (
             <div className="mouse-coordinates-part scale-part">
-              <div ref={scaleRef} className="scale-custom"></div>
+              <div ref={setScaleEl} className="scale-custom"></div>
             </div>
           )}
         </div>

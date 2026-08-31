@@ -31,3 +31,35 @@ export type MapPrintStore = {
   save?: (cb?: (image: string) => Promise<void>) => void;
   saveAll?: (cb?: (image: string) => Promise<void>) => void;
 };
+
+export function createDefaultPrintStore(): MapPrintStore {
+  return {};
+}
+
+export function createPrintStoreApi(store: MapPrintStore) {
+  function initPrint({ show, close, save, saveAll }: MapPrintStore) {
+    store.show = show;
+    store.close = close;
+    store.save = save;
+    store.saveAll = saveAll;
+  }
+  function closePrint() {
+    store.close?.();
+  }
+  function showPrint(
+    options: PrintOption = {
+      ratio: 1,
+      orientation: 'portrait',
+      format: 'png',
+    },
+  ) {
+    store.show?.(options);
+  }
+  function savePrint(cb?: (image: string) => Promise<void>) {
+    store.save?.(cb);
+  }
+  function saveAllPrint(cb?: (image: string) => Promise<void>) {
+    store.saveAll?.(cb);
+  }
+  return { showPrint, closePrint, savePrint, saveAllPrint, initPrint };
+}

@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import './input-file.css';
 
 export interface InputFileProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
