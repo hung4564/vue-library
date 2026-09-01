@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
+import {
+  convertTabWithDefaultConfig,
+  DEFAULT_VALUE,
+  TABS,
+  type Tab,
+  type TabConfig,
+} from '@hungpvq/map-dataset';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
 import TabContent from '../component/tab-content.vue';
 import TabItem from '../component/tab-item.vue';
-import { DEFAULT_VALUE, TABS, convertTabWithDefaultConfig } from './type';
-import { Tab, TabConfig } from './type/style';
+import { CONFIG_TABS } from './type/default';
 const props = defineProps({
   trans: {
     required: true,
@@ -21,14 +27,14 @@ const tabs_format = computed<TabConfig[]>(() => {
   if (tab.type === 'multi') {
     return tab.tabs.map((x) => ({
       ...x,
-      items: convertTabWithDefaultConfig(x.items),
+        items: convertTabWithDefaultConfig(x.items, CONFIG_TABS),
     }));
   }
   return [
     {
       type: 'single',
       text: 'style',
-      items: convertTabWithDefaultConfig(tab.items),
+        items: convertTabWithDefaultConfig(tab.items, CONFIG_TABS),
     },
   ];
 });

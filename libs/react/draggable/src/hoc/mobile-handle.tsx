@@ -1,12 +1,12 @@
-import { ComponentProps, ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { useContainerId } from '../context/ContainerContext';
 import { useDragIsMobile, useStoreReactive } from '../store';
 
-export function WithMobileHandle<T extends ComponentType<any>>(
-  Component: T,
-  ComponentMobile: ComponentType<any>,
+export function WithMobileHandle<P, M>(
+  Component: ComponentType<P>,
+  ComponentMobile: ComponentType<M>,
 ) {
-  type Props = ComponentProps<T> & { containerId?: string };
+  type Props = P & M & { containerId?: string };
 
   return function WithMobileHandleComponent(props: Props) {
     const containerId = useContainerId(props.containerId);
@@ -14,7 +14,9 @@ export function WithMobileHandle<T extends ComponentType<any>>(
     useStoreReactive();
     const store = useDragIsMobile(containerId);
     const isMobile = store.getIsMobile();
-    const Active = (isMobile ? ComponentMobile : Component) as ComponentType<Props>;
+    const Active = (
+      isMobile ? ComponentMobile : Component
+    ) as ComponentType<Props>;
 
     return <Active {...props} />;
   };

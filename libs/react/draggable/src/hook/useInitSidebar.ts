@@ -1,5 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSidebarItem } from '../store';
 import { LocationSideBar } from '../types';
 
@@ -20,25 +20,27 @@ export function useInitSidebar(
     setZIndexState(value);
   }
 
-  function setShowValue(value: boolean) {
-    setShow(value);
-  }
-
   const store = useSidebarItem(containerId);
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  const optionDefaultRef = useRef(optionDefault);
+  optionDefaultRef.current = optionDefault;
+  const setShowRef = useRef(setShow);
+  setShowRef.current = setShow;
+
   useEffect(() => {
-    store.registerSideBar(itemId, optionDefault.location);
-    store.registerAction(itemId, {
-      ...optionDefault,
+    const currentStore = storeRef.current;
+    const options = optionDefaultRef.current;
+    currentStore.registerSideBar(itemId, options.location);
+    currentStore.registerAction(itemId, {
+      ...options,
       setZIndex,
-      setShow: setShowValue,
+      setShow: (value: boolean) => setShowRef.current(value),
     });
-    if (show) {
-      store.registerSideBarShow(itemId, show);
-    }
     return () => {
-      store.unRegisterSideBar(itemId);
+      currentStore.unRegisterSideBar(itemId);
     };
-  }, []);
+  }, [itemId]);
 
   useEffect(() => {
     // Match Vue: only push show→true into the store.
@@ -46,7 +48,7 @@ export function useInitSidebar(
     // selectSideBar(newId) sets store.show=newId then old item's show→false
     // would clear the newly selected sidebar.
     if (show) {
-      store.registerSideBarShow(itemId, show);
+      storeRef.current.registerSideBarShow(itemId, show);
     }
   }, [show, itemId]);
 

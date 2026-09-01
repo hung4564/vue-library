@@ -33,7 +33,7 @@ export function SidebarModule({
       containerId &&
       itemId &&
       location &&
-      itemId == getShowForLocation(location)
+      itemId === getShowForLocation(location)
     );
   }, [containerId, itemId, location, getShowForLocation]);
 

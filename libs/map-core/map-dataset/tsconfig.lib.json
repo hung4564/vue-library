@@ -4,7 +4,9 @@
     "outDir": "../../../dist/out-tsc",
     "declaration": true,
     "module": "esnext",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.json"]
 }

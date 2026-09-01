@@ -1,6 +1,8 @@
-import { ComponentType, CSSProperties, ReactNode, useMemo } from 'react';
+import { CSSProperties, ReactNode, useMemo } from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
+  ShareCardComponent,
+  ShareHeaderComponent,
   useComponent,
   useContainerOrder,
   useExpand,
@@ -16,8 +18,8 @@ export interface DraggableItemFloatProps {
   expand?: boolean;
   title?: string;
   containerId?: string;
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
   disabledExpand?: boolean;
   disabledHeader?: boolean;
   disabledClose?: boolean;
@@ -125,7 +127,7 @@ export function DraggableItemFloat({
     return { maxHeight: `${maxHeight}px` };
   }, [maxHeight]);
 
-  const isAutoWidth = !width || width == 'auto';
+  const isAutoWidth = !width || width === 'auto';
 
   if (!show) return null;
 

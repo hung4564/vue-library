@@ -1,6 +1,8 @@
-import { ComponentType, ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
+  ShareCardComponent,
+  ShareHeaderComponent,
   useComponent,
   useContainerOrder,
   useExpand,
@@ -16,8 +18,8 @@ export interface DraggableItemBottomProps {
   expand?: boolean;
   title?: string;
   containerId?: string;
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
   disabledExpand?: boolean;
   disabledHeader?: boolean;
   disabledClose?: boolean;

@@ -43,7 +43,6 @@ export default defineConfig(() => ({
         '@hungpvq/shared',
         '@hungpvq/shared-log',
         'maplibre-gl',
-        'lodash',
         '@mdi/js',
         '@mdi/react',
       ],

@@ -1,12 +1,30 @@
-import { Component, Ref, computed, defineComponent, h, inject, ref } from 'vue';
+import {
+  Component,
+  Ref,
+  computed,
+  defineComponent,
+  h,
+  inject,
+  ref,
+} from 'vue';
 import { useDragIsMobile } from '../store';
 
-export function WithMobileHandle<T = Component>(
+function getComponentName(component: Component): string {
+  if (typeof component === 'object' && component && 'name' in component) {
+    return String(component.name ?? '');
+  }
+  if (typeof component === 'function') {
+    return component.name || '';
+  }
+  return '';
+}
+
+export function WithMobileHandle<T extends Component>(
   Component: T,
-  ComponentMobile: any,
+  ComponentMobile: Component,
 ) {
   return defineComponent({
-    name: 'WithMobileHandle' + (Component as any).name,
+    name: 'WithMobileHandle' + getComponentName(Component),
     props: {
       containerId: String,
     },
@@ -22,13 +40,13 @@ export function WithMobileHandle<T = Component>(
     render() {
       if (this.isMobile) {
         return h(
-          ComponentMobile as any,
+          ComponentMobile,
           { ...this.$attrs, containerId: this.p_containerId },
           this.$slots,
         );
       }
       return h(
-        Component as any,
+        Component,
         { ...this.$attrs, containerId: this.p_containerId },
         this.$slots,
       );

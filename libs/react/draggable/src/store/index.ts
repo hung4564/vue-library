@@ -67,7 +67,7 @@ export const useSidebarItem = (containerId: string) => {
   function getStoreContainer(id: string) {
     const container = store.container[id];
     if (!container) {
-      throw 'Not found container for id ' + id;
+      throw new Error('Not found container for id ' + id);
     }
     return container;
   }
@@ -83,7 +83,7 @@ export const useSidebarItem = (containerId: string) => {
       p_store.actions[oldId].setShow(false);
       p_store.sideBar[location].show = undefined;
     } else if (show) {
-      if (oldId && itemId != oldId) p_store.actions[oldId].setShow(false);
+      if (oldId && itemId !== oldId) p_store.actions[oldId].setShow(false);
       p_store.sideBar[location].show = itemId;
       p_store.actions[itemId].setShow(true);
     }
@@ -136,7 +136,7 @@ export const useDragItem = (containerId: string) => {
   function getStoreContainer(id: string) {
     const container = store.container[id];
     if (!container) {
-      throw 'Not found container for id ' + id;
+      throw new Error('Not found container for id ' + id);
     }
     return container;
   }
@@ -187,7 +187,7 @@ export const useDragItem = (containerId: string) => {
     setToBack(sidebar_id: string) {
       if (!containerId || !sidebar_id) return;
       const p_store = getStoreContainer(containerId);
-      const index = p_store.show.findIndex((x) => x == sidebar_id);
+      const index = p_store.show.findIndex((x) => x === sidebar_id);
       if (index > 0) {
         p_store.show.splice(index, 1);
         p_store.show.unshift(sidebar_id);
@@ -197,7 +197,7 @@ export const useDragItem = (containerId: string) => {
     setToFront(sidebar_id: string) {
       if (!containerId || !sidebar_id) return;
       const p_store = getStoreContainer(containerId);
-      const index = p_store.show.findIndex((x) => x == sidebar_id);
+      const index = p_store.show.findIndex((x) => x === sidebar_id);
       if (index < p_store.show.length - 1) {
         p_store.show.splice(index, 1);
         p_store.show.push(sidebar_id);

@@ -17,7 +17,7 @@ export const FILL_CONFIG: LayerTypeConfig<FillLayerSpecification> = {
         trans: 'fill-style.setting.fill-pattern',
         key: 'fill-pattern',
         type: 'image',
-        format: (value: string) => {
+        format: (value: unknown) => {
           if (!value) {
             return undefined;
           }

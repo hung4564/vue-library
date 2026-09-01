@@ -1,14 +1,9 @@
-import {
-  ComponentType,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { useContainerId } from '../../context/ContainerContext';
 import {
+  ShareCardComponent,
+  ShareHeaderComponent,
   useComponent,
   useContainerOrder,
   useExpand,
@@ -46,8 +41,8 @@ export interface DraggableItemPopupProps {
   expand?: boolean;
   title?: string;
   containerId?: string;
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
   disabledExpand?: boolean;
   disabledHeader?: boolean;
   disabledClose?: boolean;
@@ -118,7 +113,6 @@ export function DraggableItemPopup({
   const { isLast, isFirst, isHasItems, onToBack, onToFront } =
     useContainerOrder(containerId, itemId);
   const [initDone, setInitDone] = useState(false);
-  const [isActive, setIsActive] = useState(false);
   const [p_height, setPHeight] = useState(propHeight || 200);
   const [old_height, setOldHeight] = useState(p_height);
   const [p_width, setPWidth] = useState(propWidth || 200);
@@ -177,7 +171,6 @@ export function DraggableItemPopup({
     (_e: unknown, data: { x: number; y: number }) => {
       setPX(data.x);
       setPY(data.y);
-      setIsActive(false);
     },
     [],
   );
@@ -194,7 +187,6 @@ export function DraggableItemPopup({
       setPHeight(elementRef.offsetHeight);
       setPX(position.x);
       setPY(position.y);
-      setIsActive(false);
     },
     [],
   );
@@ -281,8 +273,6 @@ export function DraggableItemPopup({
       onResize={handleResize}
       onResizeStop={handleResizeStop}
       onDrag={onDragging}
-      onDragStart={() => setIsActive(true)}
-      onResizeStart={() => setIsActive(true)}
       onDragStop={handleDragStop}
     >
       <Card width={p_width} height={p_height} highlight={isHighlight}>

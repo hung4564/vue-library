@@ -1,6 +1,13 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { debounce } from 'lodash';
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer } from '../../store';
 import { SidebarContainer } from './sidebar/sidebar-container';
@@ -10,7 +17,7 @@ type ResultShow = {
     leftCount: number;
     rightCount: number;
   };
-  [key: string]: any;
+  [key: string]: number | Record<string, number> | undefined;
 };
 
 export interface DraggableContainerProps {
@@ -28,7 +35,6 @@ export function DraggableContainer({
   children,
   onInit,
   onDestroy,
-  onChangeShow,
 }: DraggableContainerProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [containerId] = useState(
@@ -36,54 +42,58 @@ export function DraggableContainer({
   );
   const [initDone, setInitDone] = useState(false);
   const store = useDragContainer(containerId);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  const onInitRef = useRef(onInit);
+  onInitRef.current = onInit;
+  const onDestroyRef = useRef(onDestroy);
+  onDestroyRef.current = onDestroy;
 
   const onResize = useCallback(() => {
     const clientWidth = boxRef.current?.clientWidth || 0;
-    store.setParentProps({
+    storeRef.current.setParentProps({
       width: clientWidth,
       height: boxRef.current?.clientHeight || 0,
       isMobile: clientWidth < 600,
     });
-  }, [store]);
+  }, []);
 
-  const handleResize = useCallback(
-    debounce(() => {
-      onResize();
-    }, 200),
+  const handleResize = useMemo(
+    () =>
+      debounce(() => {
+        onResize();
+      }, 200),
     [onResize],
   );
 
   useEffect(() => {
-    store.initContainer();
+    const box = boxRef.current;
+    storeRef.current.initContainer();
     window.addEventListener('resize', onResize);
     onResize();
 
-    if (boxRef.current) {
-      resizeObserverRef.current = new ResizeObserver(() => {
+    let observer: ResizeObserver | null = null;
+    if (box) {
+      observer = new ResizeObserver(() => {
         handleResize();
       });
-      resizeObserverRef.current.observe(boxRef.current);
+      observer.observe(box);
     }
 
     setInitDone(true);
-    onInit?.(containerId);
+    onInitRef.current?.(containerId);
 
     return () => {
-      store.removeContainer();
+      storeRef.current.removeContainer();
       window.removeEventListener('resize', onResize);
-      onDestroy?.(containerId);
-      if (resizeObserverRef.current && boxRef.current) {
-        resizeObserverRef.current.unobserve(boxRef.current);
-        resizeObserverRef.current.disconnect();
+      onDestroyRef.current?.(containerId);
+      handleResize.cancel();
+      if (observer && box) {
+        observer.unobserve(box);
+        observer.disconnect();
       }
     };
-  }, []);
-
-  // Note: This effect should be triggered when items change
-  // For now, we'll rely on external triggers or polling
-  // In a production app, you might want to use a state management library
-  // or implement a subscription pattern
+  }, [containerId, handleResize, onResize]);
 
   return (
     <ContainerProvider containerId={containerId}>

@@ -1,6 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { useState, useEffect, useMemo } from 'react';
-import { useDragContainer, useDragItem, useDragStore } from '../store';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDragItem, useDragStore } from '../store';
 import { useStoreReactive } from '../store/useStoreReactive';
 import { InitOption } from '../types';
 import { checkIsFirst, checkIsLast } from '../utils/array';
@@ -20,29 +20,30 @@ export function useInitItem(
     setZIndexState(value);
   }
 
-  function setShowValue(value: boolean) {
-    setShow(value);
-  }
-
   const store = useDragItem(containerId);
-  useEffect(() => {
-    store.registerItem(itemId);
-    store.registerAction(itemId, {
-      ...optionDefault,
-      setZIndex,
-      setShow: setShowValue,
-    });
-    if (show) {
-      store.registerItemShow(itemId, show);
-    }
-    return () => {
-      store.unRegisterItem(itemId);
-    };
-  }, []);
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  const optionDefaultRef = useRef(optionDefault);
+  optionDefaultRef.current = optionDefault;
+  const setShowRef = useRef(setShow);
+  setShowRef.current = setShow;
 
   useEffect(() => {
-    store.registerItemShow(itemId, show);
-  }, [show]);
+    const currentStore = storeRef.current;
+    currentStore.registerItem(itemId);
+    currentStore.registerAction(itemId, {
+      ...optionDefaultRef.current,
+      setZIndex,
+      setShow: (value: boolean) => setShowRef.current(value),
+    });
+    return () => {
+      currentStore.unRegisterItem(itemId);
+    };
+  }, [itemId]);
+
+  useEffect(() => {
+    storeRef.current.registerItemShow(itemId, show);
+  }, [show, itemId]);
 
   return { itemId, zIndex };
 }

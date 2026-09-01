@@ -1,11 +1,15 @@
-import { computed } from 'vue';
+import { computed, type Component } from 'vue';
 
 import MapCard from '../components/parts/MapCard.vue';
 import MapHeader from '../components/parts/MapHeader.vue';
 import { useDragComponent } from '../store';
+
+export type ShareCardComponent = Component | string;
+export type ShareHeaderComponent = Component | string;
+
 export function useComponent(props: {
-  componentCard?: any;
-  componentCardHeader?: any;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
   containerId: string;
 }) {
   const store = useDragComponent();
@@ -25,6 +29,6 @@ export const withShareComponent = {
 };
 
 export type PropsShareComponent = {
-  componentCard?: any;
-  componentCardHeader?: any;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
 };

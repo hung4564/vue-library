@@ -24,7 +24,7 @@ export function BaseButton({
     .join(' ');
 
   return (
-    <button type="button" className={classes} {...props}>
+    <button type="button" className={classes} {...props} disabled={disabled}>
       {children}
     </button>
   );

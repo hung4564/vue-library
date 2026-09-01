@@ -12,23 +12,17 @@ type ResultShow = {
   [key: string]: any;
 };
 
-const emit = defineEmits({
-  init: (id: string) => {
-    return true;
-  },
-  destroy: (id: string) => {
-    return true;
-  },
-  changeShow: (options: { show: ResultShow; idsShow: string[] }) => {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  init: [id: string];
+  destroy: [id: string];
+  changeShow: [options: { show: ResultShow; idsShow: string[] }];
+}>();
 const box = ref<HTMLDivElement>();
 const { containerId } = defineProps<{ containerId?: string }>();
 const p_container_id = ref(containerId || `draggable-container-${getUUIDv4()}`);
 const init_done = ref(false);
 const store = useDragContainer(p_container_id.value);
-let resizeObserver: any;
+let resizeObserver: ResizeObserver | undefined;
 
 const handleResize = debounce(() => {
   nextTick(() => {

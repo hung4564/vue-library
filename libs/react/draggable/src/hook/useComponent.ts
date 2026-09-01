@@ -1,22 +1,28 @@
 import { ComponentType, useMemo } from 'react';
-import { MapCard } from '../components/parts/MapCard';
-import { MapHeader } from '../components/parts/MapHeader';
+import { MapCard, MapCardProps } from '../components/parts/MapCard';
+import { MapHeader, MapHeaderProps } from '../components/parts/MapHeader';
 import { useDragComponent } from '../store';
 
+export type ShareCardComponent = ComponentType<MapCardProps>;
+export type ShareHeaderComponent = ComponentType<MapHeaderProps>;
+
 export function useComponent(props: {
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
   containerId: string;
 }) {
   const store = useDragComponent();
+  const storeCard = store.getComponentCard() as ShareCardComponent | undefined;
+  const storeHeader = store.getComponentCardHeader() as
+    | ShareHeaderComponent
+    | undefined;
   const componentCard = useMemo(
-    () => store.getComponentCard() || props.componentCard || MapCard,
-    [props.componentCard],
+    () => storeCard || props.componentCard || MapCard,
+    [storeCard, props.componentCard],
   );
   const componentCardHeader = useMemo(
-    () =>
-      store.getComponentCardHeader() || props.componentCardHeader || MapHeader,
-    [props.componentCardHeader],
+    () => storeHeader || props.componentCardHeader || MapHeader,
+    [storeHeader, props.componentCardHeader],
   );
   return { componentCard, componentCardHeader };
 }
@@ -27,6 +33,6 @@ export const withShareComponent = {
 };
 
 export type PropsShareComponent = {
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
 };

@@ -9,6 +9,7 @@ import {
   MultiLegend,
 } from '../modules/Legend';
 import { StyleControl } from '../modules/StyleControl/StyleControl';
+import { MultiStyle } from '../modules/StyleControl/style/MultiStyle';
 
 export function createDatasetRegistryPlugin() {
   return {
@@ -27,6 +28,7 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent('layer-detail', LayerDetail);
       UniversalRegistry.registerComponent('dataset-detail', DatasetDetail);
       UniversalRegistry.registerComponent('style-control', StyleControl);
+      UniversalRegistry.registerComponent('style-multi-control', MultiStyle);
       UniversalRegistry.registerComponent(
         'layer-action-toggle-show',
         ToggleShow,

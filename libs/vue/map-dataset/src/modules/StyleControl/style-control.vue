@@ -17,28 +17,16 @@ import {
   IDataset,
   IMapboxLayerView,
   isMapboxLayerView,
+  STYLE_CONTROL_LOCALE,
 } from '@hungpvq/map-dataset';
 import { copyByJson } from '@hungpvq/shared';
-import enLang from './lang/style-control.json';
-import circleStyleLang from './lang/style/circle-style.json';
-import fillStyleLang from './lang/style/fill-style.json';
-import lineStyleLang from './lang/style/line-style.json';
-import rasterStyleLang from './lang/style/raster-style.json';
-import symbolStyleLang from './lang/style/symbol-style.json';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();
 const { mapId, callMap } = useMap();
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: { 'style-control': enLang },
-  'circle-style': circleStyleLang,
-  'line-style': lineStyleLang,
-  'fill-style': fillStyleLang,
-  'symbol-style': symbolStyleLang,
-  'raster-style': rasterStyleLang,
-});
+setLocaleDefault(STYLE_CONTROL_LOCALE);
 
 const [show, toggleShow] = useShow(false);
 const layer = ref<unknown>();

@@ -1,7 +1,14 @@
 import { ComponentType, ReactNode } from 'react';
 import { useContainerId } from '../../context/ContainerContext';
-import { useInitAction, useInitSidebar, useShow } from '../../hook';
+import {
+  ShareCardComponent,
+  ShareHeaderComponent,
+  useInitAction,
+  useInitSidebar,
+  useShow,
+} from '../../hook';
 import { LocationSideBar } from '../../types';
+import { MapSidebarToggleProps } from '../parts/MapSidebarToggle';
 import { SidebarModule } from './sidebar/sidebar-module';
 
 export interface DraggableItemSideBarProps {
@@ -11,9 +18,9 @@ export interface DraggableItemSideBarProps {
   /** Custom title node portaled into sidebar header (matches Vue #title slot) */
   titleNode?: ReactNode;
   containerId?: string;
-  componentCard?: ComponentType<any>;
-  componentCardHeader?: ComponentType<any>;
-  componentMapSidebarToggle?: ComponentType<any>;
+  componentCard?: ShareCardComponent;
+  componentCardHeader?: ShareHeaderComponent;
+  componentMapSidebarToggle?: ComponentType<MapSidebarToggleProps>;
   width?: number | string;
   right?: boolean;
   location?: LocationSideBar;
@@ -27,10 +34,6 @@ export function DraggableItemSideBar({
   title = '',
   titleNode,
   containerId: propContainerId,
-  componentCard,
-  componentCardHeader,
-  componentMapSidebarToggle,
-  width = 'auto',
   right = false,
   location: propLocation,
   onUpdateShow,

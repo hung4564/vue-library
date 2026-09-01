@@ -5,12 +5,12 @@ import {
   InputSelect,
   InputSlider,
   InputText,
-} from '@hungpvq/vue-map-core';
-import InputArrayIndex from '../field/InputArrayIndex.vue';
-import InputArrayXY from '../field/InputArrayXY.vue';
-import InputImage from '../field/InputImage.vue';
-import InputMultiple from '../field/InputMultiple.vue';
-import { divColor, textAfter, textFormat } from '../label';
+} from '@hungpvq/react-map-core';
+import { InputArrayIndex } from '../field/InputArrayIndex';
+import { InputArrayXY } from '../field/InputArrayXY';
+import { InputImage } from '../field/InputImage';
+import { InputMultiple } from '../field/InputMultiple';
+import { DivColor, TextAfter, TextFormat } from '../label';
 import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
@@ -51,7 +51,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   color: {
     component: {
       content: () => InputColorPicker,
-      label: () => divColor,
+      label: () => DivColor,
     },
     props: {
       content: {
@@ -71,7 +71,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   chose: {
     component: {
       content: () => InputChoose,
-      label: () => textFormat,
+      label: () => TextFormat,
     },
     props: {
       content: (tab: ChoseTab) => {
@@ -80,7 +80,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
       label: (tab: ChoseTab) => {
         return {
           format(value: string) {
-            return tab.menu.find((x) => x.value == value)?.text;
+            return tab.menu.find((x) => x.value === value)?.text;
           },
         };
       },
@@ -89,7 +89,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   opacity: {
     component: {
       content: () => InputSlider,
-      label: () => textFormat,
+      label: () => TextFormat,
     },
     props: {
       content: {
@@ -103,12 +103,12 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
         },
       },
     },
-    format: (value: any) => +value,
+    format: (value: unknown) => +(value as number),
   },
   minMax: {
     component: {
       content: () => InputSlider,
-      label: () => textFormat,
+      label: () => TextFormat,
     },
     props: {
       content: {
@@ -122,12 +122,12 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
         },
       },
     },
-    format: (value: any) => +value,
+    format: (value: unknown) => +(value as number),
   },
   unit: {
     component: {
       content: () => InputText,
-      label: () => textAfter,
+      label: () => TextAfter,
     },
     props: {
       content: {
@@ -135,7 +135,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
         min: 0,
       },
     },
-    format: (value: any) => +value,
+    format: (value: unknown) => +(value as number),
   },
   number: {
     component: {
@@ -147,7 +147,7 @@ export const CONFIG_TABS: Record<string, Partial<Tab>> = {
         min: 0,
       },
     },
-    format: (value: any) => +value,
+    format: (value: unknown) => +(value as number),
   },
   text: {
     component: {

@@ -1,19 +1,19 @@
-import type { IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
+import type { ComponentType, IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
 import {
   findSiblingOrNearestLeaf,
   isMapboxLayerView,
+  STYLE_CONTROL_LOCALE,
 } from '@hungpvq/map-dataset';
 import { copyByJson } from '@hungpvq/shared';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
-  InputText,
   ModuleContainer,
   RegistryItem,
   useLang,
   useMap,
   useShow,
 } from '@hungpvq/react-map-core';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function StyleControl({
   item,
@@ -24,13 +24,19 @@ export function StyleControl({
 }) {
   const { mapId, moduleContainerProps, callMap } = useMap();
   const { trans, setLocaleDefault } = useLang(mapId);
-  const [show, toggleShow] = useShow(true);
+  const [show, toggleShow] = useShow(false);
   const [layer, setLayer] = useState<unknown>();
   const [layerView, setLayerView] = useState<IMapboxLayerView | undefined>();
-  const [componentKey, setComponentKey] = useState('');
+  const [component, setComponent] = useState<ComponentType>({
+    componentKey: '',
+  });
+  const layerViewRef = useRef(layerView);
+  layerViewRef.current = layerView;
 
   useEffect(() => {
-    setLocaleDefault({ map: { 'style-control': { title: 'Style Control' } } });
+    setLocaleDefault(STYLE_CONTROL_LOCALE);
+    toggleShow(true);
+    setLayerView(undefined);
     updateValue();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, setLocaleDefault]);
@@ -42,54 +48,57 @@ export function StyleControl({
     );
     if (layerViewFound && isMapboxLayerView(layerViewFound)) {
       setLayerView(layerViewFound);
-      const component = layerViewFound.getComponentUpdate();
-      setComponentKey(component.componentKey);
+      setComponent(layerViewFound.getComponentUpdate());
       setLayer(copyByJson(layerViewFound.getData()));
     }
   }
 
   function onUpdateStyle(value: unknown) {
     callMap((map) => {
-      if (layerView) layerView.updateValue(map, value);
+      layerViewRef.current?.updateValue(map, value);
     });
     updateValue();
+  }
+
+  function handleClose() {
+    setLayerView(undefined);
+    setLayer(undefined);
+    onClose?.();
   }
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
+      draggable={(bind) =>
+        component.componentKey ? (
           <DraggableItemSideBar
-            show={show && !!componentKey}
+            {...bind}
+            right
+            show={show}
             onUpdateShow={(v) => {
               toggleShow(!!v);
-              if (!v) onClose?.();
+              if (!v) handleClose();
             }}
+            onClose={handleClose}
             title={trans('map.style-control.title')}
-            containerId={bind.containerId}
+            titleNode={
+              <span className="layer-control__title">
+                {trans('map.style-control.title')}
+              </span>
+            }
           >
             <div className="style-control">
               <RegistryItem
-                componentKey={componentKey}
+                componentKey={component.componentKey}
                 mapId={mapId}
                 value={layer}
                 trans={trans}
                 onUpdateStyle={onUpdateStyle}
               />
-              <InputText
-                label="Raw layer JSON"
-                value={JSON.stringify(layer, null, 2)}
-                onChange={(v) => {
-                  try {
-                    onUpdateStyle(JSON.parse(v));
-                  } catch {
-                    /* ignore invalid json while typing */
-                  }
-                }}
-              />
             </div>
           </DraggableItemSideBar>
-      )}
+        ) : null
+      }
     />
   );
 }

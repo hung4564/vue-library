@@ -1,10 +1,10 @@
 import type { LayerSpecification } from 'maplibre-gl';
 
-interface ITabCommon<L> {
+export interface ITabCommon<L> {
   trans?: string;
   text?: string;
   type: string;
-  format?: (value: any) => any;
+  format?: (value: unknown) => unknown;
   component?: {
     content?: () => unknown;
     label?: unknown;

@@ -17,7 +17,7 @@ export const LINE_CONFIG: LayerTypeConfig<LineLayerSpecification> = {
         trans: 'line-style.setting.pattern',
         key: 'line-pattern',
         type: 'image',
-        format: (value: string) => {
+        format: (value: unknown) => {
           if (!value) {
             return undefined;
           }
@@ -83,7 +83,7 @@ export const LINE_CONFIG: LayerTypeConfig<LineLayerSpecification> = {
         part: 'layout',
         unit: 'px',
         disabled: (layer) => {
-          return layer.layout?.['line-join'] != 'round';
+          return layer.layout?.['line-join'] !== 'round';
         },
       },
       {
