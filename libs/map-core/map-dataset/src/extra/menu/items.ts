@@ -263,6 +263,7 @@ export const LIST_VIEW_MENU_ID = {
   addToGroup: 'add-to-group',
   addToExistingGroup: 'add-to-existing-group',
   exportGeo: 'export-geo',
+  attributeTable: 'attribute-table',
 } as const;
 
 export const LIST_VIEW_MENU_COMPONENT_KEY = {

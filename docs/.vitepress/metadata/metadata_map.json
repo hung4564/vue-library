@@ -261,6 +261,12 @@
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset/export",
       "order": 5.42
+    },
+    {
+      "name": "Attribute table",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/attribute-table",
+      "order": 5.43
     }
   ]
 }

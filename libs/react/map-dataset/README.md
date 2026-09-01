@@ -2,7 +2,7 @@
 
 React UI for map datasets. Same core as Vue: [`@hungpvq/map-dataset`](../../map-core/map-dataset). Vue package: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset).
 
-**Docs (shared):** [Getting started](../../vue/map-dataset/docs/index.md) · [Components](../../vue/map-dataset/docs/module/) · [Menus](../../vue/map-dataset/docs/create-dataset/with-helper-menu.md)
+**Docs (shared):** [Getting started](../../vue/map-dataset/docs/index.md) · [Components](../../vue/map-dataset/docs/module/) · [Menus](../../vue/map-dataset/docs/create-dataset/with-helper-menu.md) · [Attribute table](../../vue/map-dataset/docs/create-dataset/attribute-table.md)
 
 ## Install
 
@@ -15,7 +15,7 @@ import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 ```
 
-Register built-in components once (legend, opacity, add-to-group, …):
+Register built-in components once (legend, opacity, add-to-group, export, attribute table, …):
 
 ```ts
 import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';

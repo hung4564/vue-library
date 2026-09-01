@@ -11,6 +11,7 @@ export {
   createMenuItemMoveDown,
   createMenuItemAddToGroup,
   createMenuItemExportGeo,
+  createMenuItemAttributeTable,
   createWithMenuHelper,
   isListViewReorderMenuHidden,
   createAddToGroupSubmenu,
@@ -21,4 +22,6 @@ export {
   resolveMenuContextSource,
   LIST_VIEW_MENU_ID,
   LIST_VIEW_MENU_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  isAttributeTableMenuHidden,
 } from '@hungpvq/map-dataset';

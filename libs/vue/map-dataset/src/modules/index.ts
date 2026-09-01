@@ -1,3 +1,4 @@
+export { default as AttributeTable } from './AttributeTable/AttributeTable.vue';
 export { default as ComponentManagementControl } from './ComponentManagementControl/ComponentManagementControl.vue';
 export { default as CreateControl } from './CreateControl/CreateControl.vue';
 export { default as DatasetControl } from './DatasetControl/DatasetControl.vue';

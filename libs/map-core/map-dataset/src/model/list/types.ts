@@ -24,6 +24,7 @@ export type IListViewUI = IDataset &
       disabled_move?: boolean;
       disabled_add_to_group?: boolean;
       disabled_export?: boolean;
+      disabled_attribute_table?: boolean;
       componentKey?: string;
       init_show_legend?: boolean;
       init_show_children?: boolean;

@@ -343,7 +343,8 @@
 .map-setting-control,
 .map-compare-setting,
 .map-print-advanced-setting,
-.map-measurement-setting {
+.map-measurement-setting,
+.map-info-control {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -576,4 +577,98 @@
   opacity: 0.3;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* ---------- Info control ---------- */
+.map-info-control {
+  padding: var(--map-padding-control);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  color: inherit;
+  background: transparent;
+  gap: var(--map-space-md, 8px);
+}
+
+.map-info-control__rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-info-control__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--map-space-md, 8px);
+  padding: var(--map-space-md, 8px) 0;
+  position: relative;
+  min-height: 32px;
+  border-bottom: thin solid hsla(0, 0%, 100%, 0.12);
+}
+
+.map-info-control__label {
+  flex: 0 0 88px;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.map-info-control__value {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  padding-right: 28px;
+}
+
+.map-info-control__copy {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  opacity: 0.8;
+}
+
+.map-info-control__row:hover .map-info-control__copy {
+  display: inline-flex;
+}
+
+.map-info-control__bbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-md, 8px);
+  padding-top: var(--map-space-md, 8px);
+}
+
+.map-info-control__draw {
+  width: 100%;
+  gap: var(--map-space-md, 8px);
+  padding: var(--map-space-md, 8px) var(--map-space-lg, 12px);
+  border: 1px solid var(--map-border-color, hsla(0, 0%, 100%, 0.24));
+  border-radius: 4px;
+  justify-content: center;
+}
+
+.map-info-control__draw svg {
+  color: var(--map-accent-color, #1a73e8);
+}
+
+.map-info-control__bbox-value {
+  padding: var(--map-space-md, 8px) var(--map-space-lg, 12px);
+  background: hsla(0, 0%, 100%, 0.08);
+  border-radius: 4px;
+  word-break: break-all;
+  min-height: 36px;
+}
+
+.map-info-control__bbox-actions {
+  display: flex;
+  gap: var(--map-space-md, 8px);
+}
+
+.map-info-control__action-btn {
+  padding: var(--map-space-xs, 4px) var(--map-space-md, 8px);
+  border: 1px solid var(--map-border-color, hsla(0, 0%, 100%, 0.24));
+  border-radius: 4px;
 }

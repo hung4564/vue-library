@@ -1,3 +1,4 @@
+export { AttributeTable } from './AttributeTable/AttributeTable';
 export { ComponentManagementControl } from './ComponentManagementControl/ComponentManagementControl';
 export { CreateControl } from './CreateControl/CreateControl';
 export { DatasetControl, DatasetDetail } from './DatasetControl/DatasetControl';

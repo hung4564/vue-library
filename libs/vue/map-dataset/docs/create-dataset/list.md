@@ -56,6 +56,7 @@ const list = createDatasetPartListViewUiComponentBuilder('My Layer')
 | `configDisabledMove()` | | Do not add Move up/down |
 | `configDisabledAddToGroup()` | | Do not add Add to group |
 | `configDisabledExport()` | | Do not add Export (GeoJSON / KML / CSV / Shapefile) |
+| `configDisabledAttributeTable()` | | Do not add Attribute table |
 | `configInitShowLegend()` | | Legend expanded |
 | `addMenu` / `addMenus` | see [Menus](./with-helper-menu.md) | Extra actions |
 
@@ -63,7 +64,7 @@ Each `configDisabled*(true)` is the default when called with no arg. Pass `false
 
 List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **Add to group** unless those flags are set. Sub-items (`list-item`) do not.
 
-**Export** is added on list and list-item when a GeoJSON source or data-management node is present. See [Export](./export.md).
+**Export** and **Attribute table** are added on list and list-item when a GeoJSON source or data-management node is present. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
 ## Sub-list and group list
 

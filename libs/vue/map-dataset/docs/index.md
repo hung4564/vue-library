@@ -45,7 +45,7 @@ import '@hungpvq/react-map-dataset/style.css';
 
 ## Setup
 
-Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, **Export**, style editor). Without this step those components do not render.
+Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, **Export**, **Attribute table**, style editor). Without this step those components do not render.
 
 ### Vue
 
@@ -80,6 +80,7 @@ createDatasetRegistryPlugin().install();
 - Custom context-menu UI via `setComponentMenuKey`
 - Identify, style editor, legends
 - **Export** GeoJSON layers as GeoJSON / KML / CSV / Shapefile
+- **Attribute table** for GeoJSON feature properties (click a row to zoom / highlight)
 
 ## Quick start (Vue)
 
@@ -198,3 +199,5 @@ Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatas
 - [Components](./module/) — LayerControl, Identify, Highlight, DatasetControl, props / events
 - [Menus](./create-dataset/with-helper-menu.md) — `createMenuBuilder`, `setHidden` / `setDisabled`, custom menu component
 - [Events](./create-dataset/with-helper-event.md) — `toggleShow` / `changeOpacity` on list nodes
+- [Attribute table](./create-dataset/attribute-table.md) — feature properties, click to zoom
+- [Export](./create-dataset/export.md) — GeoJSON / KML / CSV / Shapefile

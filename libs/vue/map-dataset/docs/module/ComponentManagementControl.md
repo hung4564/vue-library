@@ -1,6 +1,6 @@
 # Component Management Control
 
-Renders overlay UI that menus open with `addComponent` (style editor, layer detail, dataset detail, …). **Required** next to `LayerControl` / `IdentifyControl` / `DatasetControl` if those menus should show dialogs.
+Renders overlay UI that menus open with `addComponent` (style editor, layer detail, dataset detail, attribute table, …). **Required** next to `LayerControl` / `IdentifyControl` / `DatasetControl` if those menus should show dialogs.
 
 **Events:** none. Closing a dialog calls the store `removeComponent` internally.
 
@@ -40,4 +40,4 @@ import {
 <ComponentManagementControl />
 ```
 
-Needs `createDatasetRegistryPlugin()` so keys like `style-control`, `layer-detail`, `dataset-detail` resolve.
+Needs `createDatasetRegistryPlugin()` so keys like `style-control`, `layer-detail`, `dataset-detail`, `attribute-table` resolve.

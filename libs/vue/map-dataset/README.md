@@ -2,7 +2,7 @@
 
 Vue 3 UI for map datasets: layer list, groups, identify, legends, and menus. Logic lives in [`@hungpvq/map-dataset`](../../map-core/map-dataset). React counterpart: [`@hungpvq/react-map-dataset`](../../react/map-dataset).
 
-**Docs:** [Getting started](./docs/index.md) · [Components](./docs/module/) · [Menus](./docs/create-dataset/with-helper-menu.md) · [Events](./docs/create-dataset/with-helper-event.md) · [Export](./docs/create-dataset/export.md)
+**Docs:** [Getting started](./docs/index.md) · [Components](./docs/module/) · [Menus](./docs/create-dataset/with-helper-menu.md) · [Events](./docs/create-dataset/with-helper-event.md) · [Export](./docs/create-dataset/export.md) · [Attribute table](./docs/create-dataset/attribute-table.md)
 
 ## Install
 
@@ -65,6 +65,7 @@ function onMapLoaded(map: MapSimple) {
 - `IdentifyControl` / `IdentifyShowFirstControl` / `LayerHighlight`
 - `DatasetControl` / `ComponentManagementControl` (dialogs from menus)
 - **Export** GeoJSON as GeoJSON / KML / CSV / Shapefile
+- **Attribute table** for GeoJSON feature properties
 - Dataset builders (GeoJSON, raster, list UI, highlight, …)
 - Layer menus: extra / bottom / context menu
 - `setHidden` / `setDisabled` with `menuContext` (Pinia, props, …)

@@ -6,6 +6,7 @@ export * from './fillBound';
 export * from './filter';
 export * from './image';
 export * from './log';
+export * from './map-info';
 export * from './measurement';
 export * from './number';
 export * from './print';

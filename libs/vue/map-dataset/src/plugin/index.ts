@@ -1,10 +1,14 @@
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
+import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  LIST_VIEW_MENU_COMPONENT_KEY,
+} from '@hungpvq/map-dataset';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { LayerItemIcon } from '../extra';
 import AddToGroup from '../extra/component/add-to-group.vue';
 import ExportGeo from '../extra/component/export-geo.vue';
 import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShow from '../extra/component/toggle-show.vue';
+import AttributeTable from '../modules/AttributeTable/AttributeTable.vue';
 import DatasetDetail from '../modules/DatasetControl/DatasetDetail.vue';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import {
@@ -50,6 +54,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
         ExportGeo,
+      );
+      UniversalRegistry.registerComponent(
+        ATTRIBUTE_TABLE_COMPONENT_KEY,
+        AttributeTable,
       );
     },
   };

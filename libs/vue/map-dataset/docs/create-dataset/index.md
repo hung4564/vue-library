@@ -146,6 +146,7 @@ For each node type:
 - [data-management](./data-management) — CRUD helpers
 - [highlight](./highlight) — Highlight
 - [Export](./export) — GeoJSON / KML / CSV / Shapefile
+- [Attribute table](./attribute-table) — Feature properties table, click to zoom
 - [Menus](./with-helper-menu) — Locations, hidden/disabled, custom menu components
 - [Events](./with-helper-event) — `on` / `off` / `emit` on nodes
 - [Data helper](./with-helper-data) — `getData` / `setData`
