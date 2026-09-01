@@ -1,6 +1,6 @@
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
-import { AddToGroup, LayerItemIcon, SetOpacity, ToggleShow } from '../extra/component';
+import { AddToGroup, ExportGeo, LayerItemIcon, SetOpacity, ToggleShow } from '../extra/component';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
 import {
@@ -41,6 +41,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
         AddToGroup,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
+        ExportGeo,
       );
     },
   };

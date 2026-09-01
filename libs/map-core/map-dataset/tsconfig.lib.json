@@ -8,5 +8,5 @@
     "allowSyntheticDefaultImports": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.json"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.json"]
 }

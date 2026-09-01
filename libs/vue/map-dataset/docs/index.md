@@ -45,7 +45,7 @@ import '@hungpvq/react-map-dataset/style.css';
 
 ## Setup
 
-Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, style editor). Without this step those components do not render.
+Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, **Export**, style editor). Without this step those components do not render.
 
 ### Vue
 
@@ -79,6 +79,7 @@ createDatasetRegistryPlugin().install();
 - Menu **hidden** / **disabled** from layer data **or** external state (Pinia, React context)
 - Custom context-menu UI via `setComponentMenuKey`
 - Identify, style editor, legends
+- **Export** GeoJSON layers as GeoJSON / KML / CSV / Shapefile
 
 ## Quick start (Vue)
 

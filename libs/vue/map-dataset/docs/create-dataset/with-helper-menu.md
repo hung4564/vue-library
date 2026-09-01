@@ -330,6 +330,7 @@ import {
   createMenuItemMoveUp,
   createMenuItemMoveDown,
   createMenuItemAddToGroup,
+  createMenuItemExportGeo,
 } from '@hungpvq/vue-map-dataset';
 
 list.addMenus([
@@ -361,8 +362,11 @@ identify.addMenus([
 | `createMenuItemToBoundActionForItem()` | `menu` | Identify |
 | `createMenuItemMoveUp()` / `MoveDown()` | `menu` | List UI unless `configDisabledMove()` |
 | `createMenuItemAddToGroup()` | `menu` | List UI unless `configDisabledAddToGroup()` |
+| `createMenuItemExportGeo()` | `menu` | List UI unless `configDisabledExport()`; hidden if the layer is not GeoJSON |
 
 Move / add-to-group also hide when the list is `readonly` or LayerControl has `disabledMove` / `disabledCreateGroup`. Per-layer: `configDisabledMove()`, `configDisabledAddToGroup()`.
+
+Export submenu: GeoJSON, KML, CSV, Shapefile. See [Export](./export.md).
 
 ---
 

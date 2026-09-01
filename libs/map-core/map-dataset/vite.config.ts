@@ -40,7 +40,16 @@ export default defineConfig(() => ({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: [],
+      external: [
+        '@hungpvq/map-core',
+        '@hungpvq/shared',
+        '@hungpvq/shared-log',
+        'maplibre-gl',
+        '@mdi/js',
+        'mitt',
+        'tokml',
+        '@mapbox/shp-write',
+      ],
     },
   },
 }));

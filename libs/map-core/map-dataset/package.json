@@ -21,5 +21,13 @@
     "@hungpvq/shared-log": ">=0.0.1",
     "maplibre-gl": "^5.4.0",
     "@mdi/js": "^7.4.47"
+  },
+  "peerDependencies": {
+    "tokml": "^0.4.0",
+    "@mapbox/shp-write": "^0.4.3"
+  },
+  "peerDependenciesMeta": {
+    "tokml": { "optional": true },
+    "@mapbox/shp-write": { "optional": true }
   }
 }

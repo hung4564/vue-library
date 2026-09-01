@@ -21,5 +21,6 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 - [Create dataset](../create-dataset/)
 - [Menus](../create-dataset/with-helper-menu.md)
 - [Events](../create-dataset/with-helper-event.md)
+- [Export](../create-dataset/export.md)
 - [Quick dataset creation](../helper/QuickDatasetCreation.md)
 - [Traverse](../helper/traverse.md)

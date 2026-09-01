@@ -2,11 +2,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
-import {
-  useConvertToGeoJSON,
-  useDownloadFile,
-  useGeoConvertToFile,
-} from '@hungpvq/shared-file';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
@@ -28,10 +23,7 @@ import {
   createMenuBuilder,
   createMultiMapboxLayerComponent,
   createRootDataset,
-  findSiblingOrNearestLeaf,
-  IDataManagementView,
   IdentifyControl,
-  isDataManagementView,
   LayerControl,
   LayerSimpleMapboxBuild,
   useMapDataset,
@@ -43,7 +35,7 @@ import {
   MapDrawOption,
   useMapDraw,
 } from '@hungpvq/vue-map-draw';
-import { mdiDownload, mdiPencil } from '@mdi/js';
+import { mdiPencil } from '@mdi/js';
 import type { Feature } from 'geojson';
 import { ComponentPublicInstance, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
@@ -56,9 +48,6 @@ const popupRef = ref<
   }
 >();
 
-const { downloadFile } = useDownloadFile();
-const { convertList } = useConvertToGeoJSON();
-const { convert } = useGeoConvertToFile();
 const mapId = ref(getUUIDv4());
 function onMapLoaded(map: MapSimple) {
   const { addDataset } = useMapDataset(map.id);
@@ -207,7 +196,6 @@ function createDrawDraftListItemDataset(map: MapSimple) {
   });
   const dataset = createRootDataset('Draw draft');
   list.addMenus([
-    createMenuDownload(),
     createMenuDrawLayer({
       draft: { show: true },
       cleanAfterDone: true,
@@ -270,7 +258,6 @@ function createDrawDraftListItemDataset(map: MapSimple) {
 function createDrawListItemDataset() {
   const dataset = createRootDataset('Default');
   const list = createDatasetPartListViewUiComponentBuilder('Draw list item')
-    .addMenus([createMenuDownload()])
     .build();
   const source = createDatasetPartGeojsonSourceComponent(list.getName(), {
     type: 'FeatureCollection',
@@ -362,7 +349,6 @@ function createDrawListItemDataset() {
 function createDefaultListItemDataset() {
   const dataset = createRootDataset('Default');
   const list = createDatasetPartListViewUiComponentBuilder('Default list item')
-    .addMenus([createMenuDownload()])
     .build();
   const source = createDatasetPartGeojsonSourceComponent(list.getName(), {
     type: 'FeatureCollection',
@@ -416,7 +402,6 @@ function createDefaultListItemDataset() {
 function createDefaultListDataset() {
   const dataset = createRootDataset('Default');
   const list = createDatasetPartListViewUiComponentBuilder('Default list')
-    .addMenus([createMenuDownload()])
     .build();
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -553,7 +538,6 @@ function createDrawListDataset() {
   ]);
   const list = createDatasetPartListViewUiComponentBuilder('Draw list')
     .addMenus([
-      createMenuDownload(),
       createMenuDrawLayer({
         cleanAfterDone: true,
         drawSupports: [
@@ -727,7 +711,6 @@ function createDrawDraftListDataset(map: MapSimple) {
   const dataset = createRootDataset('Draw draft');
   const list = createDatasetPartListViewUiComponentBuilder('Draw draft list')
     .addMenus([
-      createMenuDownload(),
       createMenuDrawLayer({
         draft: { show: true },
         cleanAfterDone: true,
@@ -781,29 +764,6 @@ function createDrawDraftListDataset(map: MapSimple) {
   dataset.add(groupDraft);
   dataset.add(dataManagement);
   return dataset;
-}
-function createMenuDownload() {
-  return createMenuBuilder()
-    .item()
-    .setName('Download')
-    .setIcon(mdiDownload)
-    .setClick(async ({ layer }) => {
-      const maybeDataManagement = findSiblingOrNearestLeaf<IDataManagementView>(
-        layer,
-        isDataManagementView,
-      );
-      if (!maybeDataManagement) {
-        return;
-      }
-      const data = await convert(
-        convertList((await maybeDataManagement.list()) || []),
-        {
-          filename: 'download.geojson',
-        },
-      );
-      if (data) downloadFile(data, 'download.geojson');
-    })
-    .build();
 }
 function createMenuDrawLayer(config: MapDrawOption) {
   return createMenuBuilder()

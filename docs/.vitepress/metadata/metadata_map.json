@@ -255,6 +255,12 @@
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset/with-helper-event",
       "order": 5.41
+    },
+    {
+      "name": "Export",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/export",
+      "order": 5.42
     }
   ]
 }

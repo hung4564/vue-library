@@ -2,6 +2,7 @@ import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { LayerItemIcon } from '../extra';
 import AddToGroup from '../extra/component/add-to-group.vue';
+import ExportGeo from '../extra/component/export-geo.vue';
 import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShow from '../extra/component/toggle-show.vue';
 import DatasetDetail from '../modules/DatasetControl/DatasetDetail.vue';
@@ -45,6 +46,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
         AddToGroup,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
+        ExportGeo,
       );
     },
   };

@@ -262,10 +262,12 @@ export const LIST_VIEW_MENU_ID = {
   moveDown: 'move-down',
   addToGroup: 'add-to-group',
   addToExistingGroup: 'add-to-existing-group',
+  exportGeo: 'export-geo',
 } as const;
 
 export const LIST_VIEW_MENU_COMPONENT_KEY = {
   addToGroup: 'layer-action-add-to-group',
+  exportGeo: 'layer-action-export-geo',
 } as const;
 
 export type ListViewGroupOption = { id: string; name: string };

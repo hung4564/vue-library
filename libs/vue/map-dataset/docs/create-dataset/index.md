@@ -145,6 +145,7 @@ For each node type:
 - [identify](./identify) — Click identify
 - [data-management](./data-management) — CRUD helpers
 - [highlight](./highlight) — Highlight
+- [Export](./export) — GeoJSON / KML / CSV / Shapefile
 - [Menus](./with-helper-menu) — Locations, hidden/disabled, custom menu components
 - [Events](./with-helper-event) — `on` / `off` / `emit` on nodes
 - [Data helper](./with-helper-data) — `getData` / `setData`

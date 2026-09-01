@@ -10,6 +10,7 @@ export {
   createMenuItemMoveUp,
   createMenuItemMoveDown,
   createMenuItemAddToGroup,
+  createMenuItemExportGeo,
   createWithMenuHelper,
   isListViewReorderMenuHidden,
   createAddToGroupSubmenu,
