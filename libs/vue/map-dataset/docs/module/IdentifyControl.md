@@ -1,85 +1,61 @@
 # Identify Control
 
-## Usecase
-
-- Provide interactive feature identification tools for map layers.
-- Support both point click and bounding box selection for feature identification.
-- Display identified features with their properties and available actions.
-- Integrate with dataset management system for comprehensive feature analysis.
+Click or box-select features. Results use menus defined on the identify dataset node.
 
 ## Props
 
 <!--@include: ../../core/module/props.md-->
 
-and
-
-| Prop          | Description                              | Type      | Required | Default Value |
-| ------------- | ---------------------------------------- | --------- | -------- | ------------- |
-| `immediately` | Start identify mode immediately on mount | `boolean` | `false`  | `false`       |
+| Prop | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `show` | `boolean` | — | Open the results panel |
+| `immediately` | `boolean` | `false` | Start click-identify on mount |
 
 ## Slots
 
-This component does not expose custom slots.
+None.
 
 ## Events
 
-This component does not emit custom events. It integrates with the dataset management system through the store.
+None. Feature actions are identify-node menus. Mount [`ComponentManagementControl`](./ComponentManagementControl.md) so Show detail / Style can open.
 
-## Usage
+## Vue
 
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import { IdentifyControl } from '@hungpvq/vue-map-dataset';
+import {
+  IdentifyControl,
+  ComponentManagementControl,
+  LayerHighlight,
+} from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 </script>
 
 <template>
   <Map>
-    <IdentifyControl position="top-right" />
+    <IdentifyControl position="top-right" show />
+    <LayerHighlight enable-click />
+    <ComponentManagementControl />
   </Map>
 </template>
 ```
 
-### Immediate Identify Mode
+Immediate click mode:
 
 ```vue
-<template>
-  <Map>
-    <IdentifyControl position="top-right" :immediately="true" />
-  </Map>
-</template>
+<IdentifyControl position="top-right" immediately />
 ```
 
-### With Dataset Integration
+## React
 
-```vue
-<template>
-  <Map @map-loaded="onMapLoaded">
-    <IdentifyControl position="top-right" />
-  </Map>
-</template>
-
-<script setup lang="ts">
-import { Map } from '@hungpvq/vue-map-core';
-import { IdentifyControl, useMapDataset, createDataset } from '@hungpvq/vue-map-dataset';
-
-function onMapLoaded(map: any) {
-  const { addDataset } = useMapDataset(map.id);
-
-  // Add datasets with identify capabilities
-  const dataset = createDataset('Sample Dataset', null, true);
-  addDataset(dataset);
-}
-</script>
+```tsx
+<IdentifyControl position="top-right" show />
+<LayerHighlight enableClick />
+<ComponentManagementControl />
 ```
 
-## Features
+Immediate click mode: `<IdentifyControl position="top-right" immediately />`.
 
-- **Point Click Identification**: Click on the map to identify features at that location
-- **Bounding Box Selection**: Draw a rectangle to identify features within the area
-- **Feature Actions**: Each identified feature can have custom menu actions
-- **Loading States**: Visual feedback during feature identification
-- **Coordinate Display**: Shows the coordinates of the clicked point
-- **Multi-layer Support**: Identifies features across multiple layers simultaneously
+Identify menus are defined on the identify dataset node. See [Identify](../create-dataset/identify.md).

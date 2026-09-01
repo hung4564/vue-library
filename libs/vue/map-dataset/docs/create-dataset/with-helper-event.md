@@ -1,77 +1,53 @@
-# Event System in Dataset Components
+# Events
 
-## Overview
+Dataset nodes can emit typed events. List UI already has this helper; custom leaves can add it.
 
-The event system allows dataset components (including custom leaves) to emit and listen for custom events. This enables decoupled communication and flexible extension of dataset behavior.
+There are **no Vue `emit` / React callback props** on map controls for layer data. Subscribe on the **dataset node**.
 
-## Use Cases
+## List UI events
 
-- Reacting to user actions (e.g., selection, editing, custom menu clicks)
-- Integrating with UI components or external systems
-- Triggering side effects or workflows in response to dataset changes
-
-## API
-
-You can create an event system for your dataset component using `createWithEventHelper`. The returned object provides the following methods:
-
-- `emit(eventName, data)`: Emit an event with optional data
-- `on(eventName, handler)`: Listen for an event
-- `off(eventName, handler?)`: Remove a specific handler or all handlers for an event
-
-## Typing Events
-
-You can type your event system for better type safety. Import the event type definition from the relevant file (e.g., `EventIListViewUI` for list view events).
-
-```typescript
-import { createWithEventHelper } from '@hungpvq/vue-map-dataset';
-import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
-
-const event = createWithEventHelper<EventIListViewUI>();
+```ts
+type EventIListViewUI = {
+  toggleShow: { show: boolean; dataset: IListViewUI };
+  changeOpacity: { opacity: number; dataset: IListViewUI };
+};
 ```
 
-## Basic Usage Example
+```ts
+const list = createDatasetPartListViewUiComponentBuilder('Layer').build();
 
-```typescript
-const event = createWithEventHelper();
-
-event.on('customEvent', (data) => {
-  // Handle event
+list.on('toggleShow', ({ show, dataset }) => {
+  console.log(dataset.getName(), show);
 });
 
-event.emit('customEvent', { foo: 123 });
+list.on('changeOpacity', ({ opacity }) => {
+  console.log(opacity);
+});
 
-event.off('customEvent'); // Remove all handlers for 'customEvent'
+list.off('toggleShow', handler); // optional unsubscribe
 ```
 
-## Example: Using Events in a Custom Leaf
+`LayerControl` toggling visibility / opacity calls these internally.
 
-```typescript
+## Custom leaf
+
+```ts
 import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/vue-map-dataset';
-import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
 
-const event = createWithEventHelper<EventIListViewUI>();
+type MyEvents = { saved: { id: string } };
 
-const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf'),
+const event = createWithEventHelper<MyEvents>();
+
+const leaf = {
+  ...createDatasetLeaf('My leaf'),
   type: 'my-custom-type',
-  event,
+  ...event,
 };
 
-customLeaf.event.on('customEvent', (data) => {
-  // Handle custom event
-});
-
-customLeaf.event.emit('customEvent', { foo: 123 });
+leaf.on('saved', ({ id }) => console.log(id));
+leaf.emit('saved', { id: '1' });
 ```
 
-## Where to Find Event Type Definitions
+`addDatasetWithEvent(parent)` copies the same `on` / `off` / `emit` onto an existing node.
 
-- For built-in components, event type definitions are usually found in the `src/model/<component>/types.ts` files (e.g., `list-view/types.ts`).
-- For custom leaves, you can define your own event type interface.
-
-## Best Practices
-
-- Use clear and descriptive event names
-- Type your events for better safety and autocompletion
-- Remove event listeners when they are no longer needed to avoid memory leaks
-- Document custom events in your component's documentation
+See [Custom leaf](./custom-leaf.md).

@@ -1,28 +1,51 @@
-# Data Management Dataset Component
+# Data Management
 
-## Overview
+CRUD for dataset records. Prefer the local GeoJSON helper unless you need a custom adapter.
 
-The Data Management dataset component handles data retrieval, detail display, and CRUD (Create, Read, Update, Delete) operations for datasets.
+**Events:** none. Call `list` / `create` / `update` / `delete` / `getDetail` / `redraw` on the node.
 
-## Use Cases
+## Local GeoJSON (localStorage)
 
-- Fetching and displaying detailed data for features
-- Supporting add, edit, and delete operations
-- Integrating with external APIs or databases
+```ts
+import { createDatasetPartDataManagementGeojsonLocalComponent } from '@hungpvq/vue-map-dataset';
 
-## Basic Usage Example
+const dataManagement = createDatasetPartDataManagementGeojsonLocalComponent('records', {
+  key: 'my-layer-geojson', // localStorage key
+  initData: features,      // GeoJSON Feature[]
+});
 
-```typescript
-// Example: Fetch data and display details
-const dataManager = createDatasetDataManagementComponent('Data Manager');
+dataset.add(dataManagement);
 ```
 
-## API
+On `addToMap`, features are written to the sibling source (`type === 'source'`). `list({ point: [lng, lat] })` filters by intersection.
 
-- `createDatasetDataManagementComponent(name: string, options: object)`: Create a data management component with custom handlers
+## Custom adapter
 
-## Best Practices
+```ts
+createDatasetPartDataManagementComponent(name, {
+  source: 'geojson',
+  adapter: {
+    list: async () => [],
+    create: async (item) => item,
+    getDetail: async (item) => item,
+    update: async (item) => item,
+    delete: async () => undefined,
+  },
+  mapper?: IDataMapper,
+  hooks?: IDataManagerHook[],
+});
+```
 
-- Implement proper error handling for API calls
-- Validate data before performing CRUD operations
-- Keep UI responsive during data operations
+| Option | Role |
+| --- | --- |
+| `source` | Label (e.g. `'geojson'`) |
+| `adapter` | `list` / `create` / `getDetail` / `update` / `delete` |
+| `mapper` | Feature ↔ record |
+| `hooks` | `before*` / `after*` around those actions |
+
+Draft variants (edit then `commit` / `discard`):
+
+- `createDatasetPartDataManagementDraftComponent`
+- `createDatasetParDraftDataManagementGeojsonLocalComponent`
+
+Also: `createDatasetPartDataManagementListLocalComponent` for a plain list stored locally.

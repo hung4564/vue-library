@@ -1,40 +1,22 @@
-# data System in Dataset Components
+# Data helper
 
-## Overview
+In-memory payload on a node (`getData` / `setData`). Used by source, layer, and highlight factories.
 
-## Use Cases
+**Events:** none.
 
-## API
+```ts
+import { createWithDataHelper, createDatasetLeaf } from '@hungpvq/vue-map-dataset';
 
-You can create an event system for your dataset component using `createWithDataHelper`. The returned object provides the following methods:
+const data = createWithDataHelper({ count: 0 });
 
-- `getData()`
-- `setData(data)`
-
-## Basic Usage Example
-
-```typescript
-const data = createWithDataHelper();
-data.setData([1, 2, 3]);
-```
-
-## Example: Using Events in a Custom Leaf
-
-```typescript
-import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/vue-map-dataset';
-import type { EventIListViewUI } from '@hungpvq/vue-map-dataset/src/model/list-view/types';
-
-const data = createWithDataHelper<number>();
-
-const customLeaf = {
-  ...createDatasetLeaf('My Custom Leaf'),
-  type: 'my-custom-type',
-  data,
+const leaf = {
+  ...createDatasetLeaf('counter'),
+  type: 'counter',
+  ...data,
 };
 
-customLeaf.data.setData(1);
-
-const data = customLeaf.data.getData();
+leaf.getData(); // { count: 0 }
+leaf.setData({ count: 1 });
 ```
 
-## Best Practices
+GeoJSON source wraps this: `source.getData()` is the FeatureCollection; `source.updateData(map, next)` also updates the MapLibre source.

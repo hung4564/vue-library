@@ -137,14 +137,15 @@ listView.opacity = 0.8;
 
 ## More Information
 
-For detailed documentation on each dataset leaf type, see the following files in this folder:
+For each node type:
 
-- [list](./list) - List UI
-- [layer](./layer) - Layer
-- [source](./source) - Source
-- [identify](./identify) - Identify
-- [data-management]()./data-management) - Data Management
-- [highlight](./highlight) - Highlight
-- [Custom](./custom-leaf) - Custom
-
-Each file contains in-depth explanations, API references, and advanced usage examples for its respective dataset component.
+- [list](./list) — List UI, groups, default Move / Add to group, events
+- [layer](./layer) — Map layers
+- [source](./source) — GeoJSON / raster / vector
+- [identify](./identify) — Click identify
+- [data-management](./data-management) — CRUD helpers
+- [highlight](./highlight) — Highlight
+- [Menus](./with-helper-menu) — Locations, hidden/disabled, custom menu components
+- [Events](./with-helper-event) — `on` / `off` / `emit` on nodes
+- [Data helper](./with-helper-data) — `getData` / `setData`
+- [Custom leaf](./custom-leaf)

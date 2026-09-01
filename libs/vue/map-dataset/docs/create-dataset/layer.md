@@ -1,36 +1,46 @@
-# Layer Dataset Component
+# Layer
 
-## Overview
+MapLibre paint layers. Pair with a [source](./source.md) on the same parent.
 
-The Layer dataset component defines how map layers are added and managed. Layers can represent points, lines, polygons, or other visual elements on the map.
+**Events:** none (visibility / opacity go through the [list UI](./list.md)).
 
-## Use Cases
+## Factory
 
-- Displaying vector or raster data on the map
-- Styling map features (color, opacity, etc.)
-- Managing multiple layers for complex visualizations
-
-## Basic Usage: Single Layer
-
-```typescript
-import { createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
-
-const singleLayer = createMultiMapboxLayerComponent('single-layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build()]);
+```ts
+createMultiMapboxLayerComponent(name: string, layers?: BaseLayerSpec[])
 ```
 
-## Multiple Layers
+`BaseLayerSpec` is a MapLibre `LayerSpecification` without a required `id` (an id is assigned if missing).
 
-```typescript
-const multiLayer = createMultiMapboxLayerComponent('multi-layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(), new LayerSimpleMapboxBuild().setStyleType('line').setColor('#4ecdc4').build()]);
+```ts
+import {
+  createMultiMapboxLayerComponent,
+  LayerSimpleMapboxBuild,
+} from '@hungpvq/vue-map-dataset';
+
+const layer = createMultiMapboxLayerComponent('cities', [
+  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
+]);
+
+const multi = createMultiMapboxLayerComponent('mixed', [
+  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
+  new LayerSimpleMapboxBuild().setStyleType('line').setColor('#4ecdc4').build(),
+]);
 ```
 
-## API
+Or pass a raw spec:
 
-- `createMultiMapboxLayerComponent(name: string, layers: LayerBuild[])`: Create a layer component with one or more layers
-- `LayerSimpleMapboxBuild`: Builder for layer styles (type, color, etc.)
+```ts
+createMultiMapboxLayerComponent('fill', [
+  {
+    type: 'fill',
+    paint: { 'fill-color': '#4ecdc4', 'fill-opacity': 0.4 },
+  },
+]);
+```
 
-## Best Practices
+Methods on the node: `getAllLayerIds()`, `getLayers()`, `moveLayer(map, beforeId)`, `updateValue(map, value)`.
 
-- Use descriptive names for layers
-- Group related layers for better management
-- Use builders to standardize layer styles
+Style editor from the list ⋮ menu uses `getComponentUpdate()` → registry key `style-control`. Mount [`ComponentManagementControl`](../module/ComponentManagementControl.md) so that dialog can open.
+
+See [`LayerSimpleMapboxBuild`](../module/LayerSimpleMapboxBuild.md) for `point` / `line` / `area` / `symbol`.

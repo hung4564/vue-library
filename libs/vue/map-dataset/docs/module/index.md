@@ -1,13 +1,25 @@
-# 📚 Components
+# Components
 
-- [LayerControl](./LayerControl.md)
-- [LayerInfoControl](./LayerInfoControl.md)
-- [IdentifyControl](./IdentifyControl.md)
-- [IdentifyShowFirstControl](./IdentifyShowFirstControl.md)
+Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `controlVisible`).
 
-## 📚 Helper
+| Component | Role | Custom events |
+| --- | --- | --- |
+| [LayerControl](./LayerControl.md) | Editable layer list | none (list node: `toggleShow`, `changeOpacity`) |
+| [LayerInfoControl](./LayerInfoControl.md) | Read-only list | none |
+| [IdentifyControl](./IdentifyControl.md) | Click / box identify | none |
+| [IdentifyShowFirstControl](./IdentifyShowFirstControl.md) | Click → first identify menu | none |
+| [DatasetControl](./DatasetControl.md) | Root dataset list | none |
+| [ComponentManagementControl](./ComponentManagementControl.md) | Dialogs from menus (`addComponent`) | none |
+| [LayerHighlight](./LayerHighlight.md) | Click / hover highlight | none |
+| [CreateControl](./CreateControl.md) | Create-layer dialog | Vue `update:show` / React `onShowChange` |
 
+## Helpers
+
+- [Legend](./Legend.md) — `createLegend` / `createMultiLegend`
 - [LayerSimpleMapboxBuild](./LayerSimpleMapboxBuild.md)
-- [CreateDataset](../create-dataset/)
-- [QuickDatasetCreation](../helper/QuickDatasetCreation.md)
+- [useMapDataset](../helper/useMapDataset.md)
+- [Create dataset](../create-dataset/)
+- [Menus](../create-dataset/with-helper-menu.md)
+- [Events](../create-dataset/with-helper-event.md)
+- [Quick dataset creation](../helper/QuickDatasetCreation.md)
 - [Traverse](../helper/traverse.md)

@@ -1,7 +1,14 @@
-# map-dataset
+# @hungpvq/map-dataset
 
-This library was generated with [Nx](https://nx.dev).
+Framework-agnostic dataset model: tree of source / layer / list UI / identify nodes, menu builders, and map add/remove.
 
-## Building
+UI packages:
 
-Run `nx build map-dataset` to build the library.
+- Vue: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset)
+- React: [`@hungpvq/react-map-dataset`](../../react/map-dataset)
+
+**Docs:** [Getting started](../../vue/map-dataset/docs/index.md)
+
+```bash
+npm install @hungpvq/map-dataset @hungpvq/map-core
+```

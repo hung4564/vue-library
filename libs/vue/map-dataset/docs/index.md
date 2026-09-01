@@ -1,158 +1,199 @@
-# Map Dataset docs
+# Map Dataset
 
-> Vue.js library for managing and visualizing map data with high interactivity
+Library for creating, listing, styling, identifying, and grouping map layers. Vue and React packages share the same core (`@hungpvq/map-dataset`).
 
-## 🚀 Introduction
+- Vue: `@hungpvq/vue-map-dataset`
+- React: `@hungpvq/react-map-dataset`
 
-Map Dataset provides components and utilities to create, list, style, identify and manage map layers/datasets. It supports GeoJSON and raster sources, dynamic legends, identify tools, and layer grouping with drag-and-drop functionality.
+Demo: [Vue](https://hung4564.github.io/demo-map) · source in `apps/vue/demo-map` and `apps/react/demo-map`.
 
-## 📦 Installation
+## Installation
+
+### Vue
 
 ```bash
-npm install @hungpvq/vue-map-dataset
+npm install @hungpvq/vue-map-dataset @hungpvq/vue-map-core @hungpvq/map-dataset @hungpvq/map-core
+```
+
+Peer packages you also need (already used by typical map apps):
+
+```bash
+npm install maplibre-gl @mdi/js @jamescoyle/vue-icon @hungpvq/vue-draggable @hungpvq/vue-content-menu @hungpvq/shared @hungpvq/shared-store
+```
+
+### React
+
+```bash
+npm install @hungpvq/react-map-dataset @hungpvq/react-map-core @hungpvq/map-dataset @hungpvq/map-core
 ```
 
 ```bash
-yarn add @hungpvq/vue-map-dataset
+npm install maplibre-gl @mdi/js @mdi/react @hungpvq/react-draggable @hungpvq/shared
 ```
 
-## 🎯 Features
+Import styles once at the app root:
 
-- ✅ **Dataset and layer management** - Create, group, reorder, and delete layers dynamically
-- ✅ **Identify tools** - Click and box select with immediate show-first functionality
-- ✅ **Style editor** - Comprehensive styling for Mapbox layers
-- ✅ **Legends** - Linear gradient, single color, and single value legends
-- ✅ **Component manager** - Dynamic UI components for dataset management
-- ✅ **TypeScript support** - Full TypeScript support with comprehensive type definitions
-- ✅ **Vue 3 Composition API** - Modern Vue 3 Composition API integration
-- ✅ **Drag and drop** - Intuitive layer organization with drag-and-drop support
-
-## 🚀 Usage
-
-### Basic Layer Management
-
-```vue
-<template>
-  <Map @map-loaded="onMapLoaded">
-    <LayerControl position="top-left" show />
-  </Map>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { getUUIDv4 } from '@hungpvq/shared';
-import { Map } from '@hungpvq/vue-map-core';
-import { LayerControl, useMapDataset, createDataset, createDatasetPartGeojsonSourceComponent, createDatasetPartListViewUiComponent, createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+```ts
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
-
-const mapId = ref(getUUIDv4());
-
-function onMapLoaded(map: any) {
-  mapId.value = map.id;
-  const { addDataset } = useMapDataset(mapId.value);
-
-  // Create sample dataset
-  const dataset = createDataset('Sample Dataset', null, true);
-
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: { name: 'Sample Point' },
-        geometry: {
-          type: 'Point',
-          coordinates: [105.8342, 21.0285],
-        },
-      },
-    ],
-  });
-
-  const listView = createDatasetPartListViewUiComponent('Sample Layer');
-  listView.color = '#ff6b6b';
-
-  const layer = createMultiMapboxLayerComponent('sample-layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor(listView.color).build()]);
-
-  dataset.add(source);
-  dataset.add(listView);
-  dataset.add(layer);
-
-  addDataset(dataset);
-}
-</script>
 ```
 
-### Identify Controls
+```ts
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+```
+
+## Setup
+
+Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, style editor). Without this step those components do not render.
+
+### Vue
+
+```ts
+import { createApp } from 'vue';
+import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
+import { createDatasetRegistryPlugin } from '@hungpvq/vue-map-dataset';
+import App from './App.vue';
+
+const app = createApp(App);
+app.use(createStoreRegistryPlugin());
+app.use(createDatasetRegistryPlugin());
+app.mount('#app');
+```
+
+### React
+
+```ts
+import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
+
+createDatasetRegistryPlugin().install();
+```
+
+## Features
+
+- Dataset tree: source, layer, list UI, identify, highlight, data management
+- Layer list: show/hide, opacity, delete, drag-and-drop groups
+- Reorder in the list: **Move up** / **Move down**
+- **Add to group** from the layer context menu
+- Custom menus: extra / bottom / prebottom / context menu
+- Menu **hidden** / **disabled** from layer data **or** external state (Pinia, React context)
+- Custom context-menu UI via `setComponentMenuKey`
+- Identify, style editor, legends
+
+## Quick start (Vue)
 
 ```vue
 <template>
-  <Map @map-loaded="onMapLoaded">
-    <IdentifyControl position="top-right" />
-    <IdentifyShowFirstControl />
-  </Map>
-</template>
-
-<script setup lang="ts">
-import { Map } from '@hungpvq/vue-map-core';
-import { IdentifyControl, IdentifyShowFirstControl } from '@hungpvq/vue-map-dataset';
-import '@hungpvq/vue-map-core/style.css';
-import '@hungpvq/vue-map-dataset/style.css';
-
-function onMapLoaded(map: any) {
-  // Initialize datasets with identify capabilities
-}
-</script>
-```
-
-### Layer Information Display
-
-```vue
-<template>
-  <Map @map-loaded="onMapLoaded">
-    <LayerInfoControl position="bottom-right" />
-  </Map>
-</template>
-
-<script setup lang="ts">
-import { Map } from '@hungpvq/vue-map-core';
-import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
-import '@hungpvq/vue-map-core/style.css';
-import '@hungpvq/vue-map-dataset/style.css';
-</script>
-```
-
-### Complete Integration Example
-
-```vue
-<template>
-  <Map @map-loaded="onMapLoaded">
-    <!-- Core controls -->
-    <ZoomControl position="top-right" />
-    <HomeControl position="top-right" />
-
-    <!-- Dataset controls -->
+  <Map :mapId="mapId" @map-loaded="onMapLoaded">
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-
-    <LayerInfoControl position="bottom-right" />
     <IdentifyControl position="top-right" />
-    <IdentifyShowFirstControl />
+    <LayerHighlight enable-click />
+    <ComponentManagementControl />
   </Map>
 </template>
 
 <script setup lang="ts">
-import { Map, ZoomControl, HomeControl } from '@hungpvq/vue-map-core';
-import { LayerControl, LayerInfoControl, IdentifyControl, IdentifyShowFirstControl } from '@hungpvq/vue-map-dataset';
-import { BaseMapCard } from '@hungpvq/vue-map-core';
+import type { MapSimple } from '@hungpvq/map-core';
+import { getUUIDv4 } from '@hungpvq/shared';
+import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
+import {
+  LayerControl,
+  IdentifyControl,
+  LayerHighlight,
+  ComponentManagementControl,
+  useMapDataset,
+  createRootDataset,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartGeojsonSourceComponent,
+  createMultiMapboxLayerComponent,
+  LayerSimpleMapboxBuild,
+} from '@hungpvq/vue-map-dataset';
+import { ref } from 'vue';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 
-function onMapLoaded(map: any) {
-  // Initialize your datasets here
+const mapId = ref(getUUIDv4());
+
+function onMapLoaded(map: MapSimple) {
+  const { addDataset } = useMapDataset(map.id);
+
+  const dataset = createRootDataset('Sample');
+  const list = createDatasetPartListViewUiComponentBuilder('Hanoi')
+    .setColor('#ff6b6b')
+    .build();
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { name: 'Hanoi' },
+        geometry: { type: 'Point', coordinates: [105.8342, 21.0285] },
+      },
+    ],
+  });
+  const layer = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild().setStyleType('point').setColor(list.color).build(),
+  ]);
+
+  dataset.add(source);
+  dataset.add(list);
+  dataset.add(layer);
+  addDataset(dataset);
 }
 </script>
 ```
+
+## Quick start (React)
+
+```tsx
+import type { MapSimple } from '@hungpvq/map-core';
+import { Map, BaseMapCard } from '@hungpvq/react-map-core';
+import {
+  LayerControl,
+  IdentifyControl,
+  LayerHighlight,
+  ComponentManagementControl,
+  useMapDataset,
+  createRootDataset,
+  createDatasetPartListViewUiComponentBuilder,
+} from '@hungpvq/react-map-dataset';
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+
+function Page() {
+  function onMapLoaded(map: MapSimple) {
+    const { addDataset } = useMapDataset(map.id);
+    const dataset = createRootDataset('Sample');
+    dataset.add(
+      createDatasetPartListViewUiComponentBuilder('Layer').build(),
+    );
+    addDataset(dataset);
+  }
+
+  return (
+    <Map onMapLoaded={onMapLoaded}>
+      <LayerControl
+        position="top-left"
+        show
+        endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
+      />
+      <IdentifyControl position="top-right" />
+      <LayerHighlight enableClick />
+      <ComponentManagementControl />
+    </Map>
+  );
+}
+```
+
+Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatasetCreation.md).
+
+## Next
+
+- [Create a dataset](./create-dataset/) — tree, source, layer, list UI
+- [Components](./module/) — LayerControl, Identify, Highlight, DatasetControl, props / events
+- [Menus](./create-dataset/with-helper-menu.md) — `createMenuBuilder`, `setHidden` / `setDisabled`, custom menu component
+- [Events](./create-dataset/with-helper-event.md) — `toggleShow` / `changeOpacity` on list nodes

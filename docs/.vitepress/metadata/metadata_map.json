@@ -176,10 +176,85 @@
       "order": 5.2
     },
     {
+      "name": "LayerControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "LayerInfoControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerInfoControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "IdentifyControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/IdentifyControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "IdentifyShowFirstControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/IdentifyShowFirstControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "DatasetControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/DatasetControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "ComponentManagementControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/ComponentManagementControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "LayerHighlight",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerHighlight",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "CreateControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/CreateControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "Legend",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/Legend",
+      "category": "Helper",
+      "order": 5.22
+    },
+    {
       "name": "Create Dataset",
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset",
       "order": 5.3
+    },
+    {
+      "name": "Menus",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/with-helper-menu",
+      "order": 5.4
+    },
+    {
+      "name": "Events",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/with-helper-event",
+      "order": 5.41
     }
   ]
 }

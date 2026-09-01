@@ -1,32 +1,29 @@
 # Layer Info Control
 
-## Usecase
-
-- Provide a read-only layer information display for datasets and layers.
-- Show layer details without editing capabilities.
-- Display layer hierarchy and properties in a clean interface.
-- Integrate with basemap controls for comprehensive layer management.
+Read-only layer list (no create / delete / move). Same list data as `LayerControl`.
 
 ## Props
 
 <!--@include: ../../core/module/props.md-->
 
+| Prop | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `show` | `boolean` | — | Open the panel |
+
+**Events:** none.
+
 ## Slots
 
-| Name      | Description                | Props               |
-| --------- | -------------------------- | ------------------- |
-| `endList` | Content at the end of list | `{ mapId: string }` |
-| `default` | Default slot content       | -                   |
+| Name | Vue | React |
+| --- | --- | --- |
+| `endList` | slot `{ mapId }` | not exposed |
+| `default` | extra children | — |
 
-## Events
-
-This component does not emit custom events. It provides a read-only view of layer information.
-
-## Usage
+## Vue
 
 ```vue
 <script setup lang="ts">
-import { Map } from '@hungpvq/vue-map-core';
+import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
 import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
@@ -34,37 +31,17 @@ import '@hungpvq/vue-map-dataset/style.css';
 
 <template>
   <Map>
-    <LayerInfoControl position="bottom-right" />
-  </Map>
-</template>
-```
-
-### With Basemap Integration
-
-```vue
-<template>
-  <Map>
-    <LayerInfoControl position="bottom-right">
+    <LayerInfoControl position="bottom-right" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerInfoControl>
   </Map>
 </template>
-
-<script setup lang="ts">
-import { Map } from '@hungpvq/vue-map-core';
-import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
-import { BaseMapCard } from '@hungpvq/vue-map-core';
-</script>
 ```
 
-### Read-only Layer Display
+## React
 
-```vue
-<template>
-  <Map>
-    <LayerInfoControl position="bottom-right" :show="true" />
-  </Map>
-</template>
+```tsx
+<LayerInfoControl position="bottom-right" show />
 ```

@@ -1,121 +1,101 @@
-# List UI Dataset Component
+# List UI
 
-## Overview
+How a dataset appears in `LayerControl`. Prefer the builder.
 
-The List UI dataset component defines how a dataset appears in the layer control list and what user actions are available in the UI. It allows customization of display properties, menus, and events for user interaction.
+```ts
+import {
+  createDatasetPartListViewUiComponent,
+  createDatasetPartListViewUiComponentBuilder,
+  createMenuBuilder,
+  createMenuItemToggleShow,
+  createMultiLegend,
+} from '@hungpvq/vue-map-dataset';
+import { mdiDownload } from '@mdi/js';
 
-## Use Cases
+// Shortcut (defaults: opacity menu, move up/down, add to group)
+const simple = createDatasetPartListViewUiComponent('My Layer');
+simple.color = '#ff6b6b';
+simple.opacity = 0.8;
 
-- Displaying datasets in a sidebar or control panel
-- Allowing users to toggle visibility, adjust opacity, or access dataset-specific actions
-- Grouping datasets for better organization
-
-## Basic Usage
-
-```typescript
-import { createDatasetPartListViewUiComponent } from '@hungpvq/vue-map-dataset';
-
-const listView = createDatasetPartListViewUiComponent('My Layer');
-listView.color = '#ff6b6b';
-listView.opacity = 0.8;
+const list = createDatasetPartListViewUiComponentBuilder('My Layer')
+  .setColor('#4ecdc4')
+  .setOpacity(0.9)
+  .setIndex(1)
+  .setGroup({ id: 'g1', name: 'Group 1' })
+  .setLegend(
+    createMultiLegend([
+      { type: 'color', value: { text: 'Fill', value: '#4ecdc4' } },
+    ]),
+  )
+  .configInitShowLegend()
+  .addMenu(createMenuItemToggleShow())
+  .addMenus([
+    createMenuBuilder()
+      .item()
+      .setLocation('menu')
+      .setName('Download')
+      .setIcon(mdiDownload)
+      .setHidden(({ context }) => context?.role !== 'admin')
+      .setClick(({ layer }) => download(layer))
+      .build(),
+  ])
+  .build();
 ```
 
-## Builder Usage
+## Builder methods
 
-For advanced configuration, use the builder:
+| Method | Example | Effect |
+| --- | --- | --- |
+| `setColor` | `.setColor('#4ecdc4')` | Swatch / default paint |
+| `setOpacity` | `.setOpacity(0.8)` | Initial opacity |
+| `setIndex` | `.setIndex(2)` | Sort in the list |
+| `setGroup` | `.setGroup('g1')` or `{ id, name }` | Initial group |
+| `setLegend` | `.setLegend(createMultiLegend([...]))` | Legend block |
+| `configDisabledOpacity()` | | No opacity control / no auto opacity menu |
+| `configDisabledDelete()` | | Hide row delete |
+| `configDisabledMove()` | | Do not add Move up/down |
+| `configDisabledAddToGroup()` | | Do not add Add to group |
+| `configInitShowLegend()` | | Legend expanded |
+| `addMenu` / `addMenus` | see [Menus](./with-helper-menu.md) | Extra actions |
 
-```typescript
-const builder = createDatasetPartListViewUiComponentBuilder('My list');
-builder.setColor('#4ecdc4');
-builder.configDisabledOpacity();
-const list = builder.build();
+Each `configDisabled*(true)` is the default when called with no arg. Pass `false` to turn the flag off.
+
+List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **Add to group** unless those flags are set. Sub-items (`list-item`) do not.
+
+## Sub-list and group list
+
+```ts
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartSubListViewUiComponentBuilder,
+} from '@hungpvq/vue-map-dataset';
+
+const group = createDatasetPartGroupSubListViewUiComponentBuilder('Group')
+  .setColor('#00bfff')
+  .configInitShowChildren()
+  .build();
+
+const child = createDatasetPartSubListViewUiComponentBuilder('Child')
+  .setColor('#ffa500')
+  .build();
+
+group.add(child);
 ```
 
-### Builder Methods
+`createDatasetPartGroupSubListViewUiComponent` / `createDatasetPartSubListViewUiComponent` are the no-builder shortcuts.
 
-- `setColor(color: string)`: Set the color for the list item
-- `setOpacity(opacity: number)`: Set the opacity
-- `setGroup(group: string | { name: string; id: string })`: Assign to a group
-- `setLegend(legend: any)`: Set legend information
-- `configDisabledOpacity()`: Disable opacity adjustment
-- `configDisabledDelete()`: Disable delete action
-- `configInitShowLegend()`: Set default legend visibility
+## Events
 
-## Sub List and Group Sub List Builders
+The list node (not `LayerControl`) emits:
 
-For more complex list structures, you can use the following builders:
+| Event | Payload |
+| --- | --- |
+| `toggleShow` | `{ show: boolean, dataset }` |
+| `changeOpacity` | `{ opacity: number, dataset }` |
 
-### createDatasetPartSubListViewUiComponentBuilder
-
-This builder is used to create sub-list items, which are typically children of a group list.
-
-```typescript
-const subListBuilder = createDatasetPartSubListViewUiComponentBuilder('Sub List');
-subListBuilder.setColor('#ffa500');
-subListBuilder.setOpacity(0.7);
-const subList = subListBuilder.build();
+```ts
+list.on('toggleShow', ({ show }) => console.log(show));
+list.on('changeOpacity', ({ opacity }) => console.log(opacity));
 ```
 
-#### Sub List Builder Methods
-
-- Inherits all methods from `createDatasetPartListViewUiComponentBuilder` (setColor, setOpacity, setGroup, setLegend, etc.)
-
-### createDatasetPartGroupSubListViewUiComponentBuilder
-
-This builder is used to create group list items that can contain sub-lists or other group lists.
-
-```typescript
-const groupListBuilder = createDatasetPartGroupSubListViewUiComponentBuilder('Example Group List');
-groupListBuilder.setColor('#00bfff');
-groupListBuilder.configInitShowChildren(); // Show children by default
-const groupList = groupListBuilder.build();
-```
-
-#### Group Sub List Builder Methods
-
-- Inherits all methods from `createDatasetPartListViewUiComponentBuilder`
-- `configInitShowChildren()`: Set whether child lists are shown by default
-
-## Grouped List View Example
-
-```typescript
-import { createDatasetPartGroupSubListViewUiComponent, createDatasetPartSubListViewUiComponent } from '@hungpvq/vue-map-dataset';
-
-const groupList = createDatasetPartGroupSubListViewUiComponent('My Group');
-const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
-groupList.add(subList1);
-```
-
-## Menu Customization
-
-You can define custom menus for list items (see [menu](./with-helper-menu) for more details):
-
-```typescript
-list.addMenu(
-  createMenuItem({
-    type: 'item',
-    name: 'Download',
-    icon: mdiDownload,
-    click: async (layer, mapId) => {
-      // Custom action
-    },
-  }),
-);
-```
-
-## Event Handling
-
-List UI components can emit and listen to events (see the [event](./with-helper-event) for available events):
-
-```typescript
-list.emit('customEvent', data);
-list.on('customEvent', (data) => {
-  // Handle event
-});
-```
-
-## Best Practices
-
-- Use groups to organize large numbers of datasets
-- Customize menus for user-relevant actions
-- Use builder for advanced configuration
+See [Events](./with-helper-event.md). Legend helpers: [`createLegend` / `createMultiLegend`](../module/Legend.md).

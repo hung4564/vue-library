@@ -1,68 +1,77 @@
-# Source Dataset Component
+# Source
 
-## Overview
+Data source for MapLibre layers. Put the source node **before** the layer node on the same parent (or set `layer.dependsOn`).
 
-The Source dataset component defines data sources for map layers. Supported types include GeoJSON, raster tiles, and vector tiles.
+**Events:** none.
 
-## Use Cases
+## GeoJSON
 
-- Providing data for map layers
-- Integrating external or dynamic data sources
-- Supporting multiple data formats
-
-## GeoJSON Source Example
-
-```typescript
+```ts
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/vue-map-dataset';
 
-const source = createDatasetPartGeojsonSourceComponent('my-source', {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: { name: 'Feature 1' },
-      geometry: {
-        type: 'Point',
-        coordinates: [105.8342, 21.0285],
+const source = createDatasetPartGeojsonSourceComponent(
+  'my-source',
+  {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { id: 1, name: 'Hanoi' },
+        geometry: { type: 'Point', coordinates: [105.8342, 21.0285] },
       },
-    },
-  ],
-});
+    ],
+  },
+  { generateId: true }, // optional: promoteId | generateId
+);
 ```
 
-## Raster Source Example
+| Argument | Type | Role |
+| --- | --- | --- |
+| `name` | `string` | Source id on the map |
+| `data` | GeoJSON / URL | `GeoJSONSourceSpecification['data']` |
+| `options.promoteId` | `string` | Feature id from a property |
+| `options.generateId` | `boolean` | Let MapLibre generate ids |
 
-```typescript
+After add: `source.updateData(map, nextGeoJSON)` to replace features.
+
+## Raster tiles
+
+```ts
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/vue-map-dataset';
 
-const rasterSource = createDatasetPartRasterSourceComponent('raster-source', {
+const raster = createDatasetPartRasterSourceComponent('raster-source', {
   type: 'raster',
   tiles: ['https://example.com/tiles/{z}/{x}/{y}.png'],
   tileSize: 256,
+  minzoom: 0,
+  maxzoom: 18,
+  bounds: [102.144, 8.179, 109.464, 23.393],
 });
 ```
 
-## Vector Tile Source Example
+Second argument is a MapLibre `RasterSourceSpecification`.
 
-```typescript
+## Vector tiles
+
+```ts
 import { createDatasetPartVectorTileComponent } from '@hungpvq/vue-map-dataset';
 
-const vectorSource = createDatasetPartVectorTileComponent('vector-source', {
-  type: 'vector',
-  tiles: ['https://example.com/vector-tiles/{z}/{x}/{y}.pbf'],
+const vector = createDatasetPartVectorTileComponent('vector-source', {
+  tiles: ['https://example.com/tiles/{z}/{x}/{y}.pbf'],
   minzoom: 0,
   maxzoom: 14,
 });
 ```
 
-## API
+Second argument is a partial `VectorSourceSpecification` (`type: 'vector'` is set for you).
 
-- `createDatasetPartGeojsonSourceComponent(name: string, data: GeoJSON)`: Create a GeoJSON source
-- `createDatasetPartRasterSourceComponent(name: string, options: object)`: Create a raster source
-- `createDatasetPartVectorTileComponent(name: string, options: object)`: Create a vector tile source
+## With a layer
 
-## Best Practices
-
-- Use appropriate source types for your data
-- Optimize data for performance (e.g., tile sources for large datasets)
-- Keep source names unique and descriptive
+```ts
+const layer = createMultiMapboxLayerComponent('layer', [
+  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
+]);
+layer.addDependsOn(source);
+dataset.add(source);
+dataset.add(layer);
+```

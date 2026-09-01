@@ -20,7 +20,8 @@ VueLibrary is a monorepo containing Vue.js libraries designed to build interacti
 - **[@hungpvq/vue-map-draw](./libs/map/draw/)** - Drawing and editing tools
 - **[@hungpvq/vue-map-measurement](./libs/map/measurement/)** - Distance and area measurement tools
 - **[@hungpvq/vue-map-print](./libs/map/print/)** - Map printing functionality
-- **[@hungpvq/vue-map-dataset](./libs/map/dataset/)** - Dataset management and visualization
+- **[@hungpvq/vue-map-dataset](./libs/vue/map-dataset/)** - Dataset management and visualization
+- **[@hungpvq/react-map-dataset](./libs/react/map-dataset/)** - React dataset UI
 - **[@hungpvq/vue-map-legend](./libs/map/legend/)** - Legend components
 
 ### 🎯 UI Libraries
@@ -104,7 +105,6 @@ import '@hungpvq/vue-map-core/style.css';
 ```vue
 <template>
   <Map @map-loaded="onMapLoaded">
-    <DatasetControl position="top-left" show />
     <LayerControl position="top-left" show />
     <BaseMapControl position="bottom-left" />
     <DrawControl position="top-right" />
@@ -114,15 +114,15 @@ import '@hungpvq/vue-map-core/style.css';
 </template>
 
 <script setup>
-import { Map } from '@hungpvq/vue-map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-core';
+import { Map, BaseMapControl, MeasurementControl, PrintAdvancedControl } from '@hungpvq/vue-map-core';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { MeasurementControl } from '@hungpvq/vue-map-core';
-import { PrintAdvancedControl } from '@hungpvq/vue-map-core';
-import { DatasetControl, LayerControl } from '@hungpvq/vue-map-dataset';
+import { LayerControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
 </script>
 ```
+
+Dataset install and menus: [vue-map-dataset docs](./libs/vue/map-dataset/docs/index.md).
 
 ## 📚 Documentation
 
