@@ -290,6 +290,7 @@
 /* ===== ContextMenu (mobile overlay) ===== */
 .context-menu-container {
   pointer-events: all;
+  overflow: visible;
 }
 
 .context-menu-container:not(.context-menu-mobile) {

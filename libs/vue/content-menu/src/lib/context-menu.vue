@@ -1,18 +1,20 @@
 <template>
-  <div
-    class="menu-container"
-    ref="target"
-    v-show="isOpen"
-    :style="menuStyle"
-    :class="{ 'menu-mobile': isMobile }"
-  >
-    <div class="menu-content">
-      <slot />
+  <Teleport to="body">
+    <div
+      class="menu-container"
+      ref="target"
+      v-show="isOpen"
+      :style="menuStyle"
+      :class="{ 'menu-mobile': isMobile }"
+    >
+      <div class="menu-content">
+        <slot />
+      </div>
+      <div v-if="isOpen && isMobile" @click="close">
+        <button type="button" class="btn-close">Close</button>
+      </div>
     </div>
-    <div v-if="isOpen && isMobile" @click="close">
-      <button type="button" class="btn-close">Close</button>
-    </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -27,7 +29,7 @@ import {
 } from 'vue';
 
 const props = defineProps({
-  zIndex: { type: [String, Number], default: '9' },
+  zIndex: { type: [String, Number], default: 10000 },
 });
 
 const target = ref<HTMLDivElement>();
@@ -44,7 +46,6 @@ const breakpoints = useBreakpoints({
 });
 const isMobile = breakpoints.smallerOrEqual('tablet');
 
-// Auto-close on outside click
 onClickOutside(target, () => close());
 
 const menuStyle = computed<CSSProperties>(() => ({
@@ -77,7 +78,6 @@ function open(event: MouseEvent) {
     const menu = target.value;
     if (!menu) return;
 
-    // force measure if unset
     if (!menuWidth.value || !menuHeight.value) {
       menu.style.visibility = 'hidden';
       menu.style.display = 'block';
@@ -88,14 +88,16 @@ function open(event: MouseEvent) {
     }
 
     if (!isMobile.value) {
+      const x = event.clientX;
+      const y = event.clientY;
       const left =
-        event.pageX + menuWidth.value >= window.innerWidth
-          ? event.pageX - menuWidth.value + 10
-          : event.pageX - 10;
+        x + menuWidth.value >= window.innerWidth
+          ? x - menuWidth.value + 10
+          : x;
       const top =
-        event.pageY + menuHeight.value >= window.innerHeight
-          ? event.pageY - menuHeight.value + 10
-          : event.pageY - 10;
+        y + menuHeight.value >= window.innerHeight
+          ? y - menuHeight.value + 10
+          : y;
       stylePosition.value = {
         left: `${left}px`,
         top: `${top}px`,
@@ -121,6 +123,11 @@ defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
+.menu-container {
+  overflow: visible;
+  background: transparent;
+}
+
 .menu-mobile .menu-content {
   width: 100%;
   position: absolute;

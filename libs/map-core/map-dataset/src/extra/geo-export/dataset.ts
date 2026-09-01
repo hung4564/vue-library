@@ -64,22 +64,37 @@ export async function getDatasetFeatureCollection(
   return resolveGeojsonData(spec?.data);
 }
 
-export async function exportDatasetGeo(
-  layer: IDataset,
+export type ExportDatasetGeoOptions = {
+  filename?: string;
+  collection?: FeatureCollection;
+};
+
+export async function exportFeatureCollectionGeo(
+  collection: FeatureCollection,
   format: GeoExportFormat,
   options?: { filename?: string },
 ): Promise<void> {
-  const collection = await getDatasetFeatureCollection(layer);
-  if (!collection) {
-    logger.debug('No GeoJSON data to export', { layerId: layer.id, format });
-    return;
-  }
   const blob = await convertFeatureCollectionToFile(collection, format);
   const meta = GEO_EXPORT_FORMAT_META[format];
-  const base =
-    options?.filename ?? sanitizeExportFilename(layer.getName?.() || 'layer');
+  const base = sanitizeExportFilename(options?.filename || 'layer');
   const filename = base.toLowerCase().endsWith(`.${meta.extension}`)
     ? base
     : `${base}.${meta.extension}`;
   downloadBlob(blob, filename);
+}
+
+export async function exportDatasetGeo(
+  layer: IDataset,
+  format: GeoExportFormat,
+  options?: ExportDatasetGeoOptions,
+): Promise<void> {
+  const collection =
+    options?.collection ?? (await getDatasetFeatureCollection(layer));
+  if (!collection) {
+    logger.debug('No GeoJSON data to export', { layerId: layer.id, format });
+    return;
+  }
+  await exportFeatureCollectionGeo(collection, format, {
+    filename: options?.filename ?? (layer.getName?.() || 'layer'),
+  });
 }

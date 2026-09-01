@@ -7,6 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
+
 export interface ContextMenuRef {
   open: (e: React.MouseEvent | MouseEvent) => void;
   close: () => void;
@@ -18,7 +20,7 @@ export interface ContextMenuProps {
 }
 
 export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
-  function ContextMenu({ zIndex = '9', children }, ref) {
+  function ContextMenu({ zIndex = 10000, children }, ref) {
     const targetRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [stylePosition, setStylePosition] = useState<React.CSSProperties>({});
@@ -74,10 +76,10 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
 
       const w = menu.offsetWidth || 150;
       const h = menu.offsetHeight || 100;
-      const pageX = ev?.clientX ?? 0;
-      const pageY = ev?.clientY ?? 0;
-      const left = pageX + w >= window.innerWidth ? pageX - w + 10 : pageX - 10;
-      const top = pageY + h >= window.innerHeight ? pageY - h + 10 : pageY - 10;
+      const x = ev?.clientX ?? 0;
+      const y = ev?.clientY ?? 0;
+      const left = x + w >= window.innerWidth ? x - w + 10 : x;
+      const top = y + h >= window.innerHeight ? y - h + 10 : y;
       setStylePosition({ left: `${left}px`, top: `${top}px` });
     }, [isOpen, isMobile]);
 
@@ -99,9 +101,9 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
       [isMobile, close],
     );
 
-    if (!isOpen) return null;
+    if (!isOpen || typeof document === 'undefined') return null;
 
-    return (
+    return createPortal(
       <div
         ref={targetRef}
         className={`context-menu-container ${isMobile ? 'context-menu-mobile' : ''}`}
@@ -123,7 +125,8 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
             Close
           </button>
         )}
-      </div>
+      </div>,
+      document.body,
     );
   },
 );

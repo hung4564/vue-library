@@ -50,9 +50,10 @@ import { exportDatasetGeo, getDatasetFeatureCollection } from '@hungpvq/vue-map-
 const fc = await getDatasetFeatureCollection(list);
 await exportDatasetGeo(list, 'kml');
 await exportDatasetGeo(list, 'shapefile', { filename: 'cities' });
+await exportDatasetGeo(list, 'csv', { collection: fc, filename: 'cities' });
 ```
 
-**Events:** none. The browser download starts after convert.
+Pass `collection` to export a FeatureCollection you already have (the attribute table Export does this for the visible rows). The list ⋮ **Export** item and the table toolbar share `createExportGeoSubmenu` → `exportDatasetGeo`.
 
 ## Vue / React
 

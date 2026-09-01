@@ -73,6 +73,7 @@ function onChildClick(action: MenuAction, event: MouseEvent) {
     mapId: props.mapId,
     value: props.data,
   });
+  open.value = false;
   emit('close');
 }
 </script>

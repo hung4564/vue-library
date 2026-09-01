@@ -11,15 +11,21 @@ import {
 } from '../menu/builder';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { hasGeojsonExportData } from '../geo-export/dataset';
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from './model';
+import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  type AttributeTableColumnsOption,
+} from './model';
 
 export type AttributeTableMenuOptions = Partial<
   Omit<MenuItemBottomOrExtra<IDataset>, 'click' | 'location'>
->;
+> & {
+  columns?: AttributeTableColumnsOption;
+};
 
 export function createMenuItemAttributeTable(
   menu: AttributeTableMenuOptions = {},
 ) {
+  const { columns, ...rest } = menu;
   return createMenuBuilder()
     .item()
     .setLocation('menu')
@@ -32,7 +38,7 @@ export function createMenuItemAttributeTable(
         .addTupleDynamic('addComponent', ({ layer, mapId }) => ({
           value: createMenuClickAddComponentBuilder()
             .setComponentKey(ATTRIBUTE_TABLE_COMPONENT_KEY)
-            .setAttr({ layer, mapId })
+            .setAttr({ layer, mapId, columns })
             .setCheck(`${ATTRIBUTE_TABLE_COMPONENT_KEY}:${layer.id}`)
             .build(),
         }))
@@ -40,7 +46,7 @@ export function createMenuItemAttributeTable(
     )
     .setAdditional({
       order: 24,
-      ...menu,
+      ...rest,
     })
     .build();
 }

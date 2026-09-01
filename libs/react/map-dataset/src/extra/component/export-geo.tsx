@@ -25,6 +25,7 @@ export function ExportGeo(props: WithLayerItemMenuComponentType) {
       value: props.data,
     });
     props.onClose?.();
+    setOpen(false);
   }
 
   return (

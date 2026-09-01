@@ -1,4 +1,5 @@
 import { mdiDownload } from '@mdi/js';
+import type { FeatureCollection } from 'geojson';
 import type {
   IDataset,
   MenuAction,
@@ -18,9 +19,18 @@ import {
   type GeoExportFormat,
 } from './types';
 
+export type ExportGeoGetCollection = (
+  layer: IDataset,
+) =>
+  | FeatureCollection
+  | null
+  | undefined
+  | Promise<FeatureCollection | null | undefined>;
+
 export type ExportGeoMenuOptions = {
   formats?: GeoExportFormat[];
   filename?: string | ((layer: IDataset) => string);
+  getCollection?: ExportGeoGetCollection;
   id?: string;
   name?: string;
   icon?: string;
@@ -31,7 +41,10 @@ export type ExportGeoMenuOptions = {
 };
 
 export function createExportGeoSubmenu(
-  options: Pick<ExportGeoMenuOptions, 'formats' | 'filename'> = {},
+  options: Pick<
+    ExportGeoMenuOptions,
+    'formats' | 'filename' | 'getCollection'
+  > = {},
 ): MenuAction[] {
   const formats = options.formats?.length
     ? options.formats
@@ -49,6 +62,12 @@ export function createExportGeoSubmenu(
             ? options.filename(layer)
             : options.filename;
         try {
+          if (options.getCollection) {
+            const collection = await options.getCollection(layer);
+            if (!collection) return;
+            await exportDatasetGeo(layer, format, { filename, collection });
+            return;
+          }
           await exportDatasetGeo(layer, format, { filename });
         } catch (error) {
           console.error('[export-geo]', error);
@@ -59,7 +78,7 @@ export function createExportGeoSubmenu(
 }
 
 export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
-  const { formats, filename, ...rest } = menu;
+  const { formats, filename, getCollection, ...rest } = menu;
   return createMenuBuilder()
     .item()
     .setLocation('menu')
@@ -72,6 +91,7 @@ export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
       order: 23,
       formats,
       filename,
+      getCollection,
       ...rest,
     })
     .build();
@@ -79,11 +99,12 @@ export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
 
 export function getExportGeoMenuOptions(
   menu: MenuAction,
-): Pick<ExportGeoMenuOptions, 'formats' | 'filename'> {
+): Pick<ExportGeoMenuOptions, 'formats' | 'filename' | 'getCollection'> {
   const extra = menu as MenuAction & ExportGeoMenuOptions;
   return {
     formats: extra['formats'],
     filename: extra['filename'],
+    getCollection: extra['getCollection'],
   };
 }
 

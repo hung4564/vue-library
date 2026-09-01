@@ -309,6 +309,11 @@
   margin: 0;
 }
 
+.layer-context-menu::before,
+.layer-context-menu::after {
+  content: none;
+}
+
 .layer-context-menu__item {
   display: flex;
   position: relative;
@@ -381,6 +386,21 @@
 .layer-context-menu__item.is-open > .layer-context-menu--submenu,
 .layer-context-menu__item:focus-within > .layer-context-menu--submenu {
   display: block;
+}
+
+.layer-context-menu__item--submenu-bottom > .layer-context-menu--submenu {
+  left: 0;
+  top: 100%;
+  margin-top: 2px;
+}
+
+.layer-context-menu.layer-context-menu--submenu-portal {
+  display: block;
+  position: fixed;
+  left: auto;
+  top: auto;
+  z-index: 10000;
+  min-width: 150px;
 }
 
 .layer-context-menu li.layer-context-menu__item.layer-context-menu__divider {
