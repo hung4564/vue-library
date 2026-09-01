@@ -3,14 +3,16 @@ import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
   handleMenuAction,
   hasMoveLayer,
+  listListViewGroups,
   traverseTree,
 } from '@hungpvq/map-dataset';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import { BaseButton, useMap } from '@hungpvq/react-map-core';
-import { mdiCircleSmall, mdiDelete, mdiGroup } from '@mdi/js';
+import { mdiDelete, mdiGroup } from '@mdi/js';
 import Icon from '@mdi/react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useMapDataset } from '../../store';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { ButtonToggleShowAll } from './ButtonToggleShowAll';
 import {
   DraggableGroupList,
@@ -18,9 +20,9 @@ import {
 } from './DraggableList/DraggableGroupList';
 import type { GroupTree, LayerListItem } from './DraggableList/utils';
 import { LayerItem } from './layer-item';
+import { LayerContextMenuList } from './layer-context-menu-list';
 
 const HEADER_ICON = '16px';
-const MENU_ICON = '16px';
 
 export function LayerList({
   mapId,
@@ -29,6 +31,7 @@ export function LayerList({
   disabledCreateGroup,
   disabledDeleteAll,
   disabledDrag,
+  disabledMove,
 }: {
   mapId: string;
   readonly?: boolean;
@@ -36,6 +39,7 @@ export function LayerList({
   disabledCreateGroup?: boolean;
   disabledDeleteAll?: boolean;
   disabledDrag?: boolean;
+  disabledMove?: boolean;
 }) {
   const { callMap } = useMap({ mapId });
   const { getAllComponentsByType, removeComponent, datasetVersion } =
@@ -130,8 +134,16 @@ export function LayerList({
     item: IListViewUI;
     actions: MenuAction<IListViewUI>[];
   }) {
-    setMenuContext({ items: actions ? [...actions] : [], view: item });
+    setMenuContext({
+      items: actions ? [...actions] : [],
+      view: item,
+    });
     contextMenuRef.current?.open(event);
+  }
+
+  function getMenuGroups() {
+    const treeGroups = groupRef.current?.getGroups() ?? [];
+    return treeGroups.length > 0 ? treeGroups : listListViewGroups(views);
   }
 
   function closeContextMenu() {
@@ -140,7 +152,14 @@ export function LayerList({
   }
 
   return (
-    <div className="layer-control-container">
+    <MenuConditionProvider
+      value={{
+        readonly: !!readonly,
+        disabledMove: !!disabledMove,
+        disabledCreateGroup: !!disabledCreateGroup,
+      }}
+    >
+      <div className="layer-control-container">
       <div className="layer-control__header">
         {title}
         <div className="v-spacer" />
@@ -170,6 +189,8 @@ export function LayerList({
               item={item}
               mapId={mapId}
               readonly={readonly}
+              disabledMove={disabledMove}
+              disabledCreateGroup={disabledCreateGroup}
               onTitleClick={toggleSelect}
               onRemove={(layer) => {
                 removeComponent(layer);
@@ -182,52 +203,25 @@ export function LayerList({
         />
       </div>
       <ContextMenu ref={contextMenuRef}>
-        <ul className="layer-context-menu">
-          {menuContext.items.map((option, index) => (
-            <li
-              key={index}
-              className={[
-                'layer-context-menu__item',
-                option.type === 'divider' ? 'layer-context-menu__divider' : '',
-                option.class || '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (option.type !== 'divider' && menuContext.view) {
-                  onLayerAction({
-                    action: option,
-                    item: menuContext.view,
-                    event: e,
-                  });
-                }
-                closeContextMenu();
-              }}
-            >
-              {option.type === 'divider' ? (
-                <div className="layer-context-menu__divider-line" />
-              ) : 'componentKey' in option && option.componentKey ? null : (
-                <>
-                  <div className="layer-context-menu__item-icon">
-                    <Icon
-                      path={
-                        ('icon' in option && option.icon) || mdiCircleSmall
-                      }
-                      size={MENU_ICON}
-                    />
-                  </div>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: ('name' in option && option.name) || '',
-                    }}
-                  />
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+        <LayerContextMenuList
+          items={menuContext.items}
+          view={menuContext.view}
+          mapId={mapId}
+          getGroups={getMenuGroups}
+          onClose={closeContextMenu}
+          onSelect={({ action, event }) => {
+            if (menuContext.view) {
+              onLayerAction({
+                action,
+                item: menuContext.view,
+                event,
+              });
+            }
+            closeContextMenu();
+          }}
+        />
       </ContextMenu>
     </div>
+    </MenuConditionProvider>
   );
 }

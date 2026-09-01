@@ -21,6 +21,8 @@ export type IListViewUI = IDataset &
     config: {
       disabled_delete?: boolean;
       disabled_opacity?: boolean;
+      disabled_move?: boolean;
+      disabled_add_to_group?: boolean;
       componentKey?: string;
       init_show_legend?: boolean;
       init_show_children?: boolean;

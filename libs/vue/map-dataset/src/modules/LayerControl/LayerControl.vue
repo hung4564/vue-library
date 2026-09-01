@@ -6,6 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
+import type { MenuContextSource } from '@hungpvq/map-dataset';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -27,6 +28,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { watch } from 'vue';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
@@ -38,6 +40,8 @@ const props = withDefaults(
         disabledCreate?: boolean;
         disabledCreateGroup?: boolean;
         disabledDeleteAll?: boolean;
+        disabledMove?: boolean;
+        menuContext?: MenuContextSource;
       }
   >(),
   {
@@ -45,8 +49,10 @@ const props = withDefaults(
     disabledCreate: false,
     disabledCreateGroup: false,
     disabledDeleteAll: false,
+    disabledMove: false,
   },
 );
+provideMenuConditionContext(() => props.menuContext);
 defineSlots<{
   titleList: (props: { mapId: string }) => any;
   endList: (props: { mapId: string }) => any;
@@ -144,6 +150,7 @@ watch(show, () => control.sync());
             :mapId="mapId"
             :disabledCreateGroup="disabledCreateGroup"
             :disabledDeleteAll="disabledDeleteAll"
+            :disabledMove="disabledMove"
           >
             <template #title>
               <slot name="titleList" :mapId="mapId">

@@ -51,7 +51,10 @@ export function LayerMenuButton({
       className="menu-item"
       disabled={disabled}
       title={title}
-      onClick={(event) => onAction?.({ event, action: menu, item })}
+      onClick={(event) => {
+        if (disabled) return;
+        onAction?.({ event, action: menu, item });
+      }}
     >
       {icon ? <Icon path={icon} size={ICON_SIZE} /> : title}
     </BaseButton>

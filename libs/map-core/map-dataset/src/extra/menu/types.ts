@@ -1,6 +1,18 @@
 import type { MapMouseEvent } from 'maplibre-gl';
-import type { IDataset, MenuAction } from '../../interfaces';
+import type {
+  IDataset,
+  MenuAction,
+  MenuCondition,
+  MenuConditionContext,
+} from '../../interfaces';
 import type { createMenuClickBuilder } from './builder';
+
+export type MenuContextSource =
+  | Record<string, any>
+  | (() => Record<string, any> | undefined)
+  | undefined;
+
+export type { MenuCondition, MenuConditionContext };
 
 export type CommandHandlerMenuExecute<PDefault = any, TDefault = IDataset> = {
   execute: <P = PDefault, T = TDefault>(

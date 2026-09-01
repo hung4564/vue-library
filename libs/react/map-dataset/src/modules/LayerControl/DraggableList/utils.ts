@@ -70,3 +70,23 @@ export function convertTreeToList(tree: TreeNode[]): LayerListItem[] {
     return acc;
   }, []);
 }
+
+/** Empty groups exist only in the UI tree (the flat item list cannot store them). Re-insert them after converting from items, matching Vue. */
+export function mergeEmptyGroups(
+  next: TreeNode[],
+  previous: TreeNode[],
+): TreeNode[] {
+  if (!previous.length) return next;
+  const present = new Set(next.map((node) => node.id));
+  const merged = [...next];
+  previous.forEach((node, index) => {
+    if (!isGroupNode(node) || node.children.length > 0) return;
+    if (present.has(node.id)) return;
+    merged.splice(Math.min(index, merged.length), 0, {
+      ...node,
+      children: [],
+    });
+    present.add(node.id);
+  });
+  return merged;
+}

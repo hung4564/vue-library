@@ -1,9 +1,15 @@
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
-import { findAllComponentsByType } from '@hungpvq/map-dataset';
+import {
+  createMenuConditionContext,
+  findAllComponentsByType,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+} from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
 import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useMenuConditionContext } from '../../extra/menu/condition-context';
 import { LayerMenuButton } from './layer-menu-button';
 import { LayerSubItem } from './layer-sub-item';
 
@@ -13,6 +19,8 @@ export function LayerItem({
   item,
   mapId,
   readonly,
+  disabledMove,
+  disabledCreateGroup,
   onRemove,
   onAction,
   onContextMenu,
@@ -21,6 +29,8 @@ export function LayerItem({
   item: IListViewUI;
   mapId: string;
   readonly?: boolean;
+  disabledMove?: boolean;
+  disabledCreateGroup?: boolean;
   onRemove?: (item: IListViewUI) => void;
   onAction?: (payload: {
     event: React.MouseEvent;
@@ -48,21 +58,38 @@ export function LayerItem({
     setChildren(childItems);
   }, [item]);
 
+  const injectedMenuContext = useMenuConditionContext();
+  const conditionCtx = createMenuConditionContext(item, {
+    mapId,
+    context: [
+      {
+        readonly,
+        disabledMove,
+        disabledCreateGroup,
+      },
+      injectedMenuContext,
+    ],
+  });
+
   const menus = useMemo(
     () => (item.getMenus?.() || []) as MenuAction<IListViewUI>[],
     [item],
   );
   const extraMenus = menus
     .filter((x) => !x.location || x.location === 'extra')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const preBottomMenus = menus
     .filter((x) => x.location === 'prebottom')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const bottomMenus = menus
     .filter((x) => x.location === 'bottom')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const contentMenus = menus
     .filter((x) => x.location === 'menu')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const showBottom =
     !readonly && (!item.config?.disabled_opacity || bottomMenus.length > 0);
@@ -95,6 +122,7 @@ export function LayerItem({
               menu={menu}
               item={item}
               mapId={mapId}
+              disabled={isMenuItemDisabled(menu, conditionCtx)}
               onAction={onAction}
             />
           ))}
@@ -122,6 +150,7 @@ export function LayerItem({
                   menu={menu}
                   item={item}
                   mapId={mapId}
+                  disabled={isMenuItemDisabled(menu, conditionCtx)}
                   onAction={onAction}
                 />
               ))}
@@ -145,6 +174,7 @@ export function LayerItem({
               menu={menu}
               item={item}
               mapId={mapId}
+              disabled={isMenuItemDisabled(menu, conditionCtx)}
               onAction={onAction}
             />
           ))}
@@ -155,6 +185,7 @@ export function LayerItem({
               menu={menu}
               item={item}
               mapId={mapId}
+              disabled={isMenuItemDisabled(menu, conditionCtx)}
               onAction={onAction}
             />
           ))}
@@ -191,6 +222,9 @@ export function LayerItem({
               key={child.id}
               item={child}
               mapId={mapId}
+              readonly={readonly}
+              disabledMove={disabledMove}
+              disabledCreateGroup={disabledCreateGroup}
               onAction={onAction}
               onContextMenu={onContextMenu}
             />

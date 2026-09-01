@@ -1,8 +1,14 @@
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import {
+  createMenuConditionContext,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+} from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
 import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useMemo } from 'react';
+import { useMenuConditionContext } from '../../extra/menu/condition-context';
 import { LayerMenuButton } from './layer-menu-button';
 
 const ICON_SIZE = '14px';
@@ -10,11 +16,17 @@ const ICON_SIZE = '14px';
 export function LayerSubItem({
   item,
   mapId,
+  readonly,
+  disabledMove,
+  disabledCreateGroup,
   onAction,
   onContextMenu,
 }: {
   item: IListViewUI;
   mapId: string;
+  readonly?: boolean;
+  disabledMove?: boolean;
+  disabledCreateGroup?: boolean;
   onAction?: (payload: {
     event: React.MouseEvent;
     action: MenuAction<IListViewUI>;
@@ -26,15 +38,29 @@ export function LayerSubItem({
     item: IListViewUI;
   }) => void;
 }) {
+  const injectedMenuContext = useMenuConditionContext();
+  const conditionCtx = createMenuConditionContext(item, {
+    mapId,
+    context: [
+      {
+        readonly,
+        disabledMove,
+        disabledCreateGroup,
+      },
+      injectedMenuContext,
+    ],
+  });
   const menus = useMemo(
     () => (item.getMenus?.() || []) as MenuAction<IListViewUI>[],
     [item],
   );
   const extraMenus = menus
     .filter((x) => x.location !== 'menu')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const contentMenus = menus
     .filter((x) => x.location === 'menu')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
@@ -60,6 +86,7 @@ export function LayerSubItem({
               menu={menu}
               item={item}
               mapId={mapId}
+              disabled={isMenuItemDisabled(menu, conditionCtx)}
               onAction={onAction}
             />
           ))}

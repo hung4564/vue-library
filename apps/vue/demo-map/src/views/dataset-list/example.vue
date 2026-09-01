@@ -2,7 +2,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { BaseMapCard, BaseMapControl, Map, UniversalRegistry } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   createDatasetPartListViewUiComponentBuilder,
@@ -13,17 +13,26 @@ import {
   LayerHighlight,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import { mdiPen } from '@mdi/js';
-import { ref } from 'vue';
+import { mdiPen, mdiStar } from '@mdi/js';
+import { reactive, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import SampleCustomMenu from './sample-custom-menu.vue';
+
+UniversalRegistry.registerComponent('sample-layer-menu', SampleCustomMenu);
 loggerFactory.enable('menu');
 const mapId = ref(getUUIDv4());
+const menuUi = reactive({
+  role: 'admin' as 'admin' | 'viewer',
+  canUsePen: true,
+});
 function onMapLoaded(map: MapSimple) {
   const { addDataset } = useMapDataset(map.id);
   addDataset(createDefaultListDataset());
   addDataset(createCustomDefaultListDataset());
   addDataset(createListWithLegendDataset());
   addDataset(createListWithMenuDataset());
+  addDataset(createListWithCustomMenuComponentDataset());
+  addDataset(createListWithConditionMenusDataset());
 }
 
 function createDefaultListDataset() {
@@ -139,12 +148,91 @@ function createListWithLegendDataset() {
   dataset.add(list1);
   return dataset;
 }
+
+function createListWithCustomMenuComponentDataset() {
+  const dataset = createRootDataset('Custom menu component');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Menu with setComponentMenuKey',
+  )
+    .addMenus([
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Sample custom menu')
+        .setIcon(mdiStar)
+        .setComponentMenuKey('sample-layer-menu')
+        .build(),
+    ])
+    .build();
+  dataset.add(list1);
+  return dataset;
+}
+
+function createListWithConditionMenusDataset() {
+  const dataset = createRootDataset('Menu conditions');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Hidden / disabled from menuContext',
+  )
+    .addMenus([
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Admin only')
+        .setIcon(mdiStar)
+        .setHidden(({ context }) => context?.role !== 'admin')
+        .setClick(() => {
+          console.info('admin only menu');
+        })
+        .build(),
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Pen action')
+        .setIcon(mdiPen)
+        .setDisabled(({ context }) => !context?.canUsePen)
+        .setClick(() => {
+          console.info('pen action');
+        })
+        .build(),
+      createMenuBuilder()
+        .item()
+        .setLocation('extra')
+        .setName('Pen extra')
+        .setIcon(mdiPen)
+        .setDisabled(({ context }) => !context?.canUsePen)
+        .setClick(() => {
+          console.info('pen extra');
+        })
+        .build(),
+    ])
+    .build();
+  dataset.add(list1);
+  return dataset;
+}
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
-    <LayerControl position="top-left" show>
+    <LayerControl position="top-left" show :menu-context="menuUi">
+      <template #titleList>
+        <label class="menu-condition-toggle">
+          <input
+            type="checkbox"
+            :checked="menuUi.role === 'admin'"
+            @change="
+              menuUi.role = ($event.target as HTMLInputElement).checked
+                ? 'admin'
+                : 'viewer'
+            "
+          />
+          admin
+        </label>
+        <label class="menu-condition-toggle">
+          <input type="checkbox" v-model="menuUi.canUsePen" />
+          pen
+        </label>
+      </template>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
@@ -154,7 +242,16 @@ function createListWithLegendDataset() {
   </Map>
 </template>
 
-<style></style>
+<style>
+.menu-condition-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+</style>
 
 <style>
 * {

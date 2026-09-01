@@ -24,7 +24,7 @@
           <LayerMenu
             :item="menu"
             :data="item"
-            :disabled="loading"
+            :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
             :mapId="mapId"
             @click="onLayerAction($event, menu)"
           />
@@ -49,7 +49,7 @@
             <LayerMenu
               :item="menu"
               :data="item"
-              :disabled="loading"
+              :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
               :mapId="mapId"
               @click="onLayerAction($event, menu)"
             />
@@ -69,7 +69,7 @@
         <LayerMenu
           :item="menu"
           :data="item"
-          :disabled="loading"
+          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
           :mapId="mapId"
           @click="onLayerAction($event, menu)"
         />
@@ -79,7 +79,7 @@
         <LayerMenu
           :item="menu"
           :data="item"
-          :disabled="loading"
+          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
           :mapId="mapId"
           @click="onLayerAction($event, menu)"
         />
@@ -114,6 +114,10 @@
         :key="item.id"
         :item="item"
         :mapId="mapId"
+        :readonly="readonly"
+        :disabledMove="disabledMove"
+        :disabledCreateGroup="disabledCreateGroup"
+        :menuContext="menuContext"
         @click:action="emit('click:action', $event)"
         @click:content-menu="emit('click:content-menu', $event)"
       ></LayerSubItem>
@@ -121,8 +125,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
-import { findAllComponentsByType } from '@hungpvq/map-dataset';
+import type { IListViewUI, MenuAction, MenuContextSource } from '@hungpvq/map-dataset';
+import {
+  createMenuConditionContext,
+  findAllComponentsByType,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+} from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -136,12 +145,16 @@ import {
   mdiPencilOutline,
 } from '@mdi/js';
 import { computed, onMounted, ref } from 'vue';
+import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
   readonly: boolean;
+  disabledMove?: boolean;
+  disabledCreateGroup?: boolean;
+  menuContext?: MenuContextSource;
 }>();
 const emit = defineEmits([
   'update:item',
@@ -161,6 +174,21 @@ const path = {
   legendClose: mdiMenuDown,
 };
 const loading = ref(false);
+const injectedMenuContext = useMenuConditionSource();
+const conditionCtx = computed(() =>
+  createMenuConditionContext(props.item, {
+    mapId: props.mapId,
+    context: [
+      {
+        readonly: props.readonly,
+        disabledMove: props.disabledMove,
+        disabledCreateGroup: props.disabledCreateGroup,
+      },
+      injectedMenuContext,
+      props.menuContext,
+    ],
+  }),
+);
 const onRemove = () => {
   emit('click:remove', props.item);
 };
@@ -173,21 +201,25 @@ const button_menus = computed<MenuAction<any>[]>(() => {
 const extra_menus = computed(() => {
   return button_menus.value
     .filter((x) => !x.location || x.location == 'extra')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const bottoms = computed(() => {
   return button_menus.value
     .filter((x) => x.location == 'prebottom')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const extra_bottoms = computed(() => {
   return button_menus.value
     .filter((x) => x.location == 'bottom')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const content_menus = computed(() => {
   return button_menus.value
     .filter((x) => x.location == 'menu')
+    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const showBottom = computed(() => {
@@ -197,6 +229,7 @@ const showBottom = computed(() => {
   );
 });
 function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
+  if (isMenuItemDisabled(action, conditionCtx.value)) return;
   emit('click:action', { event, action, item: props.item });
 }
 function handleContextClick(event: MouseEvent) {

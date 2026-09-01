@@ -16,6 +16,7 @@ export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
   if (menu.type !== 'item') return;
 
   const click = (menu as MenuItemCommon).click;
+  if (!click) return;
 
   handleMenuActionClick(click, props);
 }

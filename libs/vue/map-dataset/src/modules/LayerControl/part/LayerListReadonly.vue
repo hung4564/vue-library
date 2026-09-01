@@ -4,21 +4,22 @@ import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
   convertListToTree,
   handleMenuAction,
+  listListViewGroups,
   TreeItem,
 } from '@hungpvq/map-dataset';
 import { ContextMenu } from '@hungpvq/vue-content-menu';
 import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
 import {
-  mdiDelete,
-  mdiDotsVertical,
-  mdiGroup,
-  mdiLayers,
-  mdiPlus,
-} from '@mdi/js';
-import { getCurrentInstance, nextTick, onMounted, reactive, ref } from 'vue';
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  ref,
+  shallowReactive,
+} from 'vue';
 import { useMapDataset } from '../../../store';
+import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import RecursiveList from '../../List/RecursiveList.vue';
+import LayerContextMenuList from './item/layer-context-menu-list.vue';
 import LayerItem from './item/layer-item.vue';
 
 const props = withDefaults(
@@ -34,13 +35,9 @@ const props = withDefaults(
     disabled: false,
   },
 );
-const path = {
-  icon: mdiLayers,
-  menu: mdiDotsVertical,
-  group: { create: mdiGroup },
-  deleteAll: mdiDelete,
-  layer: { create: mdiPlus },
-};
+provideMenuConditionContext(() => ({
+  readonly: true,
+}));
 const { mapId } = useMap(props);
 const { getAllComponentsByType } = useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
@@ -74,7 +71,7 @@ const contextMenuRef = ref<
     }
   | undefined
 >();
-const menu_context = reactive<{
+const menu_context = shallowReactive<{
   items: MenuAction<IListViewUI>[];
   view: IListViewUI | undefined;
 }>({
@@ -90,9 +87,12 @@ function handleContextClick({
   item: IListViewUI;
   actions: MenuAction<IListViewUI>[];
 }) {
-  menu_context.items = actions ? [...actions] : ([] as any);
+  menu_context.items = actions ? [...actions] : [];
   menu_context.view = item;
   if (contextMenuRef.value) contextMenuRef.value.open(event, item);
+}
+function getMenuGroups() {
+  return listListViewGroups(views.value);
 }
 function closeContextMenu() {
   menu_context.items = [];
@@ -140,34 +140,23 @@ function onLayerAction({
       </div>
     </div>
     <ContextMenu ref="contextMenuRef">
-      <ul class="layer-context-menu">
-        <li
-          v-for="(option, index) in menu_context.items"
-          :key="index"
-          @click.stop="
+      <LayerContextMenuList
+        :items="menu_context.items"
+        :view="menu_context.view"
+        :mapId="mapId"
+        :getGroups="getMenuGroups"
+        @close="closeContextMenu"
+        @select="
+          if (menu_context.view) {
             onLayerAction({
-              event: $event,
-              action: option,
+              action: $event.action,
               item: menu_context.view,
+              event: $event.event,
             });
-            closeContextMenu();
-          "
-          class="layer-context-menu__item"
-          :class="[
-            option.class,
-            option.type === 'divider' ? 'layer-context-menu__divider' : '',
-          ]"
-        >
-          <div class="layer-context-menu__item-icon">
-            <SvgIcon
-              size="16"
-              type="mdi"
-              :path="option.icon || mdiCircleSmall"
-            />
-          </div>
-          <span v-html="option.name"></span>
-        </li>
-      </ul>
+          }
+          closeContextMenu();
+        "
+      />
     </ContextMenu>
   </div>
 </template>

@@ -6,7 +6,8 @@ import {
   mdiUngroup,
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type Sortable from 'sortablejs';
 import { ListItem } from '../../List/ListItem';
 import type { GroupTree } from './utils';
 
@@ -17,6 +18,8 @@ export function DraggableGroupItem({
   readonly,
   disabledDrag,
   children,
+  childrenListId,
+  createSortable,
   onDelete,
   onUngroup,
 }: {
@@ -24,11 +27,21 @@ export function DraggableGroupItem({
   readonly?: boolean;
   disabledDrag?: boolean;
   children: React.ReactNode;
+  childrenListId?: string;
+  createSortable?: (el: HTMLElement) => Sortable;
   onDelete: () => void;
   onUngroup: () => void;
 }) {
   const [isGroupShow, setIsGroupShow] = useState(true);
+  const childrenElRef = useRef<HTMLDivElement>(null);
   const hasChildren = layerGroup.children.length > 0;
+
+  useEffect(() => {
+    const el = childrenElRef.current;
+    if (!el || disabledDrag || !createSortable) return;
+    const instance = createSortable(el);
+    return () => instance.destroy();
+  }, [layerGroup.id, disabledDrag, createSortable]);
 
   return (
     <ListItem disabledDrag={disabledDrag} className="draggable-group__item">
@@ -59,7 +72,13 @@ export function DraggableGroupItem({
       <div
         className={`draggable-group__children-container ${isGroupShow ? '_show' : ''}`}
       >
-        <div className="draggable-group__children">{children}</div>
+        <div
+          ref={childrenElRef}
+          className="draggable-group__children"
+          data-list-id={childrenListId}
+        >
+          {children}
+        </div>
         {isGroupShow && !hasChildren && (
           <div className="draggable-group__nodata">Drag layer inside this group</div>
         )}

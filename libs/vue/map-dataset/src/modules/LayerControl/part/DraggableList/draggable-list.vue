@@ -205,6 +205,13 @@ function toggleSelect(layer: Item) {
     currentSelectLayerObject.value[layer.id] = layer;
   }
 }
+function getGroups() {
+  return treeLayer.value
+    .filter(
+      (node): node is GroupTree => 'isGroup' in node && node.isGroup === true,
+    )
+    .map((node) => ({ id: node.id, name: node.name }));
+}
 function addNewGroup(name: string) {
   let children: Item[] = [];
   if (currentSelectId.value && currentSelectId.value.length > 0) {
@@ -260,5 +267,5 @@ function createDefaultGroup(group: any) {
   temp = Object.assign({}, temp, group);
   return temp as GroupTree;
 }
-defineExpose({ update, addNewGroup });
+defineExpose({ update, addNewGroup, getGroups });
 </script>

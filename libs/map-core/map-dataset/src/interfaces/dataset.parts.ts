@@ -8,7 +8,6 @@ import type { FieldFeaturesDef, MenuItemClick, WithDataHelper } from '../extra';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 
 import type { MapSimple } from '@hungpvq/map-core';
-import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import type { BBox } from 'geojson';
 import { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
@@ -19,13 +18,24 @@ import type { IDatasetMap } from './dataset.map';
  * These types define the structure of menu items and actions in the dataset
  */
 
+export type MenuConditionContext<T = IDataset, C = Record<string, any>> = {
+  layer: T;
+  mapId?: string;
+  /** External data from UI: React context, Pinia, props, etc. */
+  context?: C;
+};
+
+export type MenuCondition<T = IDataset, C = Record<string, any>> =
+  | boolean
+  | ((ctx: MenuConditionContext<T, C>) => boolean);
+
 /** Base type for all menu items */
 type MenuCommon = {
   order?: number;
   id?: string;
   class?: string;
-  disabled?: MaybeRefOrGetter<boolean>;
-  hidden?: MaybeRefOrGetter<boolean>;
+  disabled?: MenuCondition;
+  hidden?: MenuCondition;
 };
 
 /** Divider menu item type */
@@ -62,14 +72,17 @@ export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
 };
 
 /** Menu item type for menu location */
-export type MenuItemContentMenu<P = any, T = IDataset> = MenuItemCommon<
-  P,
-  T
+export type MenuItemContentMenu<P = any, T = IDataset> = Omit<
+  MenuItemCommon<P, T>,
+  'click'
 > & {
   type: 'item';
   location: 'menu';
   name: string;
   icon?: string;
+  click?: MenuItemClick<P, T>;
+  /** Registry key of a component that renders this item inside the context menu */
+  componentMenuKey?: string;
 };
 export type MenuAction<P = any, T = IDataset> =
   | MenuDivider

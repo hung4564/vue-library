@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import { ListItem } from '../../List/ListItem';
@@ -15,6 +16,7 @@ import {
   convertTreeToList,
   createDefaultGroup,
   isGroupNode,
+  mergeEmptyGroups,
   type GroupTree,
   type LayerListItem,
   type TreeNode,
@@ -23,6 +25,7 @@ import {
 export interface DraggableGroupListRef {
   update: (items?: LayerListItem[]) => void;
   addNewGroup: (name: string) => void;
+  getGroups: () => { id: string; name: string }[];
 }
 
 export interface DraggableGroupListProps {
@@ -41,11 +44,76 @@ export interface DraggableGroupListProps {
   }) => ReactNode;
 }
 
+type SortableHandlers = {
+  onEnd: (evt: Sortable.SortableEvent) => void;
+  onMove: (evt: Sortable.MoveEvent) => boolean | void;
+};
+
 function reorder<T>(list: T[], oldIndex: number, newIndex: number): T[] {
   const next = [...list];
   const [removed] = next.splice(oldIndex, 1);
   next.splice(newIndex, 0, removed);
   return next;
+}
+
+function isPersistentSortableItem(el: Element) {
+  return (
+    el.classList.contains('draggable__item') &&
+    !el.classList.contains('sortable-ghost') &&
+    !el.classList.contains('sortable-fallback') &&
+    !el.classList.contains('sortable-drag')
+  );
+}
+
+function restoreSortableItem(evt: Sortable.SortableEvent) {
+  const item = evt.item;
+  const from = evt.from;
+  if (!item || !from) return;
+  const oldIndex = evt.oldIndex ?? 0;
+  const siblings = Array.from(from.children).filter(
+    (child) => child !== item && isPersistentSortableItem(child),
+  );
+  const reference = siblings[oldIndex];
+  if (reference) from.insertBefore(item, reference);
+  else from.appendChild(item);
+}
+
+function getListTarget(el: HTMLElement): { kind: 'root' } | { kind: 'group'; groupId: string } {
+  const listId = el.dataset.listId ?? 'root';
+  if (listId === 'root') return { kind: 'root' };
+  return { kind: 'group', groupId: listId };
+}
+
+function createLayerSortable(
+  el: HTMLElement,
+  draggable: string,
+  handlersRef: MutableRefObject<SortableHandlers>,
+) {
+  return Sortable.create(el, {
+    group: {
+      name: 'layers',
+      pull: true,
+      put: (to, _from, dragEl) => {
+        const target = getListTarget(to.el);
+        if (target.kind === 'group' && dragEl.dataset.nodeId?.startsWith('group-')) {
+          return false;
+        }
+        return true;
+      },
+    },
+    handle: '.draggable-handle',
+    animation: 200,
+    fallbackOnBody: true,
+    swapThreshold: 0.65,
+    emptyInsertThreshold: 80,
+    ghostClass: 'sortable-ghost',
+    draggable,
+    onEnd: (evt) => {
+      restoreSortableItem(evt);
+      handlersRef.current.onEnd(evt);
+    },
+    onMove: (evt) => handlersRef.current.onMove(evt),
+  });
 }
 
 export const DraggableGroupList = forwardRef<
@@ -66,10 +134,14 @@ export const DraggableGroupList = forwardRef<
   ref,
 ) {
   const [tree, setTree] = useState<TreeNode[]>([]);
+  const treeRef = useRef<TreeNode[]>([]);
+  treeRef.current = tree;
   const selectedObjectsRef = useRef<Record<string, LayerListItem>>({});
   const rootRef = useRef<HTMLDivElement>(null);
-  const groupListRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const sortableInstancesRef = useRef<Sortable[]>([]);
+  const handlersRef = useRef<SortableHandlers>({
+    onEnd: () => undefined,
+    onMove: () => true,
+  });
 
   const emitChange = useCallback(
     (nextTree: TreeNode[]) => {
@@ -80,11 +152,15 @@ export const DraggableGroupList = forwardRef<
   );
 
   const updateTree = useCallback((nextItems: LayerListItem[] = items) => {
-    setTree(convertListToTree(nextItems));
+    setTree((prev) => mergeEmptyGroups(convertListToTree(nextItems), prev));
   }, [items]);
 
   useImperativeHandle(ref, () => ({
     update: (nextItems?: LayerListItem[]) => updateTree(nextItems),
+    getGroups: () =>
+      treeRef.current
+        .filter(isGroupNode)
+        .map((group) => ({ id: group.id, name: group.name })),
     addNewGroup: (name: string) => {
       setTree((prev) => {
         let next = [...prev];
@@ -141,8 +217,8 @@ export const DraggableGroupList = forwardRef<
 
   const handleSortEnd = useCallback(
     (evt: Sortable.SortableEvent) => {
-      const fromId = (evt.from as HTMLElement).dataset.listId ?? 'root';
-      const toId = (evt.to as HTMLElement).dataset.listId ?? 'root';
+      const from = getListTarget(evt.from as HTMLElement);
+      const to = getListTarget(evt.to as HTMLElement);
       const oldIndex = evt.oldIndex;
       const newIndex = evt.newIndex;
       if (oldIndex == null || newIndex == null) return;
@@ -150,11 +226,11 @@ export const DraggableGroupList = forwardRef<
       setTree((prev) => {
         let next = [...prev];
 
-        if (fromId === toId) {
-          if (fromId === 'root') {
+        if (from.kind === to.kind && (from.kind === 'root' || from.groupId === to.groupId)) {
+          if (from.kind === 'root') {
             next = reorder(next, oldIndex, newIndex);
           } else {
-            const groupId = fromId.replace('group-', '');
+            const groupId = from.groupId;
             next = next.map((node) => {
               if (isGroupNode(node) && node.id === groupId) {
                 return { ...node, children: reorder(node.children, oldIndex, newIndex) };
@@ -164,12 +240,12 @@ export const DraggableGroupList = forwardRef<
           }
         } else {
           let moved: LayerListItem | undefined;
-          if (fromId === 'root') {
+          if (from.kind === 'root') {
             const removed = next.splice(oldIndex, 1)[0];
             if (removed && !isGroupNode(removed)) moved = removed;
             else if (removed) next.splice(oldIndex, 0, removed);
           } else {
-            const fromGroupId = fromId.replace('group-', '');
+            const fromGroupId = from.groupId;
             next = next.map((node) => {
               if (isGroupNode(node) && node.id === fromGroupId) {
                 const children = [...node.children];
@@ -183,11 +259,11 @@ export const DraggableGroupList = forwardRef<
           if (!moved) return prev;
 
           const movedItem = moved;
-          if (toId === 'root') {
+          if (to.kind === 'root') {
             movedItem.group = undefined;
             next.splice(newIndex, 0, movedItem);
           } else {
-            const toGroupId = toId.replace('group-', '');
+            const toGroupId = to.groupId;
             const targetGroup = next.find(
               (node): node is GroupTree => isGroupNode(node) && node.id === toGroupId,
             );
@@ -213,55 +289,29 @@ export const DraggableGroupList = forwardRef<
 
   const checkMove = useCallback((evt: Sortable.MoveEvent) => {
     const draggedId = (evt.dragged as HTMLElement).dataset.nodeId;
-    const toListId = (evt.to as HTMLElement).dataset.listId ?? 'root';
+    const to = getListTarget(evt.to as HTMLElement);
     const isDraggingGroup = draggedId?.startsWith('group-');
-    const isDroppingIntoGroup = toListId.startsWith('group-');
-    if (isDraggingGroup && isDroppingIntoGroup) return false;
+    if (isDraggingGroup && to.kind === 'group') return false;
     return true;
   }, []);
 
+  handlersRef.current = { onEnd: handleSortEnd, onMove: checkMove };
+
+  const createGroupSortable = useCallback(
+    (el: HTMLElement) => createLayerSortable(el, '> .draggable__item', handlersRef),
+    [],
+  );
+
   useEffect(() => {
-    sortableInstancesRef.current.forEach((instance) => instance.destroy());
-    sortableInstancesRef.current = [];
-
-    if (disabledDrag) return;
-
-    if (rootRef.current) {
-      sortableInstancesRef.current.push(
-        Sortable.create(rootRef.current, {
-          group: 'layers',
-          handle: '.draggable-handle',
-          animation: 200,
-          draggable: '.draggable__item.item',
-          onEnd: handleSortEnd,
-          onMove: checkMove,
-        }),
-      );
-    }
-
-    groupListRefs.current.forEach((el) => {
-      sortableInstancesRef.current.push(
-        Sortable.create(el, {
-          group: 'layers',
-          handle: '.draggable-handle',
-          animation: 200,
-          draggable: '.draggable__item',
-          onEnd: handleSortEnd,
-          onMove: checkMove,
-        }),
-      );
-    });
-
-    return () => {
-      sortableInstancesRef.current.forEach((instance) => instance.destroy());
-      sortableInstancesRef.current = [];
-    };
-  }, [tree, disabledDrag, handleSortEnd, checkMove]);
-
-  const setGroupListRef = useCallback((groupId: string, el: HTMLDivElement | null) => {
-    if (el) groupListRefs.current.set(groupId, el);
-    else groupListRefs.current.delete(groupId);
-  }, []);
+    const rootEl = rootRef.current;
+    if (disabledDrag || !rootEl) return;
+    const instance = createLayerSortable(
+      rootEl,
+      '> .draggable__item.item',
+      handlersRef,
+    );
+    return () => instance.destroy();
+  }, [disabledDrag]);
 
   function deleteGroup(group: GroupTree, groupIndex: number) {
     setTree((prev) => {
@@ -302,34 +352,30 @@ export const DraggableGroupList = forwardRef<
               <DraggableGroupItem
                 layerGroup={node}
                 disabledDrag={disabledDrag}
+                childrenListId={node.id}
+                createSortable={createGroupSortable}
                 onDelete={() => deleteGroup(node, index)}
                 onUngroup={() => unGroup(node, index)}
               >
-                <div
-                  ref={(el) => setGroupListRef(node.id, el)}
-                  className="draggable-group__children"
-                  data-list-id={`group-${node.id}`}
-                >
-                  {node.children.map((child) => (
-                    <div
-                      key={child.id}
-                      className="draggable__item"
-                      data-node-id={child.id}
+                {node.children.map((child) => (
+                  <div
+                    key={child.id}
+                    className="draggable__item"
+                    data-node-id={child.id}
+                  >
+                    <ListItem
+                      item={child}
+                      isSelected={selected.includes(child.id)}
+                      disabledDrag={disabledDrag}
                     >
-                      <ListItem
-                        item={child}
-                        isSelected={selected.includes(child.id)}
-                        disabledDrag={disabledDrag}
-                      >
-                        {renderItem({
-                          item: child,
-                          isSelected: selected.includes(child.id),
-                          toggleSelect: () => toggleSelect(child),
-                        })}
-                      </ListItem>
-                    </div>
-                  ))}
-                </div>
+                      {renderItem({
+                        item: child,
+                        isSelected: selected.includes(child.id),
+                        toggleSelect: () => toggleSelect(child),
+                      })}
+                    </ListItem>
+                  </div>
+                ))}
               </DraggableGroupItem>
             </div>
           );

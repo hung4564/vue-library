@@ -6,6 +6,7 @@ import {
   hasMoveLayer,
   IGroupListViewUI,
   IListViewUI,
+  listListViewGroups,
   traverseTree,
 } from '@hungpvq/map-dataset';
 import { ContextMenu } from '@hungpvq/vue-content-menu';
@@ -17,7 +18,6 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
-  mdiCircleSmall,
   mdiDelete,
   mdiDotsVertical,
   mdiGroup,
@@ -28,15 +28,17 @@ import {
   computed,
   nextTick,
   onMounted,
-  reactive,
   ref,
+  shallowReactive,
   VNode,
   watch,
 } from 'vue';
 import { useMapDataset } from '../../../store';
+import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
+import LayerContextMenuList from './item/layer-context-menu-list.vue';
 
 const props = withDefaults(
   defineProps<
@@ -45,6 +47,7 @@ const props = withDefaults(
       disabled?: boolean;
       disabledCreateGroup?: boolean;
       disabledDeleteAll?: boolean;
+      disabledMove?: boolean;
     }
   >(),
   {
@@ -53,8 +56,15 @@ const props = withDefaults(
     disabled: false,
     disabledCreateGroup: false,
     disabledDeleteAll: false,
+    disabledMove: false,
   },
 );
+
+provideMenuConditionContext(() => ({
+  readonly: false,
+  disabledMove: props.disabledMove,
+  disabledCreateGroup: props.disabledCreateGroup,
+}));
 
 defineSlots<{
   title(): VNode[];
@@ -179,7 +189,7 @@ const contextMenuRef = ref<
   | undefined
 >();
 
-const menu_context = reactive<{
+const menu_context = shallowReactive<{
   items: MenuAction<IListViewUI>[];
   view: IListViewUI | undefined;
 }>({
@@ -196,9 +206,14 @@ function handleContextClick({
   item: IListViewUI;
   actions: MenuAction<IListViewUI>[];
 }) {
-  menu_context.items = (actions ? [...actions] : []) as any;
+  menu_context.items = actions ? [...actions] : [];
   menu_context.view = item;
   if (contextMenuRef.value) contextMenuRef.value.open(event, item);
+}
+
+function getMenuGroups() {
+  const treeGroups = groupRef.value?.getGroups?.() ?? [];
+  return treeGroups.length > 0 ? treeGroups : listListViewGroups(views.value);
 }
 
 function closeContextMenu() {
@@ -265,6 +280,8 @@ function onLayerAction({
               @click:action="onLayerAction"
               :map-id="mapId"
               :readonly="false"
+              :disabledMove="disabledMove"
+              :disabledCreateGroup="disabledCreateGroup"
             >
             </RegistryItem>
           </slot>
@@ -272,47 +289,23 @@ function onLayerAction({
       </DraggableGroupList>
     </div>
     <ContextMenu ref="contextMenuRef">
-      <ul class="layer-context-menu">
-        <li
-          v-for="(option, index) in menu_context.items"
-          :key="index"
-          class="layer-context-menu__item"
-          :class="[
-            option.class,
-            option.type === 'divider' ? 'layer-context-menu__divider' : '',
-          ]"
-          @click.stop="
-            if (option.type !== 'divider' && menu_context.view) {
-              onLayerAction({
-                action: option as any,
-                item: menu_context.view,
-                event: $event,
-              });
-            }
-            closeContextMenu();
-          "
-        >
-          <!-- Divider -->
-          <template v-if="option.type === 'divider'">
-            <div class="layer-context-menu__divider-line"></div>
-          </template>
-          <template v-else-if="'componentKey' in option">
-            <!-- item dạng component -->
-            <component :is="option.componentKey" />
-          </template>
-          <!-- Normal item -->
-          <template v-else>
-            <div class="layer-context-menu__item-icon">
-              <SvgIcon
-                size="16"
-                type="mdi"
-                :path="option.icon || mdiCircleSmall"
-              />
-            </div>
-            <span v-html="option.name"></span>
-          </template>
-        </li>
-      </ul>
+      <LayerContextMenuList
+        :items="menu_context.items"
+        :view="menu_context.view"
+        :mapId="mapId"
+        :getGroups="getMenuGroups"
+        @close="closeContextMenu"
+        @select="
+          if (menu_context.view) {
+            onLayerAction({
+              action: $event.action,
+              item: menu_context.view,
+              event: $event.event,
+            });
+          }
+          closeContextMenu();
+        "
+      />
     </ContextMenu>
   </div>
 </template>

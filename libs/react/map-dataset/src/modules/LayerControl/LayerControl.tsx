@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import type { MenuContextSource } from '@hungpvq/map-dataset';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   BaseButton,
@@ -15,6 +16,7 @@ import Icon from '@mdi/react';
 import { type ReactNode, useEffect } from 'react';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { LayerList } from './LayerList';
 
 type LayerControlSlot = ReactNode | ((props: { mapId: string }) => ReactNode);
@@ -24,6 +26,8 @@ export interface LayerControlProps extends WithMapPropType {
   disabledCreate?: boolean;
   disabledCreateGroup?: boolean;
   disabledDeleteAll?: boolean;
+  disabledMove?: boolean;
+  menuContext?: MenuContextSource;
   /** Slot after list header actions (Vue: titleList). */
   titleList?: LayerControlSlot;
   /** Slot below the layer list (Vue: endList), e.g. BaseMapCard. */
@@ -107,21 +111,24 @@ export function LayerControl(props: LayerControlProps) {
             containerId={bind.containerId}
           >
             <div className="layer-control">
-              <LayerList
-                mapId={mapId}
-                disabledCreateGroup={props.disabledCreateGroup}
-                disabledDeleteAll={props.disabledDeleteAll}
-                title={
-                  titleSlot !== null && titleSlot !== undefined
-                    ? titleSlot
-                    : !props.disabledCreate ? (
-                        <BaseButton onClick={() => toggleShowCreate(true)}>
-                          <Icon path={mdiPlus} size="14px" />
-                        </BaseButton>
-                      ) : null
-                }
-              />
-              <div className="base-map-card-container">{endSlot}</div>
+              <MenuConditionProvider value={props.menuContext}>
+                <LayerList
+                  mapId={mapId}
+                  disabledCreateGroup={props.disabledCreateGroup}
+                  disabledDeleteAll={props.disabledDeleteAll}
+                  disabledMove={props.disabledMove}
+                  title={
+                    titleSlot !== null && titleSlot !== undefined
+                      ? titleSlot
+                      : !props.disabledCreate ? (
+                          <BaseButton onClick={() => toggleShowCreate(true)}>
+                            <Icon path={mdiPlus} size="14px" />
+                          </BaseButton>
+                        ) : null
+                  }
+                />
+                <div className="base-map-card-container">{endSlot}</div>
+              </MenuConditionProvider>
             </div>
           </DraggableItemSideBar>
       )}

@@ -91,6 +91,9 @@
   --map-padding-chip: var(--map-space-xs) var(--map-space-md); /* tags / chips */
   --map-padding-header: 0 var(--map-space-xs) 0 var(--map-space-md);
   --map-padding-compact: var(--map-space-xs); /* mouse coords / dense UI */
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
 }
 
 /* Dark Theme */

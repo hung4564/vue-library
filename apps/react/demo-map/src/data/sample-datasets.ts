@@ -28,6 +28,7 @@ import {
   mdiMarker,
   mdiPen,
   mdiRegisteredTrademark,
+  mdiStar,
 } from '@mdi/js';
 import { addDatasetToMap } from './dataset-utils';
 
@@ -327,6 +328,67 @@ function createListWithMenuDataset() {
   return dataset;
 }
 
+function createListWithCustomMenuComponentDataset() {
+  const dataset = createRootDataset('Custom menu component');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Menu with setComponentMenuKey',
+  )
+    .addMenus([
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Sample custom menu')
+        .setIcon(mdiStar)
+        .setComponentMenuKey('sample-layer-menu')
+        .build(),
+    ])
+    .build();
+  dataset.add(list1);
+  return dataset;
+}
+
+function createListWithConditionMenusDataset() {
+  const dataset = createRootDataset('Menu conditions');
+  const list1 = createDatasetPartListViewUiComponentBuilder(
+    'Hidden / disabled from menuContext',
+  )
+    .addMenus([
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Admin only')
+        .setIcon(mdiStar)
+        .setHidden(({ context }) => context?.role !== 'admin')
+        .setClick(() => {
+          console.info('admin only menu');
+        })
+        .build(),
+      createMenuBuilder()
+        .item()
+        .setLocation('menu')
+        .setName('Pen action')
+        .setIcon(mdiPen)
+        .setDisabled(({ context }) => !context?.canUsePen)
+        .setClick(() => {
+          console.info('pen action');
+        })
+        .build(),
+      createMenuBuilder()
+        .item()
+        .setLocation('extra')
+        .setName('Pen extra')
+        .setIcon(mdiPen)
+        .setDisabled(({ context }) => !context?.canUsePen)
+        .setClick(() => {
+          console.info('pen extra');
+        })
+        .build(),
+    ])
+    .build();
+  dataset.add(list1);
+  return dataset;
+}
+
 function createDefaultMenuSupportDataset() {
   const dataset = createRootDataset('Default menu support');
   const source = createDatasetPartGeojsonSourceComponent('source', {
@@ -559,6 +621,8 @@ export async function loadListDemoDatasets(mapId: string) {
   await addDatasetToMap(mapId, createCustomColorListDataset());
   await addDatasetToMap(mapId, createListWithLegendDataset());
   await addDatasetToMap(mapId, createListWithMenuDataset());
+  await addDatasetToMap(mapId, createListWithCustomMenuComponentDataset());
+  await addDatasetToMap(mapId, createListWithConditionMenusDataset());
 }
 
 export async function loadMenuDemoDatasets(mapId: string) {

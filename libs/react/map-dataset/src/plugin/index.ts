@@ -1,5 +1,6 @@
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
-import { LayerItemIcon, SetOpacity, ToggleShow } from '../extra/component';
+import { AddToGroup, LayerItemIcon, SetOpacity, ToggleShow } from '../extra/component';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
 import {
@@ -36,6 +37,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         'layer-action-set-opacity',
         SetOpacity,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
+        AddToGroup,
       );
     },
   };

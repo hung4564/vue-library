@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import { createMenuItemSetOpacity, createWithMenuHelper } from '../../extra';
+import { createMenuItemSetOpacity, createMenuItemMoveUp, createMenuItemMoveDown, createMenuItemAddToGroup, createWithMenuHelper } from '../../extra';
 import { createWithEventHelper } from '../../extra/event';
 import { addMenuBuilder, type WithMenuBuilder } from '../../extra/menu';
 import type { WithChildren } from '../../interfaces';
@@ -19,6 +19,8 @@ export interface ListViewUIBuilder {
   setLegend(legend: IListViewUI['legend']): this;
   configDisabledOpacity(disabled?: boolean): this;
   configDisabledDelete(disabled?: boolean): this;
+  configDisabledMove(disabled?: boolean): this;
+  configDisabledAddToGroup(disabled?: boolean): this;
   configInitShowLegend(initShow?: boolean): this;
   build(): IListViewUI;
 }
@@ -35,6 +37,8 @@ function createBaseListViewUiBuilder(
     config: {
       disabled_delete: false,
       disabled_opacity: false,
+      disabled_move: false,
+      disabled_add_to_group: false,
       init_show_legend: false,
     },
     index: 0,
@@ -70,6 +74,14 @@ function createBaseListViewUiBuilder(
       state.config!.disabled_delete = disabled ?? true;
       return this;
     },
+    configDisabledMove(disabled) {
+      state.config!.disabled_move = disabled ?? true;
+      return this;
+    },
+    configDisabledAddToGroup(disabled) {
+      state.config!.disabled_add_to_group = disabled ?? true;
+      return this;
+    },
     configInitShowLegend(initShow) {
       state.config!.init_show_legend = initShow ?? true;
       return this;
@@ -99,6 +111,8 @@ function createBaseListViewUiBuilder(
         config: {
           disabled_delete: false,
           disabled_opacity: false,
+          disabled_move: false,
+          disabled_add_to_group: false,
           ...state.config,
         },
         toggleShow(map: MapSimple, show: boolean) {
@@ -113,6 +127,17 @@ function createBaseListViewUiBuilder(
       }
       if (!dataset.config.disabled_opacity) {
         dataset.addMenu(createMenuItemSetOpacity());
+      }
+      if (dataset.type !== 'list-item') {
+        if (!dataset.config.disabled_move) {
+          dataset.addMenus([
+            createMenuItemMoveUp(),
+            createMenuItemMoveDown(),
+          ]);
+        }
+        if (!dataset.config.disabled_add_to_group) {
+          dataset.addMenu(createMenuItemAddToGroup());
+        }
       }
       return dataset;
     },
@@ -168,6 +193,8 @@ export function createDatasetPartGroupSubListViewUiComponentBuilder(
     config: {
       disabled_delete: false,
       disabled_opacity: false,
+      disabled_move: false,
+      disabled_add_to_group: false,
       init_show_legend: false,
       init_show_children: false,
     },

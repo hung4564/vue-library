@@ -2,6 +2,7 @@ import type { Feature } from 'geojson';
 import type { IDataset, MenuAction } from '../../interfaces';
 
 import type {
+  MenuCondition,
   MenuItemClick,
   MenuItemClickCommon,
   MenuItemClickHandle,
@@ -46,6 +47,14 @@ export function createMenuBuilder<T = IDataset>() {
           state.location = loc;
           return this;
         },
+        setHidden(hidden: MenuCondition<T>) {
+          state.hidden = hidden;
+          return this;
+        },
+        setDisabled(disabled: MenuCondition<T>) {
+          state.disabled = disabled;
+          return this;
+        },
         build() {
           return state; // type MenuDivider
         },
@@ -74,6 +83,18 @@ export function createMenuBuilder<T = IDataset>() {
         },
         setComponentKey(key: string) {
           state.componentKey = key;
+          return this;
+        },
+        setComponentMenuKey(key: string) {
+          state.componentMenuKey = key;
+          return this;
+        },
+        setHidden(hidden: MenuCondition<T>) {
+          state.hidden = hidden;
+          return this;
+        },
+        setDisabled(disabled: MenuCondition<T>) {
+          state.disabled = disabled;
           return this;
         },
         setAdditional(additional: Partial<any>) {

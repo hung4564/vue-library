@@ -1,12 +1,22 @@
 import { fitBounds, getMap } from '@hungpvq/map-core';
-import { mdiCrosshairsGps, mdiFormatLineStyle, mdiInformation } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiCrosshairsGps,
+  mdiFolderOutline,
+  mdiFolderPlusOutline,
+  mdiFormatLineStyle,
+  mdiInformation,
+} from '@mdi/js';
 import type { BBox } from 'geojson';
 import type {
   IDataset,
   IMapboxSourceView,
   IMetadataView,
   MenuAction,
+  MenuConditionContext,
   MenuItemBottomOrExtra,
+  MenuItemContentMenu,
   MenuItemCustomComponentBottomOrExtra,
   WithMenuHelper,
 } from '../../interfaces';
@@ -245,4 +255,151 @@ export function createMenuItemSetOpacity(
     .setComponentKey('layer-action-set-opacity')
     .setAdditional(menu)
     .build();
+}
+
+export const LIST_VIEW_MENU_ID = {
+  moveUp: 'move-up',
+  moveDown: 'move-down',
+  addToGroup: 'add-to-group',
+  addToExistingGroup: 'add-to-existing-group',
+} as const;
+
+export const LIST_VIEW_MENU_COMPONENT_KEY = {
+  addToGroup: 'layer-action-add-to-group',
+} as const;
+
+export type ListViewGroupOption = { id: string; name: string };
+
+export function isMenuItemCustomComponent(
+  menu: MenuAction,
+): menu is MenuItemContentMenu & { componentMenuKey: string } {
+  return (
+    menu.type === 'item' &&
+    typeof (menu as MenuItemContentMenu).componentMenuKey === 'string' &&
+    !!(menu as MenuItemContentMenu).componentMenuKey
+  );
+}
+
+export function createAddToGroupSubmenu(
+  groups: ListViewGroupOption[],
+  excludeGroupId?: string,
+): MenuAction[] {
+  const children: MenuAction[] = [
+    {
+      type: 'item',
+      location: 'menu',
+      id: `${LIST_VIEW_MENU_ID.addToGroup}:new`,
+      name: 'New group',
+      icon: mdiFolderPlusOutline,
+      click: LIST_VIEW_MENU_ID.addToGroup,
+    },
+  ];
+  const others = groups.filter((group) => group.id !== excludeGroupId);
+  if (others.length === 0) return children;
+
+  children.push({ type: 'divider', location: 'menu' });
+  for (const group of others) {
+    children.push({
+      type: 'item',
+      location: 'menu',
+      id: `${LIST_VIEW_MENU_ID.addToExistingGroup}:${group.id}`,
+      name: group.name || 'Group',
+      icon: mdiFolderOutline,
+      click: createMenuClickBuilder()
+        .addTupleStatic(LIST_VIEW_MENU_ID.addToExistingGroup, {
+          meta: { groupId: group.id, groupName: group.name },
+        })
+        .build(),
+    });
+  }
+  return children;
+}
+
+export function createMenuItemMoveUp(
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+) {
+  return createMenuBuilder()
+    .item()
+    .setLocation('menu')
+    .setId(LIST_VIEW_MENU_ID.moveUp)
+    .setName('Move up')
+    .setIcon(mdiChevronUp)
+    .setClick(LIST_VIEW_MENU_ID.moveUp)
+    .setHidden((ctx) =>
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.moveUp, ctx),
+    )
+    .setAdditional({ order: 20, ...menu })
+    .build();
+}
+
+export function createMenuItemMoveDown(
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+) {
+  return createMenuBuilder()
+    .item()
+    .setLocation('menu')
+    .setId(LIST_VIEW_MENU_ID.moveDown)
+    .setName('Move down')
+    .setIcon(mdiChevronDown)
+    .setClick(LIST_VIEW_MENU_ID.moveDown)
+    .setHidden((ctx) =>
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.moveDown, ctx),
+    )
+    .setAdditional({ order: 21, ...menu })
+    .build();
+}
+
+export function createMenuItemAddToGroup(
+  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+) {
+  return createMenuBuilder()
+    .item()
+    .setLocation('menu')
+    .setId(LIST_VIEW_MENU_ID.addToGroup)
+    .setName('Add to group')
+    .setIcon(mdiFolderPlusOutline)
+    .setComponentMenuKey(LIST_VIEW_MENU_COMPONENT_KEY.addToGroup)
+    .setHidden((ctx) =>
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.addToGroup, ctx),
+    )
+    .setAdditional({
+      order: 22,
+      ...menu,
+    })
+    .build();
+}
+
+export function isListViewReorderMenuHidden(
+  menuId: string | undefined,
+  ctx: MenuConditionContext,
+): boolean {
+  if (!menuId) return false;
+  const extra = (ctx.context ?? {}) as {
+    readonly?: boolean;
+    disabledMove?: boolean;
+    disabledCreateGroup?: boolean;
+  };
+  const config = (
+    ctx.layer as {
+      config?: { disabled_move?: boolean; disabled_add_to_group?: boolean };
+    }
+  )?.config;
+  if (
+    menuId === LIST_VIEW_MENU_ID.moveUp ||
+    menuId === LIST_VIEW_MENU_ID.moveDown
+  ) {
+    return !!(
+      extra.readonly ||
+      extra.disabledMove ||
+      config?.disabled_move
+    );
+  }
+  if (menuId === LIST_VIEW_MENU_ID.addToGroup) {
+    return !!(
+      extra.readonly ||
+      extra.disabledCreateGroup ||
+      config?.disabled_add_to_group
+    );
+  }
+  return false;
 }
