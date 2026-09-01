@@ -16,7 +16,7 @@ npm install @hungpvq/vue-map-core
 
 - ✅ **Map container** - Main MapLibre GL wrapper component
 - ✅ **Navigation controls** - Zoom, Home, Fullscreen, Geolocate
-- ✅ **Info controls** - Mouse coordinates, Settings
+- ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel
 - ✅ **Compare & CRS extras** - Optional extras for map compare and CRS
 - ✅ **Composable hooks** - `useMap`, `useShow` and more
 - ✅ **TypeScript support** - Full TypeScript types

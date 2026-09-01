@@ -3,6 +3,7 @@ export { default as GeoLocateControl } from './GeoLocateControl/GeoLocateControl
 export { default as GlobeControl } from './GlobeControl/GlobeControl.vue';
 export { default as GotoControl } from './GotoControl/GotoControl.vue';
 export { default as HomeControl } from './HomeControl/HomeControl.vue';
+export { default as InfoControl } from './InfoControl/InfoControl.vue';
 export { default as Map } from './Map.vue';
 export { default as ModuleContainer } from './ModuleContainer/ModuleContainer.vue';
 export { default as MouseCoordinatesControl } from './MouseCoordinatesControl/MouseCoordinatesControl.vue';

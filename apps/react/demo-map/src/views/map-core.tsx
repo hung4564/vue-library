@@ -7,6 +7,7 @@ import {
   GlobeControl,
   GotoControl,
   HomeControl,
+  InfoControl,
   Map,
   MouseCoordinatesControl,
   SettingControl,
@@ -21,6 +22,7 @@ export function MapCorePage() {
       <Map>
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
+        <InfoControl position="top-right" />
         <CrsControl />
         <GlobeControl />
         <SettingControl />

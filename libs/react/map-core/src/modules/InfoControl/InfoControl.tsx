@@ -1,0 +1,212 @@
+import {
+  copyText,
+  downloadDataUrl,
+  exportMapbox,
+  readMapViewInfo,
+  type MapSimple,
+  type MapViewInfo,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import {
+  mdiCameraOutline,
+  mdiContentCopy,
+  mdiInformationOutline,
+} from '@mdi/js';
+import Icon from '@mdi/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MapCommonButton } from '../../components/MapCommonButton';
+import { useLang } from '../../extra';
+import { useToolbarControl } from '../../extra/toolbar';
+import { BaseButton } from '../../field';
+import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+
+export interface InfoControlProps extends WithMapPropType {
+  show?: boolean;
+  fileName?: string;
+}
+
+const EMPTY_INFO: MapViewInfo = {
+  center: '',
+  zoom: '',
+  pitch: '',
+  bearing: '',
+  projection: '',
+  bounds: '',
+};
+
+export function InfoControl(props: InfoControlProps) {
+  const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
+  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { trans, setLocaleDefault } = useLang(mapId);
+  const [show, toggleShow] = useShow(props.show);
+  const [info, setInfo] = useState<MapViewInfo>(EMPTY_INFO);
+  const [capturing, setCapturing] = useState(false);
+
+  useEffect(() => {
+    setLocaleDefault({
+      map: {
+        'info-control': {
+          title: 'INFO',
+          screenshot: 'Screenshot',
+          center: 'Center',
+          zoom: 'Zoom',
+          pitch: 'Pitch',
+          bearing: 'Bearing',
+          projection: 'Projection',
+          bounds: 'Bounds',
+          copy: 'Copy',
+        },
+      },
+    });
+  }, [setLocaleDefault]);
+
+  const syncInfo = useCallback(() => {
+    callMap((map) => {
+      setInfo(readMapViewInfo(map));
+    });
+  }, [callMap]);
+
+  const attachListeners = useCallback(
+    (map: MapSimple) => {
+      map.on('move', syncInfo);
+      map.on('pitch', syncInfo);
+      map.on('rotate', syncInfo);
+      map.on('styledata', syncInfo);
+    },
+    [syncInfo],
+  );
+
+  const detachListeners = useCallback(
+    (map: MapSimple) => {
+      map.off('move', syncInfo);
+      map.off('pitch', syncInfo);
+      map.off('rotate', syncInfo);
+      map.off('styledata', syncInfo);
+    },
+    [syncInfo],
+  );
+
+  useEffect(() => {
+    if (!show) {
+      callMap(detachListeners);
+      return;
+    }
+    syncInfo();
+    callMap(attachListeners);
+    return () => {
+      callMap(detachListeners);
+    };
+  }, [show, callMap, syncInfo, attachListeners, detachListeners]);
+
+  function handleToggle() {
+    toggleShow(!show);
+  }
+
+  function onScreenshot() {
+    callMap(async (map) => {
+      setCapturing(true);
+      try {
+        const image = await exportMapbox(map);
+        downloadDataUrl(image, `${mergedProps.fileName}.png`);
+      } finally {
+        setCapturing(false);
+      }
+    });
+  }
+
+  const rows = [
+    { key: 'center', label: trans('map.info-control.center'), value: info.center },
+    { key: 'zoom', label: trans('map.info-control.zoom'), value: info.zoom },
+    { key: 'pitch', label: trans('map.info-control.pitch'), value: info.pitch },
+    { key: 'bearing', label: trans('map.info-control.bearing'), value: info.bearing },
+    {
+      key: 'projection',
+      label: trans('map.info-control.projection'),
+      value: info.projection,
+    },
+    { key: 'bounds', label: trans('map.info-control.bounds'), value: info.bounds },
+  ];
+
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapInfoControl',
+    getState: () => ({
+      visible: true,
+      active: show,
+      title: trans('map.info-control.title'),
+      order,
+      icon: { type: 'mdi' as const, path: mdiInformationOutline },
+    }),
+    onClick: () => handleToggle(),
+  });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
+
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      btn={
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction(e.nativeEvent);
+            }}
+          />
+        ) : null
+      }
+      draggable={(bind) =>
+        show ? (
+          <DraggableItemPopup
+            show={show}
+            onUpdateShow={(v) => toggleShow(!!v)}
+            title={trans('map.info-control.title')}
+            width={360}
+            height={340}
+            extraBtn={
+              <BaseButton
+                title={trans('map.info-control.screenshot')}
+                disabled={capturing}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onScreenshot();
+                }}
+              >
+                <Icon path={mdiCameraOutline} size={16 / 24} />
+              </BaseButton>
+            }
+            {...bind}
+          >
+            <div className="map-info-control">
+              <div className="map-info-control__rows">
+                {rows.map((row) => (
+                  <div key={row.key} className="map-info-control__row">
+                    <div className="map-info-control__label">{row.label}</div>
+                    <div className="map-info-control__value">{row.value}</div>
+                    <BaseButton
+                      className="map-info-control__copy"
+                      title={trans('map.info-control.copy')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void copyText(row.value);
+                      }}
+                    >
+                      <Icon path={mdiContentCopy} size={14 / 24} />
+                    </BaseButton>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </DraggableItemPopup>
+        ) : null
+      }
+    />
+  );
+}

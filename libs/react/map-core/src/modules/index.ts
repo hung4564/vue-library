@@ -6,5 +6,6 @@ export * from './FullScreenControl/FullScreenControl';
 export * from './GeoLocateControl/GeoLocateControl';
 export * from './GlobeControl/GlobeControl';
 export * from './GotoControl/GotoControl';
+export * from './InfoControl/InfoControl';
 export * from './MouseCoordinatesControl/MouseCoordinatesControl';
 export * from './SettingControl/SettingControl';

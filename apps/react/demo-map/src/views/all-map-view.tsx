@@ -17,6 +17,7 @@ import {
   GlobeControl,
   GotoControl,
   HomeControl,
+  InfoControl,
   LegendControl,
   Map,
   MeasurementControl,
@@ -53,6 +54,7 @@ export function AllMapView() {
         <PrintAdvancedControl />
         <PrintControl />
         <GotoControl position="top-right" />
+        <InfoControl position="top-right" />
         <GlobeControl />
         <LegendControl />
         <CrsControl />

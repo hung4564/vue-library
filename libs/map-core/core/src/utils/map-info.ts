@@ -1,4 +1,4 @@
-import type { Coordinates, MapSimple } from '../types';
+import type { MapSimple } from '../types';
 
 export type MapViewInfo = {
   center: string;
@@ -68,19 +68,6 @@ export function readMapViewInfo(map: MapSimple): MapViewInfo {
       bounds.getNorth(),
     ),
   };
-}
-
-export function formatBboxCorners(
-  a?: Coordinates,
-  b?: Coordinates,
-  digits = 4,
-): string {
-  if (!a || !b) return '';
-  const west = Math.min(a.x, b.x);
-  const east = Math.max(a.x, b.x);
-  const south = Math.min(a.y, b.y);
-  const north = Math.max(a.y, b.y);
-  return formatLngLatBounds(west, south, east, north, digits);
 }
 
 export function copyText(value: string): Promise<void> {

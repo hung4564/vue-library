@@ -11,6 +11,7 @@ import {
   GlobeControl,
   GotoControl,
   HomeControl,
+  InfoControl,
   LegendControl,
   Map,
   type MeasureActionItem,
@@ -744,6 +745,7 @@ function createGroupIdentify() {
     <PrintAdvancedControl />
     <PrintControl />
     <GotoControl position="top-right" />
+    <InfoControl position="top-right" />
     <GlobeControl />
     <LegendControl />
     <CrsControl />

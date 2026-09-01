@@ -55,6 +55,13 @@
       "order": 4
     },
     {
+      "name": "InfoControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/InfoControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
       "name": "HomeControl",
       "package": "Map - Core",
       "docs": "/map/core/module/HomeControl",

@@ -2,6 +2,7 @@
   <Map ref="mapRef">
     <AsideControl position="top-left" />
     <GotoControl position="top-right" />
+    <InfoControl position="top-right" />
     <CrsControl />
     <GlobeControl />
     <SettingControl />
@@ -24,6 +25,7 @@ import {
   GlobeControl,
   GotoControl,
   HomeControl,
+  InfoControl,
   Map,
   MouseCoordinatesControl,
   SettingControl,

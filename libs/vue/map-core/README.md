@@ -142,6 +142,7 @@ All map controls support the following common props:
 - **FullScreenControl** - Toggle fullscreen mode
 - **GeoLocateControl** - Get user location
 - **GotoControl** - Navigate to coordinates
+- **InfoControl** - Map view info and screenshot
 - **MouseCoordinatesControl** - Display mouse coordinates
 - **SettingControl** - Map settings panel
 - **CrsControl** - Coordinate reference system selector
