@@ -4,7 +4,7 @@ import {
   type HighlightFilterCreator,
   type HighlightLayerIds,
   type IHighlightView,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import type { LayerSpecification } from 'maplibre-gl';
 
 export function createDatasetCustomHighlightComponent(
@@ -22,7 +22,7 @@ export function createDatasetCustomHighlightComponent(
     layerIds: HighlightLayerIds;
     state: { color: string; startTime: number };
   }) {
-    const t = (performance.now() - state.startTime) / 1000; // giây
+    const t = (performance.now() - state.startTime) / 1000;
     const c = state.color;
     const radius = 6 + Math.sin(t * 3) * 2;
     const opacity = 0.4 + 0.3 * Math.sin(t * 2);

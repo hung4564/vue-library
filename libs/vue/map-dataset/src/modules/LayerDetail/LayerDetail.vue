@@ -23,15 +23,23 @@ defineProps({
 });
 const { mapId } = useMap();
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-const { trans } = useLang(mapId.value);
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault({
+  map: {
+    'layer-control': {
+      info: { title: 'Layer info' },
+    },
+  },
+});
 const emit = defineEmits(['close']);
+function handleClose() {
+  setFeatureHighlight(undefined, 'detail');
+  emit('close');
+}
 function onUpdateShow(val) {
   if (!val) {
-    emit('close');
+    handleClose();
   }
-}
-function onClose() {
-  setFeatureHighlight(undefined, 'detail');
 }
 </script>
 <template>
@@ -39,10 +47,11 @@ function onClose() {
     <template #draggable="props">
       <DraggableItemPopup
         show
-        @close="onClose"
+        @close="handleClose"
         @update:show="onUpdateShow"
         :width="400"
         v-bind="{ ...props, ...popupProps }"
+        :title="trans('map.layer-control.info.title')"
       >
         <template #title>
           {{ trans('map.layer-control.info.title') }}

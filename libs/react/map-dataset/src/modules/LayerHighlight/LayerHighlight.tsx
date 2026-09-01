@@ -1,5 +1,10 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { EventClick, logHelper, type MapSimple } from '@hungpvq/map-core';
+import {
+  EventClick,
+  EventMouseMove,
+  logHelper,
+  type MapSimple,
+} from '@hungpvq/map-core';
 import type {
   HighlightHandle,
   IdentifySingleResult,
@@ -17,9 +22,16 @@ import { loggerHighlight } from '../../logger';
 import { useMapDataset, useMapDatasetHighlight } from '../../store';
 import { createDefaultHighlight } from './helper';
 
+function featureIdentity(feature?: Feature | GeoJSONFeature) {
+  if (!feature) return undefined;
+  const id = feature.id ?? feature.properties?.id;
+  return id != null ? String(id) : undefined;
+}
+
 export function LayerHighlight(
   props: WithMapPropType & {
     enableClick?: boolean;
+    enableHover?: boolean;
     color?: string;
     durationMs?: number;
   },
@@ -33,60 +45,116 @@ export function LayerHighlight(
   const getAllRef = useRef<
     ReturnType<typeof useMapDataset>['getAllComponentsByType'] | null
   >(null);
+  const clickRequestIdRef = useRef(0);
+  const hoverRequestIdRef = useRef(0);
+  const lastHoverIdRef = useRef<string | undefined>();
   const onGetFeaturesRef = useRef<
-    (point?: PointLike | [PointLike, PointLike]) => Promise<void>
+    (
+      point?: PointLike | [PointLike, PointLike],
+      source?: 'highlight' | 'hover',
+    ) => Promise<void>
   >(async () => undefined);
 
   const clickEvent = useRef(
     new EventClick().setHandler((e: MapMouseEvent) => {
-      void onGetFeaturesRef.current(e.point);
+      void onGetFeaturesRef.current(e.point, 'highlight');
+    }),
+  );
+  const hoverEvent = useRef(
+    new EventMouseMove().setClassPointer('').setHandler((e: MapMouseEvent) => {
+      void onGetFeaturesRef.current(e.point, 'hover');
     }),
   );
 
   const { mapId, callMap } = useMap(merged, undefined, (map) => {
     handleHighlight.current?.stopAnimation(map);
+    handleDefault.stopAnimation(map);
   });
   const { getAllComponentsByType } = useMapDataset(mapId);
   const {
     getFeatureHighlight,
     setFeatureHighlight,
     getDatesetHighlight,
+    getHighlightSource,
     version: highlightVersion,
   } = useMapDatasetHighlight(mapId);
 
   getAllRef.current = getAllComponentsByType;
 
-  const { add, remove } = useEventMap(mapId, clickEvent.current, false);
+  const { add: addClick, remove: removeClick } = useEventMap(
+    mapId,
+    clickEvent.current,
+    false,
+  );
+  const { add: addHover, remove: removeHover } = useEventMap(
+    mapId,
+    hoverEvent.current,
+    false,
+  );
 
   useEffect(() => {
-    if (props.enableClick) add();
-    return () => remove();
-  }, [props.enableClick, add, remove]);
+    if (props.enableClick) addClick();
+    return () => removeClick();
+  }, [props.enableClick, addClick, removeClick]);
+
+  useEffect(() => {
+    if (props.enableHover) addHover();
+    return () => removeHover();
+  }, [props.enableHover, addHover, removeHover]);
 
   async function onGetFeatures(
     pointOrBox?: PointLike | [PointLike, PointLike],
+    source: 'highlight' | 'hover' = 'highlight',
   ) {
+    const current =
+      source === 'highlight'
+        ? ++clickRequestIdRef.current
+        : ++hoverRequestIdRef.current;
+    if (source === 'highlight') {
+      hoverRequestIdRef.current += 1;
+      lastHoverIdRef.current = undefined;
+      callMap((map) => stopAnimation(map));
+    }
     const highlights =
-      (getAllRef.current?.(
-        'highlight',
-      ) as IHighlightView[] | undefined) || [];
-    const feature: IdentifySingleResult = await handleMultiIdentifyGetFirst(
-      highlights as never,
-      mapId,
-      pointOrBox,
-    );
+      (getAllRef.current?.('highlight') as IHighlightView[] | undefined) || [];
+    const feature: IdentifySingleResult | undefined =
+      await handleMultiIdentifyGetFirst(
+        highlights as never,
+        mapId,
+        pointOrBox,
+      );
+    if (source === 'highlight' && current !== clickRequestIdRef.current) return;
+    if (source === 'hover' && current !== hoverRequestIdRef.current) return;
     logHelper(loggerHighlight, mapId, 'LayerHighlight').debug(
       'onGetFeatures',
       feature,
     );
-    if (!feature?.feature?.data) return;
-    setFeatureHighlight(feature.feature.data, 'highlight', feature.identify);
+    const data = feature?.feature?.data;
+    if (!data) {
+      if (source === 'hover') {
+        lastHoverIdRef.current = undefined;
+        if (getHighlightSource() === 'hover') {
+          setFeatureHighlight(undefined, 'hover', undefined);
+        }
+        return;
+      }
+      setFeatureHighlight(undefined, 'highlight', undefined);
+      return;
+    }
+    if (source === 'hover') {
+      const id = featureIdentity(data);
+      if (id && id === lastHoverIdRef.current && getHighlightSource() === 'hover') {
+        return;
+      }
+      lastHoverIdRef.current = id;
+    }
+    setFeatureHighlight(data, source, feature?.identify);
   }
   onGetFeaturesRef.current = onGetFeatures;
 
   function stopAnimation(map: MapSimple) {
-    if (!handleHighlight.current) return;
-    handleHighlight.current.stopAnimation(map);
+    handleHighlight.current?.stopAnimation(map);
+    handleDefault.stopAnimation(map);
   }
 
   function clear() {

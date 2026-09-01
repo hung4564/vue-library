@@ -294,7 +294,7 @@ export async function handleMultiIdentifyGetFirst(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
-): Promise<IdentifySingleResult> {
+): Promise<IdentifySingleResult | undefined> {
   const allLayerIds: string[] = [];
   const cache: Record<string, IIdentifyView> = {};
   identifies.forEach((identify) => {
@@ -386,7 +386,15 @@ export async function handleMultiIdentifyGetFirst(
           'handleMultiIdentifyGetFirst',
         ).debug('end', { result });
         resolve(result);
+        return;
       }
+      logHelper(
+        loggerIdentify,
+        mapId,
+        'FIRST',
+        'handleMultiIdentifyGetFirst',
+      ).debug('end', { result: undefined });
+      resolve(undefined);
     });
   });
 }

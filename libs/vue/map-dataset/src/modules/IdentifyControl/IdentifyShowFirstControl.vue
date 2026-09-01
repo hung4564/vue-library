@@ -72,7 +72,10 @@ const result = reactive<{
 }>({
   loading: false,
 });
-function onSelectFeatures(feature: IdentifyResult, event?: MapMouseEvent) {
+function onSelectFeatures(
+  feature: IdentifyResult | undefined,
+  event?: MapMouseEvent,
+) {
   logHelper(
     loggerIdentify,
     mapId.value,

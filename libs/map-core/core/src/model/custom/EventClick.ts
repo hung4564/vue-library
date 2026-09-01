@@ -22,8 +22,9 @@ export class EventClick extends Event<'click', EventClickOption> {
   /**
    * Set the CSS class for pointer cursor
    */
-  setClassPointer(classPointer: string): void {
+  setClassPointer(classPointer: string): this {
     this.options.classPointer = classPointer;
+    return this;
   }
 
   /**
@@ -72,8 +73,9 @@ export class EventMouseMove extends Event<'mousemove', EventClickOption> {
   /**
    * Set the CSS class for pointer cursor
    */
-  setClassPointer(classPointer: string): void {
+  setClassPointer(classPointer: string): this {
     this.options.classPointer = classPointer;
+    return this;
   }
 
   /**

@@ -5,6 +5,7 @@ import type {
   IHighlightView,
 } from '@hungpvq/map-dataset';
 import {
+  createDefaultHighlightLayerIds,
   createDefaultHighlightLayers,
   defaultAnimate,
   useHighlightAnimation as createHighlightAnimation,
@@ -18,13 +19,10 @@ import type {
 } from 'maplibre-gl';
 import { loggerHighlight } from '../../logger';
 
-type LayerKey = 'point' | 'line' | 'polygon';
-
 /** Framework-agnostic default highlight animator (same as Vue useDefaultHighlight). */
 export function createDefaultHighlight(color = '#004E98'): HighlightHandle & {
   setDataset(p_dataset?: IHighlightView): void;
 } {
-  // Not a React hook — factory from @hungpvq/map-dataset (named use* for historical reasons).
   const {
     startAnimation: _startAnimation,
     stopAnimation: _stopAnimation,
@@ -33,14 +31,10 @@ export function createDefaultHighlight(color = '#004E98'): HighlightHandle & {
   } = createHighlightAnimation();
 
   let dataset: IHighlightView | undefined;
-  const layerId = 'layer-highlighted';
-  const layerIds: Record<LayerKey, string> = {
-    point: `${layerId}-point`,
-    line: `${layerId}-line`,
-    polygon: `${layerId}-polygon`,
-  };
+  const layerIds: HighlightLayerIds =
+    createDefaultHighlightLayerIds('layer-highlighted');
   const layers = createDefaultHighlightLayers(color) as Record<
-    LayerKey,
+    string,
     Partial<
       | FillLayerSpecification
       | LineLayerSpecification
@@ -67,7 +61,7 @@ export function createDefaultHighlight(color = '#004E98'): HighlightHandle & {
     );
     _initAnimation({
       map,
-      layerIds: layerIds as HighlightLayerIds,
+      layerIds,
       layers: layers as Record<string, Partial<LayerSpecification>>,
       dataset,
       feature,

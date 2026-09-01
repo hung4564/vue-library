@@ -5,6 +5,7 @@ import type {
   IHighlightView,
 } from '@hungpvq/map-dataset';
 import {
+  createDefaultHighlightLayerIds,
   createDefaultHighlightLayers,
   defaultAnimate,
   useHighlightAnimation,
@@ -29,31 +30,27 @@ export function useDefaultHighlight(color = '#004E98'): HighlightHandle & {
     setOnDone,
   } = useHighlightAnimation();
   const dataset = shallowRef<IHighlightView | undefined>(undefined);
-  const layerId = 'layer-highlighted';
-  type LayerKey = 'point' | 'line' | 'polygon';
-  const layerIds = ref<Record<LayerKey, string>>({
-    point: `${layerId}-point`,
-    line: `${layerId}-line`,
-    polygon: `${layerId}-polygon`,
-  });
+  const layerIds = ref<HighlightLayerIds>(
+    createDefaultHighlightLayerIds('layer-highlighted'),
+  );
 
-  const layers = ref<
-    Record<
-      LayerKey,
+  const layers = ref(
+    createDefaultHighlightLayers(color) as Record<
+      string,
       Partial<
         | FillLayerSpecification
         | LineLayerSpecification
         | CircleLayerSpecification
       >
-    >
-  >(createDefaultHighlightLayers(color));
+    >,
+  );
   function setDataset(p_dataset?: IHighlightView) {
     dataset.value = p_dataset;
   }
   function startAnimation({
     map,
     feature,
-    durationMs = 5000, // destructuring default value
+    durationMs = 5000,
   }: {
     map: MapSimple;
     feature?: GeoJSONFeature;

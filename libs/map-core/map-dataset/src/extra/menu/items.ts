@@ -10,9 +10,9 @@ import type {
   MenuItemCustomComponentBottomOrExtra,
   WithMenuHelper,
 } from '../../interfaces';
-import type { FieldFeaturesDef } from '../field';
-import { convertItemToFeature } from '../../utils';
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
+import { convertItemToFeature } from '../../utils';
+import type { FieldFeaturesDef } from '../field';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,

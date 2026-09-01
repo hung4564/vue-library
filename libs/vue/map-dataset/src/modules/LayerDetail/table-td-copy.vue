@@ -1,9 +1,9 @@
 <template>
-  <div class="row-container">
-    <div class="btn-copy">
-      <base-button @click="copy(value)">
+  <div class="layer-detail-row">
+    <div class="layer-detail-row__copy">
+      <BaseButton @click="copy(value)" aria-label="Copy">
         <SvgIcon :path="path.copy" size="14" type="mdi" />
-      </base-button>
+      </BaseButton>
     </div>
     <slot />
   </div>

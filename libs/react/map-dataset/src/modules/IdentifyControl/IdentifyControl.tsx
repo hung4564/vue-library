@@ -615,7 +615,10 @@ export function IdentifyShowFirstControl(props: WithMapPropType) {
     }
   }
 
-  function onSelectFeatures(feature: IdentifyResult, event?: MapMouseEvent) {
+  function onSelectFeatures(
+    feature: IdentifyResult | undefined,
+    event?: MapMouseEvent,
+  ) {
     logHelper(
       loggerIdentify,
       mapId,

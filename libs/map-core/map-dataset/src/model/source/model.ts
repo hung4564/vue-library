@@ -13,6 +13,7 @@ import { createDatasetPartMapboxSourceComponent } from './base';
 export function createDatasetPartGeojsonSourceComponent(
   name: string,
   data?: GeoJSONSourceSpecification['data'],
+  options?: Pick<GeoJSONSourceSpecification, 'promoteId' | 'generateId'>,
 ): IMapboxSourceView {
   const base = createDatasetPartMapboxSourceComponent<
     GeoJSONSourceSpecification['data'] | undefined
@@ -21,11 +22,13 @@ export function createDatasetPartGeojsonSourceComponent(
   return createNamedComponent('GeojsonSourceComponent', {
     ...base,
     getMapboxSource: () => ({
-      type: 'geojson',
+      type: 'geojson' as const,
       data: base.getData() || {
         type: 'FeatureCollection',
         features: [],
       },
+      ...(options?.promoteId != null ? { promoteId: options.promoteId } : {}),
+      ...(options?.generateId ? { generateId: true } : {}),
     }),
     getFieldsInfo: () => [
       { trans: 'map.layer-control.field.name', value: 'name' },

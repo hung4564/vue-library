@@ -66,7 +66,11 @@ function ensureCustomMenuHandler() {
   );
 }
 
-function createCustomMenuItem(icon: string, name: string, click: MenuItemClick) {
+function createCustomMenuItem(
+  icon: string,
+  name: string,
+  click: MenuItemClick,
+) {
   return createMenuBuilder()
     .item()
     .setLocation('extra')
@@ -88,55 +92,6 @@ function createCustomWithTransformMenuItem(
     .setIcon(icon)
     .setClick(click)
     .build();
-}
-
-function createDefaultHighlightDataset() {
-  const dataset = createRootDataset('Default Highlight');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          id: '1',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.9475326507, 20.6369404209],
-              [106.1212571097, 20.6369404209],
-              [106.1212571097, 20.7192355919],
-              [105.9475326507, 20.7192355919],
-              [105.9475326507, 20.6369404209],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-    ],
-  });
-  const groupLayer1 = createGroupDataset('Group layer 1');
-  const list1 = createDatasetPartListViewUiComponentBuilder('Default highlight')
-    .setColor(getChartRandomColor())
-    .configDisabledOpacity()
-    .configInitShowLegend()
-    .addMenus([createMenuItemToggleShow()])
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setFilter(['==', '$type', 'Polygon'])
-      .setOpacity(0.5)
-      .setColor(list1.color)
-      .build(),
-  ]);
-  const highlight = createDatasetPartHighlightComponent();
-  groupLayer1.add(layer1);
-  groupLayer1.add(highlight);
-  groupLayer1.add(list1);
-  dataset.add(source);
-  dataset.add(groupLayer1);
-  return dataset;
 }
 
 function createSimpleIdentifyDataset() {
@@ -592,9 +547,7 @@ function createCustomChainSupportDataset() {
   return dataset;
 }
 
-export async function loadHighlightDemoDatasets(mapId: string) {
-  await addDatasetToMap(mapId, createDefaultHighlightDataset());
-}
+export { loadHighlightDemoDatasets } from './highlight-datasets';
 
 export async function loadIdentifyDemoDatasets(mapId: string) {
   await addDatasetToMap(mapId, createSimpleIdentifyDataset());

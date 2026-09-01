@@ -1,16 +1,16 @@
 <template>
   <TableTdCopy :value="value">
     <template v-if="!field.inline">
-      <div class="grid-row">
-        <div class="label-cell" :title="label">
+      <div class="layer-detail-grid">
+        <div class="layer-detail-grid__label" :title="label">
           {{ label }}
         </div>
-        <div class="value-cell">
+        <div class="layer-detail-grid__value">
           {{ value }}
         </div>
       </div>
     </template>
-    <div class="grid-row grid-row-full" v-else>
+    <div class="layer-detail-grid layer-detail-grid--full" v-else>
       <input-text-area readonly rows="10" v-model="value" :label="label" />
     </div>
   </TableTdCopy>
