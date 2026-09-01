@@ -8,6 +8,17 @@ import { MittTypeMapEventEventKey as EventKey } from '../types';
 import type { Emitter } from 'mitt';
 import type { LoggerFunction } from '../store/interface';
 
+/** Normalize event `from` to kebab-case (Vue/React parity). */
+export function normalizeEventFrom(name: string): string {
+  return name
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+}
+
 /**
  * Event manager service
  * Provides framework-agnostic event management
@@ -65,9 +76,9 @@ export class EventManager {
       this.logger(this.mapId, 'debug', 'add', { event, componentName });
     }
 
-    // Set component name if not set
-    if (!event.from && componentName) {
-      event.from = componentName;
+    const rawFrom = event.from || componentName;
+    if (rawFrom) {
+      event.from = normalizeEventFrom(rawFrom);
     }
 
     // Update core state (single source of truth)
