@@ -23,7 +23,7 @@ import { InputText } from '@hungpvq/vue-map-core';
 const form = defineModel<number[]>({ default: () => [] });
 const emit = defineEmits(['update:modelValue']);
 
-const props = defineProps({
+defineProps({
   mapId: {
     type: String,
     required: true,

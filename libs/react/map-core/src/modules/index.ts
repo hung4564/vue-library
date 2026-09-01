@@ -8,4 +8,5 @@ export * from './GlobeControl/GlobeControl';
 export * from './GotoControl/GotoControl';
 export * from './InfoControl/InfoControl';
 export * from './MouseCoordinatesControl/MouseCoordinatesControl';
+export * from './MapContextMenuControl/MapContextMenuControl';
 export * from './SettingControl/SettingControl';

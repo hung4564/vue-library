@@ -17,6 +17,7 @@ import {
   type MeasureActionItem,
   MeasurementControl,
   type MeasurementHandleType,
+  MapContextMenuControl,
   MouseCoordinatesControl,
   PrintAdvancedControl,
   PrintControl,
@@ -755,6 +756,7 @@ function createGroupIdentify() {
     <ZoomControl />
     <HomeControl />
     <MouseCoordinatesControl />
+    <MapContextMenuControl />
     <BaseMapControl position="bottom-left" />
     <IdentifyShowFirstControl />
     <LayerHighlight />

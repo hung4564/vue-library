@@ -10,6 +10,8 @@ import {
   EventBboxRangerHandle,
   EventClick,
   logHelper,
+  MAP_CONTEXT_MENU_ID,
+  type MapMenuItemProps,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import type {
@@ -24,6 +26,7 @@ import {
   defaultMapProps,
   MapCommonButton,
   ModuleContainer,
+  UniversalRegistry,
   useCoordinate,
   useEventMap,
   useLang,
@@ -54,7 +57,7 @@ const props = withDefaults(
   >(),
   { ...defaultMapProps },
 );
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -113,15 +116,36 @@ const {
 } = useEventMap(mapId.value, new EventBboxRanger().setHandler(onBboxSelect));
 
 const origin = reactive({ latitude: 0, longitude: 0 });
+const show = ref(props.show);
+function runIdentifyAt(
+  lng: number,
+  lat: number,
+  point: PointLike,
+  event?: MapMouseEvent,
+) {
+  origin.latitude = lat;
+  origin.longitude = lng;
+  show.value = true;
+  onGetFeatures(event ?? ({ point, lngLat: { lng, lat } } as MapMouseEvent));
+}
 function onMapClick(e: MapMouseEvent) {
   if (isEventClickBox.value) return;
   logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
     'onMapClick',
     { event: e },
   );
-  origin.latitude = e.lngLat.lat;
-  origin.longitude = e.lngLat.lng;
-  onGetFeatures(e);
+  runIdentifyAt(e.lngLat.lng, e.lngLat.lat, e.point, e);
+}
+function onIdentifyHere(props: MapMenuItemProps) {
+  const { lng, lat } = props.layer.lngLat;
+  const point = props.layer.point;
+  if (point) {
+    runIdentifyAt(lng, lat, point);
+    return;
+  }
+  callMap((map) => {
+    runIdentifyAt(lng, lat, map.project([lng, lat]));
+  });
 }
 function onBboxSelect(bbox: Parameters<EventBboxRangerHandle>[0]) {
   if (isEventClickActive.value) return;
@@ -222,7 +246,6 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
     result.loading = false;
   }
 }
-const show = ref(props.show);
 function toggleShow() {
   show.value = !show.value;
   onUseMapClick();
@@ -291,6 +314,11 @@ function onMenuAction(
 onMounted(() => {
   if (props.immediately) onUseMapClick();
 });
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
+  MAP_CONTEXT_MENU_ID.identifyHere,
+  onIdentifyHere,
+);
 interface Grouped {
   id: string;
   name: string;
@@ -338,6 +366,7 @@ function groupItems(items: IdentifyMultiResult[]): Grouped[] {
   return groups;
 }
 const { state, control } = useToolbarControl(mapId.value, props, {
+  kind: 'single',
   id: 'mapIdentifyControl',
   getState() {
     return {
@@ -346,7 +375,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       title: trans.value('map.identify.title'),
       order: order.value,
       icon: {
-        type: 'mdi',
+        type: 'mdi' as const,
         path: path.icon,
       },
     };

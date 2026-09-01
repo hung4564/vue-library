@@ -20,6 +20,7 @@ import {
   InfoControl,
   LegendControl,
   Map,
+  MapContextMenuControl,
   MeasurementControl,
   MouseCoordinatesControl,
   PrintAdvancedControl,
@@ -64,6 +65,7 @@ export function AllMapView() {
         <ZoomControl />
         <HomeControl />
         <MouseCoordinatesControl />
+        <MapContextMenuControl />
         <BaseMapControl position="bottom-left" />
         <IdentifyShowFirstControl />
         <LayerHighlight />

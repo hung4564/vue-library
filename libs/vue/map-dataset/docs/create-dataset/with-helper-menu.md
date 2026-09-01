@@ -358,7 +358,7 @@ identify.addMenus([
 | `createMenuItemSetOpacity()` | `prebottom` | List UI unless `configDisabledOpacity()` |
 | `createMenuItemStyleEdit()` | extra | — |
 | `createMenuItemShowDetailInfoSource()` | extra | — |
-| `createMenuItemToBoundActionForList({ bbox? })` | extra | — |
+| `createMenuItemToBoundActionForList({ bbox?, name? })` | extra | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (bbox from GeoJSON) |
 | `createMenuItemShowDetailForItem(fields)` | `menu` | Identify |
 | `createMenuItemToBoundActionForItem()` | `menu` | Identify |
 | `createMenuItemMoveUp()` / `MoveDown()` | `menu` | List UI unless `configDisabledMove()` |

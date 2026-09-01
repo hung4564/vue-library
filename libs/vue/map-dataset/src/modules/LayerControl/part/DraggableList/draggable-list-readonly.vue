@@ -85,24 +85,6 @@ function convertListToTree(value: Item[]): TreeItem[] {
   });
   return treeLayer;
 }
-function convertTreeToList(tree: TreeItem[]): Item[] {
-  return tree.reduce<Item[]>((acc, cur) => {
-    if (cur.isGroup) {
-      if (cur.children.length > 0) {
-        acc.push(
-          ...cur.children.map((x) => {
-            x.group = { id: cur.id, name: cur.name };
-            return x;
-          }),
-        );
-      }
-    } else {
-      cur.group = undefined;
-      acc.push(cur);
-    }
-    return acc;
-  }, []);
-}
 function createDefaultGroup(group: any) {
   let temp = {
     id: `group-${new Date().getTime()}`,

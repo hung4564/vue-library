@@ -7,5 +7,6 @@ export { default as InfoControl } from './InfoControl/InfoControl.vue';
 export { default as Map } from './Map.vue';
 export { default as ModuleContainer } from './ModuleContainer/ModuleContainer.vue';
 export { default as MouseCoordinatesControl } from './MouseCoordinatesControl/MouseCoordinatesControl.vue';
+export { default as MapContextMenuControl } from './MapContextMenuControl/MapContextMenuControl.vue';
 export { default as SettingControl } from './SettingControl/SettingControl.vue';
 export { default as ZoomControl } from './ZoomControl/ZoomControl.vue';

@@ -17,7 +17,7 @@ import {
   handleMultiIdentifyGetFirst,
 } from '@hungpvq/map-dataset';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
-import { MapMouseEvent, type PointLike } from 'maplibre-gl';
+import { MapMouseEvent } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { loggerIdentify } from '../../logger';
 import { useMapDataset } from '../../store';

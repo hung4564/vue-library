@@ -29,7 +29,7 @@ const emit = defineEmits(['update:modelValue']);
 const path = {
   delete: mdiDelete,
 };
-const props = defineProps({
+defineProps({
   mapId: {
     type: String,
     required: true,

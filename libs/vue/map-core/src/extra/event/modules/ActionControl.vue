@@ -64,7 +64,7 @@ function updateEventMap(events: IEvent[]) {
         const new_current = events[0];
 
         if (current && current.id === new_current.id) {
-          return;
+          continue;
         }
         if (current) {
           current.removeFromMap(map);

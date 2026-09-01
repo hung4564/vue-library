@@ -9,6 +9,7 @@ import {
   HomeControl,
   InfoControl,
   Map,
+  MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
@@ -33,6 +34,7 @@ export function MapCorePage() {
         <BaseMapControl position="bottom-left" />
         <GeoLocateControl position="top-right" />
         <MouseCoordinatesControl />
+        <MapContextMenuControl />
       </Map>
     </MapPageShell>
   );

@@ -79,11 +79,15 @@ export function createMenuItem<T extends IDataset>(
   return item;
 }
 
-export function createMenuItemToBoundActionForList(props?: { bbox?: BBox }) {
+export function createMenuItemToBoundActionForList(props?: {
+  bbox?: BBox;
+  name?: string;
+}) {
   return createMenuBuilder()
     .item()
+    .setId('fill-bound')
     .setLocation('extra')
-    .setName('Fly to')
+    .setName(props?.name ?? 'Fill bound')
     .setIcon(mdiCrosshairsGps)
     .setClick(({ layer, mapId }) => {
       if (props?.bbox) {

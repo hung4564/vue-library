@@ -67,7 +67,7 @@ setLocaleDefault({
 
 const loading = ref(true);
 const query = ref('');
-const columns = ref<AttributeTableColumn[]>([]);
+const tableColumns = ref<AttributeTableColumn[]>([]);
 const rows = ref<AttributeTableRow[]>([]);
 const selectedIds = ref<string[]>([]);
 const zoomToSelection = ref(false);
@@ -113,12 +113,12 @@ onMounted(async () => {
     const collection = await getDatasetFeatureCollection(props.layer);
     if (cancelled) return;
     if (!collection) {
-      columns.value = [];
+      tableColumns.value = [];
       rows.value = [];
       return;
     }
     const table = buildAttributeTable(collection, props.columns);
-    columns.value = table.columns;
+    tableColumns.value = table.columns;
     rows.value = table.rows;
   } finally {
     if (!cancelled) loading.value = false;
@@ -308,7 +308,7 @@ watch(zoomToSelection, (enabled) => {
                       @change="toggleSelectAll"
                     />
                   </th>
-                  <th v-for="column in columns" :key="column.key">
+                  <th v-for="column in tableColumns" :key="column.key">
                     {{ column.label }}
                   </th>
                 </tr>
@@ -328,7 +328,7 @@ watch(zoomToSelection, (enabled) => {
                     />
                   </td>
                   <td
-                    v-for="column in columns"
+                    v-for="column in tableColumns"
                     :key="column.key"
                     :title="cellTitle(row.cells[column.key] ?? '')"
                   >

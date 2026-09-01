@@ -1,8 +1,9 @@
-import type { EventBboxRangerHandle, WithMapPropType } from '@hungpvq/map-core';
+import type { EventBboxRangerHandle, MapMenuItemProps, WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
   EventClick,
   logHelper,
+  MAP_CONTEXT_MENU_ID,
 } from '@hungpvq/map-core';
 import type {
   IDataset,
@@ -29,6 +30,7 @@ import {
   useMap,
   useShow,
   useToolbarControl,
+  UniversalRegistry,
 } from '@hungpvq/react-map-core';
 import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -90,7 +92,7 @@ export function IdentifyControl(
   props: WithMapPropType & { show?: boolean; immediately?: boolean },
 ) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap(merged);
+  const { mapId, moduleContainerProps, order, callMap } = useMap(merged);
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
@@ -252,6 +254,35 @@ export function IdentifyControl(
     },
     [mapId, onSelectFeatures, getAllComponentsByType],
   );
+
+  const onGetFeaturesRef = useRef(onGetFeatures);
+  onGetFeaturesRef.current = onGetFeatures;
+  const toggleShowRef = useRef(toggleShow);
+  toggleShowRef.current = toggleShow;
+  const callMapRef = useRef(callMap);
+  callMapRef.current = callMap;
+
+  useEffect(() => {
+    UniversalRegistry.registerMenuHandlerForMap(
+      mapId,
+      MAP_CONTEXT_MENU_ID.identifyHere,
+      (props: MapMenuItemProps) => {
+        const { lng, lat } = props.layer.lngLat;
+        const run = (point: PointLike) => {
+          setOrigin({ latitude: lat, longitude: lng });
+          toggleShowRef.current(true);
+          void onGetFeaturesRef.current(point);
+        };
+        if (props.layer.point) {
+          run(props.layer.point);
+          return;
+        }
+        callMapRef.current((map) => {
+          run(map.project([lng, lat]));
+        });
+      },
+    );
+  }, [mapId]);
 
   const onStartMapClick = useCallback(() => {
     setIsUseClick(true);

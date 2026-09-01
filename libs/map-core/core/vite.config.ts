@@ -40,7 +40,13 @@ export default defineConfig(() => ({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['proj4', 'maplibre-gl', 'mitt', '@hungpvq/shared-log'],
+      external: [
+        'proj4',
+        'maplibre-gl',
+        'mitt',
+        '@hungpvq/shared-log',
+        '@mdi/js',
+      ],
     },
   },
   test: {

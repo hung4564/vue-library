@@ -10,7 +10,7 @@ import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 
-const props = defineProps<{
+defineProps<{
   item: MenuAction<IListViewUI>;
 }>();
 </script>

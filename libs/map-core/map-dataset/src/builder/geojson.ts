@@ -1,17 +1,19 @@
 import type { Color } from '@hungpvq/map-core';
-import { getChartRandomColor } from '@hungpvq/map-core';
+import { bboxFromGeojson, getChartRandomColor } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
 import type { IDataset } from '../interfaces';
 import { createDatasetPartGeojsonSourceComponent } from '../model/source';
 import { createDatasetPartListViewUiComponent } from '../model/list';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createMultiMapboxLayerComponent } from '../model/layer';
+import { createDatasetPartMetadataComponent } from '../model/part-metadata.model';
 import { LayerSimpleMapboxBuild } from '../utils';
 import type { FieldFeaturesDef } from '../extra/field';
 import type { LayerStyleType } from '../utils/layer-simple-builder';
 import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
+  createMenuItemToBoundActionForList,
 } from '../extra/menu/items';
 import { createIdentifyMapboxComponent } from '../model/identify';
 export type GeojsonDatasetOption = {
@@ -19,12 +21,21 @@ export type GeojsonDatasetOption = {
   geojson: GeoJSON;
   type: LayerStyleType;
   color?: Color;
+  opacity?: number;
 };
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   const dataset = createRootDataset(data.name);
 
   const list = createDatasetPartListViewUiComponent(data.name);
   list.color = data.color || getChartRandomColor();
+  if (data.opacity != null) {
+    list.opacity = data.opacity;
+  }
+  const bbox = bboxFromGeojson(data.geojson);
+  if (bbox) {
+    dataset.add(createDatasetPartMetadataComponent(data.name, { bbox }));
+    list.addMenus([createMenuItemToBoundActionForList({ bbox })]);
+  }
   const groupLayer = createGroupDataset(data.name);
 
   const layer = createMultiMapboxLayerComponent(data.name, [

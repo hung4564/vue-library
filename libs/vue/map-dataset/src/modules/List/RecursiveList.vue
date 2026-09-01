@@ -72,8 +72,8 @@ withDefaults(
 );
 
 defineSlots<{
-  group(props: { item: TreeItem }): VNode[];
-  leaf(props: { item: Item }): VNode[];
-  'group-extra-data'(props: { item: TreeItem }): VNode[];
+  group(_props: { item: TreeItem }): VNode[];
+  leaf(_props: { item: Item }): VNode[];
+  'group-extra-data'(_props: { item: TreeItem }): VNode[];
 }>();
 </script>

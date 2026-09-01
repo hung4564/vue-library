@@ -19,6 +19,8 @@ Editable layer list: create, group, reorder, delete, run menus.
 
 **Events:** none. Visibility / opacity fire on the list node (`toggleShow`, `changeOpacity`) — see [Events](../create-dataset/with-helper-event.md). Dialogs from ⋮ menus need [`ComponentManagementControl`](./ComponentManagementControl.md). Create-layer uses [`CreateControl`](./CreateControl.md) internally.
 
+When [`MapContextMenuControl`](/map/core/module/MapContextMenuControl) is on the same map, Quick analysis includes **Buffer 500 m here**, **Buffer 1 km here**, and **Buffer 5 km here**. Clicking one adds a GeoJSON circle layer (with a **Fill bound** extra button).
+
 ## Slots / render props
 
 | Name | Vue | React |

@@ -4,6 +4,13 @@
 
 ```ts
 const { add: addEventClick, remove: removeEventClick } = useEventMap(mapId.value, new EventClick().setHandler(onMapClick));
+const { add: addContextMenu, remove: removeContextMenu } = useEventMap(
+  mapId.value,
+  new EventContextMenu().setHandler((e) => {
+    e.preventDefault();
+    console.info(e.lngLat);
+  }),
+);
 ```
 
 ## Model
@@ -11,10 +18,11 @@ const { add: addEventClick, remove: removeEventClick } = useEventMap(mapId.value
 **Import event models directly from `@hungpvq/map-core`:**
 
 ```ts
-import { EventClick, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
 ```
 
 - `EventClick` - Click event handler
+- `EventContextMenu` (alias: `EventRightClick`) - Right-click / `contextmenu` handler. Uses `event_map_type: 'contextmenu'`, so it can run together with `EventClick` (`click`). `ActionControl` (already mounted by `Map`) attaches both.
 - `EventBboxRanger` (alias: `EventBboxSelect`) - Bounding box selection handler
 - `EventMouseMove` - Mouse move event handler
 
@@ -50,7 +58,7 @@ The `useEventMap` hook provides a convenient way to add, remove, and check the s
 
 ```ts
 import { useEventMap } from '@hungpvq/vue-map-core';
-import { EventClick } from '@hungpvq/map-core';
+import { EventClick, EventContextMenu } from '@hungpvq/map-core';
 ```
 
 **Usage:**
@@ -75,12 +83,13 @@ You can use several built-in event models provided by the library:
 **Import:**
 
 ```ts
-import { EventClick, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
 ```
 
 **Available Events:**
 
 - `EventClick` - Click event handler
+- `EventContextMenu` - Right-click / `contextmenu` handler
 - `EventBboxRanger` - Bounding box selection handler (can be imported as `EventBboxSelect` for backward compatibility)
 - `EventMouseMove` - Mouse move event handler
 
@@ -125,5 +134,5 @@ add();
 
 - Use `useMapEventStore` for direct access to the event store (current event, event list).
 - Use `useEventMap` for adding, removing, and checking the status of events in a component-friendly way.
-- Use built-in events like `EventClick`, `EventBboxRanger`, and `EventMouseMove` from `@hungpvq/map-core` for common interactions.
+- Use built-in events like `EventClick`, `EventContextMenu`, `EventBboxRanger`, and `EventMouseMove` from `@hungpvq/map-core` for common interactions.
 - Create custom events by implementing the `IEvent` interface or extending a base event class, and register them with the hook.

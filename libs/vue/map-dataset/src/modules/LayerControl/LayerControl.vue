@@ -5,14 +5,26 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
-import type { MenuContextSource } from '@hungpvq/map-dataset';
+import {
+  MAP_CONTEXT_MENU_ID,
+  getDefaultAddGeojsonHereItems,
+  setAddGeojsonHereItems,
+  clearAddGeojsonHereItems,
+  type AddGeojsonHerePayload,
+  type MapMenuItemProps,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import {
+  createGeojsonHereDataset,
+  type MenuContextSource,
+} from '@hungpvq/map-dataset';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   defaultMapProps,
   MapCommonButton,
   ModuleContainer,
+  UniversalRegistry,
   useLang,
   useMap,
   useShow,
@@ -27,8 +39,9 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
-import { watch } from 'vue';
+import { onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import { useMapDataset } from '../../store';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
@@ -112,7 +125,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       title: trans.value('map.layer-control.title'),
       order: order.value,
       icon: {
-        type: 'mdi',
+        type: 'mdi' as const,
         path: path.icon,
       },
     };
@@ -122,6 +135,23 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   },
 });
 watch(show, () => control.sync());
+
+const { addDataset } = useMapDataset(mapId.value);
+function onAddGeojsonHere(
+  _props: MapMenuItemProps,
+  payload: AddGeojsonHerePayload,
+) {
+  void addDataset(createGeojsonHereDataset(payload));
+}
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
+  MAP_CONTEXT_MENU_ID.addGeojsonHere,
+  onAddGeojsonHere,
+);
+setAddGeojsonHereItems(mapId.value, getDefaultAddGeojsonHereItems());
+onUnmounted(() => {
+  clearAddGeojsonHereItems(mapId.value);
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

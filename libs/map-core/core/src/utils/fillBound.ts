@@ -81,6 +81,28 @@ export function fitBounds(
 }
 
 /**
+ * GeoJSON bbox `[minLng, minLat, maxLng, maxLat]`, or undefined if empty.
+ */
+export function bboxFromGeojson(
+  feature: Geometry | Feature | FeatureCollection,
+): [number, number, number, number] | undefined {
+  const bounds = getBBox(feature);
+  if (!Array.isArray(bounds) || bounds.length !== 2) return undefined;
+  const sw = bounds[0];
+  const ne = bounds[1];
+  if (!Array.isArray(sw) || !Array.isArray(ne)) return undefined;
+  if (
+    typeof sw[0] !== 'number' ||
+    typeof sw[1] !== 'number' ||
+    typeof ne[0] !== 'number' ||
+    typeof ne[1] !== 'number'
+  ) {
+    return undefined;
+  }
+  return [sw[0], sw[1], ne[0], ne[1]];
+}
+
+/**
  * Get bounding box from geometry/feature/collection
  */
 function getBBox(

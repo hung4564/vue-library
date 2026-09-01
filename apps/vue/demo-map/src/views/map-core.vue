@@ -13,6 +13,7 @@
     <BaseMapControl position="bottom-left" />
     <GeoLocateControl position="top-right" />
     <MouseCoordinatesControl />
+    <MapContextMenuControl />
   </Map>
 </template>
 <script setup lang="ts">
@@ -27,6 +28,7 @@ import {
   HomeControl,
   InfoControl,
   Map,
+  MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,

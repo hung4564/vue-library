@@ -59,3 +59,5 @@ Immediate click mode:
 Immediate click mode: `<IdentifyControl position="top-right" immediately />`.
 
 Identify menus are defined on the identify dataset node. See [Identify](../create-dataset/identify.md).
+
+Right-click **Quick analysis → Identify features** (`MapContextMenuControl`) runs the same query and opens this panel. That menu item is added only when `IdentifyControl` is mounted.

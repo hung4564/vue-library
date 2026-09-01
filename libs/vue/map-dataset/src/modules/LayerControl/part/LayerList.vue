@@ -68,10 +68,10 @@ provideMenuConditionContext(() => ({
 
 defineSlots<{
   title(): VNode[];
-  item(props: {
+  item(_props: {
     item: IListViewUI;
     isSelected: boolean;
-    toggleSelect: (item: IListViewUI) => void;
+    toggleSelect: (_item: IListViewUI) => void;
   }): VNode[];
 }>();
 
@@ -183,7 +183,7 @@ function onRemoveAllLayer() {
 
 const contextMenuRef = ref<
   | {
-      open(event: MouseEvent, item: IListViewUI): void;
+      open(_event: MouseEvent, _item: IListViewUI): void;
       close(): void;
     }
   | undefined

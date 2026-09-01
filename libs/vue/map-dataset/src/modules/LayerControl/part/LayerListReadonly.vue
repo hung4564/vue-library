@@ -66,7 +66,7 @@ function getViewFromStore() {
 }
 const contextMenuRef = ref<
   | {
-      open(event: MouseEvent, item: IListViewUI): void;
+      open(_event: MouseEvent, _item: IListViewUI): void;
       close(): void;
     }
   | undefined

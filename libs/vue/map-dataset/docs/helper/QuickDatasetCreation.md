@@ -29,8 +29,9 @@ const raster = createRasterUrlDataset({
 | `geojson` | GeoJSON | yes | Features |
 | `type` | `'point' \| 'line' \| 'area' \| 'symbol'` | yes | Layer style |
 | `color` | color | no | List swatch + paint (random if omitted) |
+| `opacity` | `number` | no | Fill / line / circle opacity |
 
-Also adds an identify node with zoom-to-bounds and show-detail menus. Mount `IdentifyControl` + `ComponentManagementControl` to use them.
+Computes bbox from `geojson`, stores it on a metadata node, and adds a **Fill bound** extra button on the list row. Also adds an identify node with zoom-to-bounds and show-detail menus. Mount `IdentifyControl` + `ComponentManagementControl` to use identify.
 
 ## `createRasterUrlDataset`
 

@@ -26,5 +26,6 @@ export * from './print';
 export * from './toolbar';
 export * from './mitt';
 export * from './registry';
+export * from './map-context-menu';
 
 import './style/index.scss';
