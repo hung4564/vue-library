@@ -41,7 +41,7 @@ const props = withDefaults(
   },
 );
 
-const [show, setShow] = useShow(props.show);
+const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault({
@@ -105,7 +105,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       title: trans.value('map.info-control.title'),
       order: order.value,
       icon: {
-        type: 'mdi',
+        type: 'mdi' as const,
         path: mdiInformationOutline,
       },
     };
@@ -166,7 +166,9 @@ function onScreenshot() {
       <DraggableItemPopup
         v-if="show"
         v-bind="bind"
-        v-model:show="show"
+        :show="show"
+        @update:show="setShow"
+        @close="setShow(false)"
         :width="360"
         :height="340"
         :title="trans('map.info-control.title')"

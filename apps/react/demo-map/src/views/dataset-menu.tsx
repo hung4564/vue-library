@@ -6,7 +6,7 @@ import {
   LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { MapPageShell } from '../components/MapPageShell';
-import { loadMenuDemoDatasets } from '../data/sample-datasets';
+import { loadMenuDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 

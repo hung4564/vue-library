@@ -56,7 +56,7 @@ export function LayerItem({
         (a, b) => b.index - a.index,
       ) || [];
     setChildren(childItems);
-  }, [item]);
+  }, [item, item.id]);
 
   const injectedMenuContext = useMenuConditionContext();
   const conditionCtx = createMenuConditionContext(item, {

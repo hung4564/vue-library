@@ -88,13 +88,13 @@ const button_menus = computed<MenuAction<any>[]>(() => {
 });
 const extra_menus = computed(() => {
   return button_menus.value
-    .filter((x) => x.location !== 'menu')
+    .filter((x) => !x.location || x.location === 'extra')
     .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });
 const content_menus = computed(() => {
   return button_menus.value
-    .filter((x) => x.location == 'menu')
+    .filter((x) => x.location === 'menu')
     .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 });

@@ -105,7 +105,7 @@ watch(
 );
 function init() {
   init_done.value = false;
-  if (!show) return;
+  if (!show.value) return;
   if (props.left != null) {
     p_x.value = props.left;
   }
@@ -190,7 +190,7 @@ function onDragging() {
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
               </map-button>
-              <map-button v-if="!disabledClose" @click="onClose">
+              <map-button v-if="!disabledClose" @click.stop="onClose">
                 <CloseIcon :size="16" />
               </map-button>
             </template>

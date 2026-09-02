@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { useContainerId } from '../../context/ContainerContext';
 import {
@@ -191,9 +191,13 @@ export function DraggableItemPopup({
     [],
   );
 
-  function handleClose() {
-    setShow(false);
-  }
+  const handleClose = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      setShow(false);
+    },
+    [setShow],
+  );
 
   useEffect(() => {
     if (!show) {

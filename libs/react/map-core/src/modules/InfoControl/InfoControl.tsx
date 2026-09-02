@@ -19,8 +19,11 @@ import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { BaseButton } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
-import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { defaultMapProps, useMap } from '../../hooks';
+import {
+  ModuleContainer,
+  type BindPosition,
+} from '../ModuleContainer/ModuleContainer';
 
 export interface InfoControlProps extends WithMapPropType {
   show?: boolean;
@@ -40,7 +43,7 @@ export function InfoControl(props: InfoControlProps) {
   const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
   const { trans, setLocaleDefault } = useLang(mapId);
-  const [show, toggleShow] = useShow(props.show);
+  const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_INFO);
   const [capturing, setCapturing] = useState(false);
 
@@ -88,23 +91,32 @@ export function InfoControl(props: InfoControlProps) {
     [syncInfo],
   );
 
+  const callMapRef = useRef(callMap);
+  callMapRef.current = callMap;
+  const syncInfoRef = useRef(syncInfo);
+  syncInfoRef.current = syncInfo;
+  const attachListenersRef = useRef(attachListeners);
+  attachListenersRef.current = attachListeners;
+  const detachListenersRef = useRef(detachListeners);
+  detachListenersRef.current = detachListeners;
+
   useEffect(() => {
     if (!show) {
-      callMap(detachListeners);
+      callMapRef.current(detachListenersRef.current);
       return;
     }
-    syncInfo();
-    callMap(attachListeners);
+    syncInfoRef.current();
+    callMapRef.current(attachListenersRef.current);
     return () => {
-      callMap(detachListeners);
+      callMapRef.current(detachListenersRef.current);
     };
-  }, [show, callMap, syncInfo, attachListeners, detachListeners]);
+  }, [show]);
 
-  function handleToggle() {
-    toggleShow(!show);
-  }
+  const handleToggle = useCallback(() => {
+    setShow((visible) => !visible);
+  }, []);
 
-  function onScreenshot() {
+  const onScreenshot = useCallback(() => {
     callMap(async (map) => {
       setCapturing(true);
       try {
@@ -114,20 +126,7 @@ export function InfoControl(props: InfoControlProps) {
         setCapturing(false);
       }
     });
-  }
-
-  const rows = [
-    { key: 'center', label: trans('map.info-control.center'), value: info.center },
-    { key: 'zoom', label: trans('map.info-control.zoom'), value: info.zoom },
-    { key: 'pitch', label: trans('map.info-control.pitch'), value: info.pitch },
-    { key: 'bearing', label: trans('map.info-control.bearing'), value: info.bearing },
-    {
-      key: 'projection',
-      label: trans('map.info-control.projection'),
-      value: info.projection,
-    },
-    { key: 'bounds', label: trans('map.info-control.bounds'), value: info.bounds },
-  ];
+  }, [callMap, mergedProps.fileName]);
 
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
@@ -148,6 +147,68 @@ export function InfoControl(props: InfoControlProps) {
     controlRef.current.sync();
   }, [show]);
 
+  const draggableContent = useCallback(
+    (bind: BindPosition) => {
+      const rows = [
+        { key: 'center', label: trans('map.info-control.center'), value: info.center },
+        { key: 'zoom', label: trans('map.info-control.zoom'), value: info.zoom },
+        { key: 'pitch', label: trans('map.info-control.pitch'), value: info.pitch },
+        { key: 'bearing', label: trans('map.info-control.bearing'), value: info.bearing },
+        {
+          key: 'projection',
+          label: trans('map.info-control.projection'),
+          value: info.projection,
+        },
+        { key: 'bounds', label: trans('map.info-control.bounds'), value: info.bounds },
+      ];
+
+      return (
+        <DraggableItemPopup
+          show={show}
+          onUpdateShow={setShow}
+          title={trans('map.info-control.title')}
+          width={360}
+          height={340}
+          extraBtn={
+            <BaseButton
+              title={trans('map.info-control.screenshot')}
+              disabled={capturing}
+              onClick={(e) => {
+                e.stopPropagation();
+                onScreenshot();
+              }}
+            >
+              <Icon path={mdiCameraOutline} size={16 / 24} />
+            </BaseButton>
+          }
+          {...bind}
+        >
+          <div className="map-info-control">
+            <div className="map-info-control__rows">
+              {rows.map((row) => (
+                <div key={row.key} className="map-info-control__row">
+                  <div className="map-info-control__label">{row.label}</div>
+                  <div className="map-info-control__value">{row.value}</div>
+                  <BaseButton
+                    className="map-info-control__copy"
+                    title={trans('map.info-control.copy')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void copyText(row.value);
+                    }}
+                  >
+                    <Icon path={mdiContentCopy} size={14 / 24} />
+                  </BaseButton>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DraggableItemPopup>
+      );
+    },
+    [show, capturing, onScreenshot, info, trans],
+  );
+
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -162,51 +223,7 @@ export function InfoControl(props: InfoControlProps) {
           />
         ) : null
       }
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => toggleShow(!!v)}
-            title={trans('map.info-control.title')}
-            width={360}
-            height={340}
-            extraBtn={
-              <BaseButton
-                title={trans('map.info-control.screenshot')}
-                disabled={capturing}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onScreenshot();
-                }}
-              >
-                <Icon path={mdiCameraOutline} size={16 / 24} />
-              </BaseButton>
-            }
-            {...bind}
-          >
-            <div className="map-info-control">
-              <div className="map-info-control__rows">
-                {rows.map((row) => (
-                  <div key={row.key} className="map-info-control__row">
-                    <div className="map-info-control__label">{row.label}</div>
-                    <div className="map-info-control__value">{row.value}</div>
-                    <BaseButton
-                      className="map-info-control__copy"
-                      title={trans('map.info-control.copy')}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void copyText(row.value);
-                      }}
-                    >
-                      <Icon path={mdiContentCopy} size={14 / 24} />
-                    </BaseButton>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+      draggable={draggableContent}
     />
   );
 }

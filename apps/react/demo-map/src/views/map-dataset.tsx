@@ -21,7 +21,7 @@ import {
   PrintControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-import { loadAllMapDatasets } from '../data/all-map-datasets';
+import { loadAllMapDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';

@@ -18,7 +18,6 @@ const NAV_ITEMS = [
   { to: '/', label: 'Home (All Map)' },
   { to: '/map-core', label: 'Map - Core' },
   { to: '/toolbar', label: 'Map - Toolbar' },
-  { to: '/compare', label: 'Compare' },
   { to: '/basemap', label: 'BaseMap' },
   { to: '/measurement', label: 'Measurement' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },
@@ -70,27 +69,27 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
         ) : null
       }
       draggable={(bind) => (
-          <DraggableItemSideBar
-            show={show}
-            onUpdateShow={(v) => toggleShow(!!v)}
-            title={trans('map.aside-control.title')}
-            titleNode={
-              <span className="aside-control__title">
-                {trans('map.aside-control.title')}
-              </span>
-            }
-            containerId={bind.containerId}
-          >
-            <ul className="v-list">
-              {NAV_ITEMS.map((item) => (
-                <li key={item.to} className="v-list-item">
-                  <Link to={item.to} onClick={() => toggleShow(false)}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </DraggableItemSideBar>
+        <DraggableItemSideBar
+          show={show}
+          onUpdateShow={(v) => toggleShow(!!v)}
+          title={trans('map.aside-control.title')}
+          titleNode={
+            <span className="aside-control__title">
+              {trans('map.aside-control.title')}
+            </span>
+          }
+          containerId={bind.containerId}
+        >
+          <ul className="v-list">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.to} className="v-list-item">
+                <Link to={item.to} onClick={() => toggleShow(false)}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </DraggableItemSideBar>
       )}
     />
   );

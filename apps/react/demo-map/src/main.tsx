@@ -5,7 +5,7 @@ import App from './app/app';
 import { installDatasetRegistry } from './hooks/useDatasetRegistry';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
-import { ComparePage } from './views/compare';
+import { DatasetDataManagementPage } from './views/dataset-data-management';
 import { DatasetHighlightPage } from './views/dataset-highlight';
 import { DatasetIdentifyPage } from './views/dataset-identify';
 import { DatasetListPage } from './views/dataset-list';
@@ -33,13 +33,16 @@ root.render(
           <Route path="map-core" element={<MapCorePage />} />
           <Route path="map-dataset" element={<MapDatasetPage />} />
           <Route path="toolbar" element={<ToolbarPage />} />
-          <Route path="compare" element={<ComparePage />} />
           <Route path="basemap" element={<BasemapPage />} />
           <Route path="measurement" element={<MeasurementPage />} />
           <Route path="dataset-highlight" element={<DatasetHighlightPage />} />
           <Route path="dataset-identify" element={<DatasetIdentifyPage />} />
           <Route path="dataset-menu" element={<DatasetMenuPage />} />
           <Route path="dataset-list" element={<DatasetListPage />} />
+          <Route
+            path="dataset-data-management"
+            element={<DatasetDataManagementPage />}
+          />
           <Route path="story-telling" element={<StoryTellingPage />} />
           <Route path="story-telling-gps" element={<StoryTellingPage />} />
           <Route path="inspect" element={<InspectPage />} />

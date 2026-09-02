@@ -144,7 +144,7 @@ import {
   mdiMenuLeft,
   mdiPencilOutline,
 } from '@mdi/js';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
 import LayerSubItem from './layer-sub-item.vue';
 import LayerMenu from './menu/index.vue';
@@ -250,12 +250,16 @@ const [legendShow, onToggleLegend] = useShow(
 );
 const isHasChildren = ref(false);
 const children = ref<IListViewUI[]>([]);
-onMounted(() => {
+
+function refreshChildren() {
   const allComponentsOfType = findAllComponentsByType(
     props.item,
     'list-item',
   ) as IListViewUI[];
   isHasChildren.value = allComponentsOfType.length > 0;
   children.value = allComponentsOfType.sort((a, b) => b.index - a.index) || [];
-});
+}
+
+onMounted(refreshChildren);
+watch(() => props.item.id, refreshChildren);
 </script>

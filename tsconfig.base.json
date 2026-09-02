@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@hungpvq/demo-map-datasets": ["libs/demo/map-datasets/src/index.ts"],
       "@hungpvq/draggable": ["libs/draggable/core/src/index.ts"],
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
       "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],

@@ -2,29 +2,21 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import {
-  BaseMapCard,
-  BaseMapControl,
-  Map,
-  ZoomControl,
-} from '@hungpvq/vue-map-core';
+import { BaseMapCard, BaseMapControl, Map, ZoomControl } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   LayerControl,
   LayerHighlight,
-  useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
-import { createAllHighlightDemoDatasets } from './datasets';
+import { loadHighlightDemoDatasets } from '../../data/loaders';
 
 loggerFactory.enable('map:highlight');
 const mapId = ref(getUUIDv4());
+
 function onMapLoaded(map: MapSimple) {
-  const { addDataset } = useMapDataset(map.id);
-  for (const dataset of createAllHighlightDemoDatasets()) {
-    addDataset(dataset);
-  }
+  loadHighlightDemoDatasets(map.id);
 }
 </script>
 <template>
@@ -41,8 +33,6 @@ function onMapLoaded(map: MapSimple) {
     <ZoomControl />
   </Map>
 </template>
-
-<style></style>
 
 <style>
 * {

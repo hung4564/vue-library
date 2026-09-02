@@ -12,7 +12,7 @@ import {
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartMetadataComponent,
   createDatasetPartRasterSourceComponent,
-  createDatasetPartSubListViewUiComponent,
+  createDatasetPartSubListViewUiComponentBuilder,
   createGroupDataset,
   createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
@@ -25,10 +25,9 @@ import {
   LayerSimpleMapboxBuild,
   type LayerStyleType,
 } from '@hungpvq/map-dataset';
-import { createLegend, createMultiLegend } from '@hungpvq/react-map-dataset';
-import { addDatasetToMap } from './dataset-utils';
+import { createLegend, createMultiLegend } from '../../legend/create-legend';
 
-export function createGroupList() {
+export function createGroupListDemoDataset() {
   const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -194,6 +193,9 @@ export function createGroupList() {
   dataset.add(metadata);
   return dataset;
 }
+
+/** @deprecated Use createGroupListDemoDataset */
+export const createGroupList = createGroupListDemoDataset;
 
 export function createRasterDataset() {
   const name = 'World Imagery';
@@ -407,10 +409,13 @@ export function createDatasetMeasure(
   measurementType: string,
 ) {
   const result = handler.getResult();
+  const measureFeatures = Array.isArray(result.features)
+    ? result.features
+    : result.features?.features ?? [];
   const dataset = createRootDataset('Dataset Measure');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
-    features: result.features || [],
+    features: measureFeatures,
   });
   const groupLayer1 = createGroupDataset('Group layer 1');
   const list1 = createDatasetPartListViewUiComponentBuilder(
@@ -446,7 +451,7 @@ export function createDatasetMeasure(
   return dataset;
 }
 
-export function createExampleGroupLayer() {
+export function createGroupSublistDemoDataset() {
   const dataset = createRootDataset('Example Group layer');
 
   const source = createDatasetPartGeojsonSourceComponent('source', {
@@ -481,8 +486,10 @@ export function createExampleGroupLayer() {
     .build();
   groupLayer.add(list);
   dataset.add(groupLayer);
-  const subList1 = createDatasetPartSubListViewUiComponent('Sub list 1');
-  subList1.color = getChartRandomColor();
+  const subList1 = createDatasetPartSubListViewUiComponentBuilder('Sub list 1')
+    .setColor(getChartRandomColor())
+    .addMenus([createMenuItemToggleShow()])
+    .build();
   const groupSubLayer1 = createGroupDataset('Group sub layer 1');
   const layer1 = createMultiMapboxLayerComponent('sub layer 1 - point', [
     new LayerSimpleMapboxBuild()
@@ -492,10 +499,10 @@ export function createExampleGroupLayer() {
   ]);
   groupSubLayer1.add(subList1);
   groupSubLayer1.add(layer1);
-  const subList2 = createDatasetPartSubListViewUiComponent('Sub list 2');
-  subList2.color = getChartRandomColor();
-  subList1.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
-  subList2.addMenus([createMenuItemToggleShow({ location: 'bottom' })]);
+  const subList2 = createDatasetPartSubListViewUiComponentBuilder('Sub list 2')
+    .setColor(getChartRandomColor())
+    .addMenus([createMenuItemToggleShow()])
+    .build();
   const groupSubLayer2 = createGroupDataset('Group sub layer 2');
   const layer2 = createMultiMapboxLayerComponent('sub layer 2 - line', [
     new LayerSimpleMapboxBuild()
@@ -510,7 +517,10 @@ export function createExampleGroupLayer() {
   return dataset;
 }
 
-export function createGroupIdentify() {
+/** @deprecated Use createGroupSublistDemoDataset */
+export const createExampleGroupLayer = createGroupSublistDemoDataset;
+
+export function createGroupIdentifyDemoDataset() {
   const dataset = createRootDataset('Geojson With Group Identify');
   const source1 = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -666,12 +676,15 @@ export function createGroupIdentify() {
   return dataset;
 }
 
-export async function loadAllMapDatasets(mapId: string) {
-  await addDatasetToMap(mapId, createRasterDataset());
-  await addDatasetToMap(mapId, createGroupList());
-  await addDatasetToMap(mapId, createDatasetPoint());
-  await addDatasetToMap(mapId, createDatasetLineString());
-  await addDatasetToMap(mapId, createExampleGroupLayer());
-  await addDatasetToMap(mapId, createDatasetGeojsonWithIdentify());
-  await addDatasetToMap(mapId, createGroupIdentify());
-}
+/** @deprecated Use createGroupIdentifyDemoDataset */
+export const createGroupIdentify = createGroupIdentifyDemoDataset;
+
+export const ALL_MAP_DATASET_FACTORIES = [
+  createRasterDataset,
+  createGroupListDemoDataset,
+  createDatasetPoint,
+  createDatasetLineString,
+  createGroupSublistDemoDataset,
+  createDatasetGeojsonWithIdentify,
+  createGroupIdentifyDemoDataset,
+] as const;

@@ -55,7 +55,7 @@ export function LayerSubItem({
     [item],
   );
   const extraMenus = menus
-    .filter((x) => x.location !== 'menu')
+    .filter((x) => !x.location || x.location === 'extra')
     .filter((x) => !isMenuItemHidden(x, conditionCtx))
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const contentMenus = menus

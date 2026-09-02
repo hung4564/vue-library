@@ -1,4 +1,3 @@
-import type { MapSimple } from '@hungpvq/map-core';
 import {
   ComponentManagementControl,
   DatasetControl,
@@ -29,20 +28,15 @@ import {
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
-import { loadAllMapDatasets } from '../data/all-map-datasets';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 
 export function AllMapView() {
   useDatasetRegistry();
 
-  function onMapLoaded(map: MapSimple) {
-    loadAllMapDatasets(map.id);
-  }
-
   return (
     <MapPageShell>
-      <Map onMapLoaded={onMapLoaded}>
+      <Map>
         <AsideControl position="top-left" />
         <ComponentManagementControl />
         <MeasurementControl position="top-right" />

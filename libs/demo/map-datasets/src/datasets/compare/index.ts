@@ -16,23 +16,17 @@ import {
   createRootDataset,
   LayerSimpleMapboxBuild,
 } from '@hungpvq/map-dataset';
-import { createLegend, createMultiLegend } from '@hungpvq/react-map-dataset';
-import { addDatasetToMap } from './dataset-utils';
+import { createLegend, createMultiLegend } from '../../legend/create-legend';
+import { createRasterSourceConfig } from '../../fixtures/raster';
 
-function createCompareRasterDataset() {
+export function createCompareRasterDataset() {
   const name = 'World Imagery';
   const bbox: [number, number, number, number] = [104.5, 18.5, 108.0, 22.5];
   const dataset = createRootDataset(name);
-  const source = createDatasetPartRasterSourceComponent(name, {
-    type: 'raster',
-    tiles: [
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    ],
-    tileSize: 256,
-    maxzoom: 19,
-    attribution: 'Tiles © Esri',
-    bounds: bbox,
-  });
+  const source = createDatasetPartRasterSourceComponent(
+    name,
+    createRasterSourceConfig(bbox),
+  );
   const layer = createMultiMapboxLayerComponent(name, [{ type: 'raster' }]);
   const list = createDatasetPartListViewUiComponent(name);
   list.color = '#4CAF50';
@@ -50,7 +44,7 @@ function createCompareRasterDataset() {
   return dataset;
 }
 
-function createCompareGeojsonDataset() {
+export function createCompareGeojsonDataset() {
   const dataset = createRootDataset('Group test');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -198,7 +192,7 @@ function createCompareGeojsonDataset() {
   return dataset;
 }
 
-export async function loadCompareDatasets(mapId: string) {
-  await addDatasetToMap(mapId, createCompareRasterDataset());
-  await addDatasetToMap(mapId, createCompareGeojsonDataset());
-}
+export const COMPARE_DEMO_DATASET_FACTORIES = [
+  createCompareRasterDataset,
+  createCompareGeojsonDataset,
+] as const;

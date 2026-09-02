@@ -12,7 +12,7 @@ import {
 } from '@hungpvq/react-map-dataset';
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
-import { loadListDemoDatasets } from '../data/sample-datasets';
+import { loadListDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import {

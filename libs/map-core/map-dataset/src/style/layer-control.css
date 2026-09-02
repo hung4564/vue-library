@@ -277,9 +277,10 @@
 
 .layer-sub-item__title-action {
   display: flex;
-  flex: 0;
+  flex-grow: 0;
+  flex-shrink: 0;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   gap: var(--map-space-xs, 4px);
   line-height: 0;
   height: 16px;

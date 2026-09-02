@@ -14,41 +14,8 @@ import {
   LayerSimpleMapboxBuild,
 } from '@hungpvq/map-dataset';
 import type { Feature } from 'geojson';
-import { addDatasetToMap } from './dataset-utils';
-import { createDatasetCustomHighlightComponent } from './highlight-helper';
-
-function point(coords: [number, number], properties: Record<string, unknown>): Feature {
-  const id = properties.id;
-  return {
-    type: 'Feature',
-    id: typeof id === 'string' || typeof id === 'number' ? id : undefined,
-    properties,
-    geometry: { type: 'Point', coordinates: coords },
-  };
-}
-
-function line(coords: [number, number][], properties: Record<string, unknown>): Feature {
-  const id = properties.id;
-  return {
-    type: 'Feature',
-    id: typeof id === 'string' || typeof id === 'number' ? id : undefined,
-    properties,
-    geometry: { type: 'LineString', coordinates: coords },
-  };
-}
-
-function polygon(
-  coords: [number, number][][],
-  properties: Record<string, unknown>,
-): Feature {
-  const id = properties.id;
-  return {
-    type: 'Feature',
-    id: typeof id === 'string' || typeof id === 'number' ? id : undefined,
-    properties,
-    geometry: { type: 'Polygon', coordinates: coords },
-  };
-}
+import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
+import { createDatasetCustomHighlightComponent } from './helper';
 
 function createHighlightDemoDataset(config: {
   name: string;
@@ -123,8 +90,8 @@ function createDefaultHighlight() {
     name: 'Default Highlight',
     listName: 'Default highlight (blink + id)',
     features: [
-      point([105.7892014954, 20.943262715], { id: '1' }),
-      line(
+      demoPoint([105.7892014954, 20.943262715], { id: '1' }),
+      demoLine(
         [
           [105.7804053203, 20.7274626545],
           [106.1036647594, 20.9247777007],
@@ -134,7 +101,7 @@ function createDefaultHighlight() {
         ],
         { id: '2' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.9475326507, 20.6369404209],
@@ -156,8 +123,8 @@ function createShadowHighlight() {
     name: 'Shadow Highlight',
     listName: 'Shadow highlight (static glow)',
     features: [
-      point([105.45, 20.55], { id: '1' }),
-      line(
+      demoPoint([105.45, 20.55], { id: '1' }),
+      demoLine(
         [
           [105.35, 20.5],
           [105.55, 20.58],
@@ -165,7 +132,7 @@ function createShadowHighlight() {
         ],
         { id: '2' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.4, 20.4],
@@ -187,8 +154,8 @@ function createChangeColorHighlight() {
     name: 'Change color Highlight',
     listName: 'Change color highlight',
     features: [
-      point([105.6108155623, 21.1273787081], { id: '1' }),
-      line(
+      demoPoint([105.6108155623, 21.1273787081], { id: '1' }),
+      demoLine(
         [
           [105.3015095688, 21.0955507976],
           [105.1738176473, 21.0152685258],
@@ -197,7 +164,7 @@ function createChangeColorHighlight() {
         ],
         { id: '2' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.2320616025, 21.2276478432],
@@ -220,8 +187,8 @@ function createCustomHighlight() {
     listName: 'Custom animate highlight',
     color: '#0000FF',
     features: [
-      point([106.1128036314, 21.1891301922], { id: '1' }),
-      line(
+      demoPoint([106.1128036314, 21.1891301922], { id: '1' }),
+      demoLine(
         [
           [106.2285487367, 21.2142605019],
           [106.3443667242, 21.2184735353],
@@ -230,7 +197,7 @@ function createCustomHighlight() {
         ],
         { id: '3' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [106.0363566887, 21.3525153613],
@@ -252,8 +219,8 @@ function createHighlightWithPropertyName() {
     name: 'Highlight with Property Name',
     listName: 'Default + filterCreator "code"',
     features: [
-      point([105.8892014954, 20.743262715], { code: 'P001', name: 'Point 1' }),
-      line(
+      demoPoint([105.8892014954, 20.743262715], { code: 'P001', name: 'Point 1' }),
+      demoLine(
         [
           [105.7804053203, 20.5274626545],
           [106.0036647594, 20.7247777007],
@@ -261,7 +228,7 @@ function createHighlightWithPropertyName() {
         ],
         { code: 'L002', name: 'Line 2' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.8475326507, 20.4369404209],
@@ -285,15 +252,15 @@ function createHighlightWithExplicitIdField() {
     name: 'Highlight filterCreator id',
     listName: 'Default + filterCreator "id"',
     features: [
-      point([105.55, 21.02], { id: 'id-1', name: 'Point' }),
-      line(
+      demoPoint([105.55, 21.02], { id: 'id-1', name: 'Point' }),
+      demoLine(
         [
           [105.5, 20.98],
           [105.65, 21.05],
         ],
         { id: 'id-2', name: 'Line' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.5, 20.9],
@@ -318,13 +285,13 @@ function createCustomAnimateWithFilterFunction() {
     listName: 'Custom + filterCreator function',
     color: '#00FF00',
     features: [
-      point([106.1892014954, 20.943262715], {
+      demoPoint([106.1892014954, 20.943262715], {
         code: 'ANIM001',
         type: 'important',
         status: 'active',
         priority: 1,
       }),
-      line(
+      demoLine(
         [
           [106.0804053203, 20.7274626545],
           [106.2036647594, 20.9247777007],
@@ -337,7 +304,7 @@ function createCustomAnimateWithFilterFunction() {
           priority: 2,
         },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [106.1475326507, 20.6369404209],
@@ -354,7 +321,7 @@ function createCustomAnimateWithFilterFunction() {
           priority: 3,
         },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [106.2475326507, 20.7369404209],
@@ -389,13 +356,13 @@ function createDefaultHighlightWithFilterFunction() {
     listName: 'Default + filterCreator function',
     color: '#FF6600',
     features: [
-      point([105.8892014954, 20.843262715], {
+      demoPoint([105.8892014954, 20.843262715], {
         category: 'building',
         status: 'active',
         priority: 'high',
         code: 'BLD001',
       }),
-      line(
+      demoLine(
         [
           [105.7804053203, 20.6274626545],
           [106.0036647594, 20.8247777007],
@@ -408,7 +375,7 @@ function createDefaultHighlightWithFilterFunction() {
           code: 'ROD002',
         },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.8475326507, 20.5369404209],
@@ -425,7 +392,7 @@ function createDefaultHighlightWithFilterFunction() {
           code: 'PRK003',
         },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.9475326507, 20.6369404209],
@@ -460,11 +427,11 @@ function createCustomAnimateWithFieldName() {
     listName: 'Custom + filterCreator "productCode"',
     color: '#9900FF',
     features: [
-      point([106.0892014954, 20.943262715], {
+      demoPoint([106.0892014954, 20.943262715], {
         productCode: 'PRD001',
         name: 'Product A',
       }),
-      line(
+      demoLine(
         [
           [105.9804053203, 20.7274626545],
           [106.2036647594, 20.9247777007],
@@ -472,7 +439,7 @@ function createCustomAnimateWithFieldName() {
         ],
         { productCode: 'PRD002', name: 'Product B' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [106.1475326507, 20.6369404209],
@@ -496,15 +463,15 @@ function createShadowWithPropertyFilter() {
     name: 'Shadow with Property Filter',
     listName: 'Shadow + filterCreator "code"',
     features: [
-      point([105.2, 20.75], { code: 'SH-1', name: 'Shadow point' }),
-      line(
+      demoPoint([105.2, 20.75], { code: 'SH-1', name: 'Shadow point' }),
+      demoLine(
         [
           [105.1, 20.7],
           [105.3, 20.8],
         ],
         { code: 'SH-2', name: 'Shadow line' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.15, 20.62],
@@ -529,16 +496,16 @@ function createHighlightByClickedCategory() {
     listName: 'Default + filterCreator(feature)',
     color: '#2A9D8F',
     features: [
-      point([105.72, 21.05], { id: '1', category: 'A', name: 'Category A point' }),
-      point([105.8, 21.08], { id: '2', category: 'A', name: 'Category A point 2' }),
-      line(
+      demoPoint([105.72, 21.05], { id: '1', category: 'A', name: 'Category A point' }),
+      demoPoint([105.8, 21.08], { id: '2', category: 'A', name: 'Category A point 2' }),
+      demoLine(
         [
           [105.65, 21.0],
           [105.82, 21.08],
         ],
         { id: '3', category: 'B', name: 'Category B line' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.68, 20.92],
@@ -568,15 +535,15 @@ function createFeatureStateHighlight() {
     color: '#E63946',
     promoteId: 'id',
     features: [
-      point([105.95, 21.18], { id: 'fs-1', name: 'State point' }),
-      line(
+      demoPoint([105.95, 21.18], { id: 'fs-1', name: 'State point' }),
+      demoLine(
         [
           [105.88, 21.12],
           [106.05, 21.2],
         ],
         { id: 'fs-2', name: 'State line' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [105.9, 21.05],
@@ -600,16 +567,16 @@ function createFeatureStateHighlightWithGroup() {
     color: '#9B5DE5',
     promoteId: 'id',
     features: [
-      point([106.22, 21.05], { id: 'g-1', group: 'alpha', name: 'Group A point' }),
-      point([106.28, 21.08], { id: 'g-2', group: 'alpha', name: 'Group A point 2' }),
-      line(
+      demoPoint([106.22, 21.05], { id: 'g-1', group: 'alpha', name: 'Group A point' }),
+      demoPoint([106.28, 21.08], { id: 'g-2', group: 'alpha', name: 'Group A point 2' }),
+      demoLine(
         [
           [106.18, 20.98],
           [106.32, 21.06],
         ],
         { id: 'g-3', group: 'beta', name: 'Group B line' },
       ),
-      polygon(
+      demoPolygon(
         [
           [
             [106.18, 20.88],
@@ -628,8 +595,18 @@ function createFeatureStateHighlightWithGroup() {
   });
 }
 
-export async function loadHighlightDemoDatasets(mapId: string) {
-  for (const dataset of createAllHighlightDemoDatasets()) {
-    await addDatasetToMap(mapId, dataset);
-  }
-}
+export const HIGHLIGHT_DEMO_DATASET_FACTORIES = [
+  createDefaultHighlight,
+  createShadowHighlight,
+  createChangeColorHighlight,
+  createCustomHighlight,
+  createHighlightWithPropertyName,
+  createHighlightWithExplicitIdField,
+  createCustomAnimateWithFilterFunction,
+  createDefaultHighlightWithFilterFunction,
+  createCustomAnimateWithFieldName,
+  createShadowWithPropertyFilter,
+  createHighlightByClickedCategory,
+  createFeatureStateHighlight,
+  createFeatureStateHighlightWithGroup,
+] as const;

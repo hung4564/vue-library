@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 export function useShow(
   props: { show?: boolean },
@@ -8,23 +8,26 @@ export function useShow(
   },
   init?: boolean,
 ) {
-  const [p_show, setPShow] = useState<boolean>(!!props.show || !!init);
+  const isControlled = props.show !== undefined;
+  const [uncontrolledShow, setUncontrolledShow] = useState<boolean>(
+    !!props.show || !!init,
+  );
+  const emitRef = useRef(emit);
+  emitRef.current = emit;
 
-  useEffect(() => {
-    if (props.show !== undefined) {
-      setPShow(props.show);
-    }
-  }, [props.show]);
+  const show = isControlled ? props.show! : uncontrolledShow;
 
   const setShow = useCallback(
     (val: boolean) => {
-      setPShow(val);
-      emit?.['update:show']?.(val);
+      if (!isControlled) {
+        setUncontrolledShow(val);
+      }
+      emitRef.current?.['update:show']?.(val);
       if (!val) {
-        emit?.close?.();
+        emitRef.current?.close?.();
       }
     },
-    [emit],
+    [isControlled],
   );
 
   const open = useCallback(() => {
@@ -35,7 +38,7 @@ export function useShow(
     setShow(false);
   }, [setShow]);
 
-  return { show: p_show, setShow, open, close };
+  return { show, setShow, open, close };
 }
 
 export const withShowProps = {
