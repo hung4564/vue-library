@@ -17,7 +17,33 @@
 .layer-control__header {
   display: flex;
   align-items: center;
-  padding: var(--map-space-md, 8px);
+  padding: var(--map-space-md, 8px) var(--map-space-lg, 12px);
+  gap: 0;
+  min-height: 0;
+}
+
+.menu-condition-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--map-space-xs, 4px);
+  margin: 0 var(--map-space-md, 8px) 0 0;
+  padding: 0;
+  font-size: var(--map-font-size-sm, 12px);
+  line-height: 1;
+  white-space: nowrap;
+  color: inherit;
+  cursor: pointer;
+}
+
+.menu-condition-toggle:last-child {
+  margin-right: 0;
+}
+
+.menu-condition-toggle input[type='checkbox'] {
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
 .layer-control__list {

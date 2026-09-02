@@ -4,7 +4,6 @@ import {
   BaseMapControl,
   Map,
   UniversalRegistry,
-  ZoomControl,
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
@@ -38,7 +37,7 @@ export function DatasetListPage() {
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
         <AsideControl position="top-left" />
-        <ComponentManagementControl />
+        <BaseMapControl position="bottom-left" />
         <LayerControl
           position="top-left"
           show
@@ -75,9 +74,8 @@ export function DatasetListPage() {
           }
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <LayerHighlight enableClick />
-        <ZoomControl />
-        <BaseMapControl position="bottom-left" />
+        <LayerHighlight />
+        <ComponentManagementControl />
       </Map>
     </MapPageShell>
   );

@@ -125,7 +125,7 @@ function createListWithLegendDataset() {
       createMultiLegend([
         {
           type: 'color',
-          value: { text: 'legend color', value: '#0000FF' },
+          value: { text: 'legend color', color: '#0000FF' },
         },
         {
           type: 'text',

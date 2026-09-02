@@ -21,7 +21,14 @@ export function ListItem({
       className={`draggale-item ${isSelected ? 'draggale-item-active' : ''} ${className}`.trim()}
     >
       {!disabledDrag && (
-        <div className="draggable-handle" style={{ background: item?.color || '#1a73e8' }}>
+        <div
+          className="draggable-handle"
+          style={{
+            background:
+              item?.color ||
+              'var(--map-list-item-active-bg, var(--map-primary-color, #1a73e8))',
+          }}
+        >
           <div className="draggable-handle__icon">
             <Icon path={mdiArrowUpDown} size={ICON_SIZE} />
           </div>

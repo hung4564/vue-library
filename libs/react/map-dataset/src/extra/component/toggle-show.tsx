@@ -74,7 +74,7 @@ export function ToggleShow(props: WithLayerItemActionType) {
 
   return (
     <BaseButton onClick={onToggleShow}>
-      <Icon path={showValue ? mdiEye : mdiEyeOff} size={14 / 24} />
+      <Icon path={showValue ? mdiEye : mdiEyeOff} size="14px" />
     </BaseButton>
   );
 }

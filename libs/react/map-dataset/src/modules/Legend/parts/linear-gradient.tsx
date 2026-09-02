@@ -6,18 +6,27 @@ export function LayerLegendLinearGradient({
     items: { color: string; value: string }[];
   };
 }) {
-  const item = value || { text: '', items: [] };
-  const colors = item.items.map((x) => x.color);
+  const item = value || { text: '', items: [] as { color: string; value: string }[] };
+  const items = item.items || [];
+  const colors = items.map((x) => x.color);
   return (
-    <div className="legend-item" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-      <div>{item.text}:</div>
-      <div
-        className="legend-item-color"
-        style={{
-          width: '100%',
-          background: `linear-gradient(to right, ${colors.join(',')})`,
-        }}
-      />
+    <div className="legend-item legend-item--column">
+      <div className="legend-text">{item.text}:</div>
+      <div className="legend-value-container">
+        {items.map((entry, i) => (
+          <div className="legend-value" key={i}>
+            {entry.value}
+          </div>
+        ))}
+      </div>
+      <div>
+        <div
+          className="legend-item-color"
+          style={{
+            background: `linear-gradient(to right,${colors.join(',')})`,
+          }}
+        />
+      </div>
     </div>
   );
 }

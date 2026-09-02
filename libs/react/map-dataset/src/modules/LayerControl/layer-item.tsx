@@ -112,7 +112,7 @@ export function LayerItem({
           title={item.getName()}
           onClick={() => onTitleClick?.()}
         >
-          {item.getName()}
+          <span>{item.getName()}</span>
         </span>
         <div className="v-spacer" />
         <div className="layer-item__title-action">
@@ -208,12 +208,14 @@ export function LayerItem({
         </div>
       )}
       {legendShow && item.legend && (
-        <RegistryItem
-          componentKey={item.legend.componentKey}
-          mapId={mapId}
-          data={item}
-          {...item.legend.attr}
-        />
+        <div>
+          <RegistryItem
+            componentKey={item.legend.componentKey}
+            mapId={mapId}
+            data={item}
+            {...item.legend.attr}
+          />
+        </div>
       )}
       {childrenShow && children.length > 0 && (
         <div className="layer-item__children">

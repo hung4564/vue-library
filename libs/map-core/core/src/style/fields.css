@@ -170,9 +170,14 @@
 }
 
 input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
   display: block;
   width: 100%;
+  height: 4px;
   margin: var(--map-space-md, 8px) 0;
+  border: none;
+  border-radius: 0;
   background: var(--map-surface-variant-color, #3e3e3f);
   background-image: linear-gradient(
     to right,
@@ -197,6 +202,8 @@ input[type='range']::-webkit-slider-runnable-track {
 }
 
 input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
   box-shadow: none;
   border: 4px solid var(--map-primary-color, #004e98);
   height: 16px;

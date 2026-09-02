@@ -2,9 +2,14 @@
 
 .layer-item-slider,
 .layer-item__opacity input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
   display: block;
   width: 100%;
+  height: 4px;
   margin: var(--map-space-md, 8px) 0;
+  border: none;
+  border-radius: 0;
   background: #3e3e3f;
   background-image: linear-gradient(to right, #004e98 0%, #004e98 100%);
   background-repeat: no-repeat;
