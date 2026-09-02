@@ -8,6 +8,8 @@ import {
   type CrsItem,
   type DraftCoordinatesNumber,
 } from '../types';
+import { MapError } from '../errors';
+import { errorHandler } from '../services/error-handler.service';
 
 export function isCoordinatesNumber(
   value: DraftCoordinatesNumber | null | undefined,
@@ -144,8 +146,13 @@ export function formatCoordinate(
           }
         }
       } catch (error) {
-        // If transformation fails, use original coordinates
-        console.warn('proj4 transformation failed:', error);
+        errorHandler.handle(
+          new MapError('proj4 transformation failed', 'CRS_ERROR', {
+            recoverable: true,
+            cause: error,
+            context: { epsg: crs.epsg },
+          }),
+        );
         transformedLng = longitude;
         transformedLat = latitude;
       }

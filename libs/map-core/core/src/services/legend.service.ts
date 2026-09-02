@@ -25,7 +25,12 @@ export class LegendService {
         visible: layer.visible !== false,
       }));
     } catch (error) {
-      console.error('Failed to generate legend items:', error);
+      const legendError = new MapError(
+        'Failed to generate legend items',
+        'LEGEND_ERROR',
+        { recoverable: true, cause: error },
+      );
+      errorHandler.handle(legendError);
       return [];
     }
   }

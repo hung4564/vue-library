@@ -7,6 +7,8 @@ import type {
   EventBboxRangerHandle,
   EventBboxRangerOption,
 } from '../../types/event';
+import { MapEventError } from '../../errors';
+import { errorHandler } from '../../services/error-handler.service';
 import { startBoxRangerMap, type BoxRangerHandle } from '../../utils';
 import { Event } from '../Event';
 
@@ -83,7 +85,12 @@ export class EventBboxRanger extends Event<
         this.handler,
       );
     } catch (error) {
-      console.error('Error disabling map controls:', error);
+      errorHandler.handle(
+        new MapEventError('Error disabling map controls', {
+          recoverable: true,
+          cause: error,
+        }),
+      );
     }
 
     return this;
@@ -119,7 +126,12 @@ export class EventBboxRanger extends Event<
         map.boxZoom.enable();
       }
     } catch (error) {
-      console.error('Error re-enabling map controls:', error);
+      errorHandler.handle(
+        new MapEventError('Error re-enabling map controls', {
+          recoverable: true,
+          cause: error,
+        }),
+      );
     }
 
     if (this.map_ranger) {

@@ -4,7 +4,9 @@
 
 import { area, length } from '@turf/turf';
 import type { Feature } from 'geojson';
+import { MapError } from '../errors';
 import { formatAreaText, formatDistanceText } from '../utils';
+import { errorHandler } from './error-handler.service';
 
 /**
  * Service for measurement operations
@@ -23,7 +25,12 @@ export class MeasurementService {
       }
       return length(feature, { units: 'kilometers' });
     } catch (error) {
-      console.error('Failed to calculate distance:', error);
+      errorHandler.handle(
+        new MapError('Failed to calculate distance', 'MEASUREMENT_ERROR', {
+          recoverable: true,
+          cause: error,
+        }),
+      );
       return 0;
     }
   }
@@ -41,7 +48,12 @@ export class MeasurementService {
       }
       return area(feature);
     } catch (error) {
-      console.error('Failed to calculate area:', error);
+      errorHandler.handle(
+        new MapError('Failed to calculate area', 'MEASUREMENT_ERROR', {
+          recoverable: true,
+          cause: error,
+        }),
+      );
       return 0;
     }
   }
@@ -69,7 +81,13 @@ export class MeasurementService {
         return formatAreaText(value, locales);
       }
     } catch (error) {
-      console.error('Failed to format measurement:', error);
+      errorHandler.handle(
+        new MapError('Failed to format measurement', 'MEASUREMENT_ERROR', {
+          recoverable: true,
+          cause: error,
+          context: { type },
+        }),
+      );
       return '0';
     }
   }

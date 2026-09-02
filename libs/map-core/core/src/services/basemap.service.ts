@@ -5,6 +5,7 @@
 import type { BaseMapItem } from '../types';
 import { BaseMapAdapter } from '../adapter';
 import { BasemapError } from '../errors';
+import { errorHandler } from './error-handler.service';
 
 /**
  * Service for managing basemap operations
@@ -34,6 +35,7 @@ export class BasemapService {
           cause: error,
         },
       );
+      errorHandler.handle(basemapError);
       throw basemapError;
     }
   }

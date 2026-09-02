@@ -1,8 +1,16 @@
-import type { MapError } from '@hungpvq/map-core';
-import { MapErrorHandler, logHelper } from '@hungpvq/map-core';
+import {
+  errorHandler as coreErrorHandler,
+  logHelper,
+  type MapError,
+} from '@hungpvq/map-core';
 import { logger } from '../store/logger';
 
-export const errorHandler = new MapErrorHandler({
+const isDev =
+  typeof import.meta !== 'undefined' &&
+  Boolean((import.meta as ImportMeta & { env?: { DEV?: boolean } }).env?.DEV);
+
+coreErrorHandler.configure({
+  isDevelopment: isDev,
   logError: (error: MapError) => {
     logHelper(logger, 'global', 'ErrorHandler').error('Error occurred', {
       code: error.code,
@@ -12,10 +20,18 @@ export const errorHandler = new MapErrorHandler({
     });
   },
   logToService: (error: MapError) => {
-    console.warn('Error logging service not configured:', error);
+    logHelper(logger, 'global', 'ErrorHandler').warn(
+      'Error logging service not configured',
+      error,
+    );
   },
 });
 
-export function handleError(error: Error, context?: Record<string, unknown>): void {
+export const errorHandler = coreErrorHandler;
+
+export function handleError(
+  error: Error,
+  context?: Record<string, unknown>,
+): void {
   errorHandler.handle(error, context);
 }

@@ -5,7 +5,7 @@ export interface LogEntry {
   timestamp: number;
   namespaces: string[];
   level: LogLevel;
-  args: any[];
+  args: unknown[];
 }
 
 export class DevtoolLogAdapter implements LogAdapter {
@@ -19,20 +19,19 @@ export class DevtoolLogAdapter implements LogAdapter {
     this.limit = limit;
   }
 
-  log(namespaces: string[], level: LogLevel, ...args: any[]): void {
+  log(namespaces: string[], level: LogLevel, ...args: unknown[]): void {
     const entry: LogEntry = {
       id: Math.random().toString(36).substr(2, 9),
       timestamp: Date.now(),
       namespaces,
       level,
-      args, // Be careful with args, they might be reactive objects
+      args,
     };
 
     this.buffer.unshift(entry);
 
     if (!this.flushPending) {
       this.flushPending = true;
-      // Flush on next frame to avoid synchronous recursive updates
       requestAnimationFrame(() => {
         this.flush();
       });
@@ -45,12 +44,9 @@ export class DevtoolLogAdapter implements LogAdapter {
       return;
     }
 
-    // Import devtoolState dynamically to avoid circular dependency
     import('./store').then(({ devtoolState }) => {
-      // Append buffer to logs
       const newLogs = [...this.buffer, ...devtoolState.logs];
 
-      // Trim if needed
       if (newLogs.length > this.limit) {
         newLogs.splice(this.limit);
       }

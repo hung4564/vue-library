@@ -1,5 +1,13 @@
 import { MapError } from '../errors';
 
+function isDevEnvironment(): boolean {
+  try {
+    return Boolean(import.meta.env?.DEV);
+  } catch {
+    return process.env.NODE_ENV !== 'production';
+  }
+}
+
 /**
  * Interface for error handling.
  */
@@ -27,11 +35,15 @@ export class MapErrorHandler implements ErrorHandler {
 
   constructor(options: ErrorHandlerOptions = {}) {
     this.options = {
-      isDevelopment: options.isDevelopment ?? false,
+      isDevelopment: options.isDevelopment ?? isDevEnvironment(),
       logError: options.logError,
       logToService: options.logToService,
       ...options,
     };
+  }
+
+  configure(options: Partial<ErrorHandlerOptions>): void {
+    this.options = { ...this.options, ...options };
   }
 
   /**

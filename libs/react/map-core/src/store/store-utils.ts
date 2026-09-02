@@ -21,5 +21,9 @@ export function createMapScopedStore<T>(
   if (!storeManagerRef) {
     throw new Error('Store manager not initialized');
   }
+  const existing = storeManagerRef.peekStore<T>(mapId, key as string);
+  if (existing !== undefined) {
+    return existing;
+  }
   return storeManagerRef.addStore(mapId, key as string, factory, options);
 }

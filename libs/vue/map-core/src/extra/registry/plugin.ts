@@ -88,8 +88,8 @@ export class UniversalRegistry {
     const mapRegistry = useMapRegistryStore(mapId);
 
     if (mapRegistry.has(key)) {
-      console.warn(
-        `[UniversalRegistry] Key '${key}' đã tồn tại cho map ${mapId}, sẽ ghi đè`,
+      logHelper(logger, mapId, 'registry').warn(
+        `Key '${key}' đã tồn tại cho map ${mapId}, sẽ ghi đè`,
       );
     }
     mapRegistry.set(key, item);

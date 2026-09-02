@@ -88,6 +88,14 @@ export class MapStoreManager {
   /**
    * Add store entry
    */
+  peekStore<T>(mapId: string, key: string): T | undefined {
+    const temp = this.adapter.getRootStore()[mapId];
+    if (!temp || !(key in temp)) {
+      return undefined;
+    }
+    return temp[key] as T;
+  }
+
   addStore<T = Record<string, unknown>>(
     mapId: string,
     key: string,
@@ -98,8 +106,6 @@ export class MapStoreManager {
     if (!(key in temp)) {
       this.log(mapId, 'debug', 'addStore: initialize key', key);
       temp[key] = this.resolveDefaultValue(defaultValue);
-    } else {
-      this.log(mapId, 'debug', 'addStore: reuse key', key);
     }
     if (options?.cleanup) {
       this.registerCleanup(mapId, key, options.cleanup);

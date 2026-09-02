@@ -45,8 +45,8 @@ export const StringCommandHandler = createCommandHandler(
   async (click, context) => {
     const handler = methodRegistry.getMenuHandler(click, context.mapId);
     if (!handler) {
-      console.warn(
-        `[handleMenuActionClick] No handler found for key: ${click}`,
+      logHelper(logger, 'handleMenuActionClick').warn(
+        `No handler found for key: ${click}`,
       );
       return;
     }
@@ -134,7 +134,9 @@ export async function handleMenuActionClick<P = any, T = IDataset>(
 ) {
   if (!action) return;
   if (depth > MAX_DEPTH) {
-    console.warn('[handleMenuActionClick] Max recursion depth reached.');
+    logHelper(logger, 'handleMenuActionClick').warn(
+      'Max recursion depth reached.',
+    );
     return;
   }
 
@@ -191,7 +193,10 @@ export async function handleMenuActionClick<P = any, T = IDataset>(
     }
 
     if (!handled) {
-      console.warn('[handleMenuActionClick] Unknown entry:', entry);
+      logHelper(logger, 'handleMenuActionClick', depth).warn(
+        'Unknown entry:',
+        entry,
+      );
     }
   }
 }

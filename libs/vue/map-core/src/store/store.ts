@@ -81,6 +81,10 @@ export function createMapScopedStore<T>(
   factory: () => T,
   options?: MapScopedStoreOptions,
 ) {
+  const existing = storeManager.peekStore<T>(mapId, key as string);
+  if (existing !== undefined) {
+    return existing;
+  }
   return storeManager.addStore<T>(mapId, key as string, factory, options);
 }
 

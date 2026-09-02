@@ -1,4 +1,6 @@
 import { saveAs } from 'file-saver';
+import { MapError } from '../errors';
+import { errorHandler } from '../services/error-handler.service';
 
 export function exportFile(
   canvas: HTMLCanvasElement,
@@ -13,7 +15,12 @@ export function exportFile(
       toJPEG(canvas, fileName);
       break;
     default:
-      console.error(`Invalid file format: ${format}`);
+      errorHandler.handle(
+        new MapError(`Invalid file format: ${format}`, 'PRINT_ERROR', {
+          recoverable: true,
+          context: { format },
+        }),
+      );
       break;
   }
 }

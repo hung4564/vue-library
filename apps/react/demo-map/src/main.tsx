@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
+import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
 import { installDatasetRegistry } from './hooks/useDatasetRegistry';
 import { AllMapView } from './views/all-map-view';
@@ -19,6 +20,7 @@ import { ToolbarPage } from './views/toolbar';
 
 // Match Vue: register legend/menu/style components before any map mounts
 installDatasetRegistry();
+installDevtools();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

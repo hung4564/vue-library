@@ -1,4 +1,5 @@
 import { mdiDownload } from '@mdi/js';
+import { errorHandler, MapError } from '@hungpvq/map-core';
 import type { FeatureCollection } from 'geojson';
 import type {
   IDataset,
@@ -70,7 +71,13 @@ export function createExportGeoSubmenu(
           }
           await exportDatasetGeo(layer, format, { filename });
         } catch (error) {
-          console.error('[export-geo]', error);
+          errorHandler.handle(
+            new MapError('Geo export failed', 'DATASET_EXPORT_ERROR', {
+              recoverable: true,
+              cause: error,
+              context: { format, layerId: layer.id },
+            }),
+          );
         }
       })
       .build(),

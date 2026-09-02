@@ -120,6 +120,7 @@
       "@hungpvq/map-core",
       "@hungpvq/react-draggable",
       "@hungpvq/react-map-dataset",
+      "@hungpvq/react-map-devtools",
       "@hungpvq/map-dataset"
     ]
   },

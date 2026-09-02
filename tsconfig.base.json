@@ -22,6 +22,7 @@
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],
       "@hungpvq/react-map-dataset": ["libs/react/map-dataset/src/index.ts"],
+      "@hungpvq/react-map-devtools": ["libs/react/map-devtools/src/index.ts"],
       "@hungpvq/router": ["libs/router/src/index.ts"],
       "@hungpvq/shared": ["libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["libs/share/core/src/index.ts"],

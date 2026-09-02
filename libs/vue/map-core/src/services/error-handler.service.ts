@@ -1,12 +1,12 @@
 import type { ErrorHandlerOptions, MapError } from '@hungpvq/map-core';
-import { MapErrorHandler, logHelper } from '@hungpvq/map-core';
+import {
+  errorHandler as coreErrorHandler,
+  logHelper,
+  MapErrorHandler,
+} from '@hungpvq/map-core';
 import { logger } from '../logger';
 
-/**
- * Vue-specific error handler instance
- * Uses MapErrorHandler directly with Vue-specific logging options
- */
-export const errorHandler = new MapErrorHandler({
+coreErrorHandler.configure({
   isDevelopment: import.meta.env.DEV,
   logError: (error: MapError) => {
     logHelper(logger, 'global', 'ErrorHandler').error('Error occurred', {
@@ -17,8 +17,14 @@ export const errorHandler = new MapErrorHandler({
     });
   },
   logToService: (error: MapError) => {
-    // Log to external service in production
-    // TODO: Integrate with error tracking service
-    console.warn('Error logging service not configured:', error);
+    logHelper(logger, 'global', 'ErrorHandler').warn(
+      'Error logging service not configured',
+      error,
+    );
   },
 } as ErrorHandlerOptions);
+
+export const errorHandler = coreErrorHandler;
+
+/** @deprecated Use errorHandler directly — kept for backwards compatibility */
+export { MapErrorHandler };
