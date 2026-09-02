@@ -13,6 +13,7 @@ import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
 import { FieldGeometry } from './setting/field-geometry';
 import { MeasurementSettingFields } from './setting/fields-show';
+import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';
 
 type Coord = DraftCoordinatesNumber;
 
@@ -23,6 +24,7 @@ export interface MeasurementSettingPopupProps extends WithMapPropType {
   onChange?: (value: CoordinatesNumber[]) => void;
   maxLength?: number;
   fields?: IViewSettingField[];
+  measurementType?: string;
   popUpPosition?: {
     top?: number;
     right?: number;
@@ -38,6 +40,7 @@ export function MeasurementSettingPopup({
   onChange,
   maxLength = 0,
   fields = [{ text: 'Status', value: 'waiting...' }],
+  measurementType,
   popUpPosition = { top: 50, right: 40, width: 350, height: 300 },
   ...mapProps
 }: MeasurementSettingPopupProps) {
@@ -71,6 +74,7 @@ export function MeasurementSettingPopup({
           >
             <div className="map-measurement-setting">
               <MeasurementSettingFields fields={fields} />
+              {measurementType === 'point' ? <CrsDisplaySettings /> : null}
               <FieldGeometry
                 value={value}
                 maxLength={maxLength}

@@ -8,9 +8,11 @@ import {
   MeasureDistance,
   MeasurePoint,
   MeasurementHandle,
+  buildMapCrsCatalog,
   convertGeometry,
   fitBounds,
   logHelper,
+  resolveCrsDisplayItems,
   type CoordinatesNumber,
   type IViewSettingField,
   type MapSimple,
@@ -36,7 +38,7 @@ import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useMapCrsItems } from '../../crs/useMapCrsItems';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems';
 import { useEventMap } from '../../event';
 import { useMapImage } from '../../image';
 import { useLang } from '../../lang';
@@ -91,6 +93,14 @@ export function MeasurementControl(props: MeasurementControlProps) {
     onDestroy,
   );
   const crsHandle = useMapCrsItems(mapId);
+  const displayCrsHandle = useMapCrsDisplayEpsgs(mapId);
+
+  const getMeasurePointCrsItems = useCallback(() => {
+    return resolveCrsDisplayItems(
+      displayCrsHandle.displayEpsgs,
+      buildMapCrsCatalog(crsHandle.items),
+    );
+  }, [crsHandle.items, displayCrsHandle.displayEpsgs]);
   const imageHandle = useMapImage(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const controlRef = useRef<{ sync: () => void } | null>(null);
@@ -214,9 +224,20 @@ export function MeasurementControl(props: MeasurementControlProps) {
 
   function onMeasureMarker() {
     if (!checkMeasureRun('point')) return;
-    handler.current.setAction(new MeasurePoint(crsHandle.items));
+    handler.current.setAction(new MeasurePoint(() => getMeasurePointCrsItems()));
     handler.current.start();
   }
+
+  useEffect(() => {
+    if (measurementType !== 'point') return;
+    const action = handler.current.action;
+    if (action instanceof MeasurePoint) {
+      action.setCrsItems(getMeasurePointCrsItems());
+      if (coordinatesRef.current.length) {
+        handler.current.init(coordinatesRef.current);
+      }
+    }
+  }, [crsHandle.items, displayCrsHandle.displayEpsgs, getMeasurePointCrsItems, measurementType]);
 
   function toggleSetting() {
     setSetting((prev) => {
@@ -588,6 +609,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
           onChange={setValue}
           maxLength={setting.maxLength}
           fields={setting.fields}
+          measurementType={measurementType}
         />
       ) : null}
     </ModuleContainer>

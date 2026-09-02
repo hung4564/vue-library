@@ -469,7 +469,9 @@
 }
 
 .crs-item__add-btn,
-.crs-item__add .layer-item__button {
+.crs-item__add .layer-item__button,
+.crs-item__add-picker .layer-item__button,
+.crs-display-settings .map-control__button {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -477,8 +479,35 @@
   padding: var(--map-padding-input, 8px);
   width: 100%;
   background: transparent;
-  border: none;
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: var(--map-radius-sm, 4px);
   color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.crs-item__add-btn:hover,
+.crs-item__add .layer-item__button:hover,
+.crs-item__add-picker .layer-item__button:hover,
+.crs-display-settings .map-control__button:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.crs-item__add-picker .input-container > input::placeholder,
+.crs-display-settings .input-container > input::placeholder {
+  color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.crs-item-header__action {
+  display: flex;
+  align-items: center;
+  gap: var(--map-space-sm, 6px);
+}
+
+.crs-item-header__display {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .crs-item-header__action button {
@@ -491,11 +520,134 @@
   padding: 0;
 }
 
+.crs-item__add-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-sm, 6px);
+  padding-top: var(--map-space-sm, 6px);
+}
+
+.crs-catalog {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  gap: var(--map-space-sm, 6px);
+}
+
+.crs-catalog__filter {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--map-padding-input, 8px);
+  border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  border-radius: var(--map-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.crs-catalog__filter::placeholder {
+  color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.crs-catalog__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.crs-catalog__item {
+  display: flex;
+  align-items: center;
+  gap: var(--map-space-sm, 6px);
+  padding: var(--map-space-xs, 4px) var(--map-space-sm, 6px);
+  font-size: var(--map-font-size-sm, 12px);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.crs-catalog__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crs-custom {
+  flex: 0 0 auto;
+  max-height: 40%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  padding-top: var(--map-space-sm, 6px);
+}
+
+.crs-custom__title {
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  margin-bottom: var(--map-space-xs, 4px);
+}
+
+.crs-custom__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.crs-display-settings {
+  margin-bottom: var(--map-space-md, 8px);
+  padding-bottom: var(--map-space-md, 8px);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.crs-display-settings__title {
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  margin-bottom: var(--map-space-sm, 6px);
+}
+
+.crs-display-settings__list {
+  list-style: none;
+  margin: 0 0 var(--map-space-sm, 6px);
+  padding: 0;
+}
+
+.crs-display-settings__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--map-space-sm, 6px);
+  padding: var(--map-space-xs, 4px) 0;
+  font-size: var(--map-font-size-sm, 12px);
+}
+
+.crs-display-settings__remove {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: var(--map-font-size-xs, 10px);
+  opacity: 0.8;
+}
+
+.crs-display-settings__add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-sm, 6px);
+}
+
+.crs-display-settings__add-btn {
+  align-self: stretch;
+}
+
 /* ---------- Measurement setting fields ---------- */
 .map-measurement-fields__label {
   font-weight: var(--map-font-weight-normal, 400);
   letter-spacing: 0.0333333333em;
-  width: 150px;
+  min-width: 150px;
   flex-grow: 0;
   line-height: 2rem;
 }

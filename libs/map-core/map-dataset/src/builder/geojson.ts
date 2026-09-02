@@ -1,5 +1,5 @@
 import type { Color } from '@hungpvq/map-core';
-import { bboxFromGeojson, getChartRandomColor } from '@hungpvq/map-core';
+import { bboxFromGeojson, getChartRandomColor, reprojectGeojsonToWgs84, toPlainJson } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
 import type { IDataset } from '../interfaces';
 import { createDatasetPartGeojsonSourceComponent } from '../model/source';
@@ -14,16 +14,21 @@ import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
 } from '../extra/menu/items';
 import { createIdentifyMapboxComponent } from '../model/identify';
 export type GeojsonDatasetOption = {
   name: string;
   geojson: GeoJSON;
   type: LayerStyleType;
+  crs?: string;
   color?: Color;
   opacity?: number;
 };
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
+  const geojson = toPlainJson(
+    data.crs ? reprojectGeojsonToWgs84(data.geojson, data.crs) : data.geojson,
+  );
   const dataset = createRootDataset(data.name);
 
   const list = createDatasetPartListViewUiComponent(data.name);
@@ -31,11 +36,13 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   if (data.opacity != null) {
     list.opacity = data.opacity;
   }
-  const bbox = bboxFromGeojson(data.geojson);
+  const bbox = bboxFromGeojson(geojson);
+  const listMenus = [createMenuItemToggleShow()];
   if (bbox) {
     dataset.add(createDatasetPartMetadataComponent(data.name, { bbox }));
-    list.addMenus([createMenuItemToBoundActionForList({ bbox })]);
+    listMenus.push(createMenuItemToBoundActionForList({ bbox }));
   }
+  list.addMenus(listMenus);
   const groupLayer = createGroupDataset(data.name);
 
   const layer = createMultiMapboxLayerComponent(data.name, [
@@ -47,7 +54,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   ]);
   groupLayer.add(layer);
   groupLayer.add(list);
-  const dataConvert = convertGeojsonToList(data.geojson);
+  const dataConvert = convertGeojsonToList(geojson);
   const identify = createIdentifyMapboxComponent(data.name);
   identify.addMenus([
     createMenuItemToBoundActionForItem(),
@@ -55,7 +62,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   ]);
   const source = createDatasetPartGeojsonSourceComponent(
     data.name,
-    data.geojson,
+    geojson,
   );
   dataset.add(source);
   dataset.add(groupLayer);

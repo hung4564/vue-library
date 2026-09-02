@@ -10,9 +10,21 @@ export abstract class ConfigHelper<F = Record<string, unknown>> {
     return true;
   }
 
-  abstract get create(): (form: F & { name: string }) => IDataset;
+  abstract get create(): (form: F & { name: string }) => IDataset | Promise<IDataset>;
 
   get component(): (() => any) | undefined {
     return undefined;
+  }
+
+  get dataSourceComponent(): (() => any) | undefined {
+    return this.component;
+  }
+
+  get settingsComponent(): (() => any) | undefined {
+    return undefined;
+  }
+
+  get hasLayerSettings(): boolean {
+    return this.settingsComponent !== undefined;
   }
 }

@@ -9,6 +9,7 @@
       >
         <div class="map-measurement-setting">
           <MeasurementSettingFields :fields="fields" />
+          <CrsDisplaySettings v-if="measurementType === 'point'" />
           <FieldGeometry
             @update:modelValue="setValue"
             :modelValue="model"
@@ -42,11 +43,13 @@ import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
+import { CrsDisplaySettings } from '../../crs';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
       maxLength?: number;
       fields?: IViewSettingField[];
+      measurementType?: string;
       popUpPosition?: {
         top: number;
         right: number;

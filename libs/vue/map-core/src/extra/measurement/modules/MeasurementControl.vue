@@ -22,6 +22,7 @@
       :position="position"
       :maxLength="setting.maxLength"
       :fields="setting.fields"
+      :measurementType="measurement_type"
       @update:modelValue="setValue"
     />
   </ModuleContainer>
@@ -43,15 +44,17 @@ import {
   FormView,
   MapSimple,
   WithMapPropType,
+  buildMapCrsCatalog,
   convertGeometry,
   fitBounds,
   logHelper,
+  resolveCrsDisplayItems,
 } from '@hungpvq/map-core';
 
 import { MapCommonButton, MapControlGroupButton } from '../../../components';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
-import { useMapCrsItems } from '../../crs';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs';
 import { useEventMap } from '../../event';
 import { useMapImage } from '../../image';
 import { useLang } from '../../lang';
@@ -126,6 +129,14 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
 );
 
 const crsHandle = useMapCrsItems(mapId.value);
+const displayCrsHandle = useMapCrsDisplayEpsgs(mapId.value);
+
+function getMeasurePointCrsItems() {
+  return resolveCrsDisplayItems(
+    displayCrsHandle.displayEpsgs.value,
+    buildMapCrsCatalog(crsHandle.items.value),
+  );
+}
 const imageHandle = useMapImage(mapId.value);
 
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -346,9 +357,21 @@ function onMeasureAzimuth() {
 
 function onMeasureMarker() {
   if (!checkMeasureRun('point')) return;
-  handler.setAction(new MeasurePoint(crsHandle.items.value));
+  handler.setAction(new MeasurePoint(() => getMeasurePointCrsItems()));
   handler.start();
 }
+
+watch(
+  [() => crsHandle.items.value, () => displayCrsHandle.displayEpsgs.value],
+  () => {
+    if (measurement_type.value !== 'point') return;
+    const action = handler.action;
+    if (action instanceof MeasurePoint) {
+      action.setCrsItems(getMeasurePointCrsItems());
+      if (coordinates.value.length) handler.init(coordinates.value);
+    }
+  },
+);
 
 function toggleSetting() {
   setting.value.show = !setting.value.show;

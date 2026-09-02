@@ -1,4 +1,5 @@
 export * from './attribute-table';
+export * from './create-control';
 export * from './data';
 export * from './detail';
 export * from './event';

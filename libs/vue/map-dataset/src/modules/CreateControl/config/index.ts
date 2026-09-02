@@ -1,5 +1,13 @@
 import ConfigNo from './no-config.vue';
 import ConfigRasterJson from './xyz-json.vue';
-import ConfigRasterUrl from './xyz-url.vue';
+import ConfigRasterSettings from './xyz-settings.vue';
 import GeojsonUpload from './geojson-upload.vue';
-export { ConfigRasterJson, ConfigNo, ConfigRasterUrl, GeojsonUpload };
+import GeojsonSettings from './geojson-settings.vue';
+
+export {
+  ConfigNo,
+  ConfigRasterJson,
+  ConfigRasterSettings,
+  GeojsonSettings,
+  GeojsonUpload,
+};

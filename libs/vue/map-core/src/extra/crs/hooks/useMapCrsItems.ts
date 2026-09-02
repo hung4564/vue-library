@@ -1,12 +1,13 @@
-import { logHelper } from '@hungpvq/map-core';
+import { logHelper, normalizeEpsgCode } from '@hungpvq/map-core';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapCrsStore } from '../store';
 import {
-  CrsItem,
-  MittTypeMapCrs,
+  type CrsItem,
   MittTypeMapCrsEventKey,
+  normalizeEpsgCode,
+  type MittTypeMapCrs,
 } from '@hungpvq/map-core';
 
 export const useMapCrsItems = (
@@ -71,4 +72,48 @@ export const useMapCrsCurrent = (
     return item.value?.unit === 'degree';
   });
   return { item, setItem, isCrsDegree };
+};
+
+export const useMapCrsDisplayEpsgs = (
+  mapId: string,
+  {
+    onChange,
+  }: {
+    onChange?: (epsgs: string[]) => void;
+  } = {},
+) => {
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
+  const store = useMapCrsStore(mapId);
+  const displayEpsgs = shallowRef(store.displayEpsgs ?? ['4326']);
+
+  function setDisplayEpsgs(epsgs: string[]) {
+    const normalized = Array.from(
+      new Set(
+        epsgs
+          .map((epsg) => normalizeEpsgCode(epsg))
+          .filter((epsg): epsg is string => !!epsg),
+      ),
+    );
+    if (!normalized.includes('4326')) {
+      normalized.unshift('4326');
+    }
+    logHelper(logger, mapId, 'store').debug('setDisplayEpsgs', normalized);
+    store.displayEpsgs = normalized;
+    emitter.emit(MittTypeMapCrsEventKey.setDisplayEpsgs, normalized);
+    displayEpsgs.value = [...normalized];
+  }
+
+  function updateDisplayEpsgs(epsgs: string[]) {
+    displayEpsgs.value = epsgs;
+    onChange?.(epsgs);
+  }
+
+  onMounted(() => {
+    emitter.on(MittTypeMapCrsEventKey.setDisplayEpsgs, updateDisplayEpsgs);
+  });
+  onUnmounted(() => {
+    emitter.off(MittTypeMapCrsEventKey.setDisplayEpsgs, updateDisplayEpsgs);
+  });
+
+  return { displayEpsgs, setDisplayEpsgs };
 };

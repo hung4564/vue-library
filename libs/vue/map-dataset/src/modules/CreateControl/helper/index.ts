@@ -1,16 +1,11 @@
 import type { IDataset } from '@hungpvq/map-dataset';
 import { ConfigNo } from '../config';
 import type { ConfigHelper } from './_default';
-import {
-  ConfigGeojsonHelper,
-  ConfigRasterJsonHelper,
-  ConfigRasterUrlHelper,
-} from './custom';
+import { ConfigGeojsonHelper, ConfigRasterJsonHelper } from './custom';
 
 export const LAYER_TYPES = {
-  'raster-url': 'Raster url layer',
-  'raster-json': 'Raster json layer',
-  geojson: 'Geojson layer',
+  vector: 'Vector layer',
+  rasterxyz: 'Raster XYZ layer',
 } as const;
 
 export type LayerType = keyof typeof LAYER_TYPES;
@@ -30,12 +25,24 @@ export class LayerHelper {
     return this.helper.default_value;
   }
 
-  get create(): (form: any) => IDataset {
+  get create(): (form: any) => IDataset | Promise<IDataset> {
     return this.helper.create;
   }
 
+  get dataSourceComponent(): () => any {
+    return this.helper.dataSourceComponent || (() => ConfigNo);
+  }
+
+  get settingsComponent(): () => any {
+    return this.helper.settingsComponent || (() => ConfigNo);
+  }
+
+  get hasLayerSettings(): boolean {
+    return this.helper.hasLayerSettings;
+  }
+
   get component(): () => any {
-    return this.helper.component || (() => ConfigNo);
+    return this.dataSourceComponent;
   }
 
   validate(form: any): boolean {
@@ -46,11 +53,9 @@ export class LayerHelper {
 const HelperFactory = {
   create(type: LayerType): ConfigHelper<any> {
     switch (type) {
-      case 'raster-url':
-        return new ConfigRasterUrlHelper();
-      case 'raster-json':
+      case 'rasterxyz':
         return new ConfigRasterJsonHelper();
-      case 'geojson':
+      case 'vector':
         return new ConfigGeojsonHelper();
       default:
         throw new Error('not support type: ' + type);

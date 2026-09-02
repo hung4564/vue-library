@@ -119,6 +119,7 @@ export function formatCoordinate(
   { longitude, latitude }: { longitude: number; latitude: number },
   crs?: CrsItem,
   isDMS = false,
+  precision?: number | null,
 ): FormattedCoordinate {
   const currentPoint: FormattedCoordinate = { longitude: '0', latitude: '0' };
   if (!longitude || !latitude) return currentPoint;
@@ -168,16 +169,23 @@ export function formatCoordinate(
   }
 
   // Format based on unit
+  const formatNumber = (value: number) => {
+    if (precision === null) return String(value);
+    if (typeof precision === 'number') return value.toFixed(precision);
+    if (crs && crs.unit === 'meter') return value.toFixed(0);
+    return value.toFixed(6);
+  };
+
   if (crs && crs.unit === 'meter') {
-    currentPoint.longitude = transformedLng.toFixed(0);
-    currentPoint.latitude = transformedLat.toFixed(0);
+    currentPoint.longitude = formatNumber(transformedLng);
+    currentPoint.latitude = formatNumber(transformedLat);
   } else {
     if (isDMS) {
       currentPoint.longitude = lngDMS(+transformedLng);
       currentPoint.latitude = latDMS(+transformedLat);
     } else {
-      currentPoint.longitude = transformedLng.toFixed(6);
-      currentPoint.latitude = transformedLat.toFixed(6);
+      currentPoint.longitude = formatNumber(transformedLng);
+      currentPoint.latitude = formatNumber(transformedLat);
     }
   }
 

@@ -1,4 +1,16 @@
-import { InputFile, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core';
+import {
+  applyCreateControlSample,
+  CREATE_CONTROL_DEFAULT_DATA_TAB,
+  CREATE_CONTROL_SAMPLE_NONE,
+  getCreateControlDataTabs,
+  getCreateControlSamples,
+  loadGeojsonFileAsync,
+  loadGeojsonTextAsync,
+  type CreateControlDataTab,
+} from '@hungpvq/map-dataset';
+import { DragDropFile, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core';
+import { useMemo, useRef, useState } from 'react';
+import { DataSourceTabs } from './DataSourceTabs';
 
 type ConfigFormProps = {
   config: Record<string, unknown>;
@@ -6,47 +18,196 @@ type ConfigFormProps = {
   trans: (key: string) => string;
 };
 
-export function ConfigGeojsonForm({ config, onChange, trans }: ConfigFormProps) {
+export function ConfigGeojsonLayerSettings({ config, onChange, trans }: ConfigFormProps) {
   return (
-    <>
-      <div className="map-col-12">
+    <div className="map-row create-control-settings">
+      <div className="map-col-6">
         <InputSelect
-          label={trans('map.layer-control.field.type')}
+          label={trans('map.layer-control.field.style-type')}
           value={config.type as string}
           items={['point', 'line', 'area']}
           onChange={(v) => onChange({ type: v })}
         />
       </div>
+      <div className="map-col-6">
+        <div className="form-group">
+          <label>{trans('map.layer-control.field.color')}</label>
+          <div className="input-container create-control-color">
+            <input
+              type="color"
+              value={String(config.color ?? '#3498db')}
+              onChange={(event) => onChange({ color: event.target.value })}
+            />
+          </div>
+        </div>
+      </div>
       <div className="map-col-12">
-        <InputFile
-          accept=".json,.geojson"
-          label="GeoJSON file"
-          onChange={async (file) => {
-            const text = await (file as File).text();
-            onChange({ geojson: JSON.parse(text) });
-          }}
+        <InputCrs
+          label={trans('map.layer-control.field.crs')}
+          placeholder={trans('map.layer-control.field.crs-placeholder')}
+          value={String(config.crs ?? '4326')}
+          onChange={(v) => onChange({ crs: v })}
         />
       </div>
-      {!!config.geojson && (
-        <div className="map-col-12">
-          <InputTextarea value={JSON.stringify(config.geojson, null, 2)} readOnly rows={4} />
-        </div>
-      )}
-    </>
+    </div>
   );
 }
 
-export function ConfigRasterUrlForm({ config, onChange, trans }: ConfigFormProps) {
-  const bounds = (config.bounds as number[]) || [0, 0, 0, 0];
+export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
+  const [pasteText, setPasteText] = useState('');
+  const [parsing, setParsing] = useState(false);
+  const [sampleId, setSampleId] = useState('');
+  const [loadingSample, setLoadingSample] = useState(false);
+  const [sampleError, setSampleError] = useState('');
+  const pasteTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const dataTabs = getCreateControlDataTabs('vector');
+  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(CREATE_CONTROL_DEFAULT_DATA_TAB);
+  const sampleItems = useMemo(
+    () => [
+      { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
+      ...getCreateControlSamples('vector').map((item) => ({
+        value: item.id,
+        text: item.label,
+      })),
+    ],
+    [],
+  );
+
+  async function applyGeojsonText(text: string) {
+    setPasteText(text);
+    setSampleId('');
+    setSampleError('');
+    if (!text.trim()) {
+      onChange({ geojson: null });
+      return;
+    }
+    setParsing(true);
+    try {
+      const { geojson, crs } = await loadGeojsonTextAsync(text);
+      if (geojson) {
+        const patch: Record<string, unknown> = { geojson };
+        if (crs) patch.crs = crs;
+        onChange(patch);
+      }
+    } finally {
+      setParsing(false);
+    }
+  }
+
+  async function onSelectSample(id: string) {
+    setSampleId(id);
+    setSampleError('');
+    if (!id) return;
+
+    const sample = getCreateControlSamples('vector').find((item) => item.id === id);
+    if (!sample) return;
+
+    setLoadingSample(true);
+    setPasteText('');
+    try {
+      const patch = await applyCreateControlSample(sample);
+      onChange({ ...patch, name: sample.label });
+      setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
+    } catch (err) {
+      setSampleError(
+        err instanceof Error ? err.message : trans('map.layer-control.create.sample-error'),
+      );
+    } finally {
+      setLoadingSample(false);
+    }
+  }
+
   return (
-    <>
+    <div className="map-row create-control-settings">
       <div className="map-col-12">
-        <InputText
-          label={trans('map.layer-control.field.url')}
-          value={(config.url as string) || ''}
-          onChange={(v) => onChange({ url: v })}
-        />
+        <DataSourceTabs
+          tabs={dataTabs}
+          trans={trans}
+          activeTab={activeDataTab}
+          onActiveTabChange={setActiveDataTab}
+        >
+          {{
+            file: (
+              <>
+                <DragDropFile
+                  accept=".json,.geojson"
+                  onChange={async (file) => {
+                    setParsing(true);
+                    setSampleId('');
+                    setSampleError('');
+                    try {
+                      setPasteText('');
+                      const { geojson, crs } = await loadGeojsonFileAsync(file as File);
+                      if (geojson) {
+                        const patch: Record<string, unknown> = { geojson };
+                        if (crs) patch.crs = crs;
+                        onChange(patch);
+                      }
+                      setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
+                    } finally {
+                      setParsing(false);
+                    }
+                  }}
+                />
+                {parsing ? (
+                  <div className="create-control-status">
+                    {trans('map.layer-control.create.parsing')}
+                  </div>
+                ) : null}
+              </>
+            ),
+            raw: (
+              <>
+                <InputTextarea
+                  label={trans('map.layer-control.create.paste-geojson')}
+                  value={pasteText}
+                  rows={4}
+                  onChange={(text) => {
+                    setPasteText(text);
+                    clearTimeout(pasteTimerRef.current);
+                    pasteTimerRef.current = setTimeout(() => {
+                      void applyGeojsonText(text);
+                    }, 400);
+                  }}
+                />
+                {parsing ? (
+                  <div className="create-control-status">
+                    {trans('map.layer-control.create.parsing')}
+                  </div>
+                ) : null}
+              </>
+            ),
+            sample: (
+              <>
+                <InputSelect
+                  label={trans('map.layer-control.create.sample')}
+                  value={sampleId}
+                  items={sampleItems}
+                  onChange={(v) => void onSelectSample(String(v))}
+                />
+                {loadingSample ? (
+                  <div className="create-control-status">
+                    {trans('map.layer-control.create.loading-sample')}
+                  </div>
+                ) : null}
+                {sampleError ? (
+                  <div className="create-control-sample-error">{sampleError}</div>
+                ) : null}
+              </>
+            ),
+          }}
+        </DataSourceTabs>
       </div>
+    </div>
+  );
+}
+
+export function ConfigRasterLayerSettings({ config, onChange, trans }: ConfigFormProps) {
+  const bounds = (config.bounds as number[]) || [-180, -85.051129, 180, 85.051129];
+
+  return (
+    <div className="map-row create-control-settings">
       <div className="map-col-6">
         <InputText
           label={trans('map.layer-control.field.minzoom')}
@@ -57,7 +218,7 @@ export function ConfigRasterUrlForm({ config, onChange, trans }: ConfigFormProps
       <div className="map-col-6">
         <InputText
           label={trans('map.layer-control.field.maxzoom')}
-          value={String(config.maxzoom ?? 24)}
+          value={String(config.maxzoom ?? 22)}
           onChange={(v) => onChange({ maxzoom: Number(v) })}
         />
       </div>
@@ -74,34 +235,125 @@ export function ConfigRasterUrlForm({ config, onChange, trans }: ConfigFormProps
           />
         </div>
       ))}
-    </>
-  );
-}
-
-export function ConfigRasterJsonForm({ config, onChange, trans }: ConfigFormProps) {
-  return (
-    <div className="map-col-12">
-      <InputText
-        label={trans('map.layer-control.field.url')}
-        value={(config.url as string) || ''}
-        onChange={(v) => onChange({ url: v, tiles: v ? [v] : [] })}
-      />
     </div>
   );
 }
 
-const FORM_MAP: Record<string, typeof ConfigGeojsonForm> = {
-  'create-geojson': ConfigGeojsonForm,
-  'create-raster-url': ConfigRasterUrlForm,
-  'create-raster-json': ConfigRasterJsonForm,
+export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormProps) {
+  const [sampleId, setSampleId] = useState('');
+  const [loadingSample, setLoadingSample] = useState(false);
+  const [sampleError, setSampleError] = useState('');
+
+  const dataTabs = getCreateControlDataTabs('rasterxyz');
+  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(CREATE_CONTROL_DEFAULT_DATA_TAB);
+  const sampleItems = useMemo(
+    () => [
+      { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
+      ...getCreateControlSamples('rasterxyz').map((item) => ({
+        value: item.id,
+        text: item.label,
+      })),
+    ],
+    [],
+  );
+
+  async function onSelectSample(id: string) {
+    setSampleId(id);
+    setSampleError('');
+    if (!id) return;
+
+    const sample = getCreateControlSamples('rasterxyz').find((item) => item.id === id);
+    if (!sample) return;
+
+    setLoadingSample(true);
+    try {
+      const patch = await applyCreateControlSample(sample);
+      onChange({ ...patch, name: sample.label });
+      setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
+    } catch (err) {
+      setSampleError(
+        err instanceof Error ? err.message : trans('map.layer-control.create.sample-error'),
+      );
+    } finally {
+      setLoadingSample(false);
+    }
+  }
+
+  return (
+    <div className="map-row create-control-settings">
+      <div className="map-col-12">
+        <DataSourceTabs
+          tabs={dataTabs}
+          trans={trans}
+          activeTab={activeDataTab}
+          onActiveTabChange={setActiveDataTab}
+        >
+          {{
+            raw: (
+              <InputText
+                label={trans('map.layer-control.field.url')}
+                value={(config.url as string) || ''}
+                onChange={(v) => {
+                  setSampleId('');
+                  setSampleError('');
+                  onChange({ url: v, tiles: v ? [v] : [] });
+                }}
+              />
+            ),
+            sample: (
+              <>
+                <InputSelect
+                  label={trans('map.layer-control.create.sample')}
+                  value={sampleId}
+                  items={sampleItems}
+                  onChange={(v) => void onSelectSample(String(v))}
+                />
+                {loadingSample ? (
+                  <div className="create-control-status">
+                    {trans('map.layer-control.create.loading-sample')}
+                  </div>
+                ) : null}
+                {sampleError ? (
+                  <div className="create-control-sample-error">{sampleError}</div>
+                ) : null}
+              </>
+            ),
+          }}
+        </DataSourceTabs>
+      </div>
+    </div>
+  );
+}
+
+const DATA_FORM_MAP: Record<string, typeof ConfigGeojsonDataSource> = {
+  'create-geojson': ConfigGeojsonDataSource,
+  'create-raster-json': ConfigRasterDataSource,
+};
+
+const SETTINGS_FORM_MAP: Record<string, typeof ConfigGeojsonLayerSettings> = {
+  'create-geojson': ConfigGeojsonLayerSettings,
+  'create-raster-json': ConfigRasterLayerSettings,
 };
 
 export function CreateConfigForm(props: {
+  section: 'data' | 'settings';
   componentKey?: string;
   config: Record<string, unknown>;
   onChange: (patch: Record<string, unknown>) => void;
   trans: (key: string) => string;
 }) {
-  const Form = (props.componentKey && FORM_MAP[props.componentKey]) || ConfigGeojsonForm;
+  if (props.section === 'settings') {
+    const Form =
+      (props.componentKey && SETTINGS_FORM_MAP[props.componentKey]) || null;
+    if (!Form) return null;
+    return <Form {...props} />;
+  }
+
+  const Form =
+    (props.componentKey && DATA_FORM_MAP[props.componentKey]) || ConfigGeojsonDataSource;
   return <Form {...props} />;
+}
+
+export function hasCreateConfigSettings(componentKey?: string) {
+  return !!(componentKey && SETTINGS_FORM_MAP[componentKey]);
 }

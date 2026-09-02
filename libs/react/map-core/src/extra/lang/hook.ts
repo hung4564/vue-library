@@ -13,7 +13,7 @@ export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
   const { getMapLang, setMapLang, setMapLocaleDefault, setMapTranslate } =
     useMapLocale(mapId);
-  const [, setTick] = useState(0);
+  const [tick, setTick] = useState(0);
   const emitter = useMapMittStore<MittTypeMapLang>(mapId);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function useLang(mapId: string) {
       }
       return key;
     },
-    [getMapLang],
+    [getMapLang, tick],
   );
 
   return {
@@ -79,12 +79,13 @@ function getProp(
     ) {
       current = (current as Record<string, unknown>)[segment];
     } else {
-      objCache.set(pathStr, defaultVal);
       return defaultVal;
     }
   }
   const result = typeof current === 'string' ? current : defaultVal;
-  objCache.set(pathStr, result);
+  if (result !== undefined) {
+    objCache.set(pathStr, result);
+  }
   return result;
 }
 

@@ -8,8 +8,9 @@ import { useMapMittStore } from '../../store/mitt-store';
 import { useMapCrsStore } from './store';
 import {
   type CrsItem,
-  type MittTypeMapCrs,
   MittTypeMapCrsEventKey,
+  normalizeEpsgCode,
+  type MittTypeMapCrs,
 } from '@hungpvq/map-core';
 
 export const useMapCrsItems = (
@@ -85,4 +86,51 @@ export const useMapCrsCurrent = (
   }, [item]);
 
   return { item, setItem, isCrsDegree };
+};
+
+export const useMapCrsDisplayEpsgs = (
+  mapId: string,
+  {
+    onChange,
+  }: {
+    onChange?: (epsgs: string[]) => void;
+  } = {},
+) => {
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
+  const store = useMapCrsStore(mapId);
+  const [displayEpsgs, setDisplayEpsgsState] = useState<string[]>(
+    store.displayEpsgs ?? ['4326'],
+  );
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  function setDisplayEpsgs(epsgs: string[]) {
+    const normalized = Array.from(
+      new Set(
+        epsgs
+          .map((epsg) => normalizeEpsgCode(epsg))
+          .filter((epsg): epsg is string => !!epsg),
+      ),
+    );
+    if (!normalized.includes('4326')) {
+      normalized.unshift('4326');
+    }
+    store.displayEpsgs = normalized;
+    emitter.emit(MittTypeMapCrsEventKey.setDisplayEpsgs, normalized);
+    setDisplayEpsgsState([...normalized]);
+  }
+
+  const updateDisplayEpsgs = useCallback((epsgs: string[]) => {
+    setDisplayEpsgsState(epsgs);
+    onChangeRef.current?.(epsgs);
+  }, []);
+
+  useEffect(() => {
+    emitter.on(MittTypeMapCrsEventKey.setDisplayEpsgs, updateDisplayEpsgs);
+    return () => {
+      emitter.off(MittTypeMapCrsEventKey.setDisplayEpsgs, updateDisplayEpsgs);
+    };
+  }, [emitter, updateDisplayEpsgs]);
+
+  return { displayEpsgs, setDisplayEpsgs };
 };

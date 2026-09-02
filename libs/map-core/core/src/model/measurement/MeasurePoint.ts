@@ -5,18 +5,31 @@
 import { point } from '@turf/turf';
 import type { Feature } from 'geojson';
 import type { CoordinatesNumber, CrsItem, IViewSetting } from '../../types';
+import { lookupProj4CrsItem } from '../../utils/proj4-crs-catalog';
 import { formatCoordinate } from '../../utils';
 import { Measure } from './Measure';
+
+function enrichCrsItem(crs: CrsItem): CrsItem {
+  if (crs.proj4js) return crs;
+  const resolved = lookupProj4CrsItem(crs.epsg);
+  if (!resolved?.proj4js) return crs;
+  return { ...crs, proj4js: resolved.proj4js, unit: crs.unit ?? resolved.unit };
+}
 
 /**
  * Class for measuring a single point with coordinate formatting
  */
 export class MeasurePoint extends Measure {
-  protected crs_items: CrsItem[];
+  protected getCrsItems: () => CrsItem[];
 
-  constructor(crs_items: CrsItem[] = []) {
+  constructor(crs_items: CrsItem[] | (() => CrsItem[])) {
     super();
-    this.crs_items = crs_items;
+    this.getCrsItems =
+      typeof crs_items === 'function' ? crs_items : () => crs_items.slice();
+  }
+
+  setCrsItems(crs_items: CrsItem[]) {
+    this.getCrsItems = () => crs_items.slice();
   }
 
   get name(): string {
@@ -61,45 +74,42 @@ export class MeasurePoint extends Measure {
     result.features = [point(this.coordinates[0])];
     const lng = this.coordinates[0][0];
     const lat = this.coordinates[0][1];
+    const crsItems = this.getCrsItems();
+    const formatOptions = { precision: null as null };
+
     const temp = formatCoordinate(
       { longitude: lng, latitude: lat },
       undefined,
       false,
+      formatOptions.precision,
     );
     if (temp) result.value = `${temp.longitude}, ${temp.latitude}`;
 
-    if (this.crs_items) {
-      const crs_default = this.crs_items.find((x) => x.default);
-      result.fields = [
-        {
-          trans: crs_default?.name,
-          value: result.value,
-        },
-      ];
-      this.crs_items
-        .filter((x) => !x.default)
-        .forEach((crs) => {
-          if (!crs.default && crs.proj4js) {
-            const point = formatCoordinate(
-              { longitude: lng, latitude: lat },
-              crs,
-              false,
-            );
-            if (point)
-              result.fields?.push({
-                trans: crs.name,
-                value: `${point.longitude}, ${point.latitude}`,
-              });
-          }
-        });
-    } else {
-      result.fields = [
-        {
-          trans: 'map.measurement.setting.point',
-          value: result.value,
-        },
-      ];
-    }
+    const crsDefault = crsItems.find((x) => x.default);
+    result.fields = [
+      {
+        trans: crsDefault?.name,
+        value: result.value,
+      },
+    ];
+
+    crsItems
+      .filter((x) => !x.default)
+      .forEach((crs) => {
+        const enriched = enrichCrsItem(crs);
+        const pointFormatted = formatCoordinate(
+          { longitude: lng, latitude: lat },
+          enriched,
+          false,
+          formatOptions.precision,
+        );
+        if (pointFormatted) {
+          result.fields?.push({
+            trans: enriched.name || `EPSG:${enriched.epsg}`,
+            value: `${pointFormatted.longitude}, ${pointFormatted.latitude}`,
+          });
+        }
+      });
 
     result.features_label = [
       {

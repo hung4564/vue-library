@@ -3,6 +3,7 @@
     type="button"
     class="map-control__button clickable"
     v-bind="$attrs"
+    :disabled="props.disabled"
     :class="{
       'map-control__button-active': props.active,
       'map-control__button-disabled': props.disabled,

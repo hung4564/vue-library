@@ -4,11 +4,7 @@ import { Icon } from '@mdi/react';
 import { debounce } from 'lodash';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useCoordinate,
-  useMapCrsCurrent,
-  useMapCrsItems,
-} from '../../extra/crs';
+import { useCoordinate } from '../../extra/crs';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -42,7 +38,6 @@ function setScale(container: HTMLElement, maxDistance: number, unit: string) {
 
 export interface MouseCoordinatesControlProps extends WithMapPropType {
   hideZoom?: boolean;
-  hideCrsSelect?: boolean;
   hideScale?: boolean;
   hideCoordinates?: boolean;
 }
@@ -52,7 +47,6 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     ...defaultMapProps,
     ...props,
     hideZoom: props.hideZoom || false,
-    hideCrsSelect: props.hideCrsSelect || false,
     hideScale: props.hideScale || false,
     hideCoordinates: props.hideCoordinates || false,
   };
@@ -183,19 +177,10 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
   callMapRef.current = callMap;
 
   const { format: formatCoordinate } = useCoordinate(mapId);
-  const { items: crsItems } = useMapCrsItems(mapId);
 
   const changePixelValueRef = useRef<() => void>(() => {
     return;
   });
-
-  const { item, setItem, isCrsDegree } = useMapCrsCurrent(mapId, {
-    onChange: () => {
-      changePixelValueRef.current();
-    },
-  });
-
-  const crs = useMemo(() => item?.epsg, [item?.epsg]);
 
   useEffect(() => {
     formatCoordinateRef.current = formatCoordinate;
@@ -249,38 +234,18 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
                     marginLeft: '4px',
                   }}
                 />
-                {isCrsDegree && (
-                  <i
-                    title={
-                      isDMS
-                        ? 'DMS <=> Latitude, Longitude'
-                        : 'Latitude, Longitude <=> DMS'
-                    }
-                    style={{ marginLeft: '4px', cursor: 'pointer' }}
-                    onClick={changeDisplayTypePixelValue}
-                    className="icon icon-clickable"
-                  >
-                    <Icon size="16px" path={mdiCached} />
-                  </i>
-                )}
-              </div>
-            </div>
-          )}
-          {!mergedProps.hideCrsSelect && (
-            <div className="mouse-coordinates-part crs-part">
-              <div className="mouse-coordinates-point">
-                <select
-                  className="crs-select"
-                  style={{ width: '70px' }}
-                  value={crs || '4326'}
-                  onChange={(e) => setItem(e.target.value)}
+                <i
+                  title={
+                    isDMS
+                      ? 'DMS <=> Latitude, Longitude'
+                      : 'Latitude, Longitude <=> DMS'
+                  }
+                  style={{ marginLeft: '4px', cursor: 'pointer' }}
+                  onClick={changeDisplayTypePixelValue}
+                  className="icon icon-clickable"
                 >
-                  {crsItems.map((crsItem) => (
-                    <option key={crsItem.epsg} value={crsItem.epsg}>
-                      {crsItem.name || crsItem.epsg}
-                    </option>
-                  ))}
-                </select>
+                  <Icon size="16px" path={mdiCached} />
+                </i>
               </div>
             </div>
           )}

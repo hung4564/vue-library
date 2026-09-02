@@ -3,21 +3,16 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
 import { debounce } from 'lodash';
-import { computed, nextTick, ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { defaultMapProps, useMap } from '../../hooks';
 
 import type { MapSimple } from '@hungpvq/map-core';
-import {
-  useCoordinate,
-  useMapCrsCurrent,
-  useMapCrsItems,
-} from '../../extra/crs';
+import { useCoordinate } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
       hideZoom?: boolean;
-      hideCrsSelect?: boolean;
       hideScale?: boolean;
       hideCoordinates?: boolean;
     }
@@ -25,7 +20,6 @@ const props = withDefaults(
   {
     ...defaultMapProps,
     hideZoom: false,
-    hideCrsSelect: false,
     hideScale: false,
     hideCoordinates: false,
   },
@@ -47,20 +41,6 @@ const { callMap, mapId, moduleContainerProps } = useMap(
 );
 const { format: formatCoordinate } = useCoordinate(mapId.value);
 
-const { items: crsItems } = useMapCrsItems(mapId.value);
-const { item, setItem, isCrsDegree } = useMapCrsCurrent(mapId.value, {
-  onChange: () => {
-    changePixelValue();
-  },
-});
-const crs = computed<string | undefined>({
-  get() {
-    return item.value?.epsg;
-  },
-  set(value) {
-    return setItem(value);
-  },
-});
 function onInit(map: MapSimple) {
   currentZoom.value = +map.getZoom().toFixed(2);
   map.on('zoomend', onZoomEnd);
@@ -179,7 +159,6 @@ function getRoundNum(num: number) {
               :style="{ 'min-width': isDMS ? '220px' : '100px' }"
             ></div>
             <i
-              v-if="isCrsDegree"
               :title="
                 isDMS
                   ? 'DMS <=> Latitude, Longitude'
@@ -191,19 +170,6 @@ function getRoundNum(num: number) {
             >
               <SvgIcon :size="16" type="mdi" :path="path.change" />
             </i>
-          </div>
-        </div>
-        <div class="mouse-coordinates-part crs-part" v-if="!hideCrsSelect">
-          <div class="mouse-coordinates-point">
-            <select v-model="crs" class="crs-select" style="width: 70px">
-              <option
-                :value="item.epsg"
-                :key="item.epsg"
-                v-for="item in crsItems"
-              >
-                {{ item.name || item.epsg }}
-              </option>
-            </select>
           </div>
         </div>
         <div class="mouse-coordinates-part scale-part" v-if="!hideScale">

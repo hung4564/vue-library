@@ -318,3 +318,62 @@ input[type='range']:focus::-ms-fill-upper {
 .form-checkbox label {
   padding-left: var(--map-space-md, 8px);
 }
+
+/* ---------- CRS combobox ---------- */
+.input-crs__wrap {
+  position: relative;
+  overflow: visible;
+}
+
+.input-crs__list {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 2px);
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  padding: var(--map-space-xs, 4px) 0;
+  list-style: none;
+  background-color: var(
+    --map-card-bg,
+    var(--card-background-color, rgba(32, 43, 54, 0.95))
+  );
+  color: var(
+    --map-card-text,
+    var(--card-color, #fff)
+  );
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: var(--map-radius-sm, 4px);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.input-crs__list--portal {
+  top: auto;
+  right: auto;
+  left: auto;
+}
+
+.input-crs__option {
+  padding: var(--map-space-sm, 6px) var(--map-space-md, 8px);
+  font-size: var(--map-font-size-sm, 12px);
+  line-height: var(--map-line-height, 1.4);
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input-crs__option:hover,
+.input-crs__option._active {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.input-crs__option._active {
+  color: var(
+    --map-card-text,
+    var(--card-color, #fff)
+  );
+}

@@ -1,14 +1,9 @@
 import type { IDataset } from '@hungpvq/map-dataset';
-import {
-  ConfigGeojsonHelper,
-  ConfigRasterJsonHelper,
-  ConfigRasterUrlHelper,
-} from './custom';
+import { ConfigGeojsonHelper, ConfigRasterJsonHelper } from './custom';
 
 export const LAYER_TYPES = {
-  'raster-url': 'Raster url layer',
-  'raster-json': 'Raster json layer',
-  geojson: 'Geojson layer',
+  vector: 'Vector layer',
+  rasterxyz: 'Raster XYZ layer',
 } as const;
 
 export type LayerType = keyof typeof LAYER_TYPES;
@@ -18,7 +13,7 @@ type LayerForm = Record<string, unknown> & { name?: string };
 /** Erased helper surface — concrete helpers differ by form shape. */
 type ConfigHelperLike = {
   readonly default_value: Record<string, unknown>;
-  readonly create: (form: LayerForm & { name: string }) => IDataset;
+  readonly create: (form: LayerForm & { name: string }) => IDataset | Promise<IDataset>;
   readonly componentKey?: string;
   validate(form: LayerForm): boolean;
 };
@@ -54,11 +49,9 @@ export class LayerHelper {
 const HelperFactory = {
   create(type: LayerType): ConfigHelperLike {
     switch (type) {
-      case 'raster-url':
-        return new ConfigRasterUrlHelper() as unknown as ConfigHelperLike;
-      case 'raster-json':
+      case 'rasterxyz':
         return new ConfigRasterJsonHelper() as unknown as ConfigHelperLike;
-      case 'geojson':
+      case 'vector':
         return new ConfigGeojsonHelper() as unknown as ConfigHelperLike;
       default:
         throw new Error('not support type: ' + type);

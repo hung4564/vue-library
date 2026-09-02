@@ -20,6 +20,7 @@ export function useLang(mapId: string) {
   onMounted(() => {
     emitter.on(MittTypeMapLangEventKey.setLocale, update);
     emitter.on(MittTypeMapLangEventKey.setTranslate, update);
+    update();
   });
 
   onUnmounted(() => {
@@ -55,6 +56,7 @@ export function useLang(mapId: string) {
   }
 
   const trans = computed(() => {
+    storeLang.value;
     return transLocal;
   });
 
@@ -99,13 +101,14 @@ function getProp(
     if (current && typeof current === 'object' && segment in current) {
       current = current[segment];
     } else {
-      objCache.set(pathStr, defaultVal);
       return defaultVal;
     }
   }
 
   const result = typeof current === 'string' ? current : defaultVal;
-  objCache.set(pathStr, result);
+  if (result !== undefined) {
+    objCache.set(pathStr, result);
+  }
   return result;
 }
 
