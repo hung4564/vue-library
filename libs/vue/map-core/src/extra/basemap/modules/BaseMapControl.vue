@@ -77,6 +77,7 @@
 <script lang="ts" setup>
 import type { BaseMapItem } from '@hungpvq/map-core';
 import {
+  BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
   logHelper,
   type WithMapPropType,
@@ -137,14 +138,7 @@ watch(
     setDefaultBaseMap(value);
   },
 );
-setLocaleDefault({
-  map: {
-    basemap: {
-      title: 'Map basemap',
-      setting: 'Setting',
-    },
-  },
-});
+setLocaleDefault(BASEMAP_CONTROL_LOCALE);
 const sizeBaseMap = computed(() => {
   return 70;
 });

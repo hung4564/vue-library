@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { LAYER_INFO_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { DraggableItemFloat } from '@hungpvq/react-draggable';
 import {
   MapCommonButton,
@@ -20,9 +21,7 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   const [show, toggleShow] = useShow(props.show);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: { 'layer-info-control': { title: 'Layer Info Control' } },
-    });
+    setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const { state, control } = useToolbarControl(mapId, merged, {

@@ -8,6 +8,7 @@ import {
   copyText,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
+  INFO_CONTROL_LOCALE,
   exportMapbox,
   readMapViewInfo,
   type MapSimple,
@@ -44,21 +45,7 @@ const props = withDefaults(
 const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'info-control': {
-      title: 'INFO',
-      screenshot: 'Screenshot',
-      center: 'Center',
-      zoom: 'Zoom',
-      pitch: 'Pitch',
-      bearing: 'Bearing',
-      projection: 'Projection',
-      bounds: 'Bounds',
-      copy: 'Copy',
-    },
-  },
-});
+setLocaleDefault(INFO_CONTROL_LOCALE);
 
 const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra';
@@ -14,14 +14,7 @@ export function GeoLocateControl(props: WithMapPropType) {
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        action: {
-          'geolocate-control-find-my-location': 'Find my location',
-          'geolocate-control-location-not-available': 'Location not available',
-        },
-      },
-    });
+    setLocaleDefault(MAP_ACTION_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

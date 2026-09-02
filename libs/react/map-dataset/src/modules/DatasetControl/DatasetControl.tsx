@@ -1,6 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
+  DATASET_CONTROL_LOCALE,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   handleMenuActionClick,
@@ -33,7 +34,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const [views, setViews] = useState<IDataset[]>([]);
 
   useEffect(() => {
-    setLocaleDefault({ map: { 'dataset-control': { title: 'Dataset Control' } } });
+    setLocaleDefault(DATASET_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   useEffect(() => {

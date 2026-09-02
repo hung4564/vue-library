@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
+  LEGEND_CONTROL_LOCALE,
   getLegendName,
   isSupportGenLayerLegend,
   type LegendLayerSpecification,
@@ -31,11 +32,7 @@ export function LegendControl(props: WithMapPropType) {
   onlyRenderRef.current = onlyRender;
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'legend-control': { title: 'Legend', onlyRendered: 'Only rendered' },
-      },
-    });
+    setLocaleDefault(LEGEND_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const updateLegend = useCallback(

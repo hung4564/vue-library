@@ -1,14 +1,15 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
+  LAYER_CONTROL_LOCALE,
   handleMenuAction,
   hasMoveLayer,
   listListViewGroups,
   traverseTree,
 } from '@hungpvq/map-dataset';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
-import { BaseButton, useMap } from '@hungpvq/react-map-core';
-import { mdiDelete, mdiGroup } from '@mdi/js';
+import { BaseButton, useLang, useMap } from '@hungpvq/react-map-core';
+import { mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useMapDataset } from '../../store';
@@ -28,20 +29,25 @@ export function LayerList({
   mapId,
   readonly,
   title,
+  disabledCreate,
   disabledCreateGroup,
   disabledDeleteAll,
   disabledDrag,
   disabledMove,
+  onCreate,
 }: {
   mapId: string;
   readonly?: boolean;
   title?: ReactNode;
+  disabledCreate?: boolean;
   disabledCreateGroup?: boolean;
   disabledDeleteAll?: boolean;
   disabledDrag?: boolean;
   disabledMove?: boolean;
+  onCreate?: () => void;
 }) {
   const { callMap } = useMap({ mapId });
+  const { trans, setLocaleDefault } = useLang(mapId);
   const { getAllComponentsByType, removeComponent, datasetVersion } =
     useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
@@ -52,6 +58,10 @@ export function LayerList({
     items: MenuAction<IListViewUI>[];
     view?: IListViewUI;
   }>({ items: [] });
+
+  useEffect(() => {
+    setLocaleDefault(LAYER_CONTROL_LOCALE);
+  }, [setLocaleDefault]);
 
   function refresh() {
     const viewSource = getAllComponentsByType<IListViewUI>('list');
@@ -151,6 +161,9 @@ export function LayerList({
     contextMenuRef.current?.close();
   }
 
+  const isEmpty = views.length === 0;
+  const showCreate = Boolean(onCreate) && !disabledCreate && !readonly;
+
   return (
     <MenuConditionProvider
       value={{
@@ -163,44 +176,77 @@ export function LayerList({
       <div className="layer-control__header">
         {title}
         <div className="v-spacer" />
-        <ButtonToggleShowAll mapId={mapId} items={views} />
-        {!disabledCreateGroup && (
-          <BaseButton onClick={addNewGroup} aria-label="Create group">
-            <Icon path={mdiGroup} size={HEADER_ICON} />
-          </BaseButton>
-        )}
-        {!disabledDeleteAll && (
-          <BaseButton onClick={onRemoveAllLayer} aria-label="Delete all layers">
-            <Icon path={mdiDelete} size={HEADER_ICON} />
-          </BaseButton>
+        {!isEmpty && (
+          <>
+            <ButtonToggleShowAll mapId={mapId} items={views} />
+            {!disabledCreateGroup && (
+              <BaseButton onClick={addNewGroup} aria-label="Create group">
+                <Icon path={mdiGroup} size={HEADER_ICON} />
+              </BaseButton>
+            )}
+            {!disabledDeleteAll && (
+              <BaseButton onClick={onRemoveAllLayer} aria-label="Delete all layers">
+                <Icon path={mdiDelete} size={HEADER_ICON} />
+              </BaseButton>
+            )}
+          </>
         )}
       </div>
       <div className="layer-control__list">
-        <DraggableGroupList
-          ref={groupRef}
-          items={views}
-          selected={selected}
-          disabledDrag={disabledDrag}
-          onSelectedChange={setSelected}
-          onItemsChange={onItemsChange}
-          onGroupRemove={onRemoveGroupLayer}
-          renderItem={({ item, toggleSelect }) => (
-            <LayerItem
-              item={item}
-              mapId={mapId}
-              readonly={readonly}
-              disabledMove={disabledMove}
-              disabledCreateGroup={disabledCreateGroup}
-              onTitleClick={toggleSelect}
-              onRemove={(layer) => {
-                removeComponent(layer);
-                refresh();
-              }}
-              onAction={onLayerAction}
-              onContextMenu={handleContextClick}
+        {isEmpty && (
+          <div className="layer-control__empty">
+            <Icon
+              className="layer-control__empty-icon"
+              path={mdiLayers}
+              size="36px"
             />
-          )}
-        />
+            <div className="layer-control__empty-title">
+              {trans('map.layer-control.empty')}
+            </div>
+            {showCreate && (
+              <div className="layer-control__empty-hint">
+                {trans('map.layer-control.empty-hint')}
+              </div>
+            )}
+            {showCreate && (
+              <button
+                type="button"
+                className="layer-control__empty-action"
+                onClick={onCreate}
+              >
+                <Icon path={mdiPlus} size="14px" />
+                {trans('map.layer-control.create-btn')}
+              </button>
+            )}
+          </div>
+        )}
+        <div hidden={isEmpty}>
+          <DraggableGroupList
+            ref={groupRef}
+            items={views}
+            selected={selected}
+            disabledDrag={disabledDrag}
+            onSelectedChange={setSelected}
+            onItemsChange={onItemsChange}
+            onGroupRemove={onRemoveGroupLayer}
+            renderItem={({ item, toggleSelect }) => (
+              <LayerItem
+                item={item}
+                mapId={mapId}
+                readonly={readonly}
+                disabledMove={disabledMove}
+                disabledCreateGroup={disabledCreateGroup}
+                onTitleClick={toggleSelect}
+                onRemove={(layer) => {
+                  removeComponent(layer);
+                  refresh();
+                }}
+                onAction={onLayerAction}
+                onContextMenu={handleContextClick}
+              />
+            )}
+          />
+        </div>
       </div>
       <ContextMenu ref={contextMenuRef}>
         <LayerContextMenuList

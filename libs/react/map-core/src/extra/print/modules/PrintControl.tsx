@@ -1,4 +1,4 @@
-import { exportMapbox, type WithMapPropType } from '@hungpvq/map-core';
+import { exportMapbox, PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useRef, useState } from 'react';
@@ -24,9 +24,7 @@ export function PrintControl({
   const controlRef = useRef<{ sync: () => void } | null>(null);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: { print: { title: 'Print' } },
-    });
+    setLocaleDefault(PRINT_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const { state, control } = useToolbarControl(mapId, merged, {

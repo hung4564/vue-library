@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { MAP_ACTION_LOCALE } from '@hungpvq/map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
@@ -55,15 +56,7 @@ export function ZoomControl({
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        action: {
-          'navigation-control-zoom-in': 'Zoom in',
-          'navigation-control-zoom-out': 'Zoom out',
-          'navigation-control-reset-bearing': 'Reset bearing to north',
-        },
-      },
-    });
+    setLocaleDefault(MAP_ACTION_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

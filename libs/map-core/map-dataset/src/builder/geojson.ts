@@ -1,6 +1,6 @@
 import type { Color } from '@hungpvq/map-core';
 import { bboxFromGeojson, getChartRandomColor, reprojectGeojsonToWgs84, toPlainJson } from '@hungpvq/map-core';
-import type { GeoJSON } from 'geojson';
+import type { Feature, GeoJSON, Geometry } from 'geojson';
 import type { IDataset } from '../interfaces';
 import { createDatasetPartGeojsonSourceComponent } from '../model/source';
 import { createDatasetPartListViewUiComponent } from '../model/list';
@@ -69,20 +69,23 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   dataset.add(identify);
   return dataset;
 }
+type GeojsonListItem = Record<string, unknown> & {
+  geometry?: Geometry | null;
+};
+
 function convertGeojsonToList(geojson: GeoJSON): {
-  items: any[];
+  items: GeojsonListItem[];
   fields: FieldFeaturesDef;
 } {
-  const items: any[] = [];
+  const items: GeojsonListItem[] = [];
   const fieldSet: Set<string> = new Set();
 
-  const processFeature = (feature: any) => {
-    const { properties = {}, geometry } = feature;
-    // Thu thập tất cả các key trong properties
+  const processFeature = (feature: Feature): GeojsonListItem => {
+    const properties = (feature.properties ?? {}) as Record<string, unknown>;
     Object.keys(properties).forEach((key) => fieldSet.add(key));
     return {
       ...properties,
-      geometry,
+      geometry: feature.geometry,
     };
   };
 

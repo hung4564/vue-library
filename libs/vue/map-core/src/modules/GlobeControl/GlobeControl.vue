@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/map-core';
-import { type WithMapPropType } from '@hungpvq/map-core';
+import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import { GLOBE_CONTROL_LOCALE } from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -18,13 +18,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onDestroy,
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'global-control': {
-      title: 'Toggle projection',
-    },
-  },
-});
+setLocaleDefault(GLOBE_CONTROL_LOCALE);
 function toggle() {
   callMap((map) => {
     if (currentProjection.value === 'mercator' || !currentProjection.value) {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
@@ -29,24 +30,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    'crs-control': {
-      title: 'Crs setting',
-      filter: 'Search CRS…',
-      custom: 'Custom CRS',
-      field: {
-        name: 'name',
-        unit: 'unit',
-        epsg: 'epsg',
-        proj4js: 'proj4js',
-      },
-    },
-    'crs-display': {
-      show: 'Show in measure',
-    },
-  },
-});
+setLocaleDefault(CRS_CONTROL_LOCALE);
 const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {

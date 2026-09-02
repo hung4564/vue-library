@@ -13,6 +13,7 @@ import type {
   MenuAction,
 } from '@hungpvq/map-dataset';
 import {
+  IDENTIFY_CONTROL_LOCALE,
   convertFeatureToItem,
   handleMenuAction,
   handleMultiIdentify,
@@ -117,17 +118,7 @@ export function IdentifyControl(
   isSelectBboxRef.current = isSelectBbox;
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        identify: {
-          title: 'Identify',
-          point: 'Point',
-          no_selection: 'Please select a point on the map',
-          no_data: 'No data found',
-          loading: 'Loading...',
-        },
-      },
-    });
+    setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   useEffect(() => {

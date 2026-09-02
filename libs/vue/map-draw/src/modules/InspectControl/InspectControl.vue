@@ -10,6 +10,7 @@ import {
   WithMapPropType,
   type MapSimple,
 } from '@hungpvq/map-core';
+import { INSPECT_CONTROL_LOCALE } from '../../locale';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -87,13 +88,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const showInspect = ref(props.showInspectDefault);
-setLocaleDefault({
-  map: {
-    'inspect-control': {
-      button: 'Toggle inspect',
-    },
-  },
-});
+setLocaleDefault(INSPECT_CONTROL_LOCALE);
 const event = new EventClick().setHandler(onMapMouseMove);
 const eventMouseMove = new EventMouseMove().setHandler(onMapMouseMove);
 const _popupBlocked = ref(false);

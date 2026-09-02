@@ -7,6 +7,7 @@ import {
   MeasureAzimuth,
   MeasureDistance,
   MeasurePoint,
+  MEASUREMENT_CONTROL_LOCALE,
   MeasurementHandle,
   buildMapCrsCatalog,
   convertGeometry,
@@ -108,52 +109,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
   const removeEventClickRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        measurement: {
-          action: {
-            clear: 'Clear',
-            close: 'Close',
-            setting: 'Setting',
-            download: 'Download',
-            'add-point': 'Add point',
-            'fly-to': 'Fill bound',
-            add: 'Add',
-          },
-          title: 'Measurement',
-          result: 'Measurement Result',
-          field: {
-            'unit-distance': 'Unit distance',
-            'unit-area': 'Unit area',
-          },
-          tools: {
-            point: 'Measure Point',
-            distance: 'Measure Distance',
-            area: 'Measure Area',
-            azimuth: 'Measure azimuth',
-          },
-          unit: {
-            meter: 'Meter',
-            kilometer: 'Kilometer',
-            'square-meter': 'Square Meter',
-            hecta: 'Hecta',
-            'square-kilometer': 'Square Kilometer',
-          },
-          setting: {
-            title: 'Setting',
-            field: { data: 'Data' },
-            point: 'Point',
-            distance: 'Distance',
-            area: 'Area',
-            azimuth: 'Azimuth',
-          },
-          'no-data': {
-            text: 'Status',
-            value: 'Waiting...',
-          },
-        },
-      },
-    });
+    setLocaleDefault(MEASUREMENT_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const clickEvent = useRef(

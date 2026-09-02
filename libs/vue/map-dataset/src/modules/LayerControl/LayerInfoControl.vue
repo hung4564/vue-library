@@ -6,6 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
+import { LAYER_INFO_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -33,13 +34,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'layer-info-control': {
-      title: 'Layer Info Control',
-    },
-  },
-});
+setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,

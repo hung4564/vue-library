@@ -1,6 +1,7 @@
 import {
   copyText,
   downloadDataUrl,
+  INFO_CONTROL_LOCALE,
   exportMapbox,
   readMapViewInfo,
   type MapSimple,
@@ -48,21 +49,7 @@ export function InfoControl(props: InfoControlProps) {
   const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'info-control': {
-          title: 'INFO',
-          screenshot: 'Screenshot',
-          center: 'Center',
-          zoom: 'Zoom',
-          pitch: 'Pitch',
-          bearing: 'Bearing',
-          projection: 'Projection',
-          bounds: 'Bounds',
-          copy: 'Copy',
-        },
-      },
-    });
+    setLocaleDefault(INFO_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const syncInfo = useCallback(() => {

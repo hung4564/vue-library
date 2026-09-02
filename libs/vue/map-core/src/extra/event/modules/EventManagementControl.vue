@@ -6,6 +6,7 @@ export default {
 
 <script setup lang="ts">
 import {
+  EVENT_CONTROL_LOCALE,
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
@@ -49,18 +50,7 @@ const { getCurrent } = useEventMapItems(mapId.value, {
 function updateCurrent() {
   current.value = getCurrent();
 }
-setLocaleDefault({
-  map: {
-    'event-control': {
-      title: 'Event Control',
-      field: {
-        name: 'Name',
-        id: 'ID',
-        from: 'From',
-      },
-    },
-  },
-});
+setLocaleDefault(EVENT_CONTROL_LOCALE);
 const path = {
   icon: mdiCalendarSearch,
 };

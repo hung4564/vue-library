@@ -8,6 +8,7 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import {
+  LAYER_CONTROL_LOCALE,
   createGeojsonHereDataset,
   type MenuContextSource,
 } from '@hungpvq/map-dataset';
@@ -61,69 +62,7 @@ export function LayerControl(props: LayerControlProps) {
   const [showCreate, toggleShowCreate] = useShow(false);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'layer-control': {
-          title: 'Layer Control',
-          'create-btn': 'Create Layer',
-          create: {
-            title: 'New Layer',
-            sample: 'Sample',
-            'sample-none': '— Select sample —',
-            'sample-error': 'Failed to load sample',
-            'loading-sample': 'Loading sample…',
-            'layer-setting': 'Layer settings',
-            'data-source': 'Data source',
-            'tab-file': 'File',
-            'tab-raw': 'Raw',
-            'tab-sample': 'Sample',
-            preset: 'Sample data',
-            'preset-none': '— Select sample —',
-            'paste-geojson': 'Paste GeoJSON',
-            'paste-geojson-hint': '{ "type": "FeatureCollection", ... }',
-            parsing: 'Parsing GeoJSON…',
-          },
-          field: {
-            name: 'Name',
-            type: 'Type',
-            'layer-type': 'Layer type',
-            'layer-name': 'Layer name',
-            'style-type': 'Style type',
-            url: 'Url',
-            minzoom: 'Min zoom',
-            maxzoom: 'Max zoom',
-            geojson: 'Geojson',
-            tiles: 'Tiles',
-            id: 'Id',
-            kind: 'Kind',
-            color: 'Color',
-            opacity: 'Opacity',
-            visible: 'Visible',
-            features: 'Features',
-            geometry: 'Geometry',
-            'promote-id': 'Promote id',
-            'generate-id': 'Generate id',
-            'layer-ids': 'Layer ids',
-            'layer-types': 'Layer types',
-            'source-layer': 'Source layer',
-            'source-id': 'Source id',
-            'source-type': 'Source type',
-            attribution: 'Attribution',
-            'tile-size': 'Tile size',
-            scheme: 'Scheme',
-            filter: 'Filter',
-            layers: 'Layers',
-            bound: {
-              minx: 'Min Longitude',
-              miny: 'Min Latitude',
-              maxx: 'Max Longitude',
-              maxy: 'Max Latitude',
-              title: 'Bound',
-            },
-          },
-        },
-      },
-    });
+    setLocaleDefault(LAYER_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
@@ -194,9 +133,11 @@ export function LayerControl(props: LayerControlProps) {
             <MenuConditionProvider value={props.menuContext}>
               <LayerList
                 mapId={mapId}
+                disabledCreate={props.disabledCreate}
                 disabledCreateGroup={props.disabledCreateGroup}
                 disabledDeleteAll={props.disabledDeleteAll}
                 disabledMove={props.disabledMove}
+                onCreate={() => toggleShowCreate(true)}
                 title={
                   titleSlot !== null && titleSlot !== undefined ? (
                     titleSlot

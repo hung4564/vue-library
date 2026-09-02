@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { exportMapbox, type WithMapPropType } from '@hungpvq/map-core';
+import { exportMapbox, PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
@@ -26,14 +26,7 @@ const path = {
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    print: {
-      title: 'Print',
-      actions: { save: 'save', clear: 'clear' },
-    },
-  },
-});
+setLocaleDefault(PRINT_CONTROL_LOCALE);
 const print = ref({ show: false, loading: false });
 function onSaveAll(cb?: (image: string) => Promise<void>) {
   callMap(async (map) => {

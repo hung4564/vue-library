@@ -105,6 +105,7 @@
 import {
   type BaseMapItem,
   type WithMapPropType,
+  BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
 } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -184,14 +185,7 @@ watch(
   },
 );
 
-setLocaleDefault({
-  map: {
-    basemap: {
-      title: 'Map basemap',
-      setting: 'Setting',
-    },
-  },
-});
+setLocaleDefault(BASEMAP_CONTROL_LOCALE);
 
 const sizeBaseMap = computed(() => 70);
 

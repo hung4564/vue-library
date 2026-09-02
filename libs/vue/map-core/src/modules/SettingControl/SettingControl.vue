@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
@@ -16,22 +16,7 @@ const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    'setting-control': {
-      title: 'Setting',
-      field: {
-        zoom: 'Zoom',
-        center: 'Center',
-        sprite: 'Sprite url',
-        glyphs: 'Glyphs url',
-      },
-      btn: {
-        apply: 'Apply',
-      },
-    },
-  },
-});
+setLocaleDefault(SETTING_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {

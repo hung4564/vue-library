@@ -1,5 +1,6 @@
 import type { CrsItem, WithMapPropType } from '@hungpvq/map-core';
 import {
+  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
@@ -35,24 +36,7 @@ export function CrsControl(props: CrsControlProps) {
   const [filterQuery, setFilterQuery] = useState('');
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'crs-control': {
-          title: 'Crs setting',
-          filter: 'Search CRS…',
-          custom: 'Custom CRS',
-          field: {
-            name: 'name',
-            unit: 'unit',
-            epsg: 'epsg',
-            proj4js: 'proj4js',
-          },
-        },
-        'crs-display': {
-          show: 'Show in measure',
-        },
-      },
-    });
+    setLocaleDefault(CRS_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const catalogItems = useMemo(

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -22,14 +22,7 @@ export function CompareSettingControl(props: CompareSettingControlProps) {
   const { setting, updateSetting } = useMapCompareSetting(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'setting-control': {
-          title: 'Setting',
-          field: { split: 'split', sync: 'sync', vertical: 'vertical' },
-        },
-      },
-    });
+    setLocaleDefault(SETTING_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   return (

@@ -8,6 +8,7 @@ export default {
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
+  DATASET_CONTROL_LOCALE,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   handleMenuActionClick,
@@ -33,13 +34,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'dataset-control': {
-      title: 'Dataset Control',
-    },
-  },
-});
+setLocaleDefault(DATASET_CONTROL_LOCALE);
 const path = {
   icon: mdiDatabaseOutline,
   detail: mdiInformation,

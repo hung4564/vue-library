@@ -42,6 +42,7 @@ import {
   CoordinatesNumber,
   EventClick,
   FormView,
+  MEASUREMENT_CONTROL_LOCALE,
   MapSimple,
   WithMapPropType,
   buildMapCrsCatalog,
@@ -141,54 +142,7 @@ const imageHandle = useMapImage(mapId.value);
 
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    measurement: {
-      action: {
-        clear: 'Clear',
-        close: 'Close',
-        setting: 'Setting',
-        download: 'Download',
-        'add-point': 'Add point',
-        'fly-to': 'Fill bound',
-        add: 'Add',
-      },
-      title: 'Measurement',
-      result: 'Measurement Result',
-      field: {
-        'unit-distance': 'Unit distance',
-        'unit-area': 'Unit area',
-      },
-      tools: {
-        point: 'Measure Point',
-        distance: 'Measure Distance',
-        area: 'Measure Area',
-        azimuth: 'Measure azimuth',
-      },
-      unit: {
-        meter: 'Meter',
-        kilometer: 'Kilometer',
-        'square-meter': 'Square Meter',
-        hecta: 'Hecta',
-        'square-kilometer': 'Square Kilometer',
-      },
-      setting: {
-        title: 'Setting',
-        field: {
-          data: 'Data',
-        },
-        point: 'Point',
-        distance: 'Distance',
-        area: 'Area',
-        azimuth: 'Azimuthị',
-      },
-      'no-data': {
-        text: 'Status',
-        value: 'Waiting...',
-      },
-    },
-  },
-});
+setLocaleDefault(MEASUREMENT_CONTROL_LOCALE);
 
 const button_show: MeasureActionItem[] = [
   {

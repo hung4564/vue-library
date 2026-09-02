@@ -2,13 +2,14 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
+  LAYER_CONTROL_LOCALE,
   convertListToTree,
   handleMenuAction,
   listListViewGroups,
   TreeItem,
 } from '@hungpvq/map-dataset';
 import { ContextMenu } from '@hungpvq/vue-content-menu';
-import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
+import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import {
   getCurrentInstance,
   nextTick,
@@ -39,6 +40,8 @@ provideMenuConditionContext(() => ({
   readonly: true,
 }));
 const { mapId } = useMap(props);
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault(LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType } = useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
 onMounted(() => {
@@ -122,6 +125,11 @@ function onLayerAction({
       <div class="v-spacer"></div>
     </div>
     <div class="layer-control__list">
+      <div v-if="!views.length" class="layer-control__empty">
+        <div class="layer-control__empty-title">
+          {{ trans('map.layer-control.empty') }}
+        </div>
+      </div>
       <div v-for="(item, index) in treeLayer" :key="item.id || index">
         <RecursiveList :item="item" disabledDrag>
           <template #leaf="{ item }">

@@ -11,6 +11,7 @@ import {
   fitBounds,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { DRAW_CONTROL_LOCALE } from '../../locale';
 import {
   defaultMapProps,
   ModuleContainer,
@@ -61,28 +62,7 @@ const control = new MapboxDraw({
 });
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const { setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'draw-control': {
-      draftList: {
-        title: 'Draft items',
-        field: {
-          id: 'Id',
-          type: 'Type',
-          action: '#',
-        },
-        type: {
-          created: 'Created',
-          updated: 'Updated',
-          deleted: 'Deleted',
-        },
-        action: {
-          fillBound: 'Fill bound',
-        },
-      },
-    },
-  },
-});
+setLocaleDefault(DRAW_CONTROL_LOCALE);
 const isShow = ref(false);
 function onStart(config: MapDrawOption) {
   isShow.value = true;

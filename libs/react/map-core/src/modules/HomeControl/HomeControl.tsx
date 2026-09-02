@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra';
@@ -41,13 +41,7 @@ export function HomeControl(props: HomeControlProps) {
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        home: {
-          title: 'Default view',
-        },
-      },
-    });
+    setLocaleDefault(HOME_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

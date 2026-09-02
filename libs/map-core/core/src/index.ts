@@ -16,6 +16,9 @@ export * from './model';
 // Export types
 export * from './types';
 
+// Export default locales
+export * from './locale';
+
 // Export store
 export * from './basemap';
 export * from './store';

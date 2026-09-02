@@ -1,5 +1,5 @@
+import { reprojectGeojsonToWgs84 } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
-import { reprojectGeojsonToWgs84 } from '../../../../core/src/utils/geojson-reproject';
 import { detectGeojsonCrs, parseGeojsonText } from './geojson-parse';
 
 export type GeojsonWorkerRequest =

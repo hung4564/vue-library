@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SETTING_CONTROL_LOCALE } from '@hungpvq/map-core';
 import { InputCheckbox } from '../../../../field';
 import { useMap } from '../../../../hooks';
 import { useLang } from '../../../lang';
@@ -9,22 +10,7 @@ const props = defineProps({
 const { mapId } = useMap(props);
 const { trans, setLocaleDefault } = useLang(props.mapId);
 
-setLocaleDefault({
-  map: {
-    'setting-control': {
-      title: 'Setting',
-      field: {
-        compare: 'compare',
-        split: 'split',
-        sync: 'sync',
-        vertical: 'vertical',
-      },
-      btn: {
-        apply: 'Apply',
-      },
-    },
-  },
-});
+setLocaleDefault(SETTING_CONTROL_LOCALE);
 const { setting, updateSetting } = useMapCompareSetting(mapId.value);
 </script>
 <template>

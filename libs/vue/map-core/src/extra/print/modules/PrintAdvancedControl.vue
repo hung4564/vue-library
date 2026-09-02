@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { BaseButton, InputSelect, InputText } from '../../../field';
@@ -42,24 +42,7 @@ const path = {
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    print: {
-      title: 'Print',
-      actions: { save: 'save', clear: 'clear', setting: 'Setting' },
-      setting: {
-        title: 'Setting',
-      },
-      field: {
-        ratio: 'Ratio',
-        orientation: 'Orientation',
-      },
-      btn: {
-        apply: 'Print',
-      },
-    },
-  },
-});
+setLocaleDefault(PRINT_CONTROL_LOCALE);
 const print = ref({
   show: false,
   loading: false,

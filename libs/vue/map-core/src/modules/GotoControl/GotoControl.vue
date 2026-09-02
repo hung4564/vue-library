@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref } from 'vue';
@@ -15,20 +15,7 @@ const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    'goto-control': {
-      title: 'Go to',
-      field: {
-        zoom: 'Zoom',
-        center: 'Center',
-      },
-      btn: {
-        apply: 'Go to',
-      },
-    },
-  },
-});
+setLocaleDefault(GOTO_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {

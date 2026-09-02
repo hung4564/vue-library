@@ -1,5 +1,6 @@
 import type { BaseMapItem } from '@hungpvq/map-core';
 import {
+  BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
   logHelper,
   type WithMapPropType,
@@ -67,14 +68,7 @@ export function BaseMapControl({
   }, [props.defaultBaseMap, setDefaultBaseMap]);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        basemap: {
-          title: 'Map basemap',
-          setting: 'Setting',
-        },
-      },
-    });
+    setLocaleDefault(BASEMAP_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const [show, setShow] = useState(false);

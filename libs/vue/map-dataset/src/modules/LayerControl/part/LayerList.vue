@@ -2,6 +2,7 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import type { MenuAction } from '@hungpvq/map-dataset';
 import {
+  LAYER_CONTROL_LOCALE,
   handleMenuAction,
   hasMoveLayer,
   IGroupListViewUI,
@@ -14,6 +15,7 @@ import {
   BaseButton,
   defaultMapProps,
   RegistryItem,
+  useLang,
   useMap,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -45,6 +47,7 @@ const props = withDefaults(
     WithMapPropType & {
       disabledDrag?: boolean;
       disabled?: boolean;
+      disabledCreate?: boolean;
       disabledCreateGroup?: boolean;
       disabledDeleteAll?: boolean;
       disabledMove?: boolean;
@@ -54,11 +57,15 @@ const props = withDefaults(
     ...defaultMapProps,
     disabledDrag: false,
     disabled: false,
+    disabledCreate: false,
     disabledCreateGroup: false,
     disabledDeleteAll: false,
     disabledMove: false,
   },
 );
+const emit = defineEmits<{
+  create: [];
+}>();
 
 provideMenuConditionContext(() => ({
   readonly: false,
@@ -84,6 +91,8 @@ const path = {
 };
 
 const { callMap, mapId } = useMap(props);
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault(LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
 
@@ -244,16 +253,42 @@ function onLayerAction({
     <div class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
-      <ButtonToggleShowALl :items="views" />
-      <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
-        <SvgIcon size="16" type="mdi" :path="path.group.create" />
-      </BaseButton>
-      <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
-        <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-      </BaseButton>
+      <template v-if="views.length">
+        <ButtonToggleShowALl :items="views" />
+        <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
+          <SvgIcon size="16" type="mdi" :path="path.group.create" />
+        </BaseButton>
+        <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
+          <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
+        </BaseButton>
+      </template>
     </div>
     <div class="layer-control__list">
+      <div v-if="!views.length" class="layer-control__empty">
+        <SvgIcon
+          class="layer-control__empty-icon"
+          size="36"
+          type="mdi"
+          :path="path.icon"
+        />
+        <div class="layer-control__empty-title">
+          {{ trans('map.layer-control.empty') }}
+        </div>
+        <div v-if="!disabledCreate" class="layer-control__empty-hint">
+          {{ trans('map.layer-control.empty-hint') }}
+        </div>
+        <button
+          v-if="!disabledCreate"
+          type="button"
+          class="layer-control__empty-action"
+          @click="emit('create')"
+        >
+          <SvgIcon size="14" type="mdi" :path="path.layer.create" />
+          {{ trans('map.layer-control.create-btn') }}
+        </button>
+      </div>
       <DraggableGroupList
+        v-show="views.length"
         ref="groupRef"
         v-model:items="views"
         v-model:selected="layers_select"

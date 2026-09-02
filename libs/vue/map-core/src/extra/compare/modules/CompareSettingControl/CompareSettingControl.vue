@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCog } from '@mdi/js';
@@ -21,22 +21,7 @@ const [show, toggleShow] = useShow(props.show);
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    'setting-control': {
-      title: 'Setting',
-      field: {
-        compare: 'compare',
-        split: 'split',
-        sync: 'sync',
-        vertical: 'vertical',
-      },
-      btn: {
-        apply: 'Apply',
-      },
-    },
-  },
-});
+setLocaleDefault(SETTING_CONTROL_LOCALE);
 const { setting, updateSetting } = useMapCompareSetting(mapId.value);
 </script>
 <template>

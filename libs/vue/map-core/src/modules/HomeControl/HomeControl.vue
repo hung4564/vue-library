@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -26,13 +26,7 @@ const i_zoom = ref(props.zoom || 0);
 
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    home: {
-      title: 'Default view',
-    },
-  },
-});
+setLocaleDefault(HOME_CONTROL_LOCALE);
 function onGoHome() {
   callMap((map) => {
     map.setZoom(i_zoom.value);

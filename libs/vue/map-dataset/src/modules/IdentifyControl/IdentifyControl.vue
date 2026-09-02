@@ -19,7 +19,7 @@ import type {
   IIdentifyView,
   MenuAction,
 } from '@hungpvq/map-dataset';
-import { handleMenuAction, handleMultiIdentify } from '@hungpvq/map-dataset';
+import { handleMenuAction, handleMultiIdentify, IDENTIFY_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -62,17 +62,7 @@ const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
-setLocaleDefault({
-  map: {
-    identify: {
-      title: 'Identify',
-      point: 'Point',
-      no_selection: 'Please select a point on the map',
-      no_data: 'No data found',
-      loading: 'Loading...',
-    },
-  },
-});
+setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 const views = ref<Array<IIdentifyView>>([]);
 const datasetIds = computed(() => {
   return getDatasetIds().value;

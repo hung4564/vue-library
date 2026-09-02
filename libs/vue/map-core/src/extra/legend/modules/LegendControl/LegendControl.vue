@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
@@ -21,14 +22,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
-setLocaleDefault({
-  map: {
-    'legend-control': {
-      title: 'Legend',
-      onlyRendered: 'Only rendered',
-    },
-  },
-});
+setLocaleDefault(LEGEND_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
 }

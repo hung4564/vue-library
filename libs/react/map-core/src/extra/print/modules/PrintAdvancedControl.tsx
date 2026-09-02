@@ -1,5 +1,6 @@
 import {
   CrosshairManager,
+  PRINT_CONTROL_LOCALE,
   PrintableAreaManager,
   exportMapbox,
   exportMapboxWithOptions,
@@ -86,20 +87,7 @@ export function PrintAdvancedControl({
   disabledPrintableAreaRef.current = disabledPrintableArea;
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        print: {
-          title: 'Print',
-          actions: { save: 'save', clear: 'clear', setting: 'Setting' },
-          setting: { title: 'Setting' },
-          field: {
-            ratio: 'Ratio',
-            orientation: 'Orientation',
-          },
-          btn: { apply: 'Print' },
-        },
-      },
-    });
+    setLocaleDefault(PRINT_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   useEffect(() => {

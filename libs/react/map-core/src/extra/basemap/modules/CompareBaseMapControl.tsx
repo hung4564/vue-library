@@ -1,5 +1,5 @@
 import type { BaseMapItem } from '@hungpvq/map-core';
-import { INIT_BASEMAPS, type WithMapPropType } from '@hungpvq/map-core';
+import { BASEMAP_CONTROL_LOCALE, INIT_BASEMAPS, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiLayersOutline } from '@mdi/js';
@@ -78,14 +78,7 @@ export function CompareBaseMapControl({
   );
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        basemap: {
-          title: 'Map basemap',
-          setting: 'Setting',
-        },
-      },
-    });
+    setLocaleDefault(BASEMAP_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   useEffect(() => {

@@ -8,6 +8,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
 import {
+  ATTRIBUTE_TABLE_LOCALE,
   attributeTableRowsToFeatureCollection,
   buildAttributeTable,
   createExportGeoSubmenu,
@@ -49,21 +50,7 @@ const { mapId, moduleContainerProps, callMap } = useMap(props);
 const { setFeatureHighlight, getHighlightSource } =
   useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'attribute-table': {
-      title: 'Attribute table',
-      search: 'Search',
-      empty: 'No features',
-      loading: 'Loading…',
-      zoomToSelection: 'Zoom to selection',
-      showAll: 'All rows',
-      showSelected: 'Selected',
-      clear: 'Clear selection',
-      export: 'Export',
-    },
-  },
-});
+setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
 
 const loading = ref(true);
 const query = ref('');

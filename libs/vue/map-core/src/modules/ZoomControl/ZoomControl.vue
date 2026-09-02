@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import { MAP_ACTION_LOCALE, MapSimple, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -59,15 +59,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
 );
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    action: {
-      'navigation-control-zoom-in': 'Zoom in',
-      'navigation-control-zoom-out': 'Zoom out',
-      'navigation-control-reset-bearing': 'Reset bearing to north',
-    },
-  },
-});
+setLocaleDefault(MAP_ACTION_LOCALE);
 
 let bindSyncRotate: (() => void) | null = null;
 

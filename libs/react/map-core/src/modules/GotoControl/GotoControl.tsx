@@ -1,4 +1,4 @@
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { useEffect, useState } from 'react';
@@ -24,20 +24,7 @@ export function GotoControl(props: GotoControlProps) {
   }>({ center: [0, 0] });
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'goto-control': {
-          title: 'Go to',
-          field: {
-            zoom: 'Zoom',
-            center: 'Center',
-          },
-          btn: {
-            apply: 'Go to',
-          },
-        },
-      },
-    });
+    setLocaleDefault(GOTO_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   function loadCurrentView() {

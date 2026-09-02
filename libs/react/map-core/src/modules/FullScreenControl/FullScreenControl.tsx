@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra';
@@ -22,14 +22,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        action: {
-          'fullscreen-control-enter': 'Enter fullscreen',
-          'fullscreen-control-exit': 'Exit fullscreen',
-        },
-      },
-    });
+    setLocaleDefault(MAP_ACTION_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

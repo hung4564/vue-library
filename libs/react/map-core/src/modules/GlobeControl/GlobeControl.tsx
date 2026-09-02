@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { GLOBE_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra';
@@ -41,13 +41,7 @@ export function GlobeControl(props: WithMapPropType) {
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'global-control': {
-          title: 'Toggle projection',
-        },
-      },
-    });
+    setLocaleDefault(GLOBE_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

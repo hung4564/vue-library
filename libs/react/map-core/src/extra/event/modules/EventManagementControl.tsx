@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
+  EVENT_CONTROL_LOCALE,
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
@@ -38,18 +39,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
   const [current, setCurrent] = useState(getCurrent);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'event-control': {
-          title: 'Event Control',
-          field: {
-            name: 'Name',
-            id: 'ID',
-            from: 'From',
-          },
-        },
-      },
-    });
+    setLocaleDefault(EVENT_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   useEffect(() => {

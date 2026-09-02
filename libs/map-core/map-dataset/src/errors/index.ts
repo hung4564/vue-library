@@ -4,7 +4,7 @@ export class DatasetError extends MapError {
   constructor(
     message: string,
     options?: {
-      context?: Record<string, any>;
+      context?: Record<string, unknown>;
       recoverable?: boolean;
       cause?: unknown;
     },

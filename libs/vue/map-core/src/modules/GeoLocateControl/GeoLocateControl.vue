@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { toValue, tryOnMounted, tryOnUnmounted } from '@hungpvq/shared';
 import { useGeolocation } from '@hungpvq/shared-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
@@ -22,14 +22,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 const { mapId, callMap, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
-setLocaleDefault({
-  map: {
-    action: {
-      'geolocate-control-find-my-location': 'Find my location',
-      'geolocate-control-location-not-available': 'Location not available',
-    },
-  },
-});
+setLocaleDefault(MAP_ACTION_LOCALE);
 
 const active = ref(false);
 const center = ref<LngLatLike>();

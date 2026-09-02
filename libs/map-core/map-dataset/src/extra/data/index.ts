@@ -1,4 +1,4 @@
-export interface WithDataHelper<T = any> {
+export interface WithDataHelper<T = unknown> {
   getData(): T;
   setData(data: T): void;
 }
