@@ -46,6 +46,7 @@ export default defineConfig({
       external: [
         'vue',
         '@hungpvq/map-core',
+        '@hungpvq/map-dataset',
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
         '@hungpvq/shared-core',

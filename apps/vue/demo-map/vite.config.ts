@@ -21,10 +21,11 @@ export default defineConfig((env) => {
 
     plugins: [vue(), nxViteTsPaths()],
 
-    // Uncomment this if you are using workers.
-    // worker: {
-    //  plugins: [ nxViteTsPaths() ],
-    // },
+    // GeoJSON parse + CRS reproject (CreateControl). See libs/vue/map-dataset/docs/worker.md
+    worker: {
+      plugins: () => [nxViteTsPaths()],
+      format: 'es' as const,
+    },
 
     build: {
       outDir: '../../../dist/apps/demo-map',

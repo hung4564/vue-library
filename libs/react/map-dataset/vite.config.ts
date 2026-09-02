@@ -18,6 +18,10 @@ export default defineConfig(() => ({
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
   ],
+  worker: {
+    plugins: () => [nxViteTsPaths()],
+    format: 'es' as const,
+  },
   build: {
     outDir: '../../../dist/libs/map/react-dataset',
     emptyOutDir: true,

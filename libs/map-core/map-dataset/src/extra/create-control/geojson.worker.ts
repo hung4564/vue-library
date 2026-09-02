@@ -1,5 +1,8 @@
-import { reprojectGeojsonToWgs84 } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
+// Vite workers cannot resolve workspace package names and would leave
+// `@hungpvq/map-core` external; import the source file so reproject is bundled.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { reprojectGeojsonToWgs84 } from '../../../../core/src/utils/geojson-reproject';
 import { detectGeojsonCrs, parseGeojsonText } from './geojson-parse';
 
 export type GeojsonWorkerRequest =

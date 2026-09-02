@@ -2,7 +2,7 @@
 
 Vue 3 UI for map datasets: layer list, groups, identify, legends, and menus. Logic lives in [`@hungpvq/map-dataset`](../../map-core/map-dataset). React counterpart: [`@hungpvq/react-map-dataset`](../../react/map-dataset).
 
-**Docs:** [Getting started](./docs/index.md) · [Components](./docs/module/) · [Menus](./docs/create-dataset/with-helper-menu.md) · [Events](./docs/create-dataset/with-helper-event.md) · [Export](./docs/create-dataset/export.md) · [Attribute table](./docs/create-dataset/attribute-table.md)
+**Docs:** [Getting started](./docs/index.md) · [GeoJSON worker](./docs/worker.md) · [Components](./docs/module/) · [Menus](./docs/create-dataset/with-helper-menu.md) · [Events](./docs/create-dataset/with-helper-event.md) · [Export](./docs/create-dataset/export.md) · [Attribute table](./docs/create-dataset/attribute-table.md)
 
 ## Install
 
@@ -26,6 +26,8 @@ const app = createApp(App);
 app.use(createStoreRegistryPlugin());
 app.use(createDatasetRegistryPlugin());
 ```
+
+Create-layer reads GeoJSON and reprojects CRS in a Web Worker. Vite apps need `worker.format: 'es'`. In this Nx workspace also add `nxViteTsPaths()` to `worker.plugins` — see [GeoJSON worker](./docs/worker.md).
 
 ## Usage
 

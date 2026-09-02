@@ -2,7 +2,7 @@
 
 React UI for map datasets. Same core as Vue: [`@hungpvq/map-dataset`](../../map-core/map-dataset). Vue package: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset).
 
-**Docs (shared):** [Getting started](../../vue/map-dataset/docs/index.md) · [Components](../../vue/map-dataset/docs/module/) · [Menus](../../vue/map-dataset/docs/create-dataset/with-helper-menu.md) · [Attribute table](../../vue/map-dataset/docs/create-dataset/attribute-table.md)
+**Docs (shared):** [Getting started](../../vue/map-dataset/docs/index.md) · [GeoJSON worker](../../vue/map-dataset/docs/worker.md) · [Components](../../vue/map-dataset/docs/module/) · [Menus](../../vue/map-dataset/docs/create-dataset/with-helper-menu.md) · [Attribute table](../../vue/map-dataset/docs/create-dataset/attribute-table.md)
 
 ## Install
 
@@ -22,6 +22,8 @@ import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
 
 createDatasetRegistryPlugin().install();
 ```
+
+Create-layer reads GeoJSON and reprojects CRS in a Web Worker. Vite apps need `worker.format: 'es'`. In this Nx workspace also add `nxViteTsPaths()` to `worker.plugins` — see [GeoJSON worker](../../vue/map-dataset/docs/worker.md).
 
 ## Usage
 

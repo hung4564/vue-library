@@ -193,8 +193,11 @@ function Page() {
 
 Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatasetCreation.md).
 
+Create-layer parses GeoJSON and reprojects CRS in a [Web Worker](./worker.md). Vite apps need `worker.format: 'es'` (and `worker.plugins` with `nxViteTsPaths` in this monorepo).
+
 ## Next
 
+- [GeoJSON worker](./worker.md) — Vite / Nx config so parse + CRS stay off the main thread
 - [Create a dataset](./create-dataset/) — tree, source, layer, list UI
 - [Components](./module/) — LayerControl, Identify, Highlight, DatasetControl, props / events
 - [Menus](./create-dataset/with-helper-menu.md) — `createMenuBuilder`, `setHidden` / `setDisabled`, custom menu component

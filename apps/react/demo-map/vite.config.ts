@@ -16,10 +16,11 @@ export default defineConfig(() => ({
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  // GeoJSON parse + CRS reproject (CreateControl). See libs/vue/map-dataset/docs/worker.md
+  worker: {
+    plugins: () => [nxViteTsPaths()],
+    format: 'es' as const,
+  },
   build: {
     outDir: '../../../dist/apps/react/demo-map',
     emptyOutDir: true,

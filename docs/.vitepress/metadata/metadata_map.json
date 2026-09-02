@@ -281,6 +281,12 @@
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset/attribute-table",
       "order": 5.43
+    },
+    {
+      "name": "GeoJSON worker",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/worker",
+      "order": 5.44
     }
   ]
 }
