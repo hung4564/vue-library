@@ -62,6 +62,9 @@ export type Coordinates = {
  */
 export type CoordinatesNumber = [number, number];
 
+/** Draft point in the measurement form; empty rows are `[null, null]`. */
+export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
+
 /**
  * Re-export GeoJSON types
  */

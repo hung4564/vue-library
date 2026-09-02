@@ -1,4 +1,4 @@
-import type { FieldFeaturesDef } from '@hungpvq/map-dataset';
+import { LAYER_DETAIL_LOCALE, type FieldFeaturesDef } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   BaseButton,
@@ -56,7 +56,14 @@ function TableTdLayer({
   item?: Record<string, unknown>;
 }) {
   const raw = item ? item[field.value] : '';
-  const text = raw == null ? '' : String(raw);
+  const text =
+    raw == null
+      ? ''
+      : typeof raw === 'string' ||
+          typeof raw === 'number' ||
+          typeof raw === 'boolean'
+        ? String(raw)
+        : JSON.stringify(raw, undefined, 2);
 
   return (
     <TableTdCopy value={text}>
@@ -87,13 +94,7 @@ export function LayerDetail({
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault({
-      map: {
-        'layer-control': {
-          info: { title: 'Layer info' },
-        },
-      },
-    });
+    setLocaleDefault(LAYER_DETAIL_LOCALE);
   }, [setLocaleDefault]);
 
   function handleClose() {
@@ -111,7 +112,7 @@ export function LayerDetail({
           onUpdateShow={(v) => {
             if (!v) handleClose();
           }}
-          width={400}
+          width={520}
           {...bind}
           {...popupProps}
           title={trans('map.layer-control.info.title')}

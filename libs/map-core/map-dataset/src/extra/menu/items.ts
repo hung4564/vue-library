@@ -11,7 +11,6 @@ import {
 import type { BBox } from 'geojson';
 import type {
   IDataset,
-  IMapboxSourceView,
   IMetadataView,
   MenuAction,
   MenuConditionContext,
@@ -22,6 +21,7 @@ import type {
 } from '../../interfaces';
 import { findSiblingOrNearestLeaf } from '../../model/visitors';
 import { convertItemToFeature } from '../../utils';
+import { getDatasetDetailInfo } from '../detail';
 import type { FieldFeaturesDef } from '../field';
 import {
   createMenuBuilder,
@@ -192,24 +192,19 @@ export function createMenuItemShowDetailInfoSource(
     .setClick(
       createMenuClickBuilder()
         .addTupleDynamic('addComponent', ({ layer }) => {
-          const source = findSiblingOrNearestLeaf(
-            layer,
-            (dataset) => dataset.type === 'source',
-          ) as IMapboxSourceView | null;
-          if (source) {
-            return {
-              value: createMenuClickAddComponentBuilder()
-                .setComponentKey('layer-detail')
-                .setAttr({
-                  item: source.getDataInfo(),
-                  fields: source.getFieldsInfo(),
-                  view: layer,
-                })
-                .setCheck('detail')
-                .build(),
-            };
-          }
-          return undefined;
+          const detail = getDatasetDetailInfo(layer);
+          if (detail.fields.length === 0) return undefined;
+          return {
+            value: createMenuClickAddComponentBuilder()
+              .setComponentKey('layer-detail')
+              .setAttr({
+                item: detail.item,
+                fields: detail.fields,
+                view: layer,
+              })
+              .setCheck('detail')
+              .build(),
+          };
         })
         .build(),
     )

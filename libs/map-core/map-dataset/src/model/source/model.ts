@@ -30,25 +30,45 @@ export function createDatasetPartGeojsonSourceComponent(
       ...(options?.promoteId != null ? { promoteId: options.promoteId } : {}),
       ...(options?.generateId ? { generateId: true } : {}),
     }),
-    getFieldsInfo: () => [
-      { trans: 'map.layer-control.field.name', value: 'name' },
-      { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
-      {
-        trans: 'map.layer-control.field.geojson',
-        value: 'geojson',
-        inline: true,
-      },
-    ],
-    getDataInfo: () => {
+    getFieldsInfo() {
+      return [
+        { trans: 'map.layer-control.field.name', value: 'name' },
+        { trans: 'map.layer-control.field.type', value: 'type' },
+        { trans: 'map.layer-control.field.source-id', value: 'sourceId' },
+        { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
+        { trans: 'map.layer-control.field.features', value: 'features' },
+        { trans: 'map.layer-control.field.geometry', value: 'geometry' },
+        { trans: 'map.layer-control.field.promote-id', value: 'promoteId' },
+        { trans: 'map.layer-control.field.generate-id', value: 'generateId' },
+        {
+          trans: 'map.layer-control.field.geojson',
+          value: 'geojson',
+          inline: true,
+        },
+      ];
+    },
+    getDataInfo() {
       const metadata = findSiblingOrNearestLeaf(
         base,
         (d) => d.type === 'metadata',
       ) as IMetadataView;
+      const spec = this.getMapboxSource();
+      const data = base.getData();
+      const stats = getGeojsonStats(data);
 
       return {
         name: base.getName(),
+        type: spec.type,
+        sourceId: this.getSourceId(),
         bbox: metadata?.metadata?.bbox,
-        geojson: JSON.stringify(base.getData(), undefined, 2),
+        features: stats.featureCount,
+        geometry: stats.geometryTypes,
+        promoteId: spec.promoteId,
+        generateId: spec.generateId,
+        geojson:
+          typeof data === 'string'
+            ? data
+            : JSON.stringify(data ?? {}, undefined, 2),
       };
     },
     updateData(
@@ -79,22 +99,39 @@ export function createDatasetPartRasterSourceComponent(
   return createNamedComponent('RasterSourceComponent', {
     ...base,
     getMapboxSource: () => base.getData(),
-    getFieldsInfo: () => [
-      { trans: 'map.layer-control.field.name', value: 'name' },
-      { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
-      { trans: 'map.layer-control.field.tiles', value: 'tiles' },
-    ],
-    getDataInfo: () => {
+    getFieldsInfo() {
+      return [
+        { trans: 'map.layer-control.field.name', value: 'name' },
+        { trans: 'map.layer-control.field.type', value: 'type' },
+        { trans: 'map.layer-control.field.source-id', value: 'sourceId' },
+        { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
+        { trans: 'map.layer-control.field.url', value: 'url', inline: true },
+        { trans: 'map.layer-control.field.tiles', value: 'tiles', inline: true },
+        { trans: 'map.layer-control.field.tile-size', value: 'tileSize' },
+        { trans: 'map.layer-control.field.minzoom', value: 'minzoom' },
+        { trans: 'map.layer-control.field.maxzoom', value: 'maxzoom' },
+        { trans: 'map.layer-control.field.scheme', value: 'scheme' },
+        { trans: 'map.layer-control.field.attribution', value: 'attribution' },
+      ];
+    },
+    getDataInfo() {
       const metadata = findSiblingOrNearestLeaf(
         base,
         (d) => d.type === 'metadata',
       ) as IMetadataView;
-
-      const raster = base.getData();
+      const raster = this.getMapboxSource();
       return {
         name: base.getName(),
-        bbox: metadata?.metadata?.bbox || raster?.bounds,
-        tiles: raster?.tiles?.join(',\n'),
+        type: raster.type,
+        sourceId: this.getSourceId(),
+        bbox: metadata?.metadata?.bbox || raster.bounds,
+        url: raster.url,
+        tiles: raster.tiles?.join('\n'),
+        tileSize: raster.tileSize,
+        minzoom: raster.minzoom,
+        maxzoom: raster.maxzoom,
+        scheme: raster.scheme,
+        attribution: raster.attribution,
       };
     },
   });
@@ -114,32 +151,80 @@ export function createDatasetPartVectorTileComponent(
       ...base.getData(),
     }),
 
-    getFieldsInfo: () => [
-      { trans: 'map.layer-control.field.name', value: 'name' },
-      { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
-      {
-        trans: 'map.layer-control.field.minzoom',
-        value: 'minzoom',
-      },
-      {
-        trans: 'map.layer-control.field.maxzoom',
-        value: 'maxzoom',
-      },
-    ],
-    getDataInfo: () => {
+    getFieldsInfo() {
+      return [
+        { trans: 'map.layer-control.field.name', value: 'name' },
+        { trans: 'map.layer-control.field.type', value: 'type' },
+        { trans: 'map.layer-control.field.source-id', value: 'sourceId' },
+        { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
+        { trans: 'map.layer-control.field.url', value: 'url', inline: true },
+        { trans: 'map.layer-control.field.tiles', value: 'tiles', inline: true },
+        { trans: 'map.layer-control.field.minzoom', value: 'minzoom' },
+        { trans: 'map.layer-control.field.maxzoom', value: 'maxzoom' },
+        { trans: 'map.layer-control.field.scheme', value: 'scheme' },
+        { trans: 'map.layer-control.field.attribution', value: 'attribution' },
+      ];
+    },
+    getDataInfo() {
       const metadata = findSiblingOrNearestLeaf(
         base,
         (d) => d.type === 'metadata',
       ) as IMetadataView;
-
-      const raster = base.getData();
+      const spec = this.getMapboxSource();
       return {
         name: base.getName(),
-        bbox: metadata?.metadata?.bbox || raster?.bounds,
-        tiles: raster?.tiles?.join(',\n'),
-        minzoom: raster?.minzoom,
-        maxzoom: raster?.maxzoom,
+        type: spec.type,
+        sourceId: this.getSourceId(),
+        bbox: metadata?.metadata?.bbox || spec.bounds,
+        url: spec.url,
+        tiles: spec.tiles?.join('\n'),
+        minzoom: spec.minzoom,
+        maxzoom: spec.maxzoom,
+        scheme: spec.scheme,
+        attribution: spec.attribution,
       };
     },
   });
 }
+
+function getGeojsonStats(data: unknown): {
+  featureCount?: number;
+  geometryTypes?: string;
+} {
+  if (!data || typeof data === 'string') return {};
+  if (typeof data !== 'object') return {};
+
+  const types = new Set<string>();
+  const record = data as {
+    type?: string;
+    features?: unknown[];
+    geometry?: { type?: string };
+  };
+
+  if (record.type === 'FeatureCollection' && Array.isArray(record.features)) {
+    for (const feature of record.features) {
+      const geometryType = (feature as { geometry?: { type?: string } })
+        ?.geometry?.type;
+      if (geometryType) types.add(geometryType);
+    }
+    return {
+      featureCount: record.features.length,
+      geometryTypes: [...types].join(', ') || undefined,
+    };
+  }
+
+  if (record.type === 'Feature') {
+    const geometryType = record.geometry?.type;
+    if (geometryType) types.add(geometryType);
+    return {
+      featureCount: 1,
+      geometryTypes: [...types].join(', ') || undefined,
+    };
+  }
+
+  if (record.type) {
+    return { featureCount: 1, geometryTypes: record.type };
+  }
+  return {};
+}
+

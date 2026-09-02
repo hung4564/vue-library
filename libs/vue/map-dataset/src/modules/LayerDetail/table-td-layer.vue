@@ -25,5 +25,12 @@ const props = defineProps({
   field: {},
   label: {},
 });
-const value = computed(() => (props.item ? props.item[props.field.value] : ''));
+const value = computed(() => {
+  const raw = props.item ? props.item[props.field.value] : '';
+  if (raw == null) return '';
+  if (typeof raw === 'string' || typeof raw === 'number' || typeof raw === 'boolean') {
+    return String(raw);
+  }
+  return JSON.stringify(raw, undefined, 2);
+});
 </script>

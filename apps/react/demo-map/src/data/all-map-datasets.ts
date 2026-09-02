@@ -196,32 +196,34 @@ export function createGroupList() {
 }
 
 export function createRasterDataset() {
-  const dataset_raster = createRootDataset('Group test');
-  const source_raster = createDatasetPartRasterSourceComponent('source', {
+  const name = 'World Imagery';
+  const bbox: [number, number, number, number] = [104.5, 18.5, 108.0, 22.5];
+  const dataset = createRootDataset(name);
+  const source = createDatasetPartRasterSourceComponent(name, {
     type: 'raster',
     tiles: [
-      'https://naturalearthtiles.roblabs.com/tiles/natural_earth_cross_blended_hypso_shaded_relief.raster/{z}/{x}/{y}.png',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     ],
-    maxzoom: 6,
-    bounds: [
-      104.96327341667353, 18.461221184685627, 106.65936430823979,
-      19.549518287564368,
-    ],
+    tileSize: 256,
+    maxzoom: 19,
+    attribution: 'Tiles © Esri',
+    bounds: bbox,
   });
-  const layerraster = createMultiMapboxLayerComponent('layer raster', [
-    {
-      type: 'raster',
-    },
+  const layer = createMultiMapboxLayerComponent(name, [{ type: 'raster' }]);
+  const list = createDatasetPartListViewUiComponent(name);
+  list.color = '#4CAF50';
+  const group = createGroupDataset(name);
+  dataset.add(createDatasetPartMetadataComponent(name, { bbox }));
+  dataset.add(source);
+  group.add(list);
+  group.add(layer);
+  dataset.add(group);
+  list.addMenus([
+    createMenuItemToggleShow(),
+    createMenuItemShowDetailInfoSource(),
+    createMenuItemToBoundActionForList({ bbox }),
   ]);
-  const list_raster = createDatasetPartListViewUiComponent('test raster');
-  list_raster.color = '#0000FF';
-  const groupLayer_raster = createGroupDataset('Group layer 1');
-  dataset_raster.add(source_raster);
-  groupLayer_raster.add(list_raster);
-  groupLayer_raster.add(layerraster);
-  dataset_raster.add(groupLayer_raster);
-  list_raster.addMenu(createMenuItemShowDetailInfoSource());
-  return dataset_raster;
+  return dataset;
 }
 
 export function createDatasetLineString() {
@@ -665,6 +667,7 @@ export function createGroupIdentify() {
 }
 
 export async function loadAllMapDatasets(mapId: string) {
+  await addDatasetToMap(mapId, createRasterDataset());
   await addDatasetToMap(mapId, createGroupList());
   await addDatasetToMap(mapId, createDatasetPoint());
   await addDatasetToMap(mapId, createDatasetLineString());

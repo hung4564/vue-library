@@ -1,4 +1,4 @@
-import type { CoordinatesNumber } from '@hungpvq/map-core';
+import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,
@@ -11,7 +11,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { saveAs } from 'file-saver';
 import { useMemo } from 'react';
 
-type Coord = CoordinatesNumber | [null, null];
+type Coord = DraftCoordinatesNumber;
 
 export interface FieldGeometryProps {
   value?: Coord[];

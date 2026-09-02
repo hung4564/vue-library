@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CoordinatesNumber } from '@hungpvq/map-core';
+import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -13,7 +13,7 @@ import FileSaver from 'file-saver';
 import { computed } from 'vue';
 
 const props = defineProps<{
-  modelValue?: (CoordinatesNumber | [null, null])[];
+  modelValue?: DraftCoordinatesNumber[];
   maxLength?: number;
   title?: string;
   titleActionDownload?: string;
@@ -21,7 +21,7 @@ const props = defineProps<{
   titleActionAddPoint?: string;
 }>();
 
-const model = defineModel<(CoordinatesNumber | [null, null])[]>({
+const model = defineModel<DraftCoordinatesNumber[]>({
   default: () => [[0, 0]],
 });
 
@@ -38,7 +38,7 @@ const emit = defineEmits<{
   (_e: 'click:fillbound', _geometry: any): void; // turf geometry
 }>();
 
-const submit = (value: (CoordinatesNumber | [null, null])[] = []) => {
+const submit = (value: DraftCoordinatesNumber[] = []) => {
   model.value = [...value];
 };
 
@@ -46,7 +46,7 @@ const onAddItem = () => {
   if (!model.value) {
     model.value = [];
   }
-  model.value.push([null, null] as any);
+  model.value.push([null, null]);
 };
 
 const onUpdatePathItem = () => {
@@ -59,7 +59,7 @@ const onDeleteItem = (index: number) => {
   submit(model.value);
 };
 
-const convertGeometry = (coordinates: (CoordinatesNumber | [null, null])[]) => {
+const convertGeometry = (coordinates: DraftCoordinatesNumber[]) => {
   const validCoords = coordinates.filter(
     (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
   );

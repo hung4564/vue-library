@@ -1,6 +1,8 @@
 import {
-  fitBounds,
   type CoordinatesNumber,
+  type DraftCoordinatesNumber,
+  fitBounds,
+  toCoordinatesNumberList,
   type IViewSettingField,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -12,7 +14,7 @@ import { useLang } from '../../lang';
 import { FieldGeometry } from './setting/field-geometry';
 import { MeasurementSettingFields } from './setting/fields-show';
 
-type Coord = CoordinatesNumber | [null, null];
+type Coord = DraftCoordinatesNumber;
 
 export interface MeasurementSettingPopupProps extends WithMapPropType {
   show?: boolean;
@@ -50,10 +52,7 @@ export function MeasurementSettingPopup({
   }
 
   function setValue(next: Coord[]) {
-    const coords = next.filter(
-      (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
-    );
-    onChange?.(coords);
+    onChange?.(toCoordinatesNumberList(next));
   }
 
   return (

@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup>
+import { LAYER_DETAIL_LOCALE } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { ModuleContainer, useLang, useMap } from '@hungpvq/vue-map-core';
 import { useMapDatasetHighlight } from '../../store';
@@ -24,13 +25,7 @@ defineProps({
 const { mapId } = useMap();
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault({
-  map: {
-    'layer-control': {
-      info: { title: 'Layer info' },
-    },
-  },
-});
+setLocaleDefault(LAYER_DETAIL_LOCALE);
 const emit = defineEmits(['close']);
 function handleClose() {
   setFeatureHighlight(undefined, 'detail');
@@ -49,7 +44,7 @@ function onUpdateShow(val) {
         show
         @close="handleClose"
         @update:show="onUpdateShow"
-        :width="400"
+        :width="520"
         v-bind="{ ...props, ...popupProps }"
         :title="trans('map.layer-control.info.title')"
       >

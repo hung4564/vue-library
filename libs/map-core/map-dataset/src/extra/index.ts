@@ -1,5 +1,6 @@
 export * from './attribute-table';
 export * from './data';
+export * from './detail';
 export * from './event';
 export * from './field';
 export * from './geo-export';

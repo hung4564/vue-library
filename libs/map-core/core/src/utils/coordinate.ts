@@ -3,7 +3,27 @@
  * Provides functions for coordinate formatting and conversion
  */
 
-import { CrsItem } from '../types';
+import {
+  type CoordinatesNumber,
+  type CrsItem,
+  type DraftCoordinatesNumber,
+} from '../types';
+
+export function isCoordinatesNumber(
+  value: DraftCoordinatesNumber | null | undefined,
+): value is CoordinatesNumber {
+  return (
+    Array.isArray(value) &&
+    typeof value[0] === 'number' &&
+    typeof value[1] === 'number'
+  );
+}
+
+export function toCoordinatesNumberList(
+  coords: DraftCoordinatesNumber[] = [],
+): CoordinatesNumber[] {
+  return coords.filter(isCoordinatesNumber);
+}
 
 // Type for proj4 function
 // proj4(from, to, coordinates) or proj4(from, coordinates) where from is projection string

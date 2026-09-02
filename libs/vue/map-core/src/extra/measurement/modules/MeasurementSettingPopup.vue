@@ -28,9 +28,11 @@
 
 <script setup lang="ts">
 import {
-  CoordinatesNumber,
+  type CoordinatesNumber,
+  type DraftCoordinatesNumber,
   fitBounds,
   IViewSettingField,
+  toCoordinatesNumberList,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -40,11 +42,9 @@ import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
-const emit = defineEmits(['update:modelValue']);
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
-      modelValue?: (CoordinatesNumber | [null, null])[];
       maxLength?: number;
       fields?: IViewSettingField[];
       popUpPosition?: {
@@ -69,8 +69,8 @@ const props = withDefaults(
 );
 const { callMap, moduleContainerProps, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
-const model = defineModel<(CoordinatesNumber | [null, null])[]>({
-  default: [[0, 0]],
+const model = defineModel<CoordinatesNumber[]>({
+  default: () => [],
 });
 const c_show = defineModel('show', { default: false });
 const onFlyTo = (geometry: Geometry | Feature | FeatureCollection) => {
@@ -78,7 +78,7 @@ const onFlyTo = (geometry: Geometry | Feature | FeatureCollection) => {
     fitBounds(map, geometry);
   });
 };
-function setValue(value: (CoordinatesNumber | [null, null])[]) {
-  emit('update:modelValue', value);
+function setValue(value: DraftCoordinatesNumber[]) {
+  model.value = toCoordinatesNumberList(value);
 }
 </script>
