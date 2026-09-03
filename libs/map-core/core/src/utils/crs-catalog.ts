@@ -1,5 +1,9 @@
 import { DEFAULT_CRS_ITEMS, type CrsItem } from '../types/crs';
-import { lookupProj4CrsItem } from './proj4-crs-catalog';
+import proj4 from 'proj4';
+import {
+  ensureRegisteredProjection,
+  lookupProj4CrsItem,
+} from './proj4-crs-catalog';
 const EXTRA_CRS_ITEMS: CrsItem[] = [
   {
     name: 'VN-2000 / UTM zone 48N',
@@ -195,9 +199,17 @@ export function resolveCrsProjection(
   catalog: CrsItem[] = COMMON_CRS_ITEMS,
 ): string {
   const normalized = normalizeEpsgCode(epsg) ?? '4326';
-  if (normalized === '4326') return 'EPSG:4326';
+  const registered = ensureRegisteredProjection(normalized);
+  if (registered) return registered;
 
   const item = findCrsItem(normalized, catalog);
-  if (item?.proj4js) return item.proj4js;
-  return `EPSG:${normalized}`;
+  const projStr = item?.proj4js?.trim();
+  if (projStr?.startsWith('+')) {
+    proj4.defs(`EPSG:${normalized}`, projStr);
+    return projStr;
+  }
+
+  throw new Error(
+    `No proj4 definition for EPSG:${normalized}. Pick a listed CRS or provide a +proj string.`,
+  );
 }

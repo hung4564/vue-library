@@ -1,16 +1,37 @@
-# GeoJSON worker
+# GIS worker
 
-[`CreateControl`](./module/CreateControl.md) parses GeoJSON and reprojects CRS **off the main thread** using a Web Worker. You do not start the worker yourself — it is created the first time a file is read, text is pasted, or a layer is created with a CRS other than EPSG:4326.
+[`CreateControl`](./module/CreateControl.md) reads GIS files, parses them to GeoJSON, and reprojects CRS **off the main thread** using a Web Worker. You do not start the worker yourself — it is created the first time a file is read, text is pasted, a sample URL is fetched, a layer is created with a CRS other than EPSG:4326, or bbox / auto-style work runs.
 
 If the worker cannot start, the same work still runs on the main thread (large files can freeze the UI). Configure your bundler so the worker actually loads.
 
-Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).
+Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`, name **GIS**) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).
+
+## Formats
+
+| Input | Notes |
+| --- | --- |
+| GeoJSON `.geojson` / `.json` | CRS from `crs.properties.name` when present |
+| GeoJSON Lines `.geojsonl` / `.ndjson` | One Feature per line |
+| TopoJSON `.topojson` | Converted with `topojson-client` |
+| KML `.kml` | Converted with `@tmcw/togeojson` |
+| KMZ `.kmz` | Zip archive containing a KML |
+| GPX `.gpx` | Tracks / routes / waypoints |
+| ZIP `.zip` | Shapefile (`.shp`+`.dbf`+`.prj`) **or** GeoJSON / KML / GPX / TopoJSON / CSV / WKT members (merged when several) |
+| Shapefile parts `.shp` / `.dbf` / `.prj` | Drop the sidecar files together |
+| CSV `.csv` | `lat`/`lon` (or aliases) **or** a WKT/`geometry` column |
+| WKT `.wkt` | `POINT`, `LINESTRING`, `POLYGON`, and Multi* |
+
+Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
 
 ## What runs in the worker
 
-- Read `.geojson` / `.json` files
-- `JSON.parse` and CRS detection (EPSG from the GeoJSON, if present)
+- Fetch sample / remote GIS URLs
+- Read files (`File.arrayBuffer` / `text`)
+- Parse + convert to GeoJSON
+- Detect EPSG when the source includes it
 - Reproject to WGS84 when creating a layer (`proj4`)
+- Turf **bbox** when creating a layer (always prefers worker)
+- Auto style-type detection when FeatureCollection is large (≥ ~2000 features)
 
 ## Vite
 
@@ -72,25 +93,32 @@ Re-exported from `@hungpvq/map-dataset` (and the Vue / React packages):
 
 ```ts
 import {
-  loadGeojsonFileAsync,
-  loadGeojsonTextAsync,
+  GIS_FILE_ACCEPT,
+  loadGisFileAsync,
+  loadGisTextAsync,
+  loadGisUrlAsync,
   reprojectGeojsonToWgs84Async,
   terminateGeojsonWorker,
 } from '@hungpvq/map-dataset';
 
-const { geojson, crs } = await loadGeojsonFileAsync(file);
+const { geojson, crs, format } = await loadGisFileAsync(file);
 const wgs84 = await reprojectGeojsonToWgs84Async(geojson!, crs);
 ```
 
+`loadGeojsonFileAsync` / `loadGeojsonTextAsync` remain as aliases.
+
 | Function | Role |
 | --- | --- |
-| `loadGeojsonFileAsync(file)` | Read a `File` / `Blob`, parse, detect CRS |
-| `loadGeojsonTextAsync(text)` | Parse pasted text, detect CRS |
+| `loadGisFileAsync(file \| files)` | Read one file, a Shapefile sidecar set, parse, detect CRS |
+| `loadGisTextAsync(text)` | Parse pasted GIS text, detect CRS |
+| `loadGisUrlAsync(url)` | Fetch in the worker, then parse |
 | `parseGeojsonTextAsync(text)` | Same parse; returns GeoJSON only |
 | `reprojectGeojsonToWgs84Async(geojson, crs)` | Reproject to EPSG:4326 (no-op if already 4326) |
+| `bboxFromGeojsonAsync(geojson)` | Turf bbox (prefers worker) |
+| `detectGeojsonStyleTypesAsync(geojson)` | Style types; worker when file is large |
 | `terminateGeojsonWorker()` | Optional cleanup (tests / HMR) |
 
-The client registers with `WorkerMonitor` as `geojson`. Progress and **worker logs** (`read` / `parse` / `reproject`, plus `console.*` inside the worker) show up on `WorkerControl`.
+The client registers with `WorkerMonitor` as `geojson`. Progress and **worker logs** (`read` / `parse` / `fetch` / `reproject`, plus `console.*` inside the worker) show up on `WorkerControl`.
 
 ## Vue: do not make GeoJSON reactive
 

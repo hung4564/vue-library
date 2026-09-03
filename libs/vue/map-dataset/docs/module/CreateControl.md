@@ -2,7 +2,7 @@
 
 Dialog to add a GeoJSON / raster / vector dataset from the UI. `LayerControl` opens this when **Create layer** is clicked — you usually do **not** mount it yourself.
 
-GeoJSON file read, parse, and CRS reproject run in a [Web Worker](../worker.md). Configure Vite `worker.format: 'es'` (and `nxViteTsPaths` on `worker.plugins` in this Nx workspace) or large files fall back to the main thread and can freeze the UI. Mount [WorkerControl](/map/core/module/WorkerControl) to watch progress and errors.
+GeoJSON / KML / GPX / Shapefile file read, parse, and CRS reproject run in a [Web Worker](../worker.md). Configure Vite `worker.format: 'es'` (and `nxViteTsPaths` on `worker.plugins` in this Nx workspace) or large files fall back to the main thread and can freeze the UI. Mount [WorkerControl](/map/core/module/WorkerControl) to watch progress and errors.
 
 ## Props
 

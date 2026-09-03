@@ -32,18 +32,32 @@
 
 <script setup>
 import { getChartRandomColor } from '@hungpvq/map-core';
+import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset';
 import { InputCrs, InputSelect, useLang, useMap } from '@hungpvq/vue-map-core';
+import { computed } from 'vue';
 
-const items_type = ['point', 'line', 'area'];
 const form = defineModel();
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);
+
+const items_type = computed(() => [
+  {
+    value: GEOJSON_STYLE_AUTO,
+    text: trans.value('map.layer-control.field.style-type-auto'),
+  },
+  { value: 'point', text: 'point' },
+  { value: 'line', text: 'line' },
+  { value: 'area', text: 'area' },
+]);
 
 if (!form.value.crs) {
   form.value.crs = '4326';
 }
 if (!form.value.color) {
   form.value.color = getChartRandomColor();
+}
+if (!form.value.type) {
+  form.value.type = 'point';
 }
 
 function onCrsChange(crs) {

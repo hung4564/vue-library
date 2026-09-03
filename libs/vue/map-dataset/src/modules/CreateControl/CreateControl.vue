@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
-import { CREATE_CONTROL_LOCALE, suggestLayerName } from '@hungpvq/map-dataset';
+import {
+  CREATE_CONTROL_LOCALE,
+  reportCreateLayerError,
+  suggestLayerName,
+} from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -117,10 +121,22 @@ async function onAddLayer() {
     reset();
     cShow.value = false;
   } catch (err) {
+    const mapError = reportCreateLayerError(err, {
+      crs:
+        typeof form.value.config.crs === 'string'
+          ? form.value.config.crs
+          : undefined,
+      layerType: form.value.type,
+      name:
+        typeof form.value.config.name === 'string'
+          ? form.value.config.name
+          : undefined,
+    });
     createError.value =
-      err instanceof Error
-        ? err.message
-        : trans.value('map.layer-control.create.create-error');
+      mapError.message ||
+      (mapError.context?.['reason'] === 'too_deep_or_circular_or_large'
+        ? trans.value('map.layer-control.create.create-error-data-too-large')
+        : trans.value('map.layer-control.create.create-error'));
   } finally {
     creating.value = false;
   }

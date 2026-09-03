@@ -2,15 +2,28 @@ import {
   applyCreateControlSample,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
   CREATE_CONTROL_SAMPLE_NONE,
+  GEOJSON_STYLE_AUTO,
+  GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
   getCreateControlSamples,
-  loadGeojsonFileAsync,
-  loadGeojsonTextAsync,
+  loadGisFileAsync,
+  loadGisTextAsync,
   type CreateControlDataTab,
 } from '@hungpvq/map-dataset';
 import { DragDropFile, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core';
 import { useMemo, useRef, useState } from 'react';
 import { DataSourceTabs } from './DataSourceTabs';
+
+function looksCompleteGis(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith('{') && trimmed.endsWith('}')) return true;
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) return true;
+  if (trimmed.startsWith('<') && /<\/[a-z]+>\s*$/i.test(trimmed)) return true;
+  return /^(GEOMETRYCOLLECTION|MULTI(POINT|LINESTRING|POLYGON)|POINT|LINESTRING|POLYGON)\s*\([\s\S]*\)$/i.test(
+    trimmed,
+  );
+}
 
 type ConfigFormProps = {
   config: Record<string, unknown>;
@@ -19,13 +32,23 @@ type ConfigFormProps = {
 };
 
 export function ConfigGeojsonLayerSettings({ config, onChange, trans }: ConfigFormProps) {
+  const styleItems = useMemo(
+    () => [
+      { value: GEOJSON_STYLE_AUTO, text: trans('map.layer-control.field.style-type-auto') },
+      { value: 'point', text: 'point' },
+      { value: 'line', text: 'line' },
+      { value: 'area', text: 'area' },
+    ],
+    [trans],
+  );
+
   return (
     <div className="map-row create-control-settings">
       <div className="map-col-6">
         <InputSelect
           label={trans('map.layer-control.field.style-type')}
-          value={config.type as string}
-          items={['point', 'line', 'area']}
+          value={String(config.type ?? 'point')}
+          items={styleItems}
           onChange={(v) => onChange({ type: v })}
         />
       </div>
@@ -56,6 +79,7 @@ export function ConfigGeojsonLayerSettings({ config, onChange, trans }: ConfigFo
 export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
   const [pasteText, setPasteText] = useState('');
   const [parsing, setParsing] = useState(false);
+  const [parseError, setParseError] = useState('');
   const [sampleId, setSampleId] = useState('');
   const [loadingSample, setLoadingSample] = useState(false);
   const [sampleError, setSampleError] = useState('');
@@ -78,18 +102,26 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
     setPasteText(text);
     setSampleId('');
     setSampleError('');
+    setParseError('');
     if (!text.trim()) {
       onChange({ geojson: null });
       return;
     }
     setParsing(true);
     try {
-      const { geojson, crs } = await loadGeojsonTextAsync(text);
+      const { geojson, crs } = await loadGisTextAsync(text);
       if (geojson) {
         const patch: Record<string, unknown> = { geojson };
         if (crs) patch.crs = crs;
         onChange(patch);
+        setParseError('');
       }
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : trans('map.layer-control.create.parse-error');
+      if (looksCompleteGis(text)) setParseError(message);
     } finally {
       setParsing(false);
     }
@@ -131,29 +163,43 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
             file: (
               <>
                 <DragDropFile
-                  accept=".json,.geojson"
-                  onChange={async (file) => {
+                  multiple
+                  accept={GIS_FILE_ACCEPT}
+                  onChange={async (input) => {
+                    const files = Array.isArray(input) ? input : input ? [input] : [];
                     setParsing(true);
                     setSampleId('');
                     setSampleError('');
+                    setParseError('');
                     try {
                       setPasteText('');
-                      const { geojson, crs } = await loadGeojsonFileAsync(file as File);
-                      if (geojson) {
-                        const patch: Record<string, unknown> = { geojson };
-                        if (crs) patch.crs = crs;
-                        onChange(patch);
-                      }
+                      const { geojson, crs } = await loadGisFileAsync(files);
+                      const patch: Record<string, unknown> = { geojson };
+                      if (crs) patch.crs = crs;
+                      onChange(patch);
                       setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
+                    } catch (err) {
+                      setParseError(
+                        err instanceof Error
+                          ? err.message
+                          : trans('map.layer-control.create.parse-error'),
+                      );
+                      onChange({ geojson: null });
                     } finally {
                       setParsing(false);
                     }
                   }}
                 />
+                <p className="create-control-status">
+                  {trans('map.layer-control.create.file-hint')}
+                </p>
                 {parsing ? (
                   <div className="create-control-status">
                     {trans('map.layer-control.create.parsing')}
                   </div>
+                ) : null}
+                {parseError ? (
+                  <div className="create-control-sample-error">{parseError}</div>
                 ) : null}
               </>
             ),
@@ -175,6 +221,9 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
                   <div className="create-control-status">
                     {trans('map.layer-control.create.parsing')}
                   </div>
+                ) : null}
+                {parseError ? (
+                  <div className="create-control-sample-error">{parseError}</div>
                 ) : null}
               </>
             ),

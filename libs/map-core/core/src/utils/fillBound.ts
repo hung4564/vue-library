@@ -1,4 +1,5 @@
 import type { LngLatBoundsLike } from 'maplibre-gl';
+import { bbox as turfBbox } from '@turf/turf';
 import type {
   CoordinatesNumber,
   Feature,
@@ -25,6 +26,8 @@ type FitBoundsValue =
 export interface FitBoundsOptions {
   zoom?: number;
 }
+
+export type GeojsonBbox = [number, number, number, number];
 
 /**
  * Fit bounds to map
@@ -80,96 +83,40 @@ export function fitBounds(
   }
 }
 
-/**
- * GeoJSON bbox `[minLng, minLat, maxLng, maxLat]`, or undefined if empty.
- */
-export function bboxFromGeojson(
-  feature: Geometry | Feature | FeatureCollection,
-): [number, number, number, number] | undefined {
-  const bounds = getBBox(feature);
-  if (!Array.isArray(bounds) || bounds.length !== 2) return undefined;
-  const sw = bounds[0];
-  const ne = bounds[1];
-  if (!Array.isArray(sw) || !Array.isArray(ne)) return undefined;
-  if (
-    typeof sw[0] !== 'number' ||
-    typeof sw[1] !== 'number' ||
-    typeof ne[0] !== 'number' ||
-    typeof ne[1] !== 'number'
-  ) {
-    return undefined;
-  }
-  return [sw[0], sw[1], ne[0], ne[1]];
+function isValidTurfBbox(box: number[]): box is GeojsonBbox {
+  return (
+    box.length === 4 &&
+    box.every((n) => typeof n === 'number' && Number.isFinite(n))
+  );
 }
 
 /**
- * Get bounding box from geometry/feature/collection
+ * GeoJSON bbox `[minLng, minLat, maxLng, maxLat]` via Turf, or undefined if empty.
+ */
+export function bboxFromGeojson(
+  feature: Geometry | Feature | FeatureCollection,
+): GeojsonBbox | undefined {
+  if (!feature) return undefined;
+  try {
+    const box = turfBbox(feature as never);
+    if (!isValidTurfBbox(box)) return undefined;
+    return [box[0], box[1], box[2], box[3]];
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Get bounding box as MapLibre `[[sw], [ne]]`.
  */
 function getBBox(
   feature: Geometry | Feature | FeatureCollection,
 ): LngLatBoundsLike | undefined {
-  if (!feature) {
-    return undefined;
-  }
-
-  let coordinates: CoordinatesNumber[] = [];
-
-  if (feature.type === 'FeatureCollection') {
-    coordinates = feature.features.flatMap((f) => {
-      if (f.geometry.type === 'Point') {
-        return [f.geometry.coordinates as CoordinatesNumber];
-      }
-      if (
-        f.geometry.type === 'LineString' ||
-        f.geometry.type === 'MultiPoint'
-      ) {
-        return f.geometry.coordinates as CoordinatesNumber[];
-      }
-      if (
-        f.geometry.type === 'Polygon' ||
-        f.geometry.type === 'MultiLineString'
-      ) {
-        return f.geometry.coordinates.flat() as CoordinatesNumber[];
-      }
-      if (f.geometry.type === 'MultiPolygon') {
-        return f.geometry.coordinates.flat(2) as CoordinatesNumber[];
-      }
-      return [];
-    });
-  } else if (feature.type === 'Feature') {
-    const geom = feature.geometry;
-    if (geom.type === 'Point') {
-      coordinates = [geom.coordinates as CoordinatesNumber];
-    } else if (geom.type === 'LineString' || geom.type === 'MultiPoint') {
-      coordinates = geom.coordinates as CoordinatesNumber[];
-    } else if (geom.type === 'Polygon' || geom.type === 'MultiLineString') {
-      coordinates = geom.coordinates.flat() as CoordinatesNumber[];
-    } else if (geom.type === 'MultiPolygon') {
-      coordinates = geom.coordinates.flat(2) as CoordinatesNumber[];
-    }
-  } else {
-    const geom = feature;
-    if (geom.type === 'Point') {
-      coordinates = [geom.coordinates as CoordinatesNumber];
-    } else if (geom.type === 'LineString' || geom.type === 'MultiPoint') {
-      coordinates = geom.coordinates as CoordinatesNumber[];
-    } else if (geom.type === 'Polygon' || geom.type === 'MultiLineString') {
-      coordinates = geom.coordinates.flat() as CoordinatesNumber[];
-    } else if (geom.type === 'MultiPolygon') {
-      coordinates = geom.coordinates.flat(2) as CoordinatesNumber[];
-    }
-  }
-
-  if (coordinates.length === 0) {
-    return undefined;
-  }
-
-  const lngs = coordinates.map((c) => c[0]);
-  const lats = coordinates.map((c) => c[1]);
-
+  const box = bboxFromGeojson(feature);
+  if (!box) return undefined;
   return [
-    [Math.min(...lngs), Math.min(...lats)],
-    [Math.max(...lngs), Math.max(...lats)],
+    [box[0], box[1]],
+    [box[2], box[3]],
   ];
 }
 

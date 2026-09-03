@@ -5,7 +5,7 @@ import type {
 import type { GeoJSON } from 'geojson';
 import { createGeoJsonDataset } from '../../builder/geojson';
 import type { IDataset } from '../../interfaces';
-import type { LayerStyleType } from '../../utils/layer-simple-builder';
+import { detectGeojsonStyleType } from '../create-control/geojson-parse';
 
 function toFeatureCollection(geojson: GeoJSON): GeoJSON {
   if (geojson.type === 'FeatureCollection') return geojson;
@@ -18,27 +18,11 @@ function toFeatureCollection(geojson: GeoJSON): GeoJSON {
   };
 }
 
-function inferLayerType(geojson: GeoJSON): LayerStyleType {
-  const geometryType =
-    geojson.type === 'FeatureCollection'
-      ? geojson.features[0]?.geometry?.type
-      : geojson.type === 'Feature'
-        ? geojson.geometry?.type
-        : geojson.type;
-  if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
-    return 'area';
-  }
-  if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
-    return 'line';
-  }
-  return 'point';
-}
-
 export function createGeojsonHereDataset(
   payload: AddGeojsonHerePayload,
 ): IDataset {
   const type: MapAddGeojsonHereLayerType =
-    payload.type ?? inferLayerType(payload.geojson);
+    payload.type ?? detectGeojsonStyleType(payload.geojson);
   return createGeoJsonDataset({
     name: payload.name,
     geojson: toFeatureCollection(payload.geojson),

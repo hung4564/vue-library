@@ -2,7 +2,7 @@
 
 `WorkerMonitor` is a framework-agnostic registry in `@hungpvq/map-core`. Any web worker client can register, then report **status**, **progress**, **logs**, and **errors**. `WorkerControl` (Vue / React) lists every registered worker. When several are registered, pick one from the list (search + busy-first) to inspect it.
 
-The GeoJSON parse / CRS worker in `@hungpvq/map-dataset` is already wired (`id: 'geojson'`).
+The GIS parse / CRS worker in `@hungpvq/map-dataset` is already wired (`id: 'geojson'`).
 
 ## Register a worker
 

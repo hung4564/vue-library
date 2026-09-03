@@ -24,9 +24,10 @@ export class MapError extends Error {
     this.recoverable = options?.recoverable ?? false;
     this.cause = options?.cause;
 
-    // 👇 merge stack để không mất error gốc
+    // Keep cause stack short — overflow stacks can be enormous.
     if (options?.cause instanceof Error && options.cause.stack) {
-      this.stack += `\nCaused by:\n${options.cause.stack}`;
+      const causeStack = options.cause.stack.slice(0, 4000);
+      this.stack = `${this.stack ?? ''}\nCaused by:\n${causeStack}`;
     }
 
     Object.setPrototypeOf(this, new.target.prototype);

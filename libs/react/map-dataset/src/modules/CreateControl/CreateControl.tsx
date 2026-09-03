@@ -1,6 +1,10 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import { CREATE_CONTROL_LOCALE, suggestLayerName } from '@hungpvq/map-dataset';
+import {
+  CREATE_CONTROL_LOCALE,
+  reportCreateLayerError,
+  suggestLayerName,
+} from '@hungpvq/map-dataset';
 import {
   BaseButton,
   InputSelect,
@@ -93,10 +97,16 @@ export function CreateControl(props: CreateControlProps) {
       reset();
       props.onShowChange(false);
     } catch (err) {
+      const mapError = reportCreateLayerError(err, {
+        crs: typeof form.config.crs === 'string' ? form.config.crs : undefined,
+        layerType: form.type,
+        name,
+      });
       setCreateError(
-        err instanceof Error
-          ? err.message
-          : trans('map.layer-control.create.create-error'),
+        mapError.message ||
+          (mapError.context?.['reason'] === 'too_deep_or_circular_or_large'
+            ? trans('map.layer-control.create.create-error-data-too-large')
+            : trans('map.layer-control.create.create-error')),
       );
     } finally {
       setCreating(false);

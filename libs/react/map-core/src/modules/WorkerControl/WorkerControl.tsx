@@ -4,12 +4,12 @@ import {
   formatWorkerLogTime,
   isWorkerBusy,
   resolveSelectedWorkerId,
-  workerProgressRatio,
   WORKER_CONTROL_LOCALE,
+  workerProgressRatio,
+  type WithMapPropType,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
-  type WithMapPropType,
 } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
@@ -143,7 +143,7 @@ export function WorkerControl(props: WorkerControlProps) {
           onUpdateShow={(value) => toggleShow(!!value)}
           title={trans('map.worker-control.title')}
           containerId={bind.containerId}
-          location={panelPosition.location || 'left'}
+          location={panelPosition.location || 'right'}
         >
           <div className="map-worker-control">
             <div className="map-worker-control__toolbar">
@@ -282,7 +282,10 @@ function WorkerCard(props: {
     <article className="map-worker-control__worker">
       <header className="map-worker-control__head">
         <div className="map-worker-control__name">{worker.name}</div>
-        <span className="map-worker-control__status" data-status={worker.status}>
+        <span
+          className="map-worker-control__status"
+          data-status={worker.status}
+        >
           {statusLabel}
         </span>
       </header>
@@ -317,7 +320,9 @@ function WorkerCard(props: {
                 >
                   <div
                     className="map-worker-control__bar-fill"
-                    style={percent != null ? { width: `${percent}%` } : undefined}
+                    style={
+                      percent != null ? { width: `${percent}%` } : undefined
+                    }
                   />
                 </div>
                 {text ? (

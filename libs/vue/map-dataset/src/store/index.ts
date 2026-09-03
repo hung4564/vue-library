@@ -41,8 +41,8 @@ export const useMapDataset = (initialMapId?: string) => {
     });
 
     logHelper(logger, mapId.value, 'store').debug('addDataset', {
-      store,
-      dataset: layer,
+      datasetId: layer.id,
+      name: layer.getName?.() ?? layer.id,
     });
   }
 

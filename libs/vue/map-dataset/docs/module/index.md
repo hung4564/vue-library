@@ -15,7 +15,7 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 
 ## Helpers
 
-- [GeoJSON worker](../worker.md) — Vite / Nx config for parse + CRS off the main thread
+- [GIS worker](../worker.md) — Vite / Nx config for parse + CRS off the main thread
 - [Legend](./Legend.md) — `createLegend` / `createMultiLegend`
 - [LayerSimpleMapboxBuild](./LayerSimpleMapboxBuild.md)
 - [useMapDataset](../helper/useMapDataset.md)

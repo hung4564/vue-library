@@ -10,12 +10,12 @@ import {
   formatWorkerLogTime,
   isWorkerBusy,
   resolveSelectedWorkerId,
-  workerProgressRatio,
   WORKER_CONTROL_LOCALE,
+  workerProgressRatio,
+  type WithMapPropType,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
-  type WithMapPropType,
 } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -48,9 +48,7 @@ const selected = computed(() => {
   const id = resolveSelectedWorkerId(filtered.value, selectedId.value);
   return filtered.value.find((worker) => worker.id === id) ?? null;
 });
-const busyCount = computed(
-  () => workers.value.filter(isWorkerBusy).length,
-);
+const busyCount = computed(() => workers.value.filter(isWorkerBusy).length);
 const manyWorkers = computed(() => workers.value.length > 1);
 const hasSelectedHistory = computed(
   () =>
@@ -171,7 +169,7 @@ function summaryText() {
         :containerId="slotProps.containerId"
         v-model:show="show"
         :title="trans('map.worker-control.title')"
-        :location="panelPosition.location || 'left'"
+        :location="panelPosition.location || 'right'"
       >
         <template #title>
           {{ trans('map.worker-control.title') }}
@@ -195,7 +193,11 @@ function summaryText() {
                 :disabled="!hasAnyHistory"
                 @click.stop="clearHistory()"
               >
-                <SvgIcon :size="16" type="mdi" :path="mdiNotificationClearAll" />
+                <SvgIcon
+                  :size="16"
+                  type="mdi"
+                  :path="mdiNotificationClearAll"
+                />
               </BaseButton>
             </div>
           </div>
@@ -237,9 +239,15 @@ function summaryText() {
                   >
                     {{ statusLabel(worker.status) }}
                   </span>
-                  <span v-if="worker.name !== worker.id || pendingLabel(worker)" class="map-worker-control__pick-meta">
+                  <span
+                    v-if="worker.name !== worker.id || pendingLabel(worker)"
+                    class="map-worker-control__pick-meta"
+                  >
                     {{
-                      [worker.name !== worker.id ? worker.id : '', pendingLabel(worker)]
+                      [
+                        worker.name !== worker.id ? worker.id : '',
+                        pendingLabel(worker),
+                      ]
                         .filter(Boolean)
                         .join(' · ')
                     }}
@@ -260,11 +268,23 @@ function summaryText() {
                 </span>
               </header>
               <div class="map-worker-control__stats">
-                <span>{{ trans('map.worker-control.stats.ok') }} {{ selected.stats.ok }}</span>
-                <span>{{ trans('map.worker-control.stats.error') }} {{ selected.stats.error }}</span>
-                <span>{{ trans('map.worker-control.stats.fallback') }} {{ selected.stats.fallback }}</span>
+                <span
+                  >{{ trans('map.worker-control.stats.ok') }}
+                  {{ selected.stats.ok }}</span
+                >
+                <span
+                  >{{ trans('map.worker-control.stats.error') }}
+                  {{ selected.stats.error }}</span
+                >
+                <span
+                  >{{ trans('map.worker-control.stats.fallback') }}
+                  {{ selected.stats.fallback }}</span
+                >
               </div>
-              <div v-if="selected.pending.length" class="map-worker-control__tasks">
+              <div
+                v-if="selected.pending.length"
+                class="map-worker-control__tasks"
+              >
                 <div
                   v-for="task in selected.pending"
                   :key="task.id"
@@ -272,11 +292,16 @@ function summaryText() {
                 >
                   <div class="map-worker-control__task-row">
                     <span>{{ task.type }}</span>
-                    <span>{{ engineLabel(task.engine) }} · {{ elapsed(task) }}</span>
+                    <span
+                      >{{ engineLabel(task.engine) }} ·
+                      {{ elapsed(task) }}</span
+                    >
                   </div>
                   <div
                     class="map-worker-control__bar"
-                    :class="{ 'is-indeterminate': progressPercent(task) == null }"
+                    :class="{
+                      'is-indeterminate': progressPercent(task) == null,
+                    }"
                     role="progressbar"
                     :aria-valuenow="progressPercent(task) ?? undefined"
                   >
@@ -289,15 +314,22 @@ function summaryText() {
                       "
                     />
                   </div>
-                  <div v-if="progressText(task)" class="map-worker-control__progress">
+                  <div
+                    v-if="progressText(task)"
+                    class="map-worker-control__progress"
+                  >
                     {{ progressText(task) }}
                   </div>
                 </div>
               </div>
               <p v-if="selected.lastError" class="map-worker-control__error">
-                {{ trans('map.worker-control.field.error') }}: {{ selected.lastError }}
+                {{ trans('map.worker-control.field.error') }}:
+                {{ selected.lastError }}
               </p>
-              <div v-if="logItems(selected).length" class="map-worker-control__logs">
+              <div
+                v-if="logItems(selected).length"
+                class="map-worker-control__logs"
+              >
                 <div class="map-worker-control__history-title">
                   {{ trans('map.worker-control.field.logs') }}
                 </div>
@@ -320,7 +352,10 @@ function summaryText() {
                   </div>
                 </div>
               </div>
-              <div v-if="historyItems(selected).length" class="map-worker-control__history">
+              <div
+                v-if="historyItems(selected).length"
+                class="map-worker-control__history"
+              >
                 <div class="map-worker-control__history-title">
                   {{ trans('map.worker-control.field.history') }}
                 </div>
@@ -330,7 +365,10 @@ function summaryText() {
                   class="map-worker-control__history-row"
                   :data-status="task.status"
                 >
-                  <span>{{ task.status === 'ok' ? '✓' : '✕' }} {{ task.type }}</span>
+                  <span
+                    >{{ task.status === 'ok' ? '✓' : '✕' }}
+                    {{ task.type }}</span
+                  >
                   <span>
                     {{ engineLabel(task.engine) }} · {{ elapsed(task) }}
                   </span>

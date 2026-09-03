@@ -13,6 +13,7 @@ function isDevEnvironment(): boolean {
  */
 export interface ErrorHandler {
   handle(error: Error, context?: Record<string, unknown>): void;
+  handleOnce(error: Error, context?: Record<string, unknown>): void;
   onError(callback: (error: MapError) => void): () => void;
 }
 
@@ -32,6 +33,7 @@ export interface ErrorHandlerOptions {
 export class MapErrorHandler implements ErrorHandler {
   private listeners: Set<(error: MapError) => void> = new Set();
   private options: ErrorHandlerOptions;
+  private handledOnce = new WeakSet<object>();
 
   constructor(options: ErrorHandlerOptions = {}) {
     this.options = {
@@ -47,12 +49,27 @@ export class MapErrorHandler implements ErrorHandler {
   }
 
   /**
+   * Handle an error at most once per Error instance (avoids duplicate Devtools entries).
+   */
+  handleOnce(error: Error, context?: Record<string, unknown>): void {
+    if (this.handledOnce.has(error)) {
+      if (error instanceof MapError && context) {
+        error.setContext(context);
+      }
+      return;
+    }
+    this.handledOnce.add(error);
+    this.handle(error, context);
+  }
+
+  /**
    * Handle an error.
    * @param error - The error to handle
    * @param context - Additional context about the error
    */
   handle(error: Error, context?: Record<string, unknown>): void {
     const mapError = this.normalizeError(error, context);
+    this.handledOnce.add(mapError);
 
     // Log to console in dev
     if (this.options.isDevelopment) {

@@ -3,9 +3,19 @@
     <div class="map-col-12">
       <DataSourceTabs v-model:active-tab="activeDataTab" :tabs="dataTabs">
         <template #file>
-          <DragDropFile @change="onChangeFile" accept=".json,.geojson" />
+          <DragDropFile
+            :multiple="true"
+            :accept="GIS_FILE_ACCEPT"
+            @change="onChangeFile"
+          />
+          <p class="create-control-status">
+            {{ trans('map.layer-control.create.file-hint') }}
+          </p>
           <div v-if="parsing" class="create-control-status">
             {{ trans('map.layer-control.create.parsing') }}
+          </div>
+          <div v-if="parseError" class="create-control-sample-error">
+            {{ parseError }}
           </div>
         </template>
 
@@ -19,6 +29,9 @@
           />
           <div v-if="parsing" class="create-control-status">
             {{ trans('map.layer-control.create.parsing') }}
+          </div>
+          <div v-if="parseError" class="create-control-sample-error">
+            {{ parseError }}
           </div>
         </template>
 
@@ -53,10 +66,11 @@ import {
   applyCreateControlSample,
   CREATE_CONTROL_SAMPLE_NONE,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
+  GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
   getCreateControlSamples,
-  loadGeojsonFileAsync,
-  loadGeojsonTextAsync,
+  loadGisFileAsync,
+  loadGisTextAsync,
 } from '@hungpvq/map-dataset';
 import { computed, markRaw, onBeforeUnmount, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
@@ -67,6 +81,7 @@ const sampleId = ref('');
 const loadingSample = ref(false);
 const sampleError = ref('');
 const parsing = ref(false);
+const parseError = ref('');
 let pasteTimer;
 
 const { mapId } = useMap();
@@ -83,6 +98,17 @@ const sampleItems = computed(() => [
   })),
 ]);
 
+function looksCompleteGis(text) {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith('{') && trimmed.endsWith('}')) return true;
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) return true;
+  if (trimmed.startsWith('<') && /<\/[a-z]+>\s*$/i.test(trimmed)) return true;
+  return /^(GEOMETRYCOLLECTION|MULTI(POINT|LINESTRING|POLYGON)|POINT|LINESTRING|POLYGON)\s*\([\s\S]*\)$/i.test(
+    trimmed,
+  );
+}
+
 function syncGeojsonPreview(geojson, crs) {
   form.value.geojson = geojson ? markRaw(geojson) : geojson;
   if (crs) {
@@ -90,15 +116,23 @@ function syncGeojsonPreview(geojson, crs) {
   }
 }
 
-async function onChangeFile(file) {
+async function onChangeFile(input) {
+  const files = Array.isArray(input) ? input : input ? [input] : [];
   parsing.value = true;
   sampleId.value = '';
   sampleError.value = '';
+  parseError.value = '';
   try {
     pasteText.value = '';
-    const { geojson, crs } = await loadGeojsonFileAsync(file);
+    const { geojson, crs } = await loadGisFileAsync(files);
     syncGeojsonPreview(geojson, crs);
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
+  } catch (err) {
+    parseError.value =
+      err instanceof Error
+        ? err.message
+        : trans.value('map.layer-control.create.parse-error');
+    syncGeojsonPreview(null);
   } finally {
     parsing.value = false;
   }
@@ -108,6 +142,7 @@ function onPasteGeojson(text) {
   pasteText.value = text;
   sampleId.value = '';
   sampleError.value = '';
+  parseError.value = '';
   clearTimeout(pasteTimer);
   if (!text.trim()) {
     syncGeojsonPreview(null);
@@ -116,8 +151,15 @@ function onPasteGeojson(text) {
   pasteTimer = setTimeout(async () => {
     parsing.value = true;
     try {
-      const { geojson, crs } = await loadGeojsonTextAsync(text);
+      const { geojson, crs } = await loadGisTextAsync(text);
+      parseError.value = '';
       if (geojson) syncGeojsonPreview(geojson, crs);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : trans.value('map.layer-control.create.parse-error');
+      if (looksCompleteGis(text)) parseError.value = message;
     } finally {
       parsing.value = false;
     }

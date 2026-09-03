@@ -1,5 +1,11 @@
-import type { Color } from '@hungpvq/map-core';
-import { bboxFromGeojson, getChartRandomColor, reprojectGeojsonToWgs84, toPlainJson } from '@hungpvq/map-core';
+import type { Color, GeojsonBbox } from '@hungpvq/map-core';
+import {
+  bboxFromGeojson,
+  getChartRandomColor,
+  MapError,
+  reprojectGeojsonToWgs84,
+  toPlainJson,
+} from '@hungpvq/map-core';
 import type { Feature, GeoJSON, Geometry } from 'geojson';
 import type { IDataset } from '../interfaces';
 import { createDatasetPartGeojsonSourceComponent } from '../model/source';
@@ -11,20 +17,78 @@ import { LayerSimpleMapboxBuild } from '../utils';
 import type { FieldFeaturesDef } from '../extra/field';
 import type { LayerStyleType } from '../utils/layer-simple-builder';
 import {
+  detectGeojsonStyleTypes,
+  isGeojsonStyleAuto,
+  styleTypeToMapboxGeometryType,
+  type GeojsonStyleMode,
+} from '../extra/create-control/geojson-parse';
+import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
 } from '../extra/menu/items';
 import { createIdentifyMapboxComponent } from '../model/identify';
+
 export type GeojsonDatasetOption = {
   name: string;
   geojson: GeoJSON;
-  type: LayerStyleType;
+  /**
+   * `point` | `line` | `area` = single layer (legacy).
+   * `auto` = one layer per geometry type found in the data.
+   * Optional `styles` overrides detection when already resolved (e.g. via worker).
+   */
+  type?: GeojsonStyleMode;
+  /** Precomputed styles (from worker); used when `type` is `auto`. */
+  styles?: LayerStyleType[];
+  /** Precomputed Turf bbox from worker/main; skips sync bbox when set. */
+  bbox?: GeojsonBbox | null;
   crs?: string;
   color?: Color;
   opacity?: number;
 };
+
+function buildSingleStyleLayer(
+  style: LayerStyleType,
+  color: Color,
+  opacity?: number,
+  withFilter = false,
+) {
+  const builder = new LayerSimpleMapboxBuild()
+    .setStyleType(style)
+    .setColor(color)
+    .setOpacity(style === 'area' ? opacity ?? 0.5 : opacity ?? 1);
+  if (withFilter) {
+    const mapboxType = styleTypeToMapboxGeometryType(style);
+    if (mapboxType) {
+      builder.setFilter(['==', '$type', mapboxType]);
+    }
+  }
+  return builder.build();
+}
+
+function resolveStyleLayers(
+  geojson: GeoJSON,
+  type: GeojsonStyleMode | undefined,
+  styles: LayerStyleType[] | undefined,
+  color: Color,
+  opacity?: number,
+) {
+  if (styles && styles.length > 0) {
+    return styles.map((style) =>
+      buildSingleStyleLayer(style, color, opacity, true),
+    );
+  }
+
+  if (isGeojsonStyleAuto(type)) {
+    return detectGeojsonStyleTypes(geojson).map((style) =>
+      buildSingleStyleLayer(style, color, opacity, true),
+    );
+  }
+
+  return [buildSingleStyleLayer(type ?? 'point', color, opacity, false)];
+}
+
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   const geojson = toPlainJson(
     data.crs ? reprojectGeojsonToWgs84(data.geojson, data.crs) : data.geojson,
@@ -36,7 +100,10 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   if (data.opacity != null) {
     list.opacity = data.opacity;
   }
-  const bbox = bboxFromGeojson(geojson);
+  const bbox =
+    data.bbox === null
+      ? undefined
+      : data.bbox ?? bboxFromGeojson(geojson);
   const listMenus = [createMenuItemToggleShow()];
   if (bbox) {
     dataset.add(createDatasetPartMetadataComponent(data.name, { bbox }));
@@ -45,13 +112,27 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   list.addMenus(listMenus);
   const groupLayer = createGroupDataset(data.name);
 
-  const layer = createMultiMapboxLayerComponent(data.name, [
-    new LayerSimpleMapboxBuild()
-      .setStyleType(data.type)
-      .setColor(list.color)
-      .setOpacity(list.opacity)
-      .build(),
-  ]);
+  let layer;
+  try {
+    layer = createMultiMapboxLayerComponent(
+      data.name,
+      resolveStyleLayers(
+        geojson,
+        data.type,
+        data.styles,
+        list.color,
+        list.opacity,
+      ),
+    );
+  } catch (error) {
+    throw error instanceof MapError
+      ? error
+      : new MapError(
+          error instanceof Error ? error.message : 'Failed to build style layers',
+          'LAYER_CREATE_ERROR',
+          { recoverable: false, cause: error, context: { stage: 'build-layers' } },
+        );
+  }
   groupLayer.add(layer);
   groupLayer.add(list);
   const dataConvert = convertGeojsonToList(geojson);
@@ -60,10 +141,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(dataConvert.fields),
   ]);
-  const source = createDatasetPartGeojsonSourceComponent(
-    data.name,
-    geojson,
-  );
+  const source = createDatasetPartGeojsonSourceComponent(data.name, geojson);
   dataset.add(source);
   dataset.add(groupLayer);
   dataset.add(identify);

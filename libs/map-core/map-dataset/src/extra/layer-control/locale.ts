@@ -8,6 +8,7 @@ export const LAYER_CONTROL_FIELD_LOCALE = {
   'layer-type': 'Layer type',
   'layer-name': 'Layer name',
   'style-type': 'Style type',
+  'style-type-auto': 'Auto (from data)',
   crs: 'Coordinate reference system',
   'crs-placeholder': 'Search or enter EPSG code',
   'crs-hint': 'EPSG:4326 — WGS 84',
@@ -26,11 +27,15 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'tab-sample': 'Sample',
   preset: 'Sample data',
   'preset-none': CREATE_CONTROL_SAMPLE_NONE,
-  'paste-geojson': 'Paste GeoJSON',
-  'paste-geojson-hint': '{ "type": "FeatureCollection", ... }',
-  parsing: 'Parsing GeoJSON…',
+  'paste-geojson': 'Paste GIS data',
+  'paste-geojson-hint': 'GeoJSON, TopoJSON, KML, GPX, CSV, or WKT',
+  'file-hint': 'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile, or .zip (GeoJSON/KML/… or Shapefile)',
+  parsing: 'Reading file…',
+  'parse-error': 'Could not read this file',
   creating: 'Creating layer…',
   'create-error': 'Failed to create layer',
+  'create-error-data-too-large':
+    'Data may be too large, too deeply nested, or circular. Try a smaller file or EPSG:4326.',
 };
 
 export const LAYER_CONTROL_LOCALE = {
