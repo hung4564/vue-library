@@ -9,4 +9,6 @@ export * from './GotoControl/GotoControl';
 export * from './InfoControl/InfoControl';
 export * from './MouseCoordinatesControl/MouseCoordinatesControl';
 export * from './MapContextMenuControl/MapContextMenuControl';
+export * from './RegistryControl/RegistryControl';
 export * from './SettingControl/SettingControl';
+export * from './WorkerControl/WorkerControl';

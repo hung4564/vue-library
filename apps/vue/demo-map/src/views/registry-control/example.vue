@@ -1,5 +1,4 @@
 <template>
-  <div class="registry-control-demo">
     <Map :mapId="mapId">
       <AsideControl position="top-left" />
       <MeasurementControl position="top-right" />
@@ -15,6 +14,7 @@
 
       <GotoControl position="top-right" />
       <InfoControl position="top-right" />
+      <WorkerControl position="top-left" />
       <IdentifyControl position="top-right" />
       <DrawControl position="top-right" />
       <InspectControl position="top-right" />
@@ -36,9 +36,8 @@
       <IdentifyShowFirstControl />
       <LayerHighlight />
 
-      <RegistryControlDemo position="top-right" show />
+      <RegistryControl position="top-right" show />
     </Map>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -61,7 +60,9 @@ import {
   MouseCoordinatesControl,
   PrintAdvancedControl,
   PrintControl,
+  RegistryControl,
   SettingControl,
+  WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
@@ -75,8 +76,6 @@ import {
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
-import RegistryControlDemo from './RegistryControlDemo.vue';
-import './registry-control-demo.css';
 
 const mapId = ref(getUUIDv4());
 </script>

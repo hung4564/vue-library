@@ -4,6 +4,7 @@ import {
   BaseMapControl,
   Map,
   UniversalRegistry,
+  WorkerControl,
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
@@ -38,6 +39,7 @@ export function DatasetListPage() {
       <Map onMapLoaded={onMapLoaded}>
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
+        <WorkerControl position="top-left" />
         <LayerControl
           position="top-left"
           show

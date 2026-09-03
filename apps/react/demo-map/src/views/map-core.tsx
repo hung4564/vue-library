@@ -12,6 +12,7 @@ import {
   MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
+  WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
@@ -24,6 +25,7 @@ export function MapCorePage() {
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
         <InfoControl position="top-right" />
+        <WorkerControl position="top-left" />
         <CrsControl />
         <GlobeControl />
         <SettingControl />

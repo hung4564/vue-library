@@ -16,7 +16,7 @@ npm install @hungpvq/vue-map-core
 
 - ✅ **Map container** - Main MapLibre GL wrapper component
 - ✅ **Navigation controls** - Zoom, Home, Fullscreen, Geolocate
-- ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel, right-click context menu
+- ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel, worker monitor, right-click context menu
 - ✅ **Compare & CRS extras** - Optional extras for map compare and CRS
 - ✅ **Composable hooks** - `useMap`, `useShow` and more
 - ✅ **TypeScript support** - Full TypeScript types
@@ -31,6 +31,7 @@ npm install @hungpvq/vue-map-core
     <HomeControl position="top-right" />
     <FullScreenControl position="top-right" />
     <MouseCoordinatesControl position="bottom-right" />
+    <WorkerControl position="top-left" />
     <MapContextMenuControl />
   </Map>
 
@@ -44,7 +45,7 @@ npm install @hungpvq/vue-map-core
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl, MapContextMenuControl } from '@hungpvq/vue-map-core';
+import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl, MapContextMenuControl, WorkerControl } from '@hungpvq/vue-map-core';
 
 const mapId = ref('map-core');
 

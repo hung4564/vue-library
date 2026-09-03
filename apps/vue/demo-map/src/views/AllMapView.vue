@@ -22,7 +22,9 @@ import {
   MouseCoordinatesControl,
   PrintAdvancedControl,
   PrintControl,
+  RegistryControl,
   SettingControl,
+  WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
@@ -158,6 +160,8 @@ function createDatasetMeasure(
     <PrintControl />
     <GotoControl position="top-right" />
     <InfoControl position="top-right" />
+    <RegistryControl position="top-right" />
+    <WorkerControl position="top-left" />
     <GlobeControl />
     <LegendControl />
     <CrsControl />

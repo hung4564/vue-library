@@ -77,6 +77,7 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 | `mapGotoControl` | popup | |
 | `mapSettingControl` | popup | |
 | `mapInfoControl` | popup | |
+| `mapWorkerControl` | sidebar | Any registered web worker |
 | `mapIdentifyControl` | popup | |
 | `mapCrsControl` | popup | |
 | `mapLegendControl` | popup | |
@@ -91,7 +92,7 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 | `mapMeasurementControl` | button | multi: `distance`, `area`, … |
 | `mapPrintAdvancedControl` | button | multi: `mapPrintShow`, `mapPrintSave`, … |
 | `mapInspectControl` | button | Vue draw only |
-| `demoRegistryControl` | popup | demo inspector |
+| `mapRegistryControl` | popup | Inspector for registered controls |
 
 Ids match toolbar / module ids where those exist.
 
@@ -100,9 +101,9 @@ Dynamic panels (`mapCreateControl`, `mapAttributeTable`, `mapLayerDetail`, `mapD
 
 ## Demo
 
-In `apps/vue/demo-map` and `apps/react/demo-map`, open `#/registry-control` (nav: **UniversalRegistry - Controls**).
+Mount [`RegistryControl`](./module/RegistryControl.md) (id `mapRegistryControl`) — or open `#/registry-control` in `apps/vue/demo-map` / `apps/react/demo-map`.
 
-The inspector itself is a map module (`demoRegistryControl`) using `ModuleContainer` + `DraggableItemPopup` + `useRegisterMapControl` — same pattern as library controls.
+The inspector uses `ModuleContainer` + `DraggableItemPopup` + `useRegisterMapControl`, same as other library controls.
 
 ## Hook (library authors)
 

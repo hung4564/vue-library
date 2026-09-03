@@ -2,7 +2,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl, Map, UniversalRegistry } from '@hungpvq/vue-map-core';
+import { BaseMapCard, BaseMapControl, Map, UniversalRegistry, WorkerControl } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   LayerControl,
@@ -30,6 +30,7 @@ function onMapLoaded(map: MapSimple) {
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
+    <WorkerControl position="top-left" />
     <LayerControl position="top-left" show :menu-context="menuUi">
       <template #titleList>
         <label class="menu-condition-toggle">

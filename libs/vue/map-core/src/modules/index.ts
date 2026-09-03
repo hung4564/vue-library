@@ -8,5 +8,7 @@ export { default as Map } from './Map.vue';
 export { default as ModuleContainer } from './ModuleContainer/ModuleContainer.vue';
 export { default as MouseCoordinatesControl } from './MouseCoordinatesControl/MouseCoordinatesControl.vue';
 export { default as MapContextMenuControl } from './MapContextMenuControl/MapContextMenuControl.vue';
+export { default as RegistryControl } from './RegistryControl/RegistryControl.vue';
 export { default as SettingControl } from './SettingControl/SettingControl.vue';
+export { default as WorkerControl } from './WorkerControl/WorkerControl.vue';
 export { default as ZoomControl } from './ZoomControl/ZoomControl.vue';

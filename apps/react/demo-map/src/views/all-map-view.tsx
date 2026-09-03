@@ -24,7 +24,9 @@ import {
   MouseCoordinatesControl,
   PrintAdvancedControl,
   PrintControl,
+  RegistryControl,
   SettingControl,
+  WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
@@ -50,6 +52,8 @@ export function AllMapView() {
         <PrintControl />
         <GotoControl position="top-right" />
         <InfoControl position="top-right" />
+        <RegistryControl position="top-right" />
+        <WorkerControl position="top-left" />
         <GlobeControl />
         <LegendControl />
         <CrsControl />

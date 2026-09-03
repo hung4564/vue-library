@@ -30,5 +30,6 @@ export * from './toolbar';
 export * from './mitt';
 export * from './registry';
 export * from './map-context-menu';
+export * from './worker';
 
 import './style/index.scss';

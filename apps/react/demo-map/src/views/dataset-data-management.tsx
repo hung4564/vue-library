@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import { BaseMapCard, BaseMapControl, EventManagementControl, Map } from '@hungpvq/react-map-core';
+import { BaseMapCard, BaseMapControl, EventManagementControl, Map, WorkerControl } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
   IdentifyControl,
@@ -30,6 +30,7 @@ export function DatasetDataManagementPage() {
         <ComponentManagementControl />
         <EventManagementControl position="top-left" />
         <IdentifyControl position="top-right" />
+        <WorkerControl position="top-left" />
       </Map>
     </MapPageShell>
   );

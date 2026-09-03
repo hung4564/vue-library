@@ -55,3 +55,22 @@ export type MapControlHandle = {
 };
 
 export const REGISTRY_CONTROL_PREFIX = 'control:' as const;
+
+export function filterMapControls(
+  controls: readonly MapControlHandle[],
+  query: string,
+): MapControlHandle[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [...controls];
+  return controls.filter((ctrl) => {
+    if (ctrl.id.toLowerCase().includes(q)) return true;
+    if (ctrl.panelKind.toLowerCase().includes(q)) return true;
+    if (ctrl.title?.toLowerCase().includes(q)) return true;
+    if (ctrl.defaultActionType?.toLowerCase().includes(q)) return true;
+    return ctrl.actions.some(
+      (action) =>
+        action.type.toLowerCase().includes(q) ||
+        Boolean(action.title?.toLowerCase().includes(q)),
+    );
+  });
+}

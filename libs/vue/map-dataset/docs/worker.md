@@ -4,6 +4,8 @@
 
 If the worker cannot start, the same work still runs on the main thread (large files can freeze the UI). Configure your bundler so the worker actually loads.
 
+Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).
+
 ## What runs in the worker
 
 - Read `.geojson` / `.json` files
@@ -87,6 +89,8 @@ const wgs84 = await reprojectGeojsonToWgs84Async(geojson!, crs);
 | `parseGeojsonTextAsync(text)` | Same parse; returns GeoJSON only |
 | `reprojectGeojsonToWgs84Async(geojson, crs)` | Reproject to EPSG:4326 (no-op if already 4326) |
 | `terminateGeojsonWorker()` | Optional cleanup (tests / HMR) |
+
+The client registers with `WorkerMonitor` as `geojson`. Progress and **worker logs** (`read` / `parse` / `reproject`, plus `console.*` inside the worker) show up on `WorkerControl`.
 
 ## Vue: do not make GeoJSON reactive
 

@@ -196,3 +196,70 @@ export const MEASUREMENT_CONTROL_LOCALE = {
     },
   },
 };
+
+export const WORKER_CONTROL_LOCALE = {
+  map: {
+    'worker-control': {
+      title: 'Workers',
+      empty: 'No workers registered',
+      emptyMatch: 'No matching workers',
+      hint: 'Workers appear here when a task starts (GeoJSON parse, CRS, …).',
+      search: 'Search',
+      searchPlaceholder: 'Filter by name, id, task…',
+      count: '{n} workers',
+      busyCount: '{n} busy',
+      pending: '{n} running',
+      status: {
+        'not-started': 'Not started',
+        idle: 'Idle',
+        busy: 'Busy',
+        unavailable: 'Unavailable',
+        terminated: 'Terminated',
+      },
+      engine: {
+        worker: 'Worker',
+        main: 'Main thread',
+      },
+      field: {
+        status: 'Status',
+        task: 'Task',
+        progress: 'Progress',
+        elapsed: 'Elapsed',
+        error: 'Error',
+        history: 'Recent tasks',
+        logs: 'Worker log',
+      },
+      stats: {
+        ok: 'OK',
+        error: 'Errors',
+        fallback: 'Fallback',
+      },
+      action: {
+        clear: 'Clear this worker',
+        clearAll: 'Clear all workers',
+      },
+    },
+  },
+};
+
+export const REGISTRY_CONTROL_LOCALE = {
+  map: {
+    'registry-control': {
+      title: 'Registry',
+      hint: 'List, open, close, move, and run registered map controls.',
+      search: 'Search',
+      searchPlaceholder: 'Filter by id, title, kind, action…',
+      empty: 'No matching controls',
+      refresh: 'Refresh',
+      open: 'Open',
+      close: 'Close',
+      movePopup: 'Move popup',
+      toggleSidebar: 'Toggle sidebar side',
+      actionType: 'Action type',
+      runAction: 'Run action',
+      actionDefault: '(default / single)',
+      openState: 'open',
+      closedState: 'closed',
+    },
+  },
+};

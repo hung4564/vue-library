@@ -3,6 +3,7 @@
     <AsideControl position="top-left" />
     <GotoControl position="top-right" />
     <InfoControl position="top-right" />
+    <WorkerControl position="top-left" />
     <CrsControl />
     <GlobeControl />
     <SettingControl />
@@ -31,6 +32,7 @@ import {
   MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
+  WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';

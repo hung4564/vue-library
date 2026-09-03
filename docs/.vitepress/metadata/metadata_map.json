@@ -76,6 +76,20 @@
       "order": 4
     },
     {
+      "name": "WorkerControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/WorkerControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "RegistryControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/RegistryControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
       "name": "HomeControl",
       "package": "Map - Core",
       "docs": "/map/core/module/HomeControl",
@@ -114,6 +128,13 @@
       "name": "Event",
       "package": "Map - Core",
       "docs": "/map/core/extra-event",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
+      "name": "Worker monitor",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-worker",
       "category": "Extra",
       "order": 4.2
     },

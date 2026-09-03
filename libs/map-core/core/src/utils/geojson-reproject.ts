@@ -72,9 +72,12 @@ export function toPlainJson<T>(value: T): T {
   }
 }
 
+export type ReprojectProgress = (current: number, total: number) => void;
+
 export function reprojectGeojsonToWgs84(
   geojson: GeoJSON,
   fromCrs: string | null | undefined,
+  onProgress?: ReprojectProgress,
 ): GeoJSON {
   const epsg = normalizeEpsgCode(fromCrs) ?? '4326';
   if (epsg === '4326') return geojson;
@@ -86,27 +89,38 @@ export function reprojectGeojsonToWgs84(
     const clone = toPlainJson(geojson);
 
     if (clone.type === 'FeatureCollection') {
-      return {
-        ...clone,
-        features: clone.features.map((feature) => ({
+      const total = clone.features.length;
+      const features = new Array(total);
+      onProgress?.(0, total);
+      for (let i = 0; i < total; i++) {
+        const feature = clone.features[i];
+        features[i] = {
           ...feature,
           geometry: feature.geometry
             ? transformGeometry(feature.geometry, from, to)
             : feature.geometry,
-        })),
-      };
+        };
+        onProgress?.(i + 1, total);
+      }
+      return { ...clone, features };
     }
 
     if (clone.type === 'Feature') {
-      return {
+      onProgress?.(0, 1);
+      const result = {
         ...clone,
         geometry: clone.geometry
           ? transformGeometry(clone.geometry, from, to)
           : clone.geometry,
       };
+      onProgress?.(1, 1);
+      return result;
     }
 
-    return transformGeometry(clone as Geometry, from, to) as GeoJSON;
+    onProgress?.(0, 1);
+    const geometry = transformGeometry(clone as Geometry, from, to) as GeoJSON;
+    onProgress?.(1, 1);
+    return geometry;
   } catch (error) {
     errorHandler.handle(
       new MapError('GeoJSON reprojection failed', 'CRS_ERROR', {

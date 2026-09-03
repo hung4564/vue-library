@@ -9,6 +9,7 @@ import {
   EventManagementControl,
   getMap,
   Map,
+  WorkerControl,
 } from '@hungpvq/vue-map-core';
 import {
   createDataManagementDrawListItemDataset,
@@ -577,6 +578,7 @@ function createMenuDrawLayer(config: MapDrawOption) {
     <EventManagementControl position="top-left" />
     <DrawControl position="top-right" />
     <IdentifyControl position="top-right" />
+    <WorkerControl position="top-left" />
     <FormEdit ref="popupRef" />
   </Map>
 </template>

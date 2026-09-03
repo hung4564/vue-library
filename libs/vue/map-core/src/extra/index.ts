@@ -10,3 +10,4 @@ export * from './mitt';
 export * from './print';
 export * from './registry';
 export * from './toolbar';
+export * from './worker';
