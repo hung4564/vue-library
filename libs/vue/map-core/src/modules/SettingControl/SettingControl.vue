@@ -5,7 +5,7 @@ import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { BaseButton, InputText } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -31,6 +31,24 @@ function onToggleShow() {
     });
   }
 }
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapSettingControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.setting-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapSettingControl',
+      run: () => onToggleShow(),
+    },
+  ],
+});
 const setting = ref<{
   zoom?: number;
   center: [number, number];
@@ -85,12 +103,12 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       </MapCommonButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
         :height="400"
         :width="400"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         :title="trans('map.setting-control.title')"
       >

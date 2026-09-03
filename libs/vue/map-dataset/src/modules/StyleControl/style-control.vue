@@ -7,6 +7,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
 } from '@hungpvq/vue-map-core';
 
@@ -29,6 +30,20 @@ const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(STYLE_CONTROL_LOCALE);
 
 const [show, toggleShow] = useShow(false);
+const { panelPosition } = useRegisterMapControl(mapId, {
+  id: 'mapStyleControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.style-control.title'),
+  show,
+  setShow: toggleShow,
+  initialPanelPosition: { location: 'right' },
+  actions: [
+    {
+      type: 'mapStyleControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
 const layer = ref<unknown>();
 const layer_map = ref<IMapboxLayerView | undefined>(undefined);
 const layer_map_component: Ref<ComponentType> = shallowRef({
@@ -76,11 +91,11 @@ const updateValue = () => {
     <template #draggable="p">
       <DraggableItemSideBar
         v-bind="p"
-        right
         v-model:show="show"
         v-if="layer_map_component.componentKey"
         @close="onClose"
         :title="trans('map.style-control.title')"
+        :location="panelPosition.location || 'right'"
       >
         <template #title>
           <span class="layer-control__title">

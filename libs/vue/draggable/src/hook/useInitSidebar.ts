@@ -10,7 +10,7 @@ export function useInitSidebar(
   optionDefault: {
     title?: string;
     type: 'item-sidebar';
-    location: LocationSideBar;
+    location: LocationSideBar | Ref<LocationSideBar>;
   },
 ) {
   const itemId = ref(`draggable-item-${getUUIDv4()}`);
@@ -22,10 +22,20 @@ export function useInitSidebar(
     show.value = value;
   }
   const store = useSidebarItem(containerId);
+
+  const locationRef = computed(() => {
+    const loc = optionDefault.location;
+    return (typeof loc === 'object' && loc && 'value' in loc
+      ? loc.value
+      : loc) as LocationSideBar;
+  });
+
   onMounted(() => {
-    store.registerSideBar(itemId.value, optionDefault.location);
+    store.registerSideBar(itemId.value, locationRef.value);
     store.registerAction(itemId.value, {
-      ...optionDefault,
+      title: optionDefault.title,
+      type: optionDefault.type,
+      location: locationRef.value,
       setZIndex,
       setShow,
     });
@@ -37,11 +47,36 @@ export function useInitSidebar(
     store.unRegisterSideBar(itemId.value);
   });
   watch(show, (value) => {
-    if (value) store.registerSideBarShow(itemId.value, value);
+    if (value) {
+      store.registerSideBarShow(itemId.value, true);
+      return;
+    }
+    // Keep store in sync when parent/registry closes (show→false).
+    // Only clear if this item is the active one at its location.
+    try {
+      const current =
+        store.getStoreContainer(containerId).sideBar[locationRef.value]?.show;
+      if (current === itemId.value) {
+        store.registerSideBarShow(itemId.value, false);
+      }
+    } catch {
+      // container may already be gone during unmount
+    }
   });
-  const location = computed(() => {
-    return optionDefault.location;
+  watch(locationRef, (next, prev) => {
+    if (!next || next === prev) return;
+    const wasOpen = show.value;
+    store.moveSideBarLocation(itemId.value, next);
+    store.registerAction(itemId.value, {
+      title: optionDefault.title,
+      type: optionDefault.type,
+      location: next,
+      setZIndex,
+      setShow,
+    });
+    if (wasOpen) store.registerSideBarShow(itemId.value, true);
   });
+  const location = computed(() => locationRef.value);
   return { itemId, zIndex, location };
 }
 export function useContainerOrder(containerId: string, itemId: string) {

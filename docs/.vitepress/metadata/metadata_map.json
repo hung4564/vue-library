@@ -27,6 +27,13 @@
       "order": 2.2
     },
     {
+      "name": "UniversalRegistry controls",
+      "package": "Map - Core",
+      "docs": "/map/core/registry-controls",
+      "category": "Core",
+      "order": 2.3
+    },
+    {
       "name": "FullScreenControl",
       "package": "Map - Core",
       "docs": "/map/core/module/FullScreenControl",

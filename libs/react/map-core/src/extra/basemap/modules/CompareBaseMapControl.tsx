@@ -15,6 +15,7 @@ import { getMaps } from '../../../store/store';
 import { getMapCompareSetting } from '../../compare';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
+import { useRegisterMapControl } from '../../registry';
 import { useBaseMap } from '../hooks';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
 
@@ -42,7 +43,7 @@ export function CompareBaseMapControl({
     defaultBaseMap,
     controlIcon,
   };
-  const { mapId, moduleContainerProps, mapInstance } = useMap(props);
+  const { mapId, moduleContainerProps, mapInstance } = useMap({ ...props, controlId: 'mapCompareBaseMapControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const setting = getMapCompareSetting(mapId);
   const [currentTab, setCurrentTab] = useState(0);
@@ -101,6 +102,22 @@ export function CompareBaseMapControl({
   }, [props.defaultBaseMap]);
 
   const [show, setShow] = useState(false);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapCompareBaseMapControl',
+    panelKind: 'popup',
+    title: title || trans('map.basemap.title'),
+    buttonPosition: props.position,
+    show,
+    setShow,
+    getProps: () => ({
+      position: props.position,
+      controlLayout: props.controlLayout,
+      defaultBaseMap: props.defaultBaseMap,
+    }),
+    actions: [
+      { type: 'mapCompareBaseMapControl', run: () => setShow((s) => !s) },
+    ],
+  });
 
   const onClick = useCallback(
     (i: number, baseMap: BaseMapItem) => {
@@ -139,6 +156,7 @@ export function CompareBaseMapControl({
         left={bindDrag.left}
         bottom={bindDrag.bottom}
         right={bindDrag.right}
+        {...panelBind}
       >
         <div className="map-compare-basemap-panel">
           <div className="map-compare-basemap-tabs">
@@ -185,7 +203,7 @@ export function CompareBaseMapControl({
         </div>
       </DraggableItemPopup>
     ),
-    [show, c_items_baseMaps, current_baseMaps, currentTab, trans, onClick],
+    [show, c_items_baseMaps, current_baseMaps, currentTab, trans, onClick, panelBind],
   );
 
   const current_baseMaps_for_display = current_baseMaps.filter(Boolean);

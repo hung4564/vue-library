@@ -250,18 +250,16 @@ function onLayerAction({
 </script>
 <template>
   <div class="layer-control-container">
-    <div class="layer-control__header">
+    <div v-if="views.length" class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
-      <template v-if="views.length">
-        <ButtonToggleShowALl :items="views" />
-        <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
-          <SvgIcon size="16" type="mdi" :path="path.group.create" />
-        </BaseButton>
-        <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
-          <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-        </BaseButton>
-      </template>
+      <ButtonToggleShowALl :items="views" />
+      <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
+        <SvgIcon size="16" type="mdi" :path="path.group.create" />
+      </BaseButton>
+      <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
+        <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
+      </BaseButton>
     </div>
     <div class="layer-control__list">
       <div v-if="!views.length" class="layer-control__empty">

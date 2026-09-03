@@ -8,6 +8,7 @@ import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap, useShow } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useMapCompareSetting } from '../hooks';
 
 export interface CompareSettingControlProps extends WithMapPropType {
@@ -17,9 +18,22 @@ export interface CompareSettingControlProps extends WithMapPropType {
 export function CompareSettingControl(props: CompareSettingControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const [show, toggleShow] = useShow(props.show);
-  const { mapId, moduleContainerProps } = useMap(merged);
+  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapCompareSettingControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const { setting, updateSetting } = useMapCompareSetting(mapId);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapCompareSettingControl',
+    panelKind: 'popup',
+    title: trans('map.setting-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapCompareSettingControl', run: () => toggleShow() }],
+  });
 
   useEffect(() => {
     setLocaleDefault(SETTING_CONTROL_LOCALE);
@@ -48,6 +62,7 @@ export function CompareSettingControl(props: CompareSettingControlProps) {
             height={200}
             width={280}
             {...bind}
+            {...panelBind}
           >
             <div className="map-compare-setting">
               <div className="map-compare-setting__fields">

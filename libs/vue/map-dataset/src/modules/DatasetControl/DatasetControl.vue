@@ -21,6 +21,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
   WithShowProps,
@@ -40,7 +41,26 @@ const path = {
   detail: mdiInformation,
   delete: mdiDelete,
 };
-const [show, toggleShow] = useShow(props.show);
+const [show, setShow] = useShow(props.show);
+const { panelPosition } = useRegisterMapControl(mapId, {
+  id: 'mapDatasetControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.dataset-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  initialPanelPosition: { location: 'left' },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapDatasetControl',
+      run: () => setShow(),
+    },
+  ],
+});
 const { getDatasets, getDatasetIds, removeDataset } = useMapDataset(
   mapId.value,
 );
@@ -102,7 +122,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     };
   },
   onClick() {
-    toggleShow();
+    setShow();
   },
 });
 watch(show, () => control.sync());
@@ -123,6 +143,7 @@ watch(show, () => control.sync());
         :containerId="props.containerId"
         v-model:show="show"
         :title="trans('map.dataset-control.title')"
+        :location="panelPosition.location || 'left'"
       >
         <template #title> {{ trans('map.dataset-control.title') }} </template>
         <div class="dataset-control">

@@ -13,6 +13,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
   WithShowProps,
@@ -43,6 +44,24 @@ const path = {
   layer: { create: mdiPlus },
 };
 const [show, toggleShow] = useShow(props.show);
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapLayerInfoControl',
+  panelKind: 'float',
+  title: () => trans.value('map.layer-info-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow: toggleShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapLayerInfoControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerInfoControl',
   getState() {
@@ -74,9 +93,9 @@ watch(show, () => control.sync());
       </MapCommonButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemFloat
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         headerLocation="bottom"
       >

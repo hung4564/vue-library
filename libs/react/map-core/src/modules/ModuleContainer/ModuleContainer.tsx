@@ -7,6 +7,8 @@ export interface ModuleContainerProps {
   dragId?: string;
   btnWidth?: number;
   order?: number;
+  /** Control id → class `{controlId}-btn-module-container` */
+  controlId?: string;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   controlVisible?: boolean;
   controlLayout?: 'toolbar' | 'standalone';
@@ -32,6 +34,7 @@ export function ModuleContainer({
   dragId: propsDragId,
   btnWidth = 40,
   order = 0,
+  controlId = '',
   position = 'bottom-right',
   controlVisible = true,
   controlLayout = 'standalone',
@@ -94,7 +97,6 @@ export function ModuleContainer({
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
-    // Wait for DOM to be ready
     const findTargets = () => {
       const btnTarget = document.querySelector(btnTo) as HTMLElement;
       const dragTarget = document.querySelector(draggableTo) as HTMLElement;
@@ -107,14 +109,12 @@ export function ModuleContainer({
       }
     };
 
-    // Try multiple times with increasing delays
     findTargets();
     const timeout1 = setTimeout(findTargets, 10);
     const timeout2 = setTimeout(findTargets, 50);
     const timeout3 = setTimeout(findTargets, 100);
     const timeout4 = setTimeout(findTargets, 200);
 
-    // Watch for changes in the map container
     const mapContainer =
       document.querySelector(`[data-map-id="${mapId}"]`) || document.body;
     const observer = new MutationObserver(() => {
@@ -137,6 +137,10 @@ export function ModuleContainer({
     };
   }, [btnTo, draggableTo, mapId, btnPortalTarget, draggablePortalTarget]);
 
+  const btnClassName = controlId
+    ? `btn-module-container ${controlId}-btn-module-container`
+    : 'btn-module-container';
+
   return (
     <div className="module__container">
       {controlVisible &&
@@ -144,7 +148,7 @@ export function ModuleContainer({
         isStandaloneButton &&
         btnPortalTarget &&
         createPortal(
-          <div className="btn-module-container" style={{ order }}>
+          <div className={btnClassName} style={{ order }}>
             {btn}
           </div>,
           btnPortalTarget,

@@ -18,6 +18,7 @@ import {
   useEventMap,
   useLang,
   useMap,
+  useRegisterMapControl,
   useToolbarControl,
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
@@ -240,6 +241,23 @@ function _inspectStyle(map: MapSimple) {
   });
 }
 const isDrawShow = ref(false);
+useRegisterMapControl(mapId, {
+  id: 'mapInspectControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapInspectControl',
+      run: () => {
+        toggleInspect();
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapInspectControl',
   getState() {

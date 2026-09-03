@@ -59,6 +59,7 @@ import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs';
 import { useEventMap } from '../../event';
 import { useMapImage } from '../../image';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl, type ToolbarButtonConfig } from '../../toolbar';
 
 import {
@@ -276,6 +277,24 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
     toToolbarButton,
   ),
+});
+
+useRegisterMapControl(mapId, {
+  id: 'mapMeasurementControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  defaultActionType: 'distance',
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: () =>
+    [...button_show, ...button_handle, ...(props.actions || [])].map(
+      (action) => ({
+        type: action.type,
+        run: (e) => control.onAction(action.type, e as MouseEvent),
+      }),
+    ),
 });
 
 watch([measurement_type, coordinates], () => control.sync(), { deep: true });

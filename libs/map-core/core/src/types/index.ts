@@ -19,6 +19,8 @@ export interface WithMapPropType {
   controlVisible?: boolean;
   controlOrder?: number | string;
   controlLayout?: 'standalone' | 'toolbar';
+  /** Control id for ModuleContainer btn class (`{controlId}-btn-module-container`) */
+  controlId?: string;
   top?: number;
   bottom?: number;
   left?: number;

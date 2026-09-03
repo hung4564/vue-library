@@ -23,6 +23,7 @@ import { BaseButton, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useMapPrint } from '../store';
 
@@ -51,7 +52,7 @@ export function PrintAdvancedControl({
 }: PrintAdvancedControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
   const { callMap, mapId, moduleContainerProps, order } = useMap(
-    merged,
+    { ...merged, controlId: 'mapPrintAdvancedControl' },
     onInit,
   );
   const { trans, setLocaleDefault } = useLang(mapId);
@@ -273,6 +274,43 @@ export function PrintAdvancedControl({
 
   const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
   controlRef.current = control;
+
+  const registerActions = useMemo(
+    () => [
+      {
+        type: 'mapPrintShow',
+        run: () =>
+          handlersRef.current.onShowPrint(printRef.current.setting),
+      },
+      {
+        type: 'mapPrintSave',
+        run: () => handlersRef.current.onSave(),
+      },
+      {
+        type: 'mapPrintClose',
+        run: () => handlersRef.current.onClosePrint(),
+      },
+      {
+        type: 'mapPrintSetting',
+        run: () => handlersRef.current.toggleSetting(),
+      },
+    ],
+    [],
+  );
+
+  useRegisterMapControl(mapId, {
+    id: 'mapPrintAdvancedControl',
+    panelKind: 'button',
+    buttonPosition: merged.position,
+    defaultActionType: 'mapPrintShow',
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+      disabledCrosshair,
+      disabledPrintableArea,
+    }),
+    actions: registerActions,
+  });
 
   useEffect(() => {
     control.sync();

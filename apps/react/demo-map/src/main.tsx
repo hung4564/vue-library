@@ -15,6 +15,7 @@ import { InspectPage } from './views/inspect';
 import { MapCorePage } from './views/map-core';
 import { MapDatasetPage } from './views/map-dataset';
 import { MeasurementPage } from './views/measurement';
+import { RegistryControlPage } from './views/registry-control';
 import { StoryTellingPage } from './views/story-telling';
 import { ToolbarPage } from './views/toolbar';
 
@@ -41,6 +42,7 @@ root.render(
           <Route path="dataset-identify" element={<DatasetIdentifyPage />} />
           <Route path="dataset-menu" element={<DatasetMenuPage />} />
           <Route path="dataset-list" element={<DatasetListPage />} />
+          <Route path="registry-control" element={<RegistryControlPage />} />
           <Route
             path="dataset-data-management"
             element={<DatasetDataManagementPage />}

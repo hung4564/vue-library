@@ -61,6 +61,7 @@ export const useMap = (
     position: props.position,
     controlVisible: props.controlVisible,
     controlLayout: props.controlLayout,
+    controlId: props.controlId,
     order: c_order.value,
     top: props.top,
     bottom: props.bottom,

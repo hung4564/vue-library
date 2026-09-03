@@ -24,13 +24,14 @@ const NAV_ITEMS = [
   { to: '/dataset-identify', label: 'Dataset - Identify' },
   { to: '/dataset-menu', label: 'Dataset - Menu' },
   { to: '/dataset-list', label: 'Dataset - List' },
+  { to: '/registry-control', label: 'UniversalRegistry - Controls' },
   { to: '/dataset-data-management', label: 'Dataset - Data management' },
   { to: '/story-telling', label: 'Story telling' },
 ];
 
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap(merged);
+  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'asideControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
 

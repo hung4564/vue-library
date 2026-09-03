@@ -1,4 +1,11 @@
-import { logHelper, MAP_STORE_KEY, methodRegistry } from '@hungpvq/map-core';
+import {
+  logHelper,
+  MAP_STORE_KEY,
+  methodRegistry,
+  REGISTRY_CONTROL_PREFIX,
+  type MapControlHandle,
+  type MapControlPanelPosition,
+} from '@hungpvq/map-core';
 import { createStore } from '@hungpvq/shared';
 import type { Component } from 'vue';
 import { logger } from '../../logger';
@@ -11,7 +18,10 @@ export const useMapRegistryStore = (mapId: string) =>
     return new Map<string, RegistryItem>();
   });
 
-export type RegistryItem = ((...args: any[]) => any) | Component;
+export type RegistryItem =
+  | ((...args: any[]) => any)
+  | Component
+  | MapControlHandle;
 
 export class UniversalRegistry {
   // Global registry cho tất cả map
@@ -25,6 +35,7 @@ export class UniversalRegistry {
     COMPONENT: 'component:',
     METHOD: 'method:',
     MENU_HANDLER: 'menu-handler:',
+    CONTROL: REGISTRY_CONTROL_PREFIX,
   } as const;
 
   // ===== GLOBAL REGISTRATION =====
@@ -76,6 +87,60 @@ export class UniversalRegistry {
     const namespacedKey = this.NAMESPACES.MENU_HANDLER + key;
     this.registerForMap(mapId, namespacedKey, fn);
     methodRegistry.registerMenuHandlerForMap(mapId, key, fn);
+  }
+
+  /** Đăng ký map control handle (panel + button actions) */
+  static registerControl(mapId: string, key: string, handle: MapControlHandle) {
+    this.registerControlForMap(mapId, key, handle);
+  }
+
+  static registerControlForMap(
+    mapId: string,
+    key: string,
+    handle: MapControlHandle,
+  ) {
+    const namespacedKey = this.NAMESPACES.CONTROL + key;
+    this.registerForMap(mapId, namespacedKey, handle);
+  }
+
+  static unregisterControl(mapId: string, key: string) {
+    const namespacedKey = this.NAMESPACES.CONTROL + key;
+    const mapRegistry = useMapRegistryStore(mapId);
+    mapRegistry.delete(namespacedKey);
+  }
+
+  static getControl(key: string, mapId: string): MapControlHandle | undefined {
+    const namespacedKey = this.NAMESPACES.CONTROL + key;
+    const mapRegistry = useMapRegistryStore(mapId);
+    return mapRegistry.get(namespacedKey) as MapControlHandle | undefined;
+  }
+
+  static listControls(mapId: string): MapControlHandle[] {
+    const mapRegistry = useMapRegistryStore(mapId);
+    const prefix = this.NAMESPACES.CONTROL;
+    return Array.from(mapRegistry.entries())
+      .filter(([k]) => k.startsWith(prefix))
+      .map(([, v]) => v as MapControlHandle);
+  }
+
+  static openControl(mapId: string, key: string) {
+    this.getControl(key, mapId)?.open();
+  }
+
+  static closeControl(mapId: string, key: string) {
+    this.getControl(key, mapId)?.close();
+  }
+
+  static setControlPosition(
+    mapId: string,
+    key: string,
+    pos: MapControlPanelPosition,
+  ) {
+    this.getControl(key, mapId)?.setPanelPosition(pos);
+  }
+
+  static runControlAction(mapId: string, key: string, type?: string, event?: unknown) {
+    this.getControl(key, mapId)?.runAction(type, event);
   }
 
   // ===== INTERNAL HELPER =====
@@ -179,24 +244,34 @@ export class UniversalRegistry {
   /** Lấy tất cả keys trong namespace cho map cụ thể */
   static getKeysForMap(
     mapId: string,
-    namespace: 'component' | 'method' | 'menu-handler',
+    namespace: 'component' | 'method' | 'menu-handler' | 'control',
   ): string[] {
     const mapRegistry = useMapRegistryStore(mapId);
-    const prefix =
-      this.NAMESPACES[namespace.toUpperCase() as keyof typeof this.NAMESPACES];
+    const resolved =
+      namespace === 'component'
+        ? this.NAMESPACES.COMPONENT
+        : namespace === 'method'
+          ? this.NAMESPACES.METHOD
+          : namespace === 'menu-handler'
+            ? this.NAMESPACES.MENU_HANDLER
+            : this.NAMESPACES.CONTROL;
 
     return Array.from(mapRegistry.keys())
-      .filter((key) => key.startsWith(prefix))
-      .map((key) => key.replace(prefix, ''));
+      .filter((key) => key.startsWith(resolved))
+      .map((key) => key.replace(resolved, ''));
   }
 }
 
 export function useUniversalRegistry(mapId?: string) {
   function get<T = any>(
-    type: 'component' | 'method' | 'menu-handler',
+    type: 'component' | 'method' | 'menu-handler' | 'control',
     name: string,
     defaultValue?: T,
   ): T | undefined {
+    if (type === 'control') {
+      if (!mapId) return defaultValue;
+      return (UniversalRegistry.getControl(name, mapId) as T) || defaultValue;
+    }
     const registry = UniversalRegistry as any;
     const getter = `get${type.charAt(0).toUpperCase() + type.slice(1)}`;
 
@@ -227,9 +302,17 @@ export function useUniversalRegistry(mapId?: string) {
     ): T | undefined {
       return UniversalRegistry.getMenuHandler<T>(key, mapId) || defaultValue;
     },
+    getControl(key: string, defaultValue?: MapControlHandle): MapControlHandle | undefined {
+      if (!mapId) return defaultValue;
+      return UniversalRegistry.getControl(key, mapId) || defaultValue;
+    },
+    listControls(): MapControlHandle[] {
+      if (!mapId) return [];
+      return UniversalRegistry.listControls(mapId);
+    },
     // Utility methods
     getKeysForMap(
-      namespace: 'component' | 'method' | 'menu-handler',
+      namespace: 'component' | 'method' | 'menu-handler' | 'control',
     ): string[] {
       if (!mapId) return [];
       return UniversalRegistry.getKeysForMap(mapId, namespace);

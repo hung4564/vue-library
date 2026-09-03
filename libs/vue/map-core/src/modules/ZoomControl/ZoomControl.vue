@@ -33,7 +33,7 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -74,13 +74,13 @@ function onDestroy(_map: MapSimple) {
   }
 }
 
-function onZoomIn(e: MouseEvent) {
+function onZoomIn(e?: MouseEvent) {
   callMap((map) => {
     map.zoomIn({}, { originalEvent: e });
   });
 }
 
-function onZoomOut(e: MouseEvent) {
+function onZoomOut(e?: MouseEvent) {
   callMap((map) => {
     map.zoomOut({}, { originalEvent: e });
   });
@@ -91,6 +91,23 @@ function onResetBearing() {
     map.easeTo({ bearing: 0, pitch: 0 });
   });
 }
+useRegisterMapControl(mapId, {
+  id: 'mapNavigationControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  defaultActionType: 'mapZoomIn',
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    showCompass: props.showCompass,
+    showZoom: props.showZoom,
+  }),
+  actions: [
+    { type: 'mapCompass', run: () => onResetBearing() },
+    { type: 'mapZoomIn', run: (e) => onZoomIn(e as MouseEvent) },
+    { type: 'mapZoomOut', run: (e) => onZoomOut(e as MouseEvent) },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'module',
   moduleId: 'mapNavigationControl',

@@ -31,6 +31,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
@@ -52,6 +53,7 @@ const { setFeatureHighlight, getHighlightSource } =
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
 
+const show = ref(true);
 const loading = ref(true);
 const query = ref('');
 const tableColumns = ref<AttributeTableColumn[]>([]);
@@ -95,6 +97,31 @@ const title = computed(() => {
     : `${name} (${count})`;
 });
 
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapAttributeTable',
+  panelKind: 'popup',
+  title: () => title.value,
+  buttonPosition: () => props.position,
+  show,
+  setShow: (value) => {
+    show.value = value;
+    if (!value) handleClose();
+  },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapAttributeTable',
+      run: () => {
+        show.value = !show.value;
+        if (!show.value) handleClose();
+      },
+    },
+  ],
+});
+
 onMounted(async () => {
   try {
     const collection = await getDatasetFeatureCollection(props.layer);
@@ -129,6 +156,7 @@ function handleClose() {
 }
 
 function onUpdateShow(val: boolean) {
+  show.value = val;
   if (!val) handleClose();
 }
 
@@ -229,8 +257,8 @@ watch(zoomToSelection, (enabled) => {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="bind">
       <DraggableItemPopup
-        v-bind="bind"
-        show
+        v-bind="{ ...bind, ...panelBind }"
+        :show="show"
         :width="760"
         :height="460"
         @close="handleClose"

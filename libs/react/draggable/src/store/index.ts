@@ -80,8 +80,10 @@ export const useSidebarItem = (containerId: string) => {
     const location = action.location;
     const oldId = p_store.sideBar[location].show;
     if (oldId && !show) {
-      p_store.actions[oldId].setShow(false);
+      // Only close when the caller is the currently shown item
+      if (oldId !== itemId) return;
       p_store.sideBar[location].show = undefined;
+      p_store.actions[oldId].setShow(false);
     } else if (show) {
       if (oldId && itemId !== oldId) p_store.actions[oldId].setShow(false);
       p_store.sideBar[location].show = itemId;
@@ -117,6 +119,26 @@ export const useSidebarItem = (containerId: string) => {
     },
     registerAction(id: string, action: ContainerStoreAction) {
       container.actions[id] = action;
+      notifyStoreChange(['drag:core', 'container', containerId]);
+    },
+    moveSideBarLocation(id: string, next: LocationSideBar) {
+      if (!container) return;
+      const action = container.actions[id];
+      if (!action || !('location' in action)) return;
+      const prev = action.location as LocationSideBar;
+      if (prev === next) return;
+      const wasShow = container.sideBar[prev].show === id;
+      container.sideBar[prev].items = container.sideBar[prev].items.filter(
+        (x) => x !== id,
+      );
+      if (wasShow) container.sideBar[prev].show = undefined;
+      if (!container.sideBar[next].items.includes(id)) {
+        container.sideBar[next].items.push(id);
+      }
+      action.location = next;
+      if (wasShow) {
+        container.sideBar[next].show = id;
+      }
       notifyStoreChange(['drag:core', 'container', containerId]);
     },
   };

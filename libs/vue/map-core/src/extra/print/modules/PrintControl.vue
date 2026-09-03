@@ -5,6 +5,7 @@ import { saveAs } from 'file-saver';
 import { ref } from 'vue';
 import { MapCommonButton } from '../../../components';
 import { useLang } from '../../../extra/lang';
+import { useRegisterMapControl } from '../../../extra/registry';
 import { useToolbarControl } from '../../../extra/toolbar';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
@@ -47,6 +48,23 @@ function onSaveAll(cb?: (image: string) => Promise<void>) {
 async function onDownload(data64: string) {
   saveAs(data64, `${props.fileName}.png`);
 }
+useRegisterMapControl(mapId, {
+  id: 'mapPrintControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapPrintControl',
+      run: () => {
+        onSaveAll(onDownload);
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapPrintControl',
   getState() {

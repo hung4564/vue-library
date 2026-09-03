@@ -22,6 +22,7 @@ import {
 } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useToolbarControl } from '../../../toolbar';
+import { useRegisterMapControl } from '../../../registry';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -36,6 +37,24 @@ const [show, setShow] = useShow(props.show);
 function onToggleShow() {
   setShow(!show.value);
 }
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapCrsControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.crs-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapCrsControl',
+      run: () => onToggleShow(),
+    },
+  ],
+});
 const { items: crs_items, setItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 const filterQuery = ref('');
@@ -110,12 +129,12 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       >
       </MapCommonButton>
     </template>
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
         :height="480"
         :width="400"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         :title="trans('map.crs-control.title')"
       >

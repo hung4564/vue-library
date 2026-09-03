@@ -13,6 +13,7 @@ import { defaultMapProps, useMap, useShow } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang';
 import { useMapMittStore } from '../../mitt';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useEventMapItems } from '../hook';
 import type { MapEventStore } from '../store';
@@ -28,9 +29,25 @@ function isActive(current: MapEventStore['current'], event: IEvent) {
 
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap(merged);
+  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapEventManagementControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
+  const { panelPosition } = useRegisterMapControl(mapId, {
+    id: 'mapEventManagementControl',
+    panelKind: 'sidebar',
+    title: trans('map.event-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: toggleShow,
+    initialPanelPosition: { location: 'left' },
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [
+      { type: 'mapEventManagementControl', run: () => toggleShow() },
+    ],
+  });
   const [events, setEvents] = useState<IEvent[]>([]);
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   const { getCurrent } = useEventMapItems(mapId, {
@@ -91,6 +108,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
           onUpdateShow={(v) => toggleShow(!!v)}
           title={trans('map.event-control.title')}
           containerId={bind.containerId}
+          location={panelPosition.location || 'left'}
         >
           <div className="map-event-control">
             {Object.entries(groupedViews).map(([type, group]) => (

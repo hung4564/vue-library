@@ -8,8 +8,9 @@ import {
   type ToolbarSingleOptions,
   createToolbarStrategy,
   type ToolbarKind,
+  MAP_MODULE_CONTROL_ID_KEY,
 } from '@hungpvq/map-core';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, provide, ref } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { useMapToolbarModule } from './store';
 
@@ -68,6 +69,14 @@ export function useToolbarControl(
 
   const kind: ToolbarKind = (options.kind ?? 'single') as ToolbarKind;
   const control = createToolbarStrategy({ ...options, toolbar, kind } as any);
+
+  const controlId =
+    kind === 'module'
+      ? (options as ToolbarModuleOptions).moduleId
+      : (options as ToolbarSingleOptions).id;
+  if (controlId) {
+    provide(MAP_MODULE_CONTROL_ID_KEY, controlId);
+  }
 
   const { state } = useInitToolbarControl(control);
 

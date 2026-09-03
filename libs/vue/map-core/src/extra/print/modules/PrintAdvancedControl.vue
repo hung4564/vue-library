@@ -6,6 +6,7 @@ import { BaseButton, InputSelect, InputText } from '../../../field';
 import { MapCommonButton, MapControlGroupButton } from '../../../components';
 import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../../extra/lang';
+import { useRegisterMapControl } from '../../../extra/registry';
 import { useToolbarControl } from '../../../extra/toolbar';
 import {
   mdiClose,
@@ -228,6 +229,37 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         loading: print.value.loading,
       }),
       onClick: () => toggleSetting(),
+    },
+  ],
+});
+
+useRegisterMapControl(mapId, {
+  id: 'mapPrintAdvancedControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  defaultActionType: 'mapPrintShow',
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    disabledCrosshair: props.disabledCrosshair,
+    disabledPrintableArea: props.disabledPrintableArea,
+  }),
+  actions: [
+    {
+      type: 'mapPrintShow',
+      run: () => onShowPrint(print.value.setting),
+    },
+    {
+      type: 'mapPrintSave',
+      run: () => onSave(),
+    },
+    {
+      type: 'mapPrintClose',
+      run: () => onClosePrint(),
+    },
+    {
+      type: 'mapPrintSetting',
+      run: () => toggleSetting(),
     },
   ],
 });

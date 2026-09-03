@@ -4,7 +4,7 @@ import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
@@ -46,6 +46,23 @@ function onInit(_map: MapSimple) {
     i_center.value = _map.getCenter();
   }
 }
+useRegisterMapControl(mapId, {
+  id: 'mapHomeControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapHomeControl',
+      run: () => {
+        onGoHome();
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapHomeControl',
   getState() {

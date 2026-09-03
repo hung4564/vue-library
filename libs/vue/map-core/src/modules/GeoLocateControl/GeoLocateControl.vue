@@ -7,7 +7,7 @@ import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
 import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -181,6 +181,23 @@ function isOutOfMapMaxBounds(
       coordinates.latitude > bounds.getNorth())
   );
 }
+useRegisterMapControl(mapId, {
+  id: 'mapGeoLocateControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapGeoLocateControl',
+      run: () => {
+        onClick();
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGeoLocateControl',
   getState() {

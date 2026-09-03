@@ -170,7 +170,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
   );
 
   const { callMap, mapId, moduleContainerProps } = useMap(
-    mergedProps,
+    { ...mergedProps, controlId: 'mapMouseCoordinatesControl' },
     onInit,
     onDestroy,
   );

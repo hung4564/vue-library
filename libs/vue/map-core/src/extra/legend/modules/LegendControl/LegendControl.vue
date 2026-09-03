@@ -7,6 +7,7 @@ import { ref, shallowRef, watch } from 'vue';
 import { MapCommonButton } from '../../../../components';
 import { useEventListener } from '../../../../extra/event';
 import { useLang } from '../../../../extra/lang';
+import { useRegisterMapControl } from '../../../../extra/registry';
 import { useToolbarControl } from '../../../../extra/toolbar';
 import { InputCheckbox } from '../../../../field';
 import { defaultMapProps, useMap } from '../../../../hooks/useMap';
@@ -26,6 +27,24 @@ setLocaleDefault(LEGEND_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
 }
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapLegendControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.legend-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapLegendControl',
+      run: () => onToggleShow(),
+    },
+  ],
+});
 const onlyRender = ref(false);
 const legends = shallowRef<{ icon: any; name: string }[]>([]);
 function updateLegend(map: MapSimple) {
@@ -99,12 +118,12 @@ const { state, control } = useToolbarControl(mapId.value, props, {
       </MapCommonButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
         :height="400"
         :width="400"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         :title="trans('map.legend-control.title')"
       >

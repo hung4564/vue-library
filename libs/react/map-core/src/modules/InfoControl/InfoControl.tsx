@@ -17,7 +17,7 @@ import {
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { BaseButton } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks';
@@ -42,7 +42,7 @@ const EMPTY_INFO: MapViewInfo = {
 
 export function InfoControl(props: InfoControlProps) {
   const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapInfoControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_INFO);
@@ -102,6 +102,21 @@ export function InfoControl(props: InfoControlProps) {
   const handleToggle = useCallback(() => {
     setShow((visible) => !visible);
   }, []);
+
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapInfoControl',
+    panelKind: 'popup',
+    title: trans('map.info-control.title'),
+    buttonPosition: mergedProps.position,
+    show,
+    setShow,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+      fileName: mergedProps.fileName,
+    }),
+    actions: [{ type: 'mapInfoControl', run: () => handleToggle() }],
+  });
 
   const onScreenshot = useCallback(() => {
     callMap(async (map) => {
@@ -169,6 +184,7 @@ export function InfoControl(props: InfoControlProps) {
             </BaseButton>
           }
           {...bind}
+          {...panelBind}
         >
           <div className="map-info-control">
             <div className="map-info-control__rows">
@@ -193,7 +209,7 @@ export function InfoControl(props: InfoControlProps) {
         </DraggableItemPopup>
       );
     },
-    [show, capturing, onScreenshot, info, trans],
+    [show, capturing, onScreenshot, info, trans, panelBind],
   );
 
   return (

@@ -121,7 +121,7 @@ function onLayerAction({
 </script>
 <template lang="">
   <div class="layer-control-container">
-    <div class="layer-control__header">
+    <div v-if="views.length" class="layer-control__header">
       <div class="v-spacer"></div>
     </div>
     <div class="layer-control__list">

@@ -8,15 +8,41 @@ export default {
 import type { IDataset } from '@hungpvq/map-dataset';
 import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { ModuleContainer } from '@hungpvq/vue-map-core';
-import { shallowRef, watch } from 'vue';
+import {
+  ModuleContainer,
+  useMap,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
+import { ref, shallowRef, watch } from 'vue';
 const props = defineProps<{ dataset: IDataset }>();
 const emit = defineEmits(['close']);
+const { mapId } = useMap();
+const show = ref(true);
 function onUpdateShow(val: boolean) {
+  show.value = val;
   if (!val) {
     emit('close');
   }
 }
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapDatasetDetail',
+  panelKind: 'popup',
+  title: () => props.dataset?.getName?.(),
+  show,
+  setShow: (value) => {
+    show.value = value;
+    if (!value) emit('close');
+  },
+  actions: [
+    {
+      type: 'mapDatasetDetail',
+      run: () => {
+        show.value = !show.value;
+        if (!show.value) emit('close');
+      },
+    },
+  ],
+});
 const items = shallowRef<{ level: number; path: number[]; node: IDataset }[]>(
   [],
 );
@@ -37,10 +63,10 @@ watch(
 </script>
 <template>
   <ModuleContainer v-bind="$attrs">
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
-        v-bind="props"
-        show
+        v-bind="{ ...slotProps, ...panelBind }"
+        :show="show"
         @update:show="onUpdateShow"
         :width="400"
         :height="400"

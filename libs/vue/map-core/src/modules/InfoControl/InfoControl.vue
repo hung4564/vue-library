@@ -24,7 +24,7 @@ import {
 } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { BaseButton } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -46,6 +46,26 @@ const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(INFO_CONTROL_LOCALE);
+
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapInfoControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.info-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    fileName: props.fileName,
+  }),
+  actions: [
+    {
+      type: 'mapInfoControl',
+      run: () => onToggleShow(),
+    },
+  ],
+});
 
 const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);
@@ -149,10 +169,10 @@ function onScreenshot() {
         @click.stop="control.onAction"
       />
     </template>
-    <template #draggable="bind">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
-        v-bind="bind"
+        v-bind="{ ...slotProps, ...panelBind }"
         :show="show"
         @update:show="setShow"
         @close="setShow(false)"

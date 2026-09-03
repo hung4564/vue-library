@@ -28,6 +28,7 @@ import {
   UniversalRegistry,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
   WithShowProps,
@@ -82,11 +83,34 @@ const path = {
   deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
-const [show, toggleShow] = useShow(props.show);
+const [show, setShow] = useShow(props.show);
 const [showCreate, toggleShowCreate] = useShow();
 function openAddLayer() {
   toggleShowCreate();
 }
+const { panelPosition } = useRegisterMapControl(mapId, {
+  id: 'mapLayerControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.layer-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  initialPanelPosition: { location: 'left' },
+  getProps: () => ({
+    disabledCreate: props.disabledCreate,
+    disabledCreateGroup: props.disabledCreateGroup,
+    disabledDeleteAll: props.disabledDeleteAll,
+    disabledMove: props.disabledMove,
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapLayerControl',
+      run: () => setShow(),
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerControl',
   getState() {
@@ -102,7 +126,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     };
   },
   onClick() {
-    toggleShow();
+    setShow();
   },
 });
 watch(show, () => control.sync());
@@ -140,6 +164,7 @@ onUnmounted(() => {
         :containerId="props.containerId"
         v-model:show="show"
         :title="trans('map.layer-control.title')"
+        :location="panelPosition.location || 'left'"
       >
         <template #title>
           <span class="layer-control__title">

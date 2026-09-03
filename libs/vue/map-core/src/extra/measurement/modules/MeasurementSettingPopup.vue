@@ -1,8 +1,8 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
-        v-bind="Object.assign(props, popUpPosition)"
+        v-bind="{ ...slotProps, ...popUpPosition, ...panelBind }"
         v-if="c_show"
         v-model:show="c_show"
         :title="trans('map.measurement.setting.title')"
@@ -41,6 +41,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
 import { CrsDisplaySettings } from '../../crs';
@@ -76,6 +77,34 @@ const model = defineModel<CoordinatesNumber[]>({
   default: () => [],
 });
 const c_show = defineModel('show', { default: false });
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapMeasurementSetting',
+  panelKind: 'popup',
+  title: () => trans.value('map.measurement.setting.title'),
+  buttonPosition: () => props.position,
+  show: c_show,
+  setShow: (value) => {
+    c_show.value = value;
+  },
+  initialPanelPosition: {
+    top: props.popUpPosition.top,
+    right: props.popUpPosition.right,
+  },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    maxLength: props.maxLength,
+    measurementType: props.measurementType,
+  }),
+  actions: [
+    {
+      type: 'mapMeasurementSetting',
+      run: () => {
+        c_show.value = !c_show.value;
+      },
+    },
+  ],
+});
 const onFlyTo = (geometry: Geometry | Feature | FeatureCollection) => {
   callMap((map) => {
     fitBounds(map, geometry);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 import type { MapControlButtonUIState } from '@hungpvq/map-core';
@@ -18,7 +18,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
     type: props.type || 'body',
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapFullscreenControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
@@ -50,6 +50,24 @@ export function FullScreenControl(props: FullScreenControlProps) {
       await document.exitFullscreen();
     }
   }
+
+  useRegisterMapControl(mapId, {
+    id: 'mapFullscreenControl',
+    panelKind: 'button',
+    buttonPosition: mergedProps.position,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+    }),
+    actions: [
+      {
+        type: 'mapFullscreenControl',
+        run: () => {
+          void toggleFullscreen();
+        },
+      },
+    ],
+  });
 
   const buttonState: MapControlButtonUIState = {
     visible: true,

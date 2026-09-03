@@ -39,10 +39,10 @@
 
       <div v-else></div>
     </template>
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         :height="sizeBaseMap * 2 + 48 + 10 + 40"
         v-model:show="show"
         :is-resizable="false"
@@ -118,8 +118,9 @@ import {
 } from '../../../components';
 import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../../extra/lang';
-import { getMaps } from '../../../store/store';
 import { getMapCompareSetting } from '../../../extra/compare';
+import { useRegisterMapControl } from '../../../extra/registry';
+import { getMaps } from '../../../store/store';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -194,6 +195,9 @@ const path = {
 };
 
 const show = ref(false);
+function setShow(value: boolean) {
+  show.value = value;
+}
 
 function onClick(i: number, baseMap: BaseMapItem) {
   mapStoreUseBaseMap.value[i].setCurrent(baseMap);
@@ -202,6 +206,28 @@ function onClick(i: number, baseMap: BaseMapItem) {
 function onToggleList() {
   show.value = !show.value;
 }
+
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapCompareBaseMapControl',
+  panelKind: 'popup',
+  title: () => props.title || trans.value('map.basemap.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    title: props.title,
+    defaultBaseMap: props.defaultBaseMap,
+    controlIcon: props.controlIcon,
+  }),
+  actions: [
+    {
+      type: 'mapCompareBaseMapControl',
+      run: () => onToggleList(),
+    },
+  ],
+});
 
 onMounted(() => {
   mapStoreUseBaseMap.value.forEach((c) => {

@@ -1,6 +1,7 @@
 /**
  * Framework-agnostic method/menu-handler registry.
  * Component registration stays in the framework layer (Vue/React).
+ * Map control handles are registered via UniversalRegistry (Vue/React).
  */
 
 export type RegistryFn = (...args: any[]) => any;
@@ -9,7 +10,11 @@ export const REGISTRY_NAMESPACES = {
   COMPONENT: 'component:',
   METHOD: 'method:',
   MENU_HANDLER: 'menu-handler:',
+  CONTROL: 'control:',
 } as const;
+
+export * from './control';
+export * from './module-control-id';
 
 export class MethodRegistry {
   private global = new Map<string, RegistryFn>();

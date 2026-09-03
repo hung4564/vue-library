@@ -173,11 +173,10 @@ export function LayerList({
       }}
     >
       <div className="layer-control-container">
-      <div className="layer-control__header">
-        {title}
-        <div className="v-spacer" />
         {!isEmpty && (
-          <>
+          <div className="layer-control__header">
+            {title}
+            <div className="v-spacer" />
             <ButtonToggleShowAll mapId={mapId} items={views} />
             {!disabledCreateGroup && (
               <BaseButton onClick={addNewGroup} aria-label="Create group">
@@ -185,89 +184,91 @@ export function LayerList({
               </BaseButton>
             )}
             {!disabledDeleteAll && (
-              <BaseButton onClick={onRemoveAllLayer} aria-label="Delete all layers">
+              <BaseButton
+                onClick={onRemoveAllLayer}
+                aria-label="Delete all layers"
+              >
                 <Icon path={mdiDelete} size={HEADER_ICON} />
               </BaseButton>
             )}
-          </>
-        )}
-      </div>
-      <div className="layer-control__list">
-        {isEmpty && (
-          <div className="layer-control__empty">
-            <Icon
-              className="layer-control__empty-icon"
-              path={mdiLayers}
-              size="36px"
-            />
-            <div className="layer-control__empty-title">
-              {trans('map.layer-control.empty')}
-            </div>
-            {showCreate && (
-              <div className="layer-control__empty-hint">
-                {trans('map.layer-control.empty-hint')}
-              </div>
-            )}
-            {showCreate && (
-              <button
-                type="button"
-                className="layer-control__empty-action"
-                onClick={onCreate}
-              >
-                <Icon path={mdiPlus} size="14px" />
-                {trans('map.layer-control.create-btn')}
-              </button>
-            )}
           </div>
         )}
-        <div hidden={isEmpty}>
-          <DraggableGroupList
-            ref={groupRef}
-            items={views}
-            selected={selected}
-            disabledDrag={disabledDrag}
-            onSelectedChange={setSelected}
-            onItemsChange={onItemsChange}
-            onGroupRemove={onRemoveGroupLayer}
-            renderItem={({ item, toggleSelect }) => (
-              <LayerItem
-                item={item}
-                mapId={mapId}
-                readonly={readonly}
-                disabledMove={disabledMove}
-                disabledCreateGroup={disabledCreateGroup}
-                onTitleClick={toggleSelect}
-                onRemove={(layer) => {
-                  removeComponent(layer);
-                  refresh();
-                }}
-                onAction={onLayerAction}
-                onContextMenu={handleContextClick}
+        <div className="layer-control__list">
+          {isEmpty && (
+            <div className="layer-control__empty">
+              <Icon
+                className="layer-control__empty-icon"
+                path={mdiLayers}
+                size="36px"
               />
-            )}
-          />
+              <div className="layer-control__empty-title">
+                {trans('map.layer-control.empty')}
+              </div>
+              {showCreate && (
+                <div className="layer-control__empty-hint">
+                  {trans('map.layer-control.empty-hint')}
+                </div>
+              )}
+              {showCreate && (
+                <button
+                  type="button"
+                  className="layer-control__empty-action"
+                  onClick={onCreate}
+                >
+                  <Icon path={mdiPlus} size="14px" />
+                  {trans('map.layer-control.create-btn')}
+                </button>
+              )}
+            </div>
+          )}
+          <div style={isEmpty ? { display: 'none' } : undefined}>
+            <DraggableGroupList
+              ref={groupRef}
+              items={views}
+              selected={selected}
+              disabledDrag={disabledDrag}
+              onSelectedChange={setSelected}
+              onItemsChange={onItemsChange}
+              onGroupRemove={onRemoveGroupLayer}
+              renderItem={({ item, toggleSelect }) => (
+                <LayerItem
+                  item={item}
+                  mapId={mapId}
+                  readonly={readonly}
+                  disabledMove={disabledMove}
+                  disabledCreateGroup={disabledCreateGroup}
+                  onTitleClick={toggleSelect}
+                  onRemove={(layer) => {
+                    removeComponent(layer);
+                    refresh();
+                  }}
+                  onAction={onLayerAction}
+                  onContextMenu={handleContextClick}
+                />
+              )}
+            />
+          </div>
         </div>
+        <ContextMenu ref={contextMenuRef}>
+          <LayerContextMenuList
+            items={menuContext.items}
+            view={menuContext.view}
+            mapId={mapId}
+            getGroups={getMenuGroups}
+            onClose={closeContextMenu}
+            onSelect={({ action, event }) => {
+              if (menuContext.view) {
+                onLayerAction({
+                  action,
+                  item: menuContext.view,
+                  event,
+                });
+              }
+              closeContextMenu();
+            }}
+          />
+        </ContextMenu>
       </div>
-      <ContextMenu ref={contextMenuRef}>
-        <LayerContextMenuList
-          items={menuContext.items}
-          view={menuContext.view}
-          mapId={mapId}
-          getGroups={getMenuGroups}
-          onClose={closeContextMenu}
-          onSelect={({ action, event }) => {
-            if (menuContext.view) {
-              onLayerAction({
-                action,
-                item: menuContext.view,
-                event,
-              });
-            }
-            closeContextMenu();
-          }}
-        />
-      </ContextMenu>
-    </div>
     </MenuConditionProvider>
   );
 }

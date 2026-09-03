@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 import type { MapControlButtonUIState } from '@hungpvq/map-core';
@@ -10,7 +10,7 @@ import type { MapControlButtonUIState } from '@hungpvq/map-core';
 export function GeoLocateControl(props: WithMapPropType) {
   const mergedProps = { ...defaultMapProps, ...props };
   const [active, setActive] = useState(false);
-  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGeoLocateControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
@@ -46,6 +46,24 @@ export function GeoLocateControl(props: WithMapPropType) {
       }
     });
   }
+
+  useRegisterMapControl(mapId, {
+    id: 'mapGeoLocateControl',
+    panelKind: 'button',
+    buttonPosition: mergedProps.position,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+    }),
+    actions: [
+      {
+        type: 'mapGeoLocateControl',
+        run: () => {
+          onClick();
+        },
+      },
+    ],
+  });
 
   const buttonState: MapControlButtonUIState = {
     visible: true,

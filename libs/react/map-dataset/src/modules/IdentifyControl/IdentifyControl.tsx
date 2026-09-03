@@ -29,6 +29,7 @@ import {
   useEventMap,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
   UniversalRegistry,
@@ -93,7 +94,7 @@ export function IdentifyControl(
   props: WithMapPropType & { show?: boolean; immediately?: boolean },
 ) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order, callMap } = useMap(merged);
+  const { mapId, moduleContainerProps, order, callMap } = useMap({ ...merged, controlId: 'mapIdentifyControl' });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
@@ -416,6 +417,21 @@ export function IdentifyControl(
     control.sync();
   }, [show, views.length, control]);
 
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapIdentifyControl',
+    panelKind: 'popup',
+    title: trans('map.identify.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+      immediately: props.immediately,
+    }),
+    actions: [{ type: 'mapIdentifyControl', run: () => handleToggle() }],
+  });
+
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -469,6 +485,7 @@ export function IdentifyControl(
               </>
             }
             {...bind}
+            {...panelBind}
           >
             <div className="identify-control-container">
               <div className="identify-control-header">
@@ -565,7 +582,7 @@ export function IdentifyControl(
 
 export function IdentifyShowFirstControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId } = useMap(merged);
+  const { mapId } = useMap({ ...merged, controlId: 'mapIdentifyControl' });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const [views, setViews] = useState<Array<IIdentifyView & IDataset>>([]);
   const viewsRef = useRef(views);

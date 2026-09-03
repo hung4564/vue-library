@@ -11,13 +11,22 @@ import { MAP_ACTION_LOCALE } from '@hungpvq/map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
 export interface ZoomControlProps extends WithMapPropType {
   showCompass?: boolean;
   showZoom?: boolean;
+}
+
+function resolveOriginalEvent(e?: unknown): MouseEvent | undefined {
+  if (e == null || typeof e !== 'object') return undefined;
+  if ('nativeEvent' in e) {
+    const native = (e as { nativeEvent?: unknown }).nativeEvent;
+    return native instanceof MouseEvent ? native : undefined;
+  }
+  return e instanceof MouseEvent ? e : undefined;
 }
 
 export function ZoomControl({
@@ -49,7 +58,7 @@ export function ZoomControl({
   }, []);
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
-    mergedProps,
+    { ...mergedProps, controlId: 'mapNavigationControl' },
     onInit,
     onDestroy,
   );
@@ -61,18 +70,18 @@ export function ZoomControl({
   }, []);
 
   const onZoomIn = useCallback(
-    (e: React.MouseEvent) => {
+    (e?: unknown) => {
       callMap((map) => {
-        map.zoomIn({}, { originalEvent: e.nativeEvent });
+        map.zoomIn({}, { originalEvent: resolveOriginalEvent(e) });
       });
     },
     [callMap],
   );
 
   const onZoomOut = useCallback(
-    (e: React.MouseEvent) => {
+    (e?: unknown) => {
       callMap((map) => {
-        map.zoomOut({}, { originalEvent: e.nativeEvent });
+        map.zoomOut({}, { originalEvent: resolveOriginalEvent(e) });
       });
     },
     [callMap],
@@ -83,6 +92,29 @@ export function ZoomControl({
       map.easeTo({ bearing: 0, pitch: 0 });
     });
   }, [callMap]);
+
+  const registerActions = useMemo(
+    () => [
+      { type: 'mapCompass', run: () => onResetBearing() },
+      { type: 'mapZoomIn', run: (e?: unknown) => onZoomIn(e) },
+      { type: 'mapZoomOut', run: (e?: unknown) => onZoomOut(e) },
+    ],
+    [onResetBearing, onZoomIn, onZoomOut],
+  );
+
+  useRegisterMapControl(mapId, {
+    id: 'mapNavigationControl',
+    panelKind: 'button',
+    buttonPosition: mergedProps.position,
+    defaultActionType: 'mapZoomIn',
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+      showCompass,
+      showZoom,
+    }),
+    actions: registerActions,
+  });
 
   const compassButton = useMemo(
     () => ({
@@ -108,7 +140,7 @@ export function ZoomControl({
         title: trans('map.action.navigation-control-zoom-in'),
         icon: { path: mdiPlus, type: 'mdi' as const },
       }),
-      onClick: (e: MouseEvent) => onZoomIn(e as unknown as React.MouseEvent),
+      onClick: (e?: MouseEvent) => onZoomIn(e),
     }),
     [showZoom, trans, onZoomIn],
   );
@@ -121,7 +153,7 @@ export function ZoomControl({
         title: trans('map.action.navigation-control-zoom-out'),
         icon: { path: mdiMinus, type: 'mdi' as const },
       }),
-      onClick: (e: MouseEvent) => onZoomOut(e as unknown as React.MouseEvent),
+      onClick: (e?: MouseEvent) => onZoomOut(e),
     }),
     [showZoom, trans, onZoomOut],
   );

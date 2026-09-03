@@ -3,7 +3,7 @@ import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { useEffect, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { BaseButton, InputText } from '../../field';
 import { defaultMapProps, useMap, useShow } from '../../hooks';
@@ -15,7 +15,7 @@ export interface GotoControlProps extends WithMapPropType {
 
 export function GotoControl(props: GotoControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<{
@@ -46,6 +46,20 @@ export function GotoControl(props: GotoControlProps) {
       loadCurrentView();
     }
   }
+
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapGotoControl',
+    panelKind: 'popup',
+    title: trans('map.goto-control.title'),
+    buttonPosition: mergedProps.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+    }),
+    actions: [{ type: 'mapGotoControl', run: () => handleToggle() }],
+  });
 
   function onSetSetting() {
     callMap((map) => {
@@ -89,6 +103,7 @@ export function GotoControl(props: GotoControlProps) {
             height={300}
             width={400}
             {...bind}
+            {...panelBind}
           >
             <div className="map-goto-control">
               <div className="map-goto-control__fields">

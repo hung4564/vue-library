@@ -46,6 +46,10 @@ const router = createRouter({
       component: () => import('../views/dataset-list/example.vue'),
     },
     {
+      path: '/registry-control/',
+      component: () => import('../views/registry-control/example.vue'),
+    },
+    {
       path: '/dataset-data-management/',
       component: () => import('../views/dataset-data-management/example.vue'),
     },

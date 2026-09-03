@@ -25,6 +25,7 @@ import {
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang';
 import { useMapMittStore } from '../../mitt';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useEventMapItems } from '../hook/useEventMapItems';
 import { MapEventStore } from '../store';
@@ -55,6 +56,25 @@ const path = {
   icon: mdiCalendarSearch,
 };
 const [show, toggleShow] = useShow(props.show);
+const { panelPosition } = useRegisterMapControl(mapId, {
+  id: 'mapEventManagementControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.event-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow: toggleShow,
+  initialPanelPosition: { location: 'left' },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapEventManagementControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
 defineSlots<{
   default(): any;
 }>();
@@ -103,6 +123,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
         :containerId="props.containerId"
         v-model:show="show"
         :title="trans('map.event-control.title')"
+        :location="panelPosition.location || 'left'"
       >
         <template #title> {{ trans('map.event-control.title') }} </template>
         <div class="map-event-control">

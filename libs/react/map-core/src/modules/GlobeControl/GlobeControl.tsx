@@ -3,7 +3,7 @@ import type { MapSimple } from '@hungpvq/map-core';
 import { GLOBE_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 import type { MapControlButtonUIState } from '@hungpvq/map-core';
@@ -29,14 +29,9 @@ export function GlobeControl(props: WithMapPropType) {
     };
   }, []);
 
-  const onDestroy = useCallback((_map: MapSimple) => {
-    // Cleanup handled in onInit return
-  }, []);
-
   const { callMap, mapId, moduleContainerProps, order } = useMap(
-    mergedProps,
+    { ...mergedProps, controlId: 'mapGlobeControl' },
     onInit,
-    onDestroy,
   );
   const { trans, setLocaleDefault } = useLang(mapId);
 
@@ -55,6 +50,24 @@ export function GlobeControl(props: WithMapPropType) {
       setCurrentProjection(getProjectionType(map));
     });
   }
+
+  useRegisterMapControl(mapId, {
+    id: 'mapGlobeControl',
+    panelKind: 'button',
+    buttonPosition: mergedProps.position,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+    }),
+    actions: [
+      {
+        type: 'mapGlobeControl',
+        run: () => {
+          toggle();
+        },
+      },
+    ],
+  });
 
   const buttonState: MapControlButtonUIState = {
     visible: true,

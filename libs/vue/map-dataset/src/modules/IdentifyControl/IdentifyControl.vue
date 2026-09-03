@@ -31,6 +31,7 @@ import {
   useEventMap,
   useLang,
   useMap,
+  useRegisterMapControl,
   useToolbarControl,
   WithShowProps,
 } from '@hungpvq/vue-map-core';
@@ -107,6 +108,28 @@ const {
 
 const origin = reactive({ latitude: 0, longitude: 0 });
 const show = ref(props.show);
+function setShow(value: boolean) {
+  show.value = value;
+}
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapIdentifyControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.identify.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    immediately: props.immediately,
+  }),
+  actions: [
+    {
+      type: 'mapIdentifyControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
 function runIdentifyAt(
   lng: number,
   lat: number,
@@ -391,7 +414,7 @@ watch(show, () => control.sync());
       <DraggableItemPopup
         v-if="show"
         v-model:show="show"
-        v-bind="p"
+        v-bind="{ ...p, ...panelBind }"
         :width="400"
         :height="300"
         @close="close"

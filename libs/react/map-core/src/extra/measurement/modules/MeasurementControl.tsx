@@ -43,6 +43,7 @@ import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems'
 import { useEventMap } from '../../event';
 import { useMapImage } from '../../image';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { logger } from '../logger';
 import { MeasurementSettingPopup } from './MeasurementSettingPopup';
@@ -89,7 +90,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
   settingRef.current = setting;
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
-    merged,
+    { ...merged, controlId: 'mapMeasurementControl' },
     onInit,
     onDestroy,
   );
@@ -373,6 +374,32 @@ export function MeasurementControl(props: MeasurementControlProps) {
 
   const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
   controlRef.current = control;
+
+  const registerActions = useMemo(
+    () =>
+      [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
+        (action) => {
+          const btn = toToolbarButton(action);
+          return {
+            type: action.type,
+            run: (e: unknown) => btn.onClick?.(e as MouseEvent),
+          };
+        },
+      ),
+    [buttonShow, buttonHandle, props.actions, toToolbarButton],
+  );
+
+  useRegisterMapControl(mapId, {
+    id: 'mapMeasurementControl',
+    panelKind: 'button',
+    buttonPosition: merged.position,
+    defaultActionType: 'distance',
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: registerActions,
+  });
 
   useEffect(() => {
     control.sync();

@@ -21,6 +21,7 @@ import {
   defaultMapProps,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
@@ -56,10 +57,28 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
 
 export function LayerControl(props: LayerControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap(merged);
+  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
-  const [show, toggleShow] = useShow(props.show);
+  const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
+  const { panelPosition } = useRegisterMapControl(mapId, {
+    id: 'mapLayerControl',
+    panelKind: 'sidebar',
+    title: trans('map.layer-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow,
+    initialPanelPosition: { location: 'left' },
+    getProps: () => ({
+      disabledCreate: props.disabledCreate,
+      disabledCreateGroup: props.disabledCreateGroup,
+      disabledDeleteAll: props.disabledDeleteAll,
+      disabledMove: props.disabledMove,
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapLayerControl', run: () => setShow() }],
+  });
 
   useEffect(() => {
     setLocaleDefault(LAYER_CONTROL_LOCALE);
@@ -75,7 +94,7 @@ export function LayerControl(props: LayerControlProps) {
       order,
       icon: { type: 'mdi' as const, path: mdiLayers },
     }),
-    onClick: () => toggleShow(),
+    onClick: () => setShow(),
   });
 
   useEffect(() => {
@@ -120,7 +139,7 @@ export function LayerControl(props: LayerControlProps) {
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
-          onUpdateShow={(v) => toggleShow(!!v)}
+          onUpdateShow={(v) => setShow(!!v)}
           title={trans('map.layer-control.title')}
           titleNode={
             <span className="layer-control__title">
@@ -128,6 +147,7 @@ export function LayerControl(props: LayerControlProps) {
             </span>
           }
           containerId={bind.containerId}
+          location={panelPosition.location || 'left'}
         >
           <div className="layer-control">
             <MenuConditionProvider value={props.menuContext}>

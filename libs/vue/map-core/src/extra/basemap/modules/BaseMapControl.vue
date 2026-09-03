@@ -28,10 +28,10 @@
 
       <div v-else></div>
     </template>
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         :height="
           sizeBaseMap * (Math.floor(c_baseMaps.length / 3) + 1) + 48 + 10
         "
@@ -93,6 +93,7 @@ import {
   MapImage,
 } from '../../../components';
 import { useLang } from '../../../extra/lang';
+import { useRegisterMapControl } from '../../../extra/registry';
 import { useToolbarControl } from '../../../extra/toolbar';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
@@ -146,6 +147,9 @@ const path = {
   layer: mdiLayersOutline,
 };
 const show = ref(false);
+function setShow(value: boolean) {
+  show.value = value;
+}
 function onClick(baseMap: BaseMapItem) {
   logHelper(logger, mapId.value, 'control', 'BaseMapControl').debug(
     'onClick',
@@ -156,6 +160,27 @@ function onClick(baseMap: BaseMapItem) {
 function onToggleList() {
   show.value = !show.value;
 }
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapBaseMapControl',
+  panelKind: 'popup',
+  title: () => props.title || trans.value('map.basemap.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+    title: props.title,
+    defaultBaseMap: props.defaultBaseMap,
+    controlIcon: props.controlIcon,
+  }),
+  actions: [
+    {
+      type: 'mapBaseMapControl',
+      run: () => onToggleList(),
+    },
+  ],
+});
 onMounted(() => {
   init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
 });

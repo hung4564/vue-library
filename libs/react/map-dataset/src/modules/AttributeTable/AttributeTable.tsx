@@ -28,6 +28,8 @@ import {
   defaultMapProps,
   useLang,
   useMap,
+  useRegisterMapControl,
+  useShow,
 } from '@hungpvq/react-map-core';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -43,7 +45,7 @@ type AttributeTableProps = WithMapPropType & {
 
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap(merged);
+  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapAttributeTable' });
   const { setFeatureHighlight, getHighlightSource } =
     useMapDatasetHighlight(mapId);
   const setFeatureHighlightRef = useRef(setFeatureHighlight);
@@ -51,6 +53,7 @@ export function AttributeTable(props: AttributeTableProps) {
   setFeatureHighlightRef.current = setFeatureHighlight;
   getHighlightSourceRef.current = getHighlightSource;
   const { trans, setLocaleDefault } = useLang(mapId);
+  const [show, toggleShow] = useShow(true);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [columns, setColumns] = useState<AttributeTableColumn[]>([]);
@@ -155,8 +158,29 @@ export function AttributeTable(props: AttributeTableProps) {
 
   function handleClose() {
     clearHighlight();
+    toggleShow(false);
     props.onClose?.();
   }
+
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapAttributeTable',
+    panelKind: 'popup',
+    title,
+    buttonPosition: merged.position,
+    show,
+    setShow: (v) => {
+      toggleShow(v);
+      if (!v) {
+        clearHighlight();
+        props.onClose?.();
+      }
+    },
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapAttributeTable', run: () => toggleShow() }],
+  });
 
   function toggleRow(row: AttributeTableRow) {
     const exists = selectedIds.includes(row.id);
@@ -236,7 +260,7 @@ export function AttributeTable(props: AttributeTableProps) {
       draggable={(bind) => (
         <>
         <DraggableItemPopup
-          show
+          show={show}
           width={760}
           height={460}
           title={title}
@@ -245,6 +269,7 @@ export function AttributeTable(props: AttributeTableProps) {
             if (!v) handleClose();
           }}
           {...bind}
+          {...panelBind}
         >
           <div className="attribute-table">
             <div className="attribute-table__toolbar">

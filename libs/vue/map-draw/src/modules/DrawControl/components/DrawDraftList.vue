@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { Feature } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { BaseButton, useLang } from '@hungpvq/vue-map-core';
+import {
+  BaseButton,
+  useLang,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
+import { computed, type Ref } from 'vue';
 import { IDraftRecord } from '../../../types';
 
 const props = defineProps<{
@@ -20,6 +25,29 @@ const emit = defineEmits<{
 
 const { trans } = useLang(props.mapId);
 
+const show = computed({
+  get: () => props.show,
+  set: (value: boolean) => emit('update:show', value),
+});
+
+const { panelBind } = useRegisterMapControl(() => props.mapId, {
+  id: 'mapDrawDraftList',
+  panelKind: 'popup',
+  title: () => trans.value('map.draw-control.draftList.title'),
+  show: show as Ref<boolean>,
+  setShow: (value) => {
+    show.value = value;
+  },
+  actions: [
+    {
+      type: 'mapDrawDraftList',
+      run: () => {
+        show.value = !show.value;
+      },
+    },
+  ],
+});
+
 const path = {
   delete: mdiDeleteOutline,
   fillBound: mdiCrosshairsGps,
@@ -30,6 +58,7 @@ const path = {
   <DraggableItemPopup
     :height="400"
     :width="400"
+    v-bind="panelBind"
     :show="show"
     @update:show="(val) => emit('update:show', val)"
     :title="trans('map.draw-control.draftList.title')"

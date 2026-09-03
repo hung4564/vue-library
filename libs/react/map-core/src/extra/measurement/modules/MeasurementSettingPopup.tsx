@@ -11,6 +11,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { FieldGeometry } from './setting/field-geometry';
 import { MeasurementSettingFields } from './setting/fields-show';
 import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';
@@ -45,8 +46,31 @@ export function MeasurementSettingPopup({
   ...mapProps
 }: MeasurementSettingPopupProps) {
   const merged = { ...defaultMapProps, ...mapProps };
-  const { callMap, moduleContainerProps, mapId } = useMap(merged);
+  const { callMap, moduleContainerProps, mapId } = useMap({ ...merged, controlId: 'mapMeasurementSetting' });
   const { trans } = useLang(mapId);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapMeasurementSetting',
+    panelKind: 'popup',
+    title: trans('map.measurement.setting.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: (v) => onUpdateShow?.(v),
+    initialPanelPosition: {
+      top: popUpPosition.top,
+      right: popUpPosition.right,
+    },
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+      measurementType,
+    }),
+    actions: [
+      {
+        type: 'mapMeasurementSetting',
+        run: () => onUpdateShow?.(!show),
+      },
+    ],
+  });
 
   function onFlyTo(geometry: Geometry | Feature | FeatureCollection) {
     callMap((map) => {
@@ -66,6 +90,7 @@ export function MeasurementSettingPopup({
           <DraggableItemPopup
             {...bind}
             {...popUpPosition}
+            {...panelBind}
             show={show}
             onUpdateShow={(v) => onUpdateShow?.(!!v)}
             title={trans('map.measurement.setting.title')}

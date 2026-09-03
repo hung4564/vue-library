@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { inject, ref, Ref } from 'vue';
+import { computed, inject, ref, Ref } from 'vue';
 import {
   useInitAction,
   useShow,
@@ -35,12 +35,13 @@ if (!containerId.value) {
   throw 'Not set container id';
 }
 const { show, open, close } = useShow(props, emit);
-const c_location =
+const c_location = computed<LocationSideBar>(() =>
   props.location != null
     ? (props.location as LocationSideBar)
     : props.right
       ? 'right'
-      : 'left';
+      : 'left',
+);
 const { location, itemId } = useInitSidebar(containerId.value, show, {
   title: props.title,
   type: 'item-sidebar',

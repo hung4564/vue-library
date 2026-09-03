@@ -11,6 +11,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { useEffect, useRef, useState } from 'react';
@@ -22,9 +23,20 @@ export function StyleControl({
   item: IDataset;
   onClose?: () => void;
 }) {
-  const { mapId, moduleContainerProps, callMap } = useMap();
+  const { mapId, moduleContainerProps, callMap } = useMap({
+    controlId: 'mapStyleControl',
+  });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(false);
+  const { panelPosition } = useRegisterMapControl(mapId, {
+    id: 'mapStyleControl',
+    panelKind: 'sidebar',
+    title: trans('map.style-control.title'),
+    show,
+    setShow: toggleShow,
+    initialPanelPosition: { location: 'right' },
+    actions: [{ type: 'mapStyleControl', run: () => toggleShow() }],
+  });
   const [layer, setLayer] = useState<unknown>();
   const [layerView, setLayerView] = useState<IMapboxLayerView | undefined>();
   const [component, setComponent] = useState<ComponentType>({
@@ -72,8 +84,8 @@ export function StyleControl({
       draggable={(bind) =>
         component.componentKey ? (
           <DraggableItemSideBar
-            {...bind}
-            right
+            containerId={bind.containerId}
+            location={panelPosition.location || 'right'}
             show={show}
             onUpdateShow={(v) => {
               toggleShow(!!v);

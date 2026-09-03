@@ -7,6 +7,7 @@ import {
   defaultMapProps,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
@@ -16,9 +17,22 @@ import { LayerList } from './LayerControl/LayerList';
 
 export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap(merged);
+  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerInfoControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapLayerInfoControl',
+    panelKind: 'float',
+    title: trans('map.layer-info-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapLayerInfoControl', run: () => toggleShow() }],
+  });
 
   useEffect(() => {
     setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
@@ -62,9 +76,10 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
             onUpdateShow={(v) => toggleShow(!!v)}
             title={trans('map.layer-info-control.title')}
             containerId={bind.containerId}
-            top={bind.top}
-            bottom={bind.bottom}
-            left={bind.left}
+            top={panelBind.top ?? bind.top}
+            bottom={panelBind.bottom ?? bind.bottom}
+            left={panelBind.left ?? bind.left}
+            right={panelBind.right}
           >
             <LayerList mapId={mapId} readonly />
           </DraggableItemFloat>

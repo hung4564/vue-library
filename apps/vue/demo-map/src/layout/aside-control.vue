@@ -60,6 +60,11 @@
             <RouterLink to="/dataset-list">Dataset - List </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/registry-control"
+              >UniversalRegistry - Controls
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/dataset-data-management"
               >Dataset - Data management
             </RouterLink>
@@ -103,7 +108,10 @@ export default {
       icon: mdiMenu,
     };
     const [show, toggleShow] = useShow(props.show);
-    const { mapId, moduleContainerProps } = useMap(props);
+    const { mapId, moduleContainerProps } = useMap({
+      ...props,
+      controlId: 'asideControl',
+    });
     const { trans, setLocale } = useLang(mapId.value);
 
     setLocale({

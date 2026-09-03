@@ -19,6 +19,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useBaseMap } from '../hooks';
 import { logger } from '../logger';
@@ -47,7 +48,7 @@ export function BaseMapControl({
     defaultBaseMap,
     controlIcon,
   };
-  const { mapId, moduleContainerProps, order, mapInstance } = useMap(props);
+  const { mapId, moduleContainerProps, order, mapInstance } = useMap({ ...props, controlId: 'mapBaseMapControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const {
     setBaseMaps,
@@ -72,6 +73,20 @@ export function BaseMapControl({
   }, [setLocaleDefault]);
 
   const [show, setShow] = useState(false);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapBaseMapControl',
+    panelKind: 'popup',
+    title: title || trans('map.basemap.title'),
+    buttonPosition: props.position,
+    show,
+    setShow,
+    getProps: () => ({
+      position: props.position,
+      controlLayout: props.controlLayout,
+      defaultBaseMap: props.defaultBaseMap,
+    }),
+    actions: [{ type: 'mapBaseMapControl', run: () => setShow((s) => !s) }],
+  });
 
   const onClick = useCallback(
     (baseMap: BaseMapItem) => {
@@ -124,6 +139,7 @@ export function BaseMapControl({
         sticks={[]}
         disabledExpand
         {...bindDrag}
+        {...panelBind}
       >
         <div className="base-map-control-setting">
           {c_baseMaps.map((baseMap) => (
@@ -154,7 +170,7 @@ export function BaseMapControl({
         </div>
       </DraggableItemPopup>
     ),
-    [show, c_baseMaps, current_baseMaps, trans, onClick],
+    [show, c_baseMaps, current_baseMaps, trans, onClick, panelBind],
   );
 
   // Logic mặc định: lấy map thỏa mãn defaultBaseMap (b.default hoặc b.title === defaultBaseMap), nếu không thì lấy phần tử đầu

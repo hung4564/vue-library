@@ -27,10 +27,12 @@ export function useInitSidebar(
   optionDefaultRef.current = optionDefault;
   const setShowRef = useRef(setShow);
   setShowRef.current = setShow;
+  const locationRef = useRef(optionDefault.location);
 
   useEffect(() => {
     const currentStore = storeRef.current;
     const options = optionDefaultRef.current;
+    locationRef.current = options.location;
     currentStore.registerSideBar(itemId, options.location);
     currentStore.registerAction(itemId, {
       ...options,
@@ -43,14 +45,41 @@ export function useInitSidebar(
   }, [itemId]);
 
   useEffect(() => {
-    // Match Vue: only push show→true into the store.
-    // Calling registerSideBarShow(id, false) here races with sidebar switching:
-    // selectSideBar(newId) sets store.show=newId then old item's show→false
-    // would clear the newly selected sidebar.
-    if (show) {
-      storeRef.current.registerSideBarShow(itemId, show);
+    const next = optionDefault.location;
+    const prev = locationRef.current;
+    if (next === prev) return;
+    const wasOpen = show;
+    storeRef.current.moveSideBarLocation(itemId, next);
+    storeRef.current.registerAction(itemId, {
+      ...optionDefaultRef.current,
+      location: next,
+      setZIndex,
+      setShow: (value: boolean) => setShowRef.current(value),
+    });
+    locationRef.current = next;
+    if (wasOpen) {
+      storeRef.current.registerSideBarShow(itemId, true);
     }
-  }, [show, itemId]);
+  }, [optionDefault.location, itemId, show]);
+
+  useEffect(() => {
+    if (show) {
+      storeRef.current.registerSideBarShow(itemId, true);
+      return;
+    }
+    // Keep store in sync when parent/registry closes (show→false).
+    // Only clear if this item is the active one at its location.
+    try {
+      const loc = locationRef.current;
+      const current =
+        storeRef.current.getStoreContainer(containerId).sideBar[loc]?.show;
+      if (current === itemId) {
+        storeRef.current.registerSideBarShow(itemId, false);
+      }
+    } catch {
+      // container may already be gone during unmount
+    }
+  }, [show, itemId, containerId]);
 
   const location = useMemo(() => {
     return optionDefault.location;

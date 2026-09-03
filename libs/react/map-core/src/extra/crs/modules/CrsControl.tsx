@@ -14,6 +14,7 @@ import { useLang } from '../../lang';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap, useShow } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
@@ -28,9 +29,22 @@ const UNIT_ITEMS = [
 
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap(merged);
+  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapCrsControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapCrsControl',
+    panelKind: 'popup',
+    title: trans('map.crs-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapCrsControl', run: () => toggleShow(!show) }],
+  });
   const { items: crsItems, setItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [filterQuery, setFilterQuery] = useState('');
@@ -130,6 +144,7 @@ export function CrsControl(props: CrsControlProps) {
             height={480}
             width={400}
             {...bind}
+            {...panelBind}
           >
             <div className="crs-container">
               <div className="crs-catalog">

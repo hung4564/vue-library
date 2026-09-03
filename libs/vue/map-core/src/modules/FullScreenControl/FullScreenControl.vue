@@ -5,7 +5,7 @@ import { useFullscreen } from '@hungpvq/shared-core';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const path = {
@@ -35,6 +35,23 @@ function getMapContainer(el?: HTMLElement | null): HTMLElement {
   });
   return el!;
 }
+useRegisterMapControl(mapId, {
+  id: 'mapFullscreenControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapFullscreenControl',
+      run: () => {
+        void toggle();
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapFullscreenControl',
   getState() {

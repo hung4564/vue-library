@@ -9,8 +9,9 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, type Ref } from 'vue';
 import { useMapDataset } from '../../store';
 import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
 
@@ -37,6 +38,29 @@ const cShow = computed({
   set(value) {
     emit('update:show', value);
   },
+});
+
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapCreateControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.layer-control.create.title'),
+  buttonPosition: () => props.position,
+  show: cShow as Ref<boolean>,
+  setShow: (value) => {
+    cShow.value = value;
+  },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapCreateControl',
+      run: () => {
+        cShow.value = !cShow.value;
+      },
+    },
+  ],
 });
 
 const initialState = {
@@ -130,7 +154,7 @@ onMounted(() => {
     <template #draggable="p">
       <DraggableItemPopup
         v-model:show="cShow"
-        v-bind="p"
+        v-bind="{ ...p, ...panelBind }"
         :width="400"
         :height="420"
         @close="close"

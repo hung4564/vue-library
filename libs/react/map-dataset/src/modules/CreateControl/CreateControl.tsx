@@ -9,6 +9,7 @@ import {
   defaultMapProps,
   useLang,
   useMap,
+  useRegisterMapControl,
 } from '@hungpvq/react-map-core';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDataset } from '../../store';
@@ -22,8 +23,26 @@ export interface CreateControlProps extends WithMapPropType {
 
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap(merged);
+  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapCreateControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapCreateControl',
+    panelKind: 'popup',
+    title: trans('map.layer-control.create.title'),
+    buttonPosition: merged.position,
+    show: props.show,
+    setShow: props.onShowChange,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [
+      {
+        type: 'mapCreateControl',
+        run: () => props.onShowChange(!props.show),
+      },
+    ],
+  });
   const localeInitialized = useRef(false);
   if (!localeInitialized.current) {
     setLocaleDefault(CREATE_CONTROL_LOCALE);
@@ -108,6 +127,7 @@ export function CreateControl(props: CreateControlProps) {
         props.show ? (
           <DraggableItemPopup
             {...bind}
+            {...panelBind}
             show={props.show}
             onUpdateShow={(v) => {
               if (!v) reset();

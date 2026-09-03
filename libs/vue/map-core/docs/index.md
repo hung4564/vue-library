@@ -54,4 +54,8 @@ function onMapLoaded(map: any) {
 </script>
 ```
 
+Open / move / run controls from code: [UniversalRegistry controls](./registry-controls.md).
+
+Demo (Vue / React demo-map): route `#/registry-control`.
+
 <!--@include: ../default.md -->

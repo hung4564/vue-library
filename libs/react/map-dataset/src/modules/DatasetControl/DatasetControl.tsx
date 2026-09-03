@@ -15,6 +15,7 @@ import {
   defaultMapProps,
   useLang,
   useMap,
+  useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
@@ -27,9 +28,26 @@ const ICON_SIZE = 16 / 24;
 
 export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap(merged);
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapDatasetControl',
+  });
   const { trans, setLocaleDefault } = useLang(mapId);
-  const [show, toggleShow] = useShow(props.show);
+  const [show, setShow] = useShow(props.show);
+  const { panelPosition } = useRegisterMapControl(mapId, {
+    id: 'mapDatasetControl',
+    panelKind: 'sidebar',
+    title: trans('map.dataset-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow,
+    initialPanelPosition: { location: 'left' },
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapDatasetControl', run: () => setShow() }],
+  });
   const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
   const [views, setViews] = useState<IDataset[]>([]);
 
@@ -60,7 +78,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
       order,
       icon: { type: 'mdi' as const, path: mdiDatabaseOutline },
     }),
-    onClick: () => toggleShow(),
+    onClick: () => setShow(),
   });
 
   useEffect(() => {
@@ -99,9 +117,10 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
-          onUpdateShow={(v) => toggleShow(!!v)}
+          onUpdateShow={(v) => setShow(!!v)}
           title={trans('map.dataset-control.title')}
           containerId={bind.containerId}
+          location={panelPosition.location || 'left'}
         >
           <div className="dataset-control">
             {views.map((view) => (
@@ -143,7 +162,27 @@ export function DatasetDetail({
   onClose?: () => void;
   mapId?: string;
 }) {
-  const { moduleContainerProps } = useMap({ mapId: propsMapId });
+  const { mapId, moduleContainerProps } = useMap({
+    mapId: propsMapId,
+    controlId: 'mapDatasetDetail',
+  });
+  const [show, toggleShow] = useShow(true);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapDatasetDetail',
+    panelKind: 'popup',
+    title: dataset.getName(),
+    show,
+    setShow: (v) => {
+      toggleShow(v);
+      if (!v) onClose?.();
+    },
+    actions: [
+      {
+        type: 'mapDatasetDetail',
+        run: () => toggleShow(),
+      },
+    ],
+  });
   const items: { level: number; path: number[]; node: IDataset }[] = [];
   traverseTree(dataset, (node, level, path) => {
     items.push({ node, level, path });
@@ -154,12 +193,16 @@ export function DatasetDetail({
       {...moduleContainerProps}
       draggable={(bind) => (
         <DraggableItemPopup
-          show
+          show={show}
           title={dataset.getName()}
-          onUpdateShow={(v) => !v && onClose?.()}
+          onUpdateShow={(v) => {
+            toggleShow(!!v);
+            if (!v) onClose?.();
+          }}
           width={400}
           height={400}
           {...bind}
+          {...panelBind}
         >
           <ul className="dataset-list">
             {items.map((item, index) => (

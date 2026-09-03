@@ -15,14 +15,28 @@ import { defaultMapProps, useMap, useShow } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useEventListener } from '../../event';
 import { useLang } from '../../lang';
+import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useLayerLegend } from '../lib/useLayerLegend';
 
 export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
-  const { callMap, mapId, moduleContainerProps, order } = useMap(merged);
+  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLegendControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapLegendControl',
+    panelKind: 'popup',
+    title: trans('map.legend-control.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow,
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+    }),
+    actions: [{ type: 'mapLegendControl', run: () => setShow(!show) }],
+  });
   const { getLayerLegendNode } = useLayerLegend();
   const [onlyRender, setOnlyRender] = useState(false);
   const [legends, setLegends] = useState<{ icon: ReactNode; name: string }[]>(
@@ -124,6 +138,7 @@ export function LegendControl(props: WithMapPropType) {
             width={400}
             height={400}
             {...bind}
+            {...panelBind}
           >
             <div className="map-legend-control">
               <div className="map-legend-control__list">

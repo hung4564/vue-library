@@ -6,6 +6,8 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useRegisterMapControl,
+  useShow,
 } from '@hungpvq/react-map-core';
 import Icon from '@mdi/react';
 import { mdiContentCopy } from '@mdi/js';
@@ -89,9 +91,12 @@ export function LayerDetail({
   popupProps = {},
   onClose,
 }: LayerDetailProps) {
-  const { mapId, moduleContainerProps } = useMap();
+  const { mapId, moduleContainerProps } = useMap({
+    controlId: 'mapLayerDetail',
+  });
   const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
+  const [show, toggleShow] = useShow(true);
 
   useEffect(() => {
     setLocaleDefault(LAYER_DETAIL_LOCALE);
@@ -99,21 +104,38 @@ export function LayerDetail({
 
   function handleClose() {
     setFeatureHighlight(undefined, 'detail');
+    toggleShow(false);
     onClose?.();
   }
+
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapLayerDetail',
+    panelKind: 'popup',
+    title: trans('map.layer-control.info.title'),
+    show,
+    setShow: (v) => {
+      toggleShow(v);
+      if (!v) {
+        setFeatureHighlight(undefined, 'detail');
+        onClose?.();
+      }
+    },
+    actions: [{ type: 'mapLayerDetail', run: () => toggleShow() }],
+  });
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
         <DraggableItemPopup
-          show
+          show={show}
           onClose={handleClose}
           onUpdateShow={(v) => {
             if (!v) handleClose();
           }}
           width={520}
           {...bind}
+          {...panelBind}
           {...popupProps}
           title={trans('map.layer-control.info.title')}
         >

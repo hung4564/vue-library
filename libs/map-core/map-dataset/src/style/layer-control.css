@@ -53,6 +53,11 @@
     var(--map-space-md, 8px);
 }
 
+/* Empty state owns its padding — avoid stacking with list inset */
+.layer-control__list:has(> .layer-control__empty) {
+  padding: 0;
+}
+
 .layer-control__empty {
   display: flex;
   flex-direction: column;
@@ -60,13 +65,33 @@
   justify-content: center;
   gap: var(--map-space-sm, 4px);
   min-height: 140px;
-  padding: var(--map-space-xl, 24px) var(--map-space-md, 8px);
+  padding: var(--map-space-xl, 24px) var(--map-space-lg, 12px);
+  box-sizing: border-box;
   text-align: center;
 }
 
-.layer-control__empty-icon {
+.layer-control__empty-icon,
+svg.layer-control__empty-icon {
+  display: block;
+  width: 36px;
+  height: 36px;
   opacity: 0.4;
-  margin-bottom: var(--map-space-sm, 4px);
+  margin: 0 0 var(--map-space-sm, 4px);
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+.layer-control__empty-icon svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.layer-control__empty-action svg {
+  display: block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
 }
 
 .layer-control__empty-title {
@@ -82,12 +107,15 @@
 }
 
 .layer-control__empty-action {
+  appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--map-space-sm, 4px);
-  margin-top: var(--map-space-md, 8px);
+  margin: var(--map-space-md, 8px) 0 0;
   padding: 6px 10px;
+  box-sizing: border-box;
   border-radius: var(--map-radius-sm, 4px);
   border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
   background: transparent;

@@ -13,6 +13,7 @@ import {
 } from '../../../../hooks';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../../lang';
+import { useRegisterMapControl } from '../../../registry';
 import { useMapCompareSetting } from '../../hooks';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -23,6 +24,24 @@ const { trans, setLocaleDefault } = useLang(mapId.value);
 
 setLocaleDefault(SETTING_CONTROL_LOCALE);
 const { setting, updateSetting } = useMapCompareSetting(mapId.value);
+const { panelBind } = useRegisterMapControl(mapId, {
+  id: 'mapCompareSettingControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.setting-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow: toggleShow,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapCompareSettingControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -35,12 +54,12 @@ const { setting, updateSetting } = useMapCompareSetting(mapId.value);
       </MapControlButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
         :height="400"
         :width="400"
-        v-bind="props"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         :title="trans('map.setting-control.title')"
       >

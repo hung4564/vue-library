@@ -4,7 +4,7 @@ import { GLOBE_CONTROL_LOCALE } from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useToolbarControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -39,6 +39,23 @@ function onInit(_map: MapSimple) {
 function onDestroy(_map: MapSimple) {
   if (handleMap) _map.off('styledata', handleMap);
 }
+useRegisterMapControl(mapId, {
+  id: 'mapGlobeControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapGlobeControl',
+      run: () => {
+        toggle();
+      },
+    },
+  ],
+});
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGlobeControl',
   getState() {

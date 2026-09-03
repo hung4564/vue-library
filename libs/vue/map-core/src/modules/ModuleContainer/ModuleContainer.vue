@@ -4,7 +4,7 @@
       v-if="controlVisible && hasSlotBtn && isStandaloneButton"
       :to="btnTo"
     >
-      <div class="btn-module-container" :style="{ order: order }">
+      <div :class="btnModuleClass" :style="{ order: order }">
         <slot name="btn" />
       </div>
     </Teleport>
@@ -20,6 +20,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
 import { computed, inject, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
@@ -27,6 +28,7 @@ const props = defineProps({
   dragId: { type: String, default: '' },
   btnWidth: { type: Number, default: 40 },
   order: { type: Number, default: 0 },
+  controlId: { type: String, default: '' },
   position: {
     type: String,
     default: 'bottom-right',
@@ -59,6 +61,19 @@ const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
 const i_map_id = inject<string>('$map.id');
+const injectedControlId = inject<string | undefined>(
+  MAP_MODULE_CONTROL_ID_KEY,
+  undefined,
+);
+const resolvedControlId = computed(
+  () => props.controlId || injectedControlId || '',
+);
+const btnModuleClass = computed(() => {
+  const id = resolvedControlId.value;
+  return id
+    ? ['btn-module-container', `${id}-btn-module-container`]
+    : ['btn-module-container'];
+});
 const c_containerId = computed<string>(() => {
   return props.dragId || i_dragId!;
 });

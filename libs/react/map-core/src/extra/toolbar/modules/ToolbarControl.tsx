@@ -14,7 +14,10 @@ export type ToolbarControlProps = Omit<
 
 export function ToolbarControl(props: ToolbarControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { moduleContainerProps, mapId } = useMap(merged);
+  const { moduleContainerProps, mapId } = useMap({
+    ...merged,
+    controlId: 'mapToolbarControl',
+  });
   const [buttons, setButtons] = useState<MapControlButtonState[]>([]);
   const toolbarStore = useMapToolbarStore(mapId);
 

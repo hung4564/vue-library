@@ -4,7 +4,7 @@ import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang } from '../../extra';
+import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { BaseButton, InputText } from '../../field';
 import { defaultMapProps, useMap, useShow } from '../../hooks';
@@ -41,7 +41,7 @@ function inputToSprite(value?: string): SpriteSpecification | undefined {
 
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap(mergedProps);
+  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
@@ -77,6 +77,20 @@ export function SettingControl(props: SettingControlProps) {
       loadCurrentView();
     }
   }
+
+  const { panelBind } = useRegisterMapControl(mapId, {
+    id: 'mapSettingControl',
+    panelKind: 'popup',
+    title: trans('map.setting-control.title'),
+    buttonPosition: mergedProps.position,
+    show,
+    setShow: toggleShow,
+    getProps: () => ({
+      position: mergedProps.position,
+      controlLayout: mergedProps.controlLayout,
+    }),
+    actions: [{ type: 'mapSettingControl', run: () => handleToggle() }],
+  });
 
   function onSetSetting() {
     callMap((map) => {
@@ -129,6 +143,7 @@ export function SettingControl(props: SettingControlProps) {
             height={400}
             width={400}
             {...bind}
+            {...panelBind}
           >
             <div className="map-setting-control">
               <div className="map-setting-control__fields">
