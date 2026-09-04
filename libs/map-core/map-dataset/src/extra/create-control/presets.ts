@@ -88,7 +88,11 @@ export function getCreateControlSamples(
   }
 }
 
-/** @deprecated Use getCreateControlSamples */
-export function getCreateControlPresets(layerKind: CreateControlLayerKind) {
-  return getCreateControlSamples(layerKind);
+/** URL filled into the URL tab when a sample is selected. */
+export function getCreateControlSampleUrl(
+  sample: CreateControlSample,
+): string {
+  if (sample.dataUrl) return sample.dataUrl;
+  const url = sample.config['url'];
+  return typeof url === 'string' ? url : '';
 }

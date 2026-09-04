@@ -1,4 +1,8 @@
-import type { WorkerProgress, WorkerSnapshot } from './types';
+import type {
+  WorkerLogEntry,
+  WorkerProgress,
+  WorkerSnapshot,
+} from './types';
 
 export function formatWorkerDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return '0ms';
@@ -31,14 +35,13 @@ export function isWorkerBusy(worker: WorkerSnapshot): boolean {
   return worker.status === 'busy' || worker.pending.length > 0;
 }
 
-export function sortWorkerSnapshots(
+function sortWorkerSnapshots(
   workers: readonly WorkerSnapshot[],
 ): WorkerSnapshot[] {
-  return [...workers].sort((a, b) => {
-    const busyDiff = Number(isWorkerBusy(b)) - Number(isWorkerBusy(a));
-    if (busyDiff) return busyDiff;
-    return a.name.localeCompare(b.name) || a.id.localeCompare(b.id);
-  });
+  // Stable order — do not re-rank by busy on every progress tick (UI "restarts").
+  return [...workers].sort(
+    (a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id),
+  );
 }
 
 export function filterWorkerSnapshots(
@@ -56,6 +59,10 @@ export function filterWorkerSnapshots(
   });
 }
 
+/**
+ * Keep an explicit selection sticky. Only when `selectedId` is empty or no
+ * longer in the list, fall back to a busy worker (else first).
+ */
 export function resolveSelectedWorkerId(
   workers: readonly WorkerSnapshot[],
   selectedId: string,
@@ -65,4 +72,18 @@ export function resolveSelectedWorkerId(
   }
   const busy = workers.find(isWorkerBusy);
   return busy?.id ?? workers[0]?.id ?? '';
+}
+
+/**
+ * Storage is newest-first. Return chronological order (oldest → newest).
+ * When `limit` is set, only the newest `limit` entries are kept.
+ * Omit `limit` to show the full buffer (committed worker log).
+ */
+export function workerLogsForDisplay(
+  logs: readonly WorkerLogEntry[],
+  limit?: number,
+): WorkerLogEntry[] {
+  const newestFirst =
+    limit == null || limit >= logs.length ? logs : logs.slice(0, limit);
+  return newestFirst.slice().reverse();
 }

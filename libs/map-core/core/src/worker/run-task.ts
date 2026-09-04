@@ -27,17 +27,16 @@ export async function runMonitoredTask<T>(
       engine: primary.engine,
       fallback: !!fallback,
     });
+    // Task already flushed — these are committed worker-level outcome lines.
     if (!fallback) {
       handle.log({
         level: 'error',
-        taskId,
         message: `${type} failed on ${primary.engine}: ${errorMessage(error)}`,
       });
       throw error;
     }
     handle.log({
       level: 'warn',
-      taskId,
       message: `${type} failed on ${primary.engine}, fallback to ${fallback.engine}: ${errorMessage(error)}`,
     });
 
@@ -52,7 +51,6 @@ export async function runMonitoredTask<T>(
       });
       handle.log({
         level: 'error',
-        taskId: fallbackId,
         message: `${type} failed on ${fallback.engine}: ${errorMessage(fallbackError)}`,
       });
       throw fallbackError;

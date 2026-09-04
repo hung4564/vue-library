@@ -1,12 +1,4 @@
-import type { GeoJSON } from 'geojson';
-// Vite workers cannot resolve workspace package names and would leave
-// `@hungpvq/map-core` external; import the source file so reproject is bundled.
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { reprojectGeojsonToWgs84 } from '../../../../core/src/utils/geojson-reproject';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import type { GeojsonBbox } from '../../../../core/src/utils/fillBound';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { bboxFromGeojson } from '../../../../core/src/utils/fillBound';
+import { runWorkerMonitor } from '@hungpvq/map-core/worker';
 import type { LayerStyleType } from '../../utils/layer-simple-builder';
 import { detectGeojsonCrs, detectGeojsonStyleTypes } from './geojson-parse';
 import {
@@ -16,17 +8,26 @@ import {
   parseGisFromUrl,
   parseGisText,
 } from './gis-parse';
+import type { GeoJSON } from 'geojson';
+// Vite workers cannot resolve workspace package names for most map-core
+// utilities and would leave them external; keep relative imports for those.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { reprojectGeojsonToWgs84 } from '../../../../core/src/utils/geojson-reproject';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import type { GeojsonBbox } from '../../../../core/src/utils/fillBound';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { bboxFromGeojson } from '../../../../core/src/utils/fillBound';
 
 export type GeojsonWorkerRequest =
   | {
       id: string;
-      type: 'parse-geojson' | 'parse-gis';
+      type: 'parse-gis';
       text: string;
       filename?: string;
     }
   | {
       id: string;
-      type: 'read-geojson' | 'read-gis';
+      type: 'read-gis';
       file: File;
     }
   | {
@@ -67,8 +68,6 @@ export type GeojsonWorkerResponse = {
   error?: string;
 };
 
-type WorkerLogLevel = 'debug' | 'info' | 'warn' | 'error';
-
 function describeGeojson(geojson: GeoJSON | null): string {
   if (!geojson) return 'empty';
   if (geojson.type === 'FeatureCollection') {
@@ -84,114 +83,19 @@ function formatBytes(size: number): string {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function formatLogArgs(args: unknown[]): string {
-  return args
-    .map((arg) => {
-      if (typeof arg === 'string') return arg;
-      if (arg instanceof Error) return arg.stack || arg.message;
-      try {
-        return JSON.stringify(arg);
-      } catch {
-        return String(arg);
-      }
-    })
-    .join(' ');
-}
-
-function postLog(
-  message: string,
-  options: { level?: WorkerLogLevel; taskId?: string } = {},
-) {
-  self.postMessage({
-    __workerMonitor: true,
-    kind: 'log',
-    message,
-    level: options.level ?? 'info',
-    taskId: options.taskId,
-    at: Date.now(),
-  });
-}
-
-function installConsoleForwarding() {
-  const patched = console as Console & { __mapGisConsolePatched?: boolean };
-  if (patched.__mapGisConsolePatched) return;
-  patched.__mapGisConsolePatched = true;
-
-  const map: Record<string, WorkerLogLevel> = {
-    debug: 'debug',
-    info: 'info',
-    log: 'info',
-    warn: 'warn',
-    error: 'error',
-  };
-  for (const method of ['debug', 'info', 'log', 'warn', 'error'] as const) {
-    const original = console[method].bind(console);
-    console[method] = (...args: unknown[]) => {
-      original(...args);
-      try {
-        postLog(formatLogArgs(args), { level: map[method] });
-      } catch {
-        // Logging must not crash GIS parse/reproject.
-      }
-    };
-  }
-}
-
-installConsoleForwarding();
-postLog('GIS worker ready');
-
-function postProgress(
-  taskId: string,
-  current: number,
-  total?: number,
-  message?: string,
-) {
-  self.postMessage({
-    __workerMonitor: true,
-    kind: 'progress',
-    taskId,
-    current,
-    total,
-    message,
-  });
-}
-
-function createProgressPoster(taskId: string) {
-  let last = 0;
-  return (current: number, total?: number, message?: string) => {
-    const now = Date.now();
-    const done = total != null && current >= total;
-    if (!done && now - last < 80) return;
-    last = now;
-    postProgress(taskId, current, total, message);
-  };
-}
-
-self.onmessage = (event: MessageEvent<GeojsonWorkerRequest>) => {
-  void handleMessage(event.data);
-};
-
-async function handleMessage(message: GeojsonWorkerRequest) {
-  const started = Date.now();
-  try {
+runWorkerMonitor<GeojsonWorkerRequest>(
+  async (message, ctx) => {
     let geojson: GeoJSON | null = null;
     let crs: string | null = null;
     let format: string | undefined;
     let styleTypes: LayerStyleType[] | undefined;
     let bbox: GeojsonBbox | undefined;
-    const report = createProgressPoster(message.id);
-    postLog(`${message.type} start`, {
-      level: 'info',
-      taskId: message.id,
-    });
+    const report = ctx.report;
 
     switch (message.type) {
-      case 'parse-geojson':
       case 'parse-gis': {
         report(0, 1, 'parse');
-        postLog(`parse text (${message.text.length} chars)`, {
-          taskId: message.id,
-        });
+        ctx.log(`parse text (${message.text.length} chars)`);
         const parsed = parseGisText(
           message.text,
           { name: message.filename, strict: true },
@@ -200,54 +104,46 @@ async function handleMessage(message: GeojsonWorkerRequest) {
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
-        postLog(
+        ctx.log(
           `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
-          { taskId: message.id },
         );
         report(1, 1, 'parse');
         break;
       }
-      case 'read-geojson':
       case 'read-gis': {
-        postLog(
+        ctx.log(
           `read file ${message.file.name || ''} (${formatBytes(message.file.size)})`,
-          { taskId: message.id },
         );
         const parsed = await parseGisFile(message.file, report);
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
-        postLog(
+        ctx.log(
           `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
-          { taskId: message.id },
         );
         break;
       }
       case 'read-gis-files': {
         const names = message.files.map((file) => file.name).join(', ');
         const size = message.files.reduce((sum, file) => sum + file.size, 0);
-        postLog(`read files ${names} (${formatBytes(size)})`, {
-          taskId: message.id,
-        });
+        ctx.log(`read files ${names} (${formatBytes(size)})`);
         const parsed = await parseGisFiles(message.files, report);
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
-        postLog(
+        ctx.log(
           `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
-          { taskId: message.id },
         );
         break;
       }
       case 'fetch-gis': {
-        postLog(`fetch ${message.url}`, { taskId: message.id });
+        ctx.log(`fetch ${message.url}`);
         const parsed = await parseGisFromUrl(message.url, report);
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
-        postLog(
+        ctx.log(
           `fetched ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
-          { taskId: message.id },
         );
         break;
       }
@@ -257,9 +153,8 @@ async function handleMessage(message: GeojsonWorkerRequest) {
         const fromCrs =
           message.crs || detectGeojsonCrs(message.geojson) || 'unknown';
         report(0, total, 'reproject');
-        postLog(
+        ctx.log(
           `reproject ${describeGeojson(message.geojson)} from EPSG:${fromCrs} → 4326`,
-          { taskId: message.id },
         );
         geojson = reprojectGeojsonToWgs84(
           message.geojson,
@@ -271,58 +166,27 @@ async function handleMessage(message: GeojsonWorkerRequest) {
       }
       case 'detect-style-types': {
         report(0, 1, 'detect-styles');
-        postLog(`detect style types ${describeGeojson(message.geojson)}`, {
-          taskId: message.id,
-        });
+        ctx.log(`detect style types ${describeGeojson(message.geojson)}`);
         styleTypes = detectGeojsonStyleTypes(message.geojson);
         geojson = message.geojson;
         report(1, 1, 'detect-styles');
-        postLog(`detected styles: ${styleTypes.join(', ')}`, {
-          taskId: message.id,
-        });
+        ctx.log(`detected styles: ${styleTypes.join(', ')}`);
         break;
       }
       case 'compute-bbox': {
         report(0, 1, 'bbox');
-        postLog(`compute bbox ${describeGeojson(message.geojson)}`, {
-          taskId: message.id,
-        });
+        ctx.log(`compute bbox ${describeGeojson(message.geojson)}`);
         bbox = bboxFromGeojson(message.geojson) ?? undefined;
         geojson = message.geojson;
         report(1, 1, 'bbox');
-        postLog(bbox ? `bbox ${bbox.join(',')}` : 'bbox empty', {
-          taskId: message.id,
-        });
+        ctx.log(bbox ? `bbox ${bbox.join(',')}` : 'bbox empty');
         break;
       }
       default:
         throw new Error('Unknown GIS worker task');
     }
 
-    postLog(`${message.type} done in ${Date.now() - started}ms`, {
-      taskId: message.id,
-    });
-    const response: GeojsonWorkerResponse = {
-      id: message.id,
-      ok: true,
-      geojson,
-      crs,
-      format,
-      styleTypes,
-      bbox,
-    };
-    self.postMessage(response);
-  } catch (error) {
-    const text = error instanceof Error ? error.message : String(error);
-    postLog(`${message.type} error: ${text}`, {
-      level: 'error',
-      taskId: message.id,
-    });
-    const response: GeojsonWorkerResponse = {
-      id: message.id,
-      ok: false,
-      error: text,
-    };
-    self.postMessage(response);
-  }
-}
+    return { geojson, crs, format, styleTypes, bbox };
+  },
+  { readyMessage: 'GIS worker ready' },
+);

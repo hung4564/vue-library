@@ -1,27 +1,38 @@
 # Worker monitor
 
-`WorkerMonitor` is a framework-agnostic registry in `@hungpvq/map-core`. Any web worker client can register, then report **status**, **progress**, **logs**, and **errors**. `WorkerControl` (Vue / React) lists every registered worker. When several are registered, pick one from the list (search + busy-first) to inspect it.
+`WorkerMonitor` is a framework-agnostic registry in `@hungpvq/map-core`. Any web worker client can **connect**, then report **status**, **progress**, **logs**, and **errors**. `WorkerControl` (Vue / React) lists every registered worker. When several are registered, pick one from the list (search + busy-first) to inspect it.
 
 The GIS parse / CRS worker in `@hungpvq/map-dataset` is already wired (`id: 'geojson'`).
 
-## Register a worker
+Live demo (sum-range task + `WorkerControl`): Vue `#/worker-sample/`, React `#/worker-sample` — see `apps/vue/demo-map/src/workers/` and `apps/react/demo-map/src/workers/`.
+
+## Connect a worker (main thread)
 
 ```ts
-import { WorkerMonitor, runMonitoredTask } from '@hungpvq/map-core';
+import { WorkerMonitor } from '@hungpvq/map-core';
 
 export const MY_WORKER_ID = 'my-worker';
 
-const handle = WorkerMonitor.register(MY_WORKER_ID, { name: 'My worker' });
+const client = WorkerMonitor.connect({
+  id: MY_WORKER_ID,
+  name: 'My worker',
+  createWorker: () =>
+    new Worker(new URL('./my.worker.ts', import.meta.url), { type: 'module' }),
+});
 
 export async function runHeavyTask(payload: unknown) {
-  return runMonitoredTask(
-    MY_WORKER_ID,
+  return client.runTask(
     'heavy-task',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const worker = getWorker(); // your Worker instance
-        return postToWorker(worker, { id: taskId, type: 'heavy-task', payload });
+        const response = await client.post({
+          id: taskId,
+          type: 'heavy-task',
+          payload,
+        });
+        if (!response.ok) throw new Error(response.error);
+        return response.result;
       },
     },
     {
@@ -30,19 +41,51 @@ export async function runHeavyTask(payload: unknown) {
     },
   );
 }
-
-handle.setStatus('idle'); // after the Worker is created
-handle.setStatus('unavailable'); // if new Worker() fails
 ```
 
-`runMonitoredTask` records start → success / error, then runs the fallback on the **main thread** when the worker path throws.
+`WorkerMonitor.connect` registers the worker, lazily creates the `Worker`, applies monitor envelopes from `postMessage`, tracks pending tasks, and wraps `runMonitoredTask` (optional main-thread fallback).
 
-## Progress from the worker thread
+You can still call `runMonitoredTask` / `handle.startTask` manually if you need a custom client.
 
-Post this envelope from the worker (`self.postMessage`). The main-thread `onmessage` handler should call `applyWorkerMonitorProgress` **before** treating the event as a task result:
+## Bind inside the worker thread
+
+Use the **worker-only** package entry — it does not load CSS/DOM from the main `@hungpvq/map-core` barrel:
 
 ```ts
-// worker
+import { runWorkerMonitor } from '@hungpvq/map-core/worker';
+
+runWorkerMonitor(
+  async (message, ctx) => {
+    ctx.log(`heavy-task start detail`);
+    ctx.report(0, 100, 'work');
+    const result = await doWork(message.payload, ctx.report);
+    return { result };
+  },
+  { readyMessage: 'My worker ready' },
+);
+```
+
+Published as `exports["./worker"]` → `worker.js` (built separately from `index.js`). In this monorepo, `tsconfig` maps `@hungpvq/map-core/worker` to `in-worker.ts`.
+
+`ctx`:
+
+| API | Role |
+| --- | --- |
+| `ctx.taskId` | Same as `message.id` |
+| `ctx.log(message, { level? })` | Log **with** `taskId` |
+| `ctx.report(current, total?, message?)` | Throttled progress (~80ms; always sends when done) |
+
+Runtime also:
+
+- Forwards `console.*` as **worker-level** logs (**no** `taskId`)
+- Posts `{type} start` / `done` / `error` with `taskId`
+- Replies `{ id, ok: true, ...result }` or `{ id, ok: false, error }`
+
+## Progress / log envelopes
+
+Still available if you post manually. The main-thread `onmessage` handler (inside `connect`) calls `applyWorkerMonitorMessage` **before** treating the event as a task result.
+
+```ts
 self.postMessage({
   __workerMonitor: true,
   kind: 'progress',
@@ -54,37 +97,14 @@ self.postMessage({
 ```
 
 ```ts
-// client
-worker.onmessage = (event) => {
-  if (applyWorkerMonitorProgress(MY_WORKER_ID, event.data)) return;
-  // handle the real task response
-};
-```
-
-`current` / `total` drive the progress bar. Omit `total` for an indeterminate bar.
-
-## Logs from the worker thread
-
-Same envelope, `kind: 'log'`. `console.log` / `warn` / `error` inside the GeoJSON worker are forwarded automatically.
-
-```ts
 self.postMessage({
   __workerMonitor: true,
   kind: 'log',
-  level: 'info', // debug | info | warn | error
+  level: 'info',
   taskId: message.id,
   message: 'reproject 12000 features from EPSG:3405',
 });
 ```
-
-```ts
-worker.onmessage = (event) => {
-  if (applyWorkerMonitorMessage(MY_WORKER_ID, event.data)) return;
-  // handle the real task response
-};
-```
-
-`applyWorkerMonitorMessage` applies both progress and log envelopes. Logs show in the WorkerControl sidebar.
 
 ## Inspect without the control
 
@@ -100,14 +120,21 @@ const stop = WorkerMonitor.subscribe(() => {
 
 | API | Role |
 | --- | --- |
-| `register(id, { name })` | Create or reuse a handle |
+| `WorkerMonitor.connect({ id, name, createWorker, … })` | Register + wire a Worker instance |
+| `client.post` / `client.runTask` / `client.terminate` | Talk to the worker |
+| `runWorkerMonitor(handler, options?)` | Bind inside the worker thread |
+| `register(id, { name })` | Create or reuse a handle only |
 | `handle.startTask / setProgress / completeTask / failTask` | Manual lifecycle |
 | `handle.setStatus / setLastError` | Runtime state of the Worker instance |
 | `runMonitoredTask(id, type, primary, fallback?)` | Wrap one job + optional main-thread fallback |
-| `applyWorkerMonitorProgress(id, data)` | Apply a progress `postMessage` |
 | `applyWorkerMonitorMessage(id, data)` | Apply progress **or** log `postMessage` |
 | `handle.log({ level, message, taskId })` | Append a log line on the main thread |
 | `clearHistory(id?)` | Clear logs/history for one worker, or all if omitted |
 | `subscribe(listener)` | UI updates |
+
+`WorkerControl` shows:
+- **Task log** — live lines for the **running** task only (`taskId` while pending)
+- **Worker log** — committed history (worker-level lines without `taskId`, plus a task’s lines **after** it finishes and is flushed)
+- **Recent tasks** — last **5** finished tasks (older tasks and their logs are removed from memory), each with a compact log snippet
 
 Map control: [WorkerControl](./module/WorkerControl.md). GeoJSON Vite setup: [GeoJSON worker](/map/dataset/worker).

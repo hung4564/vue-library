@@ -11,8 +11,11 @@ import type {
   WorkerTaskSnapshot,
 } from './types';
 
-const HISTORY_LIMIT = 40;
+const HISTORY_LIMIT = 5;
 const LOG_LIMIT = 120;
+const TASK_LOG_LIMIT = 80;
+/** Compact log lines kept on each finished task for Recent tasks. */
+const HISTORY_TASK_LOG_LIMIT = 8;
 
 type WorkerEntry = {
   id: string;
@@ -21,6 +24,7 @@ type WorkerEntry = {
   lastError?: string;
   pending: WorkerTaskSnapshot[];
   history: WorkerTaskSnapshot[];
+  /** Committed worker log (newest-first). Does not include live pending-task logs. */
   logs: WorkerLogEntry[];
   stats: WorkerStats;
   handle: WorkerHandle;
@@ -29,14 +33,23 @@ type WorkerEntry = {
 const workers = new Map<string, WorkerEntry>();
 const listeners = new Set<() => void>();
 
+function trimNewestFirst(logs: WorkerLogEntry[], limit: number) {
+  if (logs.length > limit) logs.length = limit;
+}
+
 function emptyStats(): WorkerStats {
   return { ok: 0, error: 0, fallback: 0 };
+}
+
+function cloneLog(log: WorkerLogEntry): WorkerLogEntry {
+  return { ...log };
 }
 
 function cloneTask(task: WorkerTaskSnapshot): WorkerTaskSnapshot {
   return {
     ...task,
     progress: task.progress ? { ...task.progress } : undefined,
+    logs: task.logs?.map(cloneLog),
   };
 }
 
@@ -48,7 +61,7 @@ function cloneSnapshot(entry: WorkerEntry): WorkerSnapshot {
     lastError: entry.lastError,
     pending: entry.pending.map(cloneTask),
     history: entry.history.map(cloneTask),
-    logs: entry.logs.map((log) => ({ ...log })),
+    logs: entry.logs.map(cloneLog),
     stats: { ...entry.stats },
   };
 }
@@ -78,6 +91,41 @@ function hasWorkerPending(entry: WorkerEntry) {
   return entry.pending.some((task) => task.engine === 'worker');
 }
 
+function pushLog(logs: WorkerLogEntry[], entry: WorkerLogEntry, limit: number) {
+  logs.unshift(entry);
+  trimNewestFirst(logs, limit);
+}
+
+/** Drop finished tasks beyond HISTORY_LIMIT and purge their logs from RAM. */
+function trimHistory(entry: WorkerEntry) {
+  if (entry.history.length <= HISTORY_LIMIT) return;
+  const dropped = entry.history.splice(HISTORY_LIMIT);
+  const droppedIds = new Set(dropped.map((task) => task.id));
+  entry.logs = entry.logs.filter(
+    (log) => !log.taskId || !droppedIds.has(log.taskId),
+  );
+  for (const task of dropped) {
+    task.logs = undefined;
+    task.progress = undefined;
+  }
+}
+
+/** Keep a compact copy on the task and mirror it into the committed worker log. */
+function flushTaskLogs(entry: WorkerEntry, task: WorkerTaskSnapshot) {
+  const taskLogs = task.logs;
+  if (!taskLogs?.length) {
+    delete task.logs;
+    return;
+  }
+  // Drop live verbosity before committing — Recent tasks + Worker log share this cap.
+  trimNewestFirst(taskLogs, HISTORY_TASK_LOG_LIMIT);
+  task.logs = taskLogs;
+  for (let i = taskLogs.length - 1; i >= 0; i -= 1) {
+    entry.logs.unshift(cloneLog(taskLogs[i]));
+  }
+  trimNewestFirst(entry.logs, LOG_LIMIT);
+}
+
 function finishTask(
   entry: WorkerEntry,
   taskId: string,
@@ -87,16 +135,16 @@ function finishTask(
   if (index < 0) return;
   const task = entry.pending[index];
   entry.pending.splice(index, 1);
+  flushTaskLogs(entry, task);
   const endedAt = Date.now();
   entry.history.unshift({
     ...task,
     ...patch,
+    progress: undefined,
     endedAt,
     durationMs: endedAt - task.startedAt,
   });
-  if (entry.history.length > HISTORY_LIMIT) {
-    entry.history.length = HISTORY_LIMIT;
-  }
+  trimHistory(entry);
   if (entry.status === 'busy' && !hasWorkerPending(entry)) {
     entry.status = 'idle';
   }
@@ -131,6 +179,7 @@ function createHandle(entry: WorkerEntry): WorkerHandle {
         status: 'running',
         engine,
         startedAt: Date.now(),
+        logs: [],
       });
       if (
         engine === 'worker' &&
@@ -149,16 +198,27 @@ function createHandle(entry: WorkerEntry): WorkerHandle {
     },
     log(input) {
       const level: WorkerLogLevel = input.level ?? 'info';
-      entry.logs.unshift({
+      const logEntry: WorkerLogEntry = {
         id: createTaskId(),
         at: Date.now(),
         level,
         message: input.message,
         taskId: input.taskId,
-      });
-      if (entry.logs.length > LOG_LIMIT) {
-        entry.logs.length = LOG_LIMIT;
+      };
+
+      // Task-scoped logs stay on the pending task until it finishes.
+      if (input.taskId) {
+        const task = findPending(entry, input.taskId);
+        if (task) {
+          if (!task.logs) task.logs = [];
+          pushLog(task.logs, logEntry, TASK_LOG_LIMIT);
+          notify();
+          return;
+        }
       }
+
+      // Worker-level (or orphan) logs go straight to the committed worker log.
+      pushLog(entry.logs, logEntry, LOG_LIMIT);
       notify();
     },
     completeTask(taskId: string, result) {
@@ -189,6 +249,9 @@ function createHandle(entry: WorkerEntry): WorkerHandle {
     clearHistory() {
       entry.history = [];
       entry.logs = [];
+      for (const task of entry.pending) {
+        task.logs = [];
+      }
       entry.lastError = undefined;
       notify();
     },
@@ -202,7 +265,21 @@ function createHandle(entry: WorkerEntry): WorkerHandle {
   return handle;
 }
 
-export const WorkerMonitor = {
+type ConnectFn = typeof import('./client').connectWorkerMonitor;
+
+export const WorkerMonitor: {
+  register(id: string, options?: WorkerRegisterOptions): WorkerHandle;
+  ensure(id: string, options?: WorkerRegisterOptions): WorkerHandle;
+  unregister(id: string): void;
+  getHandle(id: string): WorkerHandle | undefined;
+  get(id: string): WorkerSnapshot | undefined;
+  list(): WorkerSnapshot[];
+  clearHistory(id?: string): void;
+  clearAllHistory(): void;
+  subscribe(listener: () => void): () => void;
+  /** Wired by `./client` when the worker barrel is loaded. */
+  connect: ConnectFn;
+} = {
   register(id: string, options: WorkerRegisterOptions = {}): WorkerHandle {
     const existing = workers.get(id);
     if (existing) {
@@ -259,6 +336,9 @@ export const WorkerMonitor = {
     for (const entry of workers.values()) {
       entry.history = [];
       entry.logs = [];
+      for (const task of entry.pending) {
+        task.logs = [];
+      }
       entry.lastError = undefined;
     }
     notify();
@@ -270,4 +350,7 @@ export const WorkerMonitor = {
       listeners.delete(listener);
     };
   },
+
+  // Assigned in `./client` to avoid a circular import at module init.
+  connect: null as unknown as ConnectFn,
 };

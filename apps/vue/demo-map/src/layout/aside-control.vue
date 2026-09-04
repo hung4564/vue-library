@@ -28,10 +28,10 @@
             <RouterLink to="/map-core">Map - Core </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
+            <RouterLink to="/worker-sample">Worker - Sample </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/compare">Compare </RouterLink>
+            <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
           </v-list-item>
           <v-list-item>
             <RouterLink to="/story-telling">Story telling </RouterLink>
@@ -43,7 +43,7 @@
             <RouterLink to="/basemap">BaseMap </RouterLink>
           </v-list-item>
           <v-list-item>
-            <RouterLink to="/measurement">measurement </RouterLink>
+            <RouterLink to="/measurement">Measurement </RouterLink>
           </v-list-item>
           <v-list-item>
             <RouterLink to="/dataset-highlight"

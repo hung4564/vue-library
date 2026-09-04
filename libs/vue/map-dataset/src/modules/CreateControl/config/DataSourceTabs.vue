@@ -17,7 +17,7 @@
     <div class="create-control-data__panel" role="tabpanel">
       <slot v-if="activeTab === 'file'" name="file" />
       <slot v-if="activeTab === 'raw'" name="raw" />
-      <slot v-if="activeTab === 'sample'" name="sample" />
+      <slot v-if="activeTab === 'url'" name="url" />
     </div>
   </div>
 </template>

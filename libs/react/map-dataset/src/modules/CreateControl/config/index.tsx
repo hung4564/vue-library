@@ -5,12 +5,21 @@ import {
   GEOJSON_STYLE_AUTO,
   GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
+  getCreateControlSampleUrl,
   getCreateControlSamples,
   loadGisFileAsync,
   loadGisTextAsync,
+  loadGisUrlAsync,
   type CreateControlDataTab,
 } from '@hungpvq/map-dataset';
-import { DragDropFile, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core';
+import {
+  BaseButton,
+  DragDropFile,
+  InputCrs,
+  InputSelect,
+  InputText,
+  InputTextarea,
+} from '@hungpvq/react-map-core';
 import { useMemo, useRef, useState } from 'react';
 import { DataSourceTabs } from './DataSourceTabs';
 
@@ -81,12 +90,15 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
   const [parsing, setParsing] = useState(false);
   const [parseError, setParseError] = useState('');
   const [sampleId, setSampleId] = useState('');
-  const [loadingSample, setLoadingSample] = useState(false);
-  const [sampleError, setSampleError] = useState('');
+  const [dataUrl, setDataUrl] = useState('');
+  const [loadingUrl, setLoadingUrl] = useState(false);
+  const [urlError, setUrlError] = useState('');
   const pasteTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const dataTabs = getCreateControlDataTabs('vector');
-  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(CREATE_CONTROL_DEFAULT_DATA_TAB);
+  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(
+    CREATE_CONTROL_DEFAULT_DATA_TAB,
+  );
   const sampleItems = useMemo(
     () => [
       { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
@@ -98,10 +110,15 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
     [],
   );
 
+  function clearUrlState() {
+    setSampleId('');
+    setDataUrl('');
+    setUrlError('');
+  }
+
   async function applyGeojsonText(text: string) {
     setPasteText(text);
-    setSampleId('');
-    setSampleError('');
+    clearUrlState();
     setParseError('');
     if (!text.trim()) {
       onChange({ geojson: null });
@@ -127,26 +144,59 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
     }
   }
 
-  async function onSelectSample(id: string) {
+  function onSelectSample(id: string) {
     setSampleId(id);
-    setSampleError('');
+    setUrlError('');
     if (!id) return;
-
     const sample = getCreateControlSamples('vector').find((item) => item.id === id);
     if (!sample) return;
+    setDataUrl(getCreateControlSampleUrl(sample));
+  }
 
-    setLoadingSample(true);
+  function onUrlInput(value: string) {
+    setDataUrl(value);
+    setUrlError('');
+    setSampleId((current) => {
+      const sample = getCreateControlSamples('vector').find(
+        (item) => item.id === current,
+      );
+      if (sample && getCreateControlSampleUrl(sample) !== value.trim()) {
+        return '';
+      }
+      return current;
+    });
+  }
+
+  async function onLoadUrl() {
+    const url = dataUrl.trim();
+    if (!url) return;
+
+    setLoadingUrl(true);
+    setUrlError('');
     setPasteText('');
     try {
-      const patch = await applyCreateControlSample(sample);
-      onChange({ ...patch, name: sample.label });
+      const sample = getCreateControlSamples('vector').find(
+        (item) =>
+          item.id === sampleId && getCreateControlSampleUrl(item) === url,
+      );
+      if (sample) {
+        const patch = await applyCreateControlSample(sample);
+        onChange({ ...patch, name: sample.label });
+      } else {
+        const { geojson, crs } = await loadGisUrlAsync(url);
+        const patch: Record<string, unknown> = { geojson };
+        if (crs) patch.crs = crs;
+        onChange(patch);
+      }
       setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
     } catch (err) {
-      setSampleError(
-        err instanceof Error ? err.message : trans('map.layer-control.create.sample-error'),
+      setUrlError(
+        err instanceof Error
+          ? err.message
+          : trans('map.layer-control.create.url-error'),
       );
     } finally {
-      setLoadingSample(false);
+      setLoadingUrl(false);
     }
   }
 
@@ -168,8 +218,7 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
                   onChange={async (input) => {
                     const files = Array.isArray(input) ? input : input ? [input] : [];
                     setParsing(true);
-                    setSampleId('');
-                    setSampleError('');
+                    clearUrlState();
                     setParseError('');
                     try {
                       setPasteText('');
@@ -227,21 +276,35 @@ export function ConfigGeojsonDataSource({ onChange, trans }: ConfigFormProps) {
                 ) : null}
               </>
             ),
-            sample: (
+            url: (
               <>
                 <InputSelect
                   label={trans('map.layer-control.create.sample')}
                   value={sampleId}
                   items={sampleItems}
-                  onChange={(v) => void onSelectSample(String(v))}
+                  onChange={(v) => onSelectSample(String(v))}
                 />
-                {loadingSample ? (
+                <div className="create-control-url-row">
+                  <InputText
+                    label={trans('map.layer-control.field.url')}
+                    value={dataUrl}
+                    onChange={(v) => onUrlInput(v)}
+                  />
+                  <BaseButton
+                    className="create-control-url-load"
+                    disabled={loadingUrl || !dataUrl.trim()}
+                    onClick={() => void onLoadUrl()}
+                  >
+                    {trans('map.layer-control.create.load')}
+                  </BaseButton>
+                </div>
+                {loadingUrl ? (
                   <div className="create-control-status">
-                    {trans('map.layer-control.create.loading-sample')}
+                    {trans('map.layer-control.create.loading-url')}
                   </div>
                 ) : null}
-                {sampleError ? (
-                  <div className="create-control-sample-error">{sampleError}</div>
+                {urlError ? (
+                  <div className="create-control-sample-error">{urlError}</div>
                 ) : null}
               </>
             ),
@@ -290,11 +353,14 @@ export function ConfigRasterLayerSettings({ config, onChange, trans }: ConfigFor
 
 export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormProps) {
   const [sampleId, setSampleId] = useState('');
-  const [loadingSample, setLoadingSample] = useState(false);
-  const [sampleError, setSampleError] = useState('');
+  const [dataUrl, setDataUrl] = useState('');
+  const [loadingUrl, setLoadingUrl] = useState(false);
+  const [urlError, setUrlError] = useState('');
 
   const dataTabs = getCreateControlDataTabs('rasterxyz');
-  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(CREATE_CONTROL_DEFAULT_DATA_TAB);
+  const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(
+    CREATE_CONTROL_DEFAULT_DATA_TAB,
+  );
   const sampleItems = useMemo(
     () => [
       { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
@@ -306,25 +372,55 @@ export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormPr
     [],
   );
 
-  async function onSelectSample(id: string) {
+  function onSelectSample(id: string) {
     setSampleId(id);
-    setSampleError('');
+    setUrlError('');
     if (!id) return;
-
     const sample = getCreateControlSamples('rasterxyz').find((item) => item.id === id);
     if (!sample) return;
+    setDataUrl(getCreateControlSampleUrl(sample));
+  }
 
-    setLoadingSample(true);
+  function onUrlInput(value: string) {
+    setDataUrl(value);
+    setUrlError('');
+    setSampleId((current) => {
+      const sample = getCreateControlSamples('rasterxyz').find(
+        (item) => item.id === current,
+      );
+      if (sample && getCreateControlSampleUrl(sample) !== value.trim()) {
+        return '';
+      }
+      return current;
+    });
+  }
+
+  async function onLoadUrl() {
+    const url = dataUrl.trim();
+    if (!url) return;
+
+    setLoadingUrl(true);
+    setUrlError('');
     try {
-      const patch = await applyCreateControlSample(sample);
-      onChange({ ...patch, name: sample.label });
+      const sample = getCreateControlSamples('rasterxyz').find(
+        (item) =>
+          item.id === sampleId && getCreateControlSampleUrl(item) === url,
+      );
+      if (sample) {
+        const patch = await applyCreateControlSample(sample);
+        onChange({ ...patch, name: sample.label });
+      } else {
+        onChange({ url, tiles: [url] });
+      }
       setActiveDataTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
     } catch (err) {
-      setSampleError(
-        err instanceof Error ? err.message : trans('map.layer-control.create.sample-error'),
+      setUrlError(
+        err instanceof Error
+          ? err.message
+          : trans('map.layer-control.create.url-error'),
       );
     } finally {
-      setLoadingSample(false);
+      setLoadingUrl(false);
     }
   }
 
@@ -344,26 +440,41 @@ export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormPr
                 value={(config.url as string) || ''}
                 onChange={(v) => {
                   setSampleId('');
-                  setSampleError('');
+                  setDataUrl('');
+                  setUrlError('');
                   onChange({ url: v, tiles: v ? [v] : [] });
                 }}
               />
             ),
-            sample: (
+            url: (
               <>
                 <InputSelect
                   label={trans('map.layer-control.create.sample')}
                   value={sampleId}
                   items={sampleItems}
-                  onChange={(v) => void onSelectSample(String(v))}
+                  onChange={(v) => onSelectSample(String(v))}
                 />
-                {loadingSample ? (
+                <div className="create-control-url-row">
+                  <InputText
+                    label={trans('map.layer-control.field.url')}
+                    value={dataUrl}
+                    onChange={(v) => onUrlInput(v)}
+                  />
+                  <BaseButton
+                    className="create-control-url-load"
+                    disabled={loadingUrl || !dataUrl.trim()}
+                    onClick={() => void onLoadUrl()}
+                  >
+                    {trans('map.layer-control.create.load')}
+                  </BaseButton>
+                </div>
+                {loadingUrl ? (
                   <div className="create-control-status">
-                    {trans('map.layer-control.create.loading-sample')}
+                    {trans('map.layer-control.create.loading-url')}
                   </div>
                 ) : null}
-                {sampleError ? (
-                  <div className="create-control-sample-error">{sampleError}</div>
+                {urlError ? (
+                  <div className="create-control-sample-error">{urlError}</div>
                 ) : null}
               </>
             ),

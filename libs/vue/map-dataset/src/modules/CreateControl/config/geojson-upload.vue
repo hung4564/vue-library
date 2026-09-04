@@ -35,18 +35,32 @@
           </div>
         </template>
 
-        <template #sample>
+        <template #url>
           <InputSelect
             :model-value="sampleId"
             :items="sampleItems"
             :label="trans('map.layer-control.create.sample')"
             @update:model-value="onSelectSample"
           />
-          <div v-if="loadingSample" class="create-control-status">
-            {{ trans('map.layer-control.create.loading-sample') }}
+          <div class="create-control-url-row">
+            <InputText
+              v-model="dataUrl"
+              :label="trans('map.layer-control.field.url')"
+              @update:model-value="onUrlInput"
+            />
+            <BaseButton
+              class="create-control-url-load"
+              :disabled="loadingUrl || !dataUrl.trim()"
+              @click="onLoadUrl"
+            >
+              {{ trans('map.layer-control.create.load') }}
+            </BaseButton>
           </div>
-          <div v-if="sampleError" class="create-control-sample-error">
-            {{ sampleError }}
+          <div v-if="loadingUrl" class="create-control-status">
+            {{ trans('map.layer-control.create.loading-url') }}
+          </div>
+          <div v-if="urlError" class="create-control-sample-error">
+            {{ urlError }}
           </div>
         </template>
       </DataSourceTabs>
@@ -56,7 +70,9 @@
 
 <script setup>
 import {
+  BaseButton,
   InputSelect,
+  InputText,
   InputTextArea,
   useLang,
   useMap,
@@ -68,9 +84,11 @@ import {
   CREATE_CONTROL_DEFAULT_DATA_TAB,
   GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
+  getCreateControlSampleUrl,
   getCreateControlSamples,
   loadGisFileAsync,
   loadGisTextAsync,
+  loadGisUrlAsync,
 } from '@hungpvq/map-dataset';
 import { computed, markRaw, onBeforeUnmount, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
@@ -78,8 +96,9 @@ import DataSourceTabs from './DataSourceTabs.vue';
 const form = defineModel();
 const pasteText = ref('');
 const sampleId = ref('');
-const loadingSample = ref(false);
-const sampleError = ref('');
+const dataUrl = ref('');
+const loadingUrl = ref(false);
+const urlError = ref('');
 const parsing = ref(false);
 const parseError = ref('');
 let pasteTimer;
@@ -116,11 +135,16 @@ function syncGeojsonPreview(geojson, crs) {
   }
 }
 
+function clearUrlState() {
+  sampleId.value = '';
+  dataUrl.value = '';
+  urlError.value = '';
+}
+
 async function onChangeFile(input) {
   const files = Array.isArray(input) ? input : input ? [input] : [];
   parsing.value = true;
-  sampleId.value = '';
-  sampleError.value = '';
+  clearUrlState();
   parseError.value = '';
   try {
     pasteText.value = '';
@@ -140,8 +164,7 @@ async function onChangeFile(input) {
 
 function onPasteGeojson(text) {
   pasteText.value = text;
-  sampleId.value = '';
-  sampleError.value = '';
+  clearUrlState();
   parseError.value = '';
   clearTimeout(pasteTimer);
   if (!text.trim()) {
@@ -166,30 +189,59 @@ function onPasteGeojson(text) {
   }, 400);
 }
 
-async function onSelectSample(id) {
+function onSelectSample(id) {
   const nextId = typeof id === 'string' ? id : '';
   sampleId.value = nextId;
-  sampleError.value = '';
+  urlError.value = '';
   if (!nextId) return;
 
-  const sample = getCreateControlSamples('vector').find((item) => item.id === nextId);
+  const sample = getCreateControlSamples('vector').find(
+    (item) => item.id === nextId,
+  );
   if (!sample) return;
+  dataUrl.value = getCreateControlSampleUrl(sample);
+}
 
-  loadingSample.value = true;
+function onUrlInput() {
+  urlError.value = '';
+  const trimmed = dataUrl.value.trim();
+  const sample = getCreateControlSamples('vector').find(
+    (item) => item.id === sampleId.value,
+  );
+  if (sample && getCreateControlSampleUrl(sample) !== trimmed) {
+    sampleId.value = '';
+  }
+}
+
+async function onLoadUrl() {
+  const url = dataUrl.value.trim();
+  if (!url) return;
+
+  loadingUrl.value = true;
+  urlError.value = '';
   pasteText.value = '';
   try {
-    const patch = await applyCreateControlSample(sample);
-    Object.assign(form.value, patch);
-    form.value.name = sample.label;
-    syncGeojsonPreview(patch.geojson ?? null, patch.crs);
+    const sample = getCreateControlSamples('vector').find(
+      (item) =>
+        item.id === sampleId.value && getCreateControlSampleUrl(item) === url,
+    );
+    if (sample) {
+      const patch = await applyCreateControlSample(sample);
+      Object.assign(form.value, patch);
+      form.value.name = sample.label;
+      syncGeojsonPreview(patch.geojson ?? null, patch.crs);
+    } else {
+      const { geojson, crs } = await loadGisUrlAsync(url);
+      syncGeojsonPreview(geojson, crs);
+    }
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
   } catch (err) {
-    sampleError.value =
+    urlError.value =
       err instanceof Error
         ? err.message
-        : trans.value('map.layer-control.create.sample-error');
+        : trans.value('map.layer-control.create.url-error');
   } finally {
-    loadingSample.value = false;
+    loadingUrl.value = false;
   }
 }
 

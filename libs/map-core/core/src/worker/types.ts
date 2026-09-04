@@ -26,6 +26,8 @@ export type WorkerTaskSnapshot = {
   progress?: WorkerProgress;
   error?: string;
   fallback?: boolean;
+  /** Live logs while pending; after finish, a compact copy for Recent tasks (newest-first). */
+  logs?: WorkerLogEntry[];
 };
 
 export type WorkerLogLevel = 'debug' | 'info' | 'warn' | 'error';

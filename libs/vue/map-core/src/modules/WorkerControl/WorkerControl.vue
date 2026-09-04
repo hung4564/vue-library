@@ -7,10 +7,10 @@ export default {
 import {
   filterWorkerSnapshots,
   formatWorkerDuration,
-  formatWorkerLogTime,
   isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
   type WorkerRuntimeStatus,
@@ -24,9 +24,10 @@ import { computed, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton } from '../../field';
+import { BaseButton, Collapse } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+import WorkerLogList from './WorkerLogList.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -44,20 +45,43 @@ const selectedId = ref('');
 const filtered = computed(() =>
   filterWorkerSnapshots(workers.value, query.value),
 );
-const selected = computed(() => {
-  const id = resolveSelectedWorkerId(filtered.value, selectedId.value);
-  return filtered.value.find((worker) => worker.id === id) ?? null;
-});
+
+// Persist selection so progress/log updates do not re-pick "busy" every time.
+watch(
+  filtered,
+  (list) => {
+    if (!list.length) {
+      selectedId.value = '';
+      return;
+    }
+    const stillValid = list.some((worker) => worker.id === selectedId.value);
+    if (!stillValid) {
+      selectedId.value = resolveSelectedWorkerId(list, '');
+    }
+  },
+  { immediate: true },
+);
+
+const selected = computed(
+  () => filtered.value.find((worker) => worker.id === selectedId.value) ?? null,
+);
+const selectedLogs = computed(() =>
+  selected.value ? workerLogsForDisplay(selected.value.logs) : [],
+);
 const busyCount = computed(() => workers.value.filter(isWorkerBusy).length);
 const manyWorkers = computed(() => workers.value.length > 1);
-const hasSelectedHistory = computed(
-  () =>
-    Boolean(selected.value) &&
-    (selected.value!.history.length > 0 || selected.value!.logs.length > 0),
-);
+const hasSelectedHistory = computed(() => {
+  const worker = selected.value;
+  if (!worker) return false;
+  if (worker.history.length > 0 || worker.logs.length > 0) return true;
+  return worker.pending.some((task) => (task.logs?.length ?? 0) > 0);
+});
 const hasAnyHistory = computed(() =>
   workers.value.some(
-    (worker) => worker.history.length > 0 || worker.logs.length > 0,
+    (worker) =>
+      worker.history.length > 0 ||
+      worker.logs.length > 0 ||
+      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
   ),
 );
 
@@ -127,14 +151,6 @@ function progressText(task: WorkerTaskSnapshot) {
   const message = task.progress?.message;
   if (percent == null) return message || '';
   return message ? `${percent}% · ${message}` : `${percent}%`;
-}
-
-function historyItems(worker: WorkerSnapshot) {
-  return worker.history.slice(0, 8);
-}
-
-function logItems(worker: WorkerSnapshot) {
-  return worker.logs.slice(0, 40);
 }
 
 function pendingLabel(worker: WorkerSnapshot) {
@@ -281,98 +297,121 @@ function summaryText() {
                   {{ selected.stats.fallback }}</span
                 >
               </div>
-              <div
-                v-if="selected.pending.length"
-                class="map-worker-control__tasks"
-              >
-                <div
-                  v-for="task in selected.pending"
-                  :key="task.id"
-                  class="map-worker-control__task"
-                >
-                  <div class="map-worker-control__task-row">
-                    <span>{{ task.type }}</span>
-                    <span
-                      >{{ engineLabel(task.engine) }} ·
-                      {{ elapsed(task) }}</span
-                    >
-                  </div>
+              <div class="map-worker-control__tasks">
+                <template v-if="selected.pending.length">
                   <div
-                    class="map-worker-control__bar"
-                    :class="{
-                      'is-indeterminate': progressPercent(task) == null,
-                    }"
-                    role="progressbar"
-                    :aria-valuenow="progressPercent(task) ?? undefined"
+                    v-for="task in selected.pending"
+                    :key="task.id"
+                    class="map-worker-control__task"
                   >
+                    <div class="map-worker-control__task-row">
+                      <span>{{ task.type }}</span>
+                      <span
+                        >{{ engineLabel(task.engine) }} ·
+                        {{ elapsed(task) }}</span
+                      >
+                    </div>
                     <div
-                      class="map-worker-control__bar-fill"
-                      :style="
-                        progressPercent(task) != null
-                          ? { width: `${progressPercent(task)}%` }
-                          : undefined
-                      "
-                    />
+                      class="map-worker-control__bar"
+                      :class="{
+                        'is-indeterminate': progressPercent(task) == null,
+                      }"
+                      role="progressbar"
+                      :aria-valuenow="progressPercent(task) ?? undefined"
+                    >
+                      <div
+                        class="map-worker-control__bar-fill"
+                        :style="
+                          progressPercent(task) != null
+                            ? { width: `${progressPercent(task)}%` }
+                            : undefined
+                        "
+                      />
+                    </div>
+                    <div class="map-worker-control__progress">
+                      {{ progressText(task) || '\u00a0' }}
+                    </div>
+                    <Collapse class="map-worker-control__task-logs">
+                      <template #header>
+                        {{ trans('map.worker-control.field.taskLogs') }}
+                      </template>
+                      <WorkerLogList
+                        :logs="workerLogsForDisplay(task.logs ?? [])"
+                        compact
+                      />
+                    </Collapse>
                   </div>
-                  <div
-                    v-if="progressText(task)"
-                    class="map-worker-control__progress"
+                </template>
+                <div v-else class="map-worker-control__task is-idle">
+                  <div class="map-worker-control__task-row">
+                    <span>{{
+                      trans('map.worker-control.noRunning')
+                    }}</span>
+                    <span>—</span>
+                  </div>
+                  <div class="map-worker-control__bar is-idle" aria-hidden="true">
+                    <div class="map-worker-control__bar-fill" />
+                  </div>
+                  <div class="map-worker-control__progress" aria-hidden="true">
+                    &nbsp;
+                  </div>
+                  <Collapse
+                    class="map-worker-control__task-logs"
                   >
-                    {{ progressText(task) }}
-                  </div>
+                    <template #header>
+                      {{ trans('map.worker-control.field.taskLogs') }}
+                    </template>
+                    <WorkerLogList :logs="[]" compact />
+                  </Collapse>
                 </div>
               </div>
               <p v-if="selected.lastError" class="map-worker-control__error">
                 {{ trans('map.worker-control.field.error') }}:
                 {{ selected.lastError }}
               </p>
-              <div
-                v-if="logItems(selected).length"
+              <Collapse
+                v-if="selectedLogs.length"
                 class="map-worker-control__logs"
               >
-                <div class="map-worker-control__history-title">
+                <template #header>
                   {{ trans('map.worker-control.field.logs') }}
-                </div>
-                <div class="map-worker-control__log-list">
-                  <div
-                    v-for="entry in logItems(selected)"
-                    :key="entry.id"
-                    class="map-worker-control__log"
-                    :data-level="entry.level"
-                  >
-                    <span class="map-worker-control__log-time">{{
-                      formatWorkerLogTime(entry.at)
-                    }}</span>
-                    <span class="map-worker-control__log-level">{{
-                      entry.level
-                    }}</span>
-                    <span class="map-worker-control__log-message">{{
-                      entry.message
-                    }}</span>
-                  </div>
-                </div>
-              </div>
+                </template>
+                <WorkerLogList :logs="selectedLogs" />
+              </Collapse>
               <div
-                v-if="historyItems(selected).length"
+                v-if="selected.history.length"
                 class="map-worker-control__history"
               >
                 <div class="map-worker-control__history-title">
                   {{ trans('map.worker-control.field.history') }}
                 </div>
-                <div
-                  v-for="task in historyItems(selected)"
+                <Collapse
+                  v-for="task in selected.history"
                   :key="task.id"
-                  class="map-worker-control__history-row"
+                  class="map-worker-control__history-item"
                   :data-status="task.status"
+                  :selected="false"
                 >
-                  <span
-                    >{{ task.status === 'ok' ? '✓' : '✕' }}
-                    {{ task.type }}</span
-                  >
-                  <span>
-                    {{ engineLabel(task.engine) }} · {{ elapsed(task) }}
-                  </span>
-                </div>
+                  <template #header>
+                    <div
+                      class="map-worker-control__history-row"
+                      :data-status="task.status"
+                    >
+                      <span
+                        >{{ task.status === 'ok' ? '✓' : '✕' }}
+                        {{ task.type }}</span
+                      >
+                      <span>
+                        {{ engineLabel(task.engine) }} · {{ elapsed(task) }}
+                      </span>
+                    </div>
+                  </template>
+                  <WorkerLogList
+                    v-if="task.logs?.length"
+                    :logs="workerLogsForDisplay(task.logs)"
+                    compact
+                  />
+                </Collapse>
               </div>
             </article>
           </div>

@@ -8,4 +8,3 @@ export * from './gis-format';
 export * from './gis-parse';
 export * from './locale';
 export * from './presets';
-export * from './source-copy';

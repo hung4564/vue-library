@@ -5,8 +5,10 @@ import {
   isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
+  type WorkerLogEntry,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
@@ -14,12 +16,19 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton } from '../../field';
+import { BaseButton, BaseCollapse } from '../../field';
 import { defaultMapProps, useMap, useShow } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -40,6 +49,56 @@ function progressText(task: WorkerTaskSnapshot) {
   return message ? `${percent}% · ${message}` : `${percent}%`;
 }
 
+function logsSignature(logs: WorkerLogEntry[]) {
+  if (!logs.length) return '0';
+  const first = logs[0];
+  const last = logs[logs.length - 1];
+  return `${logs.length}:${first.id}:${last.id}`;
+}
+
+const LogList = memo(
+  function LogList(props: { logs: WorkerLogEntry[]; compact?: boolean }) {
+    const { logs, compact } = props;
+    const rootRef = useRef<HTMLDivElement>(null);
+    const savedScrollTop = useRef(0);
+
+    // Capture before commit so progress/elapsed parent re-renders don't jump scroll.
+    const el = rootRef.current;
+    if (el) savedScrollTop.current = el.scrollTop;
+
+    useLayoutEffect(() => {
+      const node = rootRef.current;
+      if (node) node.scrollTop = savedScrollTop.current;
+    });
+
+    return (
+      <div
+        ref={rootRef}
+        className={`map-worker-control__log-list${compact ? ' is-compact' : ''}`}
+      >
+        {logs.map((entry) => (
+          <div
+            key={entry.id}
+            className="map-worker-control__log"
+            data-level={entry.level}
+          >
+            <span className="map-worker-control__log-time">
+              {formatWorkerLogTime(entry.at)}
+            </span>
+            <span className="map-worker-control__log-level">{entry.level}</span>
+            <span className="map-worker-control__log-message">
+              {entry.message}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  },
+  (prev, next) =>
+    prev.compact === next.compact &&
+    logsSignature(prev.logs) === logsSignature(next.logs),
+);
+
 export function WorkerControl(props: WorkerControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({
@@ -55,6 +114,28 @@ export function WorkerControl(props: WorkerControlProps) {
   useEffect(() => {
     setLocaleDefault(WORKER_CONTROL_LOCALE);
   }, [setLocaleDefault]);
+
+  const filtered = useMemo(
+    () => filterWorkerSnapshots(workers, query),
+    [workers, query],
+  );
+
+  // Persist selection so progress/log updates do not re-pick "busy" every time.
+  useEffect(() => {
+    if (!filtered.length) {
+      if (selectedId) setSelectedId('');
+      return;
+    }
+    const stillValid = filtered.some((worker) => worker.id === selectedId);
+    if (!stillValid) {
+      setSelectedId(resolveSelectedWorkerId(filtered, ''));
+    }
+  }, [filtered, selectedId]);
+
+  const selected = useMemo(
+    () => filtered.find((worker) => worker.id === selectedId) ?? null,
+    [filtered, selectedId],
+  );
 
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapWorkerControl',
@@ -89,21 +170,19 @@ export function WorkerControl(props: WorkerControlProps) {
     controlRef.current.sync();
   }, [show, busy]);
 
-  const filtered = useMemo(
-    () => filterWorkerSnapshots(workers, query),
-    [workers, query],
-  );
-  const selected = useMemo(() => {
-    const id = resolveSelectedWorkerId(filtered, selectedId);
-    return filtered.find((worker) => worker.id === id) ?? null;
-  }, [filtered, selectedId]);
   const busyCount = workers.filter(isWorkerBusy).length;
   const manyWorkers = workers.length > 1;
   const hasSelectedHistory = Boolean(
-    selected && (selected.history.length > 0 || selected.logs.length > 0),
+    selected &&
+      (selected.history.length > 0 ||
+        selected.logs.length > 0 ||
+        selected.pending.some((task) => (task.logs?.length ?? 0) > 0)),
   );
   const hasAnyHistory = workers.some(
-    (worker) => worker.history.length > 0 || worker.logs.length > 0,
+    (worker) =>
+      worker.history.length > 0 ||
+      worker.logs.length > 0 ||
+      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
   );
 
   const statusLabel = (status: WorkerRuntimeStatus) =>
@@ -275,8 +354,7 @@ function WorkerCard(props: {
   trans: (key: string) => string;
 }) {
   const { worker, statusLabel, engineLabel, elapsed, trans } = props;
-  const history = worker.history.slice(0, 8);
-  const logs = worker.logs.slice(0, 40);
+  const logs = workerLogsForDisplay(worker.logs);
 
   return (
     <article className="map-worker-control__worker">
@@ -300,9 +378,9 @@ function WorkerCard(props: {
           {trans('map.worker-control.stats.fallback')} {worker.stats.fallback}
         </span>
       </div>
-      {worker.pending.length ? (
-        <div className="map-worker-control__tasks">
-          {worker.pending.map((task) => {
+      <div className="map-worker-control__tasks">
+        {worker.pending.length ? (
+          worker.pending.map((task) => {
             const percent = progressPercent(task);
             const text = progressText(task);
             return (
@@ -325,63 +403,83 @@ function WorkerCard(props: {
                     }
                   />
                 </div>
-                {text ? (
-                  <div className="map-worker-control__progress">{text}</div>
-                ) : null}
+                <div className="map-worker-control__progress">
+                  {text || '\u00a0'}
+                </div>
+                <BaseCollapse
+                  className="map-worker-control__task-logs"
+                  header={trans('map.worker-control.field.taskLogs')}
+                >
+                  <LogList
+                    logs={workerLogsForDisplay(task.logs ?? [])}
+                    compact
+                  />
+                </BaseCollapse>
               </div>
             );
-          })}
-        </div>
-      ) : null}
+          })
+        ) : (
+          <div className="map-worker-control__task is-idle">
+            <div className="map-worker-control__task-row">
+              <span>{trans('map.worker-control.noRunning')}</span>
+              <span>—</span>
+            </div>
+            <div className="map-worker-control__bar is-idle" aria-hidden>
+              <div className="map-worker-control__bar-fill" />
+            </div>
+            <div className="map-worker-control__progress" aria-hidden>
+              &nbsp;
+            </div>
+            <BaseCollapse
+              className="map-worker-control__task-logs"
+              header={trans('map.worker-control.field.taskLogs')}
+            >
+              <LogList logs={[]} compact />
+            </BaseCollapse>
+          </div>
+        )}
+      </div>
       {worker.lastError ? (
         <p className="map-worker-control__error">
           {trans('map.worker-control.field.error')}: {worker.lastError}
         </p>
       ) : null}
       {logs.length ? (
-        <div className="map-worker-control__logs">
-          <div className="map-worker-control__history-title">
-            {trans('map.worker-control.field.logs')}
-          </div>
-          <div className="map-worker-control__log-list">
-            {logs.map((entry) => (
-              <div
-                key={entry.id}
-                className="map-worker-control__log"
-                data-level={entry.level}
-              >
-                <span className="map-worker-control__log-time">
-                  {formatWorkerLogTime(entry.at)}
-                </span>
-                <span className="map-worker-control__log-level">
-                  {entry.level}
-                </span>
-                <span className="map-worker-control__log-message">
-                  {entry.message}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <BaseCollapse
+          className="map-worker-control__logs"
+          header={trans('map.worker-control.field.logs')}
+        >
+          <LogList logs={logs} />
+        </BaseCollapse>
       ) : null}
-      {history.length ? (
+      {worker.history.length ? (
         <div className="map-worker-control__history">
           <div className="map-worker-control__history-title">
             {trans('map.worker-control.field.history')}
           </div>
-          {history.map((task) => (
-            <div
+          {worker.history.map((task) => (
+            <BaseCollapse
               key={task.id}
-              className="map-worker-control__history-row"
-              data-status={task.status}
+              className="map-worker-control__history-item"
+              selected={false}
+              header={
+                <div
+                  className="map-worker-control__history-row"
+                  data-status={task.status}
+                >
+                  <span>
+                    {task.status === 'ok' ? '✓' : '✕'} {task.type}
+                  </span>
+                  <span>
+                    {engineLabel(task.engine)} · {elapsed(task)}
+                  </span>
+                </div>
+              }
             >
-              <span>
-                {task.status === 'ok' ? '✓' : '✕'} {task.type}
-              </span>
-              <span>
-                {engineLabel(task.engine)} · {elapsed(task)}
-              </span>
-            </div>
+              {task.logs?.length ? (
+                <LogList logs={workerLogsForDisplay(task.logs)} compact />
+              ) : null}
+            </BaseCollapse>
           ))}
         </div>
       ) : null}

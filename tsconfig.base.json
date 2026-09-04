@@ -18,6 +18,7 @@
       "@hungpvq/demo-map-datasets": ["libs/demo/map-datasets/src/index.ts"],
       "@hungpvq/draggable": ["libs/draggable/core/src/index.ts"],
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
+      "@hungpvq/map-core/worker": ["libs/map-core/core/src/worker-entry.ts"],
       "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],

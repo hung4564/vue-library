@@ -209,6 +209,7 @@ export const WORKER_CONTROL_LOCALE = {
       count: '{n} workers',
       busyCount: '{n} busy',
       pending: '{n} running',
+      noRunning: 'No running task',
       status: {
         'not-started': 'Not started',
         idle: 'Idle',
@@ -228,6 +229,7 @@ export const WORKER_CONTROL_LOCALE = {
         error: 'Error',
         history: 'Recent tasks',
         logs: 'Worker log',
+        taskLogs: 'Task log',
       },
       stats: {
         ok: 'OK',

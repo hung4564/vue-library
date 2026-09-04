@@ -18,6 +18,7 @@ import { MeasurementPage } from './views/measurement';
 import { RegistryControlPage } from './views/registry-control';
 import { StoryTellingPage } from './views/story-telling';
 import { ToolbarPage } from './views/toolbar';
+import { WorkerSamplePage } from './views/worker-sample';
 
 // Match Vue: register legend/menu/style components before any map mounts
 installDatasetRegistry();
@@ -34,6 +35,7 @@ root.render(
         <Route path="/" element={<App />}>
           <Route index element={<AllMapView />} />
           <Route path="map-core" element={<MapCorePage />} />
+          <Route path="worker-sample" element={<WorkerSamplePage />} />
           <Route path="map-dataset" element={<MapDatasetPage />} />
           <Route path="toolbar" element={<ToolbarPage />} />
           <Route path="basemap" element={<BasemapPage />} />

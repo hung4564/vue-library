@@ -1,12 +1,10 @@
 import type { GeoJSON } from 'geojson';
 import {
-  applyWorkerMonitorMessage,
   bboxFromGeojson,
   isCallStackOverflow,
   MapError,
   normalizeEpsgCode,
   reprojectGeojsonToWgs84,
-  runMonitoredTask,
   toPlainJson,
   WorkerMonitor,
   type GeojsonBbox,
@@ -16,29 +14,14 @@ import {
   shouldUseGisWorkerForGeojson,
 } from './geojson-parse';
 import type { LayerStyleType } from '../../utils/layer-simple-builder';
-import { parseGisFile, parseGisFiles, parseGisFromUrl, parseGisText } from './gis-parse';
+import { parseGisFiles, parseGisFromUrl, parseGisText } from './gis-parse';
 import type { GisLoadResult } from './gis-parse';
 import type {
   GeojsonWorkerRequest,
   GeojsonWorkerResponse,
 } from './geojson.worker';
 
-export const GEOJSON_WORKER_ID = 'geojson';
-
-export type GeojsonLoadResult = GisLoadResult;
-
-type PendingTask = {
-  resolve: (value: GeojsonWorkerResponse) => void;
-  reject: (reason?: unknown) => void;
-};
-
-const geojsonWorker = WorkerMonitor.register(GEOJSON_WORKER_ID, {
-  name: 'GIS',
-});
-
-let worker: Worker | null = null;
-let workerUnavailable = false;
-const pending = new Map<string, PendingTask>();
+const GEOJSON_WORKER_ID = 'geojson';
 
 const DATA_SIZE_HINT =
   'data may be too large, too deeply nested, or contain circular references. Try a smaller file or data already in EPSG:4326.';
@@ -72,89 +55,32 @@ function errorFromWorkerMessage(raw?: string): Error {
 
   return new Error(text);
 }
-function getWorker(): Worker | null {
-  if (workerUnavailable || typeof Worker === 'undefined') {
-    return null;
-  }
-  if (worker) return worker;
 
-  try {
-    worker = new Worker(new URL('./geojson.worker.ts', import.meta.url), {
+const gisWorker = WorkerMonitor.connect<
+  GeojsonWorkerRequest,
+  GeojsonWorkerResponse
+>({
+  id: GEOJSON_WORKER_ID,
+  name: 'GIS',
+  createWorker: () =>
+    new Worker(new URL('./geojson.worker.ts', import.meta.url), {
       type: 'module',
-    });
-    worker.onmessage = (event: MessageEvent<unknown>) => {
-      if (applyWorkerMonitorMessage(GEOJSON_WORKER_ID, event.data)) return;
-      const data = event.data as GeojsonWorkerResponse;
-      const task = pending.get(data.id);
-      if (!task) return;
-      pending.delete(data.id);
-      if (data.ok) {
-        task.resolve(data);
-        return;
-      }
-      task.reject(errorFromWorkerMessage(data.error));
-    };
-    worker.onerror = () => {
-      workerUnavailable = true;
-      geojsonWorker.setStatus('unavailable');
-      geojsonWorker.setLastError('GIS worker crashed');
-      geojsonWorker.log({
-        level: 'error',
-        message: 'GIS worker crashed',
-      });
-      worker?.terminate();
-      worker = null;
-      for (const [id, task] of pending) {
-        geojsonWorker.failTask(id, 'GIS worker crashed', {
-          engine: 'worker',
-          fallback: true,
-        });
-        task.reject(new Error('GIS worker crashed'));
-      }
-      pending.clear();
-    };
-    if (geojsonWorker.snapshot().pending.length === 0) {
-      geojsonWorker.setStatus('idle');
+    }),
+  mapError: errorFromWorkerMessage,
+  prepareRequest: (payload) => {
+    if (
+      payload.type === 'reproject-geojson' ||
+      payload.type === 'detect-style-types' ||
+      payload.type === 'compute-bbox'
+    ) {
+      return {
+        ...payload,
+        geojson: toPlainJson(payload.geojson),
+      };
     }
-    geojsonWorker.log({ level: 'info', message: 'GIS worker started' });
-    return worker;
-  } catch (error) {
-    workerUnavailable = true;
-    geojsonWorker.setStatus('unavailable');
-    geojsonWorker.setLastError(
-      error instanceof Error ? error.message : 'GIS worker failed to start',
-    );
-    geojsonWorker.log({
-      level: 'error',
-      message:
-        error instanceof Error
-          ? `GIS worker failed to start: ${error.message}`
-          : 'GIS worker failed to start',
-    });
-    return null;
-  }
-}
-
-function postToWorker(payload: GeojsonWorkerRequest): Promise<GeojsonWorkerResponse> {
-  const instance = getWorker();
-  if (!instance) {
-    return Promise.reject(new Error('GIS worker unavailable'));
-  }
-
-  const message =
-    payload.type === 'reproject-geojson' ||
-    payload.type === 'detect-style-types' ||
-    payload.type === 'compute-bbox'
-      ? {
-          ...payload,
-          geojson: toPlainJson(payload.geojson),
-        }
-      : payload;
-  return new Promise<GeojsonWorkerResponse>((resolve, reject) => {
-    pending.set(payload.id, { resolve, reject });
-    instance.postMessage(message);
-  });
-}
+    return payload;
+  },
+});
 
 function fromWorkerResponse(response: GeojsonWorkerResponse): GisLoadResult {
   return {
@@ -171,13 +97,12 @@ export async function loadGisTextAsync(
   const trimmed = text.trim();
   if (!trimmed) return { geojson: null, crs: null };
 
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     'parse-gis',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const response = await postToWorker({
+        const response = await gisWorker.post({
           id: taskId,
           type: 'parse-gis',
           text: trimmed,
@@ -200,20 +125,19 @@ export async function loadGisFileAsync(
   if (!files.length) return { geojson: null, crs: null };
 
   const taskType = files.length > 1 ? 'read-gis-files' : 'read-gis';
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     taskType,
     {
       engine: 'worker',
       run: async (taskId) => {
         const response =
           files.length > 1
-            ? await postToWorker({
+            ? await gisWorker.post({
                 id: taskId,
                 type: 'read-gis-files',
                 files: files as File[],
               })
-            : await postToWorker({
+            : await gisWorker.post({
                 id: taskId,
                 type: 'read-gis',
                 file: files[0] as File,
@@ -232,13 +156,12 @@ export async function loadGisUrlAsync(url: string): Promise<GisLoadResult> {
   const trimmed = url.trim();
   if (!trimmed) return { geojson: null, crs: null };
 
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     'fetch-gis',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const response = await postToWorker({
+        const response = await gisWorker.post({
           id: taskId,
           type: 'fetch-gis',
           url: trimmed,
@@ -275,13 +198,12 @@ export async function reprojectGeojsonToWgs84Async(
   const epsg = normalizeEpsgCode(crs) ?? '4326';
   if (epsg === '4326') return geojson;
 
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     'reproject-geojson',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const response = await postToWorker({
+        const response = await gisWorker.post({
           id: taskId,
           type: 'reproject-geojson',
           geojson,
@@ -294,7 +216,7 @@ export async function reprojectGeojsonToWgs84Async(
       engine: 'main',
       run: async (taskId) =>
         reprojectGeojsonToWgs84(geojson, epsg, (current, total) => {
-          geojsonWorker.setProgress(taskId, {
+          gisWorker.handle.setProgress(taskId, {
             current,
             total,
             message: 'reproject',
@@ -316,13 +238,12 @@ export async function detectGeojsonStyleTypesAsync(
     return detectGeojsonStyleTypes(plain);
   }
 
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     'detect-style-types',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const response = await postToWorker({
+        const response = await gisWorker.post({
           id: taskId,
           type: 'detect-style-types',
           geojson: plain,
@@ -348,13 +269,12 @@ export async function bboxFromGeojsonAsync(
 ): Promise<GeojsonBbox | undefined> {
   const plain = toPlainJson(geojson);
 
-  return runMonitoredTask(
-    GEOJSON_WORKER_ID,
+  return gisWorker.runTask(
     'compute-bbox',
     {
       engine: 'worker',
       run: async (taskId) => {
-        const response = await postToWorker({
+        const response = await gisWorker.post({
           id: taskId,
           type: 'compute-bbox',
           geojson: plain,
@@ -370,17 +290,5 @@ export async function bboxFromGeojsonAsync(
 }
 
 export function terminateGeojsonWorker(): void {
-  worker?.terminate();
-  worker = null;
-  workerUnavailable = false;
-  for (const [id, task] of pending) {
-    geojsonWorker.failTask(id, 'GIS worker terminated', {
-      engine: 'worker',
-      fallback: true,
-    });
-    task.reject(new Error('GIS worker terminated'));
-  }
-  pending.clear();
-  geojsonWorker.setStatus('terminated');
-  geojsonWorker.setLastError(undefined);
+  gisWorker.terminate('GIS worker terminated');
 }

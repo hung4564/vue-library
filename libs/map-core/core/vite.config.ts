@@ -30,12 +30,14 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
+      // `worker` is a CSS/DOM-free entry for Web Workers (`@hungpvq/map-core/worker`).
+      entry: {
+        index: 'src/index.ts',
+        worker: 'src/worker-entry.ts',
+      },
       name: '@hungpvq/map-core',
-      fileName: 'index',
-      // Change this to the formats you want to support.
-      // Don't forget to update your package.json as well.
+      fileName: (format, entryName) =>
+        entryName === 'index' ? 'index.js' : `${entryName}.js`,
       formats: ['es' as const],
     },
     rollupOptions: {

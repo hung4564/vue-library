@@ -8,7 +8,7 @@ With **more than one** worker, the sidebar shows a searchable list (busy first).
 
 - Confirm a task is running off the main thread (status **Busy**, engine **Worker**).
 - Watch progress while a large GeoJSON file is read or reprojected.
-- Read **worker-thread logs** (`console.*` and explicit `kind: 'log'` messages).
+- Read **worker-thread logs**: live **task log** while a task runs; when it finishes those lines flush into the **Worker log**, and a compact copy stays under **Recent tasks** (max 5).
 - See fallback to the main thread and the last error without opening DevTools.
 
 ## Props

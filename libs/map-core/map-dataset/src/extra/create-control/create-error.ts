@@ -45,7 +45,7 @@ export function reportCreateLayerError(
   return mapError;
 }
 
-export function normalizeCreateLayerError(
+function normalizeCreateLayerError(
   err: unknown,
   context?: CreateLayerErrorContext,
 ): MapError {

@@ -17,6 +17,7 @@ import './demo-nav.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Home (All Map)' },
   { to: '/map-core', label: 'Map - Core' },
+  { to: '/worker-sample', label: 'Worker - Sample' },
   { to: '/toolbar', label: 'Map - Toolbar' },
   { to: '/basemap', label: 'BaseMap' },
   { to: '/measurement', label: 'Measurement' },

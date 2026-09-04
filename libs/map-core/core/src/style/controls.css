@@ -967,11 +967,21 @@
   font-size: var(--map-font-size-sm, 12px);
 }
 
+.map-worker-control__task.is-idle {
+  opacity: 0.55;
+}
+
 .map-worker-control__bar {
   height: 4px;
   border-radius: 999px;
   background: hsla(0, 0%, 100%, 0.16);
   overflow: hidden;
+  margin-top: 4px;
+}
+
+.map-worker-control__bar.is-idle .map-worker-control__bar-fill {
+  width: 0;
+  animation: none;
 }
 
 .map-worker-control__bar-fill {
@@ -992,6 +1002,12 @@
   opacity: 0.7;
 }
 
+/* Always reserve one line so progress label show/hide does not shift layout. */
+.map-worker-control__progress {
+  min-height: 1.45em;
+  margin-top: 2px;
+}
+
 .map-worker-control__error {
   margin: 0;
   font-size: var(--map-font-size-sm, 12px);
@@ -1002,19 +1018,54 @@
 .map-worker-control__history {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+}
+
+.map-worker-control__history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .map-worker-control__logs {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
   min-height: 0;
+}
+
+.map-worker-control__task-logs {
+  margin-top: 4px;
+}
+
+.map-worker-control .collapse-header__title {
+  font-size: var(--map-font-size-xs, 10px);
+  opacity: 0.7;
+  flex: 1;
+  min-width: 0;
+}
+
+.map-worker-control__history-item .collapse-header__title {
+  font-size: inherit;
+  opacity: 1;
+}
+
+.map-worker-control__history-item .map-worker-control__history-row {
+  width: 100%;
+}
+
+.map-worker-control .collapse-content-box {
+  padding-top: 4px;
+}
+
+/* Fixed height so first log lines do not expand the panel. */
+.map-worker-control__task-logs .map-worker-control__log-list.is-compact {
+  min-height: 96px;
 }
 
 .map-worker-control__log-list {
   max-height: 220px;
   overflow: auto;
+  overscroll-behavior: contain;
+  overflow-anchor: none;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1024,6 +1075,10 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: var(--map-font-size-xs, 10px);
   line-height: 1.45;
+}
+
+.map-worker-control__log-list.is-compact {
+  max-height: 96px;
 }
 
 .map-worker-control__log {

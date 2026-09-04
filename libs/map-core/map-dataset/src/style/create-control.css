@@ -115,6 +115,24 @@
   padding-top: var(--map-space-sm, 4px);
 }
 
+.create-control-url-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--map-space-sm, 6px);
+}
+
+.create-control-url-row > .form-group {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.create-control-url-row > .create-control-url-load {
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
 .ddf__area {
   position: relative;
   overflow: hidden;
