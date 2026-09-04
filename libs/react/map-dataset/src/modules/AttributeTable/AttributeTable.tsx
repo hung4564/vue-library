@@ -45,7 +45,10 @@ type AttributeTableProps = WithMapPropType & {
 
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapAttributeTable' });
+  const { mapId, moduleContainerProps } = useMap({
+    ...merged,
+    controlId: 'mapAttributeTable',
+  });
   const { setFeatureHighlight, getHighlightSource } =
     useMapDatasetHighlight(mapId);
   const setFeatureHighlightRef = useRef(setFeatureHighlight);
@@ -148,8 +151,7 @@ export function AttributeTable(props: AttributeTableProps) {
     visibleRows.every((row) => selectedSet.has(row.id));
 
   const title = useMemo(() => {
-    const name =
-      props.layer?.getName?.() || trans('map.attribute-table.title');
+    const name = props.layer?.getName?.() || trans('map.attribute-table.title');
     if (!rows.length) return trans('map.attribute-table.title');
     return selectedIds.length
       ? `${name} (${rows.length}, ${selectedIds.length} selected)`
@@ -259,138 +261,140 @@ export function AttributeTable(props: AttributeTableProps) {
       {...moduleContainerProps}
       draggable={(bind) => (
         <>
-        <DraggableItemPopup
-          show={show}
-          width={760}
-          height={460}
-          title={title}
-          onClose={handleClose}
-          onUpdateShow={(v) => {
-            if (!v) handleClose();
-          }}
-          {...bind}
-          {...panelBind}
-        >
-          <div className="attribute-table">
-            <div className="attribute-table__toolbar">
-              <div className="attribute-table__toolbar-row">
-                <InputText
-                  value={query}
-                  placeholder={trans('map.attribute-table.search')}
-                  onChange={setQuery}
-                />
-                <BaseButton
-                  className="attribute-table__export"
-                  disabled={visibleRows.length === 0}
-                  onClick={onExportClick}
-                >
-                  <Icon path={mdiDownload} size={16 / 24} />
-                  {trans('map.attribute-table.export')}
-                  <Icon path={mdiChevronDown} size={16 / 24} />
-                </BaseButton>
+          <DraggableItemPopup
+            show={show}
+            width={760}
+            height={460}
+            title={title}
+            onClose={handleClose}
+            onUpdateShow={(v) => {
+              if (!v) handleClose();
+            }}
+            {...bind}
+            {...panelBind}
+          >
+            <div className="attribute-table">
+              <div className="attribute-table__toolbar">
+                <div className="attribute-table__toolbar-row">
+                  <InputText
+                    value={query}
+                    placeholder={trans('map.attribute-table.search')}
+                    onChange={setQuery}
+                  />
+                  <BaseButton
+                    className="attribute-table__export"
+                    disabled={visibleRows.length === 0}
+                    onClick={onExportClick}
+                  >
+                    <Icon path={mdiDownload} size="16px" />
+                    {trans('map.attribute-table.export')}
+                    <Icon path={mdiChevronDown} size="16px" />
+                  </BaseButton>
+                </div>
+                <div className="attribute-table__toolbar-row">
+                  <InputCheckbox
+                    checked={zoomToSelection}
+                    label={trans('map.attribute-table.zoomToSelection')}
+                    onChange={setZoomToSelection}
+                  />
+                  <InputSelect
+                    value={rowFilter}
+                    items={filterItems}
+                    onChange={(value) =>
+                      setRowFilter(value === 'selected' ? 'selected' : 'all')
+                    }
+                  />
+                  <BaseButton
+                    className="attribute-table__clear"
+                    disabled={selectedIds.length === 0}
+                    onClick={clearSelection}
+                  >
+                    {trans('map.attribute-table.clear')}
+                  </BaseButton>
+                </div>
               </div>
-              <div className="attribute-table__toolbar-row">
-                <InputCheckbox
-                  checked={zoomToSelection}
-                  label={trans('map.attribute-table.zoomToSelection')}
-                  onChange={setZoomToSelection}
-                />
-                <InputSelect
-                  value={rowFilter}
-                  items={filterItems}
-                  onChange={(value) =>
-                    setRowFilter(value === 'selected' ? 'selected' : 'all')
-                  }
-                />
-                <BaseButton
-                  className="attribute-table__clear"
-                  disabled={selectedIds.length === 0}
-                  onClick={clearSelection}
-                >
-                  {trans('map.attribute-table.clear')}
-                </BaseButton>
-              </div>
-            </div>
-            {loading ? (
-              <div className="attribute-table__status">
-                {trans('map.attribute-table.loading')}
-              </div>
-            ) : visibleRows.length === 0 ? (
-              <div className="attribute-table__status">
-                {trans('map.attribute-table.empty')}
-              </div>
-            ) : (
-              <div className="attribute-table__scroll">
-                <table className="attribute-table__table">
-                  <thead>
-                    <tr>
-                      <th className="attribute-table__check">
-                        <input
-                          type="checkbox"
-                          checked={allVisibleSelected}
-                          onChange={toggleSelectAll}
-                        />
-                      </th>
-                      {columns.map((column) => (
-                        <th key={column.key}>{column.label}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleRows.map((row) => (
-                      <tr
-                        key={row.id}
-                        className={selectedSet.has(row.id) ? 'is-selected' : ''}
-                        onClick={() => toggleRow(row)}
-                      >
-                        <td
-                          className="attribute-table__check"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+              {loading ? (
+                <div className="attribute-table__status">
+                  {trans('map.attribute-table.loading')}
+                </div>
+              ) : visibleRows.length === 0 ? (
+                <div className="attribute-table__status">
+                  {trans('map.attribute-table.empty')}
+                </div>
+              ) : (
+                <div className="attribute-table__scroll">
+                  <table className="attribute-table__table">
+                    <thead>
+                      <tr>
+                        <th className="attribute-table__check">
                           <input
                             type="checkbox"
-                            checked={selectedSet.has(row.id)}
-                            onChange={() => toggleRow(row)}
+                            checked={allVisibleSelected}
+                            onChange={toggleSelectAll}
                           />
-                        </td>
-                        {columns.map((column) => {
-                          const value = row.cells[column.key] ?? '';
-                          return (
-                            <td
-                              key={column.key}
-                              title={value.length > 80 ? value : undefined}
-                            >
-                              {value}
-                            </td>
-                          );
-                        })}
+                        </th>
+                        {columns.map((column) => (
+                          <th key={column.key}>{column.label}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </DraggableItemPopup>
-        <ContextMenu ref={exportMenuRef}>
-          <ul className="context-menu layer-context-menu">
-            {exportChildren.map((child, index) => (
-              <li
-                key={child.id || String(index)}
-                className="layer-context-menu__item"
-                onClick={(event) => onExportChild(child, event)}
-              >
-                <div className="layer-context-menu__item-icon">
-                  <Icon
-                    path={('icon' in child && child.icon) || mdiDownload}
-                    size={16 / 24}
-                  />
+                    </thead>
+                    <tbody>
+                      {visibleRows.map((row) => (
+                        <tr
+                          key={row.id}
+                          className={
+                            selectedSet.has(row.id) ? 'is-selected' : ''
+                          }
+                          onClick={() => toggleRow(row)}
+                        >
+                          <td
+                            className="attribute-table__check"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedSet.has(row.id)}
+                              onChange={() => toggleRow(row)}
+                            />
+                          </td>
+                          {columns.map((column) => {
+                            const value = row.cells[column.key] ?? '';
+                            return (
+                              <td
+                                key={column.key}
+                                title={value.length > 80 ? value : undefined}
+                              >
+                                {value}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <span>{('name' in child && child.name) || ''}</span>
-              </li>
-            ))}
-          </ul>
-        </ContextMenu>
+              )}
+            </div>
+          </DraggableItemPopup>
+          <ContextMenu ref={exportMenuRef}>
+            <ul className="context-menu layer-context-menu">
+              {exportChildren.map((child, index) => (
+                <li
+                  key={child.id || String(index)}
+                  className="layer-context-menu__item"
+                  onClick={(event) => onExportChild(child, event)}
+                >
+                  <div className="layer-context-menu__item-icon">
+                    <Icon
+                      path={('icon' in child && child.icon) || mdiDownload}
+                      size="16px"
+                    />
+                  </div>
+                  <span>{('name' in child && child.name) || ''}</span>
+                </li>
+              ))}
+            </ul>
+          </ContextMenu>
         </>
       )}
     />

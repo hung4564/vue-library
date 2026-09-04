@@ -1,8 +1,8 @@
 import {
   copyText,
   downloadDataUrl,
-  INFO_CONTROL_LOCALE,
   exportMapbox,
+  INFO_CONTROL_LOCALE,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
@@ -42,7 +42,10 @@ const EMPTY_INFO: MapViewInfo = {
 
 export function InfoControl(props: InfoControlProps) {
   const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapInfoControl' });
+  const { callMap, mapId, moduleContainerProps, order } = useMap({
+    ...mergedProps,
+    controlId: 'mapInfoControl',
+  });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_INFO);
@@ -152,16 +155,36 @@ export function InfoControl(props: InfoControlProps) {
   const draggableContent = useCallback(
     (bind: BindPosition) => {
       const rows = [
-        { key: 'center', label: trans('map.info-control.center'), value: info.center },
-        { key: 'zoom', label: trans('map.info-control.zoom'), value: info.zoom },
-        { key: 'pitch', label: trans('map.info-control.pitch'), value: info.pitch },
-        { key: 'bearing', label: trans('map.info-control.bearing'), value: info.bearing },
+        {
+          key: 'center',
+          label: trans('map.info-control.center'),
+          value: info.center,
+        },
+        {
+          key: 'zoom',
+          label: trans('map.info-control.zoom'),
+          value: info.zoom,
+        },
+        {
+          key: 'pitch',
+          label: trans('map.info-control.pitch'),
+          value: info.pitch,
+        },
+        {
+          key: 'bearing',
+          label: trans('map.info-control.bearing'),
+          value: info.bearing,
+        },
         {
           key: 'projection',
           label: trans('map.info-control.projection'),
           value: info.projection,
         },
-        { key: 'bounds', label: trans('map.info-control.bounds'), value: info.bounds },
+        {
+          key: 'bounds',
+          label: trans('map.info-control.bounds'),
+          value: info.bounds,
+        },
       ];
 
       return (
@@ -180,7 +203,7 @@ export function InfoControl(props: InfoControlProps) {
                 onScreenshot();
               }}
             >
-              <Icon path={mdiCameraOutline} size={16 / 24} />
+              <Icon path={mdiCameraOutline} size="16px" />
             </BaseButton>
           }
           {...bind}

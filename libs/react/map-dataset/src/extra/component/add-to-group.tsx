@@ -45,11 +45,11 @@ export function AddToGroup(props: WithLayerItemMenuComponentType) {
       }}
     >
       <div className="layer-context-menu__item-icon">
-        <Icon path={icon} size={16 / 24} />
+        <Icon path={icon} size="16px" />
       </div>
       <span>{name}</span>
       <div className="layer-context-menu__chevron">
-        <Icon path={mdiChevronRight} size={16 / 24} />
+        <Icon path={mdiChevronRight} size="16px" />
       </div>
       <ul className="context-menu layer-context-menu layer-context-menu--submenu">
         {children.map((child, index) => {
@@ -73,7 +73,7 @@ export function AddToGroup(props: WithLayerItemMenuComponentType) {
               <div className="layer-context-menu__item-icon">
                 <Icon
                   path={('icon' in child && child.icon) || mdiCircleSmall}
-                  size={16 / 24}
+                  size="16px"
                 />
               </div>
               <span>{('name' in child && child.name) || ''}</span>

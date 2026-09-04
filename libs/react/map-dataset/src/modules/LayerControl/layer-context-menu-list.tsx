@@ -88,7 +88,7 @@ export function LayerContextMenuList({
                 <div className="layer-context-menu__item-icon">
                   <Icon
                     path={('icon' in option && option.icon) || mdiCircleSmall}
-                    size={16 / 24}
+                    size="16px"
                   />
                 </div>
                 <span>{('name' in option && option.name) || ''}</span>

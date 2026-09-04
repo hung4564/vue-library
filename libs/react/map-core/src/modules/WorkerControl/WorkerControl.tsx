@@ -161,7 +161,7 @@ export function WorkerControl(props: WorkerControlProps) {
                     if (selected) clearHistory(selected.id);
                   }}
                 >
-                  <Icon path={mdiEraser} size={16 / 24} />
+                  <Icon path={mdiEraser} size="16px" />
                 </BaseButton>
                 {manyWorkers ? (
                   <BaseButton
@@ -172,7 +172,7 @@ export function WorkerControl(props: WorkerControlProps) {
                       clearHistory();
                     }}
                   >
-                    <Icon path={mdiNotificationClearAll} size={16 / 24} />
+                    <Icon path={mdiNotificationClearAll} size="16px" />
                   </BaseButton>
                 ) : null}
               </div>

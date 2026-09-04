@@ -155,7 +155,7 @@ export function MapContextMenuControl(props: MapContextMenuControlProps) {
               }}
             >
               <div className="map-context-menu__coords-icon">
-                <Icon path={mdiMapMarkerOutline} size={16 / 24} />
+                <Icon path={mdiMapMarkerOutline} size="16px" />
               </div>
               <span className="map-context-menu__label">{coordsLabel}</span>
             </li>
@@ -191,14 +191,12 @@ export function MapContextMenuControl(props: MapContextMenuControlProps) {
                 onClick={(event) => onSelect(item, event)}
               >
                 <div className="map-context-menu__item-icon">
-                  {item.icon ? (
-                    <Icon path={item.icon} size={16 / 24} />
-                  ) : null}
+                  {item.icon ? <Icon path={item.icon} size="16px" /> : null}
                 </div>
                 <span className="map-context-menu__label">{item.name}</span>
                 {item.children?.length ? (
                   <div className="map-context-menu__chevron">
-                    <Icon path={mdiChevronRight} size={16 / 24} />
+                    <Icon path={mdiChevronRight} size="16px" />
                   </div>
                 ) : null}
                 {item.children?.length ? (
@@ -207,14 +205,20 @@ export function MapContextMenuControl(props: MapContextMenuControlProps) {
                       const childKey = child.id || String(childIndex);
                       if (child.type === 'header') {
                         return (
-                          <li key={childKey} className="map-context-menu__header">
+                          <li
+                            key={childKey}
+                            className="map-context-menu__header"
+                          >
                             {child.name}
                           </li>
                         );
                       }
                       if (child.type === 'divider') {
                         return (
-                          <li key={childKey} className="map-context-menu__divider">
+                          <li
+                            key={childKey}
+                            className="map-context-menu__divider"
+                          >
                             <div className="map-context-menu__divider-line" />
                           </li>
                         );
@@ -232,7 +236,7 @@ export function MapContextMenuControl(props: MapContextMenuControlProps) {
                         >
                           <div className="map-context-menu__item-icon">
                             {child.icon ? (
-                              <Icon path={child.icon} size={16 / 24} />
+                              <Icon path={child.icon} size="16px" />
                             ) : null}
                           </div>
                           <span className="map-context-menu__label">

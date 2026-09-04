@@ -34,11 +34,11 @@ export function SampleCustomMenu({
       }}
     >
       <div className="layer-context-menu__item-icon">
-        <Icon path={mdiStar} size={16 / 24} />
+        <Icon path={mdiStar} size="16px" />
       </div>
       <span>{name}</span>
       <div className="layer-context-menu__chevron">
-        <Icon path={mdiChevronRight} size={16 / 24} />
+        <Icon path={mdiChevronRight} size="16px" />
       </div>
       <ul className="context-menu layer-context-menu layer-context-menu--submenu">
         <li
@@ -53,7 +53,7 @@ export function SampleCustomMenu({
           }}
         >
           <div className="layer-context-menu__item-icon">
-            <Icon path={mdiInformation} size={16 / 24} />
+            <Icon path={mdiInformation} size="16px" />
           </div>
           <span>Log layer (keep open)</span>
         </li>
@@ -65,7 +65,7 @@ export function SampleCustomMenu({
           }}
         >
           <div className="layer-context-menu__item-icon">
-            <Icon path={mdiClose} size={16 / 24} />
+            <Icon path={mdiClose} size="16px" />
           </div>
           <span>Done (close menu)</span>
         </li>

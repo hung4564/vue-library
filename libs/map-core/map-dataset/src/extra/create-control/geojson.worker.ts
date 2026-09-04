@@ -4,13 +4,11 @@ import type { GeoJSON } from 'geojson';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { reprojectGeojsonToWgs84 } from '../../../../core/src/utils/geojson-reproject';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { bboxFromGeojson } from '../../../../core/src/utils/fillBound';
 import type { GeojsonBbox } from '../../../../core/src/utils/fillBound';
-import {
-  detectGeojsonCrs,
-  detectGeojsonStyleTypes,
-} from './geojson-parse';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { bboxFromGeojson } from '../../../../core/src/utils/fillBound';
 import type { LayerStyleType } from '../../utils/layer-simple-builder';
+import { detectGeojsonCrs, detectGeojsonStyleTypes } from './geojson-parse';
 import {
   asGisFeatureCollection,
   parseGisFile,
@@ -256,7 +254,8 @@ async function handleMessage(message: GeojsonWorkerRequest) {
       case 'reproject-geojson': {
         const collection = asGisFeatureCollection(message.geojson);
         const total = collection?.features.length ?? 1;
-        const fromCrs = message.crs || detectGeojsonCrs(message.geojson) || 'unknown';
+        const fromCrs =
+          message.crs || detectGeojsonCrs(message.geojson) || 'unknown';
         report(0, total, 'reproject');
         postLog(
           `reproject ${describeGeojson(message.geojson)} from EPSG:${fromCrs} → 4326`,
@@ -272,10 +271,9 @@ async function handleMessage(message: GeojsonWorkerRequest) {
       }
       case 'detect-style-types': {
         report(0, 1, 'detect-styles');
-        postLog(
-          `detect style types ${describeGeojson(message.geojson)}`,
-          { taskId: message.id },
-        );
+        postLog(`detect style types ${describeGeojson(message.geojson)}`, {
+          taskId: message.id,
+        });
         styleTypes = detectGeojsonStyleTypes(message.geojson);
         geojson = message.geojson;
         report(1, 1, 'detect-styles');
@@ -292,10 +290,9 @@ async function handleMessage(message: GeojsonWorkerRequest) {
         bbox = bboxFromGeojson(message.geojson) ?? undefined;
         geojson = message.geojson;
         report(1, 1, 'bbox');
-        postLog(
-          bbox ? `bbox ${bbox.join(',')}` : 'bbox empty',
-          { taskId: message.id },
-        );
+        postLog(bbox ? `bbox ${bbox.join(',')}` : 'bbox empty', {
+          taskId: message.id,
+        });
         break;
       }
       default:
