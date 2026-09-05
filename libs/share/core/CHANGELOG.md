@@ -1,3 +1,13 @@
+## 0.1.0 (2026-09-05)
+
+### 🚀 Features
+
+- split map-dataset ([efa819b](https://github.com/hung4564/vue-library/commit/efa819b))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.0.6 (2025-04-22)
 
 This was a version bump only for shared-core to align it with other projects, there were no code changes.
