@@ -5,6 +5,7 @@ import { defineConfig, type DefaultTheme, type UserConfig } from 'vitepress';
 
 import { SharedFunctionsSideBar } from '../../libs/share/shared/metadata';
 import { getDraggableSideBar, getMapSideBar } from './metadata';
+import { navLabel, packageVersions } from './packages-versions';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDemoDraggable = process.env.VITEPRESS_SITE === 'demo-draggable';
@@ -48,9 +49,21 @@ const mainDocsConfig: UserConfig = {
     search: { provider: 'local' },
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Shared', link: '/shared/', activeMatch: '/^shared/' },
-      { text: 'Draggable', link: '/draggable/', activeMatch: '/draggable/' },
-      { text: 'Map', link: '/map/', activeMatch: '/map/' },
+      {
+        text: navLabel('Shared', '@hungpvq/shared'),
+        link: '/shared/',
+        activeMatch: '/^shared/',
+      },
+      {
+        text: navLabel('Draggable', '@hungpvq/draggable'),
+        link: '/draggable/',
+        activeMatch: '/draggable/',
+      },
+      {
+        text: navLabel('Map', '@hungpvq/vue-map-core'),
+        link: '/map/',
+        activeMatch: '/map/',
+      },
     ],
     sidebar: {
       '/shared': SharedFunctionsSideBar,
@@ -94,7 +107,7 @@ const mainDocsConfig: UserConfig = {
  */
 const demoSiteOrigin = 'https://hung4564.github.io';
 const demoDraggableConfig: UserConfig = {
-  title: '@hungpvq/draggable',
+  title: `@hungpvq/draggable ${packageVersions['@hungpvq/draggable']}`,
   description: 'Draggable docs and demos',
   srcDir: path.resolve(__dirname, '../../libs/draggable/core/docs'),
   base: '/demo-draggable/',
@@ -108,7 +121,10 @@ const demoDraggableConfig: UserConfig = {
   themeConfig: {
     search: { provider: 'local' },
     nav: [
-      { text: 'Docs', link: '/' },
+      {
+        text: navLabel('Docs', '@hungpvq/draggable'),
+        link: '/',
+      },
       {
         text: 'Demo Vue',
         link: `${demoSiteOrigin}/demo-draggable/vue/`,
