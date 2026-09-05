@@ -1,9 +1,13 @@
 <script lang="ts">
 export default {
   name: 'DraggableItemBottom',
+  // Mobile stand-in for popup/float/modal/drawer/sidebar — ignore their extra attrs
+  // (location, size, …) instead of falling through a fragment root.
+  inheritAttrs: false,
 };
 </script>
 <script setup lang="ts">
+import { ContextMenu } from '@hungpvq/vue-content-menu';
 import { computed, inject, ref, Ref, StyleValue } from 'vue';
 import {
   useComponent,
@@ -21,7 +25,9 @@ import {
   withShowProps,
 } from '../../hook';
 import MapButton from '../parts/MapButton.vue';
-const { CloseIcon, ToBackIcon, FullscreenIcon, OffFullscreenIcon } = useIcon();
+
+const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
+  useIcon();
 const props = defineProps({
   ...withShowProps,
   ...withExpandProps,
@@ -46,7 +52,7 @@ useInitAction(containerId.value, itemId.value, {
   open,
   close,
 });
-const { isFirst, isHasItems, onToBack } = useContainerOrder(
+const { switchItems, selectItem } = useContainerOrder(
   containerId.value,
   itemId.value,
 );
@@ -55,9 +61,33 @@ const { componentCard, componentCardHeader } = useComponent({
   ...props,
   containerId: containerId.value,
 });
+
+const contextMenuRef = ref<
+  | {
+      open(event: MouseEvent): void;
+      close(): void;
+    }
+  | undefined
+>();
+
 function onClose() {
   show.value = false;
 }
+function openMenu(e: MouseEvent) {
+  contextMenuRef.value?.open(e);
+}
+function closeContextMenu() {
+  contextMenuRef.value?.close();
+}
+function onSelectItem(id: string) {
+  selectItem(id);
+  closeContextMenu();
+}
+
+const showSwitcher = computed(
+  () => !props.disabledOrder && switchItems.value.length > 1,
+);
+
 const c_style = computed(() => {
   let style: StyleValue = {};
   style.zIndex = zIndex.value;
@@ -78,14 +108,14 @@ const c_style = computed(() => {
             </template>
             <template #extra-btn>
               <slot name="extra-btn"></slot>
-              <template v-if="isHasItems && !disabledOrder">
-                <map-button
-                  :disabled="isFirst"
-                  @click.prevent.stop="onToBack()"
-                >
-                  <ToBackIcon :size="16" />
-                </map-button>
-              </template>
+              <map-button
+                v-if="showSwitcher"
+                aria-label="Open item menu"
+                role="button"
+                @click="openMenu"
+              >
+                <SidebarOpenMenu :size="16" />
+              </map-button>
               <map-button @click="onToggleExpand()">
                 <FullscreenIcon :size="16" v-if="expand" />
                 <OffFullscreenIcon :size="16" v-else />
@@ -102,4 +132,17 @@ const c_style = computed(() => {
       </div>
     </component>
   </div>
+  <ContextMenu ref="contextMenuRef">
+    <ul class="context-menu">
+      <li
+        v-for="option in switchItems"
+        :key="option.id"
+        class="context-menu__item clickable"
+        :class="{ 'is-active': option.active }"
+        @click.stop="onSelectItem(option.id)"
+      >
+        <span v-html="option.title"></span>
+      </li>
+    </ul>
+  </ContextMenu>
 </template>

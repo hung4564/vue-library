@@ -14,11 +14,11 @@ export function useComponent(props: {
 }) {
   const store = useDragComponent();
   const componentCard = computed(
-    () => store.getComponentCard() || props.componentCard || MapCard,
+    () => props.componentCard || store.getComponentCard() || MapCard,
   );
   const componentCardHeader = computed(
     () =>
-      store.getComponentCardHeader() || props.componentCardHeader || MapHeader,
+      props.componentCardHeader || store.getComponentCardHeader() || MapHeader,
   );
   return { componentCard, componentCardHeader };
 }

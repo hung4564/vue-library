@@ -3,7 +3,17 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/react/demo-draggable/src",
   "projectType": "application",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project react-demo-draggable --web",
-  "targets": {}
+  "tags": ["draggable", "react", "demo"],
+  "targets": {
+    "publish-demo": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "vite build --outDir=../../../deploy/demo-draggable/react --emptyOutDir"
+        ],
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
 }

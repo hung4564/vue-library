@@ -1,8 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useDragContainer, useDragItem, useSidebarItem } from '../store';
+import { useSidebarItem } from '../store';
 import { LocationSideBar } from '../types';
-import { checkIsFirst, checkIsLast } from '../utils/array';
 
 export function useInitSidebar(
   containerId: string,
@@ -78,32 +77,4 @@ export function useInitSidebar(
   });
   const location = computed(() => locationRef.value);
   return { itemId, zIndex, location };
-}
-export function useContainerOrder(containerId: string, itemId: string) {
-  const store = useDragItem(containerId);
-  const items = computed(() => store.getItems());
-  const itemShows = computed(() => store.getItemsShow());
-  const isLast = computed(() => {
-    return checkIsLast(itemId, itemShows.value);
-  });
-  const isFirst = computed(() => {
-    return checkIsFirst(itemId, itemShows.value);
-  });
-  const isHasItems = computed(() => {
-    return itemShows.value.length > 1;
-  });
-  function onToBack() {
-    store.setToBack(itemId);
-  }
-  function onToFront() {
-    store.setToFront(itemId);
-  }
-  return { items, itemShows, isLast, isFirst, isHasItems, onToBack, onToFront };
-}
-
-export function useContainerSize(containerId: string) {
-  const store = useDragContainer(containerId);
-  const containerWidth = computed(() => store.getWidth());
-  const containerHeight = computed(() => store.getHeight());
-  return { containerWidth, containerHeight };
 }

@@ -2,6 +2,7 @@ export * from './useComponent';
 export * from './useContainerSize';
 export * from './useIcon';
 export * from './useInit';
+export * from './useInitDrawer';
 export * from './useInitItem';
 export * from './useInitSidebar';
 export * from './useShare';

@@ -78,6 +78,8 @@ const old_height = ref(p_height.value);
 const p_width = ref(props.width || 200);
 const p_x = ref(0);
 const p_y = ref(0);
+/** Remount VDR when center size changes so it remeasures parent after drawer layout. */
+const layoutKey = ref(0);
 const { expand } = useExpand(props, emit, true);
 function activateEv() {
   isActive.value = true;
@@ -103,19 +105,35 @@ watch(
   },
   { immediate: true },
 );
-function init() {
-  init_done.value = false;
+watch([containerWidth, containerHeight], (next, prev) => {
   if (!show.value) return;
+  init();
+  const [nw, nh] = next;
+  const [pw, ph] = prev || [0, 0];
+  if (nw !== pw || nh !== ph) {
+    layoutKey.value += 1;
+  }
+});
+function init() {
+  if (!show.value) {
+    init_done.value = false;
+    return;
+  }
+  if (containerWidth.value <= 0 || containerHeight.value <= 0) {
+    init_done.value = false;
+    return;
+  }
+
   if (props.left != null) {
     p_x.value = props.left;
   }
   if (props.top != null) {
     p_y.value = props.top;
   }
-  if (props.right) {
+  if (props.right != null) {
     p_x.value = containerWidth.value - props.right - p_width.value;
   }
-  if (props.bottom) {
+  if (props.bottom != null) {
     p_y.value = containerHeight.value - props.bottom - p_height.value;
   }
   if (props.center || props.centerX) {
@@ -141,7 +159,9 @@ function onDragging() {
 <template>
   <VueDraggableResizable
     v-if="show && init_done"
+    :key="layoutKey"
     v-bind="$attrs"
+    class="draggable-popup-wrapper"
     dragHandle=".drag"
     :parent="true"
     :handles="sticks"

@@ -1,9 +1,11 @@
+import { WithMobileHandle } from '../../hoc/mobile-handle';
 import { DraggableContainer } from './draggable-container';
 import { DraggableItemBottom } from './item-bottom';
+import { DraggableDrawer } from './item-drawer';
 import { DraggableItemFloat } from './item-float';
+import { DraggableModal as DraggableModalOrigin } from './item-modal';
 import { DraggableItemPopup } from './item-popup';
 import { DraggableItemSideBar } from './item-sidebar';
-import { WithMobileHandle } from '../../hoc/mobile-handle';
 
 const DraggableItemSideBarWithMobile = WithMobileHandle(
   DraggableItemSideBar,
@@ -17,11 +19,21 @@ const DraggableItemFloatWithMobile = WithMobileHandle(
   DraggableItemFloat,
   DraggableItemBottom,
 );
+const DraggableModalWithMobile = WithMobileHandle(
+  DraggableModalOrigin,
+  DraggableItemBottom,
+);
+const DraggableDrawerWithMobile = WithMobileHandle(
+  DraggableDrawer,
+  DraggableItemBottom,
+);
 
 export {
   DraggableContainer,
-  DraggableItemSideBarWithMobile as DraggableItemSideBar,
+  DraggableDrawerWithMobile as DraggableDrawer,
   DraggableItemBottom,
-  DraggableItemPopupWithMobile as DraggableItemPopup,
   DraggableItemFloatWithMobile as DraggableItemFloat,
+  DraggableItemPopupWithMobile as DraggableItemPopup,
+  DraggableItemSideBarWithMobile as DraggableItemSideBar,
+  DraggableModalWithMobile as DraggableModal,
 };

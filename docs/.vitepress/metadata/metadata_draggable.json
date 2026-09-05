@@ -29,6 +29,18 @@
       "package": "Draggable",
       "docs": "/draggable/draggable-item-bottom",
       "category": "Component"
+    },
+    {
+      "name": "DraggableModal",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-modal",
+      "category": "Component"
+    },
+    {
+      "name": "DraggableDrawer",
+      "package": "Draggable",
+      "docs": "/draggable/draggable-drawer",
+      "category": "Component"
     }
   ]
 }

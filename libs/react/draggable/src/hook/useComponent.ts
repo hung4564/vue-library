@@ -17,11 +17,11 @@ export function useComponent(props: {
     | ShareHeaderComponent
     | undefined;
   const componentCard = useMemo(
-    () => storeCard || props.componentCard || MapCard,
+    () => props.componentCard || storeCard || MapCard,
     [storeCard, props.componentCard],
   );
   const componentCardHeader = useMemo(
-    () => storeHeader || props.componentCardHeader || MapHeader,
+    () => props.componentCardHeader || storeHeader || MapHeader,
     [storeHeader, props.componentCardHeader],
   );
   return { componentCard, componentCardHeader };

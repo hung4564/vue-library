@@ -11,12 +11,12 @@ The Vue Library Map collection provides a complete set of Vue.js components and 
 ### Core Libraries
 
 - **[@hungpvq/vue-map-core](./core/)** - Core map functionality and components
-- **[@hungpvq/vue-map-basemap](./basemap/)** - Base map controls and switching
+- **[Basemap](./core/basemap/)** - Base map controls and switching
 - **[@hungpvq/vue-map-draw](./draw/)** - Drawing and editing tools
-- **[@hungpvq/vue-map-measurement](./measurement/)** - Distance and area measurement
-- **[@hungpvq/vue-map-print](./print/)** - Map printing functionality
+- **[Measurement](./core/measurement/)** - Distance and area measurement
+- **[Print](./core/print/)** - Map printing functionality
 - **[@hungpvq/vue-map-dataset](./dataset/)** - Dataset management and visualization
-- **[@hungpvq/vue-map-legend](./legend/)** - Legend components
+- **[Legend](./core/legend/)** - Legend components
 
 ## 🚀 Quick Start
 
@@ -239,12 +239,12 @@ function onMapLoaded(map: any) {
 ## 📚 Documentation Structure
 
 - **[Core](./core/)** - Core map functionality and components
-- **[Basemap](./basemap/)** - Base map controls and switching
+- **[Basemap](./core/basemap/)** - Base map controls and switching
 - **[Draw](./draw/)** - Drawing and editing tools
-- **[Measurement](./measurement/)** - Distance and area measurement
-- **[Print](./print/)** - Map printing functionality
+- **[Measurement](./core/measurement/)** - Distance and area measurement
+- **[Print](./core/print/)** - Map printing functionality
 - **[Dataset](./dataset/)** - Dataset management and visualization
-- **[Legend](./legend/)** - Legend components
+- **[Legend](./core/legend/)** - Legend components
 
 ## 🛠️ Development
 

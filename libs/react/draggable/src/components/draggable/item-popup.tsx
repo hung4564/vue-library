@@ -153,7 +153,7 @@ export function DraggableItemPopup({
 
   const handleResize = useCallback(
     (
-      _e: MouseEvent | TouchEvent,
+      _e: any,
       _dir: unknown,
       elementRef: HTMLElement,
       _delta: unknown,
@@ -177,7 +177,7 @@ export function DraggableItemPopup({
 
   const handleResizeStop = useCallback(
     (
-      _e: MouseEvent | TouchEvent,
+      _e: any,
       _dir: unknown,
       elementRef: HTMLElement,
       _delta: unknown,
@@ -270,7 +270,7 @@ export function DraggableItemPopup({
       className="draggable-popup-wrapper"
       size={{ width: p_width, height: p_height }}
       position={{ x: p_x, y: p_y }}
-      style={{ zIndex }}
+      style={{ zIndex, overflow: 'visible' }}
       bounds="parent"
       dragHandleClassName="drag"
       enableResizing={enableResizing}

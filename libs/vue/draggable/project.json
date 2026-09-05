@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/vue/draggable/src",
   "projectType": "library",
-  "tags": ["draggable"],
+  "tags": ["draggable", "vue"],
   "targets": {
     "ts-check": {
       "executor": "nx:run-commands",

@@ -1,14 +1,14 @@
+import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDragContainer, useDragItem, useDragStore } from '../store';
 import { InitOption } from '../types';
-import { checkIsFirst, checkIsLast } from '../utils/array';
 
 export function useInitItem(
   containerId: string,
   show: Ref<boolean>,
   optionDefault: InitOption = {
-    type: 'draggable-item',
+    type: 'item-popup',
   },
 ) {
   const itemId = ref(`draggable-item-${getUUIDv4()}`);
@@ -21,7 +21,7 @@ export function useInitItem(
   }
   const store = useDragItem(containerId);
   onMounted(() => {
-    store.registerItem(itemId.value);
+    store.registerItem(itemId.value, optionDefault.type);
     store.registerAction(itemId.value, {
       ...optionDefault,
       setZIndex,
@@ -41,8 +41,12 @@ export function useInitItem(
 }
 export function useContainerOrder(containerId: string, itemId: string) {
   const store = useDragItem(containerId);
-  const items = computed(() => store.getItems());
-  const itemShows = computed(() => store.getItemsShow());
+  const dragStore = useDragStore();
+  const group = computed(() =>
+    itemTypeToGroup(dragStore.container[containerId]?.actions?.[itemId]?.type),
+  );
+  const items = computed(() => store.getItems(group.value));
+  const itemShows = computed(() => store.getItemsShow(group.value));
   const isLast = computed(() => {
     return checkIsLast(itemId, itemShows.value);
   });
@@ -52,13 +56,37 @@ export function useContainerOrder(containerId: string, itemId: string) {
   const isHasItems = computed(() => {
     return itemShows.value.length > 1;
   });
+  /** All registered items in this group (for mobile/desktop switcher menus). */
+  const switchItems = computed(() => {
+    const actions = dragStore.container[containerId]?.actions || {};
+    return items.value.map((id) => ({
+      id,
+      title: actions[id]?.title || id,
+      active: id === itemId,
+    }));
+  });
   function onToBack() {
     store.setToBack(itemId);
   }
   function onToFront() {
     store.setToFront(itemId);
   }
-  return { items, itemShows, isLast, isFirst, isHasItems, onToBack, onToFront };
+  function selectItem(id: string) {
+    const action = dragStore.container[containerId]?.actions?.[id];
+    action?.setShow?.(true);
+    store.setToFront(id);
+  }
+  return {
+    items,
+    itemShows,
+    switchItems,
+    isLast,
+    isFirst,
+    isHasItems,
+    onToBack,
+    onToFront,
+    selectItem,
+  };
 }
 
 export function useContainerSize(containerId: string) {
@@ -71,10 +99,23 @@ export function useContainerSize(containerId: string) {
 export function useManagement(containerId: string) {
   const store = useDragStore();
   const container = store.container[containerId];
-  const items = computed(() => container.items);
-  const itemShows = computed(() => container.show);
-  const sideBar = computed(() => container.sideBar);
-  const width = computed(() => container.width);
-  const height = computed(() => container.height);
-  return { containerId, items, itemShows, sideBar, width, height };
+  const popup = computed(() => container?.popup || { items: [], show: [] });
+  const modal = computed(() => container?.modal || { items: [], show: [] });
+  const float = computed(() => container?.float || { items: [], show: [] });
+  const bottom = computed(() => container?.bottom || { items: [], show: [] });
+  const sideBar = computed(() => container?.sideBar);
+  const drawer = computed(() => container?.drawer);
+  const width = computed(() => container?.width || 0);
+  const height = computed(() => container?.height || 0);
+  return {
+    containerId,
+    popup,
+    modal,
+    float,
+    bottom,
+    sideBar,
+    drawer,
+    width,
+    height,
+  };
 }

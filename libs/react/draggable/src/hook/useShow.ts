@@ -8,27 +8,24 @@ export function useShow(
   },
   init?: boolean,
 ) {
-  const isControlled = props.show !== undefined;
-  const [uncontrolledShow, setUncontrolledShow] = useState<boolean>(
-    !!props.show || !!init,
-  );
+  // Match Vue: local state is source of truth; prop syncs in when it changes.
+  const [p_show, setPShow] = useState<boolean>(!!props.show || !!init);
   const emitRef = useRef(emit);
   emitRef.current = emit;
 
-  const show = isControlled ? props.show! : uncontrolledShow;
+  useEffect(() => {
+    if (props.show !== undefined) {
+      setPShow(props.show);
+    }
+  }, [props.show]);
 
-  const setShow = useCallback(
-    (val: boolean) => {
-      if (!isControlled) {
-        setUncontrolledShow(val);
-      }
-      emitRef.current?.['update:show']?.(val);
-      if (!val) {
-        emitRef.current?.close?.();
-      }
-    },
-    [isControlled],
-  );
+  const setShow = useCallback((val: boolean) => {
+    setPShow(val);
+    emitRef.current?.['update:show']?.(val);
+    if (!val) {
+      emitRef.current?.close?.();
+    }
+  }, []);
 
   const open = useCallback(() => {
     setShow(true);
@@ -38,7 +35,7 @@ export function useShow(
     setShow(false);
   }, [setShow]);
 
-  return { show, setShow, open, close };
+  return { show: p_show, setShow, open, close };
 }
 
 export const withShowProps = {

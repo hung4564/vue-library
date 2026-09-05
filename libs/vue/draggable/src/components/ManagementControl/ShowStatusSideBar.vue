@@ -1,10 +1,13 @@
 <template>
-  <div class="show-status">
-    <div v-for="(state, side) in items" :key="side" class="side-block">
-      <div class="side-title">
-        Sidebar {{ capitalize(side) }} ({{ state.items.length }} item{{
-          state.items.length !== 1 ? 's' : ''
-        }})
+  <div class="mgmt-groups">
+    <div
+      v-for="(state, side) in filledSides"
+      :key="side"
+      class="mgmt-group"
+    >
+      <div class="mgmt-group__title">
+        <span>{{ capitalize(side) }}</span>
+        <span class="mgmt__count">{{ state.items.length }}</span>
       </div>
       <ItemList
         :items="state.items"
@@ -12,7 +15,7 @@
         :containerId="containerId"
       >
         <template #extra="{ item, show }">
-          <map-button @click="onOpen(item)" v-if="!show">
+          <map-button @click.stop="onOpen(item)" v-if="!show" title="Show">
             <ShowIcon :size="16" />
           </map-button>
         </template>
@@ -22,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
 import { LocationSideBar, SidebarConfig } from '../../types';
@@ -37,6 +41,13 @@ const { ShowIcon } = useIcon();
 function capitalize(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+const filledSides = computed(() => {
+  const result = {} as Record<string, SidebarConfig>;
+  for (const [side, state] of Object.entries(props.items || {})) {
+    if (state?.items?.length) result[side] = state;
+  }
+  return result;
+});
 const { getItemAction } = useDragContainer(props.containerId);
 function onOpen(id: string) {
   getItemAction(id).open?.();

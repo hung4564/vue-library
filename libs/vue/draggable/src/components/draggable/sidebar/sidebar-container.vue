@@ -6,7 +6,7 @@ export default {
 <script setup lang="ts">
 import { ContextMenu } from '@hungpvq/vue-content-menu';
 import { computed, inject, PropType, ref, Ref, watch } from 'vue';
-import { type LocationSideBar } from '../../..//types';
+import { type LocationSideBar } from '../../../types';
 import {
   useComponent,
   useContainerSize,
@@ -87,14 +87,14 @@ function closeContextMenu() {
   if (contextMenuRef.value) contextMenuRef.value.close();
 }
 const allItems = computed(() => getItemsForLocation(props.location));
-const availableSidebarItems = computed(() =>
-  allItems.value.filter((x) => x.id !== getShowForLocation(props.location)),
-);
+const activeSidebarId = computed(() => getShowForLocation(props.location));
+const showSwitcher = computed(() => allItems.value.length > 1);
 function openMenu(e: MouseEvent) {
   if (contextMenuRef.value) contextMenuRef.value.open(e);
 }
-function selectSideBar(itemId: string) {
-  storeDragItem.registerSideBarShow(itemId, true);
+function selectSideBar(nextId: string) {
+  storeDragItem.registerSideBarShow(nextId, true);
+  closeContextMenu();
 }
 </script>
 
@@ -126,7 +126,7 @@ function selectSideBar(itemId: string) {
               <slot name="extra-btn"></slot>
               <map-button
                 @click="openMenu"
-                v-if="availableSidebarItems.length > 0"
+                v-if="showSwitcher"
                 aria-label="Open sidebar menu"
                 role="button"
               >
@@ -160,13 +160,11 @@ function selectSideBar(itemId: string) {
   <ContextMenu ref="contextMenuRef">
     <ul class="context-menu">
       <li
-        v-for="(option, index) in availableSidebarItems"
-        :key="index"
-        @click.stop="
-          selectSideBar(option.id);
-          closeContextMenu();
-        "
+        v-for="option in allItems"
+        :key="option.id"
+        @click.stop="selectSideBar(option.id)"
         class="context-menu__item clickable"
+        :class="{ 'is-active': option.id === activeSidebarId }"
       >
         <span v-html="option.title"></span>
       </li>

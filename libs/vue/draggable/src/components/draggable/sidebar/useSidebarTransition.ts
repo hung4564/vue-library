@@ -1,5 +1,5 @@
 import { computed, Ref } from 'vue';
-import { LocationSideBar } from '../../..//types';
+import { LocationSideBar } from '../../../types';
 
 export function useSidebarTransition(
   props: { location: LocationSideBar },

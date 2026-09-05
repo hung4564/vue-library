@@ -1,27 +1,24 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
+  base: '/demo-draggable/react/',
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/apps/react/demo-draggable',
   server: {
-    port: 4200,
+    port: 4201,
     host: 'localhost',
   },
   preview: {
-    port: 4300,
+    port: 4301,
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
   build: {
-    outDir: '../../../dist/apps/react/demo-draggable',
+    outDir: '../../../deploy/demo-draggable/react',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

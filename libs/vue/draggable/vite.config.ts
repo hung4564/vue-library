@@ -7,7 +7,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/draggable',
+  cacheDir: '../../../node_modules/.vite/libs/vue/draggable',
 
   plugins: [
     vue(),
@@ -26,7 +26,7 @@ export default defineConfig({
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../../dist/libs/draggable',
+    outDir: '../../../dist/libs/vue/draggable',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,

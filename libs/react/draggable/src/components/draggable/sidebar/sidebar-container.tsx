@@ -91,10 +91,11 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
     () => getItemsForLocation(location),
     [getItemsForLocation, location],
   );
-  const availableSidebarItems = useMemo(
-    () => allItems.filter((x) => x.id !== getShowForLocation(location)),
-    [allItems, getShowForLocation, location],
+  const activeSidebarId = useMemo(
+    () => getShowForLocation(location),
+    [getShowForLocation, location],
   );
+  const showSwitcher = allItems.length > 1;
 
   const classes = [
     'sidebar-container',
@@ -128,7 +129,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
                 }
                 extraBtn={
                   <>
-                    {availableSidebarItems.length > 0 && (
+                    {showSwitcher && (
                       <MapButton
                         onClick={openMenu}
                         aria-label="Open sidebar menu"
@@ -167,10 +168,16 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
       </div>
       <ContextMenu ref={contextMenuRef}>
         <ul className="context-menu">
-          {availableSidebarItems.map((item) => (
+          {allItems.map((item) => (
             <li
               key={item.id}
-              className="context-menu__item clickable"
+              className={[
+                'context-menu__item',
+                'clickable',
+                item.id === activeSidebarId ? 'is-active' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               onClick={() => selectSideBar(item.id)}
             >
               <span>{item.title ?? ''}</span>

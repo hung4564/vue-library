@@ -4,9 +4,9 @@ import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/demo-draggable/',
+  base: '/demo-draggable/vue/',
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/apps/vue-library-map',
+  cacheDir: '../../../node_modules/.vite/apps/vue/demo-draggable',
 
   server: {
     port: 4200,
@@ -20,13 +20,9 @@ export default defineConfig({
 
   plugins: [vue(), nxViteTsPaths()],
 
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-
   build: {
-    outDir: '../../../dist/apps/vue-library-map',
+    outDir: '../../../deploy/demo-draggable/vue',
+    emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -40,10 +36,9 @@ export default defineConfig({
     },
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../../coverage/apps/vue-library-map',
+      reportsDirectory: '../../../coverage/apps/vue/demo-draggable',
       provider: 'v8',
     },
   },

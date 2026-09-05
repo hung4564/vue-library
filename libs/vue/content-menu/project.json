@@ -13,6 +13,11 @@
         "forwardAllArgs": false,
         "description": "Type check with tsc"
       }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
     }
   }
 }

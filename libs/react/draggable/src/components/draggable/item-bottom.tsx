@@ -1,4 +1,10 @@
-import { ReactNode, useMemo } from 'react';
+import {
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -12,7 +18,9 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
+import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { MapButton } from '../parts/MapButton';
+
 export interface DraggableItemBottomProps {
   show?: boolean;
   expand?: boolean;
@@ -38,7 +46,6 @@ export function DraggableItemBottom({
   containerId: propContainerId,
   componentCard,
   componentCardHeader,
-  disabledExpand,
   disabledHeader,
   disabledClose,
   disabledOrder,
@@ -66,10 +73,7 @@ export function DraggableItemBottom({
     open,
     close,
   });
-  const { isFirst, isHasItems, onToBack } = useContainerOrder(
-    containerId,
-    itemId,
-  );
+  const { switchItems, selectItem } = useContainerOrder(containerId, itemId);
   const { expand, toggle: onToggleExpand } = useExpand(
     { expand: propExpand },
     {
@@ -83,12 +87,27 @@ export function DraggableItemBottom({
     containerId,
   });
 
-  const { CloseIcon, ToBackIcon, FullscreenIcon, OffFullscreenIcon } =
+  const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
     useIcon();
+  const contextMenuRef = useRef<ContextMenuRef>(null);
 
-  function handleClose() {
+  const handleClose = useCallback(() => {
     setShow(false);
-  }
+  }, [setShow]);
+
+  const openMenu = useCallback((e: ReactMouseEvent) => {
+    contextMenuRef.current?.open(e);
+  }, []);
+
+  const onSelectItem = useCallback(
+    (id: string) => {
+      selectItem(id);
+      contextMenuRef.current?.close();
+    },
+    [selectItem],
+  );
+
+  const showSwitcher = !disabledOrder && switchItems.length > 1;
 
   const style = useMemo(() => {
     return {
@@ -97,42 +116,73 @@ export function DraggableItemBottom({
     };
   }, [zIndex, expand]);
 
-  if (!show) return null;
+  const menu = (
+    <ContextMenu ref={contextMenuRef}>
+      <ul className="context-menu">
+        {switchItems.map((item) => (
+          <li
+            key={item.id}
+            className={[
+              'context-menu__item',
+              'clickable',
+              item.active ? 'is-active' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={() => onSelectItem(item.id)}
+          >
+            <span>{item.title ?? ''}</span>
+          </li>
+        ))}
+      </ul>
+    </ContextMenu>
+  );
+
+  if (!show) {
+    return menu;
+  }
 
   return (
-    <div className="popup-mobile-container" style={style}>
-      <Card highlight={isHighlight}>
-        <div className="draggable-bottom">
-          {!disabledHeader && (
-            <Header
-              title={title}
-              extraBtn={
-                <>
-                  {extraBtn}
-                  {isHasItems && !disabledOrder && (
-                    <MapButton disabled={isFirst} onClick={onToBack}>
-                      <ToBackIcon size={'16px'} />
-                    </MapButton>
-                  )}
-                  <MapButton onClick={onToggleExpand}>
-                    {expand ? (
-                      <FullscreenIcon size={'16px'} />
-                    ) : (
-                      <OffFullscreenIcon size={'16px'} />
+    <>
+      <div className="popup-mobile-container" style={style}>
+        <Card highlight={isHighlight}>
+          <div className="draggable-bottom">
+            {!disabledHeader && (
+              <Header
+                title={title}
+                extraBtn={
+                  <>
+                    {extraBtn}
+                    {showSwitcher && (
+                      <MapButton
+                        onClick={openMenu}
+                        aria-label="Open item menu"
+                        role="button"
+                      >
+                        <SidebarOpenMenu size={'16px'} />
+                      </MapButton>
                     )}
-                  </MapButton>
-                  {!disabledClose && (
-                    <MapButton onClick={handleClose}>
-                      <CloseIcon size={'16px'} />
+                    <MapButton onClick={onToggleExpand}>
+                      {expand ? (
+                        <FullscreenIcon size={'16px'} />
+                      ) : (
+                        <OffFullscreenIcon size={'16px'} />
+                      )}
                     </MapButton>
-                  )}
-                </>
-              }
-            />
-          )}
-          <div className="draggable-bottom-content">{children}</div>
-        </div>
-      </Card>
-    </div>
+                    {!disabledClose && (
+                      <MapButton onClick={handleClose}>
+                        <CloseIcon size={'16px'} />
+                      </MapButton>
+                    )}
+                  </>
+                }
+              />
+            )}
+            <div className="draggable-bottom-content">{children}</div>
+          </div>
+        </Card>
+      </div>
+      {menu}
+    </>
   );
 }

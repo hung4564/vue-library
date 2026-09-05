@@ -16,7 +16,7 @@ const links = [
     target: path.resolve(__dirname, '../docs/pages/map/draw'),
   },
   {
-    source: path.resolve(__dirname, '../libs/vue/draggable/docs'),
+    source: path.resolve(__dirname, '../libs/draggable/core/docs'),
     target: path.resolve(__dirname, '../docs/pages/draggable'),
   },
   {

@@ -134,9 +134,10 @@ defineExpose({ open, close });
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 40px;
+  padding: 40px 16px;
   height: 100%;
   overflow: auto;
+  box-sizing: border-box;
 }
 
 /* Close button style */

@@ -1,0 +1,342 @@
+/**
+ * Shared demo chrome for Vue + React demo-draggable.
+ * Import from both apps so typography, spacing, and shell layout stay identical.
+ */
+:root {
+  --demo-font-family:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --demo-font-size: 14px;
+  --demo-line-height: 1.5;
+  --demo-heading-size: 16px;
+  --demo-heading-line-height: 1.4;
+  --demo-nav-font-size: 13px;
+  --demo-btn-font-size: 13px;
+  --demo-code-font-size: 12px;
+  --demo-panel-padding: 16px;
+
+  /* Align library chrome with demo typography */
+  --map-font-family: var(--demo-font-family);
+  --map-line-height: 1.4;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+  tab-size: 4;
+  scroll-behavior: smooth;
+  height: 100%;
+  position: relative;
+  overflow: hidden !important;
+}
+
+body,
+html,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+pre,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+ul,
+ol {
+  list-style-position: inside;
+}
+
+pre,
+code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.demo-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.demo-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  background: #1e293b;
+  color: #e2e8f0;
+  z-index: 10000;
+  flex-shrink: 0;
+}
+
+.demo-nav__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  min-height: 28px;
+  border-radius: 4px;
+  font-size: var(--demo-nav-font-size);
+  font-weight: 500;
+  line-height: 1.2;
+  color: #cbd5e1;
+}
+
+.demo-nav__link:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.demo-nav__link--active {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.demo-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.demo-page {
+  width: 100%;
+  height: 100%;
+}
+
+.draggable-root {
+  height: 100%;
+}
+
+.panel {
+  box-sizing: border-box;
+  padding: var(--demo-panel-padding);
+  height: 100%;
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+  color: inherit;
+}
+
+.panel h2,
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: var(--demo-heading-size);
+  font-weight: 600;
+  line-height: var(--demo-heading-line-height);
+}
+
+.panel p {
+  margin: 0 0 12px;
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.panel p:last-child {
+  margin-bottom: 0;
+}
+
+.panel code {
+  font-size: var(--demo-code-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.panel ul,
+.panel ol {
+  margin: 0 0 12px;
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.demo-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+
+.demo-btn {
+  display: block;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  min-height: 36px;
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-btn-font-size);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.demo-btn:hover {
+  background: #0284c7;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* ManagementControl readability inside demos */
+.management-info-container {
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.management-info-container label,
+.management-info-container span,
+.management-info-container button {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.custom-card--global {
+  position: relative;
+  background: linear-gradient(160deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #059669;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.2);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #064e3b;
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.custom-card--local {
+  position: relative;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffedd5 100%);
+  border: 2px solid #ea580c;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.2);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #7c2d12;
+  font-family: var(--demo-font-family);
+  font-size: var(--demo-font-size);
+  line-height: var(--demo-line-height);
+}
+
+.custom-card__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.custom-card--global .custom-card__badge {
+  background: #059669;
+}
+
+.custom-card--local .custom-card__badge {
+  background: #ea580c;
+}
+
+.custom-card__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-card.highlight {
+  outline: 2px solid #f59e0b;
+}
+
+.custom-header--global .draggable-header {
+  background: #059669;
+  color: #fff;
+}
+
+.custom-header--global .draggable-header__title {
+  color: #fff;
+  font-weight: 600;
+}
+
+.custom-header--local .draggable-header {
+  background: #ea580c;
+  color: #fff;
+}
+
+.custom-header--local .draggable-header__title {
+  color: #fff;
+  font-weight: 600;
+}
