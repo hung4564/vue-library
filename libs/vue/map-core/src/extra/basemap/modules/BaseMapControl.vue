@@ -7,7 +7,7 @@
             class="clickable base-map-button__container"
             height="70px"
             width="70px"
-            @click="onToggleList"
+            @click.stop="onToggleList"
           >
             <div class="base-map-button__content">
               <map-image :src="current_baseMaps.thumbnail">

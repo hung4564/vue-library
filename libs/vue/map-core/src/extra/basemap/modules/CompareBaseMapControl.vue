@@ -109,21 +109,21 @@ import {
   INIT_BASEMAPS,
 } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { defaultMapProps, useMap } from '../../../hooks';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLayersOutline } from '@mdi/js';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
   MapCard,
   MapControlButton,
   MapIcon,
   MapImage,
 } from '../../../components';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../../extra/lang';
 import { getMapCompareSetting } from '../../../extra/compare';
+import { useLang } from '../../../extra/lang';
 import { useRegisterMapControl } from '../../../extra/registry';
+import { defaultMapProps, useMap } from '../../../hooks';
+import { ModuleContainer } from '../../../modules';
 import { getMaps } from '../../../store/store';
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiLayersOutline } from '@mdi/js';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useBaseMap } from '../hooks';
 
 const props = withDefaults(
