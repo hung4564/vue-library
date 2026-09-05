@@ -98,7 +98,9 @@
     "version": {
       "preVersionCommand": "npx nx run-many -t build",
       "fallbackCurrentVersionResolver": "disk",
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "updateDependents": "never",
+      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
     },
     "changelog": {
       "projectChangelogs": {
@@ -122,7 +124,8 @@
         "version": {
           "fallbackCurrentVersionResolver": "disk",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build"
+          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build",
+          "updateDependents": "auto"
         },
         "changelog": {
           "projectChangelogs": true
@@ -143,7 +146,10 @@
           "!@hungpvq/vue-draggable",
           "!react-draggable"
         ],
-        "projectsRelationship": "independent"
+        "projectsRelationship": "independent",
+        "version": {
+          "updateDependents": "never"
+        }
       }
     }
   },
