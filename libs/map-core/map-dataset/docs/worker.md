@@ -1,8 +1,8 @@
 # GIS worker
 
-[`CreateControl`](./module/CreateControl.md) reads GIS files, parses them to GeoJSON, and reprojects CRS **off the main thread** using a Web Worker. You do not start the worker yourself — it is created the first time a file is read, text is pasted, a sample URL is fetched, a layer is created with a CRS other than EPSG:4326, or bbox / auto-style work runs.
+[`CreateControl`](./module/CreateControl.md) reads GIS files, parses them to GeoJSON, and reprojects CRS **off the main thread** using a Web Worker. You do not start the worker yourself — it starts the first time a file is read, text is pasted, a sample URL is fetched, a layer is created with a CRS other than EPSG:4326, or bbox / auto-style work runs.
 
-If the worker cannot start, the same work still runs on the main thread (large files can freeze the UI). Configure your bundler so the worker actually loads.
+If the worker cannot start, the same work still runs on the main thread (large files can freeze the UI). Configure the app so the worker file is actually reachable.
 
 Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`, name **GIS**) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).
 
@@ -33,31 +33,57 @@ Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
 - Turf **bbox** when creating a layer (always prefers worker)
 - Auto style-type detection when FeatureCollection is large (≥ ~2000 features)
 
-## Vite
+## Setup (pick your app type)
 
-The worker is created with:
+### A. App installs the published package (npm) — e.g. `vue-3-test-map`
 
-```ts
-new Worker(new URL('./geojson.worker.ts', import.meta.url), { type: 'module' });
+The published `@hungpvq/map-dataset` builds the worker to:
+
+```text
+node_modules/@hungpvq/map-dataset/assets/geojson.worker-<hash>.js
 ```
 
-Vite must emit it as an ES module worker.
-
-### Plain Vite app
+and creates it with an **absolute** URL:
 
 ```ts
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  worker: {
-    format: 'es',
-  },
+new Worker(new URL('/assets/geojson.worker-<hash>.js', import.meta.url), {
+  type: 'module',
 });
 ```
 
-### Nx / TypeScript path aliases
+The browser therefore requests `http://localhost:<port>/assets/geojson.worker-<hash>.js`.  
+That file is **not** copied automatically — do **not** copy it by hand into `public/`. Use the Vite plugin instead.
 
-Vite workers **do not inherit** `plugins` from the main config. If you use `@nx/vite` path aliases (`nxViteTsPaths`), add them to `worker.plugins`:
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { mapDatasetGisWorker } from '@hungpvq/map-dataset/vite';
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    // Syncs package assets → public/assets on every Vite start / build
+    mapDatasetGisWorker(),
+  ],
+});
+```
+
+After `npm run dev` / `npm run build`, you should see:
+
+```text
+public/assets/geojson.worker-<hash>.js
+```
+
+Vite serves `public/` at the site root, so `/assets/…` resolves. When you upgrade `@hungpvq/map-dataset`, the plugin replaces the old hashed file — no manual cleanup.
+
+**Without the plugin**, CreateControl falls back to the main thread (or 404s the worker). Copying into `public/assets` by hand works once, then breaks on the next package version when the hash changes.
+
+React / Vue UI packages both depend on `@hungpvq/map-dataset` — one plugin on the app Vite config is enough.
+
+### B. App in this Nx monorepo (source / path aliases)
+
+When Vite resolves workspace TypeScript (not the published `dist`), configure the **worker** bundler. Workers do **not** inherit main `plugins`:
 
 ```ts
 import { defineConfig } from 'vite';
@@ -73,7 +99,7 @@ export default defineConfig({
 });
 ```
 
-Without this, `dev` / `build` can fail with:
+Without `worker.plugins`, you may see:
 
 ```text
 [vite:worker-import-meta-url] Rollup failed to resolve import "@hungpvq/map-core"
@@ -83,9 +109,11 @@ or the worker fails silently and parsing falls back to the main thread.
 
 Reference configs: `apps/vue/demo-map/vite.config.ts`, `apps/react/demo-map/vite.config.ts`.
 
+Do **not** use `mapDatasetGisWorker()` here — the monorepo builds the worker from source via `new URL('./geojson.worker.ts', import.meta.url)`.
+
 ### Webpack 5
 
-Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' })`. If module workers are disabled, the library falls back to the main thread.
+Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' })`. If module workers are disabled, the library falls back to the main thread. For a published npm install, still expose the hashed file at `/assets/geojson.worker-….js` (copy from `node_modules/@hungpvq/map-dataset/assets/` into your static output).
 
 ## Call the APIs yourself
 
@@ -132,6 +160,8 @@ form.geojson = markRaw(geojson);
 
 ## This repo (library / workspace)
 
-Worker source must import map-core **relatively**, not `@hungpvq/map-core`. Vite workers cannot resolve workspace package names and would leave them external.
+Worker source must import map-core utilities **relatively**, not `@hungpvq/map-core`. Vite workers cannot resolve workspace package names and would leave them external.
 
 Do **not** enable `worker.plugins` on `@hungpvq/vue-map-dataset`’s Vite config (Vue SFC parse error). Keep `@hungpvq/map-dataset` external there so the wrapper does not rebundle the worker.
+
+The Vite helper for consumer apps is exported as `@hungpvq/map-dataset/vite` (`mapDatasetGisWorker`).

@@ -2,7 +2,7 @@
 
 Vue 3 UI for map datasets: layer list, groups, identify, legends, and menus. Logic lives in [`@hungpvq/map-dataset`](../../map-core/map-dataset). React counterpart: [`@hungpvq/react-map-dataset`](../../react/map-dataset).
 
-**Docs:** [Getting started](./docs/index.md) · [GeoJSON worker](./docs/worker.md) · [Components](./docs/module/) · [Menus](./docs/create-dataset/with-helper-menu.md) · [Events](./docs/create-dataset/with-helper-event.md) · [Export](./docs/create-dataset/export.md) · [Attribute table](./docs/create-dataset/attribute-table.md)
+**Docs:** [Getting started](../../map-core/map-dataset/docs/index.md) · [GIS worker](../../map-core/map-dataset/docs/worker.md) · [Components](../../map-core/map-dataset/docs/module/) · [Menus](../../map-core/map-dataset/docs/create-dataset/with-helper-menu.md) · [Events](../../map-core/map-dataset/docs/create-dataset/with-helper-event.md) · [Export](../../map-core/map-dataset/docs/create-dataset/export.md) · [Attribute table](../../map-core/map-dataset/docs/create-dataset/attribute-table.md)
 
 ## Install
 
@@ -27,7 +27,7 @@ app.use(createStoreRegistryPlugin());
 app.use(createDatasetRegistryPlugin());
 ```
 
-Create-layer reads GeoJSON and reprojects CRS in a Web Worker. Vite apps need `worker.format: 'es'`. In this Nx workspace also add `nxViteTsPaths()` to `worker.plugins` — see [GeoJSON worker](./docs/worker.md).
+Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that install the published package need `mapDatasetGisWorker()` from `@hungpvq/map-dataset/vite`. In this Nx workspace use `worker.format: 'es'` + `nxViteTsPaths()` on `worker.plugins` — see [GIS worker](../../map-core/map-dataset/docs/worker.md).
 
 ## Usage
 

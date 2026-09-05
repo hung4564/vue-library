@@ -22,6 +22,12 @@
       "require": "./index.cjs",
       "types": "./index.d.ts"
     },
+    "./package.json": "./package.json",
+    "./vite": {
+      "import": "./vite.js",
+      "types": "./vite.d.ts"
+    },
+    "./assets/*": "./assets/*",
     "./style.css": {
       "default": "./style.css"
     }
@@ -44,13 +50,17 @@
   },
   "peerDependencies": {
     "tokml": "^0.4.0",
-    "@mapbox/shp-write": "^0.4.3"
+    "@mapbox/shp-write": "^0.4.3",
+    "vite": ">=5.0.0"
   },
   "peerDependenciesMeta": {
     "tokml": {
       "optional": true
     },
     "@mapbox/shp-write": {
+      "optional": true
+    },
+    "vite": {
       "optional": true
     }
   }

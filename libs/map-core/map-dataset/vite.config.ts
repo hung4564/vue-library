@@ -16,7 +16,6 @@ export default defineConfig(() => ({
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
   ],
-  // Uncomment this if you are using workers.
   worker: {
     plugins: () => [nxViteTsPaths()],
     format: 'es' as const,
@@ -31,12 +30,12 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        vite: 'src/vite.ts',
+      },
       name: '@hungpvq/map-dataset',
-      fileName: 'index',
-      // Change this to the formats you want to support.
-      // Don't forget to update your package.json as well.
+      fileName: (_format, entryName) => `${entryName}.js`,
       formats: ['es' as const],
     },
     rollupOptions: {
@@ -50,9 +49,17 @@ export default defineConfig(() => ({
         'mitt',
         'tokml',
         '@mapbox/shp-write',
+        'vite',
+        'node:fs',
+        'node:module',
+        'node:path',
+        'node:url',
       ],
       output: {
-        assetFileNames: 'style.css',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) return 'style.css';
+          return 'assets/[name]-[hash][extname]';
+        },
       },
     },
   },

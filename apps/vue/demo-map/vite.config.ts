@@ -21,7 +21,7 @@ export default defineConfig((env) => {
 
     plugins: [vue(), nxViteTsPaths()],
 
-    // GeoJSON parse + CRS reproject (CreateControl). See libs/vue/map-dataset/docs/worker.md
+    // GIS parse + CRS reproject (CreateControl). See libs/map-core/map-dataset/docs/worker.md
     worker: {
       plugins: () => [nxViteTsPaths()],
       format: 'es' as const,

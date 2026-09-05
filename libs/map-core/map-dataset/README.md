@@ -7,18 +7,20 @@ UI packages:
 - Vue: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset)
 - React: [`@hungpvq/react-map-dataset`](../../react/map-dataset)
 
-**Docs:** [Getting started](../../vue/map-dataset/docs/index.md) · [GeoJSON worker](../../vue/map-dataset/docs/worker.md)
+**Docs:** [Getting started](./docs/index.md) · [GIS worker](./docs/worker.md)
 
 ```bash
 npm install @hungpvq/map-dataset @hungpvq/map-core
 ```
 
-Parse and CRS reproject use a Web Worker. Vite apps need:
+Create-layer / GIS parse runs in a Web Worker. Apps that install this package from npm must sync the worker file into `public/assets` — use the Vite plugin (do not copy by hand):
 
 ```ts
-worker: {
-  format: 'es',
-  // Nx path aliases — workers do not inherit main `plugins`:
-  plugins: () => [nxViteTsPaths()],
-},
+import { mapDatasetGisWorker } from '@hungpvq/map-dataset/vite';
+
+export default defineConfig({
+  plugins: [vue(), mapDatasetGisWorker()],
+});
 ```
+
+In this Nx monorepo (source), configure `worker.format` + `nxViteTsPaths` on `worker.plugins` instead — see [GIS worker](./docs/worker.md).
