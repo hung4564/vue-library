@@ -16,6 +16,20 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "require": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./react": {
+      "types": "./src/react/index.d.ts",
+      "import": "./src/react/index.js",
+      "require": "./src/react/index.js",
+      "default": "./src/react/index.js"
+    }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },

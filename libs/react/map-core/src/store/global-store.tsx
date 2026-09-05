@@ -3,7 +3,8 @@
  * Uses @hungpvq/shared-store (same as Vue) for shared state across frameworks
  */
 
-import { GlobalStoreService, useStoreValue } from '@hungpvq/shared-store';
+import { GlobalStoreService } from '@hungpvq/shared-store';
+import { useStoreValue } from '@hungpvq/shared-store/react';
 import type { MapStore } from '@hungpvq/map-core';
 
 const MAP_CORE_STORE_ID = 'map:core';
