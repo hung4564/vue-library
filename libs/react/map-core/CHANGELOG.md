@@ -1,3 +1,17 @@
+## 1.0.1 (2026-09-05)
+
+### 🩹 Fixes
+
+- style, doc ([723ccc2](https://github.com/hung4564/vue-library/commit/723ccc2))
+
+### 🧱 Updated Dependencies
+
+- Updated @hungpvq/map-core to 1.0.1
+
+### ❤️ Thank You
+
+- hung.pv
+
 # 1.0.0 (2026-09-05)
 
 ### 🚀 Features

@@ -1,3 +1,18 @@
+## 1.0.1 (2026-09-05)
+
+### 🩹 Fixes
+
+- public package ([abb392e](https://github.com/hung4564/vue-library/commit/abb392e))
+
+### 🧱 Updated Dependencies
+
+- Updated @hungpvq/map-core to 1.0.1
+- Updated @hungpvq/vue-map-core to 1.0.1
+
+### ❤️ Thank You
+
+- hung.pv
+
 # 1.0.0 (2026-09-05)
 
 ### 🚀 Features

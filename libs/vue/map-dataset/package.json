@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/vue-map-dataset",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "hung.pv"
   },
@@ -14,7 +14,7 @@
     "url": "https://github.com/hung4564/vue-library"
   },
   "dependencies": {
-    "@hungpvq/map-dataset": "1.0.0"
+    "@hungpvq/map-dataset": "1.0.1"
   },
   "type": "module",
   "main": "./index.js",
@@ -34,8 +34,8 @@
     "@hungpvq/vue-draggable": "~1.0.0",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-core": ">=0.0.1",
-    "@hungpvq/vue-map-core": "~1.0.0",
-    "@hungpvq/map-core": "1.0.0",
+    "@hungpvq/vue-map-core": "~1.0.1",
+    "@hungpvq/map-core": "1.0.1",
     "@hungpvq/shared-log": ">=0.0.1",
     "maplibre-gl": "^5.4.0",
     "vuedraggable": "^4.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-dataset",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "hung.pv"
   },
@@ -33,7 +33,7 @@
     }
   },
   "dependencies": {
-    "@hungpvq/map-core": "1.0.0",
+    "@hungpvq/map-core": "1.0.1",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/boolean-intersects": "^6.5.0",
     "@turf/turf": "^6.5.0",

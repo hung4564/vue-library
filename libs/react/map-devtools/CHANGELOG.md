@@ -1,3 +1,10 @@
+## 1.0.1 (2026-09-05)
+
+### 🧱 Updated Dependencies
+
+- Updated @hungpvq/map-core to 1.0.1
+- Updated @hungpvq/react-map-core to 1.0.1
+
 # 1.0.0 (2026-09-05)
 
 ### 🚀 Features
