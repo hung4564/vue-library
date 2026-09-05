@@ -146,7 +146,7 @@
         "projectsRelationship": "independent",
         "version": {
           "fallbackCurrentVersionResolver": "disk",
-          "manifestRootsToUpdate": ["{projectRoot}"],
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
           "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
           "updateDependents": "never"
         },

@@ -1,3 +1,5 @@
+import './style.css';
+
 export * from './components';
 export * from './extra';
 export * from './field';

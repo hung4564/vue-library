@@ -16,9 +16,18 @@
   "dependencies": {
     "@hungpvq/map-dataset": "1.0.0"
   },
+  "type": "module",
   "main": "./index.js",
-  "module": "./index.mjs",
-  "typings": "./index.d.ts",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
   "peerDependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",

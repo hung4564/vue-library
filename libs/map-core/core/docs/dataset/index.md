@@ -43,6 +43,15 @@ import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 ```
 
+Or import the shared core styles directly:
+
+```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+```
+
+You only need one set. Prefer the framework packages (`vue-*` / `react-*`) so styles stay aligned with the wrappers you use.
+
 ## Setup
 
 Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, **Export**, **Attribute table**, style editor). Without this step those components do not render.

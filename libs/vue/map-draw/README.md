@@ -9,11 +9,11 @@ Map Draw is a Vue.js library that provides components for drawing and editing ge
 ## 📦 Installation
 
 ```bash
-npm install @hungpvq/vue-@hungpvq/vue-map-draw
+npm install @hungpvq/vue-map-draw
 ```
 
 ```bash
-yarn add @hungpvq/vue-@hungpvq/vue-map-draw
+yarn add @hungpvq/vue-map-draw
 ```
 
 ## 🎯 Features
@@ -41,8 +41,9 @@ yarn add @hungpvq/vue-@hungpvq/vue-map-draw
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Map } from '@hungpvq/vue-map-core';
-import { DrawControl, DrawingType, type DrawOption } from '@hungpvq/vue-@hungpvq/vue-map-draw';
+import { DrawControl, DrawingType, type DrawOption } from '@hungpvq/vue-map-draw';
 import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-draw/style.css';
 
 const drawOptions: DrawOption = {
   drawSupports: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],

@@ -9,11 +9,11 @@ Map Core is the foundational Vue.js library for creating and managing interactiv
 ## 📦 Installation
 
 ```bash
-npm install @hungpvq/vue-@hungpvq/vue-map-core
+npm install @hungpvq/vue-map-core
 ```
 
 ```bash
-yarn add @hungpvq/vue-@hungpvq/vue-map-core
+yarn add @hungpvq/vue-map-core
 ```
 
 ## 🎯 Features
@@ -47,8 +47,8 @@ yarn add @hungpvq/vue-@hungpvq/vue-map-core
 <script setup lang="ts">
 import { ref } from 'vue';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl } from '@hungpvq/vue-@hungpvq/vue-map-core';
-import '@hungpvq/vue-@hungpvq/vue-map-core/style.css';
+import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map-core/style.css';
 
 const mapId = ref(getUUIDv4());
 
@@ -87,8 +87,8 @@ function onMapLoaded(map: any) {
 <script setup lang="ts">
 import { ref } from 'vue';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { Map, ZoomControl, HomeControl, FullScreenControl, GeoLocateControl, GotoControl, MouseCoordinatesControl, SettingControl, CrsControl, GlobeControl } from '@hungpvq/vue-@hungpvq/vue-map-core';
-import '@hungpvq/vue-@hungpvq/vue-map-core/style.css';
+import { Map, ZoomControl, HomeControl, FullScreenControl, GeoLocateControl, GotoControl, MouseCoordinatesControl, SettingControl, CrsControl, GlobeControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map-core/style.css';
 
 const mapId = ref(getUUIDv4());
 
@@ -223,8 +223,8 @@ interface WithMapPropType {
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl } from '@hungpvq/vue-@hungpvq/vue-map-core';
-import '@hungpvq/vue-@hungpvq/vue-map-core/style.css';
+import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map-core/style.css';
 
 const mapId = ref('custom-map');
 

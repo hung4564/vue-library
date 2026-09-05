@@ -1,3 +1,4 @@
+import './style.css';
 import '@hungpvq/map-dataset';
 export * from '@hungpvq/map-dataset';
 export * from './extra';

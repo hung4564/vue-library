@@ -22,6 +22,9 @@
       "require": "./index.cjs",
       "types": "./index.d.ts"
     },
+    "./style.css": {
+      "default": "./style.css"
+    },
     "./worker": {
       "import": "./worker.js",
       "types": "./worker.d.ts"

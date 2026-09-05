@@ -57,6 +57,9 @@ export default defineConfig(() => ({
         '@mdi/react',
         'react-color',
       ],
+      output: {
+        assetFileNames: 'style.css',
+      },
     },
   },
 }));

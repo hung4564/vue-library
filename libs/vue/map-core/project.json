@@ -3,6 +3,13 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/vue/map-core/src",
   "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
   "tags": ["map"],
   "targets": {
     "ts-check": {
@@ -12,6 +19,11 @@
         "commands": ["tsc -p tsconfig.lib.json"],
         "forwardAllArgs": false,
         "description": "Type check with tsc"
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
       }
     }
   }

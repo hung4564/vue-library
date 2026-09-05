@@ -30,6 +30,26 @@ npm install @hungpvq/react-map-core
 - ✅ **TypeScript support** - Full TypeScript types
 - ✅ **Vue 3 / React** - Framework wrappers over `@hungpvq/map-core`
 
+## Styles
+
+Import CSS once at the app entry:
+
+```ts
+import '@hungpvq/vue-map-core/style.css';
+```
+
+```ts
+import '@hungpvq/react-map-core/style.css';
+```
+
+Or import the shared core styles directly:
+
+```ts
+import '@hungpvq/map-core/style.css';
+```
+
+You only need one of the above. Prefer the framework package so it stays aligned with the wrapper you use.
+
 ## 🚀 Usage
 
 ### Vue

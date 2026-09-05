@@ -50,6 +50,9 @@ export default defineConfig(() => ({
         '@mdi/js',
         '@mdi/react',
       ],
+      output: {
+        assetFileNames: 'style.css',
+      },
     },
   },
 }));

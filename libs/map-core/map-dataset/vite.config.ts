@@ -51,6 +51,9 @@ export default defineConfig(() => ({
         'tokml',
         '@mapbox/shp-write',
       ],
+      output: {
+        assetFileNames: 'style.css',
+      },
     },
   },
 }));

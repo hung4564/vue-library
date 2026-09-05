@@ -49,6 +49,9 @@ export default defineConfig(() => ({
         '@hungpvq/shared-log',
         '@mdi/js',
       ],
+      output: {
+        assetFileNames: 'style.css',
+      },
     },
   },
   test: {

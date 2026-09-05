@@ -24,7 +24,7 @@ package: vue-map
 ```vue
 <script setup lang="ts">
 import { Map, CrsControl } from '@hungpvq/vue-map-core';
-import '@hungpvq/vue-map/style.css';
+import '@hungpvq/vue-map-core/style.css';
 </script>
 
 <template>
