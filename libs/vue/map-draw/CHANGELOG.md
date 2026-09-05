@@ -1,3 +1,22 @@
+# 1.0.0 (2026-09-05)
+
+### 🚀 Features
+
+- remove @hungpvq/vue-content-menu ([5e396a9](https://github.com/hung4564/vue-library/commit/5e396a9))
+- add registry control ([66cf6ac](https://github.com/hung4564/vue-library/commit/66cf6ac))
+- change locale to js lib ([e4dddb7](https://github.com/hung4564/vue-library/commit/e4dddb7))
+- split react ([91d47af](https://github.com/hung4564/vue-library/commit/91d47af))
+- change path ([0ccaaf3](https://github.com/hung4564/vue-library/commit/0ccaaf3))
+
+### 🧱 Updated Dependencies
+
+- Updated @hungpvq/map-core to 1.0.0
+- Updated @hungpvq/vue-map-core to 1.0.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.7.3 (2025-09-18)
 
 ### 🧱 Updated Dependencies

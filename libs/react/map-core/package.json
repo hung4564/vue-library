@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/react-map-core",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": {
     "name": "hung.pv"
   },
@@ -26,7 +26,7 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/map-core": ">=0.0.1",
+    "@hungpvq/map-core": "1.0.0",
     "@hungpvq/react-draggable": ">=1.0.0",
     "@hungpvq/shared-store": ">=0.0.1",
     "@hungpvq/shared": ">=0.0.1",

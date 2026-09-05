@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-dataset",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -15,7 +15,7 @@
     }
   },
   "dependencies": {
-    "@hungpvq/map-core": ">=0.0.1",
+    "@hungpvq/map-core": "1.0.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/boolean-intersects": "^6.5.0",
     "@turf/turf": "^6.5.0",
@@ -35,7 +35,11 @@
     "@mapbox/shp-write": "^0.4.3"
   },
   "peerDependenciesMeta": {
-    "tokml": { "optional": true },
-    "@mapbox/shp-write": { "optional": true }
+    "tokml": {
+      "optional": true
+    },
+    "@mapbox/shp-write": {
+      "optional": true
+    }
   }
 }
