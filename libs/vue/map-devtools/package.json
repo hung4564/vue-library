@@ -1,6 +1,18 @@
 {
   "name": "@hungpvq/vue-map-devtools",
   "version": "1.0.0",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -13,9 +25,5 @@
   },
   "peerDependencies": {
     "vue": "^3.3.4"
-  },
-  "author": {
-    "name": "hung.pv"
-  },
-  "license": "MIT"
+  }
 }
