@@ -39,6 +39,7 @@ export default defineConfig(() => ({
         '@hungpvq/draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-store',
+        '@hungpvq/shared-store/react',
         'lodash',
         '@mdi/js',
         '@mdi/react',
