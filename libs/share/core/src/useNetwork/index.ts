@@ -60,12 +60,12 @@ export interface NetworkState {
 }
 
 export function useNetwork(
-  options: ConfigurableWindow = {}
+  options: ConfigurableWindow = {},
 ): Readonly<NetworkState> {
   const { window = defaultWindow } = options;
   const navigator = window?.navigator;
   const isSupported = useSupported(
-    () => navigator && 'connection' in navigator
+    () => navigator && 'connection' in navigator,
   );
 
   const isOnline = ref(true);

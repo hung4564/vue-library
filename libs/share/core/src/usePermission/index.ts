@@ -27,8 +27,9 @@ export type GeneralPermissionDescriptor =
   | PermissionDescriptor
   | { name: DescriptorNamePolyfill };
 
-export interface UsePermissionOptions<Controls extends boolean>
-  extends ConfigurableNavigator {
+export interface UsePermissionOptions<
+  Controls extends boolean,
+> extends ConfigurableNavigator {
   /**
    * Expose more controls
    *
@@ -48,24 +49,24 @@ export function usePermission(
   permissionDesc:
     | GeneralPermissionDescriptor
     | GeneralPermissionDescriptor['name'],
-  options?: UsePermissionOptions<false>
+  options?: UsePermissionOptions<false>,
 ): UsePermissionReturn;
 export function usePermission(
   permissionDesc:
     | GeneralPermissionDescriptor
     | GeneralPermissionDescriptor['name'],
-  options: UsePermissionOptions<true>
+  options: UsePermissionOptions<true>,
 ): UsePermissionReturnWithControls;
 export function usePermission(
   permissionDesc:
     | GeneralPermissionDescriptor
     | GeneralPermissionDescriptor['name'],
-  options: UsePermissionOptions<boolean> = {}
+  options: UsePermissionOptions<boolean> = {},
 ): UsePermissionReturn | UsePermissionReturnWithControls {
   const { controls = false, navigator = defaultNavigator } = options;
 
   const isSupported = useSupported(
-    () => navigator && 'permissions' in navigator
+    () => navigator && 'permissions' in navigator,
   );
   let permissionStatus: PermissionStatus | undefined;
 

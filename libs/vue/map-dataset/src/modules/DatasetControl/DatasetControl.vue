@@ -1,0 +1,171 @@
+<script lang="ts">
+export default {
+  name: 'dataset-control',
+};
+</script>
+
+<script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
+import {
+  DATASET_CONTROL_LOCALE,
+  createMenuClickAddComponentBuilder,
+  createMenuClickBuilder,
+  handleMenuActionClick,
+} from '@hungpvq/map-dataset';
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
+import {
+  BaseButton,
+  defaultMapProps,
+  MapCommonButton,
+  ModuleContainer,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+  useShow,
+  useToolbarControl,
+  WithShowProps,
+} from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
+import { computed, onMounted, shallowRef, watch } from 'vue';
+import { useMapDataset } from '../../store';
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
+});
+const { mapId, moduleContainerProps, order } = useMap(props);
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault(DATASET_CONTROL_LOCALE);
+const path = {
+  icon: mdiDatabaseOutline,
+  detail: mdiInformation,
+  delete: mdiDelete,
+};
+const [show, setShow] = useShow(props.show);
+const { panelPosition } = useRegisterMapControl(mapId, {
+  id: 'mapDatasetControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.dataset-control.title'),
+  buttonPosition: () => props.position,
+  show,
+  setShow,
+  initialPanelPosition: { location: 'left' },
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapDatasetControl',
+      run: () => setShow(),
+    },
+  ],
+});
+const { getDatasets, getDatasetIds, removeDataset } = useMapDataset(
+  mapId.value,
+);
+const datasetIds = computed(() => {
+  return getDatasetIds().value;
+});
+watch(
+  datasetIds,
+  () => {
+    updateList();
+  },
+  { deep: true },
+);
+function updateList() {
+  getViewFromStore();
+}
+const views = shallowRef<Array<IDataset>>([]);
+function getViewFromStore() {
+  views.value = getDatasets();
+}
+function onShowDetail(view: IDataset) {
+  handleMenuActionClick(
+    createMenuClickBuilder()
+      .addTupleStatic('addComponent', {
+        value: createMenuClickAddComponentBuilder()
+          .setComponentKey('dataset-detail')
+          .setAttr({
+            dataset: view,
+          })
+          .setCheck('detail-dataset')
+          .build(),
+      })
+      .build(),
+    { layer: view, mapId: mapId.value, value: view },
+  );
+}
+function onRemove(view: IDataset) {
+  removeDataset(view);
+}
+onMounted(() => {
+  updateList();
+});
+defineSlots<{
+  item(props: { item: IDataset }): any;
+  default(): any;
+}>();
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapDatasetControl',
+  getState() {
+    return {
+      visible: !show.value,
+      active: show.value,
+      title: trans.value('map.dataset-control.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: path.icon,
+      },
+    };
+  },
+  onClick() {
+    setShow();
+  },
+});
+watch(show, () => control.sync());
+</script>
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
+      >
+      </MapCommonButton>
+    </template>
+
+    <template #draggable="props">
+      <DraggableItemSideBar
+        :containerId="props.containerId"
+        v-model:show="show"
+        :title="trans('map.dataset-control.title')"
+        :location="panelPosition.location || 'left'"
+      >
+        <template #title> {{ trans('map.dataset-control.title') }} </template>
+        <div class="dataset-control">
+          <div v-for="view in views" :key="view.id">
+            <slot name="item" :item="view">
+              <div class="dataset-item">
+                <span class="dataset-item__title">{{ view.getName() }}</span>
+                <div class="dataset-item__title-action">
+                  <BaseButton @click.stop="onShowDetail(view)">
+                    <SvgIcon size="16" type="mdi" :path="path.detail" />
+                  </BaseButton>
+
+                  <BaseButton @click.stop="onRemove(view)">
+                    <SvgIcon size="16" type="mdi" :path="path.delete" />
+                  </BaseButton>
+                </div>
+              </div>
+            </slot>
+          </div>
+        </div>
+      </DraggableItemSideBar>
+    </template>
+    <slot />
+  </ModuleContainer>
+</template>

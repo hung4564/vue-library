@@ -20,12 +20,12 @@ export const makeVariantProps = propsFactory(
       validator: (v: Variant) => allowedVariants.includes(v),
     },
   },
-  'variant'
+  'variant',
 );
 
 export function useVariant(
   props: MaybeRef<VariantProps>,
-  name = getCurrentInstanceName()
+  name = getCurrentInstanceName(),
 ) {
   const variantClasses = computed(() => {
     const { variant } = unref(props);
@@ -38,7 +38,7 @@ export function useVariant(
       return {
         [['elevated', 'flat'].includes(variant) ? 'background' : 'text']: color,
       };
-    })
+    }),
   );
 
   return { colorClasses, colorStyles, variantClasses };

@@ -1,0 +1,3 @@
+/* Bundled entry for `@hungpvq/vue-draggable/style.css` */
+@import '../../../draggable/core/src/style/index.css';
+@import 'vue-draggable-resizable/style.css';

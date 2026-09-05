@@ -1,0 +1,94 @@
+/* Shared group / sortable list styles (Vue + React). */
+
+.draggable-group__item .draggable__item:last-child {
+  padding-bottom: 0;
+}
+
+.draggable-group__info {
+  display: flex;
+  padding-bottom: var(--map-space-xs, 4px);
+  justify-content: center;
+  align-items: center;
+}
+
+.draggable-group__title {
+  display: inline-flex;
+  text-align: left;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--map-font-size-sm, 0.75rem);
+}
+
+.draggable-group__action {
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--map-space-md, 8px);
+}
+
+.draggable-group__action button {
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.draggable-group__divider {
+  padding: var(--map-space-xs, 4px) 0;
+  display: block;
+  flex: 1 1 100%;
+  height: 0;
+  max-height: 0;
+  opacity: 0.12;
+  border-style: solid;
+  border-width: thin 0 0 0;
+}
+
+.draggable-group__children-container {
+  position: relative;
+  display: none;
+  min-height: 80px;
+}
+
+.draggable-group__children-container._show {
+  display: block;
+}
+
+.draggable-group__children {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-lg, 12px);
+  min-height: 80px;
+}
+
+.draggable-group__nodata {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  font-size: var(--map-font-size-sm, 0.75rem);
+  pointer-events: none;
+}
+
+.draggable__item.item {
+  width: 100%;
+}
+
+.sortable-ghost {
+  opacity: 0.2;
+  background: var(--v-primary-base, var(--map-primary-color, #1a73e8));
+}
+
+.no-move {
+  transition: transform 0s;
+}

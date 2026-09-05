@@ -9,7 +9,7 @@ export const makeLoaderProps = propsFactory(
   {
     loading: [Boolean, String],
   },
-  'loader'
+  'loader',
 );
 
 export function useLoader(props: LoaderProps, name = getCurrentInstanceName()) {

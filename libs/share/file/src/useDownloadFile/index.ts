@@ -50,7 +50,7 @@ export function useDownloadFile() {
     data: DownloadInput,
     filename?: string,
     type?: DownloadType,
-    mimeType?: string
+    mimeType?: string,
   ) => {
     reset();
     try {
@@ -66,7 +66,7 @@ export function useDownloadFile() {
           const response = await fetch(data as string);
           if (!response.ok) {
             throw new Error(
-              `Fetch failed: ${response.status} ${response.statusText}`
+              `Fetch failed: ${response.status} ${response.statusText}`,
             );
           }
           blob = await response.blob();

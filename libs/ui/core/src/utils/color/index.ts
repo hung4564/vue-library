@@ -86,7 +86,7 @@ export function parseColor(color: Color): RGB {
   throw new TypeError(
     `Invalid color: ${
       color == null ? color : String(color) || (color as any).constructor.name
-    }\nExpected #hex, #hexa, rgb(), rgba(), hsl(), hsla(), object or number`
+    }\nExpected #hex, #hexa, rgb(), rgba(), hsl(), hsla(), object or number`,
   );
 }
 
@@ -96,7 +96,7 @@ export function RGBToInt(color: RGB) {
 
 export function classToHex(
   color: string,
-  colors: Record<string, Record<string, string>>
+  colors: Record<string, Record<string, string>>,
 ): string {
   const [colorName, colorModifier] = color
     .toString()
@@ -248,7 +248,7 @@ export function parseHex(hex: string): Hex {
 
 export function parseGradient(
   gradient: string,
-  colors: Record<string, Record<string, string>>
+  colors: Record<string, Record<string, string>>,
 ) {
   return gradient
     .replace(/([a-z]+(\s[a-z]+-[1-5])?)(?=$|,)/gi, (x) => {
@@ -304,10 +304,10 @@ export function getContrast(first: Color, second: Color) {
 
 export function getForeground(color: Color) {
   const blackContrast = Math.abs(
-    APCAcontrast(parseColor(0), parseColor(color))
+    APCAcontrast(parseColor(0), parseColor(color)),
   );
   const whiteContrast = Math.abs(
-    APCAcontrast(parseColor(0xffffff), parseColor(color))
+    APCAcontrast(parseColor(0xffffff), parseColor(color)),
   );
 
   // TODO: warn about poor color selections

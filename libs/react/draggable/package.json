@@ -1,0 +1,48 @@
+{
+  "name": "@hungpvq/react-draggable",
+  "version": "1.0.0",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
+  "peerDependencies": {
+    "@hungpvq/draggable": "1.0.0",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-store": ">=0.0.1",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.2.0",
+    "lodash": "^4.17.21",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-rnd": "^10.0.0",
+    "@vitejs/plugin-react": "^4.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
+  }
+}

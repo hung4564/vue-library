@@ -7,8 +7,7 @@ import { defaultNavigator } from '../_configurable';
 import { useSupported } from '../useSupported';
 
 export interface UseGeolocationOptions
-  extends Partial<PositionOptions>,
-    ConfigurableNavigator {
+  extends Partial<PositionOptions>, ConfigurableNavigator {
   immediate?: boolean;
 }
 
@@ -22,7 +21,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
   } = options;
 
   const isSupported = useSupported(
-    () => navigator && 'geolocation' in navigator
+    () => navigator && 'geolocation' in navigator,
   );
 
   const locatedAt: Ref<number | null> = ref(null);
@@ -73,7 +72,7 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
           enableHighAccuracy,
           maximumAge,
           timeout,
-        }
+        },
       );
     });
   }

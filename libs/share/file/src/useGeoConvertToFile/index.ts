@@ -30,7 +30,7 @@ function detectFormatFromFilename(filename: string): SupportedFormat | null {
 export function useGeoConvertToFile() {
   async function convert(
     data: FeatureCollection,
-    { format, filename = 'data' }: ConvertOptions = {}
+    { format, filename = 'data' }: ConvertOptions = {},
   ): Promise<Blob | null> {
     const detectedFormat = format || detectFormatFromFilename(filename);
     if (!detectedFormat) {

@@ -1,0 +1,90 @@
+<script setup lang="ts">
+import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import { GLOBE_CONTROL_LOCALE } from '@hungpvq/map-core';
+import { mdiWeb } from '@mdi/js';
+import { ref } from 'vue';
+import MapCommonButton from '../../components/MapCommonButton.vue';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
+import { defaultMapProps, useMap } from '../../hooks';
+import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const currentProjection = ref<string | undefined>('mercator');
+
+const { callMap, mapId, moduleContainerProps, order } = useMap(
+  props,
+  onInit,
+  onDestroy,
+);
+const { trans, setLocaleDefault } = useLang(mapId.value);
+setLocaleDefault(GLOBE_CONTROL_LOCALE);
+function toggle() {
+  callMap((map) => {
+    if (currentProjection.value === 'mercator' || !currentProjection.value) {
+      map.setProjection({ type: 'globe' });
+    } else {
+      map.setProjection({ type: 'mercator' });
+    }
+    currentProjection.value = map.getProjection()?.type as any;
+  });
+}
+let handleMap: any;
+function onInit(_map: MapSimple) {
+  handleMap = () => {
+    currentProjection.value = _map.getProjection()?.type as any;
+  };
+  _map.on('styledata', handleMap);
+}
+function onDestroy(_map: MapSimple) {
+  if (handleMap) _map.off('styledata', handleMap);
+}
+useRegisterMapControl(mapId, {
+  id: 'mapGlobeControl',
+  panelKind: 'button',
+  buttonPosition: () => props.position,
+  getProps: () => ({
+    position: props.position,
+    controlLayout: props.controlLayout,
+  }),
+  actions: [
+    {
+      type: 'mapGlobeControl',
+      run: () => {
+        toggle();
+      },
+    },
+  ],
+});
+const { state, control } = useToolbarControl(mapId.value, props, {
+  id: 'mapGlobeControl',
+  getState() {
+    return {
+      visible: true,
+      active: currentProjection.value === 'globe',
+      title: trans.value('map.global-control.title'),
+      order: order.value,
+      icon: {
+        type: 'mdi',
+        path: mdiWeb,
+      },
+    };
+  },
+  onClick() {
+    toggle();
+  },
+});
+</script>
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
+      >
+      </MapCommonButton>
+    </template>
+    <slot />
+  </ModuleContainer>
+</template>

@@ -1,0 +1,251 @@
+/* Create control */
+
+.create-control-container {
+  padding: var(--map-space-md, 8px) 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.create-control-form {
+  flex: 1;
+  overflow: auto;
+  padding: 0 var(--map-space-lg, 12px);
+}
+
+.create-control-container .form-container {
+  overflow: auto;
+  height: 100%;
+  padding: var(--map-space-md, 8px);
+}
+
+.btn-container,
+.create-control-container .btn-container {
+  margin: var(--map-space-md, 8px) var(--map-space-lg, 12px);
+  padding: var(--map-space-md, 8px);
+}
+
+.create-control-section-label {
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: 600;
+  color: var(--map-text-secondary, #666);
+  margin-top: var(--map-space-sm, 4px);
+}
+
+.create-control-sample-error {
+  color: var(--map-color-danger, #c62828);
+  font-size: var(--map-font-size-sm, 12px);
+}
+
+.create-control-status {
+  font-size: var(--map-font-size-sm, 12px);
+  color: var(--map-text-secondary, #666);
+  margin-top: var(--map-space-sm, 4px);
+}
+
+.create-control-settings {
+  width: 100%;
+  overflow: visible;
+}
+
+.form-group .input-container.create-control-color > input[type='color'] {
+  display: block;
+  width: 100%;
+  height: calc(
+    1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) + 2px
+  );
+  padding: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+.form-group .input-container.create-control-color > input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-group .input-container.create-control-color > input[type='color']::-webkit-color-swatch {
+  border: none;
+  border-radius: calc(var(--map-radius-sm, 4px) - 1px);
+}
+
+.form-group .input-container.create-control-color > input[type='color']::-moz-color-swatch {
+  border: none;
+  border-radius: calc(var(--map-radius-sm, 4px) - 1px);
+}
+
+.create-control-data {
+  width: 100%;
+}
+
+.create-control-data__tabs {
+  display: flex;
+  gap: var(--map-space-xs, 4px);
+  margin-bottom: var(--map-space-md, 8px);
+  padding: var(--map-space-xs, 4px);
+  border-radius: var(--map-radius-md, 8px);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.create-control-data__tab {
+  flex: 1;
+  padding: var(--map-space-sm, 6px) var(--map-space-md, 8px);
+  border: none;
+  border-radius: var(--map-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  opacity: 0.62;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-medium, 500);
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.create-control-data__tab:hover {
+  opacity: 0.92;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.create-control-data__tab._active {
+  opacity: 1;
+  color: inherit;
+  font-weight: var(--map-font-weight-semibold, 600);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.create-control-data__tab._active:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.create-control-data__panel {
+  padding-top: var(--map-space-sm, 4px);
+}
+
+.create-control-url-row {
+  display: flex;
+  align-items: flex-end;
+  margin-top: var(--map-space-sm, 4px);
+}
+
+.create-control-url-row > .form-group {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.create-control-url-row > .form-group .input-container > input {
+  border-right-width: 0;
+  border-radius: var(--map-radius-sm, 4px) 0 0 var(--map-radius-sm, 4px);
+}
+
+.create-control-url-row > .form-group .input-container > input:focus {
+  border-right-width: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.create-control-url-row > .create-control-url-load {
+  flex-shrink: 0;
+  align-self: flex-end;
+  box-sizing: border-box;
+  height: calc(
+    1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) + 2px
+  );
+  margin: 0;
+  padding: 0 var(--map-space-lg, 12px);
+  white-space: nowrap;
+  border-radius: 0 var(--map-radius-sm, 4px) var(--map-radius-sm, 4px) 0;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 22%,
+    transparent
+  );
+  color: inherit;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  letter-spacing: 0.02em;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.create-control-url-row > .create-control-url-load:hover {
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 38%,
+    transparent
+  );
+  border-color: var(--map-accent-color, #1a73e8);
+}
+
+.create-control-url-row > .create-control-url-load.map-control__button-disabled,
+.create-control-url-row > .create-control-url-load:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.ddf__area {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.375em;
+  border: 2px dashed #a2a2a9;
+  transition: 0.3s;
+  padding: clamp(3.5rem, calc(1.25rem + 4.6875vw), 5rem)
+    clamp(1.5rem, calc(1.125rem + 0.78125vw), 1.75rem);
+  cursor: pointer;
+}
+
+.ddf__area.ddf__active {
+  border-color: var(--map-color-primary, #1976d2);
+}
+
+.ddf__area.ddf__active .ddf__icon {
+  color: var(--map-color-primary, #1976d2);
+}
+
+.ddf__label {
+  cursor: pointer;
+  display: block;
+}
+
+.ddf__label-inner {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.ddf__icon {
+  color: #14151a;
+  font-size: 64px;
+  height: 1em;
+  width: 1em;
+  fill: currentColor;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ddf__icon path:nth-child(2) {
+  mix-blend-mode: difference;
+  fill: #f2f2f3;
+}
+
+.ddf__text {
+  cursor: pointer;
+}
+
+.ddf__subtext {
+  padding-top: 0.25rem;
+  font-size: clamp(0.8125rem, calc(0.625rem + 0.390625vw), 0.9375rem);
+  color: var(--map-text-secondary, #666);
+}

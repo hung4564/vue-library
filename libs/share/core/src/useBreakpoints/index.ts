@@ -27,7 +27,7 @@ export interface UseBreakpointsOptions extends ConfigurableWindow {
 
 export function useBreakpoints<K extends string>(
   breakpoints: Breakpoints<K>,
-  options: UseBreakpointsOptions = {}
+  options: UseBreakpointsOptions = {},
 ) {
   function getValue(k: MaybeRefOrGetter<K>, delta?: number) {
     let v = toValue(breakpoints[toValue(k)]);
@@ -54,21 +54,24 @@ export function useBreakpoints<K extends string>(
     return useMediaQuery(() => `(max-width: ${getValue(k)})`, options);
   };
 
-  const shortcutMethods = Object.keys(breakpoints).reduce((shortcuts, k) => {
-    Object.defineProperty(shortcuts, k, {
-      get: () =>
-        strategy === 'min-width'
-          ? greaterOrEqual(k as K)
-          : smallerOrEqual(k as K),
-      enumerable: true,
-      configurable: true,
-    });
-    return shortcuts;
-  }, {} as Record<K, Ref<boolean>>);
+  const shortcutMethods = Object.keys(breakpoints).reduce(
+    (shortcuts, k) => {
+      Object.defineProperty(shortcuts, k, {
+        get: () =>
+          strategy === 'min-width'
+            ? greaterOrEqual(k as K)
+            : smallerOrEqual(k as K),
+        enumerable: true,
+        configurable: true,
+      });
+      return shortcuts;
+    },
+    {} as Record<K, Ref<boolean>>,
+  );
 
   function current() {
     const points = Object.keys(breakpoints).map(
-      (i) => [i, greaterOrEqual(i as K)] as const
+      (i) => [i, greaterOrEqual(i as K)] as const,
     );
     return computed(() => points.filter(([, v]) => v.value).map(([k]) => k));
   }
@@ -86,7 +89,7 @@ export function useBreakpoints<K extends string>(
       return useMediaQuery(
         () =>
           `(min-width: ${getValue(a)}) and (max-width: ${getValue(b, -0.1)})`,
-        options
+        options,
       );
     },
     isGreater(k: MaybeRefOrGetter<K>) {
@@ -103,14 +106,14 @@ export function useBreakpoints<K extends string>(
     },
     isInBetween(a: MaybeRefOrGetter<K>, b: MaybeRefOrGetter<K>) {
       return match(
-        `(min-width: ${getValue(a)}) and (max-width: ${getValue(b, -0.1)})`
+        `(min-width: ${getValue(a)}) and (max-width: ${getValue(b, -0.1)})`,
       );
     },
     current,
     active() {
       const bps = current();
       return computed(() =>
-        bps.value.length === 0 ? '' : bps.value[bps.value.length - 1]
+        bps.value.length === 0 ? '' : bps.value[bps.value.length - 1],
       );
     },
   });
@@ -123,7 +126,7 @@ export type UseBreakpointsReturn<K extends string = string> = {
   smallerOrEqual: (k: MaybeRefOrGetter<K>) => ComputedRef<boolean>;
   between: (
     a: MaybeRefOrGetter<K>,
-    b: MaybeRefOrGetter<K>
+    b: MaybeRefOrGetter<K>,
   ) => ComputedRef<boolean>;
   isGreater: (k: MaybeRefOrGetter<K>) => boolean;
   isGreaterOrEqual: (k: MaybeRefOrGetter<K>) => boolean;

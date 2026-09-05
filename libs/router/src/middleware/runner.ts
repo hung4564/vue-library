@@ -5,7 +5,7 @@ import { ErrorHandler, Executor, FinalHandler } from './types';
  */
 function once(
   scope: Runner<any>,
-  callback: (scope: Runner<any>) => Promise<void> | void
+  callback: (scope: Runner<any>) => Promise<void> | void,
 ) {
   function next(): Promise<void> | void {
     if (next.called) {

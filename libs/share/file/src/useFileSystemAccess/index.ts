@@ -82,10 +82,10 @@ interface FileSystemWritableFileStreamWrite {
  */
 export type FileSystemAccessWindow = Window & {
   showSaveFilePicker: (
-    options: FileSystemAccessShowSaveFileOptions
+    options: FileSystemAccessShowSaveFileOptions,
   ) => Promise<FileSystemFileHandle>;
   showOpenFilePicker: (
-    options: FileSystemAccessShowOpenFileOptions
+    options: FileSystemAccessShowOpenFileOptions,
   ) => Promise<FileSystemFileHandle[]>;
 };
 
@@ -110,26 +110,28 @@ export function useFileSystemAccess(): UseFileSystemAccessReturn<
   string | ArrayBuffer | Blob
 >;
 export function useFileSystemAccess(
-  options: UseFileSystemAccessOptions & { dataType: 'Text' }
+  options: UseFileSystemAccessOptions & { dataType: 'Text' },
 ): UseFileSystemAccessReturn<string>;
 export function useFileSystemAccess(
-  options: UseFileSystemAccessOptions & { dataType: 'ArrayBuffer' }
+  options: UseFileSystemAccessOptions & { dataType: 'ArrayBuffer' },
 ): UseFileSystemAccessReturn<ArrayBuffer>;
 export function useFileSystemAccess(
-  options: UseFileSystemAccessOptions & { dataType: 'Blob' }
+  options: UseFileSystemAccessOptions & { dataType: 'Blob' },
 ): UseFileSystemAccessReturn<Blob>;
 export function useFileSystemAccess(
-  options: UseFileSystemAccessOptions
+  options: UseFileSystemAccessOptions,
 ): UseFileSystemAccessReturn<string | ArrayBuffer | Blob>;
 export function useFileSystemAccess(
-  options: UseFileSystemAccessOptions = {}
+  options: UseFileSystemAccessOptions = {},
 ): UseFileSystemAccessReturn<string | ArrayBuffer | Blob> {
   const { window: _window = defaultWindow, dataType = 'Text' } = options;
 
   const window = _window as FileSystemAccessWindow;
   const isSupported = useSupported(
     () =>
-      window && 'showSaveFilePicker' in window && 'showOpenFilePicker' in window
+      window &&
+      'showSaveFilePicker' in window &&
+      'showOpenFilePicker' in window,
   );
 
   const fileHandle = ref<FileSystemFileHandle>();
@@ -232,11 +234,11 @@ export interface UseFileSystemAccessReturn<T = string> {
   fileLastModified: Ref<number>;
   open: (_options?: UseFileSystemAccessCommonOptions) => Awaitable<void>;
   create: (
-    _options?: UseFileSystemAccessShowSaveFileOptions
+    _options?: UseFileSystemAccessShowSaveFileOptions,
   ) => Awaitable<void>;
   save: (_options?: UseFileSystemAccessShowSaveFileOptions) => Awaitable<void>;
   saveAs: (
-    _options?: UseFileSystemAccessShowSaveFileOptions
+    _options?: UseFileSystemAccessShowSaveFileOptions,
   ) => Awaitable<void>;
   updateData: () => Awaitable<void>;
 }

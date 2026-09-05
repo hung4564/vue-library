@@ -40,7 +40,7 @@ export interface UseRafFnOptions extends ConfigurableWindow {
  */
 export function useRafFn(
   fn: (args: UseRafFnCallbackArguments) => void,
-  options: UseRafFnOptions = {}
+  options: UseRafFnOptions = {},
 ): Pausable {
   const {
     immediate = true,

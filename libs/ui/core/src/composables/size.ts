@@ -17,7 +17,7 @@ export const makeSizeProps = propsFactory(
       default: 'm',
     },
   },
-  'size'
+  'size',
 );
 
 export function useSize(props: SizeProps, name = getCurrentInstanceName()) {

@@ -1,4 +1,4 @@
-import YAML from 'js-yaml';
+import { dump } from 'js-yaml';
 import type { ComputedRef } from 'vue';
 
 // eslint-disable-next-line no-restricted-imports
@@ -36,15 +36,15 @@ export interface ReactifyOptions<T extends boolean> {
  */
 export function reactify<T extends AnyFn, K extends boolean = true>(
   fn: T,
-  options?: ReactifyOptions<K>
+  options?: ReactifyOptions<K>,
 ): Reactified<T, K> {
   const unrefFn = options?.computedGetter === false ? unref : toValue;
   return function (this: any, ...args: any[]) {
     return computed(() =>
       fn.apply(
         this,
-        args.map((i) => unrefFn(i))
-      )
+        args.map((i) => unrefFn(i)),
+      ),
     );
   } as any;
 }
@@ -52,11 +52,11 @@ export function reactify<T extends AnyFn, K extends boolean = true>(
 // alias
 export { reactify as createReactiveFn };
 export const stringify = reactify((input: any) =>
-  YAML.dump(input, {
+  dump(input, {
     skipInvalid: true,
     forceQuotes: true,
     condenseFlow: true,
     noCompatMode: true,
     quotingType: "'",
-  })
+  }),
 );

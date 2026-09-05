@@ -1,0 +1,36 @@
+{
+  "name": "@hungpvq/react-map-dataset",
+  "version": "1.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
+  "peerDependencies": {
+    "@hungpvq/map-core": "1.0.1",
+    "@hungpvq/map-dataset": "1.0.1",
+    "@hungpvq/react-draggable": ">=1.0.0",
+    "@hungpvq/react-map-core": "1.0.1",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-log": ">=0.0.1",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.2.0",
+    "maplibre-gl": "^5.4.0",
+    "react": "^18.0.0",
+    "sortablejs": "^1.15.2"
+  }
+}

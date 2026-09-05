@@ -1,0 +1,43 @@
+/* Dataset control + detail list */
+
+.dataset-control {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dataset-item {
+  display: flex;
+  min-height: 30px;
+  padding: var(--map-space-xs, 4px) var(--map-space-md, 8px);
+  align-items: center;
+}
+
+.dataset-item__title {
+  display: inline-block;
+  text-align: left;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.dataset-item__title-action {
+  display: flex;
+  flex-grow: 0;
+  align-items: center;
+}
+
+.dataset-list {
+  padding: var(--map-space-md, 8px);
+  margin: 0;
+  list-style: none;
+}
+
+.dataset-list-item {
+  display: flex;
+  align-items: center;
+  padding: var(--map-space-xs, 4px) var(--map-space-md, 8px);
+  gap: var(--map-space-md, 8px);
+}

@@ -11,7 +11,7 @@ export const vOnClickOutside: ObjectDirective<
     el: HTMLElement,
     binding: DirectiveBinding<
       OnClickOutsideHandler | [(evt: any) => void, OnClickOutsideOptions]
-    >
+    >,
   ) {
     const capture = !binding.modifiers.bubble;
     if (typeof binding.value === 'function') {
@@ -23,7 +23,7 @@ export const vOnClickOutside: ObjectDirective<
       (el as any).__onClickOutside_stop = onClickOutside(
         el,
         handler,
-        Object.assign({ capture }, options)
+        Object.assign({ capture }, options),
       );
     }
   },

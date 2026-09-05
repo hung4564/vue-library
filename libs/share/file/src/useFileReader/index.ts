@@ -43,7 +43,7 @@ class FileReaderHelper {
   }
   static async read(
     file: File,
-    type: UseFileReaderOption['type']
+    type: UseFileReaderOption['type'],
   ): Promise<string | ArrayBuffer | null> {
     return new Promise((resolve, reject) => {
       const reader = new window.FileReader();

@@ -28,7 +28,6 @@ Easily download files from a URL, Blob, Base64, or Buffer (ArrayBuffer/Uint8Arra
 ## Input Parameters for `downloadFile`
 
 - `data` (string | Blob | ArrayBuffer | Uint8Array)
-
   - Required. The content to be downloaded. It can be:
     - A URL (string)
     - A base64 string (with or without data URI prefix)
@@ -36,7 +35,6 @@ Easily download files from a URL, Blob, Base64, or Buffer (ArrayBuffer/Uint8Arra
     - An `ArrayBuffer` or `Uint8Array` for binary data
 
 - `filename` (string)
-
   - Optional. The name of the file to save. Defaults to `'download'` if not provided.
 
 - `mimeType` (string)

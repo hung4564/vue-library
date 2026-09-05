@@ -1,0 +1,121 @@
+<template>
+  <div class="module__container">
+    <Teleport
+      v-if="controlVisible && hasSlotBtn && isStandaloneButton"
+      :to="btnTo"
+    >
+      <div :class="btnModuleClass" :style="{ order: order }">
+        <slot name="btn" />
+      </div>
+    </Teleport>
+    <slot />
+    <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
+      <slot v-bind="bindDrag" name="draggable" />
+    </Teleport>
+  </div>
+</template>
+<script lang="ts">
+export default {
+  name: 'ModuleContainer',
+};
+</script>
+<script setup lang="ts">
+import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
+import { computed, inject, useSlots } from 'vue';
+const slots = useSlots();
+const props = defineProps({
+  mapId: { type: String, default: '' },
+  dragId: { type: String, default: '' },
+  btnWidth: { type: Number, default: 40 },
+  order: { type: Number, default: 0 },
+  controlId: { type: String, default: '' },
+  position: {
+    type: String,
+    default: 'bottom-right',
+    validator(value: string) {
+      return (
+        ['top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(
+          value,
+        ) !== -1
+      );
+    },
+  },
+  controlVisible: {
+    type: Boolean,
+    default: true,
+  },
+  controlLayout: {
+    type: String,
+    default: 'standalone',
+    validator(value: string) {
+      return ['toolbar', 'standalone'].indexOf(value) !== -1;
+    },
+  },
+  top: Number,
+  bottom: Number,
+  left: Number,
+  right: Number,
+});
+const hasSlotBtn = computed(() => !!slots['btn']);
+const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
+const hasSlotDraggable = computed(() => !!slots['draggable']);
+const i_dragId = inject<string>('$map.dragId');
+const i_map_id = inject<string>('$map.id');
+const injectedControlId = inject<string | undefined>(
+  MAP_MODULE_CONTROL_ID_KEY,
+  undefined,
+);
+const resolvedControlId = computed(
+  () => props.controlId || injectedControlId || '',
+);
+const btnModuleClass = computed(() => {
+  const id = resolvedControlId.value;
+  return id
+    ? ['btn-module-container', `${id}-btn-module-container`]
+    : ['btn-module-container'];
+});
+const c_containerId = computed<string>(() => {
+  return props.dragId || i_dragId!;
+});
+const c_mapId = computed<string>(() => {
+  return props.mapId || i_map_id!;
+});
+
+const draggableTo = computed(() => {
+  return `#map-draggable-${c_mapId.value}`;
+});
+const btnTo = computed(() => {
+  return `#${props.position}-${c_mapId.value}`;
+});
+
+interface BindPosition {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  containerId: string;
+}
+const bindDrag = computed(() => {
+  const result: BindPosition = {
+    containerId: c_containerId.value,
+  };
+
+  const configs = [
+    { key: 'left', fallback: 18 + props.btnWidth },
+    { key: 'right', fallback: 18 + props.btnWidth },
+    { key: 'top', fallback: 10 },
+    { key: 'bottom', fallback: 10 },
+  ] as const;
+
+  configs.forEach(({ key, fallback }) => {
+    const val = (props as any)[key];
+    if (val !== undefined) {
+      result[key] = val;
+    } else if (props.position.includes(key)) {
+      result[key] = fallback;
+    }
+  });
+
+  return result;
+});
+</script>

@@ -8,7 +8,7 @@ export default defineConfig({
       '@hungpvq/shared': resolve(__dirname, './libs/share/shared/src/index.ts'),
       '@hungpvq/shared-core': resolve(
         __dirname,
-        './libs/share/core/src/index.ts'
+        './libs/share/core/src/index.ts',
       ),
     },
   },

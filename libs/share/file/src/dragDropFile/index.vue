@@ -79,7 +79,9 @@ const { isOverDropZone } = useDropZone(dropZoneRef, onDrop);
     display: flex;
     align-items: center;
     flex-direction: column;
-    transition: opacity 0.3s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transition:
+      opacity 0.3s,
+      transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
   }
   &__icon {
     color: #14151a;

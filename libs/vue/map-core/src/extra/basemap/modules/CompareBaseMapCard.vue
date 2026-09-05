@@ -1,0 +1,79 @@
+<template>
+  <div class="base-map-card">
+    <div class="base-map-card__image">
+      <map-image v-if="current_baseMaps">
+        <div
+          class="base-map-item-image-container"
+          :class="{ _vertical: setting.vertical }"
+        >
+          <map-image
+            v-for="(current_baseMap, i) in current_baseMaps"
+            :src="current_baseMap.value?.thumbnail"
+            :key="i"
+            class="base-map-item-image"
+          ></map-image>
+        </div>
+      </map-image>
+    </div>
+    <div class="base-map-card__content">
+      <div
+        v-for="(baseMaps, i) in c_items_baseMaps"
+        :key="i"
+        class="base-map-card__item"
+      >
+        <div>#{{ i + 1 }}</div>
+        <div>
+          <InputSelect
+            :modelValue="current_baseMaps[i].value"
+            :items="baseMaps.value"
+            returnObject
+            itemText="title"
+            itemValue="id"
+            @update:modelValue="onChangeBaseMap(i, $event as BaseMapItem)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script setup lang="ts">
+import type { BaseMapItem } from '@hungpvq/map-core';
+import { MapImage } from '../../../components';
+import { InputSelect } from '../../../field';
+import { useMap } from '../../../hooks';
+import { getMaps } from '../../../store/store';
+import { getMapCompareSetting } from '../../../extra/compare';
+import { computed, onBeforeUnmount, ref } from 'vue';
+import { useBaseMap } from '../hooks';
+
+const props = defineProps<{
+  mapId: string;
+  title?: string;
+}>();
+
+const { mapId } = useMap(props);
+const setting = getMapCompareSetting(mapId.value);
+const mapIds = ref<string[]>(getMaps(mapId.value).map((x) => x.id));
+
+const mapStoreUseBaseMap = computed(() => {
+  return mapIds.value.map((id) => {
+    return useBaseMap(id);
+  });
+});
+
+const current_baseMaps = computed(() => {
+  return mapStoreUseBaseMap.value.map((x) => x.currentBaseMap);
+});
+
+const c_items_baseMaps = computed(() => {
+  return mapStoreUseBaseMap.value.map((x) => x.baseMaps);
+});
+
+const onChangeBaseMap = (i: number, base_map: BaseMapItem) => {
+  mapStoreUseBaseMap.value[i].setCurrent(base_map);
+};
+
+onBeforeUnmount(() => {
+  mapStoreUseBaseMap.value.forEach((x) => x.remove());
+});
+</script>

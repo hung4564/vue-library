@@ -1,0 +1,44 @@
+{
+  "name": "@hungpvq/react-map-devtools",
+  "version": "1.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    }
+  },
+  "peerDependencies": {
+    "@hungpvq/react-map-core": "1.0.1",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-log": ">=0.0.1",
+    "@hungpvq/shared-store": ">=0.0.1",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
+  }
+}

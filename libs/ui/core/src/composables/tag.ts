@@ -15,5 +15,5 @@ export const makeTagProps = propsFactory(
       default: 'div',
     },
   },
-  'tag'
+  'tag',
 );

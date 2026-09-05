@@ -1,0 +1,97 @@
+<template lang="">
+  <div v-if="isMulti" class="toggle-buttons-container">
+    <BaseButton
+      :class="{ _active: getShow(0) }"
+      @click.stop="onToggleShowIndex(0)"
+    >
+      <span>#1</span>
+    </BaseButton>
+    <BaseButton
+      @click.stop="onToggleShowIndex(1)"
+      :class="{ _active: getShow(1) }"
+    >
+      <span>#2</span>
+    </BaseButton>
+  </div>
+  <BaseButton @click.stop="onToggleShow" v-else>
+    <SvgIcon size="14" type="mdi" :path="path.show" v-if="showValue" />
+    <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
+  </BaseButton>
+</template>
+<script setup lang="ts">
+import { MapSimple } from '@hungpvq/map-core';
+import type { WithToggleShow } from '@hungpvq/map-dataset';
+import {
+  IDataset,
+  IMapboxLayerView,
+  isHasToggleShow,
+  isMapboxLayerView,
+  runAllComponentsWithCheck,
+} from '@hungpvq/map-dataset';
+import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiEye, mdiEyeOff } from '@mdi/js';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { WithLayerItemActionType } from './types';
+
+const path = {
+  show: mdiEye,
+  hide: mdiEyeOff,
+};
+const props = defineProps<WithLayerItemActionType>();
+const showValue = ref(props.data.show);
+const { callMap, mapId } = useMap(props);
+const onToggleShow = () => {
+  const show = !showValue.value;
+  callMap((map: MapSimple) => {
+    runAllComponentsWithCheck<IDataset & WithToggleShow>(
+      props.data.getParent() as IDataset,
+      (dataset) => isHasToggleShow(dataset),
+      [
+        (dataset) => {
+          dataset.toggleShow(map, show);
+        },
+      ],
+    );
+  });
+};
+function onToggleShowIndex(index: number) {
+  const maps = getMaps(mapId.value);
+  const map = maps[index];
+  const show = getShow(index);
+  let item = props.data;
+  item.shows[index] = !show;
+  runAllComponentsWithCheck(
+    props.data.getParent() as IDataset,
+    (dataset): dataset is IDataset & IMapboxLayerView =>
+      isMapboxLayerView(dataset),
+    [
+      (dataset) => {
+        dataset.toggleShow(map, item.shows[index]);
+      },
+    ],
+  );
+}
+const isMulti = ref(false);
+onMounted(() => {
+  isMulti.value = getIsMulti(mapId.value);
+});
+function toggleShow(e: { show: boolean }) {
+  const { show } = e;
+  showValue.value = show;
+}
+onMounted(() => {
+  props.data.on('toggleShow', toggleShow);
+});
+onUnmounted(() => {
+  props.data.off('toggleShow', toggleShow);
+});
+function getShow(index: number) {
+  let item = props.data;
+  if (props.data.shows == null || props.data.shows.length < 1) {
+    const show = props.data.show == null ? true : props.data.show;
+    item.shows = [show, show];
+  }
+  return props.data.shows[index];
+}
+</script>

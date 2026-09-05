@@ -46,7 +46,7 @@ export function chunk(str: string, size = 1) {
 
 export function has<T extends string>(
   obj: object,
-  key: T[]
+  key: T[],
 ): obj is Record<T, unknown> {
   return key.every((k) => Object.prototype.hasOwnProperty.call(obj, k));
 }
@@ -56,7 +56,7 @@ export function has<T extends string>(
  * The getter function must always return an object with the same keys.
  */
 export function destructComputed<T extends object>(
-  getter: ComputedGetter<T & NotAUnion<T>>
+  getter: ComputedGetter<T & NotAUnion<T>>,
 ): ToRefs<T>;
 export function destructComputed<T extends object>(getter: ComputedGetter<T>) {
   const refs = reactive({}) as T;
@@ -67,7 +67,7 @@ export function destructComputed<T extends object>(getter: ComputedGetter<T>) {
         refs[key] = base.value[key];
       }
     },
-    { flush: 'sync' }
+    { flush: 'sync' },
   );
   return toRefs(refs);
 }
@@ -76,16 +76,12 @@ export function clamp(value: number, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
 
-type MaybePick<T extends object, U extends Extract<keyof T, string>> = Record<
-  string,
-  unknown
-> extends T
-  ? Partial<Pick<T, U>>
-  : Pick<T, U>;
+type MaybePick<T extends object, U extends Extract<keyof T, string>> =
+  Record<string, unknown> extends T ? Partial<Pick<T, U>> : Pick<T, U>;
 // Array of keys
 export function pick<T extends object, U extends Extract<keyof T, string>>(
   obj: T,
-  paths: U[]
+  paths: U[],
 ): MaybePick<T, U> {
   const found: any = {};
 
@@ -102,7 +98,7 @@ export function pick<T extends object, U extends Extract<keyof T, string>>(
 export function mergeDeep(
   source: Record<string, any> = {},
   target: Record<string, any> = {},
-  arrayFn?: (a: unknown[], b: unknown[]) => unknown[]
+  arrayFn?: (a: unknown[], b: unknown[]) => unknown[],
 ) {
   const out: Record<string, any> = {};
 
@@ -150,11 +146,11 @@ export function includes(arr: readonly any[], val: any) {
 export function convertToUnit(str: number, unit?: string): string;
 export function convertToUnit(
   str: string | number | null | undefined,
-  unit?: string
+  unit?: string,
 ): string | undefined;
 export function convertToUnit(
   str: string | number | null | undefined,
-  unit = 'px'
+  unit = 'px',
 ): string | undefined {
   if (str == null || str === '') {
     return undefined;

@@ -1,0 +1,99 @@
+.attribute-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: var(--map-space-md, 8px);
+  overflow: visible;
+}
+
+.attribute-table__toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-sm, 4px);
+  padding: 0 var(--map-space-sm, 4px);
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+
+.attribute-table__toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--map-space-md, 8px);
+}
+
+.attribute-table__toolbar-row .form-group {
+  margin: 0;
+  flex: 1 1 140px;
+  min-width: 120px;
+}
+
+.attribute-table__export,
+.attribute-table__clear {
+  flex: 0 0 auto;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid hsla(0, 0%, 100%, 0.24);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.attribute-table__status {
+  font-size: 12px;
+  opacity: 0.75;
+  padding: 0 var(--map-space-sm, 4px);
+}
+
+.attribute-table__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.attribute-table__table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.attribute-table__table th,
+.attribute-table__table td {
+  border-bottom: thin solid hsla(0, 0%, 100%, 0.12);
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attribute-table__table th {
+  position: sticky;
+  top: 0;
+  background: #424242;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.attribute-table__check {
+  width: 36px;
+  max-width: 36px;
+  text-align: center;
+  padding-left: 8px;
+  padding-right: 4px;
+}
+
+.attribute-table__table tbody tr {
+  cursor: pointer;
+}
+
+.attribute-table__table tbody tr:hover {
+  background: #616161;
+}
+
+.attribute-table__table tbody tr.is-selected {
+  background: #1565c0;
+}

@@ -5,8 +5,9 @@ import { useTimeoutFn } from '../useTimeoutFn';
 import type { Fn, MaybeRefOrGetter, Stoppable } from '../utils';
 import { noop } from '../utils';
 
-export interface UseTimeoutOptions<Controls extends boolean>
-  extends UseTimeoutFnOptions {
+export interface UseTimeoutOptions<
+  Controls extends boolean,
+> extends UseTimeoutFnOptions {
   /**
    * Expose more controls
    *
@@ -21,15 +22,15 @@ export interface UseTimeoutOptions<Controls extends boolean>
 
 export function useTimeout(
   interval?: MaybeRefOrGetter<number>,
-  options?: UseTimeoutOptions<false>
+  options?: UseTimeoutOptions<false>,
 ): ComputedRef<boolean>;
 export function useTimeout(
   interval: MaybeRefOrGetter<number>,
-  options: UseTimeoutOptions<true>
+  options: UseTimeoutOptions<true>,
 ): { ready: ComputedRef<boolean> } & Stoppable;
 export function useTimeout(
   interval: MaybeRefOrGetter<number> = 1000,
-  options: UseTimeoutOptions<boolean> = {}
+  options: UseTimeoutOptions<boolean> = {},
 ) {
   const { controls: exposeControls = false, callback } = options;
 

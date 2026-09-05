@@ -13,10 +13,11 @@ const info = computed(
       {},
       functions.find(
         (i) =>
-          i.name === props.fn && (!props.package || i.package === props.package)
+          i.name === props.fn &&
+          (!props.package || i.package === props.package),
       ),
-      props.frontmatter || {}
-    ) || {}
+      props.frontmatter || {},
+    ) || {},
 );
 </script>
 

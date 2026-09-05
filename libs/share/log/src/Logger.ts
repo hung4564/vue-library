@@ -42,13 +42,12 @@ export class Logger {
 
   private log(level: LogLevel, ...args: any[]) {
     const nsList = this.getSortedNamespaces();
-    if (this.isEnabled(nsList)) {
-      for (const adapter of this.adapters) {
-        adapter.log(
-          nsList.filter((x) => !this.namespaceMapHide.get(x)),
-          level,
-          ...args,
-        );
+    const filteredNs = nsList.filter((x) => !this.namespaceMapHide.get(x));
+    const enabled = this.isEnabled(nsList);
+
+    for (const adapter of this.adapters) {
+      if (enabled || adapter.alwaysOn) {
+        adapter.log(filteredNs, level, ...args);
       }
     }
   }

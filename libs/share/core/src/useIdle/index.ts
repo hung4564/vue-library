@@ -22,8 +22,7 @@ const defaultEvents: WindowEventName[] = [
 const oneMinute = 60_000;
 
 export interface UseIdleOptions
-  extends ConfigurableWindow,
-    ConfigurableEventFilter {
+  extends ConfigurableWindow, ConfigurableEventFilter {
   /**
    * Event names that listen to for detected user activity
    *
@@ -58,7 +57,7 @@ export interface UseIdleReturn {
  */
 export function useIdle(
   timeout: number = oneMinute,
-  options: UseIdleOptions = {}
+  options: UseIdleOptions = {},
 ): UseIdleReturn {
   const {
     initialState = false,

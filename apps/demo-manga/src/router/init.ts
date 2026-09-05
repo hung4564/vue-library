@@ -7,9 +7,9 @@ createMiddleware('about-2', () => {
 
 addLayout(
   'default',
-  defineAsyncComponent(() => import(`../layout/custom/BlankLayout.vue`))
+  defineAsyncComponent(() => import(`../layout/custom/BlankLayout.vue`)),
 );
 addLayout(
   'HomeLayout',
-  defineAsyncComponent(() => import(`../layout/custom/HomeLayout.vue`))
+  defineAsyncComponent(() => import(`../layout/custom/HomeLayout.vue`)),
 );

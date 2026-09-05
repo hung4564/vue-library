@@ -26,12 +26,12 @@ export const makeRoundedProps = propsFactory(
     },
     tile: Boolean,
   },
-  'rounded'
+  'rounded',
 );
 
 export function useRounded(
   props: RoundedProps | Ref<RoundedValue>,
-  name = getCurrentInstanceName()
+  name = getCurrentInstanceName(),
 ): RoundedData {
   const roundedClasses = computed(() => {
     const rounded = isRef(props) ? props.value : props.rounded;

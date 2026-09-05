@@ -10,7 +10,7 @@ export function initialize(router: Router) {
 const beforeEach: NavigationGuardWithThis<undefined> = async (
   to,
   from,
-  next
+  next,
 ) => {
   const context: Parameters<MiddlewareFn>[0] = {
     to,

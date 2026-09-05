@@ -11,7 +11,7 @@ const { isActive, pause, resume } = useIntersectionObserver(
   ([{ isIntersecting }]) => {
     isVisible.value = isIntersecting;
   },
-  { root }
+  { root },
 );
 </script>
 

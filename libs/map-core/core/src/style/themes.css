@@ -1,0 +1,167 @@
+/*
+  Map Core Themes
+  All variables use the --map- prefix for scoping.
+*/
+.app {
+  width: 100%;
+  height: 100%;
+  font-family: var(--map-font-family);
+  font-size: var(--map-font-size-base);
+  line-height: var(--map-line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root,
+.map-theme-light {
+  /* Brand / Primary */
+  --map-primary-color: #004e98;
+  --map-primary-hover-color: #003a72;
+  --map-on-primary-color: #ffffff;
+  --map-accent-color: #1a73e8;
+  --map-compare-swiper-color: #3887be;
+  --map-geolocate-accuracy-color: #1da1f233;
+
+  /* Surfaces & Backgrounds */
+  --map-surface-color: #ffffff;
+  --map-surface-variant-color: #f5f5f5;
+  --map-background-color: #f7f5f2;
+
+  /* Text Colors */
+  --map-text-primary: #333333;
+  --map-text-secondary: #666666;
+  --map-text-inverse: #ffffff;
+
+  /* Borders & Outlines */
+  --map-border-color: #cccccc;
+  --map-divider-color: #eeeeee;
+
+  /* States */
+  --map-disabled-color: rgba(0, 0, 0, 0.25);
+  --map-hover-color: #f5f5f5;
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  /* Map overlay chrome (sidebar/popup) — dark translucent on map */
+  --map-card-bg: rgba(32, 43, 54, 0.9);
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #fff;
+
+  /* Alias draggable card tokens → map theme */
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+
+  /* Typography (shared by Vue + React) */
+  --map-font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --map-font-size-xs: 10px;
+  --map-font-size-sm: 12px;
+  --map-font-size-md: 14px;
+  --map-font-size-base: 14px;
+  --map-font-size-lg: 16px;
+  --map-font-size-xl: 18px;
+  --map-font-size-2xl: 20px;
+  --map-line-height: 1.4;
+  --map-line-height-tight: 1.25;
+  --map-font-weight-normal: 400;
+  --map-font-weight-medium: 500;
+  --map-font-weight-semibold: 600;
+  --map-font-weight-bold: 700;
+
+  /* Layout tokens (shared by Vue + React controls) */
+  --map-space-xs: 4px;
+  --map-space-sm: 6px;
+  --map-space-md: 8px;
+  --map-space-lg: 12px;
+  --map-space-xl: 16px;
+  --map-radius-sm: 4px;
+  --map-radius-md: 8px;
+  --map-legend-icon-size: 17px;
+  --map-control-panel-gap: var(--map-space-md);
+
+  /* Semantic padding (use these in components) */
+  --map-padding-control: var(--map-space-md); /* popup/sidebar body */
+  --map-padding-section: var(--map-space-lg); /* collapse / section block */
+  --map-padding-item: var(--map-space-lg); /* list/card items */
+  --map-padding-field: var(--map-space-xs); /* gap around a field row */
+  --map-padding-input: var(--map-space-md); /* input/select/textarea */
+  --map-padding-action: var(--map-space-md); /* footer actions */
+  --map-padding-chip: var(--map-space-xs) var(--map-space-md); /* tags / chips */
+  --map-padding-header: 0 var(--map-space-xs) 0 var(--map-space-md);
+  --map-padding-compact: var(--map-space-xs); /* mouse coords / dense UI */
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
+}
+
+/* Dark Theme */
+.map-theme-dark {
+  --map-primary-color: #4da3ff;
+  --map-primary-hover-color: #80bfff;
+  --map-on-primary-color: #00264d;
+  --map-accent-color: #4da3ff;
+  --map-compare-swiper-color: #4da3ff;
+  --map-geolocate-accuracy-color: #4da3ff33;
+
+  --map-surface-color: #1e1e1e;
+  --map-surface-variant-color: #2d2d2d;
+  --map-background-color: #121212;
+
+  --map-text-primary: #e0e0e0;
+  --map-text-secondary: #aaaaaa;
+  --map-text-inverse: #121212;
+
+  --map-border-color: #444444;
+  --map-divider-color: #333333;
+
+  --map-disabled-color: rgba(255, 255, 255, 0.3);
+  --map-hover-color: #383838;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(32, 43, 54, 0.9);
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #fff;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+}
+
+/* Vibrant / Premium Theme */
+.map-theme-vibrant {
+  --map-primary-color: #6200ee;
+  --map-primary-hover-color: #3700b3;
+  --map-on-primary-color: #ffffff;
+  --map-accent-color: #6200ee;
+  --map-compare-swiper-color: #6200ee;
+  --map-geolocate-accuracy-color: #6200ee33;
+
+  --map-surface-color: #ffffff;
+  --map-surface-variant-color: #f3e5f5;
+  --map-background-color: #f5f5f5;
+
+  --map-text-primary: #1a0229;
+  --map-text-secondary: #4a148c;
+  --map-text-inverse: #ffffff;
+
+  --map-border-color: #e1bee7;
+  --map-divider-color: #f3e5f5;
+
+  --map-disabled-color: rgba(98, 0, 238, 0.1);
+  --map-hover-color: #ede7f6;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(32, 43, 54, 0.9);
+  --map-card-highlight-bg: rgba(26, 115, 232);
+  --map-card-text: #fff;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+}

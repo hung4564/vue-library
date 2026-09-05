@@ -13,7 +13,7 @@ export const vIntersectionObserver: ObjectDirective<
 > = {
   [directiveHooks.mounted](
     el: HTMLElement,
-    binding: DirectiveBinding<BindingValueFunction | BindingValueArray>
+    binding: DirectiveBinding<BindingValueFunction | BindingValueArray>,
   ) {
     if (typeof binding.value === 'function')
       useIntersectionObserver(el, binding.value);

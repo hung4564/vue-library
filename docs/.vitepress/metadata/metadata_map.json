@@ -27,6 +27,13 @@
       "order": 2.2
     },
     {
+      "name": "UniversalRegistry controls",
+      "package": "Map - Core",
+      "docs": "/map/core/registry-controls",
+      "category": "Core",
+      "order": 2.3
+    },
+    {
       "name": "FullScreenControl",
       "package": "Map - Core",
       "docs": "/map/core/module/FullScreenControl",
@@ -41,6 +48,13 @@
       "order": 3
     },
     {
+      "name": "MapContextMenuControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/MapContextMenuControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
       "name": "GeoLocateControl",
       "package": "Map - Core",
       "docs": "/map/core/module/GeoLocateControl",
@@ -51,6 +65,27 @@
       "name": "GotoControl",
       "package": "Map - Core",
       "docs": "/map/core/module/GotoControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "InfoControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/InfoControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "WorkerControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/WorkerControl",
+      "category": "Component",
+      "order": 4
+    },
+    {
+      "name": "RegistryControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/RegistryControl",
       "category": "Component",
       "order": 4
     },
@@ -97,6 +132,13 @@
       "order": 4.2
     },
     {
+      "name": "Worker monitor",
+      "package": "Map - Core",
+      "docs": "/map/core/extra-worker",
+      "category": "Extra",
+      "order": 4.2
+    },
+    {
       "name": "Crs",
       "package": "Map - Core",
       "docs": "/map/core/extra-crs",
@@ -106,49 +148,49 @@
     {
       "name": "Getting start",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/",
+      "docs": "/map/core/basemap/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Basemap",
-      "docs": "/map/basemap/module/",
+      "docs": "/map/core/basemap/module/",
       "order": 5.1
     },
     {
       "name": "Getting start",
       "package": "Map - Measurement",
-      "docs": "/map/measurement/",
+      "docs": "/map/core/measurement/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Measurement",
-      "docs": "/map/measurement/module/",
+      "docs": "/map/core/measurement/module/",
       "order": 5.2
     },
     {
       "name": "Getting start",
       "package": "Map - Print",
-      "docs": "/map/print/",
+      "docs": "/map/core/print/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Print",
-      "docs": "/map/print/module/",
+      "docs": "/map/core/print/module/",
       "order": 5.2
     },
     {
       "name": "Getting start",
       "package": "Map - Legend",
-      "docs": "/map/legend/",
+      "docs": "/map/core/legend/",
       "order": 5
     },
     {
       "name": "Component",
       "package": "Map - Legend",
-      "docs": "/map/legend/module/",
+      "docs": "/map/core/legend/module/",
       "order": 5.2
     },
     {
@@ -176,10 +218,103 @@
       "order": 5.2
     },
     {
+      "name": "LayerControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "LayerInfoControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerInfoControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "IdentifyControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/IdentifyControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "IdentifyShowFirstControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/IdentifyShowFirstControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "DatasetControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/DatasetControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "ComponentManagementControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/ComponentManagementControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "LayerHighlight",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/LayerHighlight",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "CreateControl",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/CreateControl",
+      "category": "Component",
+      "order": 5.21
+    },
+    {
+      "name": "Legend",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/module/Legend",
+      "category": "Helper",
+      "order": 5.22
+    },
+    {
       "name": "Create Dataset",
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset",
       "order": 5.3
+    },
+    {
+      "name": "Menus",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/with-helper-menu",
+      "order": 5.4
+    },
+    {
+      "name": "Events",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/with-helper-event",
+      "order": 5.41
+    },
+    {
+      "name": "Export",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/export",
+      "order": 5.42
+    },
+    {
+      "name": "Attribute table",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/attribute-table",
+      "order": 5.43
+    },
+    {
+      "name": "GeoJSON worker",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/worker",
+      "order": 5.44
     }
   ]
 }

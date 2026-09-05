@@ -45,7 +45,7 @@ function isTypedCharValid({
 
 export function onStartTyping(
   callback: (event: KeyboardEvent) => void,
-  options: ConfigurableDocument = {}
+  options: ConfigurableDocument = {},
 ) {
   const { document = defaultDocument } = options;
 

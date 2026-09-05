@@ -20,13 +20,13 @@ VueLibrary is a monorepo containing Vue.js libraries designed to build interacti
 - **[@hungpvq/vue-map-draw](./libs/map/draw/)** - Drawing and editing tools
 - **[@hungpvq/vue-map-measurement](./libs/map/measurement/)** - Distance and area measurement tools
 - **[@hungpvq/vue-map-print](./libs/map/print/)** - Map printing functionality
-- **[@hungpvq/vue-map-dataset](./libs/map/dataset/)** - Dataset management and visualization
+- **[@hungpvq/vue-map-dataset](./libs/vue/map-dataset/)** - Dataset management and visualization
+- **[@hungpvq/react-map-dataset](./libs/react/map-dataset/)** - React dataset UI
 - **[@hungpvq/vue-map-legend](./libs/map/legend/)** - Legend components
 
 ### 🎯 UI Libraries
 
-- **[@hungpvq/vue-draggable](./libs/draggable/)** - Draggable components
-- **[@hungpvq/content-menu](./libs/content-menu/)** - Context menu
+- **[@hungpvq/vue-draggable](./libs/vue/draggable/)** - Draggable components (includes ContextMenu)
 
 ### 🔧 Shared Libraries
 
@@ -66,7 +66,6 @@ npm install @hungpvq/vue-map-legend
 
 # UI libraries
 npm install @hungpvq/vue-draggable
-npm install @hungpvq/content-menu
 
 # Shared libraries
 npm install @hungpvq/shared
@@ -91,10 +90,10 @@ npm install @hungpvq/shared-store
 
 <script setup>
 import { Map } from '@hungpvq/vue-map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintControl } from '@hungpvq/vue-map-print';
+import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { PrintControl } from '@hungpvq/vue-map-core';
 import '@hungpvq/vue-map-core/style.css';
 </script>
 ```
@@ -104,7 +103,6 @@ import '@hungpvq/vue-map-core/style.css';
 ```vue
 <template>
   <Map @map-loaded="onMapLoaded">
-    <DatasetControl position="top-left" show />
     <LayerControl position="top-left" show />
     <BaseMapControl position="bottom-left" />
     <DrawControl position="top-right" />
@@ -114,15 +112,15 @@ import '@hungpvq/vue-map-core/style.css';
 </template>
 
 <script setup>
-import { Map } from '@hungpvq/vue-map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-basemap';
+import { Map, BaseMapControl, MeasurementControl, PrintAdvancedControl } from '@hungpvq/vue-map-core';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { MeasurementControl } from '@hungpvq/vue-map-measurement';
-import { PrintAdvancedControl } from '@hungpvq/vue-map-print';
-import { DatasetControl, LayerControl } from '@hungpvq/vue-map-dataset';
+import { LayerControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
 </script>
 ```
+
+Dataset install and menus: [vue-map-dataset docs](./libs/vue/map-dataset/docs/index.md).
 
 ## 📚 Documentation
 
@@ -171,11 +169,9 @@ vue-library/
 ## Idea
 
 - [x] Introduce a new `dataset` type: **`data-management`**
-
   - This dataset type supports **CRUD operations** (create, read, update, delete).
 
 - [ ] Provide templates for `data-management` datasets:
-
   - [ ] **Local template** – handles local data sources in:
     - [x] **GeoJSON format**, or
     - [ ] **List-based format** (which may or may not be convertible to GeoJSON).

@@ -6,7 +6,7 @@ const store = createStore<{ pageIndex: Ref<number>; manga?: MangaChapter }>(
   'manga.detail',
   {
     pageIndex: ref(0),
-  }
+  },
 );
 export function setPageIndex(index: number) {
   store.pageIndex.value = index;

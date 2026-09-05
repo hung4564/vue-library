@@ -1,3 +1,13 @@
+## 0.2.0 (2026-09-05)
+
+### 🚀 Features
+
+- add react dev tool ([c3fdce1](https://github.com/hung4564/vue-library/commit/c3fdce1))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.0 (2025-06-07)
 
 ### 🚀 Features

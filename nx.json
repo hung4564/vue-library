@@ -37,6 +37,23 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx/react/router-plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "startTargetName": "start",
+        "watchDepsTargetName": "watch-deps",
+        "buildDepsTargetName": "build-deps",
+        "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
     }
   ],
   "nxCloudAccessToken": "YWEwOTkwNDMtYzIyZi00NThkLWI3NTItYmNiZmU5NDNiNjgxfHJlYWQtd3JpdGU=",
@@ -79,8 +96,11 @@
   "release": {
     "projectsRelationship": "independent",
     "version": {
+      "preVersionCommand": "npx nx run-many -t build",
       "fallbackCurrentVersionResolver": "disk",
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "updateDependents": "never",
+      "manifestRootsToUpdate": ["{projectRoot}"]
     },
     "changelog": {
       "projectChangelogs": {
@@ -93,12 +113,91 @@
       },
       "automaticFromRef": true
     },
-    "projects": [
-      "libs/share/*",
-      "libs/ui/*",
-      "libs/map/*",
-      "libs/*",
-      "shared-store"
-    ]
+    "groups": {
+      "draggable": {
+        "projects": [
+          "@hungpvq/draggable",
+          "@hungpvq/vue-draggable",
+          "@hungpvq/react-draggable"
+        ],
+        "projectsRelationship": "fixed",
+        "version": {
+          "fallbackCurrentVersionResolver": "disk",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build",
+          "updateDependents": "auto"
+        },
+        "changelog": {
+          "projectChangelogs": true
+        }
+      },
+      "map": {
+        "projects": [
+          "@hungpvq/map-core",
+          "@hungpvq/map-dataset",
+          "@hungpvq/vue-map-core",
+          "@hungpvq/vue-map-dataset",
+          "@hungpvq/vue-map-draw",
+          "@hungpvq/vue-map-devtools",
+          "@hungpvq/react-map-core",
+          "@hungpvq/react-map-dataset",
+          "@hungpvq/react-map-devtools"
+        ],
+        "projectsRelationship": "independent",
+        "version": {
+          "fallbackCurrentVersionResolver": "disk",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
+          "updateDependents": "never"
+        },
+        "changelog": {
+          "projectChangelogs": true
+        }
+      },
+      "packages": {
+        "projects": [
+          "libs/share/*",
+          "libs/ui/*",
+          "libs/map/*",
+          "libs/*",
+          "shared-store",
+          "!tag:map",
+          "!@hungpvq/map-core",
+          "!@hungpvq/map-dataset",
+          "!@hungpvq/vue-map-core",
+          "!@hungpvq/vue-map-dataset",
+          "!@hungpvq/vue-map-draw",
+          "!@hungpvq/vue-map-devtools",
+          "!@hungpvq/react-map-core",
+          "!@hungpvq/react-map-dataset",
+          "!@hungpvq/react-map-devtools",
+          "!@hungpvq/draggable",
+          "!@hungpvq/vue-draggable",
+          "!@hungpvq/react-draggable"
+        ],
+        "projectsRelationship": "independent",
+        "version": {
+          "updateDependents": "never"
+        }
+      }
+    }
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true,
+        "style": "css",
+        "linter": "eslint",
+        "bundler": "vite"
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint",
+        "unitTestRunner": "none"
+      }
+    }
   }
 }

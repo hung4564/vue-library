@@ -12,7 +12,7 @@ type ColorValue = string | false | null | undefined;
 
 // Composables
 export function useColor(
-  colors: Ref<{ background?: ColorValue; text?: ColorValue }>
+  colors: Ref<{ background?: ColorValue; text?: ColorValue }>,
 ) {
   return destructComputed(() => {
     const classes: string[] = [];

@@ -34,12 +34,12 @@ const eventHandlers = [
  */
 export function useFullscreen(
   target?: MaybeElementRef,
-  options: UseFullscreenOptions = {}
+  options: UseFullscreenOptions = {},
 ) {
   const { document = defaultDocument, autoExit = false } = options;
 
   const targetRef = computed(
-    () => unrefElement(target) ?? document?.querySelector('html')
+    () => unrefElement(target) ?? document?.querySelector('html'),
   );
   const isFullscreen = ref(false);
 
@@ -54,7 +54,8 @@ export function useFullscreen(
       'msRequestFullscreen',
     ].find(
       (m) =>
-        (document && m in document) || (targetRef.value && m in targetRef.value)
+        (document && m in document) ||
+        (targetRef.value && m in targetRef.value),
     ) as any;
   });
 
@@ -68,7 +69,8 @@ export function useFullscreen(
       'msExitFullscreen',
     ].find(
       (m) =>
-        (document && m in document) || (targetRef.value && m in targetRef.value)
+        (document && m in document) ||
+        (targetRef.value && m in targetRef.value),
     ) as any;
   });
 
@@ -81,7 +83,8 @@ export function useFullscreen(
       'msFullscreenElement',
     ].find(
       (m) =>
-        (document && m in document) || (targetRef.value && m in targetRef.value)
+        (document && m in document) ||
+        (targetRef.value && m in targetRef.value),
     ) as any;
   });
 
@@ -98,7 +101,7 @@ export function useFullscreen(
       document &&
       requestMethod.value !== undefined &&
       exitMethod.value !== undefined &&
-      fullscreenEnabled.value !== undefined
+      fullscreenEnabled.value !== undefined,
   );
 
   const isCurrentElementFullScreen = (): boolean => {
@@ -170,7 +173,7 @@ export function useFullscreen(
     () => unrefElement(targetRef),
     eventHandlers,
     handlerCallback,
-    false
+    false,
   );
 
   if (autoExit) tryOnScopeDispose(exit);
