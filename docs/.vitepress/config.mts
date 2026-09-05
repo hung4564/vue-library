@@ -9,18 +9,23 @@ import { navLabel, packageVersions } from './packages-versions';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDemoDraggable = process.env.VITEPRESS_SITE === 'demo-draggable';
+const isDemoMap = process.env.VITEPRESS_SITE === 'demo-map';
+const demoSiteOrigin = 'https://hung4564.github.io';
 
-function rewriteDraggableLink(link?: string) {
+function rewritePrefixLink(prefix: string, link?: string) {
   if (!link) return link;
-  if (link === '/draggable' || link === '/draggable/') return '/';
-  return link.replace(/^\/draggable\//, '/');
+  if (link === `/${prefix}` || link === `/${prefix}/`) return '/';
+  return link.replace(new RegExp(`^/${prefix}/`), '/');
 }
 
-function mapSidebar(items: DefaultTheme.SidebarItem[]): DefaultTheme.SidebarItem[] {
+function rewriteSidebar(
+  items: DefaultTheme.SidebarItem[],
+  rewrite: (link?: string) => string | undefined,
+): DefaultTheme.SidebarItem[] {
   return items.map((item) => ({
     ...item,
-    link: rewriteDraggableLink(item.link),
-    items: item.items ? mapSidebar(item.items) : undefined,
+    link: rewrite(item.link),
+    items: item.items ? rewriteSidebar(item.items, rewrite) : undefined,
   }));
 }
 
@@ -71,16 +76,23 @@ const mainDocsConfig: UserConfig = {
       '/draggable': [
         {
           text: 'Demo Vue',
-          link: 'https://hung4564.github.io/demo-draggable/vue/',
+          link: `${demoSiteOrigin}/demo-draggable/vue/`,
         },
         {
           text: 'Demo React',
-          link: 'https://hung4564.github.io/demo-draggable/react/',
+          link: `${demoSiteOrigin}/demo-draggable/react/`,
         },
         ...getDraggableSideBar(),
       ],
       '/map': [
-        { text: 'Demo', link: 'https://hung4564.github.io/demo-map' },
+        {
+          text: 'Demo Vue',
+          link: `${demoSiteOrigin}/demo-map/vue/`,
+        },
+        {
+          text: 'Demo React',
+          link: `${demoSiteOrigin}/demo-map/react/`,
+        },
         ...getMapSideBar(),
       ],
     },
@@ -105,7 +117,6 @@ const mainDocsConfig: UserConfig = {
  * Demo links MUST be absolute (https://...) so VitePress does a full page
  * load instead of client-routing to a missing markdown page (404).
  */
-const demoSiteOrigin = 'https://hung4564.github.io';
 const demoDraggableConfig: UserConfig = {
   title: `@hungpvq/draggable ${packageVersions['@hungpvq/draggable']}`,
   description: 'Draggable docs and demos',
@@ -151,7 +162,10 @@ const demoDraggableConfig: UserConfig = {
         target: '_self',
         rel: 'noopener',
       },
-      ...mapSidebar(getDraggableSideBar() as DefaultTheme.SidebarItem[]),
+      ...rewriteSidebar(
+        getDraggableSideBar() as DefaultTheme.SidebarItem[],
+        (link) => rewritePrefixLink('draggable', link),
+      ),
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/hung4564/vue-library' },
@@ -166,6 +180,102 @@ const demoDraggableConfig: UserConfig = {
   },
 };
 
+/**
+ * GitHub Pages site for https://hung4564.github.io/demo-map/
+ * - /              → map docs
+ * - /vue/          → Vue demo (built separately)
+ * - /react/        → React demo (built separately)
+ */
+const demoMapConfig: UserConfig = {
+  title: `@hungpvq/vue-map-core ${packageVersions['@hungpvq/vue-map-core']}`,
+  description: 'Map docs and demos',
+  srcDir: path.resolve(__dirname, '../../libs/map-core/core/docs'),
+  base: '/demo-map/',
+  outDir: path.resolve(__dirname, '../../deploy/demo-map'),
+  lastUpdated: true,
+  ignoreDeadLinks: [
+    /^\/vue/,
+    /^\/react/,
+    // Markdown uses absolute /map/... paths for the main docs site;
+    // they are rewritten to /... at render time below.
+    /^\/map(\/|$)/,
+    /^https?:\/\/hung4564\.github\.io\/demo-map\/(vue|react)/,
+  ],
+  markdown: {
+    config(md) {
+      const defaultLinkOpen =
+        md.renderer.rules.link_open ||
+        ((tokens, idx, options, _env, self) =>
+          self.renderToken(tokens, idx, options));
+
+      md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+        const hrefIndex = tokens[idx].attrIndex('href');
+        if (hrefIndex >= 0) {
+          const href = tokens[idx].attrs![hrefIndex][1];
+          if (href === '/map' || href === '/map/') {
+            tokens[idx].attrs![hrefIndex][1] = '/';
+          } else if (href.startsWith('/map/')) {
+            tokens[idx].attrs![hrefIndex][1] = href.slice('/map'.length);
+          }
+        }
+        return defaultLinkOpen(tokens, idx, options, env, self);
+      };
+    },
+  },
+  themeConfig: {
+    search: { provider: 'local' },
+    nav: [
+      {
+        text: navLabel('Docs', '@hungpvq/vue-map-core'),
+        link: '/',
+      },
+      {
+        text: 'Demo Vue',
+        link: `${demoSiteOrigin}/demo-map/vue/`,
+        target: '_self',
+        rel: 'noopener',
+      },
+      {
+        text: 'Demo React',
+        link: `${demoSiteOrigin}/demo-map/react/`,
+        target: '_self',
+        rel: 'noopener',
+      },
+    ],
+    sidebar: [
+      {
+        text: 'Demo Vue',
+        link: `${demoSiteOrigin}/demo-map/vue/`,
+        target: '_self',
+        rel: 'noopener',
+      },
+      {
+        text: 'Demo React',
+        link: `${demoSiteOrigin}/demo-map/react/`,
+        target: '_self',
+        rel: 'noopener',
+      },
+      ...rewriteSidebar(
+        getMapSideBar() as DefaultTheme.SidebarItem[],
+        (link) => rewritePrefixLink('map', link),
+      ),
+    ],
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/hung4564/vue-library' },
+    ],
+  },
+  vite: {
+    ...sharedVite,
+    build: {
+      emptyOutDir: false,
+    },
+  },
+};
+
 export default defineConfig(
-  isDemoDraggable ? demoDraggableConfig : mainDocsConfig,
+  isDemoDraggable
+    ? demoDraggableConfig
+    : isDemoMap
+      ? demoMapConfig
+      : mainDocsConfig,
 );

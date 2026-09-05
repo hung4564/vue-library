@@ -100,7 +100,7 @@
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true,
       "updateDependents": "never",
-      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
+      "manifestRootsToUpdate": ["{projectRoot}"]
     },
     "changelog": {
       "projectChangelogs": {
@@ -118,7 +118,7 @@
         "projects": [
           "@hungpvq/draggable",
           "@hungpvq/vue-draggable",
-          "react-draggable"
+          "@hungpvq/react-draggable"
         ],
         "projectsRelationship": "fixed",
         "version": {
@@ -131,6 +131,29 @@
           "projectChangelogs": true
         }
       },
+      "map": {
+        "projects": [
+          "@hungpvq/map-core",
+          "@hungpvq/map-dataset",
+          "@hungpvq/vue-map-core",
+          "@hungpvq/vue-map-dataset",
+          "@hungpvq/vue-map-draw",
+          "@hungpvq/vue-map-devtools",
+          "@hungpvq/react-map-core",
+          "@hungpvq/react-map-dataset",
+          "@hungpvq/react-map-devtools"
+        ],
+        "projectsRelationship": "independent",
+        "version": {
+          "fallbackCurrentVersionResolver": "disk",
+          "manifestRootsToUpdate": ["{projectRoot}"],
+          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
+          "updateDependents": "never"
+        },
+        "changelog": {
+          "projectChangelogs": true
+        }
+      },
       "packages": {
         "projects": [
           "libs/share/*",
@@ -138,13 +161,19 @@
           "libs/map/*",
           "libs/*",
           "shared-store",
-          "@hungpvq/map-core",
-          "@hungpvq/react-map-dataset",
-          "@hungpvq/react-map-devtools",
-          "@hungpvq/map-dataset",
+          "!tag:map",
+          "!@hungpvq/map-core",
+          "!@hungpvq/map-dataset",
+          "!@hungpvq/vue-map-core",
+          "!@hungpvq/vue-map-dataset",
+          "!@hungpvq/vue-map-draw",
+          "!@hungpvq/vue-map-devtools",
+          "!@hungpvq/react-map-core",
+          "!@hungpvq/react-map-dataset",
+          "!@hungpvq/react-map-devtools",
           "!@hungpvq/draggable",
           "!@hungpvq/vue-draggable",
-          "!react-draggable"
+          "!@hungpvq/react-draggable"
         ],
         "projectsRelationship": "independent",
         "version": {

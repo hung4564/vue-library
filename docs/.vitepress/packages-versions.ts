@@ -47,6 +47,16 @@ const draggablePackages = pkgs(
   '@hungpvq/react-draggable',
 );
 
+const mapPackages = pkgs(
+  '@hungpvq/vue-map-core',
+  '@hungpvq/vue-map-dataset',
+  '@hungpvq/vue-map-draw',
+  '@hungpvq/react-map-core',
+  '@hungpvq/react-map-dataset',
+);
+
+const isDemoMap = (base: string) => base.includes('demo-map');
+
 const docVersionGroups: DocVersionGroup[] = [
   {
     id: 'draggable',
@@ -58,29 +68,32 @@ const docVersionGroups: DocVersionGroup[] = [
   },
   {
     id: 'map-core',
-    match: (path) => path.startsWith('/map/core'),
+    match: (path, base) =>
+      path.startsWith('/map/core') ||
+      (isDemoMap(base) && path.startsWith('/core')),
     packages: pkgs('@hungpvq/vue-map-core', '@hungpvq/react-map-core'),
   },
   {
     id: 'map-dataset',
-    match: (path) => path.startsWith('/map/dataset'),
+    match: (path, base) =>
+      path.startsWith('/map/dataset') ||
+      (isDemoMap(base) && path.startsWith('/dataset')),
     packages: pkgs('@hungpvq/vue-map-dataset', '@hungpvq/react-map-dataset'),
   },
   {
     id: 'map-draw',
-    match: (path) => path.startsWith('/map/draw'),
+    match: (path, base) =>
+      path.startsWith('/map/draw') ||
+      (isDemoMap(base) && path.startsWith('/draw')),
     packages: pkgs('@hungpvq/vue-map-draw'),
   },
   {
     id: 'map',
-    match: (path) => path === '/map' || path.startsWith('/map/'),
-    packages: pkgs(
-      '@hungpvq/vue-map-core',
-      '@hungpvq/vue-map-dataset',
-      '@hungpvq/vue-map-draw',
-      '@hungpvq/react-map-core',
-      '@hungpvq/react-map-dataset',
-    ),
+    match: (path, base) =>
+      isDemoMap(base) ||
+      path === '/map' ||
+      path.startsWith('/map/'),
+    packages: mapPackages,
   },
   {
     id: 'shared',

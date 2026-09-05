@@ -3,7 +3,18 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/react/demo-map/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["map", "react", "demo"],
   "// targets": "to see all targets run: nx show project react-demo-map --web",
-  "targets": {}
+  "targets": {
+    "publish-demo": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "vite build --outDir=../../../deploy/demo-map/react --emptyOutDir"
+        ],
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
 }

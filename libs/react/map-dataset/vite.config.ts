@@ -8,11 +8,11 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/map/react-dataset',
+  cacheDir: '../../../node_modules/.vite/libs/react/map-dataset',
   plugins: [
     react(),
     nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md']),
+    nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
@@ -23,7 +23,7 @@ export default defineConfig(() => ({
     format: 'es' as const,
   },
   build: {
-    outDir: '../../../dist/libs/map/react-dataset',
+    outDir: '../../../dist/libs/react/map-dataset',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

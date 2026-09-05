@@ -8,7 +8,7 @@ export default defineConfig((env) => {
   return {
     root: __dirname,
     cacheDir: '../../../node_modules/.vite/apps/demo-map',
-    base: envFile.VITE_BASE_URL,
+    base: envFile.VITE_BASE_URL || '/demo-map/vue/',
     server: {
       port: 4200,
       host: 'localhost',
@@ -28,7 +28,8 @@ export default defineConfig((env) => {
     },
 
     build: {
-      outDir: '../../../dist/apps/demo-map',
+      outDir: '../../../deploy/demo-map/vue',
+      emptyOutDir: true,
       reportCompressedSize: true,
       commonjsOptions: {
         transformMixedEsModules: true,

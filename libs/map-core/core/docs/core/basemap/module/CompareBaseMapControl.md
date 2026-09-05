@@ -1,0 +1,63 @@
+# Compare BaseMap Control
+
+## Usecase
+
+- Compare two base maps using a swipe/side-by-side interaction.
+- Useful for visual QA or demonstrating style differences.
+
+## Props
+
+<!--@include: ../../module/props.md-->
+
+and
+
+| Prop             | Description   | Type     | Required | Default Value     |
+| ---------------- | ------------- | -------- | -------- | ----------------- |
+| `title`          |               | `string` | `fasle`  | ``                |
+| `defaultBaseMap` |               | `string` | `fasle`  | `Open Street Map` |
+| `controlIcon`    |               | `string` | `fasle`  | ``                |
+| `baseMaps`       | BaseMapItem[] | `array`  | `fasle`  | ``                |
+
+## Slots
+
+| Name      | Description |
+| --------- | ----------- |
+| `default` | id:string   |
+
+## Events
+
+| Event            | Payload   | Description                |
+| ---------------- | --------- | -------------------------- |
+| `basemap-change` | `Basemap` | Fired when basemap changes |
+
+## Usage
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { Map } from '@hungpvq/vue-map-core';
+import { CompareBaseMapControl } from '@hungpvq/vue-map-core';
+import '@hungpvq/vue-map-core/style.css';
+const baseMaps = [];
+</script>
+
+<template>
+  <Map>
+    <CompareBaseMapControl :baseMaps="baseMaps" />
+  </Map>
+</template>
+```
+
+### React
+
+```tsx
+import { Map, CompareBaseMapControl } from '@hungpvq/react-map-core';
+import '@hungpvq/react-map-core/style.css';
+
+const baseMaps = [];
+
+<Map>
+  <CompareBaseMapControl baseMaps={baseMaps} />
+</Map>
+```
