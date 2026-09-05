@@ -1,3 +1,7 @@
+## 1.0.1 (2026-09-05)
+
+This was a version bump only for @hungpvq/vue-draggable to align it with other projects, there were no code changes.
+
 ## 1.0.0 (2026-09-05)
 
 ### 🚀 Features
