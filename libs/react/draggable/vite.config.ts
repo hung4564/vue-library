@@ -12,7 +12,7 @@ export default defineConfig(() => ({
   plugins: [
     react(),
     nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md']),
+    nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
@@ -39,12 +39,14 @@ export default defineConfig(() => ({
         '@hungpvq/draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-store',
-        '@hungpvq/vue-content-menu',
         'lodash',
         '@mdi/js',
         '@mdi/react',
         'react-draggable-resizable',
       ],
+      output: {
+        assetFileNames: 'style.css',
+      },
     },
   },
 }));

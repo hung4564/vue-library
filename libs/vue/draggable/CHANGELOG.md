@@ -1,3 +1,43 @@
+## 1.0.0 (2026-09-05)
+
+### 🚀 Features
+
+- Stable 1.0 release for `@hungpvq/vue-draggable` (aligned with `@hungpvq/draggable`)
+
+### 🩹 Fixes
+
+- Emit `/style.css` entry (bundle core + VDR styles) for explicit CSS imports
+
+### 🧱 Updated Dependencies
+
+- Updated `@hungpvq/draggable` to `>=1.0.0`
+
+### ❤️ Thank You
+
+- hung.pv
+
+## 0.5.1 (2026-09-05)
+
+### 🩹 Fixes
+
+- Emit `/style.css` entry (bundle core + VDR styles) for explicit CSS imports
+
+## 0.5.0 (2026-09-05)
+
+### 🚀 Features
+
+- Merge ContextMenu into vue-draggable (remove `@hungpvq/vue-content-menu` peer)
+- Mobile item switcher menu (full-width, all items, active highlight)
+- Drawer / sidebar / bottom switcher UX improvements
+
+### 🧱 Updated Dependencies
+
+- Updated `@hungpvq/draggable` to `>=0.1.0`
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.4.4 (2026-01-04)
 
 ### 🩹 Fixes

@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ContextMenu } from '@hungpvq/vue-content-menu';
+import ContextMenu from '../ContextMenu.vue';
 import {
   computed,
   inject,

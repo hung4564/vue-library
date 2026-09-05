@@ -8,9 +8,18 @@ React version of the draggable library, converted from Vue.
 npm install @hungpvq/react-draggable
 ```
 
+## Styles
+
+Import once at the app entry (`main.tsx`):
+
+```ts
+import '@hungpvq/react-draggable/style.css';
+```
+
 ## Usage
 
 ```tsx
+import '@hungpvq/react-draggable/style.css';
 import { DraggableContainer, DraggableItemFloat } from '@hungpvq/react-draggable';
 
 function App() {

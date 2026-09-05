@@ -33,6 +33,30 @@ yarn add @hungpvq/react-draggable
 
 Peer: `@hungpvq/draggable` and `@hungpvq/shared-store` (pulled in by the wrappers).
 
+## Styles
+
+Import CSS once at the app entry (e.g. `main.ts` / `main.tsx`):
+
+### Vue
+
+```ts
+import '@hungpvq/vue-draggable/style.css';
+```
+
+### React
+
+```ts
+import '@hungpvq/react-draggable/style.css';
+```
+
+Or import the shared core styles directly:
+
+```ts
+import '@hungpvq/draggable/style.css';
+```
+
+You only need one of the above. Prefer the framework package (`vue-draggable` / `react-draggable`) so wrapper-specific CSS (e.g. Vue Draggable Resizable) is included.
+
 ## Live demos
 
 - [Vue](https://hung4564.github.io/demo-draggable/vue/)
@@ -44,6 +68,7 @@ Peer: `@hungpvq/draggable` and `@hungpvq/shared-store` (pulled in by the wrapper
 
 ```vue
 <script setup lang="ts">
+import '@hungpvq/vue-draggable/style.css';
 import {
   DraggableContainer,
   DraggableItemSideBar,
@@ -85,6 +110,7 @@ import {
 ### React — basic example
 
 ```tsx
+import '@hungpvq/react-draggable/style.css';
 import {
   DraggableContainer,
   DraggableItemSideBar,
@@ -166,7 +192,8 @@ const containerId = ref('my-container');
 
 ### Shared styles
 
-- Library UI styles live in `@hungpvq/draggable` only. Importing the Vue or React package loads them automatically.
+- Import styles at the app root — see [Styles](#styles).
+- UI CSS lives in `@hungpvq/draggable`; the Vue/React packages re-export it via `/style.css`.
 
 ## Components
 

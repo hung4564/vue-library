@@ -21,7 +21,7 @@ import {
   type AttributeTableColumnsOption,
   type AttributeTableRow,
 } from '@hungpvq/map-dataset';
-import { ContextMenu } from '@hungpvq/vue-content-menu';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,

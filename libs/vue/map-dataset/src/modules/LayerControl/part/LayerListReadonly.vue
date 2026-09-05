@@ -8,7 +8,7 @@ import {
   listListViewGroups,
   TreeItem,
 } from '@hungpvq/map-dataset';
-import { ContextMenu } from '@hungpvq/vue-content-menu';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import {
   getCurrentInstance,

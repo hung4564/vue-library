@@ -51,7 +51,6 @@ export default defineConfig({
         '@hungpvq/shared',
         '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
-        '@hungpvq/vue-content-menu',
         'vuedraggable',
         '@hungpvq/shared-file',
         'lodash',

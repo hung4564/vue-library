@@ -18,7 +18,7 @@ npm install @hungpvq/vue-map-dataset @hungpvq/vue-map-core @hungpvq/map-dataset 
 Peer packages you also need (already used by typical map apps):
 
 ```bash
-npm install maplibre-gl @mdi/js @jamescoyle/vue-icon @hungpvq/vue-draggable @hungpvq/vue-content-menu @hungpvq/shared @hungpvq/shared-store
+npm install maplibre-gl @mdi/js @jamescoyle/vue-icon @hungpvq/vue-draggable @hungpvq/shared @hungpvq/shared-store
 ```
 
 ### React

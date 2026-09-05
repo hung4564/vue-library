@@ -1,4 +1,4 @@
-import 'vue-draggable-resizable/style.css';
+import './style.css';
 import '@hungpvq/draggable';
 
 export * from './components';

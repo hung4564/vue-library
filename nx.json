@@ -111,18 +111,41 @@
       },
       "automaticFromRef": true
     },
-    "projects": [
-      "libs/share/*",
-      "libs/ui/*",
-      "libs/map/*",
-      "libs/*",
-      "shared-store",
-      "@hungpvq/map-core",
-      "@hungpvq/react-draggable",
-      "@hungpvq/react-map-dataset",
-      "@hungpvq/react-map-devtools",
-      "@hungpvq/map-dataset"
-    ]
+    "groups": {
+      "draggable": {
+        "projects": [
+          "@hungpvq/draggable",
+          "@hungpvq/vue-draggable",
+          "react-draggable"
+        ],
+        "projectsRelationship": "fixed",
+        "version": {
+          "fallbackCurrentVersionResolver": "disk",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build"
+        },
+        "changelog": {
+          "projectChangelogs": true
+        }
+      },
+      "packages": {
+        "projects": [
+          "libs/share/*",
+          "libs/ui/*",
+          "libs/map/*",
+          "libs/*",
+          "shared-store",
+          "@hungpvq/map-core",
+          "@hungpvq/react-map-dataset",
+          "@hungpvq/react-map-devtools",
+          "@hungpvq/map-dataset",
+          "!@hungpvq/draggable",
+          "!@hungpvq/vue-draggable",
+          "!react-draggable"
+        ],
+        "projectsRelationship": "independent"
+      }
+    }
   },
   "generators": {
     "@nx/react": {

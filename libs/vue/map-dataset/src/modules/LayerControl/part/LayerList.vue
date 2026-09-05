@@ -10,7 +10,7 @@ import {
   listListViewGroups,
   traverseTree,
 } from '@hungpvq/map-dataset';
-import { ContextMenu } from '@hungpvq/vue-content-menu';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
   defaultMapProps,

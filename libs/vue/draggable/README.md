@@ -2,19 +2,32 @@
 
 ## Install
 
-```
-npm i @hungpvq/vue-@hungpvq/vue-draggable
+```bash
+npm i @hungpvq/vue-draggable
 ```
 
+```bash
+yarn add @hungpvq/vue-draggable
 ```
-yarn add @hungpvq/vue-@hungpvq/vue-draggable
+
+## Styles
+
+Import once at the app entry (`main.ts`):
+
+```ts
+import '@hungpvq/vue-draggable/style.css';
 ```
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat } from '@hungpvq/vue-@hungpvq/vue-draggable';
+import {
+  DraggableContainer,
+  DraggableItemSideBar,
+  DraggableItemPopup,
+  DraggableItemFloat,
+} from '@hungpvq/vue-draggable';
 </script>
 
 <template>
@@ -26,43 +39,21 @@ import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, Draggable
     <DraggableItemPopup show title="Popup 1" :top="10" :right="10">
       <div style="height: 100vh"></div>
     </DraggableItemPopup>
-    <DraggableItemFloat show title="popup 1" :right="10" :bottom="10" :width="400" headerLocation="bottom">
+    <DraggableItemFloat
+      show
+      title="popup 1"
+      :right="10"
+      :bottom="10"
+      :width="400"
+      headerLocation="bottom"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemFloat>
   </DraggableContainer>
 </template>
-<style>
-body,
-html,
-#root {
-  height: 100%;
-}
-html {
-  height: 100%;
-  position: relative;
-  overflow: hidden !important;
-}
-
-body {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-</style>
 ```
 
-## Components
-
-- [@hungpvq/vue-draggable-container]
-- [@hungpvq/vue-draggable-bottom]
-- [@hungpvq/vue-draggable-popup]
-- [@hungpvq/vue-draggable-sidebar]
-- [@hungpvq/vue-draggable-float]
+See full docs in the [Draggable documentation](../../draggable/core/docs/index.md) (or the published docs site).
 
 ## Contributing
 

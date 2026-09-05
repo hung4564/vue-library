@@ -853,7 +853,6 @@
 }
 
 /* Full-width switcher list inside mobile overlay menus */
-.menu-mobile .context-menu,
 .context-menu-mobile .context-menu {
   width: 100%;
   max-width: 100%;

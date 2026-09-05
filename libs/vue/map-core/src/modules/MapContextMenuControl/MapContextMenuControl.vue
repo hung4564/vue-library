@@ -17,7 +17,7 @@ import {
   type MapContextMenuTarget,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import { ContextMenu } from '@hungpvq/vue-content-menu';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiMapMarkerOutline } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';

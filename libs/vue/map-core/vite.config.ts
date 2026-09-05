@@ -48,7 +48,6 @@ export default defineConfig({
         '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/map-core',
-        '@hungpvq/vue-content-menu',
         '@mapbox/mapbox-gl-sync-move',
         'mitt',
         '@hungpvq/shared-log',

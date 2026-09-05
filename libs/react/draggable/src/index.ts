@@ -1,3 +1,4 @@
+import './style.css';
 import '@hungpvq/draggable';
 
 export * from './components';
