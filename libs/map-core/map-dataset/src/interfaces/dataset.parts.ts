@@ -189,6 +189,12 @@ export type IMetadataView = {
   metadata?: { loading?: boolean; bbox?: BBox };
 };
 
+/** Dataset part that stores a layer bounding box via WithDataHelper. */
+export type IBoundView = IDataset &
+  WithDataHelper<BBox> & {
+    type: 'bound';
+  };
+
 export type IFieldInfo = {
   trans?: string;
   text?: string;

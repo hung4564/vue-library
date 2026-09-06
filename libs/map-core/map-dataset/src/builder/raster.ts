@@ -6,7 +6,7 @@ import {
   createMenuItemToggleShow,
 } from '../extra/menu/items';
 import { createDatasetPartListViewUiComponent } from '../model/list';
-import { createDatasetPartMetadataComponent } from '../model/part-metadata.model';
+import { createDatasetPartBoundComponent } from '../model/part-bound.model';
 import { createDatasetPartRasterSourceComponent } from '../model/source';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createMultiMapboxLayerComponent } from '../model/layer';
@@ -43,8 +43,8 @@ export function createRasterUrlDataset(data: RasterUrlDatasetOption): IDataset {
   const bbox = toBBox(data.bounds);
   const listMenus = [createMenuItemToggleShow()];
   if (bbox) {
-    dataset_raster.add(createDatasetPartMetadataComponent(data.name, { bbox }));
-    listMenus.push(createMenuItemToBoundActionForList({ bbox }));
+    dataset_raster.add(createDatasetPartBoundComponent(data.name, bbox));
+    listMenus.push(createMenuItemToBoundActionForList());
   }
   list_raster.addMenus(listMenus);
 

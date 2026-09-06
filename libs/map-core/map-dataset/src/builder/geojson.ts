@@ -12,7 +12,7 @@ import { createDatasetPartGeojsonSourceComponent } from '../model/source';
 import { createDatasetPartListViewUiComponent } from '../model/list';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createMultiMapboxLayerComponent } from '../model/layer';
-import { createDatasetPartMetadataComponent } from '../model/part-metadata.model';
+import { createDatasetPartBoundComponent } from '../model/part-bound.model';
 import { LayerSimpleMapboxBuild } from '../utils';
 import type { FieldFeaturesDef } from '../extra/field';
 import type { LayerStyleType } from '../utils/layer-simple-builder';
@@ -106,8 +106,8 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
       : data.bbox ?? bboxFromGeojson(geojson);
   const listMenus = [createMenuItemToggleShow()];
   if (bbox) {
-    dataset.add(createDatasetPartMetadataComponent(data.name, { bbox }));
-    listMenus.push(createMenuItemToBoundActionForList({ bbox }));
+    dataset.add(createDatasetPartBoundComponent(data.name, bbox));
+    listMenus.push(createMenuItemToBoundActionForList());
   }
   list.addMenus(listMenus);
   const groupLayer = createGroupDataset(data.name);

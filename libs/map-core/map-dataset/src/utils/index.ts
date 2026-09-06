@@ -1,3 +1,4 @@
+export * from './bbox';
 export * from './check';
 export * from './convert';
 export * from './layer-simple-builder';

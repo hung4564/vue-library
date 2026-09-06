@@ -1,5 +1,6 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import {
+  createDatasetPartBoundComponent,
   createDatasetPartGeojsonSourceComponent,
   createDatasetPartListViewUiComponentBuilder,
   createGroupDataset,
@@ -21,8 +22,13 @@ import {
   mdiMarker,
   mdiPen,
   mdiRegisteredTrademark,
+  mdiUpdate,
 } from '@mdi/js';
-import { DEMO_BBOX, DEMO_POLYGON } from '../../fixtures/geojson';
+import {
+  DEMO_BBOX,
+  DEMO_LIST_BBOX,
+  DEMO_POLYGON,
+} from '../../fixtures/geojson';
 import { DEMO_CUSTOM_MENU_HANDLER_KEY } from '../../registry/menu-handlers';
 
 function createCustomMenuItem(
@@ -82,6 +88,51 @@ export function createDefaultMenuSupportDataset() {
   groupLayer1.add(list1);
   dataset.add(source);
   dataset.add(groupLayer1);
+  return dataset;
+}
+
+/** Separate layer: Fill bound reads bound part; Update bbox toggles getData(). */
+export function createDynamicBoundMenuDataset() {
+  const name = 'Dynamic bound (update bbox)';
+  const dataset = createRootDataset(name);
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [DEMO_POLYGON],
+  });
+  const bound = createDatasetPartBoundComponent(name, DEMO_BBOX);
+  const groupLayer = createGroupDataset(name);
+  const list = createDatasetPartListViewUiComponentBuilder(name)
+    .setColor(getChartRandomColor())
+    .configDisabledDelete()
+    .addMenus([
+      createMenuItemToggleShow(),
+      createMenuItemToBoundActionForList(),
+      createCustomMenuItem(
+        mdiUpdate,
+        'Update bbox',
+        createMenuClickBuilder()
+          .addCommand(() => {
+            const current = bound.getData();
+            const next =
+              current[0] === DEMO_BBOX[0] ? DEMO_LIST_BBOX : DEMO_BBOX;
+            bound.setData(next);
+            console.info('bound bbox updated', next);
+          })
+          .build(),
+      ),
+    ])
+    .build();
+  const layer = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .build(),
+  ]);
+  groupLayer.add(layer);
+  groupLayer.add(list);
+  dataset.add(source);
+  dataset.add(bound);
+  dataset.add(groupLayer);
   return dataset;
 }
 
@@ -277,6 +328,7 @@ export function createCustomChainSupportDataset() {
 
 export const MENU_DEMO_DATASET_FACTORIES = [
   createDefaultMenuSupportDataset,
+  createDynamicBoundMenuDataset,
   createCustomSupportDataset,
   createCustomMultiSupportDataset,
   createCustomChainSupportDataset,

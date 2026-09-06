@@ -11,7 +11,6 @@ import {
 import type { BBox } from 'geojson';
 import type {
   IDataset,
-  IMetadataView,
   MenuAction,
   MenuConditionContext,
   MenuItemBottomOrExtra,
@@ -19,8 +18,7 @@ import type {
   MenuItemCustomComponentBottomOrExtra,
   WithMenuHelper,
 } from '../../interfaces';
-import { findSiblingOrNearestLeaf } from '../../model/visitors';
-import { convertItemToFeature } from '../../utils';
+import { convertItemToFeature, resolveDatasetBbox } from '../../utils';
 import { getDatasetDetailInfo } from '../detail';
 import type { FieldFeaturesDef } from '../field';
 import {
@@ -90,35 +88,16 @@ export function createMenuItemToBoundActionForList(props?: {
     .setName(props?.name ?? 'Fill bound')
     .setIcon(mdiCrosshairsGps)
     .setClick(({ layer, mapId }) => {
-      if (props?.bbox) {
-        getMap(mapId, (map) => {
-          if (props?.bbox) {
-            // Convert BBox [minLng, minLat, maxLng, maxLat] to [[minLng, minLat], [maxLng, maxLat]]
-            const bbox = props.bbox;
-            if (bbox.length >= 4) {
-              fitBounds(map, [
-                [bbox[0], bbox[1]],
-                [bbox[2], bbox[3]],
-              ]);
-            }
-          }
-        });
-        return;
-      }
-      const metadata = findSiblingOrNearestLeaf(
-        layer,
-        (dataset) => dataset.type === 'metadata',
-      ) as IMetadataView;
+      // Priority: props.bbox → bound part → metadata part → info.metadata.bbox
+      const bbox = resolveDatasetBbox(layer, props?.bbox);
+      if (!bbox) return;
 
       getMap(mapId, (map) => {
-        const bbox = metadata?.metadata?.bbox;
-        if (bbox && bbox.length >= 4) {
-          // Convert BBox [minLng, minLat, maxLng, maxLat] to [[minLng, minLat], [maxLng, maxLat]]
-          fitBounds(map, [
-            [bbox[0], bbox[1]],
-            [bbox[2], bbox[3]],
-          ]);
-        }
+        // Convert BBox [minLng, minLat, maxLng, maxLat] to [[minLng, minLat], [maxLng, maxLat]]
+        fitBounds(map, [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ]);
       });
     })
     .build();

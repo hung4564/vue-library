@@ -5,9 +5,9 @@ import type {
   RasterSourceSpecification,
   VectorSourceSpecification,
 } from 'maplibre-gl';
-import type { IMapboxSourceView, IMetadataView } from '../../interfaces';
+import type { IMapboxSourceView } from '../../interfaces';
+import { resolveDatasetBbox } from '../../utils/bbox';
 import { createNamedComponent } from '../base';
-import { findSiblingOrNearestLeaf } from '../visitors';
 import { createDatasetPartMapboxSourceComponent } from './base';
 
 export function createDatasetPartGeojsonSourceComponent(
@@ -48,10 +48,6 @@ export function createDatasetPartGeojsonSourceComponent(
       ];
     },
     getDataInfo() {
-      const metadata = findSiblingOrNearestLeaf(
-        base,
-        (d) => d.type === 'metadata',
-      ) as IMetadataView;
       const spec = this.getMapboxSource();
       const data = base.getData();
       const stats = getGeojsonStats(data);
@@ -60,7 +56,7 @@ export function createDatasetPartGeojsonSourceComponent(
         name: base.getName(),
         type: spec.type,
         sourceId: this.getSourceId(),
-        bbox: metadata?.metadata?.bbox,
+        bbox: resolveDatasetBbox(base),
         features: stats.featureCount,
         geometry: stats.geometryTypes,
         promoteId: spec.promoteId,
@@ -115,16 +111,12 @@ export function createDatasetPartRasterSourceComponent(
       ];
     },
     getDataInfo() {
-      const metadata = findSiblingOrNearestLeaf(
-        base,
-        (d) => d.type === 'metadata',
-      ) as IMetadataView;
       const raster = this.getMapboxSource();
       return {
         name: base.getName(),
         type: raster.type,
         sourceId: this.getSourceId(),
-        bbox: metadata?.metadata?.bbox || raster.bounds,
+        bbox: resolveDatasetBbox(base) || raster.bounds,
         url: raster.url,
         tiles: raster.tiles?.join('\n'),
         tileSize: raster.tileSize,
@@ -166,16 +158,12 @@ export function createDatasetPartVectorTileComponent(
       ];
     },
     getDataInfo() {
-      const metadata = findSiblingOrNearestLeaf(
-        base,
-        (d) => d.type === 'metadata',
-      ) as IMetadataView;
       const spec = this.getMapboxSource();
       return {
         name: base.getName(),
         type: spec.type,
         sourceId: this.getSourceId(),
-        bbox: metadata?.metadata?.bbox || spec.bounds,
+        bbox: resolveDatasetBbox(base) || spec.bounds,
         url: spec.url,
         tiles: spec.tiles?.join('\n'),
         minzoom: spec.minzoom,
