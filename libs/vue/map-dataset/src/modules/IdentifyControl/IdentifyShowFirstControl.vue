@@ -4,53 +4,72 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { EventClick, logHelper, WithMapPropType } from '@hungpvq/map-core';
+import {
+  EventClick,
+  logHelper,
+  runMapControlAction,
+  WithMapPropType,
+} from '@hungpvq/map-core';
 import type {
   IDataset,
-  IdentifyResult,
+  IdentifyMultiResult,
   IIdentifyView,
-  MenuAction,
 } from '@hungpvq/map-dataset';
 import {
-  convertFeatureToItem,
-  handleMenuAction,
   handleMultiIdentifyGetFirst,
+  IDENTIFY_CONTROL,
+  identifyResolver,
 } from '@hungpvq/map-dataset';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import { MapMouseEvent } from 'maplibre-gl';
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { loggerIdentify } from '../../logger';
 import { useMapDataset } from '../../store';
-const props = withDefaults(defineProps<WithMapPropType>(), {
-  ...defaultMapProps,
-});
-const { mapId } = useMap(props);
+
+const props = withDefaults(
+  defineProps<
+    WithMapPropType & {
+      /**
+       * Always open Identify Result panel (skip auto show-detail / attribute-table).
+       */
+      preferResultControl?: boolean;
+    }
+  >(),
+  {
+    ...defaultMapProps,
+    preferResultControl: false,
+  },
+);
+const { mapId, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const views = ref<Array<IIdentifyView & IDataset>>([]);
-const datasetIds = computed(() => {
-  return getDatasetIds().value;
-});
-watch(
-  datasetIds,
-  () => {
-    updateList();
-  },
-  { deep: true },
-);
-onMounted(() => {
-  updateList();
-});
-function updateList() {
-  getViewFromStore();
-}
-function getViewFromStore() {
+const loading = ref(false);
+
+function refreshViews() {
   views.value =
     getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
 }
+
+watch(getDatasetIds(), refreshViews, { deep: true, immediate: true });
+
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
   new EventClick().setHandler(onMapClick),
 );
+
+function setLoading(value: boolean) {
+  loading.value = value;
+  callMap((map) => {
+    map.getCanvas().style.cursor = value ? 'wait' : '';
+  });
+  // Sync IdentifyControl toolbar spinner when both are mounted.
+  runMapControlAction(
+    mapId.value,
+    IDENTIFY_CONTROL.id,
+    IDENTIFY_CONTROL.actionSetLoading,
+    value,
+  );
+}
 
 function onMapClick(e: MapMouseEvent) {
   logHelper(
@@ -59,21 +78,11 @@ function onMapClick(e: MapMouseEvent) {
     'FIRST',
     'IdentifyShowFirstControl',
   ).debug('onMapClick', { event: e });
-  onGetFeatures(e);
+  void onGetFeatures(e);
 }
-logHelper(
-  loggerIdentify,
-  mapId.value,
-  'FIRST',
-  'IdentifyShowFirstControl',
-).debug('init');
-const result = reactive<{
-  loading: boolean;
-}>({
-  loading: false,
-});
+
 function onSelectFeatures(
-  feature: IdentifyResult | undefined,
+  record: IdentifyMultiResult | undefined,
   event?: MapMouseEvent,
 ) {
   logHelper(
@@ -81,87 +90,77 @@ function onSelectFeatures(
     mapId.value,
     'FIRST',
     'IdentifyShowFirstControl',
-  ).debug('onSelectFeatures', { feature });
-  if (feature && 'feature' in feature && feature.feature) {
-    const menu = feature.identify.getMenu('show-detail');
-    logHelper(
-      loggerIdentify,
-      mapId.value,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onSelectFeatures', { feature, menu });
-    if (menu) {
+  ).debug('onSelectFeatures', { record });
+  const records =
+    record?.features?.length ? [record] : ([] as IdentifyMultiResult[]);
+  identifyResolver
+    .execute({
+      records,
+      mapId: mapId.value,
+      event,
+      singleLayer: true,
+      preferResultControl: !!props.preferResultControl,
+    })
+    .then((res) =>
       logHelper(
         loggerIdentify,
         mapId.value,
         'FIRST',
         'IdentifyShowFirstControl',
-      ).debug('onSelectFeatures', 'use menu');
-      onMenuAction(
-        feature.identify,
-        menu as any,
-        convertFeatureToItem(feature.feature.data),
-        event,
-      );
-    } else if (feature.identify.showDetail) {
-      logHelper(
-        loggerIdentify,
-        mapId.value,
-        'FIRST',
-        'IdentifyShowFirstControl',
-      ).debug('onSelectFeatures', 'use show detail');
-      feature.identify.showDetail(mapId.value, feature.feature.data);
-    }
-  }
+      ).debug('onSelectFeaturesResult', res),
+    );
 }
-const cUsedIdentify = computed(() => {
-  return views.value;
-});
+
 async function onGetFeatures(e: MapMouseEvent) {
-  const pointOrBox = e.point;
+  if (loading.value) return;
+  const loadStartedAt = performance.now();
+  setLoading(true);
   logHelper(
     loggerIdentify,
     mapId.value,
     'FIRST',
     'IdentifyShowFirstControl',
-  ).debug('onGetFeatures', { pointOrBox });
-  result.loading = true;
+  ).info('loading:start', { pointOrBox: e.point });
   try {
-    const feature = await handleMultiIdentifyGetFirst(
-      cUsedIdentify.value,
+    logHelper(
+      loggerIdentify,
       mapId.value,
-      pointOrBox,
+      'FIRST',
+      'IdentifyShowFirstControl',
+    ).debug('onGetFeatures', { pointOrBox: e.point });
+    const record = await handleMultiIdentifyGetFirst(
+      views.value,
+      mapId.value,
+      e.point,
     );
     logHelper(
       loggerIdentify,
       mapId.value,
       'FIRST',
       'IdentifyShowFirstControl',
-    ).debug('onGetFeatures', { feature });
-    onSelectFeatures(feature, e);
+    ).debug('onGetFeatures', { record });
+    onSelectFeatures(record, e);
+    logHelper(
+      loggerIdentify,
+      mapId.value,
+      'FIRST',
+      'IdentifyShowFirstControl',
+    ).info('loading:done', {
+      durationMs: Math.round(performance.now() - loadStartedAt),
+      featureCount: record?.features?.length ?? 0,
+      empty: !record?.features?.length,
+    });
   } finally {
-    result.loading = false;
+    setLoading(false);
   }
 }
 
-function onMenuAction(
-  identify: IIdentifyView & IDataset,
-  menu: MenuAction<IIdentifyView & IDataset>,
-  item: any,
-  event?: MapMouseEvent | MouseEvent,
-) {
-  handleMenuAction(menu, {
-    event,
-    layer: identify,
-    mapId: mapId.value,
-    value: item,
-  });
-}
 onMounted(() => {
   addEventClick();
 });
 onUnmounted(() => {
   removeEventClick();
+  if (loading.value) setLoading(false);
 });
 </script>
 <template>

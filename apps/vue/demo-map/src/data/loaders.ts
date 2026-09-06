@@ -5,6 +5,7 @@ import {
   DEMO_CUSTOM_MENU_HANDLER_KEY,
   HIGHLIGHT_DEMO_DATASET_FACTORIES,
   IDENTIFY_DEMO_DATASET_FACTORIES,
+  IDENTIFY_PRESENT_DEMO_DATASET_FACTORIES,
   LIST_DEMO_DATASET_FACTORIES,
   loadDemoDatasets,
   MENU_DEMO_DATASET_FACTORIES,
@@ -47,6 +48,13 @@ export async function loadIdentifyDemoDatasets(mapId: string) {
   await loadDemoDatasets(
     (dataset) => addDatasetToMap(mapId, dataset),
     [...IDENTIFY_DEMO_DATASET_FACTORIES],
+  );
+}
+
+export async function loadIdentifyPresentDemoDatasets(mapId: string) {
+  await loadDemoDatasets(
+    (dataset) => addDatasetToMap(mapId, dataset),
+    [...IDENTIFY_PRESENT_DEMO_DATASET_FACTORIES],
   );
 }
 

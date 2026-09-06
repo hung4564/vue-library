@@ -3,6 +3,8 @@ export const IDENTIFY_CONTROL_LOCALE = {
     identify: {
       title: 'Identify',
       point: 'Point',
+      layer: 'Layer',
+      all_layers: 'All layers',
       no_selection: 'Please select a point on the map',
       no_data: 'No data found',
       loading: 'Loading...',

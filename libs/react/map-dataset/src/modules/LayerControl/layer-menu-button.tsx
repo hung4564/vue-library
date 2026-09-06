@@ -1,7 +1,6 @@
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import { getMenuItemLocation } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
-import { SetOpacity } from '../../extra/component/set-opacity';
-import { ToggleShow } from '../../extra/component/toggle-show';
 import Icon from '@mdi/react';
 
 const ICON_SIZE = '14px';
@@ -26,12 +25,6 @@ export function LayerMenuButton({
   if (menu.type === 'divider') return null;
 
   if (menu.type === 'item' && 'componentKey' in menu) {
-    if (menu.componentKey === 'layer-action-toggle-show') {
-      return <ToggleShow item={menu} data={item} mapId={mapId} disabled={disabled} />;
-    }
-    if (menu.componentKey === 'layer-action-set-opacity') {
-      return <SetOpacity item={menu} data={item} mapId={mapId} disabled={disabled} />;
-    }
     return (
       <RegistryItem
         componentKey={menu.componentKey}
@@ -39,6 +32,7 @@ export function LayerMenuButton({
         item={menu}
         data={item}
         disabled={disabled}
+        location={getMenuItemLocation(menu)}
       />
     );
   }

@@ -54,23 +54,30 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
 
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      'addComponent',
+      LIST_VIEW_MENU_ID.addComponent,
       ({ value }: MenuItemProps<MenuClickAddComponent>) => {
         if (value) addComponentRef.current(value);
       },
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      'fitBounds',
-      ({ value }: MenuItemProps<MenuClickFitBounds>) => {
+      LIST_VIEW_MENU_ID.fitBounds,
+      ({ value }: MenuItemProps<MenuClickFitBounds | unknown>) => {
         callMapRef.current((map) => {
-          if (value?.detail) fitBounds(map, value.detail);
+          const target =
+            value &&
+            typeof value === 'object' &&
+            'detail' in value &&
+            (value as MenuClickFitBounds).detail != null
+              ? (value as MenuClickFitBounds).detail
+              : value;
+          if (target) fitBounds(map, target as never);
         });
       },
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      'highlight',
+      LIST_VIEW_MENU_ID.highlight,
       ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
         if (value)
           setFeatureHighlightRef.current(value.detail, value.key, layer);

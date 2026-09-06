@@ -4,11 +4,13 @@
     :item="item"
     :data="data"
     :mapId="mapId"
+    :location="itemLocation"
     v-bind="$attrs"
   />
 </template>
 <script setup lang="ts">
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import { getMenuItemLocation } from '@hungpvq/map-dataset';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 import MenuDivider from './menu-divider.vue';
@@ -19,6 +21,7 @@ const props = defineProps<{
   mapId: string;
 }>();
 const { getComponent } = useUniversalRegistry(props.mapId);
+const itemLocation = computed(() => getMenuItemLocation(props.item));
 const component = computed(() => {
   switch (props.item.type) {
     case 'divider':

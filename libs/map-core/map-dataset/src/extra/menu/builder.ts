@@ -1,5 +1,5 @@
 import type { Feature } from 'geojson';
-import type { IDataset, MenuAction } from '../../interfaces';
+import type { IDataset, MenuAction, MenuActionLocation } from '../../interfaces';
 
 import type {
   MenuCondition,
@@ -43,7 +43,7 @@ export function createMenuBuilder<T = IDataset>() {
       const state: any = { type: 'divider' as const };
 
       return {
-        setLocation(loc: 'extra' | 'menu' | 'bottom' | 'prebottom') {
+        setLocation(loc: MenuActionLocation) {
           state.location = loc;
           return this;
         },
@@ -69,7 +69,7 @@ export function createMenuBuilder<T = IDataset>() {
           state.id = id;
           return this;
         },
-        setLocation(loc: 'menu' | 'bottom' | 'extra' | 'prebottom') {
+        setLocation(loc: MenuActionLocation) {
           state.location = loc;
           return this;
         },

@@ -1,5 +1,10 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
-import { BaseMapCard, BaseMapControl, Map, ZoomControl } from '@hungpvq/react-map-core';
+import type { MapSimple } from '@hungpvq/map-core';
+import {
+  BaseMapCard,
+  BaseMapControl,
+  Map,
+  ZoomControl,
+} from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
   LayerControl,

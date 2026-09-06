@@ -7,28 +7,29 @@ import {
   toPlainJson,
 } from '@hungpvq/map-core';
 import type { Feature, GeoJSON, Geometry } from 'geojson';
-import type { IDataset } from '../interfaces';
-import { createDatasetPartGeojsonSourceComponent } from '../model/source';
-import { createDatasetPartListViewUiComponent } from '../model/list';
-import { createGroupDataset, createRootDataset } from '../model/dataset.base';
-import { createMultiMapboxLayerComponent } from '../model/layer';
-import { createDatasetPartBoundComponent } from '../model/part-bound.model';
-import { LayerSimpleMapboxBuild } from '../utils';
-import type { FieldFeaturesDef } from '../extra/field';
-import type { LayerStyleType } from '../utils/layer-simple-builder';
 import {
   detectGeojsonStyleTypes,
   isGeojsonStyleAuto,
   styleTypeToMapboxGeometryType,
   type GeojsonStyleMode,
 } from '../extra/create-control/geojson-parse';
+import type { FieldFeaturesDef } from '../extra/field';
 import {
+  createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
 } from '../extra/menu/items';
+import type { IDataset } from '../interfaces';
+import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createIdentifyMapboxComponent } from '../model/identify';
+import { createMultiMapboxLayerComponent } from '../model/layer';
+import { createDatasetPartListViewUiComponent } from '../model/list';
+import { createDatasetPartBoundComponent } from '../model/part-bound.model';
+import { createDatasetPartGeojsonSourceComponent } from '../model/source';
+import { LayerSimpleMapboxBuild } from '../utils';
+import type { LayerStyleType } from '../utils/layer-simple-builder';
 
 export type GeojsonDatasetOption = {
   name: string;
@@ -57,7 +58,7 @@ function buildSingleStyleLayer(
   const builder = new LayerSimpleMapboxBuild()
     .setStyleType(style)
     .setColor(color)
-    .setOpacity(style === 'area' ? opacity ?? 0.5 : opacity ?? 1);
+    .setOpacity(style === 'area' ? (opacity ?? 0.5) : (opacity ?? 1));
   if (withFilter) {
     const mapboxType = styleTypeToMapboxGeometryType(style);
     if (mapboxType) {
@@ -101,10 +102,11 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
     list.opacity = data.opacity;
   }
   const bbox =
-    data.bbox === null
-      ? undefined
-      : data.bbox ?? bboxFromGeojson(geojson);
-  const listMenus = [createMenuItemToggleShow()];
+    data.bbox === null ? undefined : (data.bbox ?? bboxFromGeojson(geojson));
+  const listMenus = [
+    createMenuItemToggleShow(),
+    createMenuItemIdentifyForList(),
+  ];
   if (bbox) {
     dataset.add(createDatasetPartBoundComponent(data.name, bbox));
     listMenus.push(createMenuItemToBoundActionForList());
@@ -128,15 +130,21 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
     throw error instanceof MapError
       ? error
       : new MapError(
-          error instanceof Error ? error.message : 'Failed to build style layers',
+          error instanceof Error
+            ? error.message
+            : 'Failed to build style layers',
           'LAYER_CREATE_ERROR',
-          { recoverable: false, cause: error, context: { stage: 'build-layers' } },
+          {
+            recoverable: false,
+            cause: error,
+            context: { stage: 'build-layers' },
+          },
         );
   }
   groupLayer.add(layer);
   groupLayer.add(list);
   const dataConvert = convertGeojsonToList(geojson);
-  const identify = createIdentifyMapboxComponent(data.name);
+  const identify = createIdentifyMapboxComponent('Identify ' + data.name);
   identify.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(dataConvert.fields),

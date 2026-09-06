@@ -1,7 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { logHelper, mergeFilters } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
-import type { Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
@@ -16,11 +16,22 @@ import type { WithDataHelper } from '../../extra';
 import type { IDataset } from '../../interfaces';
 import { loggerHighlight } from '../../logger';
 
+export type HighlightGeoJson =
+  | Feature
+  | FeatureCollection
+  | GeoJSONFeature;
+
 export type HighlightFilterCreator =
   | string
   | ((
-      feature?: GeoJSONFeature | Feature,
+      feature?: HighlightGeoJson,
     ) => FilterSpecification | undefined);
+
+function isFeatureCollection(
+  feature: HighlightGeoJson | undefined,
+): feature is FeatureCollection {
+  return !!feature && feature.type === 'FeatureCollection';
+}
 
 function scalarProperty(
   feature: GeoJSONFeature | Feature | undefined,
@@ -43,27 +54,62 @@ function featureIdValue(
   return undefined;
 }
 
+function collectFeatureIds(
+  feature: HighlightGeoJson,
+): Array<string | number> {
+  if (isFeatureCollection(feature)) {
+    return feature.features
+      .map((item) => featureIdValue(item))
+      .filter((id): id is string | number => id != null);
+  }
+  const id = featureIdValue(feature as Feature | GeoJSONFeature);
+  return id != null ? [id] : [];
+}
+
 export function createHighlightFilter(
-  feature: GeoJSONFeature | Feature | undefined,
+  feature: HighlightGeoJson | undefined,
   filterCreator?: HighlightFilterCreator,
 ): FilterSpecification | undefined {
   if (!feature) return undefined;
 
   if (!filterCreator) {
-    const fieldId = featureIdValue(feature);
-    return fieldId != null
-      ? (['==', ['get', 'id'], fieldId] as FilterSpecification)
-      : undefined;
+    const ids = collectFeatureIds(feature);
+    if (ids.length === 0) return undefined;
+    if (ids.length === 1) {
+      return ['==', ['get', 'id'], ids[0]] as FilterSpecification;
+    }
+    return ['in', ['get', 'id'], ['literal', ids]] as FilterSpecification;
   }
 
   if (typeof filterCreator === 'string') {
     if (filterCreator === 'id') {
-      const fieldId = featureIdValue(feature);
-      return fieldId != null
-        ? (['==', ['get', 'id'], fieldId] as FilterSpecification)
-        : undefined;
+      const ids = collectFeatureIds(feature);
+      if (ids.length === 0) return undefined;
+      if (ids.length === 1) {
+        return ['==', ['get', 'id'], ids[0]] as FilterSpecification;
+      }
+      return ['in', ['get', 'id'], ['literal', ids]] as FilterSpecification;
     }
-    const fieldValue = scalarProperty(feature, filterCreator);
+    if (isFeatureCollection(feature)) {
+      const values = feature.features
+        .map((item) => scalarProperty(item, filterCreator))
+        .filter(
+          (value): value is string | number | boolean => value != null,
+        );
+      if (values.length === 0) return undefined;
+      if (values.length === 1) {
+        return ['==', ['get', filterCreator], values[0]] as FilterSpecification;
+      }
+      return [
+        'in',
+        ['get', filterCreator],
+        ['literal', values],
+      ] as FilterSpecification;
+    }
+    const fieldValue = scalarProperty(
+      feature as Feature | GeoJSONFeature,
+      filterCreator,
+    );
     if (fieldValue == null) return undefined;
     return ['==', ['get', filterCreator], fieldValue] as FilterSpecification;
   }
@@ -75,12 +121,7 @@ export function createHighlightFilter(
   return undefined;
 }
 
-function toGeoJSONData(
-  feature?: GeoJSONFeature | Feature,
-): Feature | { type: 'FeatureCollection'; features: [] } {
-  if (!feature) {
-    return { type: 'FeatureCollection', features: [] };
-  }
+function normalizeFeature(feature: Feature | GeoJSONFeature): Feature {
   const propertyId = scalarProperty(feature, 'id');
   const id =
     typeof feature.id === 'string' || typeof feature.id === 'number'
@@ -92,6 +133,21 @@ function toGeoJSONData(
     properties: { ...(feature.properties || {}) },
     geometry: feature.geometry,
   };
+}
+
+function toGeoJSONData(
+  feature?: HighlightGeoJson,
+): Feature | FeatureCollection {
+  if (!feature) {
+    return { type: 'FeatureCollection', features: [] };
+  }
+  if (isFeatureCollection(feature)) {
+    return {
+      type: 'FeatureCollection',
+      features: feature.features.map((item) => normalizeFeature(item)),
+    };
+  }
+  return normalizeFeature(feature as Feature | GeoJSONFeature);
 }
 
 export type HighlightLayerKey =
@@ -386,7 +442,7 @@ export function resolveHighlightFeatureId(
 export function applyHighlightFeatureState(
   map: MapSimple,
   sourceId: string,
-  feature?: GeoJSONFeature | Feature,
+  feature?: HighlightGeoJson,
   options?: {
     filterCreator?: HighlightFilterCreator;
     stateKey?: string;
@@ -411,7 +467,9 @@ export function applyHighlightFeatureState(
     );
   }
   if (candidates.length === 0 && feature) {
-    candidates = [feature as GeoJSONFeature];
+    candidates = isFeatureCollection(feature)
+      ? (feature.features as GeoJSONFeature[])
+      : [feature as GeoJSONFeature];
   }
   for (const item of candidates) {
     const id = resolveHighlightFeatureId(item);
@@ -499,7 +557,7 @@ export function featureStatePulseAnimate(props: {
 export function ensureHighlightSource(
   base: (IDataset & WithDataHelper) | undefined,
   map: MapSimple,
-  feature?: GeoJSONFeature,
+  feature?: HighlightGeoJson,
   filterCreator?: HighlightFilterCreator,
   preferDatasetSource = false,
 ): { sourceId: string; isolated: boolean } {
@@ -547,7 +605,7 @@ export function ensureHighlightLayers(
   layersDefault: Record<string, Partial<LayerSpecification>>,
   dataset: WithDataHelper | undefined,
   sourceId: string,
-  feature?: GeoJSONFeature,
+  feature?: HighlightGeoJson,
   filterCreator?: HighlightFilterCreator,
   isolatedSource = false,
   skipHighlightFilter = false,
@@ -783,7 +841,7 @@ export function useHighlightAnimation<T = unknown>() {
   }: {
     dataset?: IDataset & WithDataHelper;
     map: MapSimple;
-    feature?: GeoJSONFeature;
+    feature?: HighlightGeoJson;
     layerIds: HighlightLayerIds;
     layers: Record<string, Partial<LayerSpecification>>;
     filterCreator?: HighlightFilterCreator;

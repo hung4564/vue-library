@@ -325,6 +325,7 @@ import {
   createMenuItemStyleEdit,
   createMenuItemShowDetailInfoSource,
   createMenuItemToBoundActionForList,
+  createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
   createMenuItemMoveUp,
@@ -336,6 +337,8 @@ import {
 
 list.addMenus([
   createMenuItemToggleShow(),
+  createMenuItemIdentifyForList(),
+  createMenuItemIdentifyForList({ location: 'menu' }),
   createMenuItemStyleEdit(),
   createMenuItemShowDetailInfoSource(),
   createMenuItemToBoundActionForList(),
@@ -357,6 +360,7 @@ identify.addMenus([
 | [`createMenuItemStyleEdit`](#createmenuitemstyleedit) | `extra` (unset → default) | — | — |
 | [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource) | unset | — | — |
 | [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist) | `extra` | `fill-bound` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper |
+| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `extra` (or `menu`) | `identify-layer` / `identify-layer-menu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling |
 | [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem) | `menu` | `show-detail` | Identify builders |
 | [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem) | `menu` | — | Identify builders |
 | [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `menu` | `move-up` / `move-down` | List UI unless `configDisabledMove()` |
@@ -482,6 +486,38 @@ list.addMenus([createMenuItemToBoundActionForList()]);
 // External button / after reload
 bound.setData([105.5, 20.5, 106.5, 21.5]);
 ```
+
+---
+
+### `createMenuItemIdentifyForList`
+
+Per-layer Identify toggle (same click mode as [`IdentifyControl`](../module/IdentifyControl.md), but scoped to this layer’s identify sibling).
+
+| | |
+| --- | --- |
+| **Signature** | `(options?: IdentifyForListMenuOptions) => MenuAction` |
+| **Default location** | `extra` |
+| **Id** | `identify-layer` (non-menu) / `identify-layer-menu` (`menu`) |
+| **Component** | `layer-action-identify` (shared for `componentKey` and `componentMenuKey`; UI branches on `location`) |
+| **Needs** | `IdentifyControl` mounted; nearest sibling `type === 'identify'` |
+| **Auto** | `createGeoJsonDataset` (extra form) |
+
+**Options:** `location?: MenuActionLocation` (`'extra' \| 'menu' \| 'bottom' \| 'prebottom'`), `name`, `icon`, `hidden`, `disabled`, `order`.
+
+**Hidden** when `isIdentifyForListMenuHidden(ctx)` (no identify sibling). Extra `options.hidden` is composed after that check.
+
+**Active (primary):** while this list’s identify scope is on, the button/row uses `_active` / primary color. Only one layer is active at a time.
+
+```ts
+list.addMenus([
+  createMenuItemIdentifyForList(), // title-row icon (`extra`)
+  createMenuItemIdentifyForList({ location: 'menu' }), // ⋮ row
+  createMenuItemIdentifyForList({ location: 'bottom' }), // bottom icon
+  createMenuItemIdentifyForList({ location: 'prebottom' }), // prebottom icon
+]);
+```
+
+Toggle on → opens IdentifyControl, starts map click, queries only that identify. Toggle off → clears scope and stops click mode. Global Identify toolbar clears the scope (all identify layers again).
 
 ---
 

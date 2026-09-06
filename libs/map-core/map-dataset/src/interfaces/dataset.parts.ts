@@ -38,9 +38,12 @@ type MenuCommon = {
   hidden?: MenuCondition;
 };
 
+/** Where a menu action renders in LayerControl. */
+export type MenuActionLocation = 'extra' | 'menu' | 'bottom' | 'prebottom';
+
 /** Divider menu item type */
 export type MenuDivider = MenuCommon & {
-  location?: 'extra' | 'menu' | 'bottom' | 'prebottom';
+  location?: MenuActionLocation;
   type: 'divider';
 };
 
@@ -56,7 +59,7 @@ export type MenuItemBottomOrExtra<P = any, T = IDataset> = MenuItemCommon<
   T
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra';
+  location?: Extract<MenuActionLocation, 'bottom' | 'extra'>;
   icon: string;
   name?: string;
 };
@@ -67,7 +70,7 @@ export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
   'click'
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra' | 'prebottom';
+  location?: Extract<MenuActionLocation, 'bottom' | 'extra' | 'prebottom'>;
   componentKey: string;
 };
 
@@ -77,7 +80,7 @@ export type MenuItemContentMenu<P = any, T = IDataset> = Omit<
   'click'
 > & {
   type: 'item';
-  location: 'menu';
+  location: Extract<MenuActionLocation, 'menu'>;
   name: string;
   icon?: string;
   click?: MenuItemClick<P, T>;
@@ -123,6 +126,11 @@ export type IIdentifyViewBase = IDataset &
       field_name?: string;
       field_id?: string;
       fields?: FieldFeaturesDef;
+      /**
+       * When true, identify resolver skips auto show-detail / attribute-table
+       * for this node and uses the Identify Result panel instead.
+       */
+      preferResultControl?: boolean;
     };
     group?: {
       name: string;
@@ -133,7 +141,6 @@ export type IIdentifyViewBase = IDataset &
       pointOrBox?: PointLike | [PointLike, PointLike],
     ) => Promise<{ id: string; name: string; data: any }[]>; // Feature's result type
     getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>; // Feature's result type
-    showDetail?: (mapId: string, feature: MapGeoJSONFeature) => void; // Feature's result type
   };
 
 // IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase
@@ -161,14 +168,12 @@ export type IdentifyMultiResult = {
   identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
   features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
 };
-export type IdentifySingleResult = {
-  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-  layer: LayerSpecification;
-  feature: { id: string | number; name: string; data: MapGeoJSONFeature }; // Features của mỗi identify
-};
+
+/** @deprecated Prefer IdentifyMultiResult — same feature list shape. */
+export type IdentifySingleResult = IdentifyMultiResult;
 
 // Define kiểu trả về cho mỗi kết quả sau khi split
-export type IdentifyResult = IdentifyMultiResult | IdentifySingleResult;
+export type IdentifyResult = IdentifyMultiResult;
 // Union type cho IIdentifyView
 export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 

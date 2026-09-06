@@ -44,6 +44,8 @@ Thumbs.db
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/.vitepress/.temp
+# Junction created by scripts/link-docs.js → map-dataset/docs (do not commit)
+libs/map-core/core/docs/dataset
 .npmrc
 
 vite.config.*.timestamp*

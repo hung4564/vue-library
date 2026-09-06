@@ -7,24 +7,25 @@ import {
 } from '@hungpvq/map-core';
 import type {
   HighlightHandle,
-  IdentifySingleResult,
+  IdentifyMultiResult,
   IHighlightView,
 } from '@hungpvq/map-dataset';
 import {
+  convertItemToFeature,
   findSiblingOrNearestLeaf,
   handleMultiIdentifyGetFirst,
 } from '@hungpvq/map-dataset';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/react-map-core';
-import type { Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';
 import { useEffect, useMemo, useRef } from 'react';
 import { loggerHighlight } from '../../logger';
 import { useMapDataset, useMapDatasetHighlight } from '../../store';
 import { createDefaultHighlight } from './helper';
 
-function featureIdentity(feature?: Feature | GeoJSONFeature) {
-  if (!feature) return undefined;
-  const id = feature.id ?? feature.properties?.id;
+function featureIdentity(data?: Record<string, unknown>) {
+  if (!data) return undefined;
+  const id = data.id;
   return id != null ? String(id) : undefined;
 }
 
@@ -117,7 +118,7 @@ export function LayerHighlight(
     }
     const highlights =
       (getAllRef.current?.('highlight') as IHighlightView[] | undefined) || [];
-    const feature: IdentifySingleResult | undefined =
+    const record: IdentifyMultiResult | undefined =
       await handleMultiIdentifyGetFirst(
         highlights as never,
         mapId,
@@ -127,10 +128,17 @@ export function LayerHighlight(
     if (source === 'hover' && current !== hoverRequestIdRef.current) return;
     logHelper(loggerHighlight, mapId, 'LayerHighlight').debug(
       'onGetFeatures',
-      feature,
+      record,
     );
-    const data = feature?.feature?.data;
-    if (!data) {
+    const item = record?.features?.[0];
+    const data = item?.data as
+      | {
+          id?: string | number;
+          geometry: Feature['geometry'];
+          [key: string]: unknown;
+        }
+      | undefined;
+    if (!data?.geometry) {
       if (source === 'hover') {
         lastHoverIdRef.current = undefined;
         if (getHighlightSource() === 'hover') {
@@ -148,7 +156,11 @@ export function LayerHighlight(
       }
       lastHoverIdRef.current = id;
     }
-    setFeatureHighlight(data, source, feature?.identify);
+    setFeatureHighlight(
+      convertItemToFeature(data),
+      source,
+      record?.identify,
+    );
   }
   onGetFeaturesRef.current = onGetFeatures;
 
@@ -161,7 +173,7 @@ export function LayerHighlight(
     setFeatureHighlight(undefined, '', undefined);
   }
 
-  function updateHighlight(geojsonData?: Feature | GeoJSONFeature) {
+  function updateHighlight(geojsonData?: Feature | FeatureCollection | GeoJSONFeature) {
     if (!geojsonData) return;
 
     const dataset = getDatesetHighlight();
@@ -189,7 +201,7 @@ export function LayerHighlight(
       });
       handleHighlight.current.startAnimation({
         map,
-        feature: geojsonData as GeoJSONFeature,
+        feature: geojsonData,
         durationMs,
       });
     });

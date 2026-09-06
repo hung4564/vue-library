@@ -9,12 +9,9 @@ import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
 } from '../menu/builder';
-import { LIST_VIEW_MENU_ID } from '../menu/items';
+import { LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '../menu/items';
 import { hasGeojsonExportData } from '../geo-export/dataset';
-import {
-  ATTRIBUTE_TABLE_COMPONENT_KEY,
-  type AttributeTableColumnsOption,
-} from './model';
+import type { AttributeTableColumnsOption } from './model';
 
 export type AttributeTableMenuOptions = Partial<
   Omit<MenuItemBottomOrExtra<IDataset>, 'click' | 'location'>
@@ -35,11 +32,13 @@ export function createMenuItemAttributeTable(
     .setHidden((ctx) => isAttributeTableMenuHidden(ctx))
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('addComponent', ({ layer, mapId }) => ({
+        .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ layer, mapId }) => ({
           value: createMenuClickAddComponentBuilder()
-            .setComponentKey(ATTRIBUTE_TABLE_COMPONENT_KEY)
+            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.attributeTable)
             .setAttr({ layer, mapId, columns })
-            .setCheck(`${ATTRIBUTE_TABLE_COMPONENT_KEY}:${layer.id}`)
+            .setCheck(
+              `${LIST_VIEW_MENU_COMPONENT_KEY.attributeTable}:${layer.id}`,
+            )
             .build(),
         }))
         .build(),

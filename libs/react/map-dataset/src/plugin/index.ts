@@ -1,9 +1,13 @@
-import {
-  ATTRIBUTE_TABLE_COMPONENT_KEY,
-  LIST_VIEW_MENU_COMPONENT_KEY,
-} from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
-import { AddToGroup, ExportGeo, LayerItemIcon, SetOpacity, ToggleShow } from '../extra/component';
+import {
+  AddToGroup,
+  ExportGeo,
+  IdentifyLayerAction,
+  LayerItemIcon,
+  SetOpacity,
+  ToggleShow,
+} from '../extra/component';
 import { AttributeTable } from '../modules/AttributeTable/AttributeTable';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
@@ -20,26 +24,47 @@ export function createDatasetRegistryPlugin() {
   return {
     install() {
       UniversalRegistry.registerComponent(
-        'legend-linear',
+        LIST_VIEW_MENU_COMPONENT_KEY.legendLinear,
         LayerLegendLinearGradient,
       );
       UniversalRegistry.registerComponent(
-        'legend-color',
+        LIST_VIEW_MENU_COMPONENT_KEY.legendColor,
         LayerLegendSingleColor,
       );
-      UniversalRegistry.registerComponent('legend-text', LayerLegendSingleText);
-      UniversalRegistry.registerComponent('legend-multi', MultiLegend);
-      UniversalRegistry.registerComponent('layer-icon', LayerItemIcon);
-      UniversalRegistry.registerComponent('layer-detail', LayerDetail);
-      UniversalRegistry.registerComponent('dataset-detail', DatasetDetail);
-      UniversalRegistry.registerComponent('style-control', StyleControl);
-      UniversalRegistry.registerComponent('style-multi-control', MultiStyle);
       UniversalRegistry.registerComponent(
-        'layer-action-toggle-show',
+        LIST_VIEW_MENU_COMPONENT_KEY.legendText,
+        LayerLegendSingleText,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
+        MultiLegend,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.layerIcon,
+        LayerItemIcon,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.layerDetail,
+        LayerDetail,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail,
+        DatasetDetail,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.styleControl,
+        StyleControl,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.styleMultiControl,
+        MultiStyle,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.toggleShow,
         ToggleShow,
       );
       UniversalRegistry.registerComponent(
-        'layer-action-set-opacity',
+        LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,
         SetOpacity,
       );
       UniversalRegistry.registerComponent(
@@ -51,7 +76,11 @@ export function createDatasetRegistryPlugin() {
         ExportGeo,
       );
       UniversalRegistry.registerComponent(
-        ATTRIBUTE_TABLE_COMPONENT_KEY,
+        LIST_VIEW_MENU_COMPONENT_KEY.identify,
+        IdentifyLayerAction,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
         AttributeTable,
       );
     },

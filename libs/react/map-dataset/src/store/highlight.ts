@@ -1,13 +1,11 @@
 import { logHelper } from '@hungpvq/map-core';
-import type { IDataset } from '@hungpvq/map-dataset';
+import type { HighlightGeoJson, IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/react-map-core';
-import type { Feature } from 'geojson';
-import type { GeoJSONFeature } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { logger } from '../logger';
 
 export type MapDatasetHighlightStore = {
-  feature: Feature | GeoJSONFeature | undefined;
+  feature: HighlightGeoJson | undefined;
   source: string | undefined;
   dataset?: IDataset;
   version: number;
@@ -47,7 +45,7 @@ export function useMapDatasetHighlight(mapId: string) {
   }, [store]);
 
   function setFeatureHighlight(
-    feature: Feature | GeoJSONFeature | undefined,
+    feature: HighlightGeoJson | undefined,
     source: string,
     dataset?: IDataset,
   ) {

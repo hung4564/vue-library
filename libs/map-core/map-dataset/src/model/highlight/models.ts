@@ -14,6 +14,7 @@ import {
   setPaintIfLayer,
   type HighlightAnimState,
   type HighlightFilterCreator,
+  type HighlightGeoJson,
   type HighlightLayerIds,
   useHighlightAnimation,
 } from './helper';
@@ -136,7 +137,7 @@ export function createDatasetPartFeatureStateHighlightComponent(
     durationMs = 5000,
   }: {
     map: MapSimple;
-    feature?: GeoJSONFeature;
+    feature?: HighlightGeoJson;
     durationMs?: number;
   }) {
     clearApplied(map);
@@ -264,7 +265,7 @@ export function createDatasetPartCustomAnimateHighlightComponent<T>(
     durationMs = 5000, // destructuring default value
   }: {
     map: MapSimple;
-    feature?: GeoJSONFeature;
+    feature?: HighlightGeoJson;
     durationMs?: number;
   }) {
     initAnimation({

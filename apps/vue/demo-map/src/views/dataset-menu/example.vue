@@ -9,8 +9,8 @@ import {
   LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
 import { loadMenuDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
 
 loggerFactory.enable('menu');
 const mapId = ref(getUUIDv4());

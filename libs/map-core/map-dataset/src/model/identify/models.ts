@@ -2,31 +2,37 @@ import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import type {
   IDataset,
-  IdentifyResult,
-  IdentifySingleResult,
+  IdentifyMultiResult,
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
-  MenuItemCommon,
 } from '../../interfaces';
 import { convertFeatureToItem } from '../../utils';
 import { createDatasetLeaf } from '../dataset.base.function';
 import { createNamedComponent } from '../base';
+import { createWithMenuHelper } from '../../extra';
 import {
-  createMenuClickAddComponentBuilder,
-  createMenuClickBuilder,
-  createMenuClickHighlightBuilder,
+  createMenuItemShowDetailForItem,
+  LIST_VIEW_MENU_ID,
 } from '../../extra/menu';
-import { handleMenuActionClick } from '../../extra/menu/handle';
 import { isIdentifyMergeView, isMapboxLayerView } from '../../utils/check';
 import { runAllComponentsWithCheck } from '../visitors';
-import { createWithMenuHelper } from '../../extra';
 import { loggerIdentify } from '../../logger';
 import {
   getMergedFeatures,
   mergePayload,
   splitResponse,
 } from './identifyMapboxMerged';
+
+/** Ensure `show-detail` menu exists when identify has detail fields. */
+export function ensureIdentifyShowDetailMenu(identify: IIdentifyView): void {
+  const fields = identify.config?.fields;
+  if (!fields?.length || identify.hasMenu(LIST_VIEW_MENU_ID.showDetail)) {
+    return;
+  }
+  identify.addMenu(createMenuItemShowDetailForItem(fields));
+}
+
 export function createDatasetPartIdentifyComponent(
   name: string,
   config: IIdentifyView['config'],
@@ -52,34 +58,8 @@ export function createDatasetPartIdentifyComponent(
     async getList<Data>(mapId: string, features: MapGeoJSONFeature[]) {
       return features.map(convertFeatureToItem<Data>);
     },
-    showDetail(mapId: string, feature: MapGeoJSONFeature) {
-      const clickBuilder = createMenuClickBuilder().addTupleDynamic(
-        'highlight',
-        () => ({
-          value: createMenuClickHighlightBuilder()
-            .setDetail(convertFeatureToItem(feature))
-            .setKey('detail')
-            .build(),
-        }),
-      );
-      if (config.fields && config.fields.length > 0) {
-        clickBuilder.addTupleDynamic('addComponent', ({ layer }) => ({
-          value: createMenuClickAddComponentBuilder()
-            .setComponentKey('layer-detail')
-            .setAttr({
-              item: convertFeatureToItem(feature),
-              fields: config.fields,
-              view: layer,
-            })
-            .setCheck('detail')
-            .build(),
-        }));
-      }
-      // build ra MenuItemClick
-      const menus: MenuItemCommon<any>['click'] = clickBuilder.build();
-      handleMenuActionClick(menus, { layer: dataset, mapId, value: feature });
-    },
   });
+  ensureIdentifyShowDetailMenu(dataset);
   return dataset;
 }
 export function createIdentifyMapboxComponent(
@@ -197,7 +177,7 @@ function handleSingleIdentify(
   identify: IIdentifyView,
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
-): Promise<IdentifyResult> {
+): Promise<IdentifyMultiResult> {
   return identify.getFeatures(mapId, pointOrBox).then((features) => ({
     identify,
     features,
@@ -208,7 +188,7 @@ function handleMergedIdentifyGroup(
   mergeIdentifies: IIdentifyViewWithMerge[],
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
-): Promise<IdentifyResult[]> {
+): Promise<IdentifyMultiResult[]> {
   const mergedIdentify = mergeIdentifies[0];
 
   if (mergeIdentifies.length === 1) {
@@ -235,12 +215,12 @@ export async function handleMultiIdentify(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
-): Promise<IdentifyResult[]> {
+): Promise<IdentifyMultiResult[]> {
   logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
     'start',
     { identifies, config: props, pointOrBox },
   );
-  const promises: Promise<IdentifyResult | IdentifyResult[]>[] = [];
+  const promises: Promise<IdentifyMultiResult | IdentifyMultiResult[]>[] = [];
   const groupMerge: Record<string, IIdentifyViewWithMerge[]> = {};
   if (pointOrBox && isPointLike(pointOrBox)) {
     const point = getXY(pointOrBox);
@@ -294,7 +274,7 @@ export async function handleMultiIdentifyGetFirst(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
-): Promise<IdentifySingleResult | undefined> {
+): Promise<IdentifyMultiResult | undefined> {
   const allLayerIds: string[] = [];
   const cache: Record<string, IIdentifyView> = {};
   identifies.forEach((identify) => {
@@ -325,13 +305,15 @@ export async function handleMultiIdentifyGetFirst(
     pointOrBox,
     config: props,
   });
-  return new Promise((resolve) => {
+
+  const features = await new Promise<MapGeoJSONFeature[]>((resolve) => {
     getMap(mapId, (map: MapSimple) => {
-      if (pointOrBox && isPointLike(pointOrBox)) {
-        const point = getXY(pointOrBox);
-        pointOrBox = [
-          [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
-          [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
+      let queryBox = pointOrBox;
+      if (queryBox && isPointLike(queryBox)) {
+        const point = getXY(queryBox);
+        queryBox = [
+          [point.x - props.selectThreshold, point.y + props.selectThreshold],
+          [point.x + props.selectThreshold, point.y - props.selectThreshold],
         ];
         logHelper(
           loggerIdentify,
@@ -343,15 +325,12 @@ export async function handleMultiIdentifyGetFirst(
           x: point.x,
           y: point.y,
           selectThreshold: props.selectThreshold,
-          pointOrBox,
+          pointOrBox: queryBox,
         });
       }
-      const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
-        pointOrBox,
-        {
-          layers: allLayerIds.filter((id) => map.getLayer(id)),
-        },
-      );
+      const queried = map.queryRenderedFeatures(queryBox, {
+        layers: allLayerIds.filter((id) => map.getLayer(id)),
+      });
       logHelper(
         loggerIdentify,
         mapId,
@@ -359,44 +338,56 @@ export async function handleMultiIdentifyGetFirst(
         'handleMultiIdentifyGetFirst',
       ).debug('current', {
         allLayerIds: allLayerIds.filter((id) => map.getLayer(id)),
-        features,
-        pointOrBox,
+        features: queried,
+        pointOrBox: queryBox,
       });
-      if (features.length > 0) {
-        const x = features[0];
-        const datasetPartIdentify = cache[x.layer.id];
-        const id =
-          x.properties?.[datasetPartIdentify?.config?.field_id || 'id'] ?? x.id;
-        const name =
-          x.properties?.[datasetPartIdentify?.config?.field_name || 'id'] ??
-          x.id;
-        const result = {
-          identify: datasetPartIdentify,
-          layer: x.layer,
-          feature: {
-            id,
-            name,
-            data: x,
-          },
-        };
-        logHelper(
-          loggerIdentify,
-          mapId,
-          'FIRST',
-          'handleMultiIdentifyGetFirst',
-        ).debug('end', { result });
-        resolve(result);
-        return;
-      }
-      logHelper(
-        loggerIdentify,
-        mapId,
-        'FIRST',
-        'handleMultiIdentifyGetFirst',
-      ).debug('end', { result: undefined });
-      resolve(undefined);
+      resolve(queried);
     });
   });
+
+  if (features.length < 1) {
+    logHelper(
+      loggerIdentify,
+      mapId,
+      'FIRST',
+      'handleMultiIdentifyGetFirst',
+    ).debug('end', { result: undefined });
+    return undefined;
+  }
+
+  const x = features[0];
+  const datasetPartIdentify = cache[x.layer.id];
+  let flat: Record<string, any> = convertFeatureToItem(x);
+  if (datasetPartIdentify?.getList) {
+    const list = await datasetPartIdentify.getList(mapId, [x]);
+    if (list?.[0]) {
+      flat = list[0] as Record<string, any>;
+    }
+  }
+
+  const id =
+    flat[datasetPartIdentify?.config?.field_id || 'id'] ?? flat.id ?? x.id;
+  const name =
+    flat[datasetPartIdentify?.config?.field_name || 'name'] ??
+    flat[datasetPartIdentify?.config?.field_id || 'id'] ??
+    '';
+  const result: IdentifyMultiResult = {
+    identify: datasetPartIdentify,
+    features: [
+      {
+        id,
+        name: String(name ?? ''),
+        data: flat,
+      },
+    ],
+  };
+  logHelper(
+    loggerIdentify,
+    mapId,
+    'FIRST',
+    'handleMultiIdentifyGetFirst',
+  ).debug('end', { result });
+  return result;
 }
 
 function isPointLike(value: unknown): value is PointLike {

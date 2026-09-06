@@ -9,6 +9,7 @@ import { BasemapPage } from './views/basemap';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
 import { DatasetHighlightPage } from './views/dataset-highlight';
 import { DatasetIdentifyPage } from './views/dataset-identify';
+import { DatasetIdentifyPresentPage } from './views/dataset-identify-present';
 import { DatasetListPage } from './views/dataset-list';
 import { DatasetMenuPage } from './views/dataset-menu';
 import { InspectPage } from './views/inspect';
@@ -42,6 +43,10 @@ root.render(
           <Route path="measurement" element={<MeasurementPage />} />
           <Route path="dataset-highlight" element={<DatasetHighlightPage />} />
           <Route path="dataset-identify" element={<DatasetIdentifyPage />} />
+          <Route
+            path="dataset-identify-present"
+            element={<DatasetIdentifyPresentPage />}
+          />
           <Route path="dataset-menu" element={<DatasetMenuPage />} />
           <Route path="dataset-list" element={<DatasetListPage />} />
           <Route path="registry-control" element={<RegistryControlPage />} />

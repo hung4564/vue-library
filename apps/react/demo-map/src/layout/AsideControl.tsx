@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { to: '/measurement', label: 'Measurement' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },
   { to: '/dataset-identify', label: 'Dataset - Identify' },
+  { to: '/dataset-identify-present', label: 'Dataset - Identify present' },
   { to: '/dataset-menu', label: 'Dataset - Menu' },
   { to: '/dataset-list', label: 'Dataset - List' },
   { to: '/registry-control', label: 'UniversalRegistry - Controls' },

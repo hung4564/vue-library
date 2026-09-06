@@ -1,4 +1,5 @@
 import type { ComponentType } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { defineComponent, h, type PropType } from 'vue';
 import LayerLegendLinearGradient from './parts/linear-gradient.vue';
@@ -9,6 +10,12 @@ export {
   LayerLegendSingleColor,
   LayerLegendSingleText,
 };
+
+const legendComponentKey = {
+  linear: LIST_VIEW_MENU_COMPONENT_KEY.legendLinear,
+  color: LIST_VIEW_MENU_COMPONENT_KEY.legendColor,
+  text: LIST_VIEW_MENU_COMPONENT_KEY.legendText,
+} as const;
 
 const componentMap = {
   linear: LayerLegendLinearGradient,
@@ -38,7 +45,7 @@ export function createLegend<T extends LegendType>(
   value: LegendPropsMap[T],
 ): ComponentType {
   return {
-    componentKey: `legend-${type}`,
+    componentKey: legendComponentKey[type],
     attr: {
       value,
     },
@@ -49,7 +56,7 @@ export function createMultiLegend<T extends LegendType[]>(
   legends: { type: T[number]; value: LegendPropsMap[T[number]] }[],
 ): ComponentType {
   return {
-    componentKey: 'legend-multi',
+    componentKey: LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
     attr: {
       legends,
     },
@@ -74,7 +81,7 @@ export const MultiLegend = defineComponent({
     const { getComponent } = useUniversalRegistry();
     return () =>
       props.legends.map((legend) => {
-        const Component = getComponent(`legend-${legend.type}`);
+        const Component = getComponent(legendComponentKey[legend.type]);
         if (!Component) {
           console.warn(
             `Component for legend type "${legend.type}" not found in UniversalRegistry`,

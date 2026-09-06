@@ -4,6 +4,7 @@ import {
   logHelper,
   MAP_STORE_KEY,
   methodRegistry,
+  registerControlActionRunner,
   REGISTRY_CONTROL_PREFIX,
   type MapControlHandle,
   type MapControlPanelPosition,
@@ -183,6 +184,10 @@ export class UniversalRegistry {
       .map((key) => key.replace(resolved, ''));
   }
 }
+
+registerControlActionRunner((mapId, key, type, event) => {
+  UniversalRegistry.runControlAction(mapId, key, type, event);
+});
 
 export function useUniversalRegistry(mapId?: string) {
   return {

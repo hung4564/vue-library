@@ -3,9 +3,9 @@
  * Handles map instance creation, event setup, and cleanup
  */
 
-import type { MapSimple } from '../types';
 import type { MapOptions } from 'maplibre-gl';
 import { MapEventError, MapInitializationError } from '../errors';
+import type { MapSimple } from '../types';
 
 /**
  * Map event callbacks interface
@@ -97,8 +97,8 @@ export class MapInitializer {
       metadata: {},
       sources: {},
       layers: [],
-      sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-      glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
+      sprite: undefined,
+      glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     };
 
     return Object.assign({}, defaultStyle, customStyle);

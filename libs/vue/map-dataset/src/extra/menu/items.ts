@@ -6,6 +6,7 @@ export {
   createMenuItemStyleEdit,
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
+  createMenuItemIdentifyForList,
   createMenuItemToggleShow,
   createMenuItemMoveUp,
   createMenuItemMoveDown,
@@ -20,8 +21,8 @@ export {
   isMenuItemDisabled,
   createMenuConditionContext,
   resolveMenuContextSource,
+  isIdentifyForListMenuHidden,
   LIST_VIEW_MENU_ID,
   LIST_VIEW_MENU_COMPONENT_KEY,
-  ATTRIBUTE_TABLE_COMPONENT_KEY,
   isAttributeTableMenuHidden,
 } from '@hungpvq/map-dataset';

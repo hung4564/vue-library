@@ -5,6 +5,8 @@ import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   handleMenuActionClick,
+  LIST_VIEW_MENU_COMPONENT_KEY,
+  LIST_VIEW_MENU_ID,
   traverseTree,
 } from '@hungpvq/map-dataset';
 import { DraggableItemSideBar, DraggableItemPopup } from '@hungpvq/react-draggable';
@@ -88,9 +90,9 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   function onShowDetail(view: IDataset) {
     handleMenuActionClick(
       createMenuClickBuilder()
-        .addTupleStatic('addComponent', {
+        .addTupleStatic(LIST_VIEW_MENU_ID.addComponent, {
           value: createMenuClickAddComponentBuilder()
-            .setComponentKey('dataset-detail')
+            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail)
             .setAttr({ dataset: view })
             .setCheck('detail-dataset')
             .build(),

@@ -122,23 +122,84 @@
   resize: vertical;
 }
 
-.input-container > select {
-  position: relative;
-}
-
 .input-container > input:focus,
-.input-container > textarea:focus,
-.input-container > select:focus {
-  border: 1px solid var(--map-primary-color, #fff);
+.input-container > textarea:focus {
+  border-color: var(--map-accent-color, #1a73e8);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--map-accent-color, #1a73e8) 28%, transparent);
 }
 
-.input-container option:not(:disabled) {
-  background-color: transparent;
-  color: black;
+/* Native select — custom chrome so Vue/React match across themes */
+.input-container > select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  min-height: 2rem;
+  line-height: var(--map-line-height, 1.4);
+  padding-right: 2rem;
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 0.75rem;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input-container > select::-ms-expand {
+  display: none;
+}
+
+.input-container > select:hover:not(:disabled) {
+  border-color: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 40%,
+    var(--map-border-color, #ccc)
+  );
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.input-container > select:focus {
+  border-color: var(--map-accent-color, #1a73e8);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--map-accent-color, #1a73e8) 28%, transparent);
+}
+
+.input-container > select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.input-container > select option {
+  background-color: var(--map-surface-color, #ffffff);
+  color: var(--map-text-primary, #333333);
+}
+
+.input-container > select option:disabled {
+  color: var(--map-text-secondary, #666666);
 }
 
 .input-container > select:invalid {
-  color: gray;
+  color: var(--map-text-secondary, #666666);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+  min-width: 0;
+}
+
+.form-group > label {
+  display: block;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-medium, 500);
+  line-height: var(--map-line-height-tight, 1.25);
+  letter-spacing: 0.01em;
+  opacity: 0.88;
 }
 
 /* ---------- Slider ---------- */

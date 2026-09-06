@@ -7,7 +7,7 @@ import {
 import { mdiChevronRight, mdiCircleSmall, mdiFolderPlusOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
-import type { WithLayerItemMenuComponentType } from './types';
+import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset';
 
 export function AddToGroup(props: WithLayerItemMenuComponentType) {
   const [open, setOpen] = useState(false);

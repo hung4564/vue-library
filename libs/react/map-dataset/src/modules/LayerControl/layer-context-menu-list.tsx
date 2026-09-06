@@ -5,6 +5,7 @@ import type {
 } from '@hungpvq/map-dataset';
 import {
   createMenuConditionContext,
+  getMenuItemLocation,
   isMenuItemCustomComponent,
   isMenuItemDisabled,
   isMenuItemHidden,
@@ -60,6 +61,7 @@ export function LayerContextMenuList({
               mapId={mapId}
               getGroups={getGroups}
               disabled={disabled}
+              location={getMenuItemLocation(option)}
               onClose={onClose}
             />
           );

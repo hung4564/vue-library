@@ -14,6 +14,7 @@ export const REGISTRY_NAMESPACES = {
 } as const;
 
 export * from './control';
+export * from './control-action';
 export * from './module-control-id';
 
 export class MethodRegistry {

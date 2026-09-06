@@ -7,12 +7,18 @@ import { addMenuBuilder, type WithMenuBuilder } from '../../extra/menu';
 import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
+  ensureIdentifyShowDetailMenu,
 } from './models';
 interface BaseBuilder {
   configFieldId(field_id: string): this;
   setGroup(group: IIdentifyView['group']): this;
   configFieldName(field_name: string): this;
   isUseMerge(id?: string): this;
+  /**
+   * Prefer Identify Result panel over auto show-detail / attribute-table
+   * for this identify node (default true when called without args).
+   */
+  preferResultControl(value?: boolean): this;
   build(): IIdentifyView;
 }
 export function createDatasetPartIdentifyComponentBuilder(name: string) {
@@ -36,6 +42,10 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
       _identifyGroupId = id;
       return this;
     },
+    preferResultControl(value = true) {
+      _config.preferResultControl = value;
+      return this;
+    },
     build(): IIdentifyView {
       const dataset = _identifyGroupId
         ? createIdentifyMapboxMergedComponent(name, _config, _identifyGroupId)
@@ -44,7 +54,15 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
       return dataset;
     },
   };
-  return addFieldBuilder(addMenuBuilder(base)) as BaseBuilder &
+  const composed = addFieldBuilder(addMenuBuilder(base)) as BaseBuilder &
     WithFieldBuilder &
     WithMenuBuilder;
+  const originBuild = composed.build.bind(composed);
+  composed.build = function build() {
+    const dataset = originBuild();
+    // setConfigFields applies after create; ensure menu once fields exist.
+    ensureIdentifyShowDetailMenu(dataset);
+    return dataset;
+  };
+  return composed;
 }

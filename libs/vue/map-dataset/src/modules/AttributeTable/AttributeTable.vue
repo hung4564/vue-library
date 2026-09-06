@@ -8,18 +8,23 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
 import {
+  ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_LOCALE,
   attributeTableRowsToFeatureCollection,
   buildAttributeTable,
+  clearPendingAttributeTableSelectRows,
   createExportGeoSubmenu,
   createMenuItemExportGeo,
   filterAttributeTableRows,
   getDatasetFeatureCollection,
   getExportGeoMenuOptions,
   handleMenuAction,
+  resolveAttributeTableSelectedRowIds,
+  takePendingAttributeTableSelectRows,
   type AttributeTableColumn,
   type AttributeTableColumnsOption,
   type AttributeTableRow,
+  type AttributeTableSelectRowsPayload,
 } from '@hungpvq/map-dataset';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -35,7 +40,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMapDatasetHighlight } from '../../store';
 
@@ -59,6 +64,7 @@ const query = ref('');
 const tableColumns = ref<AttributeTableColumn[]>([]);
 const rows = ref<AttributeTableRow[]>([]);
 const selectedIds = ref<string[]>([]);
+const pendingSelectIds = ref<string[] | null>(null);
 const zoomToSelection = ref(false);
 const rowFilter = ref<'all' | 'selected'>('all');
 let cancelled = false;
@@ -98,7 +104,7 @@ const title = computed(() => {
 });
 
 const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapAttributeTable',
+  id: ATTRIBUTE_TABLE_CONTROL.id,
   panelKind: 'popup',
   title: () => title.value,
   buttonPosition: () => props.position,
@@ -113,16 +119,48 @@ const { panelBind } = useRegisterMapControl(mapId, {
   }),
   actions: [
     {
-      type: 'mapAttributeTable',
+      type: ATTRIBUTE_TABLE_CONTROL.id,
       run: () => {
         show.value = !show.value;
         if (!show.value) handleClose();
       },
     },
+    {
+      type: ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
+      run: (event) => {
+        applySelectRows(event as AttributeTableSelectRowsPayload | undefined);
+      },
+    },
   ],
 });
 
+function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
+  const ids = (payload?.ids ?? []).map(String);
+  clearPendingAttributeTableSelectRows(mapId.value);
+  pendingSelectIds.value = ids;
+  show.value = true;
+  flushPendingSelection();
+}
+
+function flushPendingSelection() {
+  if (!pendingSelectIds.value || loading.value) return;
+  const ids = resolveAttributeTableSelectedRowIds(
+    pendingSelectIds.value,
+    rows.value,
+  );
+  pendingSelectIds.value = null;
+  clearPendingAttributeTableSelectRows(mapId.value);
+  selectedIds.value = ids;
+  rowFilter.value = ids.length > 0 ? 'selected' : 'all';
+  applySelection();
+}
+
 onMounted(async () => {
+  const queued = takePendingAttributeTableSelectRows(mapId.value);
+  if (queued) {
+    pendingSelectIds.value = queued;
+    show.value = true;
+  }
   try {
     const collection = await getDatasetFeatureCollection(props.layer);
     if (cancelled) return;
@@ -135,7 +173,10 @@ onMounted(async () => {
     tableColumns.value = table.columns;
     rows.value = table.rows;
   } finally {
-    if (!cancelled) loading.value = false;
+    if (!cancelled) {
+      loading.value = false;
+      flushPendingSelection();
+    }
   }
 });
 
@@ -167,22 +208,19 @@ function selectedRowsFrom(ids: string[]): AttributeTableRow[] {
 
 function applySelection(focus?: AttributeTableRow) {
   const selected = selectedRowsFrom(selectedIds.value);
-  if (selected.length === 0) {
+  if (selected.length !== 1) {
     clearAttributeTableHighlight();
     return;
   }
-  const current = focus ?? selected[selected.length - 1];
-  setFeatureHighlight(current.feature as Feature, 'attribute-table', props.layer);
+  const current = focus ?? selected[0];
+  setFeatureHighlight(
+    current.feature as Feature,
+    'attribute-table',
+    props.layer,
+  );
   if (!zoomToSelection.value) return;
-  const boundsValue: Feature | FeatureCollection =
-    selected.length === 1
-      ? (current.feature as Feature)
-      : {
-          type: 'FeatureCollection',
-          features: selected.map((row) => row.feature),
-        };
   callMap((map) => {
-    fitBounds(map, boundsValue);
+    fitBounds(map, current.feature as Feature);
   });
 }
 

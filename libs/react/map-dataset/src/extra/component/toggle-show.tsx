@@ -9,7 +9,7 @@ import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/react-map-core
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useState } from 'react';
-import type { WithLayerItemActionType } from './types';
+import type { WithLayerItemActionType } from '@hungpvq/map-dataset';
 
 export function ToggleShow(props: WithLayerItemActionType) {
   const { callMap, mapId } = useMap(props);

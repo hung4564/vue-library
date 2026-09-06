@@ -1,18 +1,23 @@
 import { fitBounds, getMap, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
 import {
+  ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_LOCALE,
   attributeTableRowsToFeatureCollection,
   buildAttributeTable,
+  clearPendingAttributeTableSelectRows,
   createExportGeoSubmenu,
   createMenuItemExportGeo,
   filterAttributeTableRows,
   getDatasetFeatureCollection,
   getExportGeoMenuOptions,
   handleMenuAction,
+  resolveAttributeTableSelectedRowIds,
+  takePendingAttributeTableSelectRows,
   type AttributeTableColumn,
   type AttributeTableColumnsOption,
   type AttributeTableRow,
+  type AttributeTableSelectRowsPayload,
 } from '@hungpvq/map-dataset';
 import {
   ContextMenu,
@@ -33,7 +38,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDatasetHighlight } from '../../store';
 
@@ -47,7 +52,7 @@ export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({
     ...merged,
-    controlId: 'mapAttributeTable',
+    controlId: ATTRIBUTE_TABLE_CONTROL.id,
   });
   const { setFeatureHighlight, getHighlightSource } =
     useMapDatasetHighlight(mapId);
@@ -64,6 +69,9 @@ export function AttributeTable(props: AttributeTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [zoomToSelection, setZoomToSelection] = useState(false);
   const [rowFilter, setRowFilter] = useState<'all' | 'selected'>('all');
+  const pendingSelectIdsRef = useRef<string[] | null>(null);
+  const loadingRef = useRef(loading);
+  loadingRef.current = loading;
   const zoomToSelectionRef = useRef(zoomToSelection);
   zoomToSelectionRef.current = zoomToSelection;
   const selectedIdsRef = useRef(selectedIds);
@@ -84,30 +92,33 @@ export function AttributeTable(props: AttributeTableProps) {
   const applySelection = useCallback(
     (ids: string[], focus?: AttributeTableRow) => {
       const selected = rowsRef.current.filter((row) => ids.includes(row.id));
-      if (selected.length === 0) {
+      if (selected.length !== 1) {
         clearHighlight();
         return;
       }
-      const current = focus ?? selected[selected.length - 1];
+      const current = focus ?? selected[0];
       setFeatureHighlightRef.current(
         current.feature as Feature,
         'attribute-table',
         props.layer,
       );
       if (!zoomToSelectionRef.current) return;
-      const boundsValue: Feature | FeatureCollection =
-        selected.length === 1
-          ? (current.feature as Feature)
-          : {
-              type: 'FeatureCollection',
-              features: selected.map((row) => row.feature),
-            };
       getMap(mapId, (map) => {
-        fitBounds(map, boundsValue);
+        fitBounds(map, current.feature as Feature);
       });
     },
     [clearHighlight, mapId, props.layer],
   );
+
+  useEffect(() => {
+    const queued = takePendingAttributeTableSelectRows(mapId);
+    if (queued) {
+      pendingSelectIdsRef.current = queued;
+      toggleShow(true);
+    }
+    // Mount-only: flush identify selection queued before this control registered.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,6 +143,18 @@ export function AttributeTable(props: AttributeTableProps) {
       clearHighlight();
     };
   }, [props.layer, props.columns, clearHighlight]);
+
+  useEffect(() => {
+    if (loading) return;
+    const pending = pendingSelectIdsRef.current;
+    if (!pending) return;
+    pendingSelectIdsRef.current = null;
+    clearPendingAttributeTableSelectRows(mapId);
+    const resolved = resolveAttributeTableSelectedRowIds(pending, rows);
+    setSelectedIds(resolved);
+    setRowFilter(resolved.length > 0 ? 'selected' : 'all');
+    applySelection(resolved);
+  }, [loading, rows, applySelection, mapId]);
 
   const searchedRows = useMemo(
     () => filterAttributeTableRows(rows, query),
@@ -165,7 +188,7 @@ export function AttributeTable(props: AttributeTableProps) {
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapAttributeTable',
+    id: ATTRIBUTE_TABLE_CONTROL.id,
     panelKind: 'popup',
     title,
     buttonPosition: merged.position,
@@ -181,7 +204,28 @@ export function AttributeTable(props: AttributeTableProps) {
       position: merged.position,
       controlLayout: merged.controlLayout,
     }),
-    actions: [{ type: 'mapAttributeTable', run: () => toggleShow() }],
+    actions: [
+      { type: ATTRIBUTE_TABLE_CONTROL.id, run: () => toggleShow() },
+      {
+        type: ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
+        run: (event) => {
+          const ids = (
+            (event as AttributeTableSelectRowsPayload | undefined)?.ids ?? []
+          ).map(String);
+          clearPendingAttributeTableSelectRows(mapId);
+          toggleShow(true);
+          if (loadingRef.current) {
+            pendingSelectIdsRef.current = ids;
+            return;
+          }
+          pendingSelectIdsRef.current = null;
+          const resolved = resolveAttributeTableSelectedRowIds(ids, rowsRef.current);
+          setSelectedIds(resolved);
+          setRowFilter(resolved.length > 0 ? 'selected' : 'all');
+          applySelection(resolved);
+        },
+      },
+    ],
   });
 
   function toggleRow(row: AttributeTableRow) {

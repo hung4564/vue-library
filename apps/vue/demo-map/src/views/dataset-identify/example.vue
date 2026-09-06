@@ -11,8 +11,8 @@ import {
   LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
 import { loadIdentifyDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
 
 loggerFactory.enable('map:identify');
 const mapId = ref(getUUIDv4());
@@ -31,7 +31,7 @@ function onMapLoaded(map: MapSimple) {
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <LayerHighlight enableClick />
+    <LayerHighlight />
     <IdentifyShowFirstControl />
     <ComponentManagementControl />
   </Map>

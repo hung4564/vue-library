@@ -1,6 +1,13 @@
 import type { ComponentType } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
 
 type LegendType = 'linear' | 'color' | 'text';
+
+const legendComponentKey = {
+  linear: LIST_VIEW_MENU_COMPONENT_KEY.legendLinear,
+  color: LIST_VIEW_MENU_COMPONENT_KEY.legendColor,
+  text: LIST_VIEW_MENU_COMPONENT_KEY.legendText,
+} as const;
 
 type LegendPropsMap = {
   linear: {
@@ -23,7 +30,7 @@ export function createLegend<T extends LegendType>(
   value: LegendPropsMap[T],
 ): ComponentType {
   return {
-    componentKey: `legend-${type}`,
+    componentKey: legendComponentKey[type],
     attr: { value },
   };
 }
@@ -32,7 +39,7 @@ export function createMultiLegend<T extends LegendType[]>(
   legends: { type: T[number]; value: LegendPropsMap[T[number]] }[],
 ): ComponentType {
   return {
-    componentKey: 'legend-multi',
+    componentKey: LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
     attr: { legends },
   };
 }

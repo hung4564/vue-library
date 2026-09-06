@@ -1,14 +1,12 @@
 import { logHelper } from '@hungpvq/map-core';
-import type { IDataset } from '@hungpvq/map-dataset';
+import type { HighlightGeoJson, IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
-import type { Feature } from 'geojson';
-import type { GeoJSONFeature } from 'maplibre-gl';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { logger } from '../logger';
 
 export type MapDatasetHighlightStore = {
-  feature: Ref<Feature | GeoJSONFeature | undefined>;
+  feature: Ref<HighlightGeoJson | undefined>;
   source: Ref<string | undefined>;
   dataset?: IDataset;
 };
@@ -30,7 +28,7 @@ export const useMapDatasetHighlight = (mapId: string) => {
     return store;
   }
   function setFeatureHighlight(
-    feature: Feature | GeoJSONFeature | undefined,
+    feature: HighlightGeoJson | undefined,
     source: string,
     dataset?: IDataset,
   ) {

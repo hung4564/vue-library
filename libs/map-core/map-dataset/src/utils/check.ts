@@ -1,18 +1,18 @@
+import type { WithDataHelper } from '../extra';
 import type { IDataset, WithChildren } from '../interfaces/dataset.base';
+import type {
+  WithSetOpacity,
+  WithToggleShow,
+} from '../interfaces/dataset.extra';
+import type { IDatasetMap } from '../interfaces/dataset.map';
 import type {
   IIdentifyView,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type {
-  WithSetOpacity,
-  WithToggleShow,
-} from '../interfaces/dataset.extra';
-
 import type { IDataManagementView } from '../model/data-management/types';
-import type { IDatasetMap } from '../interfaces/dataset.map';
-import type { WithDataHelper } from '../extra';
+import type { IListViewUI } from '../model/list';
 
 export function isDatasetMapHasAddToMap(
   dataset: IDataset,
@@ -66,6 +66,9 @@ export function isDataManagementView(
   dataset: unknown,
 ): dataset is IDataManagementView {
   return (dataset as IDataset)?.type === 'data-management';
+}
+export function isListView(dataset: unknown): dataset is IListViewUI {
+  return (dataset as IDataset)?.type === 'list';
 }
 export function isDatasetHasMethod<T, K extends string | number | symbol>(
   obj: unknown,

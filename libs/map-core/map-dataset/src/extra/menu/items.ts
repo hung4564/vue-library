@@ -3,15 +3,18 @@ import {
   mdiChevronDown,
   mdiChevronUp,
   mdiCrosshairsGps,
+  mdiCursorPointer,
   mdiFolderOutline,
   mdiFolderPlusOutline,
   mdiFormatLineStyle,
   mdiInformation,
 } from '@mdi/js';
-import type { BBox } from 'geojson';
+import type { BBox, Feature, Geometry } from 'geojson';
 import type {
   IDataset,
   MenuAction,
+  MenuActionLocation,
+  MenuCondition,
   MenuConditionContext,
   MenuItemBottomOrExtra,
   MenuItemContentMenu,
@@ -21,12 +24,52 @@ import type {
 import { convertItemToFeature, resolveDatasetBbox } from '../../utils';
 import { getDatasetDetailInfo } from '../detail';
 import type { FieldFeaturesDef } from '../field';
+import { isIdentifyForListMenuHidden } from '../identify';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
+  createMenuClickFitBoundsBuilder,
   createMenuClickHighlightBuilder,
 } from './builder';
+import { resolveMenuCondition } from './condition';
+
+export const LIST_VIEW_MENU_ID = {
+  moveUp: 'move-up',
+  moveDown: 'move-down',
+  addToGroup: 'add-to-group',
+  addToExistingGroup: 'add-to-existing-group',
+  exportGeo: 'export-geo',
+  attributeTable: 'attribute-table',
+  /** Identify feature detail menu (`createMenuItemShowDetailForItem`) */
+  showDetail: 'show-detail',
+  /** Toolbar / extra / bottom / prebottom */
+  identify: 'identify-layer',
+  /** Context menu row (must differ from `identify` so both can coexist) */
+  identifyMenu: 'identify-layer-menu',
+  /** Built-in menu click handlers (`registerMenuHandlerForMap`) */
+  addComponent: 'addComponent',
+  fitBounds: 'fitBounds',
+  highlight: 'highlight',
+} as const;
+
+export const LIST_VIEW_MENU_COMPONENT_KEY = {
+  addToGroup: 'layer-action-add-to-group',
+  exportGeo: 'layer-action-export-geo',
+  identify: 'layer-action-identify',
+  toggleShow: 'layer-action-toggle-show',
+  setOpacity: 'layer-action-set-opacity',
+  attributeTable: 'attribute-table',
+  legendLinear: 'legend-linear',
+  legendColor: 'legend-color',
+  legendText: 'legend-text',
+  legendMulti: 'legend-multi',
+  layerIcon: 'layer-icon',
+  layerDetail: 'layer-detail',
+  styleControl: 'style-control',
+  datasetDetail: 'dataset-detail',
+  styleMultiControl: 'style-multi-control',
+} as const;
 
 export function createWithMenuHelper<
   T extends IDataset = IDataset,
@@ -111,11 +154,28 @@ export function createMenuItemToBoundActionForItem() {
     .setIcon(mdiCrosshairsGps)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('fitBounds', ({ value }) => ({
-          value: value?.geometry,
-        }))
-        .addTupleDynamic('highlight', ({ value }) => {
+        .addTupleDynamic(LIST_VIEW_MENU_ID.fitBounds, ({ value }) => {
+          if (!value || typeof value !== 'object') return undefined;
+          const feature =
+            'type' in value && (value as { type?: string }).type === 'Feature'
+              ? (value as Feature)
+              : convertItemToFeature(
+                  value as {
+                    id?: string | number;
+                    geometry: Geometry;
+                    [key: string]: unknown;
+                  },
+                );
+          if (!feature?.geometry) return undefined;
+          return {
+            value: createMenuClickFitBoundsBuilder()
+              .setDetail(feature)
+              .build(),
+          };
+        })
+        .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => {
           const { geometry, ...properties } = value || {};
+          if (!geometry) return undefined;
           return {
             value: createMenuClickHighlightBuilder()
               .setDetail({
@@ -136,13 +196,13 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
     .item()
     .setLocation('menu')
     .setName('Detail')
-    .setId('show-detail')
+    .setId(LIST_VIEW_MENU_ID.showDetail)
     .setIcon(mdiInformation)
     .setClick((props) => {
       return createMenuClickBuilder()
-        .addTupleDynamic('addComponent', ({ value }) => ({
+        .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ value }) => ({
           value: createMenuClickAddComponentBuilder()
-            .setComponentKey('layer-detail')
+            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.layerDetail)
             .setAttr({
               item: value,
               fields,
@@ -151,7 +211,7 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
             .setCheck('detail')
             .build(),
         }))
-        .addTupleDynamic('highlight', ({ value }) => ({
+        .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => ({
           value: createMenuClickHighlightBuilder()
             .setDetail(convertItemToFeature(value))
             .setKey('detail')
@@ -170,12 +230,12 @@ export function createMenuItemShowDetailInfoSource(
     .setIcon(mdiInformation)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('addComponent', ({ layer }) => {
+        .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ layer }) => {
           const detail = getDatasetDetailInfo(layer);
           if (detail.fields.length === 0) return undefined;
           return {
             value: createMenuClickAddComponentBuilder()
-              .setComponentKey('layer-detail')
+              .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.layerDetail)
               .setAttr({
                 item: detail.item,
                 fields: detail.fields,
@@ -199,9 +259,9 @@ export function createMenuItemStyleEdit(
     .setIcon(mdiFormatLineStyle)
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic('addComponent', ({ layer }) => ({
+        .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ layer }) => ({
           value: createMenuClickAddComponentBuilder()
-            .setComponentKey('style-control')
+            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.styleControl)
             .setAttr({ item: layer })
             .build(),
         }))
@@ -218,7 +278,7 @@ export function createMenuItemToggleShow(
     .item()
     .setLocation('extra')
     .setName('ToggleShow')
-    .setComponentKey('layer-action-toggle-show')
+    .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.toggleShow)
     .setAdditional(menu)
     .build();
 }
@@ -230,24 +290,69 @@ export function createMenuItemSetOpacity(
     .item()
     .setLocation('prebottom')
     .setName('SetOpacity')
-    .setComponentKey('layer-action-set-opacity')
+    .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.setOpacity)
     .setAdditional(menu)
     .build();
 }
 
-export const LIST_VIEW_MENU_ID = {
-  moveUp: 'move-up',
-  moveDown: 'move-down',
-  addToGroup: 'add-to-group',
-  addToExistingGroup: 'add-to-existing-group',
-  exportGeo: 'export-geo',
-  attributeTable: 'attribute-table',
-} as const;
+/** One id for identify menu placement (extra vs context menu). */
+export function listViewIdentifyMenuId(
+  location: MenuActionLocation = 'extra',
+): string {
+  return location === 'menu'
+    ? LIST_VIEW_MENU_ID.identifyMenu
+    : LIST_VIEW_MENU_ID.identify;
+}
 
-export const LIST_VIEW_MENU_COMPONENT_KEY = {
-  addToGroup: 'layer-action-add-to-group',
-  exportGeo: 'layer-action-export-geo',
-} as const;
+export type IdentifyForListMenuOptions = {
+  location?: MenuActionLocation;
+  name?: string;
+  icon?: string;
+  hidden?: MenuCondition;
+  disabled?: MenuCondition;
+  order?: number;
+  class?: string;
+};
+
+export function createMenuItemIdentifyForList(
+  options: IdentifyForListMenuOptions = {},
+) {
+  const location: MenuActionLocation = options.location ?? 'extra';
+  const {
+    name = 'Identify',
+    icon = mdiCursorPointer,
+    hidden,
+    disabled,
+    order,
+    class: className,
+  } = options;
+
+  const builder = createMenuBuilder()
+    .item()
+    .setId(listViewIdentifyMenuId(location))
+    .setLocation(location)
+    .setName(name)
+    .setIcon(icon)
+    .setHidden((ctx: MenuConditionContext) => {
+      if (isIdentifyForListMenuHidden(ctx)) return true;
+      return resolveMenuCondition(hidden, ctx);
+    })
+    .setAdditional({
+      ...(order != null ? { order } : {}),
+      ...(className != null ? { class: className } : {}),
+      ...(disabled != null ? { disabled } : {}),
+    });
+
+  if (location === 'menu') {
+    return builder
+      .setComponentMenuKey(LIST_VIEW_MENU_COMPONENT_KEY.identify)
+      .build();
+  }
+
+  return builder
+    .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.identify)
+    .build();
+}
 
 export type ListViewGroupOption = { id: string; name: string };
 

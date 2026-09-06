@@ -11,15 +11,16 @@ import {
 } from '@hungpvq/map-core';
 import type {
   HighlightHandle,
-  IdentifySingleResult,
+  IdentifyMultiResult,
   IHighlightView,
 } from '@hungpvq/map-dataset';
 import {
+  convertItemToFeature,
   findSiblingOrNearestLeaf,
   handleMultiIdentifyGetFirst,
 } from '@hungpvq/map-dataset';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
-import type { Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';
 import { onUnmounted, shallowRef, watch } from 'vue';
 import { loggerHighlight } from '../../logger';
@@ -84,9 +85,9 @@ onUnmounted(() => {
   removeEventHover();
 });
 
-function featureIdentity(feature?: Feature | GeoJSONFeature) {
-  if (!feature) return undefined;
-  const id = feature.id ?? feature.properties?.id;
+function featureIdentity(data?: Record<string, unknown>) {
+  if (!data) return undefined;
+  const id = data.id;
   return id != null ? String(id) : undefined;
 }
 
@@ -115,7 +116,7 @@ async function onGetFeatures(
   current: number,
   source: 'highlight' | 'hover',
 ) {
-  const feature: IdentifySingleResult | undefined =
+  const record: IdentifyMultiResult | undefined =
     await handleMultiIdentifyGetFirst(
       (getAllComponentsByType<IHighlightView>('highlight') || []) as any[],
       mapId.value,
@@ -125,10 +126,13 @@ async function onGetFeatures(
   if (source === 'hover' && current !== hoverRequestId) return;
   logHelper(loggerHighlight, mapId.value, 'LayerHighlight').debug(
     'onGetFeatures',
-    feature,
+    record,
   );
-  const data = feature?.feature?.data;
-  if (!data) {
+  const item = record?.features?.[0];
+  const data = item?.data as
+    | { id?: string | number; geometry: Feature['geometry']; [key: string]: unknown }
+    | undefined;
+  if (!data?.geometry) {
     if (source === 'hover') {
       lastHoverId = undefined;
       if (getHighlightSource()?.value === 'hover') {
@@ -146,7 +150,11 @@ async function onGetFeatures(
     }
     lastHoverId = id;
   }
-  setFeatureHighlight(data, source, feature?.identify);
+  setFeatureHighlight(
+    convertItemToFeature(data),
+    source,
+    record?.identify,
+  );
 }
 function onRemoveMap(map: MapSimple) {
   stopAnimation(map);
@@ -154,7 +162,7 @@ function onRemoveMap(map: MapSimple) {
 
 const handleHighligh = shallowRef<HighlightHandle | undefined>();
 const handleDefault = useDefaultHighlight(props.color);
-function updateHighlight(geojsonData?: Feature | GeoJSONFeature) {
+function updateHighlight(geojsonData?: Feature | FeatureCollection | GeoJSONFeature) {
   const durationMs = props.durationMs;
   logHelper(loggerHighlight, mapId.value, 'LayerHighlight').debug(
     'updateHighlight',

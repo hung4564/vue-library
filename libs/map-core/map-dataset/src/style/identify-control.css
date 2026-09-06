@@ -25,6 +25,39 @@
   overflow: hidden;
   text-overflow: ellipsis;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.identify-control-header__row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.identify-control-header__row > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.identify-control-header__layer {
+  width: 100%;
+  min-width: 0;
+}
+
+.identify-control-header__layer .form-group {
+  margin: 0;
+}
+
+.identify-control-header__layer .input-container {
+  width: 100%;
+}
+
+.identify-control-header__layer select {
+  width: 100%;
+  max-width: 100%;
 }
 
 .identify-control-separator {

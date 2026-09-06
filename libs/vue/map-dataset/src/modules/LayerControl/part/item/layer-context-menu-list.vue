@@ -9,6 +9,7 @@
         :mapId="mapId"
         :getGroups="getGroups"
         :disabled="isDisabled(option)"
+        :location="getMenuItemLocation(option)"
         @close="emit('close')"
       />
       <li
@@ -46,6 +47,7 @@ import type {
 } from '@hungpvq/map-dataset';
 import {
   createMenuConditionContext,
+  getMenuItemLocation,
   isMenuItemCustomComponent,
   isMenuItemDisabled,
   isMenuItemHidden,

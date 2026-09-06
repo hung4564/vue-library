@@ -91,7 +91,13 @@ export async function getMergedFeatures(
     const layerIdMap = payload.layerIdMap;
 
     getMap(payload.mapId, (map) => {
-      const allLayerIds = Object.keys(layerIdMap);
+      const allLayerIds = Object.keys(layerIdMap).filter((id) =>
+        map.getLayer(id),
+      );
+      if (allLayerIds.length < 1) {
+        resolve([]);
+        return;
+      }
       const queriedFeatures: MapGeoJSONFeature[] = map.queryRenderedFeatures(
         payload.pointOrBox,
         { layers: allLayerIds },

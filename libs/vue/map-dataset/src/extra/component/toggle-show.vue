@@ -32,7 +32,7 @@ import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { WithLayerItemActionType } from './types';
+import type { WithLayerItemActionType } from './types';
 
 const path = {
   show: mdiEye,

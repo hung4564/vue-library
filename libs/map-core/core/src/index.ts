@@ -25,11 +25,12 @@ export * from './store';
 
 // Export extra modules
 export * from './legend';
-export * from './print';
-export * from './toolbar';
-export * from './mitt';
-export * from './registry';
 export * from './map-context-menu';
+export * from './mitt';
+export * from './print';
+export * from './registry';
+export * from './resolver';
+export * from './toolbar';
 export * from './worker';
 
 import './style/index.scss';

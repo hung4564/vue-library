@@ -7,6 +7,7 @@ import {
   createMenuItemExportGeo,
   createMenuItemAttributeTable,
   createWithMenuHelper,
+  LIST_VIEW_MENU_COMPONENT_KEY,
 } from '../../extra';
 import { createWithEventHelper } from '../../extra/event';
 import { addMenuBuilder, type WithMenuBuilder } from '../../extra/menu';
@@ -145,7 +146,7 @@ function createBaseListViewUiBuilder(
         },
       };
       if (!state.icon) {
-        dataset.icon = { componentKey: 'layer-icon' };
+        dataset.icon = { componentKey: LIST_VIEW_MENU_COMPONENT_KEY.layerIcon };
       }
       if (!dataset.config.disabled_opacity) {
         dataset.addMenu(createMenuItemSetOpacity());

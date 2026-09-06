@@ -19,7 +19,7 @@ import {
 import { useMap } from '@hungpvq/vue-map-core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import LayerItemSlider from './layer-item-slider.vue';
-import { WithLayerItemActionType } from './types';
+import type { WithLayerItemActionType } from './types';
 
 const props = defineProps<WithLayerItemActionType>();
 const { callMap } = useMap(props);

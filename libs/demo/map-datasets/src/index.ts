@@ -8,6 +8,7 @@ export * from './datasets/list';
 export * from './datasets/all-map';
 export * from './datasets/menu';
 export * from './datasets/identify';
+export * from './datasets/identify-present';
 export * from './datasets/highlight';
 export * from './datasets/highlight/helper';
 export * from './datasets/compare';

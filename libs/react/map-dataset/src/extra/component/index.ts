@@ -3,4 +3,8 @@ export * from './set-opacity';
 export * from './layer-item-icon';
 export * from './add-to-group';
 export * from './export-geo';
-export * from './types';
+export * from './identify';
+export type {
+  WithLayerItemActionType,
+  WithLayerItemMenuComponentType,
+} from '@hungpvq/map-dataset';

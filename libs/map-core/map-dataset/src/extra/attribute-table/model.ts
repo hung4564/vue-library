@@ -1,22 +1,60 @@
+import { runMapControlAction } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { exportFeatureCollectionGeo } from '../geo-export/dataset';
 import type { GeoExportFormat } from '../geo-export/types';
 
-export const ATTRIBUTE_TABLE_COMPONENT_KEY = 'attribute-table';
 export const ATTRIBUTE_TABLE_GEOMETRY_KEY = '__geometry';
+
+/** AttributeTable registry id + select action (must match useRegisterMapControl). */
+export const ATTRIBUTE_TABLE_CONTROL = {
+  id: 'mapAttributeTable',
+  actionSelectRows: 'mapAttributeTable.selectRows',
+} as const;
+
+export type AttributeTableSelectRowsPayload = {
+  ids: string[];
+};
+
+/**
+ * Selection requested before AttributeTable control is registered (e.g. identify
+ * opens the table via addComponent). Flushed on mount / after selectRows runs.
+ */
+const pendingSelectRowsByMapId = new Map<string, string[]>();
+
+export function queueAttributeTableSelectRows(
+  mapId: string,
+  ids: string[],
+): void {
+  const normalized = ids.map(String);
+  pendingSelectRowsByMapId.set(mapId, normalized);
+  runMapControlAction(
+    mapId,
+    ATTRIBUTE_TABLE_CONTROL.id,
+    ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
+    { ids: normalized } satisfies AttributeTableSelectRowsPayload,
+  );
+}
+
+/** Peek pending ids (cleared only via clearPending / successful apply). */
+export function takePendingAttributeTableSelectRows(
+  mapId: string,
+): string[] | null {
+  return pendingSelectRowsByMapId.get(mapId) ?? null;
+}
+
+export function clearPendingAttributeTableSelectRows(mapId: string): void {
+  pendingSelectRowsByMapId.delete(mapId);
+}
 
 export type AttributeTableColumn = {
   key: string;
   label: string;
 };
 
-export type AttributeTableColumnDef =
-  | string
-  | { key: string; label?: string };
+export type AttributeTableColumnDef = string | { key: string; label?: string };
 
 export type AttributeTableColumnsOption =
-  | AttributeTableColumnDef[]
-  | Record<string, string>;
+  AttributeTableColumnDef[] | Record<string, string>;
 
 export type AttributeTableRow = {
   id: string;
@@ -75,25 +113,27 @@ export function buildAttributeTable(
   rows: AttributeTableRow[];
 } {
   const columns = resolveAttributeTableColumns(collection, columnsOption);
-  const rows: AttributeTableRow[] = collection.features.map((feature, index) => {
-    const cells: Record<string, string> = {};
-    const props = (feature.properties ?? {}) as Record<string, unknown>;
-    for (const column of columns) {
-      if (column.key === ATTRIBUTE_TABLE_GEOMETRY_KEY) {
-        cells[column.key] = feature.geometry?.type ?? '';
-        continue;
+  const rows: AttributeTableRow[] = collection.features.map(
+    (feature, index) => {
+      const cells: Record<string, string> = {};
+      const props = (feature.properties ?? {}) as Record<string, unknown>;
+      for (const column of columns) {
+        if (column.key === ATTRIBUTE_TABLE_GEOMETRY_KEY) {
+          cells[column.key] = feature.geometry?.type ?? '';
+          continue;
+        }
+        cells[column.key] = formatAttributeCell(props[column.key]);
       }
-      cells[column.key] = formatAttributeCell(props[column.key]);
-    }
-    const featureId =
-      feature.id != null
-        ? String(feature.id)
-        : props['id'] != null
-          ? String(props['id'])
-          : '';
-    const id = featureId ? `${index}:${featureId}` : String(index);
-    return { id, feature, cells };
-  });
+      const featureId =
+        feature.id != null
+          ? String(feature.id)
+          : props['id'] != null
+            ? String(props['id'])
+            : '';
+      const id = featureId ? `${index}:${featureId}` : String(index);
+      return { id, feature, cells };
+    },
+  );
 
   return { columns, rows };
 }
@@ -109,6 +149,37 @@ export function filterAttributeTableRows(
       cell.toLowerCase().includes(needle),
     ),
   );
+}
+
+/**
+ * Map requested feature ids (from Identify etc.) onto AttributeTable row ids
+ * (`index:featureId` or plain index).
+ */
+export function resolveAttributeTableSelectedRowIds(
+  requestedIds: string[],
+  rows: AttributeTableRow[],
+): string[] {
+  if (requestedIds.length === 0) return [];
+  const requested = new Set(requestedIds.map(String));
+  return rows
+    .filter((row) => {
+      if (requested.has(row.id)) return true;
+      const featureId = row.feature.id != null ? String(row.feature.id) : '';
+      const propId =
+        row.feature.properties &&
+        typeof row.feature.properties === 'object' &&
+        (row.feature.properties as Record<string, unknown>)['id'] != null
+          ? String((row.feature.properties as Record<string, unknown>)['id'])
+          : '';
+      const colon = row.id.indexOf(':');
+      const suffix = colon >= 0 ? row.id.slice(colon + 1) : '';
+      return (
+        (featureId !== '' && requested.has(featureId)) ||
+        (propId !== '' && requested.has(propId)) ||
+        (suffix !== '' && requested.has(suffix))
+      );
+    })
+    .map((row) => row.id);
 }
 
 export function attributeTableRowsToFeatureCollection(

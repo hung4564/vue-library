@@ -75,23 +75,30 @@ function runMove(direction: 'up' | 'down') {
 
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'addComponent',
+  LIST_VIEW_MENU_ID.addComponent,
   ({ value }: MenuItemProps<MenuClickAddComponent>) => {
     if (value) addComponent(value);
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'fitBounds',
-  ({ value }: MenuItemProps<MenuClickFitBounds>) => {
+  LIST_VIEW_MENU_ID.fitBounds,
+  ({ value }: MenuItemProps<MenuClickFitBounds | unknown>) => {
     callMap((map) => {
-      fitBounds(map, value?.detail);
+      const target =
+        value &&
+        typeof value === 'object' &&
+        'detail' in value &&
+        (value as MenuClickFitBounds).detail != null
+          ? (value as MenuClickFitBounds).detail
+          : value;
+      if (target) fitBounds(map, target as never);
     });
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'highlight',
+  LIST_VIEW_MENU_ID.highlight,
   ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
     if (value) setFeatureHighlight(value.detail, value.key, layer);
   },

@@ -2,6 +2,7 @@ import {
   logHelper,
   MAP_STORE_KEY,
   methodRegistry,
+  registerControlActionRunner,
   REGISTRY_CONTROL_PREFIX,
   type MapControlHandle,
   type MapControlPanelPosition,
@@ -19,9 +20,7 @@ export const useMapRegistryStore = (mapId: string) =>
   });
 
 export type RegistryItem =
-  | ((...args: any[]) => any)
-  | Component
-  | MapControlHandle;
+  ((...args: any[]) => any) | Component | MapControlHandle;
 
 export class UniversalRegistry {
   // Global registry cho tất cả map
@@ -139,7 +138,12 @@ export class UniversalRegistry {
     this.getControl(key, mapId)?.setPanelPosition(pos);
   }
 
-  static runControlAction(mapId: string, key: string, type?: string, event?: unknown) {
+  static runControlAction(
+    mapId: string,
+    key: string,
+    type?: string,
+    event?: unknown,
+  ) {
     this.getControl(key, mapId)?.runAction(type, event);
   }
 
@@ -262,6 +266,10 @@ export class UniversalRegistry {
   }
 }
 
+registerControlActionRunner((mapId, key, type, event) => {
+  UniversalRegistry.runControlAction(mapId, key, type, event);
+});
+
 export function useUniversalRegistry(mapId?: string) {
   function get<T = any>(
     type: 'component' | 'method' | 'menu-handler' | 'control',
@@ -302,7 +310,10 @@ export function useUniversalRegistry(mapId?: string) {
     ): T | undefined {
       return UniversalRegistry.getMenuHandler<T>(key, mapId) || defaultValue;
     },
-    getControl(key: string, defaultValue?: MapControlHandle): MapControlHandle | undefined {
+    getControl(
+      key: string,
+      defaultValue?: MapControlHandle,
+    ): MapControlHandle | undefined {
       if (!mapId) return defaultValue;
       return UniversalRegistry.getControl(key, mapId) || defaultValue;
     },

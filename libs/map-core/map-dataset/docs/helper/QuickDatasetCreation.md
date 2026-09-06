@@ -31,7 +31,7 @@ const raster = createRasterUrlDataset({
 | `color` | color | no | List swatch + paint (random if omitted) |
 | `opacity` | `number` | no | Fill / line / circle opacity |
 
-Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus. Mount `IdentifyControl` + `ComponentManagementControl` to use identify.
+Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus, plus a per-layer **Identify** extra toggle (scoped IdentifyControl). Mount `IdentifyControl` + `ComponentManagementControl` to use identify.
 
 To change the fit target later without rebuilding the menu:
 

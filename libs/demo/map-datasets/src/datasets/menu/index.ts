@@ -2,11 +2,13 @@ import { getChartRandomColor } from '@hungpvq/map-core';
 import {
   createDatasetPartBoundComponent,
   createDatasetPartGeojsonSourceComponent,
+  createDatasetPartIdentifyComponentBuilder,
   createDatasetPartListViewUiComponentBuilder,
   createGroupDataset,
   createMenuBuilder,
   createMenuClickBuilder,
   createMenuClickHighlightBuilder,
+  createMenuItemIdentifyForList,
   createMenuItemShowDetailInfoSource,
   createMenuItemStyleEdit,
   createMenuItemToBoundActionForList,
@@ -14,6 +16,7 @@ import {
   createMultiMapboxLayerComponent,
   createRootDataset,
   LayerSimpleMapboxBuild,
+  LIST_VIEW_MENU_ID,
   type MenuItemClick,
 } from '@hungpvq/map-dataset';
 import {
@@ -136,6 +139,39 @@ export function createDynamicBoundMenuDataset() {
   return dataset;
 }
 
+/** Layer with identify sibling: Identify icon (extra) + ⋮ row (menu). */
+export function createIdentifyMenuDataset() {
+  const name = 'Layer identify menu';
+  const dataset = createRootDataset(name);
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features: [DEMO_POLYGON],
+  });
+  const groupLayer = createGroupDataset(name);
+  const list = createDatasetPartListViewUiComponentBuilder(name)
+    .setColor(getChartRandomColor())
+    .configDisabledDelete()
+    .addMenus([
+      createMenuItemToggleShow(),
+      createMenuItemIdentifyForList(),
+      createMenuItemIdentifyForList({ location: 'menu' }),
+    ])
+    .build();
+  const layer = createMultiMapboxLayerComponent('layer', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .build(),
+  ]);
+  const identify = createDatasetPartIdentifyComponentBuilder(name).build();
+  groupLayer.add(layer);
+  groupLayer.add(list);
+  dataset.add(source);
+  dataset.add(groupLayer);
+  dataset.add(identify);
+  return dataset;
+}
+
 export function createCustomSupportDataset() {
   const dataset = createRootDataset('Custom menu support');
   const list1 = createDatasetPartListViewUiComponentBuilder(
@@ -148,7 +184,7 @@ export function createCustomSupportDataset() {
         mdiCrosshairsGps,
         'custom use menu fitBounds',
         createMenuClickBuilder()
-          .addTupleStatic('fitBounds', { value: DEMO_BBOX })
+          .addTupleStatic(LIST_VIEW_MENU_ID.fitBounds, { value: DEMO_BBOX })
           .build(),
       ),
       createCustomMenuItem(
@@ -211,7 +247,7 @@ export function createCustomSupportDataset() {
         mdiMarker,
         'custom use menu fitBounds and transform',
         createMenuClickBuilder()
-          .addTupleDynamic('highlight', (props) => {
+          .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
             alert('custom use menu fitBounds and transform');
             console.info('custom use menu fitBounds and transform', props);
             return {
@@ -265,7 +301,7 @@ export function createCustomMultiSupportDataset() {
             console.info('custom use registry and transform', props);
             return { value: 'custom' };
           })
-          .addTupleDynamic('highlight', (props) => {
+          .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
             console.info('custom use menu fitBounds and transform', props);
             return {
               value: createMenuClickHighlightBuilder()
@@ -329,6 +365,7 @@ export function createCustomChainSupportDataset() {
 export const MENU_DEMO_DATASET_FACTORIES = [
   createDefaultMenuSupportDataset,
   createDynamicBoundMenuDataset,
+  createIdentifyMenuDataset,
   createCustomSupportDataset,
   createCustomMultiSupportDataset,
   createCustomChainSupportDataset,

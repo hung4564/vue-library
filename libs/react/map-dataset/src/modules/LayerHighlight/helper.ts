@@ -9,11 +9,11 @@ import {
   createDefaultHighlightLayers,
   defaultAnimate,
   useHighlightAnimation as createHighlightAnimation,
+  type HighlightGeoJson,
 } from '@hungpvq/map-dataset';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
-  GeoJSONFeature,
   LayerSpecification,
   LineLayerSpecification,
 } from 'maplibre-gl';
@@ -52,7 +52,7 @@ export function createDefaultHighlight(color = '#004E98'): HighlightHandle & {
     durationMs = 5000,
   }: {
     map: MapSimple;
-    feature?: GeoJSONFeature;
+    feature?: HighlightGeoJson;
     durationMs?: number;
   }) {
     logHelper(loggerHighlight, map.id, 'useDefaultHighlight').debug(
