@@ -3,8 +3,8 @@
  * Forces re-render when store changes
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { GlobalStoreService } from '@hungpvq/shared-store';
+import { useState, useCallback } from 'react';
+import { useStoreSubscribe } from '@hungpvq/shared-store/react';
 import { useDragStore } from './index';
 
 /**
@@ -19,14 +19,7 @@ export function useStoreReactive() {
     setTick((t) => t + 1);
   }, []);
 
-  useEffect(() => {
-    // Subscribe to changes in the drag:core store
-    const unsubscribe = GlobalStoreService.getInstance().subscribe(
-      'drag:core',
-      forceUpdate,
-    );
-    return unsubscribe;
-  }, [forceUpdate]);
+  useStoreSubscribe('drag:core', forceUpdate);
 
   return store;
 }
@@ -42,14 +35,7 @@ export function useContainerReactive(containerId: string) {
     setTick((t) => t + 1);
   }, []);
 
-  useEffect(() => {
-    // Subscribe to changes in the specific container
-    const unsubscribe = GlobalStoreService.getInstance().subscribe(
-      ['drag:core', 'container', containerId],
-      forceUpdate,
-    );
-    return unsubscribe;
-  }, [containerId, forceUpdate]);
+  useStoreSubscribe(['drag:core', 'container', containerId], forceUpdate);
 
   return store;
 }

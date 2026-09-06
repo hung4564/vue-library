@@ -60,13 +60,13 @@ Mobile-optimized bottom sheet component.
 This library uses `@hungpvq/shared-store` which is framework-agnostic and works with both Vue and React:
 
 - **Vue**: Uses `reactive()` for automatic reactivity
-- **React**: Uses subscription pattern for reactivity via `useStoreReactive()` and `useContainerReactive()` hooks
+- **React**: Uses `@hungpvq/shared-store/react` (`useStoreSubscribe`) via `useStoreReactive()` / `useContainerReactive()`
 
 The store is shared between Vue and React versions, allowing you to use the same store instance across both frameworks if needed.
 
 ## Differences from Vue Version
 
-1. **State Management**: Uses `@hungpvq/shared-store` with subscription pattern for React reactivity
+1. **State Management**: Uses `@hungpvq/shared-store` + `@hungpvq/shared-store/react` for React reactivity
 2. **Context**: Uses React Context API instead of Vue provide/inject
 3. **Portals**: Uses React Portal instead of Vue Teleport
 4. **Icons**: Uses @mdi/react instead of vue-material-design-icons
@@ -74,6 +74,6 @@ The store is shared between Vue and React versions, allowing you to use the same
 
 ## Notes
 
-- The store implementation uses `@hungpvq/shared-store` which supports both Vue and React
+- The store implementation uses `@hungpvq/shared-store` (core) and `@hungpvq/shared-store/react` (hooks)
 - React components automatically re-render when store changes via subscription pattern
 - Store mutations trigger notifications to subscribed React components

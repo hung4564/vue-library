@@ -50,6 +50,8 @@ export default defineConfig(() => ({
         '@hungpvq/shared',
         '@hungpvq/shared-core',
         '@hungpvq/shared-log',
+        '@hungpvq/shared-store',
+        '@hungpvq/shared-store/react',
         'maplibre-gl',
         'mitt',
         'lodash',

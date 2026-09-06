@@ -1,3 +1,13 @@
+## 1.0.1 (2026-09-05)
+
+### 🩹 Fixes
+
+- store use ([fb70379](https://github.com/hung4564/vue-library/commit/fb70379))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.0.0 (2026-09-05)
 
 ### 🚀 Features
