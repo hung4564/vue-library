@@ -80,6 +80,6 @@ Popup/modal drag-stop writes `layouts[id].bounds`; drawer writes `size` / `locat
 ## Explicitly experimental (examples)
 
 - `ManagementControl` and related debug UI
-- **`ContextMenu` / `ContextMenuItem`** — experimental menu chrome. Current surface: `role="menu"` / `role="menuitem"`, Esc close, ArrowUp/Down + Home/End focus, Enter/Space activate. Prefer `ContextMenuItem` inside a `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu / typeahead).
+- **`ContextMenu` / `ContextMenuItem`** — experimental menu chrome. Current surface: `role="menu"` / `role="menuitem"`, Esc close, ArrowUp/Down + Home/End focus, Enter/Space activate. Prefer `ContextMenuItem` inside a `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu / typeahead). See [context-menu.md](./context-menu.md) and demo-draggable **Menu** (`#/menu`).
 - Undocumented barrel leftovers (parts-only exports, internal sidebar transition helpers)
 - CSS class names / layout tokens not listed above

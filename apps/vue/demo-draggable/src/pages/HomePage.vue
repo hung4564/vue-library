@@ -18,6 +18,8 @@ const demos = [
   { to: '/float', label: 'Open Float demo' },
   { to: '/bottom', label: 'Open Bottom demo' },
   { to: '/drawer', label: 'Open Drawer demo' },
+  { to: '/modal', label: 'Open Modal demo' },
+  { to: '/menu', label: 'Open Menu demo' },
   { to: '/custom-card', label: 'Open Custom card demo' },
 ];
 </script>

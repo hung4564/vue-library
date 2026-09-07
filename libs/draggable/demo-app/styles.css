@@ -340,3 +340,38 @@ code {
   color: #fff;
   font-weight: 600;
 }
+
+.demo-list {
+  margin: 0 0 12px;
+  padding-left: 1.1em;
+  list-style: disc;
+}
+
+.demo-list li {
+  margin-bottom: 6px;
+}
+
+.menu-canvas {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 / 24px 24px,
+    #f1f5f9;
+  cursor: context-menu;
+  z-index: 0;
+}
+
+.menu-canvas__hint {
+  max-width: 280px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #cbd5e1;
+  text-align: center;
+  color: #475569;
+  pointer-events: none;
+}

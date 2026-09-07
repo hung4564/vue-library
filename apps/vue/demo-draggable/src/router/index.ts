@@ -39,6 +39,11 @@ const router = createRouter({
       component: () => import('../pages/ModalPage.vue'),
     },
     {
+      path: '/menu',
+      name: 'menu',
+      component: () => import('../pages/MenuPage.vue'),
+    },
+    {
       path: '/custom-card',
       name: 'custom-card',
       component: () => import('../pages/CustomCardPage.vue'),
