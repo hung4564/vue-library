@@ -6,31 +6,29 @@ category: Component
 
 ## Overview
 
-`DraggableItemBottom` provides a draggable panel that is anchored to the bottom of the container. It is useful for toolbars, notifications, or any content that should be accessible at the bottom and optionally draggable or expandable.
+`DraggableItemBottom` registers a bottom-sheet panel and portals its title/content into a shared **`BottomContainer`** chrome (header, expand, close, switcher menu) mounted by `DraggableContainer`.
+
+Only **one** bottom is visible at a time (`ContainerStore.bottom.show` is a single id). When several `DraggableItemBottom` instances are registered, the active panel shows a **menu button** to switch between them (same pattern as sidebar/drawer).
 
 ## Props
 
 | Prop             | Description                                   | Type      | Required | Default Value |
 | ---------------- | --------------------------------------------- | --------- | -------- | ------------- |
 | `id`             | Stable item id for store commands / remount.  | `string`  | false    | auto UUID     |
-| `title`          | Title displayed in the bottom panel header.   | `string`  | false    | -             |
-| `disabledExpand` | Disables the expand/collapse feature.         | `boolean` | false    | false         |
-| `disabledHeader` | Hides the header section.                     | `boolean` | false    | false         |
-| `disabledClose`  | Hides the close button.                       | `boolean` | false    | false         |
-| `disabledOrder`  | Disables drag ordering with other items.      | `boolean` | false    | false         |
+| `title`          | Title displayed in the bottom panel header / switch menu. | `string`  | false    | -             |
 | `containerId`    | ID of the parent container (for teleporting). | `string`  | false    | -             |
-| `show`           | Controls the visibility of the bottom panel.  | `boolean` | false    | false         |
-| `expand`         | Whether the bottom panel is expanded.         | `boolean` | false    | false         |
+| `show`           | Controls whether this bottom is the active sheet. | `boolean` | false    | false         |
+
+Legacy chrome flags (`disabledExpand`, `disabledHeader`, `disabledClose`, `expand`, …) may still appear on the component API for compatibility; expand/close live on the shared shell.
 
 ## Events
 
 | Name            | Description                                                       |
 | --------------- | ----------------------------------------------------------------- |
-| `update:expand` | Emitted when the expand state changes. Payload: `(value:boolean)` |
 | `close`         | Emitted when the bottom panel is closed. Payload: `()`            |
 | `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)`   |
 
-React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
+React: use `onUpdateShow` / `onClose`.
 
 ## Slots
 
@@ -38,7 +36,12 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 | ----------- | ----------------------------------- |
 | `default`   | Content of the bottom panel.        |
 | `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+
+## Store
+
+- `bottom.items: string[]` — registered bottom ids
+- `bottom.show?: string` — **exclusive** active id (breaking vs older `show: string[]`)
+- Use `useBottomItem(containerId)` (`registerBottom` / `registerBottomShow` / …); do not register bottoms via `useDragItem.registerItem(..., 'item-bottom')`
 
 ## Usage
 
@@ -51,8 +54,11 @@ import { DraggableContainer, DraggableItemBottom } from '@hungpvq/vue-draggable'
 
 <template>
   <DraggableContainer>
-    <DraggableItemBottom title="Title" show>
-      <div style="height: 100vh"></div>
+    <DraggableItemBottom title="Panel A" show>
+      <div>First bottom</div>
+    </DraggableItemBottom>
+    <DraggableItemBottom title="Panel B" :show="false">
+      <div>Second bottom — switch via header menu</div>
     </DraggableItemBottom>
   </DraggableContainer>
 </template>
@@ -66,8 +72,11 @@ import { DraggableContainer, DraggableItemBottom } from '@hungpvq/react-draggabl
 export function Example() {
   return (
     <DraggableContainer>
-      <DraggableItemBottom title="Title" show>
-        <div style={{ height: '100vh' }} />
+      <DraggableItemBottom title="Panel A" show>
+        <div>First bottom</div>
+      </DraggableItemBottom>
+      <DraggableItemBottom title="Panel B" show={false}>
+        <div>Second bottom — switch via header menu</div>
       </DraggableItemBottom>
     </DraggableContainer>
   );

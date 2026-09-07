@@ -1,37 +1,25 @@
 <script lang="ts">
 export default {
   name: 'DraggableItemBottom',
-  // Mobile stand-in for popup/float/modal/drawer/sidebar — ignore their extra attrs
-  // (location, size, …) instead of falling through a fragment root.
+  // Mobile stand-in for popup/float/modal/drawer/sidebar — ignore their extra attrs.
   inheritAttrs: false,
 };
 </script>
 <script setup lang="ts">
-import ContextMenu from '../ContextMenu.vue';
-import ContextMenuItem from '../ContextMenuItem.vue';
-import { computed, inject, ref, Ref, StyleValue } from 'vue';
+import { inject, ref, Ref } from 'vue';
 import {
-  useComponent,
-  useContainerOrder,
-  useExpand,
-  useHighlight,
-  useIcon,
   useInitAction,
-  useInitItem,
   useShow,
   withExpandEmit,
-  withExpandProps,
   withShareProps,
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import MapButton from '../parts/MapButton.vue';
+import { useInitBottom } from '../../hook/useInitBottom';
+import BottomModule from './bottom/bottom-module.vue';
 
-const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
-  useIcon();
 const props = defineProps({
   ...withShowProps,
-  ...withExpandProps,
   ...withShareProps,
 });
 const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
@@ -43,7 +31,7 @@ if (!containerId.value) {
   throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
-const { zIndex, itemId } = useInitItem(
+const { itemId } = useInitBottom(
   containerId.value,
   show,
   {
@@ -52,102 +40,19 @@ const { zIndex, itemId } = useInitItem(
   },
   props.id,
 );
-const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
-  setHighLight,
   open,
   close,
 });
-const { switchItems, selectItem } = useContainerOrder(
-  containerId.value,
-  itemId.value,
-);
-const { expand, toggle: onToggleExpand } = useExpand(props, emit, false);
-const { componentCard, componentCardHeader } = useComponent({
-  ...props,
-  containerId: containerId.value,
-});
-
-const contextMenuRef = ref<
-  | {
-      open(event: MouseEvent): void;
-      close(): void;
-    }
-  | undefined
->();
-
-function onClose() {
-  show.value = false;
-}
-function openMenu(e: MouseEvent) {
-  contextMenuRef.value?.open(e);
-}
-function closeContextMenu() {
-  contextMenuRef.value?.close();
-}
-function onSelectItem(id: string) {
-  selectItem(id);
-  closeContextMenu();
-}
-
-const showSwitcher = computed(
-  () => !props.disabledOrder && switchItems.value.length > 1,
-);
-
-const c_style = computed(() => {
-  let style: StyleValue = {};
-  style.zIndex = zIndex.value;
-  style.height = expand.value ? '100%' : '45%';
-  return style;
-});
 </script>
+
 <template>
-  <div v-if="show" class="popup-mobile-container" :style="c_style">
-    <component :is="componentCard" :highlight="isHighlight">
-      <div class="draggable-bottom">
-        <template v-if="!disabledHeader">
-          <component :is="componentCardHeader">
-            <template #title>
-              <slot name="title">
-                {{ title }}
-              </slot>
-            </template>
-            <template #extra-btn>
-              <slot name="extra-btn"></slot>
-              <map-button
-                v-if="showSwitcher"
-                aria-label="Open item menu"
-                role="button"
-                @click="openMenu"
-              >
-                <SidebarOpenMenu :size="16" />
-              </map-button>
-              <map-button @click="onToggleExpand()">
-                <FullscreenIcon :size="16" v-if="expand" />
-                <OffFullscreenIcon :size="16" v-else />
-              </map-button>
-              <map-button v-if="!disabledClose" @click="onClose">
-                <CloseIcon :size="16" />
-              </map-button>
-            </template>
-          </component>
-        </template>
-        <div class="draggable-bottom-content">
-          <slot></slot>
-        </div>
-      </div>
-    </component>
-  </div>
-  <ContextMenu ref="contextMenuRef">
-    <ul class="context-menu">
-      <ContextMenuItem
-        v-for="option in switchItems"
-        :key="option.id"
-        :active="option.active"
-        @click="onSelectItem(option.id)"
-      >
-        <span v-html="option.title"></span>
-      </ContextMenuItem>
-    </ul>
-  </ContextMenu>
+  <BottomModule :container-id="containerId" :item-id="itemId">
+    <template #title>
+      <slot name="title">
+        {{ title }}
+      </slot>
+    </template>
+    <slot></slot>
+  </BottomModule>
 </template>

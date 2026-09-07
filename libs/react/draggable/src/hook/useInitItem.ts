@@ -107,12 +107,16 @@ export function useManagement(containerId: string) {
   const store = useDragStore();
   const container = store.container[containerId];
   const empty = { items: [] as string[], show: [] as string[] };
+  const emptyBottom = {
+    items: [] as string[],
+    show: undefined as string | undefined,
+  };
   return {
     containerId,
     popup: container?.popup || empty,
     modal: container?.modal || empty,
     float: container?.float || empty,
-    bottom: container?.bottom || empty,
+    bottom: container?.bottom || emptyBottom,
     sideBar: container?.sideBar,
     drawer: container?.drawer,
     width: container?.width || 0,

@@ -16,8 +16,9 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 
 | Area | Stable surface |
 |------|----------------|
-| Types / factories | `ItemGroupKey`, `DraggableItemType`, `LocationSideBar`, `ContainerStore*`, `InitOption`, `Bounds`, `ItemLayoutState`, `PanelSnapshot`, `createEmptyContainer`, `createEmptyDrawer`, `createEmptySideBar`, `createEmptyItemGroup`, `itemTypeToGroup` |
-| Store | `configureDragStore`, `useDragStore`, `useDragContainer`, `useDragItem`, `useSidebarItem`, `useDrawerItem`, `useDragComponent`, `useDragIsMobile`, `useDragCommands`, `useDragLayout` |
+| Types / factories | `ItemGroupKey`, `DraggableItemType`, `LocationSideBar`, `ContainerStore*`, `BottomConfig`, `InitOption`, `Bounds`, `ItemLayoutState`, `PanelSnapshot`, `createEmptyContainer`, `createEmptyDrawer`, `createEmptySideBar`, `createEmptyItemGroup`, `createEmptyBottom`, `itemTypeToGroup` |
+| Store | `configureDragStore`, `useDragStore`, `useDragContainer`, `useDragItem`, `useSidebarItem`, `useDrawerItem`, `useBottomItem`, `useDragComponent`, `useDragIsMobile`, `useDragCommands`, `useDragLayout` |
+| Bottom | Exclusive `ContainerStore.bottom.show?: string` (one active panel); shared `BottomContainer` shell + header switcher menu |
 | Store key | `drag:core` (defineStore id / notify path prefix) |
 | Layout | `ContainerStore.layouts`, `useDragLayout` â†’ `setItemLayout` / `getItemLayout` / `getLayout` / `applyLayout` |
 | Utils | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown` |

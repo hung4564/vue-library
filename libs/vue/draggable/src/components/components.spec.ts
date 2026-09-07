@@ -183,4 +183,37 @@ describe('ContextMenu', () => {
     vm.close();
     wrapper.unmount();
   });
+
+  it('closes on Escape', async () => {
+    const wrapper = mount(ContextMenu, {
+      attachTo: document.body,
+      slots: {
+        default: () =>
+          h('ul', { class: 'context-menu' }, [
+            h(ContextMenuItem, null, () => 'One'),
+          ]),
+      },
+    });
+    const vm = wrapper.vm as unknown as {
+      open: (e: MouseEvent) => void;
+    };
+    vm.open(new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }));
+    await nextTick();
+    const el = document.body.querySelector(
+      '.context-menu-container',
+    ) as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.style.display).not.toBe('none');
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    await nextTick();
+    expect(el.style.display).toBe('none');
+    wrapper.unmount();
+  });
 });

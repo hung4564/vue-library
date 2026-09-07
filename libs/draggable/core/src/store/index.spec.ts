@@ -11,6 +11,7 @@ import {
   useDragStore,
   useDrawerItem,
   useSidebarItem,
+  useBottomItem,
 } from './index';
 
 const CID = 'test-container';
@@ -55,12 +56,32 @@ describe('configureDragStore', () => {
     expect(notify).toHaveBeenCalledWith(['drag:core', 'container', CID]);
   });
 
-  it('wraps container map with makeReactive', () => {
-    const makeReactive = vi.fn(<T extends object>(value: T) => value);
-    // Reconfigure before first store read in this test path â€” store already
-    // created globally; assert notify still works after configure.
-    configureDragStore({ makeReactive });
-    expect(typeof makeReactive).toBe('function');
+  it('wraps container map with makeReactive when store factory runs', async () => {
+    // Pinia store is a singleton — force a fresh module so makeReactive runs again.
+    vi.resetModules();
+    const makeReactive = vi.fn(<T extends object>(value: T) => {
+      Object.defineProperty(value, '__wrapped', { value: true });
+      return value;
+    });
+    const mod = await import('./index');
+    mod.configureDragStore({
+      makeReactive,
+      notify: () => undefined,
+    });
+    // First useDragStore() after resetModules invokes the factory.
+    const store = mod.useDragStore();
+    expect(makeReactive).toHaveBeenCalled();
+    expect((store.container as { __wrapped?: boolean }).__wrapped).toBe(true);
+    mod.useDragContainer('make-reactive-c').initContainer();
+    expect(store.container['make-reactive-c']).toBeTruthy();
+    delete store.container['make-reactive-c'];
+    // Restore default hooks for the rest of the suite (re-import shared module).
+    vi.resetModules();
+    const restored = await import('./index');
+    restored.configureDragStore({
+      notify: () => undefined,
+      makeReactive: (value) => value,
+    });
   });
 });
 
@@ -96,12 +117,13 @@ describe('useDragItem', () => {
     items.registerItem('p1', 'item-popup');
     items.registerItem('m1', 'item-modal');
     items.registerItem('f1', 'item-float');
-    items.registerItem('b1', 'item-bottom');
 
     expect(items.getItems('popup')).toEqual(['p1']);
     expect(items.getItems('modal')).toEqual(['m1']);
     expect(items.getItems('float')).toEqual(['f1']);
-    expect(items.getItems('bottom')).toEqual(['b1']);
+    expect(() => items.registerItem('b1', 'item-bottom')).toThrow(
+      /useBottomItem/,
+    );
 
     items.registerAction('p1', createFakeAction({ type: 'item-popup' }));
     items.unRegisterItem('p1');
@@ -145,6 +167,38 @@ describe('useDragItem', () => {
     items.registerItemShow('a', false);
     expect(items.getItemsShow('popup')).toEqual(['b']);
     expect(items.getAllItemsShow()).toEqual(['b']);
+  });
+
+  it('getItemShows(group) and getGroup return group snapshots', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    items.registerItem('m1', 'item-modal');
+    items.registerAction('m1', createFakeAction({ type: 'item-modal' }));
+    items.registerItemShow('m1', true);
+    expect(useDragContainer(CID).getItemShows('modal')).toEqual(['m1']);
+    expect(items.getGroup('modal')).toEqual({ items: ['m1'], show: ['m1'] });
+    expect(items.getGroup('float')).toEqual({ items: [], show: [] });
+  });
+
+  it('unRegisterItem falls back to group items when action is missing', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    items.registerItem('orphan', 'item-float');
+    // No registerAction — only items[] membership
+    expect(items.getItems('float')).toEqual(['orphan']);
+    items.unRegisterItem('orphan');
+    expect(items.getItems('float')).toEqual([]);
+  });
+
+  it('unRegisterItem clears id from show list', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    items.registerItem('p1', 'item-popup');
+    items.registerAction('p1', createFakeAction({ type: 'item-popup' }));
+    items.registerItemShow('p1', true);
+    expect(items.getItemsShow('popup')).toEqual(['p1']);
+    items.unRegisterItem('p1');
+    expect(items.getItemsShow('popup')).toEqual([]);
   });
 
   it('registerOtherAction merges open/close helpers', () => {
@@ -450,8 +504,221 @@ describe('useDragLayout', () => {
     expect(action.close).toHaveBeenCalled();
   });
 
+  it('getLayout / applyLayout exclusive bottom show', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    const a = createFakeAction({ type: 'item-bottom', title: 'A' });
+    const b = createFakeAction({ type: 'item-bottom', title: 'B' });
+    bottom.registerBottom('a');
+    bottom.registerBottom('b');
+    bottom.registerAction('a', a);
+    bottom.registerAction('b', b);
+    bottom.registerBottomShow('a', true);
+
+    const layout = useDragLayout(CID);
+    const snapshots = layout.getLayout();
+    expect(snapshots.find((s) => s.id === 'a')).toMatchObject({
+      type: 'item-bottom',
+      show: true,
+    });
+    expect(snapshots.find((s) => s.id === 'b')).toMatchObject({
+      type: 'item-bottom',
+      show: false,
+    });
+
+    vi.mocked(a.setShow).mockClear();
+    vi.mocked(b.setShow).mockClear();
+    layout.applyLayout([
+      { id: 'a', type: 'item-bottom', show: false },
+      { id: 'b', type: 'item-bottom', show: true },
+    ]);
+    expect(bottom.getShow()).toBe('b');
+    expect(a.setShow).toHaveBeenCalledWith(false);
+    expect(b.setShow).toHaveBeenCalledWith(true);
+  });
+
+  it('getLayout / applyLayout exclusive drawer with size and location move', () => {
+    initTestContainer();
+    const drawer = useDrawerItem(CID);
+    const a = createFakeAction({
+      type: 'item-drawer',
+      location: 'left',
+      title: 'DA',
+    });
+    const b = createFakeAction({
+      type: 'item-drawer',
+      location: 'left',
+      title: 'DB',
+    });
+    useDragStore().container[CID].actions.d1 = a;
+    useDragStore().container[CID].actions.d2 = b;
+    drawer.registerDrawerShow('d1', 'left', true, 240);
+    drawer.registerDrawer('d2', 'left');
+
+    const layout = useDragLayout(CID);
+    // Live layer size when layouts.size is unset
+    expect(layout.getLayout().find((s) => s.id === 'd1')).toMatchObject({
+      type: 'item-drawer',
+      show: true,
+      size: 240,
+      location: 'left',
+    });
+    expect(layout.getLayout().find((s) => s.id === 'd2')).toMatchObject({
+      show: false,
+    });
+
+    vi.mocked(a.setShow).mockClear();
+    vi.mocked(b.setShow).mockClear();
+    layout.applyLayout([
+      {
+        id: 'd1',
+        type: 'item-drawer',
+        show: false,
+        location: 'left',
+      },
+      {
+        id: 'd2',
+        type: 'item-drawer',
+        show: true,
+        location: 'right',
+        size: 300,
+      },
+    ]);
+    expect(a.location).toBe('left');
+    expect(b.location).toBe('right');
+    expect(drawer.getShowForLocation('left')).toBeUndefined();
+    expect(drawer.getShowForLocation('right')).toBe('d2');
+    expect(drawer.getDrawerForLocation('right').size).toBe(300);
+    expect(b.setShow).toHaveBeenCalledWith(true);
+  });
+
+  it('getLayout / applyLayout exclusive sidebar with location move', () => {
+    initTestContainer();
+    const side = useSidebarItem(CID);
+    const a = createFakeAction({
+      type: 'item-sidebar',
+      location: 'left',
+      title: 'SA',
+    });
+    const b = createFakeAction({
+      type: 'item-sidebar',
+      location: 'left',
+      title: 'SB',
+    });
+    side.registerSideBar('s1', 'left');
+    side.registerSideBar('s2', 'left');
+    side.registerAction('s1', a);
+    side.registerAction('s2', b);
+    side.registerSideBarShow('s1', true);
+
+    const layout = useDragLayout(CID);
+    expect(layout.getLayout().find((s) => s.id === 's1')).toMatchObject({
+      type: 'item-sidebar',
+      show: true,
+      location: 'left',
+    });
+    expect(layout.getLayout().find((s) => s.id === 's2')).toMatchObject({
+      show: false,
+    });
+
+    layout.applyLayout([
+      { id: 's1', type: 'item-sidebar', show: false, location: 'left' },
+      { id: 's2', type: 'item-sidebar', show: true, location: 'right' },
+    ]);
+    expect(b.location).toBe('right');
+    expect(useDragStore().container[CID].sideBar.left.show).toBeUndefined();
+    expect(useDragStore().container[CID].sideBar.right.show).toBe('s2');
+  });
+
+  it('applyLayout skips unknown action ids', () => {
+    initTestContainer();
+    const layout = useDragLayout(CID);
+    expect(() =>
+      layout.applyLayout([
+        { id: 'ghost', type: 'item-popup', show: true },
+      ]),
+    ).not.toThrow();
+  });
+
   it('getLayout returns empty when container missing', () => {
     expect(useDragLayout(CID).getLayout()).toEqual([]);
     expect(useDragLayout(CID).getItemLayout('x')).toBeUndefined();
+  });
+});
+
+describe('useBottomItem', () => {
+  it('registerBottomShow is exclusive', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    const a = createFakeAction({ type: 'item-bottom' });
+    const b = createFakeAction({ type: 'item-bottom' });
+    bottom.registerBottom('a');
+    bottom.registerBottom('b');
+    bottom.registerAction('a', a);
+    bottom.registerAction('b', b);
+    bottom.registerBottomShow('a', true);
+    expect(bottom.getShow()).toBe('a');
+    expect(a.setShow).toHaveBeenCalledWith(true);
+    bottom.registerBottomShow('b', true);
+    expect(bottom.getShow()).toBe('b');
+    expect(a.setShow).toHaveBeenCalledWith(false);
+    expect(b.setShow).toHaveBeenCalledWith(true);
+    bottom.registerBottomShow('b', false);
+    expect(bottom.getShow()).toBeUndefined();
+  });
+
+  it('does not duplicate id on registerBottom', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    bottom.registerBottom('a');
+    bottom.registerBottom('a');
+    expect(bottom.getItems()).toEqual(['a']);
+  });
+
+  it('unRegisterBottom clears active show and action', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    const a = createFakeAction({ type: 'item-bottom' });
+    bottom.registerBottom('a');
+    bottom.registerAction('a', a);
+    bottom.registerBottomShow('a', true);
+    bottom.unRegisterBottom('a');
+    expect(bottom.getItems()).toEqual([]);
+    expect(bottom.getShow()).toBeUndefined();
+    expect(useDragContainer(CID).getItemAction('a')).toBeUndefined();
+  });
+
+  it('closing a non-active id is a no-op', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    const a = createFakeAction({ type: 'item-bottom' });
+    const b = createFakeAction({ type: 'item-bottom' });
+    bottom.registerBottom('a');
+    bottom.registerBottom('b');
+    bottom.registerAction('a', a);
+    bottom.registerAction('b', b);
+    bottom.registerBottomShow('a', true);
+    vi.mocked(a.setShow).mockClear();
+    bottom.registerBottomShow('b', false);
+    expect(bottom.getShow()).toBe('a');
+    expect(a.setShow).not.toHaveBeenCalled();
+  });
+
+  it('getAllItemsShow / getItemShows include exclusive bottom id', () => {
+    initTestContainer();
+    const bottom = useBottomItem(CID);
+    const items = useDragItem(CID);
+    bottom.registerBottom('bot');
+    bottom.registerAction(
+      'bot',
+      createFakeAction({ type: 'item-bottom', title: 'B' }),
+    );
+    bottom.registerBottomShow('bot', true);
+    items.registerItem('p1', 'item-popup');
+    items.registerAction('p1', createFakeAction({ type: 'item-popup' }));
+    items.registerItemShow('p1', true);
+
+    expect(items.getAllItemsShow()).toEqual(['p1', 'bot']);
+    expect(useDragContainer(CID).getItemShows()).toEqual(['p1', 'bot']);
   });
 });

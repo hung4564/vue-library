@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  createEmptyBottom,
   createEmptyContainer,
   createEmptyDrawer,
   createEmptyItemGroup,
@@ -8,16 +9,16 @@ import {
 } from './index';
 
 describe('itemTypeToGroup', () => {
-  it('maps known item types', () => {
+  it('maps known multi-show item types', () => {
     expect(itemTypeToGroup('item-modal')).toBe('modal');
     expect(itemTypeToGroup('item-float')).toBe('float');
-    expect(itemTypeToGroup('item-bottom')).toBe('bottom');
     expect(itemTypeToGroup('item-popup')).toBe('popup');
   });
 
-  it('defaults unknown / missing types to popup', () => {
+  it('defaults unknown / exclusive types to popup', () => {
     expect(itemTypeToGroup(undefined)).toBe('popup');
     expect(itemTypeToGroup('item-sidebar')).toBe('popup');
+    expect(itemTypeToGroup('item-bottom')).toBe('popup');
     expect(itemTypeToGroup('other')).toBe('popup');
   });
 });
@@ -25,6 +26,10 @@ describe('itemTypeToGroup', () => {
 describe('empty factories', () => {
   it('createEmptyItemGroup starts empty', () => {
     expect(createEmptyItemGroup()).toEqual({ items: [], show: [] });
+  });
+
+  it('createEmptyBottom is exclusive show', () => {
+    expect(createEmptyBottom()).toEqual({ items: [], show: undefined });
   });
 
   it('createEmptySideBar has four locations', () => {
@@ -47,6 +52,7 @@ describe('empty factories', () => {
     const c = createEmptyContainer();
     expect(c.popup).toEqual({ items: [], show: [] });
     expect(c.modal.items).toEqual([]);
+    expect(c.bottom).toEqual({ items: [], show: undefined });
     expect(c.isMobile).toBe(false);
     expect(c.width).toBe(0);
     expect(c.height).toBe(0);

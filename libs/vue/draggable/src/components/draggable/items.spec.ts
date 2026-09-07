@@ -111,7 +111,47 @@ describe('Stable item shells register into store', () => {
     const wrapper = await mountItem(DraggableItemBottom);
     const c = useDragStore().container[CID];
     expect(c.bottom.items.length).toBe(1);
+    expect(typeof c.bottom.show === 'string' || c.bottom.show === undefined).toBe(
+      true,
+    );
+    expect(c.bottom.show).toBe(c.bottom.items[0]);
     expect(c.actions[c.bottom.items[0]]?.type).toBe('item-bottom');
+    wrapper.unmount();
+  });
+
+  it('two bottoms → exclusive bottom.show', async () => {
+    useDragContainer(CID).initContainer();
+    useDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const wrapper = mount(
+      defineComponent({
+        components: { DraggableItemBottom },
+        setup() {
+          return { cid: CID };
+        },
+        template: `
+          <DraggableItemBottom id="bot-a" show title="A" :containerId="cid" />
+          <DraggableItemBottom id="bot-b" show title="B" :containerId="cid" />
+        `,
+      }),
+      {
+        attachTo: document.body,
+        global: {
+          provide: { containerId: ref(CID) },
+          stubs: { Teleport: true, ContextMenu: true, BottomModule: true },
+        },
+      },
+    );
+    await nextTick();
+    const c = useDragStore().container[CID];
+    expect(c.bottom.items).toEqual(['bot-a', 'bot-b']);
+    expect(c.bottom.show).toBe('bot-b');
+    const { useBottomItem } = await import('../../store');
+    useBottomItem(CID).registerBottomShow('bot-a', true);
+    expect(c.bottom.show).toBe('bot-a');
     wrapper.unmount();
   });
 

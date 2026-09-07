@@ -161,4 +161,31 @@ describe('ContextMenu', () => {
       ref.current?.close();
     });
   });
+
+  it('closes on Escape', async () => {
+    const ref = React.createRef<ContextMenuRef>();
+    render(
+      <ContextMenu ref={ref}>
+        <ul className="context-menu">
+          <ContextMenuItem>One</ContextMenuItem>
+        </ul>
+      </ContextMenu>,
+    );
+    await act(async () => {
+      ref.current?.open(
+        new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }),
+      );
+    });
+    expect(document.body.querySelector('.context-menu-container')).toBeTruthy();
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    expect(document.body.querySelector('.context-menu-container')).toBeNull();
+  });
 });

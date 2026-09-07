@@ -115,12 +115,12 @@ const drawerCount = computed(() =>
       <header class="mgmt__header">
         <span class="mgmt__title">Bottoms</span>
         <span class="mgmt__count"
-          >{{ bottom.show.length }}/{{ bottom.items.length }}</span
+          >{{ bottom.show ? 1 : 0 }}/{{ bottom.items.length }}</span
         >
       </header>
       <ShowStatusDragItem
         :items="bottom.items"
-        :itemShows="bottom.show"
+        :itemShows="bottom.show ? [bottom.show] : []"
         :containerId="containerId"
       />
     </section>

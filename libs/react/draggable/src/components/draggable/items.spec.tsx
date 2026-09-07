@@ -1,4 +1,4 @@
-import { render, cleanup, waitFor } from '@testing-library/react';
+import { render, cleanup, waitFor, act } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import React, { ComponentType, ReactNode } from 'react';
 import { ContainerProvider } from '../../context/ContainerContext';
@@ -118,11 +118,36 @@ describe('Stable item shells register into store', () => {
     await waitFor(() => {
       expect(getDragStore().container[CID].bottom.items.length).toBe(1);
     });
-    expect(
-      getDragStore().container[CID].actions[
-        getDragStore().container[CID].bottom.items[0]
-      ]?.type,
-    ).toBe('item-bottom');
+    const c = getDragStore().container[CID];
+    expect(c.bottom.show).toBe(c.bottom.items[0]);
+    expect(c.actions[c.bottom.items[0]]?.type).toBe('item-bottom');
+    unmount();
+  });
+
+  it('two bottoms → exclusive bottom.show', async () => {
+    getDragContainer(CID).initContainer();
+    getDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const { unmount } = render(
+      <ContainerProvider containerId={CID}>
+        <DraggableItemBottom id="bot-a" show title="A" containerId={CID} />
+        <DraggableItemBottom id="bot-b" show title="B" containerId={CID} />
+      </ContainerProvider>,
+    );
+    await waitFor(() => {
+      expect(getDragStore().container[CID].bottom.items.length).toBe(2);
+    });
+    const c = getDragStore().container[CID];
+    expect(c.bottom.items).toEqual(['bot-a', 'bot-b']);
+    expect(c.bottom.show).toBe('bot-b');
+    const { useBottomItem } = await import('../../store');
+    act(() => {
+      useBottomItem(CID).registerBottomShow('bot-a', true);
+    });
+    expect(c.bottom.show).toBe('bot-a');
     unmount();
   });
 

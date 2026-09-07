@@ -1,5 +1,6 @@
 import {
   configureDragStore,
+  useBottomItem,
   useDragCommands,
   useDragComponent,
   useDragContainer,
@@ -39,6 +40,7 @@ function notifyStoreChange(path?: string | string[]) {
 configureDragStore({ notify: notifyStoreChange });
 
 export {
+  useBottomItem,
   useDragCommands,
   useDragComponent,
   useDragContainer,

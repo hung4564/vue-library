@@ -11,7 +11,10 @@ export function BottomPage() {
       <DraggableItemSideBar show title="Controls" location="left">
         <div className="panel">
           <h2>Bottom demo</h2>
-          <p>Bottom sheet style panels.</p>
+          <p>
+            Only one bottom sheet is visible. Open the header menu to switch
+            panels (or use ManagementControl).
+          </p>
           <ManagementControl />
         </div>
       </DraggableItemSideBar>
@@ -24,7 +27,13 @@ export function BottomPage() {
 
       <DraggableItemBottom show={false} title="Bottom panel 2">
         <div className="panel">
-          <p>Second bottom item — toggle via ManagementControl.</p>
+          <p>Second bottom — switch via the bottom header menu.</p>
+        </div>
+      </DraggableItemBottom>
+
+      <DraggableItemBottom show={false} title="Bottom panel 3">
+        <div className="panel">
+          <p>Third bottom — exclusive with the others.</p>
         </div>
       </DraggableItemBottom>
     </DraggableContainer>

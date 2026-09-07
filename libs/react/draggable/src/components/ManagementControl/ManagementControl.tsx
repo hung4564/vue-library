@@ -39,6 +39,10 @@ const EMPTY_DRAWER = {
 };
 
 const EMPTY_GROUP = { items: [] as string[], show: [] as string[] };
+const EMPTY_BOTTOM = {
+  items: [] as string[],
+  show: undefined as string | undefined,
+};
 
 export function ManagementControl({
   containerId: propContainerId,
@@ -52,7 +56,7 @@ export function ManagementControl({
   const popupGroup = popup || EMPTY_GROUP;
   const modalGroup = modal || EMPTY_GROUP;
   const floatGroup = float || EMPTY_GROUP;
-  const bottomGroup = bottom || EMPTY_GROUP;
+  const bottomGroup = bottom || EMPTY_BOTTOM;
 
   const sidebarCount = Object.values(sidebarMap).reduce(
     (sum, side) => sum + (side?.items?.length || 0),
@@ -154,12 +158,12 @@ export function ManagementControl({
           <header className="mgmt__header">
             <span className="mgmt__title">Bottoms</span>
             <span className="mgmt__count">
-              {bottomGroup.show.length}/{bottomGroup.items.length}
+              {bottomGroup.show ? 1 : 0}/{bottomGroup.items.length}
             </span>
           </header>
           <ShowStatusDragItem
             items={bottomGroup.items}
-            itemShows={bottomGroup.show}
+            itemShows={bottomGroup.show ? [bottomGroup.show] : []}
             containerId={containerId}
           />
         </section>

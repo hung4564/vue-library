@@ -77,6 +77,7 @@ Breaking if you:
 - [ ] Change `LocationSideBar` values (`left` \| `right` \| `top` \| `bottom`)
 - [ ] Change z-order semantics of group `show[]` (last = top) if documented
 - [ ] Change sidebar/drawer exclusivity (one `show` id per location) if documented
+- [ ] Change bottom exclusivity (`bottom.show?: string` vs multi `show[]`) if documented
 
 ### D. CSS
 

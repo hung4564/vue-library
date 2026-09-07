@@ -101,4 +101,40 @@ describe('focus helpers', () => {
     setModalSiblingsInert(layer, false);
     expect(center.hasAttribute('inert')).toBe(false);
   });
+
+  it('trapTabKey ignores non-Tab keys', () => {
+    document.body.innerHTML = `<div id="root" tabindex="-1"><button id="a">A</button></div>`;
+    const root = document.getElementById('root')!;
+    expect(
+      trapTabKey(
+        root,
+        new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }),
+      ),
+    ).toBe(false);
+  });
+
+  it('trapTabKey with no focusables focuses root', () => {
+    document.body.innerHTML = `<div id="root" tabindex="-1"><span>x</span></div>`;
+    const root = document.getElementById('root')!;
+    const event = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      cancelable: true,
+    });
+    const prevent = vi.spyOn(event, 'preventDefault');
+    expect(trapTabKey(root, event)).toBe(true);
+    expect(prevent).toHaveBeenCalled();
+    expect(document.activeElement).toBe(root);
+  });
+
+  it('setModalSiblingsInert no-ops for null', () => {
+    expect(() => setModalSiblingsInert(null, true)).not.toThrow();
+    expect(() => setModalSiblingsInert(undefined, false)).not.toThrow();
+  });
+
+  it('focusFirst falls back to root when no focusables', () => {
+    document.body.innerHTML = `<div id="root" tabindex="-1"><span>empty</span></div>`;
+    const root = document.getElementById('root')!;
+    focusFirst(root);
+    expect(document.activeElement).toBe(root);
+  });
 });

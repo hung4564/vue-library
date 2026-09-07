@@ -103,7 +103,9 @@ export function useManagement(containerId: string) {
   const popup = computed(() => container?.popup || { items: [], show: [] });
   const modal = computed(() => container?.modal || { items: [], show: [] });
   const float = computed(() => container?.float || { items: [], show: [] });
-  const bottom = computed(() => container?.bottom || { items: [], show: [] });
+  const bottom = computed(
+    () => container?.bottom || { items: [], show: undefined as string | undefined },
+  );
   const sideBar = computed(() => container?.sideBar);
   const drawer = computed(() => container?.drawer);
   const width = computed(() => container?.width || 0);

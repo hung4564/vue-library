@@ -13,6 +13,7 @@ import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer, useDragStore } from '../../store';
 import { useStoreReactive } from '../../store/useStoreReactive';
 import { SidebarContainer } from './sidebar/sidebar-container';
+import { BottomContainer } from './bottom/bottom-container';
 
 type ResultShow = {
   sidebar?: {
@@ -183,6 +184,7 @@ export function DraggableContainer({
               <SidebarContainer location="right" />
               <SidebarContainer location="top" />
               <SidebarContainer location="bottom" />
+              <BottomContainer />
               {children}
             </>
           )}

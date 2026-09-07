@@ -12,7 +12,10 @@ import {
     <DraggableItemSideBar show title="Controls" location="left">
       <div class="panel">
         <h2>Bottom demo</h2>
-        <p>Bottom sheet style panels.</p>
+        <p>
+          Only one bottom sheet is visible. Open the header menu to switch
+          panels (or use ManagementControl).
+        </p>
         <ManagementControl />
       </div>
     </DraggableItemSideBar>
@@ -25,7 +28,13 @@ import {
 
     <DraggableItemBottom :show="false" title="Bottom panel 2">
       <div class="panel">
-        <p>Second bottom item — toggle via ManagementControl.</p>
+        <p>Second bottom — switch via the bottom header menu.</p>
+      </div>
+    </DraggableItemBottom>
+
+    <DraggableItemBottom :show="false" title="Bottom panel 3">
+      <div class="panel">
+        <p>Third bottom — exclusive with the others.</p>
       </div>
     </DraggableItemBottom>
   </DraggableContainer>

@@ -1,5 +1,6 @@
 import {
   configureDragStore,
+  useBottomItem,
   useDragCommands,
   useDragComponent,
   useDragContainer,
@@ -19,6 +20,7 @@ const makeReactive: DragStoreMakeReactive = (value) =>
 configureDragStore({ makeReactive });
 
 export {
+  useBottomItem,
   useDragCommands,
   useDragComponent,
   useDragContainer,

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
 import { WithMobileHandle } from '../hoc/mobile-handle';
 import { useInitAction } from '../hook/useInit';
+import { useInitBottom } from '../hook/useInitBottom';
 import { useInitDrawer } from '../hook/useInitDrawer';
 import {
   useContainerOrder,
@@ -20,6 +21,7 @@ import {
   useDragItem,
   useDragStore,
   useSidebarItem,
+  useBottomItem,
 } from '../store';
 
 const CID = 'vue-spec-container';
@@ -200,6 +202,24 @@ describe('init hooks', () => {
     await nextTick();
     expect(useDragContainer(CID).getItemAction('x')?.open).toBe(open);
     wrapper.unmount();
+  });
+
+  it('useInitBottom registers exclusive show and cleans up', async () => {
+    useDragContainer(CID).initContainer();
+    const show = ref(true);
+    const { wrapper, api } = mountSetup(() =>
+      useInitBottom(CID, show, {
+        type: 'item-bottom',
+        title: 'Bot',
+      }),
+    );
+    await nextTick();
+    const id = api().itemId.value;
+    expect(useBottomItem(CID).getItems()).toContain(id);
+    expect(useBottomItem(CID).getShow()).toBe(id);
+    wrapper.unmount();
+    expect(useBottomItem(CID).getItems()).not.toContain(id);
+    expect(useBottomItem(CID).getShow()).toBeUndefined();
   });
 
   it('useInitSidebar registers and cleans up', async () => {
