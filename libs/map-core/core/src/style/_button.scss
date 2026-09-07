@@ -103,6 +103,53 @@
   flex-direction: column;
 }
 
+/* Hover / focus-within: only first button until group is expanded.
+   Parent map corners use flex-end / flex-start so width growth expands inward. */
+.button-group-hover-expand.button-group-column-container {
+  height: var(--map-control-button-size, 32px);
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: all;
+  transition: height 0.15s ease;
+}
+.button-group-hover-expand.button-group-column-container .button-group-sheet {
+  min-height: 0;
+}
+.button-group-hover-expand.button-group-column-container:hover,
+.button-group-hover-expand.button-group-column-container:focus-within {
+  height: auto;
+  overflow: visible;
+}
+
+.button-group-hover-expand.button-group-row-container {
+  width: var(--map-control-button-size, 32px);
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: all;
+  transition: width 0.15s ease;
+}
+.button-group-hover-expand.button-group-row-container .button-group-sheet {
+  width: max-content;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+.button-group-hover-expand.button-group-row-container:hover,
+.button-group-hover-expand.button-group-row-container:focus-within {
+  width: max-content;
+  overflow: visible;
+}
+
+/* Right corners: keep toggle on the outer edge; menu opens inward */
+.right-top-container,
+.right-bottom-container {
+  .button-group-hover-expand.button-group-row-container .button-group-sheet {
+    direction: rtl;
+  }
+  .button-group-hover-expand.button-group-row-container .map-control-button {
+    direction: ltr;
+  }
+}
+
 /* Nested toolbar button groups */
 .button-group-container .button-group-container .button-group-sheet {
   border: unset;

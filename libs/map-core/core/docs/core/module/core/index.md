@@ -271,13 +271,21 @@ The map library supports extensive customization through CSS variables. All vari
     import '@hungpvq/vue-map-core/src/styles/themes.css';
     ```
 
-2.  **Apply a theme class** to your application container:
+2. **Apply a theme class** to `html` (recommended so teleported menus inherit tokens), or use ThemeControl:
+
     ```html
-    <!-- Dark Mode -->
-    <div class="map-theme-dark">
-      <map />
-    </div>
+    <!-- Named themes -->
+    <html class="map-theme-dark">
+    <html class="map-theme-vibrant">
+    <html class="map-theme-ocean">
     ```
+
+    ```ts
+    import { bootstrapMapTheme } from '@hungpvq/map-core';
+    bootstrapMapTheme('auto'); // auto | light | dark | vibrant | ocean | forest | sunset | slate
+    ```
+
+See also [ThemeControl](./module/ThemeControl.md).
 
 For a full list of available CSS variables and advanced customization options, see the [CSS Variables Reference](../../css-variables.md).
 

@@ -26,6 +26,7 @@ import {
   PrintControl,
   RegistryControl,
   SettingControl,
+  ThemeControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
@@ -58,6 +59,7 @@ export function AllMapView() {
         <LegendControl />
         <CrsControl />
         <SettingControl />
+        <ThemeControl />
         <GeoLocateControl />
         <FullScreenControl />
         <ZoomControl />

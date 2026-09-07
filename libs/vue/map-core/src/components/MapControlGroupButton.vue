@@ -1,10 +1,13 @@
 <template>
   <div
     class="button-container button-group-container"
-    :class="{
-      'button-group-row-container': row,
-      'button-group-column-container': !row,
-    }"
+    :class="[
+      {
+        'button-group-row-container': row,
+        'button-group-column-container': !row,
+      },
+      attrsClass,
+    ]"
     :style="containerStyle"
   >
     <div
@@ -42,6 +45,7 @@ interface ButtonItem {
 export default {
   name: 'MapControlGroupButton',
   components: { MapButton, MapIcon },
+  inheritAttrs: false,
   props: {
     // {title:string,icon:string,onClick:(e)=>{}}
     items: {
@@ -58,6 +62,9 @@ export default {
     };
   },
   computed: {
+    attrsClass(): unknown {
+      return this.$attrs.class;
+    },
     containerStyle(): Record<string, string | undefined> {
       return {
         width: !this.row ? `${this.size}px` : undefined,

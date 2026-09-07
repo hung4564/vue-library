@@ -7,6 +7,7 @@ import {
   BaseMapControl,
   Map,
   UniversalRegistry,
+  ThemeControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import {
@@ -64,6 +65,7 @@ export function DatasetMenuPage() {
         <LayerHighlight enableClick />
         <IdentifyControl position="top-right" />
         <ComponentManagementControl />
+        <ThemeControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />
       </Map>

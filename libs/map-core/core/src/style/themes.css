@@ -26,6 +26,7 @@
   --map-surface-color: #ffffff;
   --map-surface-variant-color: #f5f5f5;
   --map-background-color: #f7f5f2;
+  --map-button-bg: #ffffff;
 
   /* Text Colors */
   --map-text-primary: #333333;
@@ -42,10 +43,10 @@
   --map-status-active-color: var(--map-accent-color);
   --map-status-inactive-color: var(--map-text-secondary);
 
-  /* Map overlay chrome (sidebar/popup) — dark translucent on map */
-  --map-card-bg: rgba(32, 43, 54, 0.9);
+  /* Map overlay chrome (sidebar/popup) — light translucent on map */
+  --map-card-bg: rgba(255, 255, 255, 0.92);
   --map-card-highlight-bg: rgba(26, 115, 232);
-  --map-card-text: #fff;
+  --map-card-text: var(--map-text-primary);
 
   /* Alias draggable card tokens → map theme */
   --card-background-color: var(--map-card-bg);
@@ -96,72 +97,236 @@
   --map-layer-menu-text: var(--map-card-text);
 }
 
-/* Dark Theme */
+/* Dark Theme — deep charcoal + bright sky blue */
 .map-theme-dark {
-  --map-primary-color: #4da3ff;
-  --map-primary-hover-color: #80bfff;
-  --map-on-primary-color: #00264d;
-  --map-accent-color: #4da3ff;
-  --map-compare-swiper-color: #4da3ff;
-  --map-geolocate-accuracy-color: #4da3ff33;
+  --map-primary-color: #5eb1ff;
+  --map-primary-hover-color: #8fc9ff;
+  --map-on-primary-color: #001a33;
+  --map-accent-color: #5eb1ff;
+  --map-compare-swiper-color: #5eb1ff;
+  --map-geolocate-accuracy-color: #5eb1ff33;
 
-  --map-surface-color: #1e1e1e;
-  --map-surface-variant-color: #2d2d2d;
-  --map-background-color: #121212;
+  --map-surface-color: #1a2332;
+  --map-surface-variant-color: #243044;
+  --map-background-color: #0d1117;
+  --map-button-bg: #1a2332;
 
-  --map-text-primary: #e0e0e0;
-  --map-text-secondary: #aaaaaa;
-  --map-text-inverse: #121212;
+  --map-text-primary: #e8eef5;
+  --map-text-secondary: #9aabbc;
+  --map-text-inverse: #0d1117;
 
-  --map-border-color: #444444;
-  --map-divider-color: #333333;
+  --map-border-color: #3d4f66;
+  --map-divider-color: #2a384c;
 
-  --map-disabled-color: rgba(255, 255, 255, 0.3);
-  --map-hover-color: #383838;
+  --map-disabled-color: rgba(255, 255, 255, 0.28);
+  --map-hover-color: #2c3b50;
 
   --map-status-active-color: var(--map-accent-color);
   --map-status-inactive-color: var(--map-text-secondary);
 
-  --map-card-bg: rgba(32, 43, 54, 0.9);
-  --map-card-highlight-bg: rgba(26, 115, 232);
-  --map-card-text: #fff;
+  --map-card-bg: rgba(22, 32, 48, 0.94);
+  --map-card-highlight-bg: #1a73e8;
+  --map-card-text: #e8eef5;
 
   --card-background-color: var(--map-card-bg);
   --card-highlight-background-color: var(--map-card-highlight-bg);
   --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
 }
 
-/* Vibrant / Premium Theme */
+/* Vibrant — purple / magenta chrome (tinted panels, not plain white) */
 .map-theme-vibrant {
-  --map-primary-color: #6200ee;
-  --map-primary-hover-color: #3700b3;
+  --map-primary-color: #7c3aed;
+  --map-primary-hover-color: #5b21b6;
   --map-on-primary-color: #ffffff;
-  --map-accent-color: #6200ee;
-  --map-compare-swiper-color: #6200ee;
-  --map-geolocate-accuracy-color: #6200ee33;
+  --map-accent-color: #d946ef;
+  --map-compare-swiper-color: #a855f7;
+  --map-geolocate-accuracy-color: #d946ef33;
 
-  --map-surface-color: #ffffff;
-  --map-surface-variant-color: #f3e5f5;
-  --map-background-color: #f5f5f5;
+  --map-surface-color: #faf5ff;
+  --map-surface-variant-color: #f3e8ff;
+  --map-background-color: #f5f0ff;
+  --map-button-bg: #faf5ff;
 
-  --map-text-primary: #1a0229;
-  --map-text-secondary: #4a148c;
+  --map-text-primary: #2e1065;
+  --map-text-secondary: #6b21a8;
   --map-text-inverse: #ffffff;
 
-  --map-border-color: #e1bee7;
-  --map-divider-color: #f3e5f5;
+  --map-border-color: #d8b4fe;
+  --map-divider-color: #ede9fe;
 
-  --map-disabled-color: rgba(98, 0, 238, 0.1);
-  --map-hover-color: #ede7f6;
+  --map-disabled-color: rgba(124, 58, 237, 0.28);
+  --map-hover-color: #ede9fe;
 
   --map-status-active-color: var(--map-accent-color);
   --map-status-inactive-color: var(--map-text-secondary);
 
-  --map-card-bg: rgba(32, 43, 54, 0.9);
-  --map-card-highlight-bg: rgba(26, 115, 232);
-  --map-card-text: #fff;
+  --map-card-bg: rgba(245, 232, 255, 0.94);
+  --map-card-highlight-bg: #7c3aed;
+  --map-card-text: #2e1065;
 
   --card-background-color: var(--map-card-bg);
   --card-highlight-background-color: var(--map-card-highlight-bg);
   --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
+}
+
+/* Ocean — teal / cyan (aqua panels) */
+.map-theme-ocean {
+  --map-primary-color: #0e7490;
+  --map-primary-hover-color: #155e75;
+  --map-on-primary-color: #ffffff;
+  --map-accent-color: #06b6d4;
+  --map-compare-swiper-color: #0891b2;
+  --map-geolocate-accuracy-color: #06b6d433;
+
+  --map-surface-color: #ecfeff;
+  --map-surface-variant-color: #cffafe;
+  --map-background-color: #e0f7fa;
+  --map-button-bg: #ecfeff;
+
+  --map-text-primary: #083344;
+  --map-text-secondary: #0e7490;
+  --map-text-inverse: #ffffff;
+
+  --map-border-color: #67e8f9;
+  --map-divider-color: #a5f3fc;
+
+  --map-disabled-color: rgba(14, 116, 144, 0.3);
+  --map-hover-color: #cffafe;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(207, 250, 254, 0.92);
+  --map-card-highlight-bg: #0891b2;
+  --map-card-text: #083344;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
+}
+
+/* Forest — deep green / moss (sage panels) */
+.map-theme-forest {
+  --map-primary-color: #166534;
+  --map-primary-hover-color: #14532d;
+  --map-on-primary-color: #ffffff;
+  --map-accent-color: #22c55e;
+  --map-compare-swiper-color: #16a34a;
+  --map-geolocate-accuracy-color: #22c55e33;
+
+  --map-surface-color: #f0fdf4;
+  --map-surface-variant-color: #dcfce7;
+  --map-background-color: #e8f5e9;
+  --map-button-bg: #f0fdf4;
+
+  --map-text-primary: #052e16;
+  --map-text-secondary: #15803d;
+  --map-text-inverse: #ffffff;
+
+  --map-border-color: #86efac;
+  --map-divider-color: #bbf7d0;
+
+  --map-disabled-color: rgba(22, 101, 52, 0.3);
+  --map-hover-color: #dcfce7;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(220, 252, 231, 0.92);
+  --map-card-highlight-bg: #166534;
+  --map-card-text: #052e16;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
+}
+
+/* Sunset — warm amber / coral (peach panels) */
+.map-theme-sunset {
+  --map-primary-color: #c2410c;
+  --map-primary-hover-color: #9a3412;
+  --map-on-primary-color: #ffffff;
+  --map-accent-color: #f59e0b;
+  --map-compare-swiper-color: #ea580c;
+  --map-geolocate-accuracy-color: #f59e0b33;
+
+  --map-surface-color: #fff7ed;
+  --map-surface-variant-color: #ffedd5;
+  --map-background-color: #fff1e6;
+  --map-button-bg: #fff7ed;
+
+  --map-text-primary: #431407;
+  --map-text-secondary: #c2410c;
+  --map-text-inverse: #ffffff;
+
+  --map-border-color: #fdba74;
+  --map-divider-color: #fed7aa;
+
+  --map-disabled-color: rgba(194, 65, 12, 0.3);
+  --map-hover-color: #ffedd5;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(255, 237, 213, 0.94);
+  --map-card-highlight-bg: #ea580c;
+  --map-card-text: #431407;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
+}
+
+/* Slate — cool steel gray (distinct from dark blue-charcoal) */
+.map-theme-slate {
+  --map-primary-color: #e2e8f0;
+  --map-primary-hover-color: #f8fafc;
+  --map-on-primary-color: #0f172a;
+  --map-accent-color: #38bdf8;
+  --map-compare-swiper-color: #94a3b8;
+  --map-geolocate-accuracy-color: #38bdf833;
+
+  --map-surface-color: #1e293b;
+  --map-surface-variant-color: #334155;
+  --map-background-color: #020617;
+  --map-button-bg: #1e293b;
+
+  --map-text-primary: #f1f5f9;
+  --map-text-secondary: #94a3b8;
+  --map-text-inverse: #020617;
+
+  --map-border-color: #64748b;
+  --map-divider-color: #334155;
+
+  --map-disabled-color: rgba(148, 163, 184, 0.35);
+  --map-hover-color: #334155;
+
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+
+  --map-card-bg: rgba(15, 23, 42, 0.94);
+  --map-card-highlight-bg: #38bdf8;
+  --map-card-text: #f1f5f9;
+
+  --card-background-color: var(--map-card-bg);
+  --card-highlight-background-color: var(--map-card-highlight-bg);
+  --card-color: var(--map-card-text);
+
+  --map-layer-menu-bg: var(--map-card-bg);
+  --map-layer-menu-text: var(--map-card-text);
 }

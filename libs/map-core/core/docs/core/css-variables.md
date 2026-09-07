@@ -46,9 +46,23 @@ Below is the list of specific variables for each component and their default val
 
 ### Core - General (Map/Card)
 
-- `--map-card-bg`: `var(--map-surface-color, #ffffff)`
-- `--map-card-text`: `var(--map-text-primary, #333)`
-- `--map-card-highlight-bg`: `var(--map-primary-color, #1a73e8)`
+- `--map-card-bg`: themed translucent overlays (light = near-white; vibrant/ocean/forest/sunset = tinted panels; dark/slate = dark overlays)
+- `--map-card-text`: follows theme text
+- `--map-card-highlight-bg`: accent / primary highlight
+
+Named classes: `map-theme-light`, `map-theme-dark`, `map-theme-vibrant`, `map-theme-ocean`, `map-theme-forest`, `map-theme-sunset`, `map-theme-slate`.
+
+| Theme | Feel |
+| --- | --- |
+| `light` | Neutral white + blue |
+| `dark` | Charcoal + sky blue |
+| `vibrant` | Lavender panels + purple/magenta |
+| `ocean` | Aqua panels + teal/cyan |
+| `forest` | Sage panels + green |
+| `sunset` | Peach panels + coral/amber |
+| `slate` | Steel dark + cyan accent |
+
+Draggable overlays alias these as `--card-background-color` / `--card-color`. Apply a theme class on `html` (or use [`ThemeControl`](./module/ThemeControl.md) / `bootstrapMapTheme()`).
 
 ### Measurement - MeasurementControl
 

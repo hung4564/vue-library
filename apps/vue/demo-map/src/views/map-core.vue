@@ -7,6 +7,7 @@
     <CrsControl />
     <GlobeControl />
     <SettingControl />
+    <ThemeControl />
     <FullScreenControl />
     <EventManagementControl />
     <ZoomControl />
@@ -32,6 +33,7 @@ import {
   MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
+  ThemeControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';

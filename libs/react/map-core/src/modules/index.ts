@@ -11,4 +11,5 @@ export * from './MouseCoordinatesControl/MouseCoordinatesControl';
 export * from './MapContextMenuControl/MapContextMenuControl';
 export * from './RegistryControl/RegistryControl';
 export * from './SettingControl/SettingControl';
+export * from './ThemeControl/ThemeControl';
 export * from './WorkerControl/WorkerControl';

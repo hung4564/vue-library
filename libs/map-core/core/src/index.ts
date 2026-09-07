@@ -19,6 +19,9 @@ export * from './types';
 // Export default locales
 export * from './locale';
 
+// Theme (light / dark / auto)
+export * from './theme';
+
 // Export store
 export * from './basemap';
 export * from './store';

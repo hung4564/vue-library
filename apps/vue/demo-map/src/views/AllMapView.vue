@@ -24,6 +24,7 @@ import {
   PrintControl,
   RegistryControl,
   SettingControl,
+  ThemeControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
@@ -166,6 +167,7 @@ function createDatasetMeasure(
     <LegendControl />
     <CrsControl />
     <SettingControl />
+    <ThemeControl />
     <GeoLocateControl />
     <FullScreenControl />
     <ZoomControl />

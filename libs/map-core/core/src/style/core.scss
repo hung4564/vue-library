@@ -108,6 +108,32 @@
   font-weight: var(--map-font-weight-normal, 400);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Override draggable chrome borders/corners to follow theme text color */
+  &:not(.border-0):before {
+    border-top-color: var(--map-card-text, currentColor);
+    border-bottom-color: var(--map-card-text, currentColor);
+  }
+
+  &:not(.border-0):after {
+    border-left-color: var(--map-card-text, currentColor);
+    border-right-color: var(--map-card-text, currentColor);
+  }
+
+  .card-arrow-top-left:before,
+  .card-arrow-top-right:before,
+  .card-arrow-bottom-left:before,
+  .card-arrow-bottom-right:before,
+  .card-arrow-top-left:after,
+  .card-arrow-top-right:after,
+  .card-arrow-bottom-left:after,
+  .card-arrow-bottom-right:after {
+    background: var(--map-card-text, currentColor);
+  }
+
+  .map-divider {
+    border-color: var(--map-card-text, currentColor);
+  }
 }
 .hungpvq-draggable-card button,
 .hungpvq-draggable-card input,
@@ -237,7 +263,8 @@
     }
 
     & > .button-container,
-    & > .button-custom-container {
+    & > .button-custom-container,
+    & > .btn-module-container {
       pointer-events: all;
     }
   }

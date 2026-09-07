@@ -12,6 +12,7 @@ import {
   MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
+  ThemeControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
@@ -29,6 +30,7 @@ export function MapCorePage() {
         <CrsControl />
         <GlobeControl />
         <SettingControl />
+        <ThemeControl />
         <FullScreenControl />
         <EventManagementControl />
         <ZoomControl />

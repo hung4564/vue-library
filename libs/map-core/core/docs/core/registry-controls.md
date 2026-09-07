@@ -87,6 +87,7 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 | `mapEventManagementControl` | sidebar | |
 | `mapHomeControl` | button | |
 | `mapFullscreenControl` | button | |
+| `mapThemeControl` | button | Toggle light/dark; hover menu for themes |
 | `mapGeoLocateControl` | button | |
 | `mapGlobeControl` | button | |
 | `mapPrintControl` | button | |

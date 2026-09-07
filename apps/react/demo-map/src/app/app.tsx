@@ -1,10 +1,13 @@
+import { bootstrapMapTheme } from '@hungpvq/map-core';
 import { Outlet } from 'react-router';
 import { Devtools } from '@hungpvq/react-map-devtools';
 import './app.module.css';
 
+bootstrapMapTheme('auto');
+
 export function App() {
   return (
-    <div className="app map-theme-light">
+    <div className="app">
       <Outlet />
       <Devtools />
     </div>

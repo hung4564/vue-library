@@ -1,7 +1,7 @@
 <template>
   <MapControlButton
     :title="option.title"
-    :class="{ active: option.active }"
+    :active="option.active"
     :disabled="option.disabled"
     v-bind="$attrs"
     :loading="option.loading"

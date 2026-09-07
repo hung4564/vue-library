@@ -20,15 +20,15 @@
 
 .style-control .vc-sketch .vc-input__label,
 .style-control .w-color-sketch .w-color-editable-input {
-  --editable-input-label-color: var(--map-text-inverse, #fff) !important;
-  --editable-input-color: var(--map-text-inverse, #fff) !important;
+  --editable-input-label-color: var(--map-card-text, #333) !important;
+  --editable-input-color: var(--map-card-text, #333) !important;
   --editable-input-box-shadow: inset 0 0 0 1px
-    color-mix(in srgb, var(--map-text-inverse, #fff) 28%, transparent) !important;
+    color-mix(in srgb, var(--map-card-text, #333) 28%, transparent) !important;
 }
 
 .style-control .w-color-sketch .w-color-editable-input label,
 .style-control .w-color-sketch .w-color-editable-input input {
-  color: var(--map-text-inverse, #fff);
+  color: var(--map-card-text, #333);
 }
 
 .multi-style-edit-container {
@@ -337,7 +337,8 @@
     -6px -6px;
 }
 
-.map-theme-dark .fill-canvas {
+.map-theme-dark .fill-canvas,
+.map-theme-slate .fill-canvas {
   background-image:
     linear-gradient(-45deg, transparent 75%, rgba(32, 43, 54, 0.9) 75%),
     linear-gradient(45deg, transparent 75%, rgba(32, 43, 54, 0.9) 75%),

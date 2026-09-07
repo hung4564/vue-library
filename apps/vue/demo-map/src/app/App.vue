@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { bootstrapMapTheme } from '@hungpvq/map-core';
 import { Devtools } from '@hungpvq/vue-map-devtools';
 import { RouterView } from 'vue-router';
+
+bootstrapMapTheme('auto');
 </script>
 
 <template>
-  <div class="app map-theme-light">
+  <div class="app">
     <RouterView />
     <Devtools />
   </div>

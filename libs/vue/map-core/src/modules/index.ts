@@ -10,5 +10,6 @@ export { default as MouseCoordinatesControl } from './MouseCoordinatesControl/Mo
 export { default as MapContextMenuControl } from './MapContextMenuControl/MapContextMenuControl.vue';
 export { default as RegistryControl } from './RegistryControl/RegistryControl.vue';
 export { default as SettingControl } from './SettingControl/SettingControl.vue';
+export { default as ThemeControl } from './ThemeControl/ThemeControl.vue';
 export { default as WorkerControl } from './WorkerControl/WorkerControl.vue';
 export { default as ZoomControl } from './ZoomControl/ZoomControl.vue';

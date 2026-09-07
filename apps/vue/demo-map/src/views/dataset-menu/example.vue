@@ -9,6 +9,7 @@ import {
   BaseMapControl,
   Map,
   UniversalRegistry,
+  ThemeControl,
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
@@ -52,6 +53,7 @@ function onMapLoaded(map: MapSimple) {
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
+    <ThemeControl />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
