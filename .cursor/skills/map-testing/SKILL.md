@@ -31,17 +31,24 @@ Avoid heavy browser/MapLibre integration unless the user asks; demos and Playwri
 npx nx test @hungpvq/map-core
 npx nx test @hungpvq/map-dataset
 npm run draggable:test   # tag:draggable excl. demo
+npx nx test @hungpvq/draggable
+npx nx test @hungpvq/vue-draggable
+npx nx test @hungpvq/react-draggable
 # or project name from project.json
 ```
 
 Ensure `tsconfig.spec.json` / vite test config exist when adding the first spec to a package (see `libs/map-core/map-dataset` as a recent pattern).
+
+## Draggable public-api lock
+
+Draggable packages lock **runtime** root exports with `public-api.spec.ts` (core / vue / react). When changing `src/index.ts` or `experimental.ts`, update the allowlist arrays in that spec and `libs/draggable/core/docs/stable-api.md`. See skill `draggable-semver-api`.
 
 ## Conventions
 
 - Name files `*.spec.ts` beside the module under test
 - Keep tests deterministic; no network; mock workers if touching worker protocol
 - Do not assert on undocumented experimental internals as if they were Stable — if locking behavior, note it
-- After behavior changes to Stable protocol, add/adjust tests and point docs at `map-semver-api` / `map-docs-vitepress` if needed
+- After behavior changes to Stable protocol, add/adjust tests and point docs at `map-semver-api` / `draggable-semver-api` / `map-docs-vitepress` if needed
 
 ## Checklist
 

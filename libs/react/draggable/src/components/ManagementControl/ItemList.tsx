@@ -29,10 +29,18 @@ export function ItemList({
         return (
           <li
             key={item}
+            role="button"
+            tabIndex={0}
             className={['mgmt-row', isShow ? 'mgmt-row--active' : '']
               .filter(Boolean)
               .join(' ')}
             onClick={() => onClickItem?.(item)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClickItem?.(item);
+              }
+            }}
           >
             <div className="mgmt-row__label">
               <Item item={item} containerId={containerId} />

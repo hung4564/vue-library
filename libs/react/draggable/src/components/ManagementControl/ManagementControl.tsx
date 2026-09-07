@@ -71,7 +71,7 @@ export function ManagementControl({
     <div className="mgmt">
       <section className="mgmt__section">
         <header className="mgmt__header">
-          <span className="mgmt__title">Container</span>
+          <h3 className="mgmt__title">Container</h3>
         </header>
         <div className="mgmt__metrics">
           <div className="mgmt__metric">
@@ -88,7 +88,7 @@ export function ManagementControl({
       {sidebarCount > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Sidebars</span>
+            <h3 className="mgmt__title">Sidebars</h3>
             <span className="mgmt__count">{sidebarCount}</span>
           </header>
           <ShowStatusSideBar items={sidebarMap} containerId={containerId} />
@@ -98,7 +98,7 @@ export function ManagementControl({
       {drawerCount > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Drawers</span>
+            <h3 className="mgmt__title">Drawers</h3>
             <span className="mgmt__count">{drawerCount}</span>
           </header>
           <ShowStatusDrawer items={drawerMap} containerId={containerId} />
@@ -108,7 +108,7 @@ export function ManagementControl({
       {popupGroup.items.length > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Popups</span>
+            <h3 className="mgmt__title">Popups</h3>
             <span className="mgmt__count">
               {popupGroup.show.length}/{popupGroup.items.length}
             </span>
@@ -124,7 +124,7 @@ export function ManagementControl({
       {modalGroup.items.length > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Modals</span>
+            <h3 className="mgmt__title">Modals</h3>
             <span className="mgmt__count">
               {modalGroup.show.length}/{modalGroup.items.length}
             </span>
@@ -140,7 +140,7 @@ export function ManagementControl({
       {floatGroup.items.length > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Floats</span>
+            <h3 className="mgmt__title">Floats</h3>
             <span className="mgmt__count">
               {floatGroup.show.length}/{floatGroup.items.length}
             </span>
@@ -156,7 +156,7 @@ export function ManagementControl({
       {bottomGroup.items.length > 0 && (
         <section className="mgmt__section">
           <header className="mgmt__header">
-            <span className="mgmt__title">Bottoms</span>
+            <h3 className="mgmt__title">Bottoms</h3>
             <span className="mgmt__count">
               {bottomGroup.show ? 1 : 0}/{bottomGroup.items.length}
             </span>

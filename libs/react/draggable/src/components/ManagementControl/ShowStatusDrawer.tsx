@@ -52,11 +52,11 @@ export function ShowStatusDrawer({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <MapButton onClick={() => onOpen(item)} title="Show">
+                <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                   <ShowIcon size={16} />
                 </MapButton>
               ) : (
-                <MapButton onClick={() => onClose(item)} title="Hide">
+                <MapButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
                   <HideIcon size={16} />
                 </MapButton>
               )

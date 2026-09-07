@@ -1,7 +1,7 @@
-import { clampBounds } from '@hungpvq/draggable';
+import { clampBounds, focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
-  MouseEvent,
-  ReactNode,
+  type MouseEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -258,12 +258,44 @@ export function DraggableItemPopup({
   );
 
   const handleClose = useCallback(
-    (e: MouseEvent) => {
-      e.stopPropagation();
+    (e?: MouseEvent) => {
+      e?.stopPropagation();
       setShow(false);
     },
     [setShow],
   );
+
+  const panelRootRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = `popup-title-${itemId}`;
+
+  useEffect(() => {
+    if (!show) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (panelRootRef.current) focusFirst(panelRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      const root = panelRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      setShow(false);
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+  }, [show, setShow]);
 
   useEffect(() => {
     if (!show) {
@@ -404,10 +436,16 @@ export function DraggableItemPopup({
       onMouseDown={onToFront}
     >
       <Card width={p_width} height={p_height} highlight={isHighlight}>
-        <div className="draggable-popup-desktop">
+        <div
+          ref={panelRootRef}
+          className="draggable-popup-desktop"
+          role="dialog"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+        >
           {!disabledHeader && (
             <Header
-              title={title}
+              title={<span id={titleId}>{title}</span>}
               preTitle={
                 <div className="draggable-popup-drag-container">
                   <DragIcon size={'16px'} />
@@ -419,15 +457,27 @@ export function DraggableItemPopup({
                   {extraBtn}
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton disabled={isFirst} onClick={onToBack}>
+                      <MapButton
+                        aria-label="Send to back"
+                        disabled={isFirst}
+                        onClick={onToBack}
+                      >
                         <ToBackIcon size={'16px'} />
                       </MapButton>
-                      <MapButton disabled={isLast} onClick={onToFront}>
+                      <MapButton
+                        aria-label="Bring to front"
+                        disabled={isLast}
+                        onClick={onToFront}
+                      >
                         <ToFrontIcon size={'16px'} />
                       </MapButton>
                     </>
                   )}
-                  <MapButton onClick={onToggleExpanded}>
+                  <MapButton
+                    aria-label={expand ? 'Collapse panel' : 'Expand panel'}
+                    aria-expanded={expand}
+                    onClick={onToggleExpanded}
+                  >
                     {expand ? (
                       <ExpandedIcon size={'16px'} />
                     ) : (
@@ -435,7 +485,7 @@ export function DraggableItemPopup({
                     )}
                   </MapButton>
                   {!disabledClose && (
-                    <MapButton onClick={handleClose}>
+                    <MapButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
                     </MapButton>
                   )}

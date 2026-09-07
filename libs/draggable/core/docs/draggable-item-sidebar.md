@@ -76,3 +76,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+`role="complementary"` + `aria-labelledby`; Escape closes when focus is in the shell; switcher menu ARIA + focus restore. See [a11y.md](./a11y.md).

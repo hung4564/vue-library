@@ -82,3 +82,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+`role="region"` + labelled title host; `aria-hidden` when closed; expand `aria-controls` / `aria-expanded`; Escape + focus restore. See [a11y.md](./a11y.md).

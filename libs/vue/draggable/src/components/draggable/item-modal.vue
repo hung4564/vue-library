@@ -334,7 +334,11 @@ function onDragging() {
                 </template>
                 <template #extra-btn>
                   <slot name="extra-btn"></slot>
-                  <map-button v-if="!disabledClose" @click.stop="onClose">
+                  <map-button
+                v-if="!disabledClose"
+                aria-label="Close dialog"
+                @click.stop="onClose"
+              >
                     <CloseIcon :size="16" />
                   </map-button>
                 </template>

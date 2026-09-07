@@ -442,7 +442,7 @@ export function DraggableModal({
                   <>
                     {extraBtn}
                     {!disabledClose && (
-                      <MapButton onClick={handleClose}>
+                      <MapButton aria-label="Close dialog" onClick={handleClose}>
                         <CloseIcon size={'16px'} />
                       </MapButton>
                     )}

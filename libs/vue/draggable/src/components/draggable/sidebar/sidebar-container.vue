@@ -6,7 +6,17 @@ export default {
 <script setup lang="ts">
 import ContextMenu from '../../ContextMenu.vue';
 import ContextMenuItem from '../../ContextMenuItem.vue';
-import { computed, inject, PropType, ref, Ref, watch } from 'vue';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  PropType,
+  ref,
+  Ref,
+  watch,
+} from 'vue';
 import { type LocationSideBar } from '../../../types';
 import {
   useComponent,
@@ -27,6 +37,8 @@ const contextMenuRef = ref<
   | undefined
 >();
 const menuOpen = ref(false);
+const shellRoot = ref<HTMLElement>();
+let previousFocus: HTMLElement | null = null;
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 const props = defineProps({
   ...withShareComponent,
@@ -77,6 +89,40 @@ function onClose() {
   const itemShow = getShowForLocation(props.location);
   if (itemShow) storeDragItem.registerSideBarShow(itemShow, false);
 }
+
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  if (menuOpen.value) return;
+  const root = shellRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
+watch(
+  show,
+  async (visible) => {
+    document.removeEventListener('keydown', onKeydown);
+    if (!visible) {
+      restoreFocus(previousFocus);
+      previousFocus = null;
+      return;
+    }
+    previousFocus = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', onKeydown);
+    await nextTick();
+    if (shellRoot.value) focusFirst(shellRoot.value);
+  },
+);
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+});
+
 const c_getShowForLocation = computed(() => getShowForLocation(props.location));
 watch(
   c_getShowForLocation,
@@ -102,10 +148,12 @@ function selectSideBar(nextId: string) {
 
 <template>
   <div
+    ref="shellRoot"
     class="sidebar-container auto-sidebar-container"
     role="complementary"
     :aria-label="`Sidebar ${location}`"
     :aria-labelledby="titleTo"
+    tabindex="-1"
     :class="{
       expand,
       show,
@@ -135,15 +183,10 @@ function selectSideBar(nextId: string) {
                 aria-label="Open sidebar menu"
                 aria-haspopup="menu"
                 :aria-expanded="menuOpen ? 'true' : 'false'"
-                role="button"
               >
                 <SidebarOpenMenu :size="16" />
               </map-button>
-              <map-button
-                @click="onClose"
-                aria-label="Close sidebar"
-                role="button"
-              >
+              <map-button @click="onClose" aria-label="Close sidebar">
                 <CloseIcon :size="16" />
               </map-button>
             </template>
@@ -161,7 +204,6 @@ function selectSideBar(nextId: string) {
         :aria-controls="contentTo"
         :aria-expanded="expand ? 'true' : 'false'"
         :aria-label="expand ? 'Collapse sidebar' : 'Expand sidebar'"
-        role="button"
       ></ComponentMapSidebarToggle>
     </div>
   </div>
@@ -170,7 +212,7 @@ function selectSideBar(nextId: string) {
     aria-label="Switch sidebar panel"
     @update:open="menuOpen = $event"
   >
-    <ul class="context-menu">
+    <ul class="context-menu" role="presentation">
       <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"

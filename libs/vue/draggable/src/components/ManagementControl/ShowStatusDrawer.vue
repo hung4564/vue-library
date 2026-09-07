@@ -18,10 +18,20 @@
         :containerId="containerId"
       >
         <template #extra="{ item, show }">
-          <map-button @click.stop="onOpen(item)" v-if="!show" title="Show">
+          <map-button
+            @click.stop="onOpen(item)"
+            v-if="!show"
+            title="Show"
+            aria-label="Show"
+          >
             <ShowIcon :size="16" />
           </map-button>
-          <map-button @click.stop="onClose(item)" v-else title="Hide">
+          <map-button
+            @click.stop="onClose(item)"
+            v-else
+            title="Hide"
+            aria-label="Hide"
+          >
             <HideIcon :size="16" />
           </map-button>
         </template>

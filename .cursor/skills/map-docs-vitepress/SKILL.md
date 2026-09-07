@@ -30,11 +30,15 @@ Prefer editing package-local markdown that the sites consume:
 ## Source-of-truth docs (draggable)
 
 - Hub: `libs/draggable/core/docs/index.md`
-- Stable API: `libs/draggable/core/docs/stable-api.md`
+- Stable API: `libs/draggable/core/docs/stable-api.md` (named barrels; experimental table; enforce via `public-api.spec.ts`)
+- Accessibility: `libs/draggable/core/docs/a11y.md`
+- Context menu (experimental): `libs/draggable/core/docs/context-menu.md`
 - SemVer checklist: `libs/draggable/README.md`
 - Component docs: `libs/draggable/core/docs/draggable-*.md`
+- Adapter experimental barrels: `libs/vue/draggable/src/experimental.ts`, `libs/react/draggable/src/experimental.ts`
 
-Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys).
+Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys, a11y helpers).
+When adding a root export: update `public-api.spec.ts` + `stable-api.md` together.
 
 ## Writing guidelines
 
@@ -47,6 +51,7 @@ Keep Stable docs aligned with code when changing public protocol (ids, exports, 
 ## When changing API
 
 1. Update Stable allowlist or SemVer checklist if needed.
-2. Update registry/CSS docs if ids or tokens change.
-3. Optionally refresh demo snippets under vitepress demo scripts / linked md.
-4. Run `map:site:dev` or `docs:dev` only when verifying docs (user may not need a full site build every time).
+2. For draggable: also update `a11y.md` / `context-menu.md` if focus/ARIA/menu keyboard changes; keep `public-api.spec.ts` in sync.
+3. Update registry/CSS docs if ids or tokens change.
+4. Optionally refresh demo snippets under vitepress demo scripts / linked md.
+5. Run `map:site:dev` or `docs:dev` only when verifying docs (user may not need a full site build every time).

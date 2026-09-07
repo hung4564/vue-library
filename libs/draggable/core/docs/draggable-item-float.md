@@ -88,3 +88,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Same non-modal dialog pattern as popup (Escape, focus restore, labelled chrome). Keyboard drag/resize is out of scope. See [a11y.md](./a11y.md).

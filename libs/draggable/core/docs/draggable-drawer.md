@@ -103,3 +103,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Non-modal `role="dialog"` + `aria-labelledby`; Escape closes when focus is inside (skipped while switcher menu open); focus restore on close. Switcher: `aria-haspopup` / `aria-expanded`. See [a11y.md](./a11y.md).

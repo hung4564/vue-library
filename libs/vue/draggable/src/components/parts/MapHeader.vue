@@ -6,7 +6,7 @@ export default {
 <script setup lang="ts"></script>
 
 <template>
-  <hr class="map-divider" />
+  <hr class="map-divider" aria-hidden="true" />
   <div class="draggable-header">
     <div class="draggable-header__content">
       <slot name="pre-title"> </slot>
@@ -17,5 +17,5 @@ export default {
       <slot name="extra-btn"></slot>
     </div>
   </div>
-  <hr class="map-divider" />
+  <hr class="map-divider" aria-hidden="true" />
 </template>

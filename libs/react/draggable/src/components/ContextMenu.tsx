@@ -4,6 +4,7 @@ import {
   getMenuItems,
   handleMenuKeydown,
   restoreFocus,
+  trapTabKey,
 } from '@hungpvq/draggable';
 import {
   forwardRef,
@@ -134,9 +135,27 @@ const ContextMenu = forwardRef(function ContextMenu(
         close();
         return;
       }
-      if (contentRef.current) {
-        handleMenuKeydown(contentRef.current, e);
+      const root = contentRef.current;
+      if (!root) return;
+      if (e.key === 'Tab') {
+        const items = getMenuItems(root);
+        if (items.length > 0) {
+          e.preventDefault();
+          const active = document.activeElement as HTMLElement | null;
+          const idx = active ? items.indexOf(active) : -1;
+          if (e.shiftKey) {
+            const prev = idx <= 0 ? items.length - 1 : idx - 1;
+            items[prev].focus();
+          } else {
+            const next = idx >= items.length - 1 ? 0 : idx + 1;
+            items[next].focus();
+          }
+          return;
+        }
+        trapTabKey(root, e);
+        return;
       }
+      handleMenuKeydown(root, e);
     };
     document.addEventListener('mousedown', onPointer);
     document.addEventListener('keydown', onKey);

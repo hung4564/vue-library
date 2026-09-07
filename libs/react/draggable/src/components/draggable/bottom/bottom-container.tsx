@@ -1,5 +1,7 @@
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   type MouseEvent as ReactMouseEvent,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -28,6 +30,8 @@ export function BottomContainer() {
   const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
     useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
+  const shellRootRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const activeBottomId = getShow();
@@ -51,6 +55,36 @@ export function BottomContainer() {
     contextMenuRef.current?.close();
   }
 
+  useEffect(() => {
+    if (!visible) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (shellRootRef.current) focusFirst(shellRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      if (menuOpen) return;
+      const root = shellRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      onClose();
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- close via store
+  }, [visible, menuOpen, containerId]);
+
   const titleTo = `bottom-title-${containerId}`;
   const contentTo = `bottom-content-${containerId}`;
   const shellStyle = useMemo(
@@ -65,12 +99,14 @@ export function BottomContainer() {
   return (
     <>
       <div
+        ref={shellRootRef}
         className="popup-mobile-container bottom-container"
         style={shellStyle}
         role="region"
         aria-label="Bottom panel"
         aria-labelledby={titleTo}
         aria-hidden={!visible}
+        tabIndex={-1}
       >
         <Card>
           <div className="draggable-bottom">
@@ -84,7 +120,6 @@ export function BottomContainer() {
                       aria-label="Open bottom menu"
                       aria-haspopup="menu"
                       aria-expanded={menuOpen}
-                      role="button"
                     >
                       <SidebarOpenMenu size={'16px'} />
                     </MapButton>
@@ -94,7 +129,8 @@ export function BottomContainer() {
                     aria-label={
                       expand ? 'Collapse bottom panel' : 'Expand bottom panel'
                     }
-                    role="button"
+                    aria-expanded={expand}
+                    aria-controls={contentTo}
                   >
                     {expand ? (
                       <FullscreenIcon size={'16px'} />
@@ -102,11 +138,7 @@ export function BottomContainer() {
                       <OffFullscreenIcon size={'16px'} />
                     )}
                   </MapButton>
-                  <MapButton
-                    onClick={onClose}
-                    aria-label="Close bottom"
-                    role="button"
-                  >
+                  <MapButton onClick={onClose} aria-label="Close bottom">
                     <CloseIcon size={'16px'} />
                   </MapButton>
                 </>
@@ -121,7 +153,7 @@ export function BottomContainer() {
         ariaLabel="Switch bottom panel"
         onOpenChange={setMenuOpen}
       >
-        <ul className="context-menu">
+        <ul className="context-menu" role="presentation">
           {allItems.map((item) => (
             <ContextMenuItem
               key={item.id}

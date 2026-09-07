@@ -39,7 +39,7 @@ const drawerCount = computed(() =>
   <div class="mgmt">
     <section class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Container</span>
+        <h3 class="mgmt__title">Container</h3>
       </header>
       <div class="mgmt__metrics">
         <div class="mgmt__metric">
@@ -55,7 +55,7 @@ const drawerCount = computed(() =>
 
     <section v-if="sidebarCount > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Sidebars</span>
+        <h3 class="mgmt__title">Sidebars</h3>
         <span class="mgmt__count">{{ sidebarCount }}</span>
       </header>
       <ShowStatusSideBar :items="sideBar" :containerId="containerId" />
@@ -63,7 +63,7 @@ const drawerCount = computed(() =>
 
     <section v-if="drawerCount > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Drawers</span>
+        <h3 class="mgmt__title">Drawers</h3>
         <span class="mgmt__count">{{ drawerCount }}</span>
       </header>
       <ShowStatusDrawer :items="drawer" :containerId="containerId" />
@@ -71,7 +71,7 @@ const drawerCount = computed(() =>
 
     <section v-if="popup.items.length > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Popups</span>
+        <h3 class="mgmt__title">Popups</h3>
         <span class="mgmt__count"
           >{{ popup.show.length }}/{{ popup.items.length }}</span
         >
@@ -85,7 +85,7 @@ const drawerCount = computed(() =>
 
     <section v-if="modal.items.length > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Modals</span>
+        <h3 class="mgmt__title">Modals</h3>
         <span class="mgmt__count"
           >{{ modal.show.length }}/{{ modal.items.length }}</span
         >
@@ -99,7 +99,7 @@ const drawerCount = computed(() =>
 
     <section v-if="float.items.length > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Floats</span>
+        <h3 class="mgmt__title">Floats</h3>
         <span class="mgmt__count"
           >{{ float.show.length }}/{{ float.items.length }}</span
         >
@@ -113,7 +113,7 @@ const drawerCount = computed(() =>
 
     <section v-if="bottom.items.length > 0" class="mgmt__section">
       <header class="mgmt__header">
-        <span class="mgmt__title">Bottoms</span>
+        <h3 class="mgmt__title">Bottoms</h3>
         <span class="mgmt__count"
           >{{ bottom.show ? 1 : 0 }}/{{ bottom.items.length }}</span
         >

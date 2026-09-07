@@ -1,7 +1,8 @@
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
-  MouseEvent as ReactMouseEvent,
-  ReactNode,
-  TouchEvent as ReactTouchEvent,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+  type TouchEvent as ReactTouchEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -113,6 +114,10 @@ export function DraggableDrawer({
 
   const { CloseIcon, SidebarOpenMenu } = useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
+  const drawerRootRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = `drawer-title-${itemId}`;
 
   const isHorizontal = location === 'left' || location === 'right';
   const [p_size, setPSize] = useState(
@@ -208,6 +213,35 @@ export function DraggableDrawer({
   const handleClose = useCallback(() => {
     setShow(false);
   }, [setShow]);
+
+  useEffect(() => {
+    if (!show) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (drawerRootRef.current) focusFirst(drawerRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      if (menuOpen) return;
+      const root = drawerRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      setShow(false);
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+  }, [show, menuOpen, setShow]);
 
   const openMenu = useCallback((e: ReactMouseEvent) => {
     contextMenuRef.current?.open(e);
@@ -311,8 +345,12 @@ export function DraggableDrawer({
   }, [isResizing, location]);
 
   const menu = (
-    <ContextMenu ref={contextMenuRef}>
-      <ul className="context-menu">
+    <ContextMenu
+      ref={contextMenuRef}
+      ariaLabel="Switch drawer panel"
+      onOpenChange={setMenuOpen}
+    >
+      <ul className="context-menu" role="presentation">
         {drawerItems.map((item) => (
           <ContextMenuItem
             key={item.id}
@@ -334,6 +372,10 @@ export function DraggableDrawer({
     <>
       {createPortal(
         <div
+          ref={drawerRootRef}
+          role="dialog"
+          aria-labelledby={titleId}
+          tabIndex={-1}
           className={[
             'draggable-drawer',
             `draggable-drawer--${location}`,
@@ -346,7 +388,7 @@ export function DraggableDrawer({
             <div className="draggable-drawer-inner">
               {!disabledHeader && (
                 <Header
-                  title={title}
+                  title={<span id={titleId}>{title}</span>}
                   extraBtn={
                     <>
                       {extraBtn}
@@ -354,13 +396,17 @@ export function DraggableDrawer({
                         <MapButton
                           onClick={openMenu}
                           aria-label="Open drawer menu"
-                          role="button"
+                          aria-haspopup="menu"
+                          aria-expanded={menuOpen}
                         >
                           <SidebarOpenMenu size={'16px'} />
                         </MapButton>
                       )}
                       {!disabledClose && (
-                        <MapButton onClick={handleClose}>
+                        <MapButton
+                          aria-label="Close drawer"
+                          onClick={handleClose}
+                        >
                           <CloseIcon size={'16px'} />
                         </MapButton>
                       )}
@@ -374,6 +420,7 @@ export function DraggableDrawer({
           {resizable && (
             <div
               className={resizeHandleClass}
+              aria-hidden="true"
               onMouseDown={onResizeStart}
               onTouchStart={onResizeStart}
             />

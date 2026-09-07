@@ -6,7 +6,16 @@ export default {
 <script setup lang="ts">
 import ContextMenu from '../../ContextMenu.vue';
 import ContextMenuItem from '../../ContextMenuItem.vue';
-import { computed, inject, ref, Ref, watch } from 'vue';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  Ref,
+  watch,
+} from 'vue';
 import {
   useComponent,
   useExpand,
@@ -26,6 +35,8 @@ const contextMenuRef = ref<
   | undefined
 >();
 const menuOpen = ref(false);
+const shellRoot = ref<HTMLElement>();
+let previousFocus: HTMLElement | null = null;
 const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
   useIcon();
 defineProps({
@@ -62,6 +73,36 @@ function onClose() {
   if (itemShow) storeBottom.registerBottomShow(itemShow, false);
 }
 
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  if (menuOpen.value) return;
+  const root = shellRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
+watch(show, async (visible) => {
+  document.removeEventListener('keydown', onKeydown);
+  if (!visible) {
+    restoreFocus(previousFocus);
+    previousFocus = null;
+    return;
+  }
+  previousFocus = document.activeElement as HTMLElement | null;
+  document.addEventListener('keydown', onKeydown);
+  await nextTick();
+  if (shellRoot.value) focusFirst(shellRoot.value);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+});
+
 function closeContextMenu() {
   contextMenuRef.value?.close();
 }
@@ -85,11 +126,14 @@ const shellStyle = computed(() => ({
   <!-- v-show (not v-if): keep title/content portal hosts mounted so
        BottomModule can teleport on first open without a race. -->
   <div
+    ref="shellRoot"
     v-show="show"
     class="popup-mobile-container bottom-container"
     role="region"
     aria-label="Bottom panel"
     :aria-labelledby="titleTo"
+    :aria-hidden="show ? undefined : 'true'"
+    tabindex="-1"
     :style="shellStyle"
   >
     <component :is="componentCard">
@@ -104,20 +148,22 @@ const shellStyle = computed(() => ({
               aria-label="Open bottom menu"
               aria-haspopup="menu"
               :aria-expanded="menuOpen ? 'true' : 'false'"
-              role="button"
               @click="openMenu"
             >
               <SidebarOpenMenu :size="16" />
             </map-button>
             <map-button
-              :aria-label="expand ? 'Collapse bottom panel' : 'Expand bottom panel'"
-              role="button"
+              :aria-label="
+                expand ? 'Collapse bottom panel' : 'Expand bottom panel'
+              "
+              :aria-expanded="expand ? 'true' : 'false'"
+              :aria-controls="contentTo"
               @click="onToggleExpand()"
             >
               <FullscreenIcon v-if="expand" :size="16" />
               <OffFullscreenIcon v-else :size="16" />
             </map-button>
-            <map-button aria-label="Close bottom" role="button" @click="onClose">
+            <map-button aria-label="Close bottom" @click="onClose">
               <CloseIcon :size="16" />
             </map-button>
           </template>
@@ -131,7 +177,7 @@ const shellStyle = computed(() => ({
     aria-label="Switch bottom panel"
     @update:open="menuOpen = $event"
   >
-    <ul class="context-menu">
+    <ul class="context-menu" role="presentation">
       <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"

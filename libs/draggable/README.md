@@ -116,12 +116,13 @@ Breaking if you:
 
 ### Pre-merge
 
-1. [ ] List changed files/exports (`src/index.ts`, barrels, `package.json#exports`)
-2. [ ] Scan runtime strings: `drag:core`, item type strings, `LocationSideBar`
-3. [ ] Diff props/events against `core/docs/*`
-4. [ ] Confirm Vue **and** React keep the same contract where both ship the feature
-5. [ ] Peer matrix: `draggable` ↔ `vue-draggable` / `react-draggable`
-6. [ ] Choose `major` | `minor` | `patch` and write one “why” line for CHANGELOG
+1. [ ] List changed files/exports (`src/index.ts`, `experimental.ts`, barrels, `package.json#exports`)
+2. [ ] Update `public-api.spec.ts` allowlists if runtime exports changed
+3. [ ] Scan runtime strings: `drag:core`, item type strings, `LocationSideBar`
+4. [ ] Diff props/events / a11y against `core/docs/*` (`stable-api.md`, `a11y.md`, component docs)
+5. [ ] Confirm Vue **and** React keep the same contract where both ship the feature
+6. [ ] Peer matrix: `draggable` ↔ `vue-draggable` / `react-draggable`
+7. [ ] Choose `major` | `minor` | `patch` and write one “why” line for CHANGELOG
 
 ### Release
 
@@ -139,6 +140,7 @@ Breaking if you:
 | Change | Bump |
 |--------|------|
 | Add optional item prop | minor |
+| Add Stable a11y helper (`restoreFocus`, …) | minor |
 | Rename `drag:core` store id | major |
 | Rename `item-popup` type string | major |
 | Add new Stable component export | minor |
@@ -146,19 +148,22 @@ Breaking if you:
 | Change `v-model:show` / `onUpdateShow` contract | major |
 | Raise React peer to 19 only | major |
 | Internal store refactor, same API | patch |
-| Docs-only Stable API updates | patch |
-| ManagementControl-only change (experimental) | patch/minor — note experimental |
+| Docs-only Stable API / a11y updates | patch |
+| ManagementControl / ContextMenu-only change (experimental) | patch/minor — note experimental |
+| Vite demo Fast Refresh exclude only | patch (tooling) |
 
 ## 7. Reducing “everything is breaking”
 
 1. **Stable API allowlist:** [core/docs/stable-api.md](./core/docs/stable-api.md) — SemVer promises apply here.
-2. **Named root barrels** — packages use explicit exports (no `export *`). Runtime surface is locked by `public-api.spec.ts`.
-3. Mark the rest **experimental** (`experimental.ts` + docs table) — may change in a **minor**.
+2. **Named root barrels** — packages use explicit exports (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package (`core` / `vue` / `react`).
+3. Mark the rest **experimental** (`experimental.ts` + docs table) — may change in a **minor**. Still re-exported from the root for 1.x compat.
 4. Prefer peer ranges like `^1.0.1` over long-lived exact `1.0.1` once release process is stable.
+5. **React Vite demos:** exclude workspace `libs/` from `@vitejs/plugin-react` Fast Refresh (`react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })`). Otherwise browser ESM reports missing named exports from path-aliased source. See `apps/react/demo-draggable/vite.config.ts`.
+6. **React store:** do not re-export `useStoreReactive` from `store/index.ts` (circular with `useStoreReactive.ts`).
 
 ## 8. Team policy (one line)
 
 > **Major** if compile, store/item protocol, peer minimum, or documented behavior breaks.  
-> **Minor** if additive only.  
+> **Minor** if additive only (including new Stable a11y helpers).  
 > **Patch** if fix within the published contract.  
-> Prefer the [Stable API allowlist](./core/docs/stable-api.md) for SemVer promises. Unlisted exports are experimental.
+> Prefer the [Stable API allowlist](./core/docs/stable-api.md) for SemVer promises. Experimental root exports may change in a **minor**.

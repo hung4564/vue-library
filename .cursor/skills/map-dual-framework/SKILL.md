@@ -47,6 +47,16 @@ Skip React only when the area is explicitly Vue-only (e.g. `vue-map-draw`) or th
 - React: TSX under matching module folders; hooks like `useMap`, `useMapInstance`, `useRegisterMapControl`
 - Shared styles: package `style.css` entries and documented CSS variables — change carefully
 
+## React Vite demos
+
+Path aliases resolve `@hungpvq/react-*` into `libs/`. Exclude `libs/` from Fast Refresh or named exports break in the browser:
+
+```ts
+react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })
+```
+
+Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).
+
 ## Checklist before finishing
 
 - [ ] Core logic not duplicated only in one framework package
@@ -54,3 +64,4 @@ Skip React only when the area is explicitly Vue-only (e.g. `vue-map-draw`) or th
 - [ ] Dataset plugin / registry wiring still registers components
 - [ ] Types exported consistently from package entry
 - [ ] Demo or docs smoke path noted if UI-visible
+- [ ] New React Vite apps that alias `libs/` exclude Fast Refresh on `libs/`

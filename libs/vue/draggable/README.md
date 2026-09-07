@@ -55,6 +55,12 @@ import {
 
 See full docs in the [Draggable documentation](../../draggable/core/docs/index.md) (or the published docs site).
 
+**Stable API:** named root exports only — see [stable-api.md](../../draggable/core/docs/stable-api.md). Experimental UI (`ManagementControl`, `ContextMenu`, …) lives in `src/experimental.ts` and is still re-exported from the root for 1.x. Runtime surface is locked by `src/public-api.spec.ts`.
+
+**A11y:** [a11y.md](../../draggable/core/docs/a11y.md).
+
 ## Contributing
 
 Any contribution to the code or any part of the documentation and any idea and/or suggestion are very welcome.
+
+When changing public exports: update `src/index.ts` / `experimental.ts`, `public-api.spec.ts`, and Stable docs together (`draggable-semver-api` skill).

@@ -234,4 +234,59 @@ describe('Stable item shells register into store', () => {
     expect(c.actions[c.drawer.right.items[0]]?.type).toBe('item-drawer');
     wrapper.unmount();
   });
+
+  it('popup exposes dialog role, close label, Escape closes', async () => {
+    const wrapper = await mountItem(DraggableItemPopup, { top: 10, left: 10 });
+    const dialog = wrapper.find('[role="dialog"]');
+    expect(dialog.exists()).toBe(true);
+    expect(wrapper.find('[aria-label="Close panel"]').exists()).toBe(true);
+    (dialog.element as HTMLElement).focus();
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    await nextTick();
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  it('drawer switcher exposes haspopup when multiple on edge', async () => {
+    const drawerId = 'items-vue-drawer-switch';
+    useDragContainer(drawerId).initContainer();
+    useDragContainer(drawerId).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const wrapper = mount(
+      defineComponent({
+        components: { DraggableDrawer },
+        setup() {
+          return { cid: drawerId };
+        },
+        template: `
+          <DraggableDrawer id="sw-a" show location="right" title="A" :containerId="cid" :size="280" />
+          <DraggableDrawer id="sw-b" :show="false" location="right" title="B" :containerId="cid" :size="280" />
+        `,
+      }),
+      {
+        attachTo: document.body,
+        global: {
+          provide: { containerId: ref(drawerId) },
+          stubs: { Teleport: true, ContextMenu: true },
+        },
+      },
+    );
+    await nextTick();
+    await nextTick();
+    const switcher = document.body.querySelector(
+      '[aria-label="Open drawer menu"]',
+    );
+    expect(switcher).toBeTruthy();
+    expect(switcher?.getAttribute('aria-haspopup')).toBe('menu');
+    wrapper.unmount();
+  });
 });

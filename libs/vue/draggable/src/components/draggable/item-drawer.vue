@@ -6,9 +6,11 @@ export default {
 <script setup lang="ts">
 import ContextMenu from '../ContextMenu.vue';
 import ContextMenuItem from '../ContextMenuItem.vue';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   computed,
   inject,
+  nextTick,
   onBeforeUnmount,
   ref,
   Ref,
@@ -98,6 +100,10 @@ const contextMenuRef = ref<
     }
   | undefined
 >();
+const menuOpen = ref(false);
+const drawerRoot = ref<HTMLElement>();
+const titleId = computed(() => `drawer-title-${itemId.value}`);
+let previousFocus: HTMLElement | null = null;
 
 const savedLayout = dragLayout.getItemLayout(itemId.value);
 const p_size = ref(savedLayout?.size ?? props.size);
@@ -184,6 +190,36 @@ function onClose() {
   show.value = false;
 }
 
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  if (menuOpen.value) return;
+  const root = drawerRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
+watch(
+  show,
+  async (visible) => {
+    document.removeEventListener('keydown', onKeydown);
+    if (!visible) {
+      restoreFocus(previousFocus);
+      previousFocus = null;
+      return;
+    }
+    previousFocus = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', onKeydown);
+    await nextTick();
+    if (drawerRoot.value) focusFirst(drawerRoot.value);
+  },
+  { immediate: true },
+);
+
 function openMenu(e: MouseEvent) {
   contextMenuRef.value?.open(e);
 }
@@ -264,6 +300,7 @@ function onResizeEnd() {
 
 onBeforeUnmount(() => {
   onResizeEnd();
+  document.removeEventListener('keydown', onKeydown);
 });
 
 const resizeHandleClass = computed(() => {
@@ -278,7 +315,11 @@ const resizeHandleClass = computed(() => {
 <template>
   <Teleport v-if="show" :to="slotTo">
     <div
+      ref="drawerRoot"
       class="draggable-drawer"
+      role="dialog"
+      :aria-labelledby="titleId"
+      tabindex="-1"
       :class="[
         `draggable-drawer--${location}`,
         { 'draggable-drawer--resizing': isResizing },
@@ -289,21 +330,28 @@ const resizeHandleClass = computed(() => {
           <template v-if="!disabledHeader">
             <component :is="componentCardHeader">
               <template #title>
-                <slot name="title">
-                  {{ title }}
-                </slot>
+                <span :id="titleId">
+                  <slot name="title">
+                    {{ title }}
+                  </slot>
+                </span>
               </template>
               <template #extra-btn>
                 <slot name="extra-btn"></slot>
                 <map-button
                   v-if="showSwitcher"
                   aria-label="Open drawer menu"
-                  role="button"
+                  aria-haspopup="menu"
+                  :aria-expanded="menuOpen ? 'true' : 'false'"
                   @click="openMenu"
                 >
                   <SidebarOpenMenu :size="16" />
                 </map-button>
-                <map-button v-if="!disabledClose" @click="onClose">
+                <map-button
+                  v-if="!disabledClose"
+                  aria-label="Close drawer"
+                  @click="onClose"
+                >
                   <CloseIcon :size="16" />
                 </map-button>
               </template>
@@ -317,13 +365,18 @@ const resizeHandleClass = computed(() => {
       <div
         v-if="resizable"
         :class="resizeHandleClass"
+        aria-hidden="true"
         @mousedown="onResizeStart"
         @touchstart.prevent="onResizeStart"
       />
     </div>
   </Teleport>
-  <ContextMenu ref="contextMenuRef">
-    <ul class="context-menu">
+  <ContextMenu
+    ref="contextMenuRef"
+    aria-label="Switch drawer panel"
+    @update:open="menuOpen = $event"
+  >
+    <ul class="context-menu" role="presentation">
       <ContextMenuItem
         v-for="option in availableDrawerItems"
         :key="option.id"

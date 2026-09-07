@@ -94,3 +94,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Modal dialog: `aria-modal`, Tab trap, Escape, focus restore, sibling inert. See [a11y.md](./a11y.md).

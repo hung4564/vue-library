@@ -3,6 +3,8 @@
     type="button"
     class="hungpvq-draggable-button"
     v-bind="$attrs"
+    :disabled="disabled || undefined"
+    :aria-disabled="disabled ? 'true' : undefined"
     :style="bindStyle"
     :class="bindClass"
   >
@@ -15,6 +17,7 @@
 <script>
 export default {
   name: 'MapButton',
+  inheritAttrs: false,
   props: { height: { default: 32 }, width: { default: 32 }, disabled: Boolean },
   computed: {
     bindStyle() {

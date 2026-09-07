@@ -255,4 +255,70 @@ describe('Stable item shells register into store', () => {
     expect(c.actions[c.drawer.right.items[0]]?.type).toBe('item-drawer');
     unmount();
   });
+
+  it('popup exposes dialog role, close label, Escape closes', async () => {
+    const { container, unmount } = await renderItem(DraggableItemPopup, {
+      top: 10,
+      left: 10,
+    });
+    const dialog = container.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog).toBeTruthy();
+    expect(container.querySelector('[aria-label="Close panel"]')).toBeTruthy();
+    dialog.focus();
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    await waitFor(() => {
+      expect(container.querySelector('[role="dialog"]')).toBeNull();
+    });
+    unmount();
+  });
+
+  it('drawer switcher exposes haspopup when multiple on edge', async () => {
+    const drawerId = 'items-react-drawer-switch';
+    getDragContainer(drawerId).initContainer();
+    getDragContainer(drawerId).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const host = document.createElement('div');
+    host.id = `drawer-right-${drawerId}`;
+    document.body.appendChild(host);
+    const { unmount } = render(
+      <ContainerProvider containerId={drawerId}>
+        <DraggableDrawer
+          id="sw-a"
+          show
+          location="right"
+          title="A"
+          containerId={drawerId}
+          size={280}
+        />
+        <DraggableDrawer
+          id="sw-b"
+          show={false}
+          location="right"
+          title="B"
+          containerId={drawerId}
+          size={280}
+        />
+      </ContainerProvider>,
+    );
+    await waitFor(() => {
+      const switcher = document.body.querySelector(
+        '[aria-label="Open drawer menu"]',
+      );
+      expect(switcher).toBeTruthy();
+      expect(switcher?.getAttribute('aria-haspopup')).toBe('menu');
+    });
+    unmount();
+    host.remove();
+  });
 });

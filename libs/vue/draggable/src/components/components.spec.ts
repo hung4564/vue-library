@@ -57,6 +57,15 @@ describe('parts', () => {
     expect(wrapper.attributes('style')).toContain('24px');
   });
 
+  it('MapButton applies native disabled', () => {
+    const wrapper = mount(MapButton, {
+      props: { disabled: true },
+      slots: { default: 'X' },
+    });
+    expect(wrapper.attributes('disabled')).toBeDefined();
+    expect(wrapper.attributes('aria-disabled')).toBe('true');
+  });
+
   it('MapCard and MapHeader mount', () => {
     expect(mount(MapCard).exists()).toBe(true);
     expect(
@@ -189,7 +198,7 @@ describe('ContextMenu', () => {
       attachTo: document.body,
       slots: {
         default: () =>
-          h('ul', { class: 'context-menu' }, [
+          h('ul', { class: 'context-menu', role: 'presentation' }, [
             h(ContextMenuItem, null, () => 'One'),
           ]),
       },
@@ -214,6 +223,38 @@ describe('ContextMenu', () => {
     );
     await nextTick();
     expect(el.style.display).toBe('none');
+    wrapper.unmount();
+  });
+
+  it('traps Tab inside the open menu', async () => {
+    const wrapper = mount(ContextMenu, {
+      attachTo: document.body,
+      slots: {
+        default: () =>
+          h('ul', { class: 'context-menu', role: 'presentation' }, [
+            h(ContextMenuItem, null, () => 'One'),
+            h(ContextMenuItem, null, () => 'Two'),
+          ]),
+      },
+    });
+    const vm = wrapper.vm as unknown as {
+      open: (e: MouseEvent) => void;
+      close: () => void;
+    };
+    vm.open(new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }));
+    await nextTick();
+    const items = document.body.querySelectorAll('[role="menuitem"]');
+    expect(items.length).toBe(2);
+    (items[1] as HTMLElement).focus();
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Tab',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(items[0]);
+    vm.close();
     wrapper.unmount();
   });
 });

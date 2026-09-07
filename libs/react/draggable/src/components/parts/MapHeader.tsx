@@ -10,7 +10,7 @@ export type MapHeaderProps = {
 function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
   return (
     <>
-      <hr className="map-divider" />
+      <hr className="map-divider" aria-hidden="true" />
       <div className="draggable-header">
         <div className="draggable-header__content">
           {preTitle}
@@ -19,7 +19,7 @@ function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
           {extraBtn}
         </div>
       </div>
-      <hr className="map-divider" />
+      <hr className="map-divider" aria-hidden="true" />
     </>
   );
 }

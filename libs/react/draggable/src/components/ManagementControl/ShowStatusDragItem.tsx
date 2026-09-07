@@ -36,16 +36,20 @@ export function ShowStatusDragItem({
         renderExtra={(item, show) => (
           <>
             {show && (
-              <MapButton onClick={() => onHighLight(item)} title="Highlight">
+              <MapButton
+                onClick={() => onHighLight(item)}
+                title="Highlight"
+                aria-label="Highlight"
+              >
                 <HighlightIcon size={16} />
               </MapButton>
             )}
             {!show ? (
-              <MapButton onClick={() => onOpen(item)} title="Show">
+              <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                 <ShowIcon size={16} />
               </MapButton>
             ) : (
-              <MapButton onClick={() => onClose(item)} title="Hide">
+              <MapButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
                 <HideIcon size={16} />
               </MapButton>
             )}

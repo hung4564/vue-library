@@ -186,9 +186,13 @@ Theme tokens: [css-tokens.md](./css-tokens.md).
 - UI CSS lives in `@hungpvq/draggable`; the Vue/React packages re-export it via `/style.css`.
 - Override `--draggable-*` (or `--map-*`) — see [css-tokens.md](./css-tokens.md).
 
+### Why does the React demo say a named export is missing?
+
+Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fast Refresh runs on those files, the browser can report `does not provide an export named '…'`. Exclude `libs/` from the React plugin (already done for `demo-draggable` / `demo-map`). See [SemVer §7](../../README.md#7-reducing-everything-is-breaking).
+
 ## Stable API & SemVer
 
-- [Stable API allowlist](./stable-api.md) (includes layout persist cookbook)
+- [Stable API allowlist](./stable-api.md) (named exports + `public-api.spec.ts` lock; layout persist cookbook)
 - [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
 - [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)

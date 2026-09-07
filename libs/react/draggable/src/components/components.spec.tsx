@@ -63,6 +63,12 @@ describe('parts', () => {
     expect(btn.style.height).toBe('24px');
   });
 
+  it('MapButton applies native disabled', () => {
+    const { container } = render(<MapButton disabled>X</MapButton>);
+    const btn = container.querySelector('button') as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+  });
+
   it('MapCard and MapHeader mount', () => {
     expect(render(<MapCard />).container.firstChild).toBeTruthy();
     expect(render(<MapHeader title="T" />).getByText('T')).toBeTruthy();
@@ -166,7 +172,7 @@ describe('ContextMenu', () => {
     const ref = React.createRef<ContextMenuRef>();
     render(
       <ContextMenu ref={ref}>
-        <ul className="context-menu">
+        <ul className="context-menu" role="presentation">
           <ContextMenuItem>One</ContextMenuItem>
         </ul>
       </ContextMenu>,
@@ -187,5 +193,38 @@ describe('ContextMenu', () => {
       );
     });
     expect(document.body.querySelector('.context-menu-container')).toBeNull();
+  });
+
+  it('traps Tab inside the open menu', async () => {
+    const ref = React.createRef<ContextMenuRef>();
+    render(
+      <ContextMenu ref={ref}>
+        <ul className="context-menu" role="presentation">
+          <ContextMenuItem>One</ContextMenuItem>
+          <ContextMenuItem>Two</ContextMenuItem>
+        </ul>
+      </ContextMenu>,
+    );
+    await act(async () => {
+      ref.current?.open(
+        new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }),
+      );
+    });
+    const items = document.body.querySelectorAll('[role="menuitem"]');
+    expect(items.length).toBe(2);
+    (items[1] as HTMLElement).focus();
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    expect(document.activeElement).toBe(items[0]);
+    await act(async () => {
+      ref.current?.close();
+    });
   });
 });

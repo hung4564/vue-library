@@ -44,7 +44,7 @@ export function ShowStatusSideBar({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <MapButton onClick={() => onOpen(item)} title="Show">
+                <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                   <ShowIcon size={16} />
                 </MapButton>
               ) : null

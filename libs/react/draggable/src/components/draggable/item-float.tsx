@@ -1,4 +1,11 @@
-import { useMemo, type CSSProperties, type ReactNode } from 'react';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -113,9 +120,41 @@ export function DraggableItemFloat({
     CloseExpandedIcon,
   } = useIcon();
 
+  const panelRootRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = `float-title-${itemId}`;
+
   function handleClose() {
     setShow(false);
   }
+
+  useEffect(() => {
+    if (!show) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (panelRootRef.current) focusFirst(panelRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      const root = panelRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      setShow(false);
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+  }, [show, setShow]);
 
   const style = useMemo(() => {
     const s: CSSProperties = { zIndex };
@@ -143,18 +182,26 @@ export function DraggableItemFloat({
 
   return (
     <div
+      ref={panelRootRef}
       className={`float-container ${isAutoWidth ? 'auto-float-container' : ''}`}
       style={style}
+      role="dialog"
+      aria-labelledby={titleId}
+      tabIndex={-1}
     >
       <Card highlight={isHighlight}>
         <div className="draggable-float">
           {!disabledHeader && headerLocation === 'top' && (
             <Header
-              title={title}
+              title={<span id={titleId}>{title}</span>}
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton onClick={onToggleExpand}>
+                  <MapButton
+                    aria-label={expand ? 'Collapse panel' : 'Expand panel'}
+                    aria-expanded={expand}
+                    onClick={onToggleExpand}
+                  >
                     {expand ? (
                       <ExpandedIcon size={'16px'} />
                     ) : (
@@ -163,16 +210,24 @@ export function DraggableItemFloat({
                   </MapButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton disabled={isFirst} onClick={onToBack}>
+                      <MapButton
+                        aria-label="Send to back"
+                        disabled={isFirst}
+                        onClick={onToBack}
+                      >
                         <ToBackIcon size={'16px'} />
                       </MapButton>
-                      <MapButton disabled={isLast} onClick={onToFront}>
+                      <MapButton
+                        aria-label="Bring to front"
+                        disabled={isLast}
+                        onClick={onToFront}
+                      >
                         <ToFrontIcon size={'16px'} />
                       </MapButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton onClick={handleClose}>
+                    <MapButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
                     </MapButton>
                   )}
@@ -187,11 +242,15 @@ export function DraggableItemFloat({
           )}
           {!disabledHeader && headerLocation === 'bottom' && (
             <Header
-              title={title}
+              title={<span id={titleId}>{title}</span>}
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton onClick={onToggleExpand}>
+                  <MapButton
+                    aria-label={expand ? 'Collapse panel' : 'Expand panel'}
+                    aria-expanded={expand}
+                    onClick={onToggleExpand}
+                  >
                     {expand ? (
                       <ExpandedIcon size={'16px'} />
                     ) : (
@@ -200,16 +259,24 @@ export function DraggableItemFloat({
                   </MapButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton disabled={isFirst} onClick={onToBack}>
+                      <MapButton
+                        aria-label="Send to back"
+                        disabled={isFirst}
+                        onClick={onToBack}
+                      >
                         <ToBackIcon size={'16px'} />
                       </MapButton>
-                      <MapButton disabled={isLast} onClick={onToFront}>
+                      <MapButton
+                        aria-label="Bring to front"
+                        disabled={isLast}
+                        onClick={onToFront}
+                      >
                         <ToFrontIcon size={'16px'} />
                       </MapButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton onClick={handleClose}>
+                    <MapButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
                     </MapButton>
                   )}

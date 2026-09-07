@@ -64,9 +64,14 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 - Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md`
 - Map docs index: `libs/map-core/core/docs/index.md`
 - Draggable SemVer + public surface: `libs/draggable/README.md`
-- Draggable Stable API: `libs/draggable/core/docs/stable-api.md`
+- Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
+- Draggable a11y: `libs/draggable/core/docs/a11y.md`
 - Draggable docs index: `libs/draggable/core/docs/index.md`
 - Per-package READMEs under each lib
+
+## React demos + workspace `libs/` source
+
+Tsconfig paths point `@hungpvq/react-*` at `libs/**/src`. React Vite demos must **exclude `libs/` from Fast Refresh** or named exports break in the browser (`does not provide an export named …`). Pattern: `react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })` — see `draggable-semver-api` and `apps/react/demo-draggable/vite.config.ts`.
 
 ## Related skills
 

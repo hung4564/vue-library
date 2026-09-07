@@ -4,8 +4,8 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { clampBounds } from '@hungpvq/draggable';
-import { inject, ref, Ref, watch } from 'vue';
+import { clampBounds, focusFirst, restoreFocus } from '@hungpvq/draggable';
+import { inject, nextTick, onBeforeUnmount, ref, Ref, watch } from 'vue';
 import MapButton from '../parts/MapButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
@@ -157,13 +157,40 @@ function onResizeStop(x: number, y: number, width: number, height: number) {
   applyClamp();
   emitBounds();
 }
+const panelRoot = ref<HTMLElement>();
+const titleId = `popup-title-${itemId.value}`;
+let previousFocus: HTMLElement | null = null;
+
 function onClose() {
   show.value = false;
 }
+
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  const root = panelRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
 watch(
   show,
-  () => {
+  async (visible) => {
+    document.removeEventListener('keydown', onKeydown);
     init();
+    if (!visible) {
+      restoreFocus(previousFocus);
+      previousFocus = null;
+      return;
+    }
+    previousFocus = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', onKeydown);
+    await nextTick();
+    if (panelRoot.value) focusFirst(panelRoot.value);
   },
   { immediate: true },
 );
@@ -242,6 +269,9 @@ function onToggleExpanded() {
 function onDragging() {
   window?.getSelection()?.removeAllRanges();
 }
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+});
 </script>
 
 <template>
@@ -272,13 +302,21 @@ function onDragging() {
       :height="p_height"
       :highlight="isHighlight"
     >
-      <div class="draggable-popup-desktop">
+      <div
+        ref="panelRoot"
+        class="draggable-popup-desktop"
+        role="dialog"
+        :aria-labelledby="titleId"
+        tabindex="-1"
+      >
         <template v-if="!disabledHeader">
           <component :is="componentCardHeader">
             <template #title>
-              <slot name="title">
-                {{ title }}
-              </slot>
+              <span :id="titleId">
+                <slot name="title">
+                  {{ title }}
+                </slot>
+              </span>
             </template>
             <template #pre-title>
               <div class="draggable-popup-drag-container">
@@ -289,18 +327,34 @@ function onDragging() {
             <template #extra-btn>
               <slot name="extra-btn"></slot>
               <template v-if="isHasItems && !disabledOrder">
-                <map-button :disabled="isFirst" @click="onToBack()">
+                <map-button
+                  aria-label="Send to back"
+                  :disabled="isFirst"
+                  @click="onToBack()"
+                >
                   <ToBackIcon :size="16" />
                 </map-button>
-                <map-button :disabled="isLast" @click="onToFront()">
+                <map-button
+                  aria-label="Bring to front"
+                  :disabled="isLast"
+                  @click="onToFront()"
+                >
                   <ToFrontIcon :size="16" />
                 </map-button>
               </template>
-              <map-button @click="onToggleExpanded">
+              <map-button
+                :aria-label="expand ? 'Collapse panel' : 'Expand panel'"
+                :aria-expanded="expand ? 'true' : 'false'"
+                @click="onToggleExpanded"
+              >
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
               </map-button>
-              <map-button v-if="!disabledClose" @click.stop="onClose">
+              <map-button
+                v-if="!disabledClose"
+                aria-label="Close panel"
+                @click.stop="onClose"
+              >
                 <CloseIcon :size="16" />
               </map-button>
             </template>

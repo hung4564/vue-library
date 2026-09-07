@@ -95,7 +95,18 @@ Undocumented CSS class names / layout tokens not listed above remain experimenta
 
 ## Enforcing the allowlist
 
-1. Edit `src/index.ts` with **named** exports only (no `export *`).
-2. Update the matching `public-api.spec.ts` allowlist arrays.
-3. Update this page (Stable vs Experimental tables).
-4. CI / `nx test` fails if a new accidental export appears or a Stable symbol is dropped without updating the lock.
+1. Edit `src/index.ts` with **named** exports only (no `export *`). Prefer `import { X } from '…'; export { X }` for heavy shell graphs (Vite ESM).
+2. Put unstable UI in `experimental.ts` (adapters) and list it in the Experimental table; root may re-export for 1.x compat.
+3. Update the matching `public-api.spec.ts` allowlist arrays (runtime symbols only).
+4. Update this page (Stable vs Experimental tables) and `a11y.md` when focus/ARIA/menu helpers change.
+5. CI / `nx test` fails if a new accidental export appears or a Stable symbol is dropped without updating the lock.
+
+## React store wiring (adapters)
+
+- Vue: `configureDragStore({ makeReactive: reactive })` in `libs/vue/draggable/src/store`.
+- React: `configureDragStore({ notify })` in `libs/react/draggable/src/store/index.ts`.
+- React `useStoreReactive` / `useContainerReactive` live in `store/useStoreReactive.ts` and must **not** be re-exported from `store/index.ts` (circular barrel breaks Vite named exports). Root entry imports `./store` for side-effect configure, then exports reactive hooks from `useStoreReactive.ts`.
+
+## Vite Fast Refresh + path aliases
+
+React demos that resolve packages to `libs/**/src` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh — see [SemVer README §7](../../README.md#7-reducing-everything-is-breaking) and skill `draggable-semver-api`.

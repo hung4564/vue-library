@@ -86,3 +86,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Non-modal `role="dialog"` + `aria-labelledby`; Escape closes when focus is inside the panel; expand uses `aria-expanded`. Icon-only chrome is labelled. Keyboard drag/resize is out of scope. See [a11y.md](./a11y.md).

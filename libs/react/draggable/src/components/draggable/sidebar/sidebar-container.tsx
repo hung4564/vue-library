@@ -1,7 +1,8 @@
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   type MouseEvent as ReactMouseEvent,
   type ComponentType,
-  CSSProperties,
+  type CSSProperties,
   useEffect,
   useMemo,
   useRef,
@@ -68,7 +69,9 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
 
   const { CloseIcon, SidebarOpenMenu } = useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
+  const shellRootRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   function openMenu(e: ReactMouseEvent) {
     contextMenuRef.current?.open(e);
@@ -84,6 +87,36 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
     const itemShow = getShowForLocation(location);
     if (itemShow) storeDragItem.registerSideBarShow(itemShow, false);
   }
+
+  useEffect(() => {
+    if (!show) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (shellRootRef.current) focusFirst(shellRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      if (menuOpen) return;
+      const root = shellRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      onClose();
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onClose closes via location/store
+  }, [show, menuOpen, location]);
 
   const c_getShowForLocation = useMemo(
     () => getShowForLocation(location),
@@ -119,10 +152,12 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
   return (
     <>
       <div
+        ref={shellRootRef}
         className={classes}
         role="complementary"
         aria-label={`Sidebar ${location}`}
         aria-labelledby={titleTo}
+        tabIndex={-1}
         style={
           {
             '--sidebar-width': sidebarWidth,
@@ -145,16 +180,11 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
                         aria-label="Open sidebar menu"
                         aria-haspopup="menu"
                         aria-expanded={menuOpen}
-                        role="button"
                       >
                         <SidebarOpenMenu size={'16px'} />
                       </MapButton>
                     )}
-                    <MapButton
-                      onClick={onClose}
-                      aria-label="Close sidebar"
-                      role="button"
-                    >
+                    <MapButton onClick={onClose} aria-label="Close sidebar">
                       <CloseIcon size={'16px'} />
                     </MapButton>
                   </>
@@ -174,7 +204,6 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
               aria-controls={contentTo}
               aria-expanded={expand}
               aria-label={expand ? 'Collapse sidebar' : 'Expand sidebar'}
-              role="button"
             />
           </div>
         )}
@@ -184,7 +213,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
         ariaLabel="Switch sidebar panel"
         onOpenChange={setMenuOpen}
       >
-        <ul className="context-menu">
+        <ul className="context-menu" role="presentation">
           {allItems.map((item) => (
             <ContextMenuItem
               key={item.id}

@@ -77,3 +77,12 @@ The store is shared between Vue and React versions, allowing you to use the same
 - The store implementation uses `@hungpvq/shared-store` (core) and `@hungpvq/shared-store/react` (hooks)
 - React components automatically re-render when store changes via subscription pattern
 - Store mutations trigger notifications to subscribed React components
+- `useStoreReactive` is exported from the package root / `store/useStoreReactive.ts` — do not re-export it from `store/index.ts` (circular barrel)
+
+## Stable API & docs
+
+- [Stable API](../../draggable/core/docs/stable-api.md) — named root exports; experimental in `src/experimental.ts`; lock via `src/public-api.spec.ts`
+- [Accessibility](../../draggable/core/docs/a11y.md)
+- Hub: [docs/index.md](../../draggable/core/docs/index.md)
+
+**Vite / monorepo:** apps that path-alias this package to `libs/` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh or named exports break in the browser. See `apps/react/demo-draggable/vite.config.ts` and skill `draggable-semver-api`.

@@ -43,6 +43,7 @@ import {
   getMenuItems,
   handleMenuKeydown,
   restoreFocus,
+  trapTabKey,
 } from '@hungpvq/draggable';
 import {
   computed,
@@ -110,9 +111,26 @@ function onDocumentKeydown(e: KeyboardEvent) {
     close();
     return;
   }
-  if (content.value) {
-    handleMenuKeydown(content.value, e);
+  if (!content.value) return;
+  if (e.key === 'Tab') {
+    const items = getMenuItems(content.value);
+    if (items.length > 0) {
+      e.preventDefault();
+      const active = document.activeElement as HTMLElement | null;
+      const idx = active ? items.indexOf(active) : -1;
+      if (e.shiftKey) {
+        const prev = idx <= 0 ? items.length - 1 : idx - 1;
+        items[prev].focus();
+      } else {
+        const next = idx >= items.length - 1 ? 0 : idx + 1;
+        items[next].focus();
+      }
+      return;
+    }
+    trapTabKey(content.value, e);
+    return;
   }
+  handleMenuKeydown(content.value, e);
 }
 
 function onBackdropClick(e: MouseEvent) {
