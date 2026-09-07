@@ -15,6 +15,10 @@ Vue / React map libraries built on MapLibre GL.
 - [Vue](https://hung4564.github.io/demo-map/vue/)
 - [React](https://hung4564.github.io/demo-map/react/)
 
+## Versioning
+
+SemVer / breaking-change checklist for all map packages: [../../README.md](../../README.md#checklist-semver--breaking-change)
+
 ## Install (Vue)
 
 ```bash
