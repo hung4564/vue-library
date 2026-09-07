@@ -46,6 +46,10 @@ export type GeojsonDatasetOption = {
   bbox?: GeojsonBbox | null;
   crs?: string;
   color?: Color;
+  /**
+   * Map style opacity (`fill-opacity`, `circle-opacity`, …).
+   * The layer-item slider stays at 1 and multiplies this value when dragged.
+   */
   opacity?: number;
 };
 
@@ -98,9 +102,6 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
 
   const list = createDatasetPartListViewUiComponent(data.name);
   list.color = data.color || getChartRandomColor();
-  if (data.opacity != null) {
-    list.opacity = data.opacity;
-  }
   const bbox =
     data.bbox === null ? undefined : (data.bbox ?? bboxFromGeojson(geojson));
   const listMenus = [
@@ -123,7 +124,7 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
         data.type,
         data.styles,
         list.color,
-        list.opacity,
+        data.opacity,
       ),
     );
   } catch (error) {

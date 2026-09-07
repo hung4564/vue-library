@@ -23,7 +23,7 @@ import type { WithLayerItemActionType } from './types';
 
 const props = defineProps<WithLayerItemActionType>();
 const { callMap } = useMap(props);
-const opacityValue = ref(props.data.opacity);
+const opacityValue = ref(props.data.opacity ?? 1);
 function onUpdateValue(opacity: number) {
   opacityValue.value = opacity;
   onSetOpacity(props.data, opacity);

@@ -84,7 +84,7 @@ export const getDefaultLayer = ({
         paint: {
           'circle-color': color || getChartRandomColor(),
           'circle-radius': 6,
-          'circle-opacity': opacity || 1,
+          'circle-opacity': opacity ?? 1,
         },
       } as CircleLayerSpecification;
       break;
@@ -96,7 +96,7 @@ export const getDefaultLayer = ({
         paint: {
           'line-color': color || getChartRandomColor(),
           'line-width': 4,
-          'line-opacity': opacity || 1,
+          'line-opacity': opacity ?? 1,
         },
       } as LineLayerSpecification;
       break;
@@ -106,7 +106,7 @@ export const getDefaultLayer = ({
         type: 'fill',
         paint: {
           'fill-color': color || getChartRandomColor(),
-          'fill-opacity': opacity || 1,
+          'fill-opacity': opacity ?? 1,
         },
       } as FillLayerSpecification;
       break;

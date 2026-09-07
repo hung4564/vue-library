@@ -17,7 +17,10 @@ export function createMultiMapboxLayerComponent(
     name,
     data,
   );
+  /** Style/paint opacity (fill-opacity, …). Independent of the layer-item slider. */
   const cacheOpacity: Record<string, number> = {};
+  /** Layer-item slider (0–1). Map paint = sliderOpacity * cacheOpacity. */
+  let sliderOpacity = 1;
   base.getData().forEach((layer) => {
     const layer_id = layer.id || getUUIDv4();
     layer.id = layer_id;
@@ -25,8 +28,17 @@ export function createMultiMapboxLayerComponent(
       layer.metadata = {};
     }
     (layer.metadata as any)['maplibregl-legend:name'] = name;
-    cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
+    cacheOpacity[layer_id] = readStyleOpacity(layer);
   });
+
+  const applySliderOpacity = (map: MapSimple, layer: BaseLayerSpec) => {
+    if (!layer.id || !map.getLayer(layer.id)) return;
+    map.setPaintProperty(
+      layer.id,
+      getKeyOpacity(layer),
+      sliderOpacity * (cacheOpacity[layer.id] ?? 1),
+    );
+  };
 
   return createNamedComponent('MultiMapboxLayerComponent', {
     ...base,
@@ -40,7 +52,7 @@ export function createMultiMapboxLayerComponent(
             layer.metadata = {};
           }
           (layer.metadata as any)['maplibregl-legend:name'] = name;
-          cacheOpacity[layer_id] = layer.paint?.[getKeyOpacity(layer)] ?? 1;
+          cacheOpacity[layer_id] = readStyleOpacity(layer);
           return layer;
         }),
       );
@@ -71,6 +83,7 @@ export function createMultiMapboxLayerComponent(
             this.addDependsOn(source);
           }
           map.addLayer(layer as LayerSpecification, beforeId);
+          if (sliderOpacity !== 1) applySliderOpacity(map, layer);
         }
       });
     },
@@ -107,15 +120,8 @@ export function createMultiMapboxLayerComponent(
     },
 
     setOpacity(map: MapSimple, opacity: number): void {
-      base.getData().forEach((layer) => {
-        if (map.getLayer(layer.id!)) {
-          map.setPaintProperty(
-            layer.id!,
-            getKeyOpacity(layer),
-            opacity * (cacheOpacity[layer.id!] ?? 1),
-          );
-        }
-      });
+      sliderOpacity = opacity;
+      base.getData().forEach((layer) => applySliderOpacity(map, layer));
     },
 
     updateValue(
@@ -127,13 +133,26 @@ export function createMultiMapboxLayerComponent(
       const source = findFirstLeafByType(base, 'source');
 
       switch (type) {
-        case 'update-one-layer':
-          updateStyleLayer(map, base.getData()[index], layer);
+        case 'update-one-layer': {
+          const current = base.getData()[index];
+          const opacityKey = getKeyOpacity(current);
+          const opacityChanged =
+            !!layer.paint &&
+            opacityKey in layer.paint &&
+            layer.paint[opacityKey] !== current.paint?.[opacityKey];
+          updateStyleLayer(map, current, layer);
           base.getData()[index] = copyByJson({
-            ...base.getData()[index],
+            ...current,
             ...layer,
           });
+          cacheOpacity[base.getData()[index].id!] = readStyleOpacity(
+            base.getData()[index],
+          );
+          if (opacityChanged || sliderOpacity !== 1) {
+            applySliderOpacity(map, base.getData()[index]);
+          }
           break;
+        }
 
         case 'add-one-layer':
           layer = {
@@ -141,8 +160,10 @@ export function createMultiMapboxLayerComponent(
             id: `${base.id}-${base.getData().length}`,
             source: (source as any).getSourceId(),
           };
+          cacheOpacity[layer.id] = readStyleOpacity(layer);
           map.addLayer(layer, base.getData()[index - 1]?.id);
           base.getData().push(layer);
+          if (sliderOpacity !== 1) applySliderOpacity(map, layer);
           break;
 
         case 'remove-one-layer':
@@ -199,7 +220,9 @@ function updateStyleLayer(map: MapSimple, old: any, newVal: any) {
     newVal['max-zoom'] ?? old['max-zoom'] ?? 24,
   );
 
+  const opacityKey = getKeyOpacity(old);
   for (const key in newVal.paint) {
+    if (key === opacityKey) continue;
     if (newVal.paint[key] !== old.paint?.[key]) {
       map.setPaintProperty(old.id, key, newVal.paint[key]);
     }
@@ -218,4 +241,9 @@ function getKeyOpacity(
   const keyOpacity =
     layer.type === 'symbol' ? 'icon-opacity' : `${layer.type}-opacity`;
   return keyOpacity as keyof LayerSpecification['paint'];
+}
+
+function readStyleOpacity(layer: BaseLayerSpec): number {
+  const value = layer.paint?.[getKeyOpacity(layer)];
+  return typeof value === 'number' ? value : 1;
 }
