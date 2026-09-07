@@ -9,6 +9,8 @@ List UI and identify nodes expose actions in four places. Build items with `crea
 | `bottom` | Right of the bottom row |
 | `menu` | Context menu (⋮) |
 
+Shared defaults (all lists, identify, attribute table) live on a [`menu` dataset part](./with-helper-data.md#menu-createdatasetpartmenucomponent) in the same tree (`findFirstLeafByType`). List rows merge `for: 'layer'`; identify and the table merge `for: 'item'`.
+
 ---
 
 ## End-to-end: conditions from app state
@@ -296,7 +298,7 @@ createMenuBuilder()
 | `addTupleDynamic(key, (props) => partial)` | Compute props then dispatch |
 | `build()` | One action, or an array if several |
 
-Built-in keys used by the library: `fitBounds`, `highlight`, `addComponent`, plus list ids in `LIST_VIEW_MENU_ID`.
+Built-in click-handler keys: `LIST_VIEW_MENU_ID.addComponent`, `.fitBounds`, `.highlight`. Menu ids are nested under `LIST_VIEW_MENU_ID.layer` (list row) and `LIST_VIEW_MENU_ID.item` (identify / attribute-table row).
 
 ```ts
 createMenuClickBuilder()
@@ -353,20 +355,20 @@ identify.addMenus([
 ]);
 ```
 
-| Function | Default location | `id` | Auto-added |
-| --- | --- | --- | --- |
-| [`createMenuItemToggleShow`](#createmenuitemtoggleshow) | `extra` | — | — (add yourself) |
-| [`createMenuItemSetOpacity`](#createmenuitemsetopacity) | `prebottom` | — | List UI unless `configDisabledOpacity()` |
-| [`createMenuItemStyleEdit`](#createmenuitemstyleedit) | `extra` (unset → default) | — | — |
-| [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource) | unset | — | — |
-| [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist) | `extra` | `fill-bound` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper |
-| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `extra` (or `menu`) | `identify-layer` / `identify-layer-menu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling |
-| [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem) | `menu` | `show-detail` | Identify builders |
-| [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem) | `menu` | — | Identify builders |
-| [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `menu` | `move-up` / `move-down` | List UI unless `configDisabledMove()` |
-| [`createMenuItemAddToGroup`](#createmenuitemaddtogroup) | `menu` | `add-to-group` | List UI unless `configDisabledAddToGroup()` |
-| [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `menu` | `export-geo` | List UI unless `configDisabledExport()` |
-| [`createMenuItemAttributeTable`](#createmenuitemattributetable) | `menu` | `attribute-table` | List UI unless `configDisabledAttributeTable()` |
+| Function | `for` | Default location | `id` | Auto-added |
+| --- | --- | --- | --- | --- |
+| [`createMenuItemToggleShow`](#createmenuitemtoggleshow) | `layer` | `extra` | `LIST_VIEW_MENU_ID.layer.toggleShow` | — (add yourself) |
+| [`createMenuItemSetOpacity`](#createmenuitemsetopacity) | `layer` | `prebottom` | `LIST_VIEW_MENU_ID.layer.setOpacity` | List UI unless `configDisabledOpacity()` |
+| [`createMenuItemStyleEdit`](#createmenuitemstyleedit) | `layer` | `extra` (unset → default) | `LIST_VIEW_MENU_ID.layer.styleEdit` | — |
+| [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource) | `layer` | unset | `LIST_VIEW_MENU_ID.layer.info` | — |
+| [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist) | `layer` | `extra` | `LIST_VIEW_MENU_ID.layer.fillBound` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper |
+| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `layer` | `extra` (or `menu`) | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling |
+| [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.moveUp` / `.moveDown` | List UI unless `configDisabledMove()` |
+| [`createMenuItemAddToGroup`](#createmenuitemaddtogroup) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.addToGroup` | List UI unless `configDisabledAddToGroup()` |
+| [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.exportGeo` | List UI unless `configDisabledExport()` |
+| [`createMenuItemAttributeTable`](#createmenuitemattributetable) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.attributeTable` | List UI unless `configDisabledAttributeTable()` |
+| [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.showDetail` | Identify builders |
+| [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.flyTo` | Identify builders |
 
 ---
 
@@ -378,6 +380,7 @@ Visibility toggle on the layer title row. Renders the registry component `layer-
 | --- | --- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemCustomComponentBottomOrExtra, 'type' \| 'click'>>) => MenuAction` |
 | **Location** | `extra` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.toggleShow` (`toggle-show`) |
 | **Needs** | List node with `WithToggleShow` (`show` / `toggleShow`) |
 
 ```ts
@@ -436,6 +439,7 @@ Opacity slider on the bottom-left of the list row (`prebottom`). Registry key: `
 | --- | --- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
 | **Location** | `prebottom` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.setOpacity` (`set-opacity`) |
 | **Auto** | List UI unless `.configDisabledOpacity()` |
 | **Needs** | List node with opacity helpers |
 
@@ -456,6 +460,7 @@ Opens the style editor (`style-control`) via `addComponent` for the current list
 | | |
 | --- | --- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.styleEdit` (`style-edit`) |
 | **Default name** | `Edit style` |
 | **Needs** | `ComponentManagementControl` + registry plugin; mapbox layer sibling |
 
@@ -475,6 +480,7 @@ Opens an info popup (`layer-detail`) built from `getDatasetDetailInfo(layer)` (l
 | | |
 | --- | --- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.info` (`info`) |
 | **Default name** | `Info` |
 | **Needs** | `ComponentManagementControl` |
 
@@ -500,7 +506,7 @@ Fits the map to the layer bbox (`fitBounds`). Resolves bbox **at click time**:
 | --- | --- |
 | **Signature** | `(props?: { bbox?: BBox; name?: string }) => MenuAction` |
 | **Location** | `extra` |
-| **Id** | `fill-bound` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.fillBound` (`fill-bound`) |
 | **Default name** | `Fill bound` |
 | **Auto** | `createGeoJsonDataset` / `createRasterUrlDataset` (with a bound part) |
 
@@ -536,7 +542,7 @@ Per-layer Identify toggle (same click mode as [`IdentifyControl`](../module/Iden
 | --- | --- |
 | **Signature** | `(options?: IdentifyForListMenuOptions) => MenuAction` |
 | **Default location** | `extra` |
-| **Id** | `identify-layer` (non-menu) / `identify-layer-menu` (`menu`) |
+| **Id** | `LIST_VIEW_MENU_ID.layer.identify` (`identify-layer`) / `LIST_VIEW_MENU_ID.layer.identifyMenu` (`identify-layer-menu`) |
 | **Component** | `layer-action-identify` (shared for `componentKey` and `componentMenuKey`; UI branches on `location`) |
 | **Needs** | `IdentifyControl` mounted; nearest sibling `type === 'identify'` |
 | **Auto** | `createGeoJsonDataset` (extra form) |
@@ -568,6 +574,7 @@ Identify / feature row action: fly to the feature geometry and highlight it.
 | --- | --- |
 | **Signature** | `() => MenuAction` |
 | **Location** | `menu` |
+| **Id** | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`) |
 | **Default name** | `Fly to` |
 | **Click** | `fitBounds` on `value.geometry` + `highlight` (`key: 'identify'`) |
 | **Needs** | Identify UI + `LayerHighlight`; `value` must look like a feature |
@@ -586,7 +593,7 @@ Identify / feature row: open detail panel and highlight the feature.
 | --- | --- |
 | **Signature** | `(fields: FieldFeaturesDef) => MenuAction` |
 | **Location** | `menu` |
-| **Id** | `show-detail` |
+| **Id** | `LIST_VIEW_MENU_ID.item.showDetail` (`show-detail`) |
 | **Default name** | `Detail` |
 | **Click** | `addComponent` → `layer-detail` + `highlight` (`key: 'detail'`) |
 | **Needs** | `ComponentManagementControl`; `fields` define labels/keys for `value` |
@@ -607,11 +614,11 @@ identify.addMenus([
 
 ### `createMenuItemMoveUp` / `createMenuItemMoveDown`
 
-Reorder the list row among siblings. Click dispatches `LIST_VIEW_MENU_ID.moveUp` / `moveDown` (handled by LayerControl).
+Reorder the list row among siblings. Click dispatches `LIST_VIEW_MENU_ID.layer.moveUp` / `LIST_VIEW_MENU_ID.layer.moveDown` (handled by LayerControl).
 
 | | Move up | Move down |
 | --- | --- | --- |
-| **Id** | `move-up` | `move-down` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.moveUp` | `LIST_VIEW_MENU_ID.layer.moveDown` |
 | **Order** | `20` | `21` |
 | **Location** | `menu` | `menu` |
 
@@ -639,7 +646,7 @@ Context-menu row with a custom submenu (`layer-action-add-to-group`): **New grou
 | --- | --- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
 | **Location** | `menu` |
-| **Id** | `add-to-group` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.addToGroup` (`add-to-group`) |
 | **Order** | `22` |
 | **Needs** | Registry plugin for the submenu component |
 
@@ -673,7 +680,7 @@ Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Uses a custom submenu 
 | --- | --- |
 | **Signature** | `(menu?: ExportGeoMenuOptions) => MenuAction` |
 | **Location** | `menu` |
-| **Id** | `export-geo` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.exportGeo` (`export-geo`) |
 | **Order** | `23` |
 | **Component** | `layer-action-export-geo` |
 
@@ -708,7 +715,7 @@ Opens the attribute table dialog. Full guide: [Attribute table](./attribute-tabl
 | --- | --- |
 | **Signature** | `(menu?: AttributeTableMenuOptions) => MenuAction` |
 | **Location** | `menu` |
-| **Id** | `attribute-table` |
+| **Id** | `LIST_VIEW_MENU_ID.layer.attributeTable` (`attribute-table`) |
 | **Order** | `24` |
 | **Needs** | Registry + `ComponentManagementControl`; GeoJSON / data-management data |
 
@@ -732,14 +739,32 @@ list.addMenu(
 
 ### Constants
 
+Use `LIST_VIEW_MENU_ID.layer.*` for list-row menus (`for: 'layer'`) and `LIST_VIEW_MENU_ID.item.*` for identify / attribute-table row menus (`for: 'item'`). Top-level keys (`addComponent`, `fitBounds`, `highlight`) are click-handler names, not menu ids.
+
 ```ts
 LIST_VIEW_MENU_ID = {
-  moveUp: 'move-up',
-  moveDown: 'move-down',
-  addToGroup: 'add-to-group',
-  addToExistingGroup: 'add-to-existing-group',
-  exportGeo: 'export-geo',
-  attributeTable: 'attribute-table',
+  layer: {
+    toggleShow: 'toggle-show',
+    info: 'info',
+    fillBound: 'fill-bound',
+    styleEdit: 'style-edit',
+    setOpacity: 'set-opacity',
+    identify: 'identify-layer',
+    identifyMenu: 'identify-layer-menu',
+    moveUp: 'move-up',
+    moveDown: 'move-down',
+    addToGroup: 'add-to-group',
+    addToExistingGroup: 'add-to-existing-group',
+    exportGeo: 'export-geo',
+    attributeTable: 'attribute-table',
+  },
+  item: {
+    showDetail: 'show-detail',
+    flyTo: 'fly-to',
+  },
+  addComponent: 'addComponent',
+  fitBounds: 'fitBounds',
+  highlight: 'highlight',
 };
 
 LIST_VIEW_MENU_COMPONENT_KEY = {
@@ -814,8 +839,8 @@ resolveMenuCondition(menu.hidden, ctx); // boolean
 ### `isListViewReorderMenuHidden(menuId, ctx)`
 
 ```ts
-isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.moveUp, ctx);
-isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.addToGroup, ctx);
+isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.layer.moveUp, ctx);
+isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.layer.addToGroup, ctx);
 ```
 
 True when `context.readonly`, `disabledMove` / `disabledCreateGroup`, or `layer.config.disabled_move` / `disabled_add_to_group`.

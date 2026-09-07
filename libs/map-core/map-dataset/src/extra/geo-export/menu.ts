@@ -54,7 +54,7 @@ export function createExportGeoSubmenu(
     createMenuBuilder()
       .item()
       .setLocation('menu')
-      .setId(`${LIST_VIEW_MENU_ID.exportGeo}:${format}`)
+      .setId(`${LIST_VIEW_MENU_ID.layer.exportGeo}:${format}`)
       .setName(GEO_EXPORT_FORMAT_META[format].name)
       .setIcon(mdiDownload)
       .setClick(async ({ layer }) => {
@@ -89,7 +89,7 @@ export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
   return createMenuBuilder()
     .item()
     .setLocation('menu')
-    .setId(LIST_VIEW_MENU_ID.exportGeo)
+    .setId(LIST_VIEW_MENU_ID.layer.exportGeo)
     .setName('Export')
     .setIcon(mdiDownload)
     .setComponentMenuKey(LIST_VIEW_MENU_COMPONENT_KEY.exportGeo)

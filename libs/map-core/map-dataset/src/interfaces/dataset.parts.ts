@@ -200,6 +200,22 @@ export type IBoundView = IDataset &
     type: 'bound';
   };
 
+/** Who consumes a default menu from the shared menu dataset. */
+export type DatasetMenuFor = 'item' | 'layer';
+
+/** One default menu stored on a `menu` dataset part. `key` matches `menu.id`. */
+export type DatasetMenuEntry = {
+  for: DatasetMenuFor;
+  key: string;
+  menu: MenuAction;
+};
+
+/** Shared default menus (`getData` / `setData`) for list, identify, and tables. */
+export type IMenuView = IDataset &
+  WithDataHelper<DatasetMenuEntry[]> & {
+    type: 'menu';
+  };
+
 export type IFieldInfo = {
   trans?: string;
   text?: string;

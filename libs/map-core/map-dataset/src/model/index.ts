@@ -3,6 +3,8 @@ export * from './highlight';
 export * from './layer';
 export * from './list';
 export * from './part-bound.model';
+export * from './part-menu.builder';
+export * from './part-menu.model';
 export * from './part-metadata.model';
 export * from './source';
 export * from './visitors';

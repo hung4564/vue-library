@@ -35,19 +35,30 @@ import {
 import { resolveMenuCondition } from './condition';
 
 export const LIST_VIEW_MENU_ID = {
-  moveUp: 'move-up',
-  moveDown: 'move-down',
-  addToGroup: 'add-to-group',
-  addToExistingGroup: 'add-to-existing-group',
-  exportGeo: 'export-geo',
-  attributeTable: 'attribute-table',
-  /** Identify feature detail menu (`createMenuItemShowDetailForItem`) */
-  showDetail: 'show-detail',
-  /** Toolbar / extra / bottom / prebottom */
-  identify: 'identify-layer',
-  /** Context menu row (must differ from `identify` so both can coexist) */
-  identifyMenu: 'identify-layer-menu',
-  /** Built-in menu click handlers (`registerMenuHandlerForMap`) */
+  /** LayerControl list row (`for: 'layer'`) */
+  layer: {
+    toggleShow: 'toggle-show',
+    info: 'info',
+    fillBound: 'fill-bound',
+    styleEdit: 'style-edit',
+    setOpacity: 'set-opacity',
+    /** Toolbar / extra / bottom / prebottom */
+    identify: 'identify-layer',
+    /** Context menu row (must differ from `identify` so both can coexist) */
+    identifyMenu: 'identify-layer-menu',
+    moveUp: 'move-up',
+    moveDown: 'move-down',
+    addToGroup: 'add-to-group',
+    addToExistingGroup: 'add-to-existing-group',
+    exportGeo: 'export-geo',
+    attributeTable: 'attribute-table',
+  },
+  /** Identify / attribute-table row (`for: 'item'`) */
+  item: {
+    showDetail: 'show-detail',
+    flyTo: 'fly-to',
+  },
+  /** Built-in click handlers (`registerMenuHandlerForMap`) — not menu ids */
   addComponent: 'addComponent',
   fitBounds: 'fitBounds',
   highlight: 'highlight',
@@ -127,7 +138,7 @@ export function createMenuItemToBoundActionForList(props?: {
 }) {
   return createMenuBuilder()
     .item()
-    .setId('fill-bound')
+    .setId(LIST_VIEW_MENU_ID.layer.fillBound)
     .setLocation('extra')
     .setName(props?.name ?? 'Fill bound')
     .setIcon(mdiCrosshairsGps)
@@ -150,6 +161,7 @@ export function createMenuItemToBoundActionForList(props?: {
 export function createMenuItemToBoundActionForItem() {
   return createMenuBuilder() // = kiểu layer, bạn thay đúng type nếu có
     .item()
+    .setId(LIST_VIEW_MENU_ID.item.flyTo)
     .setLocation('menu')
     .setName('Fly to')
     .setIcon(mdiCrosshairsGps)
@@ -195,7 +207,7 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
     .item()
     .setLocation('menu')
     .setName('Detail')
-    .setId(LIST_VIEW_MENU_ID.showDetail)
+    .setId(LIST_VIEW_MENU_ID.item.showDetail)
     .setIcon(mdiInformation)
     .setClick((props) => {
       return createMenuClickBuilder()
@@ -225,6 +237,7 @@ export function createMenuItemShowDetailInfoSource(
 ) {
   return createMenuBuilder()
     .item()
+    .setId(LIST_VIEW_MENU_ID.layer.info)
     .setName('Info')
     .setIcon(mdiInformation)
     .setClick(
@@ -254,6 +267,7 @@ export function createMenuItemStyleEdit(
 ) {
   return createMenuBuilder()
     .item()
+    .setId(LIST_VIEW_MENU_ID.layer.styleEdit)
     .setName('Edit style')
     .setIcon(mdiFormatLineStyle)
     .setClick(
@@ -277,6 +291,7 @@ export function createMenuItemToggleShow(
 ) {
   return createMenuBuilder()
     .item()
+    .setId(LIST_VIEW_MENU_ID.layer.toggleShow)
     .setLocation('extra')
     .setName('ToggleShow')
     .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.toggleShow)
@@ -289,6 +304,7 @@ export function createMenuItemSetOpacity(
 ) {
   return createMenuBuilder()
     .item()
+    .setId(LIST_VIEW_MENU_ID.layer.setOpacity)
     .setLocation('prebottom')
     .setName('SetOpacity')
     .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.setOpacity)
@@ -301,8 +317,8 @@ export function listViewIdentifyMenuId(
   location: MenuActionLocation = 'extra',
 ): string {
   return location === 'menu'
-    ? LIST_VIEW_MENU_ID.identifyMenu
-    : LIST_VIEW_MENU_ID.identify;
+    ? LIST_VIEW_MENU_ID.layer.identifyMenu
+    : LIST_VIEW_MENU_ID.layer.identify;
 }
 
 export type IdentifyForListMenuOptions = {
@@ -373,10 +389,10 @@ export function createAddToGroupSubmenu(
     {
       type: 'item',
       location: 'menu',
-      id: `${LIST_VIEW_MENU_ID.addToGroup}:new`,
+      id: `${LIST_VIEW_MENU_ID.layer.addToGroup}:new`,
       name: 'New group',
       icon: mdiFolderPlusOutline,
-      click: LIST_VIEW_MENU_ID.addToGroup,
+      click: LIST_VIEW_MENU_ID.layer.addToGroup,
     },
   ];
   const others = groups.filter((group) => group.id !== excludeGroupId);
@@ -387,11 +403,11 @@ export function createAddToGroupSubmenu(
     children.push({
       type: 'item',
       location: 'menu',
-      id: `${LIST_VIEW_MENU_ID.addToExistingGroup}:${group.id}`,
+      id: `${LIST_VIEW_MENU_ID.layer.addToExistingGroup}:${group.id}`,
       name: group.name || 'Group',
       icon: mdiFolderOutline,
       click: createMenuClickBuilder()
-        .addTupleStatic(LIST_VIEW_MENU_ID.addToExistingGroup, {
+        .addTupleStatic(LIST_VIEW_MENU_ID.layer.addToExistingGroup, {
           meta: { groupId: group.id, groupName: group.name },
         })
         .build(),
@@ -406,12 +422,12 @@ export function createMenuItemMoveUp(
   return createMenuBuilder()
     .item()
     .setLocation('menu')
-    .setId(LIST_VIEW_MENU_ID.moveUp)
+    .setId(LIST_VIEW_MENU_ID.layer.moveUp)
     .setName('Move up')
     .setIcon(mdiChevronUp)
-    .setClick(LIST_VIEW_MENU_ID.moveUp)
+    .setClick(LIST_VIEW_MENU_ID.layer.moveUp)
     .setHidden((ctx) =>
-      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.moveUp, ctx),
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.layer.moveUp, ctx),
     )
     .setAdditional({ order: 20, ...menu })
     .build();
@@ -423,12 +439,12 @@ export function createMenuItemMoveDown(
   return createMenuBuilder()
     .item()
     .setLocation('menu')
-    .setId(LIST_VIEW_MENU_ID.moveDown)
+    .setId(LIST_VIEW_MENU_ID.layer.moveDown)
     .setName('Move down')
     .setIcon(mdiChevronDown)
-    .setClick(LIST_VIEW_MENU_ID.moveDown)
+    .setClick(LIST_VIEW_MENU_ID.layer.moveDown)
     .setHidden((ctx) =>
-      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.moveDown, ctx),
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.layer.moveDown, ctx),
     )
     .setAdditional({ order: 21, ...menu })
     .build();
@@ -440,12 +456,12 @@ export function createMenuItemAddToGroup(
   return createMenuBuilder()
     .item()
     .setLocation('menu')
-    .setId(LIST_VIEW_MENU_ID.addToGroup)
+    .setId(LIST_VIEW_MENU_ID.layer.addToGroup)
     .setName('Add to group')
     .setIcon(mdiFolderPlusOutline)
     .setComponentMenuKey(LIST_VIEW_MENU_COMPONENT_KEY.addToGroup)
     .setHidden((ctx) =>
-      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.addToGroup, ctx),
+      isListViewReorderMenuHidden(LIST_VIEW_MENU_ID.layer.addToGroup, ctx),
     )
     .setAdditional({
       order: 22,
@@ -470,12 +486,12 @@ export function isListViewReorderMenuHidden(
     }
   )?.config;
   if (
-    menuId === LIST_VIEW_MENU_ID.moveUp ||
-    menuId === LIST_VIEW_MENU_ID.moveDown
+    menuId === LIST_VIEW_MENU_ID.layer.moveUp ||
+    menuId === LIST_VIEW_MENU_ID.layer.moveDown
   ) {
     return !!(extra.readonly || extra.disabledMove || config?.disabled_move);
   }
-  if (menuId === LIST_VIEW_MENU_ID.addToGroup) {
+  if (menuId === LIST_VIEW_MENU_ID.layer.addToGroup) {
     return !!(
       extra.readonly ||
       extra.disabledCreateGroup ||

@@ -5,13 +5,29 @@
   overflow: hidden;
 }
 
-.style-control .vc-sketch {
+.style-control .vc-sketch,
+.style-control .w-color-sketch {
   width: calc(100% - 20px);
+  max-width: 100%;
+  box-sizing: border-box;
   background-color: transparent;
   box-shadow: unset;
+  --sketch-background: transparent;
+  --sketch-box-shadow: unset;
+  --sketch-swatch-border-top: 1px solid
+    var(--map-divider-color, var(--map-border-color, #fff));
 }
 
-.style-control .vc-sketch .vc-input__label {
+.style-control .vc-sketch .vc-input__label,
+.style-control .w-color-sketch .w-color-editable-input {
+  --editable-input-label-color: var(--map-text-inverse, #fff) !important;
+  --editable-input-color: var(--map-text-inverse, #fff) !important;
+  --editable-input-box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--map-text-inverse, #fff) 28%, transparent) !important;
+}
+
+.style-control .w-color-sketch .w-color-editable-input label,
+.style-control .w-color-sketch .w-color-editable-input input {
   color: var(--map-text-inverse, #fff);
 }
 

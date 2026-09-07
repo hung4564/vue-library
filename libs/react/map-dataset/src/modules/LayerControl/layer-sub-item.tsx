@@ -1,6 +1,7 @@
 import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
   createMenuConditionContext,
+  getResolvedMenus,
   isMenuItemDisabled,
   isMenuItemHidden,
 } from '@hungpvq/map-dataset';
@@ -9,7 +10,7 @@ import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useMemo } from 'react';
 import { useMenuConditionContext } from '../../extra/menu/condition-context';
-import { LayerMenuButton } from './layer-menu-button';
+import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 
 const ICON_SIZE = '14px';
 
@@ -51,7 +52,7 @@ export function LayerSubItem({
     ],
   });
   const menus = useMemo(
-    () => (item.getMenus?.() || []) as MenuAction<IListViewUI>[],
+    () => getResolvedMenus(item, 'layer') as MenuAction<IListViewUI>[],
     [item],
   );
   const extraMenus = menus
@@ -81,7 +82,7 @@ export function LayerSubItem({
         </span>
         <div className="layer-sub-item__title-action">
           {extraMenus.map((menu, i) => (
-            <LayerMenuButton
+            <DatasetMenuButton
               key={i}
               menu={menu}
               item={item}

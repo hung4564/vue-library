@@ -105,22 +105,22 @@ UniversalRegistry.registerMenuHandlerForMap(
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.addToGroup,
+  LIST_VIEW_MENU_ID.layer.addToGroup,
   runAddToGroup,
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.addToExistingGroup,
+  LIST_VIEW_MENU_ID.layer.addToExistingGroup,
   runAddToExistingGroup,
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.moveUp,
+  LIST_VIEW_MENU_ID.layer.moveUp,
   runMove('up'),
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.moveDown,
+  LIST_VIEW_MENU_ID.layer.moveDown,
   runMove('down'),
 );
 </script>

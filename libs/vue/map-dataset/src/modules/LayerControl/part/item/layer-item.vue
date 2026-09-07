@@ -21,7 +21,7 @@
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
         <template v-for="(menu, i) in extra_menus" :key="i">
-          <LayerMenu
+          <DatasetMenuButton
             :item="menu"
             :data="item"
             :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
@@ -46,7 +46,7 @@
         </BaseButton>
         <template v-if="!showBottom">
           <template v-for="(menu, i) in extra_bottoms" :key="i">
-            <LayerMenu
+            <DatasetMenuButton
               :item="menu"
               :data="item"
               :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
@@ -66,7 +66,7 @@
     </div>
     <div class="layer-item__action" v-if="showBottom">
       <template v-for="(menu, i) in bottoms" :key="i">
-        <LayerMenu
+        <DatasetMenuButton
           :item="menu"
           :data="item"
           :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
@@ -76,7 +76,7 @@
       </template>
       <div class="v-spacer"></div>
       <template v-for="(menu, i) in extra_bottoms" :key="i">
-        <LayerMenu
+        <DatasetMenuButton
           :item="menu"
           :data="item"
           :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
@@ -129,25 +129,17 @@ import type { IListViewUI, MenuAction, MenuContextSource } from '@hungpvq/map-da
 import {
   createMenuConditionContext,
   findAllComponentsByType,
+  getResolvedMenus,
   isMenuItemDisabled,
   isMenuItemHidden,
 } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiCrosshairsGps,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiLayers,
-  mdiLoading,
-  mdiMenuDown,
-  mdiMenuLeft,
-  mdiPencilOutline,
-} from '@mdi/js';
+import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
+import DatasetMenuButton from '../../../../extra/menu/dataset-menu-button.vue';
 import LayerSubItem from './layer-sub-item.vue';
-import LayerMenu from './menu/index.vue';
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
@@ -157,7 +149,6 @@ const props = defineProps<{
   menuContext?: MenuContextSource;
 }>();
 const emit = defineEmits([
-  'update:item',
   'click',
   'click:remove',
   'click:action',
@@ -165,11 +156,7 @@ const emit = defineEmits([
 ]);
 const path = {
   menu: mdiDotsVertical,
-  loading: mdiLoading,
-  layer: mdiLayers,
-  flyTo: mdiCrosshairsGps,
   delete: mdiDelete,
-  edit: mdiPencilOutline,
   legendOpen: mdiMenuLeft,
   legendClose: mdiMenuDown,
 };
@@ -196,7 +183,7 @@ const button_menus = computed<MenuAction<any>[]>(() => {
   if (!props.item) {
     return [];
   }
-  return props.item.getMenus() || [];
+  return getResolvedMenus(props.item, 'layer');
 });
 const extra_menus = computed(() => {
   return button_menus.value

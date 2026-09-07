@@ -1,12 +1,14 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { IIdentifyView, MenuAction } from '@hungpvq/map-dataset';
 import {
+  createMenuConditionContext,
+  getResolvedMenus,
   handleMenuAction,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
-  LIST_VIEW_MENU_ID,
+  isMenuItemHidden,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
   type IdentifyResultUpdatePayload,
@@ -27,7 +29,7 @@ import {
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { IdentifyMenuItem } from './IdentifyMenuItem';
+import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 
 const ICON_SIZE = 16 / 24;
 function runIdentifyAction(mapId: string, type: string, event?: unknown) {
@@ -128,6 +130,13 @@ export function IdentifyResultControl(props: WithMapPropType) {
       mapId,
       value: child.data,
     });
+  }
+
+  function getItemMenus(identify: IIdentifyView) {
+    const ctx = createMenuConditionContext(identify, { mapId });
+    return getResolvedMenus(identify, 'item').filter(
+      (menu) => !isMenuItemHidden(menu, ctx),
+    );
   }
 
   return (
@@ -256,10 +265,12 @@ export function IdentifyResultControl(props: WithMapPropType) {
                                 className="identify-control-child-item__action"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                {child.identify.getMenus().map((menu, i) => (
-                                  <IdentifyMenuItem
+                                {getItemMenus(child.identify).map((menu, i) => (
+                                  <DatasetMenuButton
                                     key={i}
-                                    item={menu}
+                                    menu={menu}
+                                    item={child.identify}
+                                    mapId={mapId}
                                     onClick={(event) =>
                                       onMenuAction(child, menu, event)
                                     }

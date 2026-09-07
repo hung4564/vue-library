@@ -137,14 +137,14 @@ function configurePresentMenus(
   list?.addMenus([createMenuItemIdentifyForList({ location: 'menu' })]);
 
   if (!options.detail) {
-    identify?.removeMenu(LIST_VIEW_MENU_ID.showDetail);
+    identify?.removeMenu(LIST_VIEW_MENU_ID.item.showDetail);
   }
 
   if (!options.attributeTable && list) {
     if (list.config) {
       list.config.disabled_attribute_table = true;
     }
-    list.removeMenu(LIST_VIEW_MENU_ID.attributeTable);
+    list.removeMenu(LIST_VIEW_MENU_ID.layer.attributeTable);
   }
 
   return dataset;

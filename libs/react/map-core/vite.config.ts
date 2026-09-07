@@ -57,7 +57,7 @@ export default defineConfig(() => ({
         'lodash',
         '@mdi/js',
         '@mdi/react',
-        'react-color',
+        '@uiw/react-color-sketch',
       ],
       output: {
         assetFileNames: 'style.css',

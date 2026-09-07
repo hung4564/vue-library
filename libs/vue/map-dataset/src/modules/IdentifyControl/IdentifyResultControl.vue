@@ -8,11 +8,14 @@ export default {
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { IIdentifyView, MenuAction } from '@hungpvq/map-dataset';
 import {
+  createMenuConditionContext,
+  getResolvedMenus,
   handleMenuAction,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
+  isMenuItemHidden,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
   type IdentifyResultUpdatePayload,
@@ -33,7 +36,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, reactive, ref } from 'vue';
-import MenuItem from './menu/index.vue';
+import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
 
 const path = {
   boxSelect: mdiSelect,
@@ -157,6 +160,13 @@ function onMenuAction(
     value: child.data,
   });
 }
+
+function getItemMenus(identify: IIdentifyView) {
+  const ctx = createMenuConditionContext(identify, { mapId: mapId.value });
+  return getResolvedMenus(identify, 'item').filter(
+    (menu) => !isMenuItemHidden(menu, ctx),
+  );
+}
 </script>
 
 <template>
@@ -254,11 +264,13 @@ function onMenuAction(
                         @click.stop
                       >
                         <template
-                          v-for="(menu, i) in child.identify.getMenus()"
+                          v-for="(menu, i) in getItemMenus(child.identify)"
                           :key="i"
                         >
-                          <MenuItem
+                          <DatasetMenuButton
                             :item="menu"
+                            :data="child.identify"
+                            :mapId="mapId"
                             @click="onMenuAction(child, menu, $event)"
                           />
                         </template>

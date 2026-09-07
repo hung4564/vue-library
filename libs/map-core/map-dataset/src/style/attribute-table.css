@@ -97,3 +97,16 @@
 .attribute-table__table tbody tr.is-selected {
   background: #1565c0;
 }
+
+.attribute-table__actions {
+  width: 1%;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+  text-align: right;
+}
+
+.attribute-table__actions .menu-item {
+  display: inline-flex;
+  vertical-align: middle;
+}

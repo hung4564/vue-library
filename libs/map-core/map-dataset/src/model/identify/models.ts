@@ -27,7 +27,7 @@ import {
 /** Ensure `show-detail` menu exists when identify has detail fields. */
 export function ensureIdentifyShowDetailMenu(identify: IIdentifyView): void {
   const fields = identify.config?.fields;
-  if (!fields?.length || identify.hasMenu(LIST_VIEW_MENU_ID.showDetail)) {
+  if (!fields?.length || identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail)) {
     return;
   }
   identify.addMenu(createMenuItemShowDetailForItem(fields));

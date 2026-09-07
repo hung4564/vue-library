@@ -2,6 +2,7 @@ import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
 import {
   createMenuConditionContext,
   findAllComponentsByType,
+  getResolvedMenus,
   isMenuItemDisabled,
   isMenuItemHidden,
 } from '@hungpvq/map-dataset';
@@ -10,7 +11,7 @@ import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMenuConditionContext } from '../../extra/menu/condition-context';
-import { LayerMenuButton } from './layer-menu-button';
+import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 import { LayerSubItem } from './layer-sub-item';
 
 const ICON_SIZE = '14px';
@@ -72,7 +73,7 @@ export function LayerItem({
   });
 
   const menus = useMemo(
-    () => (item.getMenus?.() || []) as MenuAction<IListViewUI>[],
+    () => getResolvedMenus(item, 'layer') as MenuAction<IListViewUI>[],
     [item],
   );
   const extraMenus = menus
@@ -117,7 +118,7 @@ export function LayerItem({
         <div className="v-spacer" />
         <div className="layer-item__title-action">
           {extraMenus.map((menu, i) => (
-            <LayerMenuButton
+            <DatasetMenuButton
               key={i}
               menu={menu}
               item={item}
@@ -145,7 +146,7 @@ export function LayerItem({
           {!showBottom && (
             <>
               {bottomMenus.map((menu, i) => (
-                <LayerMenuButton
+                <DatasetMenuButton
                   key={i}
                   menu={menu}
                   item={item}
@@ -169,7 +170,7 @@ export function LayerItem({
       {showBottom && (
         <div className="layer-item__action">
           {preBottomMenus.map((menu, i) => (
-            <LayerMenuButton
+            <DatasetMenuButton
               key={i}
               menu={menu}
               item={item}
@@ -180,7 +181,7 @@ export function LayerItem({
           ))}
           <div className="v-spacer" />
           {bottomMenus.map((menu, i) => (
-            <LayerMenuButton
+            <DatasetMenuButton
               key={i}
               menu={menu}
               item={item}

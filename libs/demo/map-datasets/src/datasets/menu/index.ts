@@ -2,15 +2,19 @@ import { getChartRandomColor } from '@hungpvq/map-core';
 import {
   createDatasetPartBoundComponent,
   createDatasetPartGeojsonSourceComponent,
+  createDatasetPartHighlightComponent,
   createDatasetPartIdentifyComponentBuilder,
   createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartMenuComponentBuilder,
   createGroupDataset,
   createMenuBuilder,
   createMenuClickBuilder,
   createMenuClickHighlightBuilder,
   createMenuItemIdentifyForList,
+  createMenuItemShowDetailForItem,
   createMenuItemShowDetailInfoSource,
   createMenuItemStyleEdit,
+  createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
   createMultiMapboxLayerComponent,
@@ -172,6 +176,112 @@ export function createIdentifyMenuDataset() {
   groupLayer.add(layer);
   groupLayer.add(list);
   dataset.add(source);
+  dataset.add(groupLayer);
+  dataset.add(identify);
+  return dataset;
+}
+
+/** Default menus on a shared `menu` part: list uses `for: 'layer'`, identify/table use `for: 'item'`. */
+export function createSharedDatasetMenuDataset() {
+  const name = 'Shared dataset menus';
+  const dataset = createRootDataset(name);
+  const features = [
+    demoPolygon(
+      [
+        [
+          [105.8, 21.0],
+          [105.8, 21.06],
+          [105.9, 21.06],
+          [105.9, 21.0],
+          [105.8, 21.0],
+        ],
+      ],
+      { id: 'shared-area-1', name: 'Hoan Kiem area', kind: 'area' },
+    ),
+    demoPolygon(
+      [
+        [
+          [105.78, 20.98],
+          [105.78, 21.02],
+          [105.84, 21.02],
+          [105.84, 20.98],
+          [105.78, 20.98],
+        ],
+      ],
+      { id: 'shared-area-2', name: 'Ba Dinh area', kind: 'area' },
+    ),
+    demoPoint([105.852, 21.028], {
+      id: 'shared-point-1',
+      name: 'Hoan Kiem Lake',
+      kind: 'point',
+    }),
+    demoPoint([105.834, 21.037], {
+      id: 'shared-point-2',
+      name: 'Ho Chi Minh Mausoleum',
+      kind: 'point',
+    }),
+  ];
+  const bbox: [number, number, number, number] = [
+    105.78, 20.98, 105.9, 21.06,
+  ];
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features,
+  });
+  const bound = createDatasetPartBoundComponent(name, bbox);
+  const menus = createDatasetPartMenuComponentBuilder(name)
+    .addLayerMenu(createMenuItemToggleShow(), LIST_VIEW_MENU_ID.layer.toggleShow)
+    .addLayerMenu(createMenuItemShowDetailInfoSource(), LIST_VIEW_MENU_ID.layer.info)
+    .addLayerMenu(
+      createMenuItemToBoundActionForList(),
+      LIST_VIEW_MENU_ID.layer.fillBound,
+    )
+    .addItemMenu(
+      createMenuItemShowDetailForItem([
+        { text: 'Id', value: 'id' },
+        { text: 'Name', value: 'name' },
+        { text: 'Kind', value: 'kind' },
+      ]),
+      LIST_VIEW_MENU_ID.item.showDetail,
+    )
+    .addItemMenu(
+      createMenuItemToBoundActionForItem(),
+      LIST_VIEW_MENU_ID.item.flyTo,
+    )
+    .build();
+  const groupLayer = createGroupDataset(name);
+  const list = createDatasetPartListViewUiComponentBuilder(name)
+    .setColor(getChartRandomColor())
+    .configDisabledDelete()
+    .addMenus([createMenuItemIdentifyForList()])
+    .build();
+  const layerArea = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .setFilter(['==', '$type', 'Polygon'])
+      .build(),
+  ]);
+  const layerPoint = createMultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(list.color)
+      .setFilter(['==', '$type', 'Point'])
+      .build(),
+  ]);
+  const highlight = createDatasetPartHighlightComponent();
+  const identify = createDatasetPartIdentifyComponentBuilder(name)
+    .configFieldId('id')
+    .configFieldName('name')
+    .preferResultControl()
+    .build();
+  groupLayer.add(layerArea);
+  groupLayer.add(layerPoint);
+  groupLayer.add(highlight);
+  groupLayer.add(list);
+  dataset.add(source);
+  dataset.add(bound);
+  dataset.add(menus);
   dataset.add(groupLayer);
   dataset.add(identify);
   return dataset;
@@ -439,6 +549,7 @@ export const MENU_DEMO_DATASET_FACTORIES = [
   createCustomToggleButtonDataset,
   createDynamicBoundMenuDataset,
   createIdentifyMenuDataset,
+  createSharedDatasetMenuDataset,
   createCustomSupportDataset,
   createCustomMultiSupportDataset,
   createCustomChainSupportDataset,

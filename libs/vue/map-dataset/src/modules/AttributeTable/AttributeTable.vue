@@ -13,12 +13,18 @@ import {
   attributeTableRowsToFeatureCollection,
   buildAttributeTable,
   clearPendingAttributeTableSelectRows,
+  convertFeatureToItem,
   createExportGeoSubmenu,
+  createMenuConditionContext,
   createMenuItemExportGeo,
   filterAttributeTableRows,
   getDatasetFeatureCollection,
   getExportGeoMenuOptions,
+  getItemMenuHost,
+  getResolvedMenus,
   handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
   resolveAttributeTableSelectedRowIds,
   takePendingAttributeTableSelectRows,
   type AttributeTableColumn,
@@ -26,6 +32,7 @@ import {
   type AttributeTableRow,
   type AttributeTableSelectRowsPayload,
 } from '@hungpvq/map-dataset';
+import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
@@ -282,6 +289,31 @@ function onExportChild(action: MenuAction, event: MouseEvent) {
   exportMenuRef.value?.close();
 }
 
+const itemMenuHost = computed(() => getItemMenuHost(props.layer));
+const itemMenus = computed(() => {
+  const host = itemMenuHost.value;
+  const ctx = createMenuConditionContext(host, { mapId: mapId.value });
+  return getResolvedMenus(props.layer, 'item').filter(
+    (menu) => menu.type !== 'divider' && !isMenuItemHidden(menu, ctx),
+  );
+});
+const itemMenuConditionCtx = computed(() =>
+  createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
+);
+
+function onRowMenuAction(
+  row: AttributeTableRow,
+  menu: MenuAction,
+  event: MouseEvent,
+) {
+  handleMenuAction(menu, {
+    event,
+    layer: itemMenuHost.value,
+    mapId: mapId.value,
+    value: convertFeatureToItem(row.feature),
+  });
+}
+
 function cellTitle(value: string) {
   return value.length > 80 ? value : undefined;
 }
@@ -364,6 +396,7 @@ watch(zoomToSelection, (enabled) => {
                   <th v-for="column in tableColumns" :key="column.key">
                     {{ column.label }}
                   </th>
+                  <th v-if="itemMenus.length" class="attribute-table__actions" />
                 </tr>
               </thead>
               <tbody>
@@ -386,6 +419,21 @@ watch(zoomToSelection, (enabled) => {
                     :title="cellTitle(row.cells[column.key] ?? '')"
                   >
                     {{ row.cells[column.key] }}
+                  </td>
+                  <td
+                    v-if="itemMenus.length"
+                    class="attribute-table__actions"
+                    @click.stop
+                  >
+                    <DatasetMenuButton
+                      v-for="(menu, index) in itemMenus"
+                      :key="menu.id || index"
+                      :item="menu"
+                      :data="itemMenuHost"
+                      :mapId="mapId"
+                      :disabled="isMenuItemDisabled(menu, itemMenuConditionCtx)"
+                      @click="onRowMenuAction(row, menu, $event)"
+                    />
                   </td>
                 </tr>
               </tbody>

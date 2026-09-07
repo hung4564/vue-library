@@ -16,7 +16,7 @@
       <div class="layer-sub-item__title-action">
         <slot name="pre-btn" />
         <template v-for="(menu, i) in extra_menus" :key="i">
-          <LayerMenu
+          <DatasetMenuButton
             :item="menu"
             :data="item"
             :mapId="mapId"
@@ -42,6 +42,7 @@ import type {
 } from '@hungpvq/map-dataset';
 import {
   createMenuConditionContext,
+  getResolvedMenus,
   isMenuItemDisabled,
   isMenuItemHidden,
 } from '@hungpvq/map-dataset';
@@ -49,8 +50,8 @@ import { BaseButton, RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
+import DatasetMenuButton from '../../../../extra/menu/dataset-menu-button.vue';
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
-import LayerMenu from './menu/index.vue';
 
 const path = {
   menu: mdiDotsVertical,
@@ -84,7 +85,7 @@ const button_menus = computed<MenuAction<any>[]>(() => {
   if (!props.item) {
     return [];
   }
-  return props.item.getMenus() || [];
+  return getResolvedMenus(props.item, 'layer');
 });
 const extra_menus = computed(() => {
   return button_menus.value

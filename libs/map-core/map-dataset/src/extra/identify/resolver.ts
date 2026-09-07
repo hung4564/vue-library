@@ -51,7 +51,7 @@ function getAttributeTableTarget(records: IdentifyMultiResult[]) {
     isListView,
   );
   if (!list) return undefined;
-  const menu = list.getMenu(LIST_VIEW_MENU_ID.attributeTable);
+  const menu = list.getMenu(LIST_VIEW_MENU_ID.layer.attributeTable);
   if (!menu) return undefined;
   return { list, features: first.features, menu };
 }
@@ -69,11 +69,11 @@ export const identifyResolver = new FallbackResolver<IdentifyContext>([
       const { total, records, singleLayer } = ctx;
       if (prefersResultPanel(ctx) || !singleLayer || total !== 1) return false;
       const first = getFirstIdentifyMultiFeature(records);
-      return !!first?.identify.hasMenu(LIST_VIEW_MENU_ID.showDetail);
+      return !!first?.identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail);
     },
     prepare: ({ records }) => {
       const first = getFirstIdentifyMultiFeature(records)!;
-      const menu = first.identify.getMenu(LIST_VIEW_MENU_ID.showDetail)!;
+      const menu = first.identify.getMenu(LIST_VIEW_MENU_ID.item.showDetail)!;
       return { identify: first.identify, value: first.feature.data, menu };
     },
     execute: ({ identify, value, event, mapId, menu }) => {

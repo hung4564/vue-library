@@ -85,7 +85,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      LIST_VIEW_MENU_ID.addToGroup,
+      LIST_VIEW_MENU_ID.layer.addToGroup,
       ({ layer }: MenuItemProps) => {
         const next = addListViewsToNewGroup(
           getAllComponentsByTypeRef.current<IListViewUI>('list'),
@@ -97,7 +97,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      LIST_VIEW_MENU_ID.addToExistingGroup,
+      LIST_VIEW_MENU_ID.layer.addToExistingGroup,
       ({ layer, meta }: MenuItemProps) => {
         const groupId =
           typeof meta?.groupId === 'string' ? meta.groupId : undefined;
@@ -117,7 +117,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      LIST_VIEW_MENU_ID.moveUp,
+      LIST_VIEW_MENU_ID.layer.moveUp,
       ({ layer }: MenuItemProps) => {
         const views = getAllComponentsByTypeRef.current<IListViewUI>('list');
         if (!canMoveListView(views, layer.id, 'up')) return;
@@ -128,7 +128,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
     );
     UniversalRegistry.registerMenuHandlerForMap(
       mapId,
-      LIST_VIEW_MENU_ID.moveDown,
+      LIST_VIEW_MENU_ID.layer.moveDown,
       ({ layer }: MenuItemProps) => {
         const views = getAllComponentsByTypeRef.current<IListViewUI>('list');
         if (!canMoveListView(views, layer.id, 'down')) return;

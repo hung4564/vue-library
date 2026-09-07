@@ -16,8 +16,7 @@ export function resolveTabProps(
 }
 
 export function toReactFieldProps(raw: Record<string, unknown>) {
-  const { class: cssClass, className, disableAlpha: _disableAlpha, ...rest } =
-    raw;
+  const { class: cssClass, className, ...rest } = raw;
   return {
     ...rest,
     className: (className || cssClass) as string | undefined,

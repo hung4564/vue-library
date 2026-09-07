@@ -70,6 +70,7 @@ export function isDataManagementView(
 export function isListView(dataset: unknown): dataset is IListViewUI {
   return (dataset as IDataset)?.type === 'list';
 }
+
 export function isDatasetHasMethod<T, K extends string | number | symbol>(
   obj: unknown,
   methodName: K,

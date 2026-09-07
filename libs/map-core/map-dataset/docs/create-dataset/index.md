@@ -94,6 +94,7 @@ Leaf datasets represent specific functionalities. The main types are:
 - **Identify**: Handles feature identification when clicking on the map.
 - **Data Management**: Handles data fetching, detail display, and CRUD operations.
 - **Highlight**: Handles highlighting features on the map when selected.
+- **Menu**: Shared default menus (`for: 'layer' | 'item'`) consumed by list, identify, and attribute table.
 
 Each type has its own API and usage. See the corresponding documentation files in this folder for details and advanced usage.
 
@@ -149,5 +150,5 @@ For each node type:
 - [Attribute table](./attribute-table) — Feature properties table, click to zoom
 - [Menus](./with-helper-menu) — Locations, hidden/disabled, custom menu components
 - [Events](./with-helper-event) — `on` / `off` / `emit` on nodes
-- [Data helper](./with-helper-data) — `getData` / `setData`
+- [Data helper](./with-helper-data) — `getData` / `setData`, bound, shared menu
 - [Custom leaf](./custom-leaf)

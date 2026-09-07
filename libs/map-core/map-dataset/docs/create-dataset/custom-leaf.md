@@ -1,6 +1,6 @@
 # Creating a Custom Dataset Leaf
 
-A leaf is a node without children. Built-in types (`list`, `layer`, `source`, `identify`, `highlight`, `dataManagement`, `list-item`) are reserved — pick another `type`.
+A leaf is a node without children. Built-in types (`list`, `layer`, `source`, `identify`, `highlight`, `dataManagement`, `list-item`, `bound`, `menu`) are reserved — pick another `type`.
 
 ```typescript
 import { createRootDataset, createDatasetLeaf } from '@hungpvq/vue-map-dataset';

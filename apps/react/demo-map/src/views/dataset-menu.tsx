@@ -11,6 +11,7 @@ import {
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
+  IdentifyControl,
   LayerControl,
   LayerHighlight,
 } from '@hungpvq/react-map-dataset';
@@ -61,6 +62,7 @@ export function DatasetMenuPage() {
           endList={({ mapId: id }) => <BaseMapCard mapId={id} />}
         />
         <LayerHighlight enableClick />
+        <IdentifyControl position="top-right" />
         <ComponentManagementControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />

@@ -26,7 +26,7 @@ export function createMenuItemAttributeTable(
   return createMenuBuilder()
     .item()
     .setLocation('menu')
-    .setId(LIST_VIEW_MENU_ID.attributeTable)
+    .setId(LIST_VIEW_MENU_ID.layer.attributeTable)
     .setName('Attribute table')
     .setIcon(mdiTable)
     .setHidden((ctx) => isAttributeTableMenuHidden(ctx))

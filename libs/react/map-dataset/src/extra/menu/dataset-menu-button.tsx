@@ -1,30 +1,34 @@
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
 import { getMenuItemLocation } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
 import Icon from '@mdi/react';
 
 const ICON_SIZE = '14px';
 
-export function LayerMenuButton({
+export function DatasetMenuButton<T extends IDataset = IDataset>({
   menu,
   item,
   mapId,
   disabled,
+  onClick,
   onAction,
 }: {
-  menu: MenuAction<IListViewUI>;
-  item: IListViewUI;
-  mapId: string;
+  menu: MenuAction<T>;
+  item?: T;
+  mapId?: string;
   disabled?: boolean;
+  onClick?: (event: React.MouseEvent) => void;
   onAction?: (payload: {
     event: React.MouseEvent;
-    action: MenuAction<IListViewUI>;
-    item: IListViewUI;
+    action: MenuAction<T>;
+    item: T;
   }) => void;
 }) {
-  if (menu.type === 'divider') return null;
+  if (menu.type === 'divider') {
+    return <div className="menu-divider" />;
+  }
 
-  if (menu.type === 'item' && 'componentKey' in menu) {
+  if (menu.type === 'item' && 'componentKey' in menu && mapId) {
     return (
       <RegistryItem
         componentKey={menu.componentKey}
@@ -47,7 +51,10 @@ export function LayerMenuButton({
       title={title}
       onClick={(event) => {
         if (disabled) return;
-        onAction?.({ event, action: menu, item });
+        onClick?.(event);
+        if (item) {
+          onAction?.({ event, action: menu, item });
+        }
       }}
     >
       {icon ? <Icon path={icon} size={ICON_SIZE} /> : title}

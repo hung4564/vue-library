@@ -12,6 +12,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  IdentifyControl,
   LayerControl,
   LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
@@ -57,6 +58,7 @@ function onMapLoaded(map: MapSimple) {
       </template>
     </LayerControl>
     <LayerHighlight enableClick />
+    <IdentifyControl position="top-right" />
     <ComponentManagementControl />
   </Map>
 </template>

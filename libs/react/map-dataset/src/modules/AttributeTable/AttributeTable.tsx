@@ -6,12 +6,18 @@ import {
   attributeTableRowsToFeatureCollection,
   buildAttributeTable,
   clearPendingAttributeTableSelectRows,
+  convertFeatureToItem,
   createExportGeoSubmenu,
+  createMenuConditionContext,
   createMenuItemExportGeo,
   filterAttributeTableRows,
   getDatasetFeatureCollection,
   getExportGeoMenuOptions,
+  getItemMenuHost,
+  getResolvedMenus,
   handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
   resolveAttributeTableSelectedRowIds,
   takePendingAttributeTableSelectRows,
   type AttributeTableColumn,
@@ -40,6 +46,7 @@ import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 import { useMapDatasetHighlight } from '../../store';
 
 type AttributeTableProps = WithMapPropType & {
@@ -291,6 +298,30 @@ export function AttributeTable(props: AttributeTableProps) {
     exportMenuRef.current?.close();
   }
 
+  const itemMenuHost = getItemMenuHost(props.layer);
+  const itemMenuConditionCtx = createMenuConditionContext(itemMenuHost, {
+    mapId,
+  });
+  const itemMenus = getResolvedMenus(props.layer, 'item').filter(
+    (menu) =>
+      menu.type !== 'divider' && !isMenuItemHidden(menu, itemMenuConditionCtx),
+  );
+
+  function onRowMenuAction(
+    row: AttributeTableRow,
+    menu: MenuAction,
+    event: React.MouseEvent,
+  ) {
+    event.stopPropagation();
+    if (isMenuItemDisabled(menu, itemMenuConditionCtx)) return;
+    handleMenuAction(menu, {
+      event: event.nativeEvent,
+      layer: itemMenuHost,
+      mapId,
+      value: convertFeatureToItem(row.feature),
+    });
+  }
+
   useEffect(() => {
     if (zoomToSelection) applySelection(selectedIdsRef.current);
   }, [zoomToSelection, applySelection]);
@@ -380,6 +411,9 @@ export function AttributeTable(props: AttributeTableProps) {
                         {columns.map((column) => (
                           <th key={column.key}>{column.label}</th>
                         ))}
+                        {itemMenus.length > 0 ? (
+                          <th className="attribute-table__actions" />
+                        ) : null}
                       </tr>
                     </thead>
                     <tbody>
@@ -412,6 +446,28 @@ export function AttributeTable(props: AttributeTableProps) {
                               </td>
                             );
                           })}
+                          {itemMenus.length > 0 ? (
+                            <td
+                              className="attribute-table__actions"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {itemMenus.map((menu, index) => (
+                                <DatasetMenuButton
+                                  key={menu.id || String(index)}
+                                  menu={menu}
+                                  item={itemMenuHost}
+                                  mapId={mapId}
+                                  disabled={isMenuItemDisabled(
+                                    menu,
+                                    itemMenuConditionCtx,
+                                  )}
+                                  onClick={(event) =>
+                                    onRowMenuAction(row, menu, event)
+                                  }
+                                />
+                              ))}
+                            </td>
+                          ) : null}
                         </tr>
                       ))}
                     </tbody>
