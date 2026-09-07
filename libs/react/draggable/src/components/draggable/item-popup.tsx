@@ -23,6 +23,7 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
+import { useDragLayout } from '../../store';
 import { MapButton } from '../parts/MapButton';
 
 const STICKS_TO_RND: Record<string, string> = {
@@ -138,6 +139,9 @@ export function DraggableItemPopup({
   const { containerWidth, containerHeight } = useContainerSize(containerId);
   const { isLast, isFirst, isHasItems, onToBack, onToFront } =
     useContainerOrder(containerId, itemId);
+  const dragLayout = useDragLayout(containerId);
+  const dragLayoutRef = useRef(dragLayout);
+  dragLayoutRef.current = dragLayout;
   const [initDone, setInitDone] = useState(false);
   const [p_height, setPHeight] = useState(propHeight || 200);
   const [old_height, setOldHeight] = useState(p_height);
@@ -152,6 +156,7 @@ export function DraggableItemPopup({
   });
   const onBoundsChangeRef = useRef(onBoundsChange);
   onBoundsChangeRef.current = onBoundsChange;
+  const mountedRef = useRef(false);
   const { expand, setExpand } = useExpand(
     { expand: propExpand },
     {
@@ -200,9 +205,10 @@ export function DraggableItemPopup({
       setPWidth(next.width);
       setPHeight(next.height);
       boundsRef.current = next;
+      dragLayoutRef.current.setItemLayout(itemId, { bounds: next });
       onBoundsChangeRef.current?.(next);
     },
-    [containerWidth, containerHeight],
+    [containerWidth, containerHeight, itemId],
   );
 
   const handleResize = useCallback(
@@ -262,11 +268,32 @@ export function DraggableItemPopup({
   useEffect(() => {
     if (!show) {
       setInitDone(false);
+      mountedRef.current = false;
       return;
     }
 
     if (containerWidth <= 0 || containerHeight <= 0) {
       setInitDone(false);
+      return;
+    }
+
+    const saved = dragLayoutRef.current.getItemLayout(itemId)?.bounds;
+    if (saved && !mountedRef.current) {
+      const next = clampBounds(
+        saved.x,
+        saved.y,
+        saved.width,
+        saved.height,
+        containerWidth,
+        containerHeight,
+      );
+      setPX(next.x);
+      setPY(next.y);
+      setPWidth(next.width);
+      setPHeight(next.height);
+      boundsRef.current = next;
+      setInitDone(true);
+      mountedRef.current = true;
       return;
     }
 
@@ -289,6 +316,7 @@ export function DraggableItemPopup({
     setPHeight(next.height);
     boundsRef.current = next;
     setInitDone(true);
+    mountedRef.current = true;
   }, [
     show,
     containerWidth,
@@ -302,8 +330,49 @@ export function DraggableItemPopup({
     centerY,
     propWidth,
     propHeight,
+    itemId,
   ]);
 
+  useEffect(() => {
+    if (!initDone || !show || !mountedRef.current) return;
+    let changed = false;
+    let x = boundsRef.current.x;
+    let y = boundsRef.current.y;
+    let w = boundsRef.current.width;
+    let h = boundsRef.current.height;
+    if (propWidth != null && propWidth !== w) {
+      w = propWidth;
+      changed = true;
+    }
+    if (propHeight != null && propHeight !== h) {
+      h = propHeight;
+      changed = true;
+    }
+    if (left != null && left !== x) {
+      x = left;
+      changed = true;
+    }
+    if (top != null && top !== y) {
+      y = top;
+      changed = true;
+    }
+    if (!changed) return;
+    const next = clampBounds(x, y, w, h, containerWidth, containerHeight);
+    setPX(next.x);
+    setPY(next.y);
+    setPWidth(next.width);
+    setPHeight(next.height);
+    boundsRef.current = next;
+  }, [
+    left,
+    top,
+    propWidth,
+    propHeight,
+    initDone,
+    show,
+    containerWidth,
+    containerHeight,
+  ]);
   function onToggleExpanded() {
     if (expand && p_height > 50) {
       setOldHeight(p_height);

@@ -1,4 +1,4 @@
-import { focusFirst } from '@hungpvq/draggable';
+import { focusFirst, getMenuItems, handleMenuKeydown } from '@hungpvq/draggable';
 import {
   forwardRef,
   useCallback,
@@ -87,7 +87,12 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
 
     useEffect(() => {
       if (!isOpen) return;
-      if (contentRef.current) focusFirst(contentRef.current);
+      const root = contentRef.current;
+      if (root) {
+        const items = getMenuItems(root);
+        if (items[0]) items[0].focus();
+        else focusFirst(root);
+      }
       const onPointer = (e: MouseEvent) => {
         const el = targetRef.current;
         if (!el || el.contains(e.target as Node)) return;
@@ -97,6 +102,10 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
         if (e.key === 'Escape') {
           e.preventDefault();
           close();
+          return;
+        }
+        if (contentRef.current) {
+          handleMenuKeydown(contentRef.current, e);
         }
       };
       document.addEventListener('mousedown', onPointer);

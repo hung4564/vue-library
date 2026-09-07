@@ -25,6 +25,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
+import { useDragLayout } from '../../store';
 const {
   CloseIcon,
   CloseExpandedIcon,
@@ -90,6 +91,7 @@ const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
   containerId.value,
   itemId.value,
 );
+const dragLayout = useDragLayout(containerId.value);
 const init_done = ref(false);
 const isActive = ref(false);
 const p_height = ref(props.height || 200);
@@ -101,12 +103,14 @@ const p_y = ref(0);
 const layoutKey = ref(0);
 const { expand } = useExpand(props, emit, true);
 function emitBounds() {
-  emit('update:bounds', {
+  const bounds = {
     x: p_x.value,
     y: p_y.value,
     width: p_width.value,
     height: p_height.value,
-  });
+  };
+  dragLayout.setItemLayout(itemId.value, { bounds });
+  emit('update:bounds', bounds);
 }
 function applyClamp() {
   const next = clampBounds(
@@ -172,6 +176,17 @@ watch([containerWidth, containerHeight], (next, prev) => {
     layoutKey.value += 1;
   }
 });
+watch(
+  () => [props.left, props.top, props.width, props.height] as const,
+  ([left, top, width, height]) => {
+    if (!init_done.value || !show.value) return;
+    if (width != null) p_width.value = width;
+    if (height != null) p_height.value = height;
+    if (left != null) p_x.value = left;
+    if (top != null) p_y.value = top;
+    applyClamp();
+  },
+);
 function init() {
   if (!show.value) {
     init_done.value = false;
@@ -179,6 +194,17 @@ function init() {
   }
   if (containerWidth.value <= 0 || containerHeight.value <= 0) {
     init_done.value = false;
+    return;
+  }
+
+  const saved = dragLayout.getItemLayout(itemId.value)?.bounds;
+  if (saved) {
+    p_width.value = saved.width;
+    p_height.value = saved.height;
+    p_x.value = saved.x;
+    p_y.value = saved.y;
+    applyClamp();
+    init_done.value = true;
     return;
   }
 

@@ -6,12 +6,37 @@ export type ItemGroupConfig = {
   show: string[];
 };
 
+/** Persisted geometry for an item (popup/modal bounds or drawer size/edge). */
+export type ItemLayoutState = {
+  bounds?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  size?: number;
+  location?: LocationSideBar;
+};
+
+/** Serializable panel row for getLayout / applyLayout. */
+export type PanelSnapshot = {
+  id: string;
+  type: DraggableItemType | string;
+  show: boolean;
+  title?: string;
+  bounds?: ItemLayoutState['bounds'];
+  size?: number;
+  location?: LocationSideBar;
+};
+
 export type ContainerStore = {
   popup: ItemGroupConfig;
   modal: ItemGroupConfig;
   float: ItemGroupConfig;
   bottom: ItemGroupConfig;
   actions: Record<string, ContainerStoreAction>;
+  /** Cached geometry keyed by stable item id. */
+  layouts: Record<string, ItemLayoutState>;
   height: number;
   width: number;
   isMobile: boolean;
@@ -108,6 +133,7 @@ export function createEmptyContainer(): ContainerStore {
     bottom: createEmptyItemGroup(),
     sideBar: createEmptySideBar(),
     actions: {},
+    layouts: {},
     height: 0,
     width: 0,
     isMobile: false,

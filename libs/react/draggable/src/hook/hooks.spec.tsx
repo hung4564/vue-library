@@ -7,6 +7,7 @@ import {
   useDragStore,
 } from '../store';
 import { useInitItem } from '../hook/useInitItem';
+import { useInitAction } from '../hook/useInit';
 import { useShow, useHighlight } from '../hook/useShow';
 
 const CID = 'react-spec-container';
@@ -96,5 +97,40 @@ describe('useDragCommands', () => {
     cmds.close('a');
     expect(close).toHaveBeenCalled();
     expect(cmds.getAction('a')?.setShow).toBe(setShow);
+  });
+
+  it('close/open emit onUpdateShow when wired via useShow + useInitAction', () => {
+    useDragContainer(CID).initContainer();
+    const onUpdateShow = vi.fn();
+    const { result } = renderHook(() => {
+      const showApi = useShow(
+        { show: true },
+        { 'update:show': onUpdateShow },
+      );
+      const init = useInitItem(
+        CID,
+        showApi.show,
+        showApi.setShow,
+        { type: 'item-popup', title: 'Cmd' },
+        'react-cmd-item',
+      );
+      useInitAction(CID, init.itemId, {
+        open: showApi.open,
+        close: showApi.close,
+      });
+      return { ...showApi, itemId: init.itemId };
+    });
+
+    expect(result.current.show).toBe(true);
+    act(() => {
+      useDragCommands(CID).close('react-cmd-item');
+    });
+    expect(result.current.show).toBe(false);
+    expect(onUpdateShow).toHaveBeenCalledWith(false);
+    act(() => {
+      useDragCommands(CID).open('react-cmd-item');
+    });
+    expect(result.current.show).toBe(true);
+    expect(onUpdateShow).toHaveBeenCalledWith(true);
   });
 });

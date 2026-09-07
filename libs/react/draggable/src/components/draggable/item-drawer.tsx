@@ -21,9 +21,10 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
-import { useDrawerItem, useStoreReactive } from '../../store';
+import { useDrawerItem, useDragLayout, useStoreReactive } from '../../store';
 import { LocationSideBar } from '../../types';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
+import { ContextMenuItem } from '../ContextMenuItem';
 import { MapButton } from '../parts/MapButton';
 
 export interface DraggableDrawerProps {
@@ -99,6 +100,9 @@ export function DraggableDrawer({
   const drawerStore = useDrawerItem(containerId);
   const drawerStoreRef = useRef(drawerStore);
   drawerStoreRef.current = drawerStore;
+  const dragLayout = useDragLayout(containerId);
+  const dragLayoutRef = useRef(dragLayout);
+  dragLayoutRef.current = dragLayout;
   const { containerWidth, containerHeight } = useContainerSize(containerId);
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
     componentCard,
@@ -110,7 +114,9 @@ export function DraggableDrawer({
   const contextMenuRef = useRef<ContextMenuRef>(null);
 
   const isHorizontal = location === 'left' || location === 'right';
-  const [p_size, setPSize] = useState(propSize);
+  const [p_size, setPSize] = useState(
+    () => dragLayout.getItemLayout(itemId)?.size ?? propSize,
+  );
   const [isResizing, setIsResizing] = useState(false);
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
   const resizeState = useRef({ startPos: 0, startSize: 0 });
@@ -161,10 +167,14 @@ export function DraggableDrawer({
       if (show) {
         drawerStoreRef.current.setDrawerSize(location, next);
       }
+      dragLayoutRef.current.setItemLayout(itemId, {
+        size: next,
+        location,
+      });
       onUpdateSize?.(next);
       onResize?.(next);
     },
-    [clampSize, location, onResize, onUpdateSize, show],
+    [clampSize, itemId, location, onResize, onUpdateSize, show],
   );
 
   useEffect(() => {
@@ -179,6 +189,10 @@ export function DraggableDrawer({
       show,
       show ? p_size : undefined,
     );
+    dragLayoutRef.current.setItemLayout(itemId, {
+      size: p_size,
+      location,
+    });
   }, [itemId, location, show, p_size]);
 
   useEffect(() => {
@@ -299,19 +313,13 @@ export function DraggableDrawer({
     <ContextMenu ref={contextMenuRef}>
       <ul className="context-menu">
         {drawerItems.map((item) => (
-          <li
+          <ContextMenuItem
             key={item.id}
-            className={[
-              'context-menu__item',
-              'clickable',
-              item.id === activeDrawerId ? 'is-active' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            active={item.id === activeDrawerId}
             onClick={() => selectDrawer(item.id)}
           >
             <span>{item.title ?? ''}</span>
-          </li>
+          </ContextMenuItem>
         ))}
       </ul>
     </ContextMenu>

@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { clampBounds, focusFirst, trapTabKey } from '@hungpvq/draggable';
+import { clampBounds, focusFirst, setModalSiblingsInert, trapTabKey } from '@hungpvq/draggable';
 import {
   computed,
   inject,
@@ -29,6 +29,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
+import { useDragLayout } from '../../store';
 
 const MODAL_Z_INDEX = 10000;
 
@@ -89,6 +90,7 @@ useInitAction(containerId.value, itemId.value, {
   close,
 });
 const { onToFront } = useContainerOrder(containerId.value, itemId.value);
+const dragLayout = useDragLayout(containerId.value);
 const layerWidth = ref(0);
 const layerHeight = ref(0);
 const modalLayerTo = computed(() => `#modal-layer-${containerId.value}`);
@@ -103,12 +105,14 @@ const modalRoot = ref<HTMLDivElement>();
 let previousFocus: HTMLElement | null = null;
 
 function emitBounds() {
-  emit('update:bounds', {
+  const bounds = {
     x: p_x.value,
     y: p_y.value,
     width: p_width.value,
     height: p_height.value,
-  });
+  };
+  dragLayout.setItemLayout(itemId.value, { bounds });
+  emit('update:bounds', bounds);
 }
 function applyClamp() {
   const next = clampBounds(
@@ -181,6 +185,8 @@ watch(
   show,
   async (visible) => {
     init_done.value = false;
+    const layer = document.getElementById(`modal-layer-${containerId.value}`);
+    setModalSiblingsInert(layer, visible);
     if (!visible) {
       document.removeEventListener('keydown', onKeydown);
       if (previousFocus && typeof previousFocus.focus === 'function') {
@@ -202,11 +208,38 @@ watch(
 );
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown);
+  if (show.value) {
+    setModalSiblingsInert(
+      document.getElementById(`modal-layer-${containerId.value}`),
+      false,
+    );
+  }
 });
+watch(
+  () => [props.left, props.top, props.width, props.height] as const,
+  ([left, top, width, height]) => {
+    if (!init_done.value || !show.value) return;
+    if (width != null) p_width.value = width;
+    if (height != null) p_height.value = height;
+    if (left != null) p_x.value = left;
+    if (top != null) p_y.value = top;
+    applyClamp();
+  },
+);
 function init() {
   measureLayer();
   if (layerWidth.value <= 0 || layerHeight.value <= 0) {
     init_done.value = false;
+    return;
+  }
+  const saved = dragLayout.getItemLayout(itemId.value)?.bounds;
+  if (saved) {
+    p_width.value = saved.width;
+    p_height.value = saved.height;
+    p_x.value = saved.x;
+    p_y.value = saved.y;
+    applyClamp();
+    init_done.value = true;
     return;
   }
   p_width.value = props.width || 480;
@@ -253,6 +286,7 @@ function onDragging() {
       <div
         v-if="mask"
         class="draggable-modal-mask"
+        aria-hidden="true"
         @click="onMaskClick"
       />
       <VueDraggableResizable

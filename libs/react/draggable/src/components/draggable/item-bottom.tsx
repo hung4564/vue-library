@@ -19,6 +19,7 @@ import {
   useShow,
 } from '../../hook';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
+import { ContextMenuItem } from '../ContextMenuItem';
 import { MapButton } from '../parts/MapButton';
 
 export interface DraggableItemBottomProps {
@@ -130,19 +131,13 @@ export function DraggableItemBottom({
     <ContextMenu ref={contextMenuRef}>
       <ul className="context-menu">
         {switchItems.map((item) => (
-          <li
+          <ContextMenuItem
             key={item.id}
-            className={[
-              'context-menu__item',
-              'clickable',
-              item.active ? 'is-active' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            active={item.active}
             onClick={() => onSelectItem(item.id)}
           >
             <span>{item.title ?? ''}</span>
-          </li>
+          </ContextMenuItem>
         ))}
       </ul>
     </ContextMenu>

@@ -22,6 +22,8 @@ const root = ref<HTMLDivElement>();
 const props = defineProps<{
   containerId?: string;
   mobileBreakpoint?: number;
+  /** `plain` drops map-heavy card chrome (transparent/inherit). */
+  variant?: 'default' | 'plain';
 }>();
 const p_container_id = ref(
   props.containerId || `draggable-container-${getUUIDv4()}`,
@@ -120,7 +122,12 @@ function onResize() {
 </script>
 
 <template>
-  <div class="draggable-root" ref="root" :style="drawerStyle">
+  <div
+    class="draggable-root"
+    :class="{ 'draggable-variant-plain': variant === 'plain' }"
+    ref="root"
+    :style="drawerStyle"
+  >
     <div
       class="drawer-slot drawer-slot-top"
       :id="`drawer-top-${p_container_id}`"

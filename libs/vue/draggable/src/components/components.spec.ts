@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils';
+import { handleMenuKeydown } from '@hungpvq/draggable';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, inject, nextTick, type Ref } from 'vue';
 import ContextMenu from '../components/ContextMenu.vue';
+import ContextMenuItem from '../components/ContextMenuItem.vue';
 import DraggableContainer from '../components/draggable/draggable-container.vue';
 import ManagementControl from '../components/ManagementControl/index.vue';
 import MapButton from '../components/parts/MapButton.vue';
@@ -143,6 +145,42 @@ describe('ContextMenu', () => {
     expect(document.body.querySelector('.context-menu-container')).toBeTruthy();
     vm.close();
     await nextTick();
+    wrapper.unmount();
+  });
+
+  it('renders ContextMenuItem as menuitem and supports ArrowDown', async () => {
+    const wrapper = mount(ContextMenu, {
+      attachTo: document.body,
+      slots: {
+        default: () =>
+          h('ul', { class: 'context-menu' }, [
+            h(ContextMenuItem, null, () => 'One'),
+            h(ContextMenuItem, null, () => 'Two'),
+          ]),
+      },
+    });
+    const vm = wrapper.vm as unknown as {
+      open: (e: MouseEvent) => void;
+      close: () => void;
+    };
+    vm.open(new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }));
+    await nextTick();
+    const menu = document.body.querySelector('[role="menu"]') as HTMLElement | null;
+    expect(menu).toBeTruthy();
+    const items = document.body.querySelectorAll('[role="menuitem"]');
+    expect(items.length).toBe(2);
+    (items[0] as HTMLElement).focus();
+    expect(handleMenuKeydown).toBeTypeOf('function');
+    handleMenuKeydown(
+      menu!,
+      new KeyboardEvent('keydown', {
+        key: 'ArrowDown',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(items[1]);
+    vm.close();
     wrapper.unmount();
   });
 });

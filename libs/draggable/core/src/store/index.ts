@@ -4,7 +4,9 @@ import {
   ContainerStoreAction,
   ContainerStoreOtherAction,
   ItemGroupKey,
+  ItemLayoutState,
   LocationSideBar,
+  PanelSnapshot,
   createEmptyContainer,
   createEmptyDrawer,
   itemTypeToGroup,
@@ -347,7 +349,7 @@ export const useDragItem = (containerId: string) => {
       const layer = getGroup(group);
       const index = layer.show.indexOf(id);
       if (show) {
-        // Most recently shown item goes to the end → highest z-index (open order).
+        // Most recently shown item goes to the end â†’ highest z-index (open order).
         if (index !== -1) {
           layer.show.splice(index, 1);
         }
@@ -537,4 +539,140 @@ export const useDragCommands = (containerId: string) => {
   }
 
   return { open, close, setFront, setBack, getAction };
+};
+
+function ensureLayouts(container: ContainerStore) {
+  if (!container.layouts) {
+    container.layouts = {};
+  }
+  return container.layouts;
+}
+
+function isItemShowing(
+  container: ContainerStore,
+  id: string,
+  type?: string,
+): boolean {
+  if (type === 'item-sidebar' && 'location' in (container.actions[id] || {})) {
+    const loc = (container.actions[id] as { location?: LocationSideBar })
+      .location;
+    return !!loc && container.sideBar[loc]?.show === id;
+  }
+  if (type === 'item-drawer') {
+    const edges: LocationSideBar[] = ['left', 'right', 'top', 'bottom'];
+    return edges.some((edge) => container.drawer?.[edge]?.show === id);
+  }
+  const group = itemTypeToGroup(type);
+  return container[group]?.show?.includes(id) ?? false;
+}
+
+/** Read / write serializable panel layout for a container. */
+export const useDragLayout = (containerId: string) => {
+  const commands = useDragCommands(containerId);
+  const drawerApi = useDrawerItem(containerId);
+  const sidebarApi = useSidebarItem(containerId);
+
+  function setItemLayout(id: string, partial: Partial<ItemLayoutState>) {
+    const container = getStoreContainer(containerId);
+    const layouts = ensureLayouts(container);
+    layouts[id] = { ...layouts[id], ...partial };
+    notify(['drag:core', 'container', containerId]);
+  }
+
+  function getItemLayout(id: string): ItemLayoutState | undefined {
+    const store = useDragStore();
+    const container = store.container[containerId];
+    if (!container) return undefined;
+    return ensureLayouts(container)[id];
+  }
+
+  function getLayout(): PanelSnapshot[] {
+    const store = useDragStore();
+    const container = store.container[containerId];
+    if (!container) return [];
+    const layouts = ensureLayouts(container);
+    const ids = Object.keys(container.actions);
+    return ids.map((id) => {
+      const action = container.actions[id];
+      const type = action?.type || 'item-popup';
+      const layout = layouts[id] || {};
+      const location =
+        layout.location ||
+        ('location' in (action || {})
+          ? (action as { location?: LocationSideBar }).location
+          : undefined);
+      let size = layout.size;
+      if (type === 'item-drawer' && location && container.drawer?.[location]) {
+        if (size == null && container.drawer[location].show === id) {
+          size = container.drawer[location].size;
+        }
+      }
+      return {
+        id,
+        type,
+        show: isItemShowing(container, id, type),
+        title: action?.title,
+        bounds: layout.bounds,
+        size,
+        location,
+      };
+    });
+  }
+
+  function applyLayout(snapshots: PanelSnapshot[]) {
+    const container = getStoreContainer(containerId);
+    ensureLayouts(container);
+
+    for (const snap of snapshots) {
+      const partial: Partial<ItemLayoutState> = {};
+      if (snap.bounds) partial.bounds = snap.bounds;
+      if (snap.size != null) partial.size = snap.size;
+      if (snap.location) partial.location = snap.location;
+      if (Object.keys(partial).length) {
+        setItemLayout(snap.id, partial);
+      }
+
+      const action = container.actions[snap.id];
+      if (!action) continue;
+
+      if (snap.type === 'item-drawer' && snap.location) {
+        if (
+          'location' in action &&
+          action.location &&
+          action.location !== snap.location
+        ) {
+          drawerApi.moveDrawerLocation(snap.id, snap.location);
+        }
+        drawerApi.registerDrawerShow(
+          snap.id,
+          snap.location,
+          snap.show,
+          snap.size,
+        );
+        continue;
+      }
+
+      if (snap.type === 'item-sidebar' && snap.location) {
+        if (
+          'location' in action &&
+          action.location &&
+          action.location !== snap.location
+        ) {
+          sidebarApi.moveSideBarLocation(snap.id, snap.location);
+        }
+        sidebarApi.registerSideBarShow(snap.id, snap.show);
+        continue;
+      }
+
+      if (snap.show) commands.open(snap.id);
+      else commands.close(snap.id);
+    }
+  }
+
+  return {
+    setItemLayout,
+    getItemLayout,
+    getLayout,
+    applyLayout,
+  };
 };

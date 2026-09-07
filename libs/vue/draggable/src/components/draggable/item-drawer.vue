@@ -5,6 +5,7 @@ export default {
 </script>
 <script setup lang="ts">
 import ContextMenu from '../ContextMenu.vue';
+import ContextMenuItem from '../ContextMenuItem.vue';
 import {
   computed,
   inject,
@@ -25,7 +26,7 @@ import {
   withShowProps,
 } from '../../hook';
 import { useInitDrawer } from '../../hook/useInitDrawer';
-import { useDrawerItem } from '../../store';
+import { useDragLayout, useDrawerItem } from '../../store';
 import { LocationSideBar } from '../../types';
 import MapButton from '../parts/MapButton.vue';
 
@@ -83,6 +84,7 @@ useInitAction(containerId.value, itemId.value, {
   close,
 });
 const drawerStore = useDrawerItem(containerId.value);
+const dragLayout = useDragLayout(containerId.value);
 const { containerWidth, containerHeight } = useContainerSize(containerId.value);
 const { componentCard, componentCardHeader } = useComponent({
   ...props,
@@ -97,7 +99,8 @@ const contextMenuRef = ref<
   | undefined
 >();
 
-const p_size = ref(props.size);
+const savedLayout = dragLayout.getItemLayout(itemId.value);
+const p_size = ref(savedLayout?.size ?? props.size);
 const slotTo = computed(
   () => `#drawer-${location.value}-${containerId.value}`,
 );
@@ -148,6 +151,10 @@ function setSize(value: number) {
   if (show.value) {
     drawerStore.setDrawerSize(location.value, next);
   }
+  dragLayout.setItemLayout(itemId.value, {
+    size: next,
+    location: location.value,
+  });
   emit('update:size', next);
   emit('resize', next);
 }
@@ -165,6 +172,10 @@ watch(
       !!isShow,
       isShow ? size : undefined,
     );
+    dragLayout.setItemLayout(itemId.value, {
+      size: size as number,
+      location: loc as LocationSideBar,
+    });
   },
   { immediate: true },
 );
@@ -313,15 +324,14 @@ const resizeHandleClass = computed(() => {
   </Teleport>
   <ContextMenu ref="contextMenuRef">
     <ul class="context-menu">
-      <li
+      <ContextMenuItem
         v-for="option in availableDrawerItems"
         :key="option.id"
-        class="context-menu__item clickable"
-        :class="{ 'is-active': option.id === activeDrawerId }"
-        @click.stop="selectDrawer(option.id)"
+        :active="option.id === activeDrawerId"
+        @click="selectDrawer(option.id)"
       >
         <span v-html="option.title"></span>
-      </li>
+      </ContextMenuItem>
     </ul>
   </ContextMenu>
 </template>

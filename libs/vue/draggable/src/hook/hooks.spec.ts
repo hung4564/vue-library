@@ -15,6 +15,7 @@ import { useShow, useExpand, useHighlight } from '../hook/useShow';
 import { useSideBarContainer } from '../hook/useSideBarContainer';
 import { useComponent } from '../hook/useComponent';
 import {
+  useDragCommands,
   useDragContainer,
   useDragItem,
   useDragStore,
@@ -91,6 +92,33 @@ describe('useShow / useExpand / useHighlight', () => {
     vi.advanceTimersByTime(1);
     expect(api().isHighlight.value).toBe(false);
     vi.useRealTimers();
+  });
+
+  it('useDragCommands close/open emit update:show when wired via useInitAction', async () => {
+    useDragContainer(CID).initContainer();
+    const emit = vi.fn();
+    const { api } = mountSetup(() => {
+      const showApi = useShow({ show: true }, emit);
+      const { itemId } = useInitItem(
+        CID,
+        showApi.show,
+        { type: 'item-popup', title: 'Cmd' },
+        'vue-cmd-item',
+      );
+      useInitAction(CID, itemId.value, {
+        open: showApi.open,
+        close: showApi.close,
+      });
+      return { itemId, show: showApi.show };
+    });
+    await nextTick();
+    expect(api().show.value).toBe(true);
+    useDragCommands(CID).close('vue-cmd-item');
+    expect(api().show.value).toBe(false);
+    expect(emit).toHaveBeenCalledWith('update:show', false);
+    useDragCommands(CID).open('vue-cmd-item');
+    expect(api().show.value).toBe(true);
+    expect(emit).toHaveBeenCalledWith('update:show', true);
   });
 });
 

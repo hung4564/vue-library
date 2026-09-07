@@ -51,6 +51,7 @@ describe('empty factories', () => {
     expect(c.width).toBe(0);
     expect(c.height).toBe(0);
     expect(c.actions).toEqual({});
+    expect(c.layouts).toEqual({});
     expect(c.sideBar.left.items).toEqual([]);
     expect(c.drawer.left.size).toBe(0);
   });

@@ -142,6 +142,65 @@ describe('Stable item shells register into store', () => {
     unmount();
   });
 
+  it('DraggableModal sets inert on root siblings while open', async () => {
+    getDragContainer(CID).initContainer();
+    getDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const shell = document.createElement('div');
+    shell.className = 'draggable-root';
+    shell.innerHTML = `
+      <div class="draggable-container" id="center-sib-react"></div>
+      <div class="draggable-modal-layer" id="modal-layer-${CID}"></div>
+    `;
+    document.body.appendChild(shell);
+    const layer = document.getElementById(`modal-layer-${CID}`)!;
+    Object.defineProperty(layer, 'clientWidth', { value: 800 });
+    Object.defineProperty(layer, 'clientHeight', { value: 600 });
+
+    const { rerender, unmount } = render(
+      <ContainerProvider containerId={CID}>
+        <DraggableModal
+          show
+          title="M"
+          containerId={CID}
+          width={320}
+          height={200}
+          id="modal-inert-react"
+        />
+      </ContainerProvider>,
+    );
+    await waitFor(() => {
+      const center = document.getElementById('center-sib-react')!;
+      expect(
+        center.hasAttribute('inert') ||
+          center.getAttribute('aria-hidden') === 'true',
+      ).toBe(true);
+    });
+
+    rerender(
+      <ContainerProvider containerId={CID}>
+        <DraggableModal
+          show={false}
+          title="M"
+          containerId={CID}
+          width={320}
+          height={200}
+          id="modal-inert-react"
+        />
+      </ContainerProvider>,
+    );
+    await waitFor(() => {
+      const center = document.getElementById('center-sib-react')!;
+      expect(center.hasAttribute('inert')).toBe(false);
+      expect(center.hasAttribute('aria-hidden')).toBe(false);
+    });
+    unmount();
+    shell.remove();
+  });
+
   it('DraggableItemSideBar → sidebar left', async () => {
     const { unmount } = await renderItem(DraggableItemSideBar, {
       location: 'left',

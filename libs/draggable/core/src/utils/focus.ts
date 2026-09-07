@@ -1,6 +1,9 @@
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+const INERT_MARK = 'data-draggable-inert';
+const MODAL_COUNT = 'data-draggable-modal-count';
+
 export function getFocusableElements(root: HTMLElement): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
     (el) => !el.hasAttribute('disabled') && el.tabIndex !== -1,
@@ -43,4 +46,44 @@ export function trapTabKey(root: HTMLElement, event: KeyboardEvent): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * When a modal opens, mark siblings under `.draggable-root` as inert
+ * (and `aria-hidden`) so assistive tech skips background UI.
+ * Pass the modal layer node (or any descendant of the root).
+ * Nested open/close is reference-counted.
+ */
+export function setModalSiblingsInert(
+  modalLayerOrDescendant: HTMLElement | null | undefined,
+  active: boolean,
+) {
+  if (!modalLayerOrDescendant) return;
+  const root =
+    modalLayerOrDescendant.closest('.draggable-root') ||
+    modalLayerOrDescendant.parentElement;
+  if (!root || !(root instanceof HTMLElement)) return;
+
+  const current = Number(root.getAttribute(MODAL_COUNT) || '0');
+  const next = Math.max(0, current + (active ? 1 : -1));
+  if (next > 0) {
+    root.setAttribute(MODAL_COUNT, String(next));
+  } else {
+    root.removeAttribute(MODAL_COUNT);
+  }
+
+  const shouldInert = next > 0;
+  Array.from(root.children).forEach((child) => {
+    if (!(child instanceof HTMLElement)) return;
+    if (child.classList.contains('draggable-modal-layer')) return;
+    if (shouldInert) {
+      child.setAttribute('inert', '');
+      child.setAttribute('aria-hidden', 'true');
+      child.setAttribute(INERT_MARK, '1');
+    } else if (child.getAttribute(INERT_MARK) === '1') {
+      child.removeAttribute('inert');
+      child.removeAttribute('aria-hidden');
+      child.removeAttribute(INERT_MARK);
+    }
+  });
 }

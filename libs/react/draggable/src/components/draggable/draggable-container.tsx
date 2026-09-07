@@ -26,6 +26,8 @@ export interface DraggableContainerProps {
   containerId?: string;
   className?: string;
   mobileBreakpoint?: number;
+  /** `plain` drops map-heavy card chrome (transparent/inherit). */
+  variant?: 'default' | 'plain';
   children?: ReactNode;
   onInit?: (id: string) => void;
   onDestroy?: (id: string) => void;
@@ -36,6 +38,7 @@ export function DraggableContainer({
   containerId: propContainerId,
   className,
   mobileBreakpoint = 600,
+  variant = 'default',
   children,
   onInit,
   onDestroy,
@@ -156,7 +159,13 @@ export function DraggableContainer({
     <ContainerProvider containerId={containerId}>
       <div
         ref={rootRef}
-        className={['draggable-root', className].filter(Boolean).join(' ')}
+        className={[
+          'draggable-root',
+          variant === 'plain' ? 'draggable-variant-plain' : '',
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         style={drawerStyle}
       >
         <div

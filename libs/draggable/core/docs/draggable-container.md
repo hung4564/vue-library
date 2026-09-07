@@ -10,10 +10,11 @@ category: Component
 
 ## Props
 
-| Prop                | Description                                                                               | Type     | Required | Default Value |
-| ------------------- | ----------------------------------------------------------------------------------------- | -------- | -------- | ------------- |
-| `containerId`       | Unique identifier for the container. Useful when teleporting items outside the container. | `string` | false    | -             |
-| `mobileBreakpoint`  | Root width (px) below which `WithMobileHandle` switches items to the bottom sheet.        | `number` | false    | `600`         |
+| Prop                | Description                                                                               | Type                        | Required | Default Value |
+| ------------------- | ----------------------------------------------------------------------------------------- | --------------------------- | -------- | ------------- |
+| `containerId`       | Unique identifier for the container. Useful when teleporting items outside the container. | `string`                    | false    | -             |
+| `mobileBreakpoint`  | Root width (px) below which `WithMobileHandle` switches items to the bottom sheet.        | `number`                    | false    | `600`         |
+| `variant`           | `plain` drops GIS card chrome (transparent/inherit). Adds `draggable-variant-plain`.      | `'default' \| 'plain'`      | false    | `'default'`   |
 
 ## Events
 

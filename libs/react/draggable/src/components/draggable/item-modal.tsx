@@ -1,4 +1,4 @@
-import { clampBounds, focusFirst, trapTabKey } from '@hungpvq/draggable';
+import { clampBounds, focusFirst, setModalSiblingsInert, trapTabKey } from '@hungpvq/draggable';
 import {
   ReactNode,
   useCallback,
@@ -22,6 +22,7 @@ import {
   useShow,
 } from '../../hook';
 import { MapButton } from '../parts/MapButton';
+import { useDragLayout } from '../../store';
 
 const MODAL_Z_INDEX = 10000;
 
@@ -139,6 +140,9 @@ export function DraggableModal({
     close,
   });
   const { onToFront } = useContainerOrder(containerId, itemId);
+  const dragLayout = useDragLayout(containerId);
+  const dragLayoutRef = useRef(dragLayout);
+  dragLayoutRef.current = dragLayout;
   const [initDone, setInitDone] = useState(false);
   const [layerEl, setLayerEl] = useState<HTMLElement | null>(null);
   const [layerWidth, setLayerWidth] = useState(0);
@@ -149,6 +153,7 @@ export function DraggableModal({
   const [p_y, setPY] = useState(0);
   const modalRootRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const mountedRef = useRef(false);
   const boundsRef = useRef({
     x: 0,
     y: 0,
@@ -189,9 +194,10 @@ export function DraggableModal({
       setPWidth(next.width);
       setPHeight(next.height);
       boundsRef.current = next;
+      dragLayoutRef.current.setItemLayout(itemId, { bounds: next });
       onBoundsChangeRef.current?.(next);
     },
-    [layerWidth, layerHeight],
+    [layerWidth, layerHeight, itemId],
   );
 
   const handleResize = useCallback(
@@ -271,8 +277,21 @@ export function DraggableModal({
   }, [containerId]);
 
   useEffect(() => {
+    if (!show) return;
+    const layer = document.getElementById(`modal-layer-${containerId}`);
+    setModalSiblingsInert(layer, true);
+    return () => {
+      setModalSiblingsInert(
+        document.getElementById(`modal-layer-${containerId}`),
+        false,
+      );
+    };
+  }, [show, containerId]);
+
+  useEffect(() => {
     if (!show) {
       setInitDone(false);
+      mountedRef.current = false;
       if (previousFocusRef.current?.focus) {
         previousFocusRef.current.focus();
       }
@@ -285,31 +304,51 @@ export function DraggableModal({
       return;
     }
 
-    const width = propWidth || 480;
-    const height = propHeight || 320;
-    let x = 0;
-    let y = 0;
-    const hasX = left != null || right != null;
-    const hasY = top != null || bottom != null;
+    const saved = dragLayoutRef.current.getItemLayout(itemId)?.bounds;
+    if (saved && !mountedRef.current) {
+      const next = clampBounds(
+        saved.x,
+        saved.y,
+        saved.width,
+        saved.height,
+        layerWidth,
+        layerHeight,
+      );
+      setPWidth(next.width);
+      setPHeight(next.height);
+      setPX(next.x);
+      setPY(next.y);
+      boundsRef.current = next;
+      setInitDone(true);
+      mountedRef.current = true;
+    } else {
+      const width = propWidth || 480;
+      const height = propHeight || 320;
+      let x = 0;
+      let y = 0;
+      const hasX = left != null || right != null;
+      const hasY = top != null || bottom != null;
 
-    if (left != null) x = left;
-    if (top != null) y = top;
-    if (right != null) x = layerWidth - right - width;
-    if (bottom != null) y = layerHeight - bottom - height;
-    if (!hasX && (center || centerX)) {
-      x = Math.max(0, (layerWidth - width) / 2);
-    }
-    if (!hasY && (center || centerY)) {
-      y = Math.max(0, (layerHeight - height) / 2);
-    }
+      if (left != null) x = left;
+      if (top != null) y = top;
+      if (right != null) x = layerWidth - right - width;
+      if (bottom != null) y = layerHeight - bottom - height;
+      if (!hasX && (center || centerX)) {
+        x = Math.max(0, (layerWidth - width) / 2);
+      }
+      if (!hasY && (center || centerY)) {
+        y = Math.max(0, (layerHeight - height) / 2);
+      }
 
-    const next = clampBounds(x, y, width, height, layerWidth, layerHeight);
-    setPWidth(next.width);
-    setPHeight(next.height);
-    setPX(next.x);
-    setPY(next.y);
-    boundsRef.current = next;
-    setInitDone(true);
+      const next = clampBounds(x, y, width, height, layerWidth, layerHeight);
+      setPWidth(next.width);
+      setPHeight(next.height);
+      setPX(next.x);
+      setPY(next.y);
+      boundsRef.current = next;
+      setInitDone(true);
+      mountedRef.current = true;
+    }
 
     previousFocusRef.current = document.activeElement as HTMLElement | null;
     const focusTimer = window.setTimeout(() => {
@@ -345,6 +384,7 @@ export function DraggableModal({
     propWidth,
     propHeight,
     setShow,
+    itemId,
   ]);
 
   function onDragging() {
@@ -364,7 +404,11 @@ export function DraggableModal({
       style={{ zIndex: stackZIndex }}
     >
       {mask && (
-        <div className="draggable-modal-mask" onClick={handleMaskClick} />
+        <div
+          className="draggable-modal-mask"
+          aria-hidden="true"
+          onClick={handleMaskClick}
+        />
       )}
       <Rnd
         className="draggable-modal-panel"

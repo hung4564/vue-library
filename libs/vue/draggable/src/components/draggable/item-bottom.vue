@@ -8,6 +8,7 @@ export default {
 </script>
 <script setup lang="ts">
 import ContextMenu from '../ContextMenu.vue';
+import ContextMenuItem from '../ContextMenuItem.vue';
 import { computed, inject, ref, Ref, StyleValue } from 'vue';
 import {
   useComponent,
@@ -139,15 +140,14 @@ const c_style = computed(() => {
   </div>
   <ContextMenu ref="contextMenuRef">
     <ul class="context-menu">
-      <li
+      <ContextMenuItem
         v-for="option in switchItems"
         :key="option.id"
-        class="context-menu__item clickable"
-        :class="{ 'is-active': option.active }"
-        @click.stop="onSelectItem(option.id)"
+        :active="option.active"
+        @click="onSelectItem(option.id)"
       >
         <span v-html="option.title"></span>
-      </li>
+      </ContextMenuItem>
     </ul>
   </ContextMenu>
 </template>

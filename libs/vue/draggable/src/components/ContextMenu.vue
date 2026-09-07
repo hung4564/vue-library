@@ -35,7 +35,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { focusFirst } from '@hungpvq/draggable';
+import { focusFirst, getMenuItems, handleMenuKeydown } from '@hungpvq/draggable';
 import {
   computed,
   CSSProperties,
@@ -77,11 +77,26 @@ function onDocumentPointerDown(e: MouseEvent) {
   close();
 }
 
+function focusMenu() {
+  const root = content.value;
+  if (!root) return;
+  const items = getMenuItems(root);
+  if (items[0]) {
+    items[0].focus();
+    return;
+  }
+  focusFirst(root);
+}
+
 function onDocumentKeydown(e: KeyboardEvent) {
   if (!isOpen.value) return;
   if (e.key === 'Escape') {
     e.preventDefault();
     close();
+    return;
+  }
+  if (content.value) {
+    handleMenuKeydown(content.value, e);
   }
 }
 
@@ -145,7 +160,7 @@ function close() {
 watch(isOpen, (openNow) => {
   if (openNow) {
     nextTick(() => {
-      if (content.value) focusFirst(content.value);
+      focusMenu();
     });
   }
 });

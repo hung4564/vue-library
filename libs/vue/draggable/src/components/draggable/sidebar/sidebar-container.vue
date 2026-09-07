@@ -5,6 +5,7 @@ export default {
 </script>
 <script setup lang="ts">
 import ContextMenu from '../../ContextMenu.vue';
+import ContextMenuItem from '../../ContextMenuItem.vue';
 import { computed, inject, PropType, ref, Ref, watch } from 'vue';
 import { type LocationSideBar } from '../../../types';
 import {
@@ -159,15 +160,14 @@ function selectSideBar(nextId: string) {
   </div>
   <ContextMenu ref="contextMenuRef">
     <ul class="context-menu">
-      <li
+      <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"
-        @click.stop="selectSideBar(option.id)"
-        class="context-menu__item clickable"
-        :class="{ 'is-active': option.id === activeSidebarId }"
+        :active="option.id === activeSidebarId"
+        @click="selectSideBar(option.id)"
       >
         <span v-html="option.title"></span>
-      </li>
+      </ContextMenuItem>
     </ul>
   </ContextMenu>
 </template>

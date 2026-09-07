@@ -188,8 +188,8 @@ Theme tokens: [css-tokens.md](./css-tokens.md).
 
 ## Stable API & SemVer
 
-- [Stable API allowlist](./stable-api.md)
-- [CSS tokens](./css-tokens.md)
+- [Stable API allowlist](./stable-api.md) (includes layout persist cookbook)
+- [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
 
 ## Components

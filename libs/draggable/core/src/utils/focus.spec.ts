@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 /**
  * @vitest-environment jsdom
  */
-import { focusFirst, getFocusableElements, trapTabKey } from './focus';
+import { focusFirst, getFocusableElements, setModalSiblingsInert, trapTabKey } from './focus';
 
 describe('focus helpers', () => {
   afterEach(() => {
@@ -64,5 +64,41 @@ describe('focus helpers', () => {
     });
     expect(trapTabKey(root, event)).toBe(true);
     expect(document.activeElement?.id).toBe('b');
+  });
+
+  it('setModalSiblingsInert toggles inert/aria-hidden on siblings', () => {
+    document.body.innerHTML = `
+      <div class="draggable-root">
+        <div class="draggable-container" id="center"><button id="bg">bg</button></div>
+        <div class="draggable-modal-layer" id="layer"></div>
+      </div>
+    `;
+    const layer = document.getElementById('layer')!;
+    const center = document.getElementById('center')!;
+    setModalSiblingsInert(layer, true);
+    expect(center.hasAttribute('inert')).toBe(true);
+    expect(center.getAttribute('aria-hidden')).toBe('true');
+    expect(layer.hasAttribute('inert')).toBe(false);
+
+    setModalSiblingsInert(layer, false);
+    expect(center.hasAttribute('inert')).toBe(false);
+    expect(center.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('setModalSiblingsInert reference-counts nested modals', () => {
+    document.body.innerHTML = `
+      <div class="draggable-root">
+        <div class="draggable-container" id="center"></div>
+        <div class="draggable-modal-layer" id="layer"></div>
+      </div>
+    `;
+    const layer = document.getElementById('layer')!;
+    const center = document.getElementById('center')!;
+    setModalSiblingsInert(layer, true);
+    setModalSiblingsInert(layer, true);
+    setModalSiblingsInert(layer, false);
+    expect(center.hasAttribute('inert')).toBe(true);
+    setModalSiblingsInert(layer, false);
+    expect(center.hasAttribute('inert')).toBe(false);
   });
 });

@@ -7,6 +7,7 @@ import {
   useDragContainer,
   useDragIsMobile,
   useDragItem,
+  useDragLayout,
   useDragStore,
   useDrawerItem,
   useSidebarItem,
@@ -56,7 +57,7 @@ describe('configureDragStore', () => {
 
   it('wraps container map with makeReactive', () => {
     const makeReactive = vi.fn(<T extends object>(value: T) => value);
-    // Reconfigure before first store read in this test path — store already
+    // Reconfigure before first store read in this test path â€” store already
     // created globally; assert notify still works after configure.
     configureDragStore({ makeReactive });
     expect(typeof makeReactive).toBe('function');
@@ -380,5 +381,77 @@ describe('useDragCommands', () => {
     expect(() => cmds.open('missing')).not.toThrow();
     expect(() => cmds.close('missing')).not.toThrow();
     expect(cmds.getAction('missing')).toBeUndefined();
+  });
+});
+
+describe('useDragLayout', () => {
+  it('setItemLayout / getItemLayout round-trip bounds', () => {
+    initTestContainer();
+    const layout = useDragLayout(CID);
+    layout.setItemLayout('p1', {
+      bounds: { x: 10, y: 20, width: 300, height: 200 },
+    });
+    expect(layout.getItemLayout('p1')).toEqual({
+      bounds: { x: 10, y: 20, width: 300, height: 200 },
+    });
+  });
+
+  it('getLayout / applyLayout round-trip show + bounds', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    const action = createFakeAction({ type: 'item-popup' });
+    items.registerItem('p1', 'item-popup');
+    items.registerAction('p1', action);
+    items.registerItemShow('p1', true);
+
+    const layout = useDragLayout(CID);
+    layout.setItemLayout('p1', {
+      bounds: { x: 5, y: 15, width: 400, height: 250 },
+    });
+
+    const snapshots = layout.getLayout();
+    expect(snapshots).toHaveLength(1);
+    expect(snapshots[0]).toMatchObject({
+      id: 'p1',
+      type: 'item-popup',
+      show: true,
+      bounds: { x: 5, y: 15, width: 400, height: 250 },
+    });
+
+    items.registerItemShow('p1', false);
+    vi.mocked(action.open).mockClear();
+    vi.mocked(action.close).mockClear();
+
+    layout.applyLayout([
+      {
+        id: 'p1',
+        type: 'item-popup',
+        show: true,
+        bounds: { x: 50, y: 60, width: 100, height: 80 },
+      },
+    ]);
+
+    expect(layout.getItemLayout('p1')?.bounds).toEqual({
+      x: 50,
+      y: 60,
+      width: 100,
+      height: 80,
+    });
+    expect(action.open).toHaveBeenCalled();
+
+    layout.applyLayout([
+      {
+        id: 'p1',
+        type: 'item-popup',
+        show: false,
+        bounds: { x: 50, y: 60, width: 100, height: 80 },
+      },
+    ]);
+    expect(action.close).toHaveBeenCalled();
+  });
+
+  it('getLayout returns empty when container missing', () => {
+    expect(useDragLayout(CID).getLayout()).toEqual([]);
+    expect(useDragLayout(CID).getItemLayout('x')).toBeUndefined();
   });
 });

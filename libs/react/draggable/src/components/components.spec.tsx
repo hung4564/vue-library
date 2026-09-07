@@ -2,6 +2,7 @@ import { render, cleanup, act, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import { ContextMenu, type ContextMenuRef } from '../components/ContextMenu';
+import { ContextMenuItem } from '../components/ContextMenuItem';
 import { DraggableContainer } from '../components/draggable/draggable-container';
 import { ManagementControl } from '../components/ManagementControl/ManagementControl';
 import { MapButton } from '../components/parts/MapButton';
@@ -123,6 +124,39 @@ describe('ContextMenu', () => {
       );
     });
     expect(document.body.querySelector('.context-menu-container')).toBeTruthy();
+    await act(async () => {
+      ref.current?.close();
+    });
+  });
+
+  it('ContextMenuItem has menuitem role; ArrowDown moves focus', async () => {
+    const ref = React.createRef<ContextMenuRef>();
+    render(
+      <ContextMenu ref={ref}>
+        <ul className="context-menu">
+          <ContextMenuItem>One</ContextMenuItem>
+          <ContextMenuItem>Two</ContextMenuItem>
+        </ul>
+      </ContextMenu>,
+    );
+    await act(async () => {
+      ref.current?.open(
+        new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }),
+      );
+    });
+    const items = document.body.querySelectorAll('[role="menuitem"]');
+    expect(items.length).toBe(2);
+    (items[0] as HTMLElement).focus();
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'ArrowDown',
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    expect(document.activeElement).toBe(items[1]);
     await act(async () => {
       ref.current?.close();
     });

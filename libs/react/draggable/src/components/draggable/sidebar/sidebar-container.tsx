@@ -1,5 +1,6 @@
 import {
   type MouseEvent as ReactMouseEvent,
+  type ComponentType,
   CSSProperties,
   useEffect,
   useMemo,
@@ -16,8 +17,12 @@ import {
 } from '../../../store';
 import { LocationSideBar } from '../../../types';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
+import { ContextMenuItem } from '../../ContextMenuItem';
 import { MapButton } from '../../parts/MapButton';
-import { MapSidebarToggle } from '../../parts/MapSidebarToggle';
+import {
+  MapSidebarToggle,
+  type MapSidebarToggleProps,
+} from '../../parts/MapSidebarToggle';
 import { useSidebarBehavior } from './useSidebarBehavior';
 
 export interface SidebarContainerProps {
@@ -57,8 +62,8 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
   });
   const storeDragItem = useSidebarItem(containerId);
   const store = useDragComponent();
-  const ComponentMapSidebarToggle =
-    store.getComponentCardSidebarToggle() || MapSidebarToggle;
+  const ComponentMapSidebarToggle = (store.getComponentCardSidebarToggle() ||
+    MapSidebarToggle) as ComponentType<MapSidebarToggleProps>;
 
   const { CloseIcon, SidebarOpenMenu } = useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
@@ -169,19 +174,13 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
       <ContextMenu ref={contextMenuRef}>
         <ul className="context-menu">
           {allItems.map((item) => (
-            <li
+            <ContextMenuItem
               key={item.id}
-              className={[
-                'context-menu__item',
-                'clickable',
-                item.id === activeSidebarId ? 'is-active' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              active={item.id === activeSidebarId}
               onClick={() => selectSideBar(item.id)}
             >
               <span>{item.title ?? ''}</span>
-            </li>
+            </ContextMenuItem>
           ))}
         </ul>
       </ContextMenu>
