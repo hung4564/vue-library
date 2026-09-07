@@ -2,11 +2,13 @@ import {
   type MouseEvent as ReactMouseEvent,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useExpand, useIcon } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useBottomItem, useStoreReactive } from '../../../store';
+import { useBottomItem } from '../../../store';
+import { useStoreReactive } from '../../../store/useStoreReactive';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
 import { MapButton } from '../../parts/MapButton';
@@ -26,6 +28,7 @@ export function BottomContainer() {
   const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
     useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const activeBottomId = getShow();
   // Derive visibility in render (not useEffect) so portal hosts exist in the
@@ -64,6 +67,9 @@ export function BottomContainer() {
       <div
         className="popup-mobile-container bottom-container"
         style={shellStyle}
+        role="region"
+        aria-label="Bottom panel"
+        aria-labelledby={titleTo}
         aria-hidden={!visible}
       >
         <Card>
@@ -76,12 +82,20 @@ export function BottomContainer() {
                     <MapButton
                       onClick={openMenu}
                       aria-label="Open bottom menu"
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
                       role="button"
                     >
                       <SidebarOpenMenu size={'16px'} />
                     </MapButton>
                   )}
-                  <MapButton onClick={onToggleExpand}>
+                  <MapButton
+                    onClick={onToggleExpand}
+                    aria-label={
+                      expand ? 'Collapse bottom panel' : 'Expand bottom panel'
+                    }
+                    role="button"
+                  >
                     {expand ? (
                       <FullscreenIcon size={'16px'} />
                     ) : (
@@ -102,7 +116,11 @@ export function BottomContainer() {
           </div>
         </Card>
       </div>
-      <ContextMenu ref={contextMenuRef}>
+      <ContextMenu
+        ref={contextMenuRef}
+        ariaLabel="Switch bottom panel"
+        onOpenChange={setMenuOpen}
+      >
         <ul className="context-menu">
           {allItems.map((item) => (
             <ContextMenuItem

@@ -19,6 +19,16 @@ export function focusFirst(root: HTMLElement) {
   }
 }
 
+/** Restore focus to a previously focused element (e.g. after closing a dialog/menu). */
+export function restoreFocus(el: HTMLElement | null | undefined) {
+  if (!el || typeof el.focus !== 'function') return;
+  try {
+    el.focus();
+  } catch {
+    // Element may have been removed from the document.
+  }
+}
+
 /**
  * Trap Tab / Shift+Tab inside root. Call from a keydown listener when key is Tab.
  * Returns true if the event was handled.

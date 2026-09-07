@@ -189,6 +189,7 @@ Theme tokens: [css-tokens.md](./css-tokens.md).
 ## Stable API & SemVer
 
 - [Stable API allowlist](./stable-api.md) (includes layout persist cookbook)
+- [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
 - [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
 

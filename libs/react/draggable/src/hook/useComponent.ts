@@ -1,6 +1,8 @@
-import { ComponentType, useMemo } from 'react';
-import { MapCard, MapCardProps } from '../components/parts/MapCard';
-import { MapHeader, MapHeaderProps } from '../components/parts/MapHeader';
+import { useMemo, type ComponentType } from 'react';
+import { MapCard } from '../components/parts/MapCard';
+import type { MapCardProps } from '../components/parts/MapCard';
+import { MapHeader } from '../components/parts/MapHeader';
+import type { MapHeaderProps } from '../components/parts/MapHeader';
 import { useDragComponent } from '../store';
 
 export type ShareCardComponent = ComponentType<MapCardProps>;

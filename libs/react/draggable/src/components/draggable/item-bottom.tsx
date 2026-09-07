@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,

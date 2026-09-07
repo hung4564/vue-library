@@ -2,7 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 /**
  * @vitest-environment jsdom
  */
-import { focusFirst, getFocusableElements, setModalSiblingsInert, trapTabKey } from './focus';
+import {
+  focusFirst,
+  getFocusableElements,
+  restoreFocus,
+  setModalSiblingsInert,
+  trapTabKey,
+} from './focus';
 
 describe('focus helpers', () => {
   afterEach(() => {
@@ -136,5 +142,15 @@ describe('focus helpers', () => {
     const root = document.getElementById('root')!;
     focusFirst(root);
     expect(document.activeElement).toBe(root);
+  });
+
+  it('restoreFocus focuses the given element', () => {
+    document.body.innerHTML = `<button id="a">A</button><button id="b">B</button>`;
+    const a = document.getElementById('a')!;
+    const b = document.getElementById('b')!;
+    b.focus();
+    restoreFocus(a);
+    expect(document.activeElement).toBe(a);
+    expect(() => restoreFocus(null)).not.toThrow();
   });
 });

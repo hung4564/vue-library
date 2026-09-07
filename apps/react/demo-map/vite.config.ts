@@ -16,7 +16,13 @@ export default defineConfig(() => ({
     port: 4300,
     host: 'localhost',
   },
-  plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+  plugins: [
+    react({
+      exclude: [/node_modules/, /[\\/]libs[\\/]/],
+    }),
+    nxViteTsPaths(),
+    nxCopyAssetsPlugin(['*.md']),
+  ],
   // GIS parse + CRS reproject (CreateControl). See libs/map-core/map-dataset/docs/worker.md
   worker: {
     plugins: () => [nxViteTsPaths()],

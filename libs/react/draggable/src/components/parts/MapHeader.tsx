@@ -1,12 +1,13 @@
-import { ReactNode } from 'react';
-export interface MapHeaderProps {
+import type { ReactNode } from 'react';
+
+export type MapHeaderProps = {
   children?: ReactNode;
   preTitle?: ReactNode;
   title?: ReactNode;
   extraBtn?: ReactNode;
-}
+};
 
-export function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
+function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
   return (
     <>
       <hr className="map-divider" />
@@ -22,3 +23,5 @@ export function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
     </>
   );
 }
+
+export { MapHeader };

@@ -4,7 +4,7 @@ category: Component
 
 # ContextMenu / ContextMenuItem
 
-**Experimental.** Prefer these helpers for switcher menus and app chrome; not a full WAI-ARIA menu (no submenu / typeahead).
+**Experimental.** Prefer these helpers for switcher menus and app chrome. Keyboard/a11y: Esc, arrows, Home/End, Enter/Space, **typeahead**, focus restore on close. Not a full WAI-ARIA menu yet (no submenu). See [a11y.md](./a11y.md).
 
 ## Usage pattern
 
@@ -20,7 +20,7 @@ category: Component
 | Button open | same `open(e)` with the click event (positions near pointer) |
 | Active row | `active` on `ContextMenuItem` |
 | Disabled row | `disabled` — skipped by Arrow navigation |
-| Keyboard | Esc closes; Arrow Up/Down, Home/End; Enter/Space activates focused item |
+| Keyboard | Esc closes (+ restores focus); Arrow Up/Down/Left/Right, Home/End; Enter/Space activates; typeahead by label |
 | Close after select | call `ref.close()` in the item click handler |
 
 ## Demo

@@ -25,6 +25,7 @@ const contextMenuRef = ref<
     }
   | undefined
 >();
+const menuOpen = ref(false);
 const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
   useIcon();
 defineProps({
@@ -86,6 +87,9 @@ const shellStyle = computed(() => ({
   <div
     v-show="show"
     class="popup-mobile-container bottom-container"
+    role="region"
+    aria-label="Bottom panel"
+    :aria-labelledby="titleTo"
     :style="shellStyle"
   >
     <component :is="componentCard">
@@ -98,12 +102,18 @@ const shellStyle = computed(() => ({
             <map-button
               v-if="showSwitcher"
               aria-label="Open bottom menu"
+              aria-haspopup="menu"
+              :aria-expanded="menuOpen ? 'true' : 'false'"
               role="button"
               @click="openMenu"
             >
               <SidebarOpenMenu :size="16" />
             </map-button>
-            <map-button @click="onToggleExpand()">
+            <map-button
+              :aria-label="expand ? 'Collapse bottom panel' : 'Expand bottom panel'"
+              role="button"
+              @click="onToggleExpand()"
+            >
               <FullscreenIcon v-if="expand" :size="16" />
               <OffFullscreenIcon v-else :size="16" />
             </map-button>
@@ -116,7 +126,11 @@ const shellStyle = computed(() => ({
       </div>
     </component>
   </div>
-  <ContextMenu ref="contextMenuRef">
+  <ContextMenu
+    ref="contextMenuRef"
+    aria-label="Switch bottom panel"
+    @update:open="menuOpen = $event"
+  >
     <ul class="context-menu">
       <ContextMenuItem
         v-for="option in allItems"

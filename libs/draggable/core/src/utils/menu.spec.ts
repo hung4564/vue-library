@@ -2,11 +2,16 @@
  * @vitest-environment jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getMenuItems, handleMenuKeydown } from './menu';
+import {
+  clearMenuTypeahead,
+  getMenuItems,
+  handleMenuKeydown,
+} from './menu';
 
 describe('menu helpers', () => {
   afterEach(() => {
     document.body.innerHTML = '';
+    clearMenuTypeahead();
   });
 
   it('getMenuItems skips disabled menuitems', () => {
@@ -87,6 +92,27 @@ describe('menu helpers', () => {
     expect(document.activeElement?.id).toBe('b');
   });
 
+  it('handleMenuKeydown ArrowRight/Left mirror Down/Up', () => {
+    document.body.innerHTML = `
+      <div role="menu" id="root">
+        <li role="menuitem" tabindex="-1" id="a">A</li>
+        <li role="menuitem" tabindex="-1" id="b">B</li>
+      </div>
+    `;
+    const root = document.getElementById('root')!;
+    document.getElementById('a')!.focus();
+    handleMenuKeydown(
+      root,
+      new KeyboardEvent('keydown', { key: 'ArrowRight', cancelable: true }),
+    );
+    expect(document.activeElement?.id).toBe('b');
+    handleMenuKeydown(
+      root,
+      new KeyboardEvent('keydown', { key: 'ArrowLeft', cancelable: true }),
+    );
+    expect(document.activeElement?.id).toBe('a');
+  });
+
   it('handleMenuKeydown Enter/Space activate focused item', () => {
     document.body.innerHTML = `
       <div role="menu" id="root">
@@ -115,7 +141,33 @@ describe('menu helpers', () => {
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('handleMenuKeydown returns false for empty menu or unknown key', () => {
+  it('handleMenuKeydown typeahead focuses matching item', () => {
+    document.body.innerHTML = `
+      <div role="menu" id="root">
+        <li role="menuitem" tabindex="-1" id="a">Apple</li>
+        <li role="menuitem" tabindex="-1" id="b">Banana</li>
+        <li role="menuitem" tabindex="-1" id="c">Berry</li>
+      </div>
+    `;
+    const root = document.getElementById('root')!;
+    document.getElementById('a')!.focus();
+    expect(
+      handleMenuKeydown(
+        root,
+        new KeyboardEvent('keydown', { key: 'b', cancelable: true }),
+      ),
+    ).toBe(true);
+    expect(document.activeElement?.id).toBe('b');
+    expect(
+      handleMenuKeydown(
+        root,
+        new KeyboardEvent('keydown', { key: 'e', cancelable: true }),
+      ),
+    ).toBe(true);
+    expect(document.activeElement?.id).toBe('c');
+  });
+
+  it('handleMenuKeydown returns false for empty menu or Escape', () => {
     document.body.innerHTML = `<div role="menu" id="root"></div>`;
     const root = document.getElementById('root')!;
     expect(

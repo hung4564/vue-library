@@ -1,11 +1,29 @@
-export * from './useComponent';
-export * from './useIcon';
-export * from './useInit';
-export * from './useInitBottom';
-export * from './useInitDrawer';
-export * from './useInitItem';
-export * from './useInitSidebar';
-export * from './useShare';
-export * from './useShow';
-export * from './useSideBarContainer';
-export * from './useBottomContainer';
+export { useComponent, withShareComponent } from './useComponent';
+export type {
+  PropsShareComponent,
+  ShareCardComponent,
+  ShareHeaderComponent,
+} from './useComponent';
+export { useIcon } from './useIcon';
+export { useInitAction } from './useInit';
+export { useInitBottom } from './useInitBottom';
+export { useInitDrawer } from './useInitDrawer';
+export {
+  useContainerOrder,
+  useContainerSize,
+  useInitItem,
+  useManagement,
+} from './useInitItem';
+export { useInitSidebar } from './useInitSidebar';
+export { withShareProps } from './useShare';
+export {
+  useExpand,
+  useHighlight,
+  useShow,
+  withExpandEmit,
+  withExpandProps,
+  withShowEmit,
+  withShowProps,
+} from './useShow';
+export { useSideBarContainer } from './useSideBarContainer';
+export { useBottomContainer } from './useBottomContainer';

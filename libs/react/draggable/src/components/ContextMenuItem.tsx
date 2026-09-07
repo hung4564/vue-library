@@ -1,18 +1,18 @@
-import {
+import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   ReactNode,
 } from 'react';
 
-export interface ContextMenuItemProps {
+export type ContextMenuItemProps = {
   active?: boolean;
   disabled?: boolean;
   className?: string;
   children?: ReactNode;
   onClick?: (event: ReactMouseEvent<HTMLLIElement>) => void;
-}
+};
 
-export function ContextMenuItem({
+function ContextMenuItem({
   active = false,
   disabled = false,
   className,
@@ -41,6 +41,7 @@ export function ContextMenuItem({
       role="menuitem"
       tabIndex={-1}
       aria-disabled={disabled || undefined}
+      aria-current={active || undefined}
       className={[
         'context-menu__item',
         active ? 'is-active' : '',
@@ -56,3 +57,5 @@ export function ContextMenuItem({
     </li>
   );
 }
+
+export { ContextMenuItem };

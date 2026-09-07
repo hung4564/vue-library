@@ -2,15 +2,16 @@
 
 Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
-Everything else reached via root `export *` is **experimental**: may change in a **minor** if the team follows this page. Until then, treat undocumented barrel exports as public-at-risk.
+Root barrels use **explicit named exports** (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package. Symbols listed under **Experimental** may change in a **minor**.
 
-Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [CSS tokens](./css-tokens.md)
+Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md)
 
 ## Architecture
 
 - **Core:** `@hungpvq/draggable` — types, store (`drag:core`), utils, shared CSS.
 - **Adapters:** `@hungpvq/vue-draggable` / `@hungpvq/react-draggable` — components, hooks, framework store wiring (`configureDragStore`).
 - Prefer store APIs from `@hungpvq/draggable` in framework-agnostic code; use wrapper packages for UI.
+- Prefer importing **Stable** symbols from the package root. Experimental UI also lives on the root for 1.x compat and as `experimental.ts` (same package) for clarity in source.
 
 ## `@hungpvq/draggable`
 
@@ -21,7 +22,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) �
 | Bottom | Exclusive `ContainerStore.bottom.show?: string` (one active panel); shared `BottomContainer` shell + header switcher menu |
 | Store key | `drag:core` (defineStore id / notify path prefix) |
 | Layout | `ContainerStore.layouts`, `useDragLayout` → `setItemLayout` / `getItemLayout` / `getLayout` / `applyLayout` |
-| Utils | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown` |
+| Utils / a11y | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `restoreFocus`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown`, `clearMenuTypeahead` |
 | Package exports | `.`, `./style.css` |
 
 ## `@hungpvq/vue-draggable`
@@ -31,7 +32,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) �
 | Shell | `DraggableContainer` (`containerId`, optional `mobileBreakpoint` default `600`, optional `variant` `'default' \| 'plain'`) |
 | Items | `DraggableItemPopup`, `DraggableItemFloat`, `DraggableItemBottom`, `DraggableModal`, `DraggableItemSideBar`, `DraggableDrawer` |
 | HOC | `WithMobileHandle` |
-| Hooks | Public hooks from the package entry (`useInit*`, `useShow` / expand / highlight helpers, `useSideBarContainer`, `useComponent`, `useContainerSize`, …) |
+| Hooks | `useInit*`, `useShow` / `useExpand` / `useHighlight`, `useSideBarContainer`, `useBottomContainer`, `useComponent`, `useContainerSize`, `useContainerOrder`, `useManagement`, `useIcon`, `withShow*` / `withExpand*` / `withShare*` helpers |
 | Store | Re-exports of Stable core store APIs after Vue `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
 | Props / events | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
 | Package exports | `.`, `./style.css` |
@@ -42,9 +43,10 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) �
 |------|----------------|
 | Shell / items | Same component names as Vue (including `variant` on `DraggableContainer`) |
 | HOC | `WithMobileHandle` |
-| Hooks | Public hooks from the package entry (`useInit*`, `useShow` / expand / highlight helpers, `useSideBarContainer`, `useComponent`, `useContainerSize`, …) |
+| Hooks | Same Stable hook set as Vue (plus React `useContainerSize` module) |
 | React-only | `ContainerProvider` / `useContainerId`, `useStoreReactive`, `useContainerReactive` |
 | Store | Re-exports of Stable core store APIs after React `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
+| Types | Core type/factory re-exports (`createEmpty*`, `itemTypeToGroup`, …) |
 | Props / events | Documented `id`, `show` + `onUpdateShow`, `containerId`, `location`, `mobileBreakpoint`, `highlightMs`, size/position props; popup/modal `onBoundsChange`; controlled bounds sync after mount |
 | Package exports | `.`, `./style.css` |
 
@@ -78,9 +80,22 @@ layout.applyLayout(snapshots);
 
 Popup/modal drag-stop writes `layouts[id].bounds`; drawer writes `size` / `location`. Prefer stable `id` props so snapshots survive remounts.
 
-## Explicitly experimental (examples)
+## Explicitly experimental
 
-- `ManagementControl` and related debug UI
-- **`ContextMenu` / `ContextMenuItem`** — experimental menu chrome. Current surface: `role="menu"` / `role="menuitem"`, Esc close, ArrowUp/Down + Home/End focus, Enter/Space activate. Prefer `ContextMenuItem` inside a `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu / typeahead). See [context-menu.md](./context-menu.md) and demo-draggable **Menu** (`#/menu`).
-- Undocumented barrel leftovers (parts-only exports, internal sidebar transition helpers)
-- CSS class names / layout tokens not listed above
+Still exported from the **root** barrel for 1.x compatibility; treat as unstable (may change in a **minor**). Source module: `experimental.ts` in each adapter.
+
+| Package | Experimental symbols |
+|---------|----------------------|
+| Vue | `ManagementControl`, `ContextMenu`, `ContextMenuItem` |
+| React | `ManagementControl`, `Item`, `ItemList`, `ShowStatus*`, `ContextMenu`, `ContextMenuItem` (+ related props/ref types) |
+
+**ContextMenu** keyboard/a11y: Esc close, Arrow/Home/End, Enter/Space, typeahead, focus restore. Prefer `ContextMenuItem` inside `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu). See [context-menu.md](./context-menu.md), [a11y.md](./a11y.md), demo-draggable **Menu** (`#/menu`).
+
+Undocumented CSS class names / layout tokens not listed above remain experimental.
+
+## Enforcing the allowlist
+
+1. Edit `src/index.ts` with **named** exports only (no `export *`).
+2. Update the matching `public-api.spec.ts` allowlist arrays.
+3. Update this page (Stable vs Experimental tables).
+4. CI / `nx test` fails if a new accidental export appears or a Stable symbol is dropped without updating the lock.

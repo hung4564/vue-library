@@ -21,7 +21,8 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
-import { useDrawerItem, useDragLayout, useStoreReactive } from '../../store';
+import { useDrawerItem, useDragLayout } from '../../store';
+import { useStoreReactive } from '../../store/useStoreReactive';
 import { LocationSideBar } from '../../types';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { ContextMenuItem } from '../ContextMenuItem';

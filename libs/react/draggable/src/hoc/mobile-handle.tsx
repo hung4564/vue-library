@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 import { useContainerId } from '../context/ContainerContext';
-import { useDragIsMobile, useStoreReactive } from '../store';
+import { useDragIsMobile } from '../store';
+import { useStoreReactive } from '../store/useStoreReactive';
 
 export function WithMobileHandle<P, M>(
   Component: ComponentType<P>,

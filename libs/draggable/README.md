@@ -52,13 +52,13 @@ Any checked item must **not** ship in `1.0.x` / as a `1.x` patch.
 
 ### B. Named exports (TypeScript / ESM)
 
-Treat everything reached via root `export *` as public unless listed as experimental on [stable-api.md](./core/docs/stable-api.md).
+Treat everything on the [Stable allowlist](./core/docs/stable-api.md) as public. Root barrels are **named exports** locked by `public-api.spec.ts`. Experimental symbols (`ManagementControl`, `ContextMenu`, …) may change in a **minor**.
 
 Breaking if you:
 
-- [ ] Remove / rename an export (`useDragItem`, `DraggableContainer`, `WithMobileHandle`, …)
+- [ ] Remove / rename a **Stable** export (`useDragItem`, `DraggableContainer`, `WithMobileHandle`, …)
 - [ ] Change function/class signature incompatibly
-- [ ] Narrow an exported `interface` / `type`
+- [ ] Narrow an exported Stable `interface` / `type`
 - [ ] Change `DraggableItemType` / `LocationSideBar` / `ItemGroupKey` string unions consumers compare
 - [ ] Tighten generics so inference fails for previous call sites
 
@@ -151,9 +151,10 @@ Breaking if you:
 
 ## 7. Reducing “everything is breaking”
 
-1. **Stable API allowlist:** [core/docs/stable-api.md](./core/docs/stable-api.md).
-2. Mark the rest experimental — only effective if the team follows it.
-3. Prefer peer ranges like `^1.0.1` over long-lived exact `1.0.1` once release process is stable.
+1. **Stable API allowlist:** [core/docs/stable-api.md](./core/docs/stable-api.md) — SemVer promises apply here.
+2. **Named root barrels** — packages use explicit exports (no `export *`). Runtime surface is locked by `public-api.spec.ts`.
+3. Mark the rest **experimental** (`experimental.ts` + docs table) — may change in a **minor**.
+4. Prefer peer ranges like `^1.0.1` over long-lived exact `1.0.1` once release process is stable.
 
 ## 8. Team policy (one line)
 

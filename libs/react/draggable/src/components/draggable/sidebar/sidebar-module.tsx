@@ -1,7 +1,7 @@
-import { ReactNode, useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useStoreReactive } from '../../../store';
+import { useStoreReactive } from '../../../store/useStoreReactive';
 import { LocationSideBar } from '../../../types';
 export interface SidebarModuleProps {
   containerId: string;

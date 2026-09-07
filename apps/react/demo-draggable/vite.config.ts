@@ -16,7 +16,16 @@ export default defineConfig(() => ({
     port: 4301,
     host: 'localhost',
   },
-  plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+  plugins: [
+    // Workspace libs are served as source via tsconfig paths. Fast Refresh on
+    // those files rewrites exports and breaks Vite ESM named imports
+    // ("does not provide an export named …"). Keep Refresh for the app only.
+    react({
+      exclude: [/node_modules/, /[\\/]libs[\\/]/],
+    }),
+    nxViteTsPaths(),
+    nxCopyAssetsPlugin(['*.md']),
+  ],
   build: {
     outDir: '../../../deploy/demo-draggable/react',
     emptyOutDir: true,

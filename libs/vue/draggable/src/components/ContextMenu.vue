@@ -13,6 +13,8 @@
         class="context-menu-content"
         role="menu"
         tabindex="-1"
+        aria-orientation="vertical"
+        :aria-label="ariaLabel"
       >
         <slot />
       </div>
@@ -35,7 +37,13 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { focusFirst, getMenuItems, handleMenuKeydown } from '@hungpvq/draggable';
+import {
+  clearMenuTypeahead,
+  focusFirst,
+  getMenuItems,
+  handleMenuKeydown,
+  restoreFocus,
+} from '@hungpvq/draggable';
 import {
   computed,
   CSSProperties,
@@ -48,7 +56,13 @@ import {
 
 const props = defineProps({
   zIndex: { type: [String, Number], default: 10000 },
+  /** Accessible name for the menu region. */
+  ariaLabel: { type: String, default: 'Context menu' },
 });
+
+const emit = defineEmits<{
+  'update:open': [open: boolean];
+}>();
 
 const target = ref<HTMLDivElement>();
 const content = ref<HTMLDivElement>();
@@ -58,6 +72,7 @@ const stylePosition = ref<Record<string, string>>({});
 const menuWidth = ref(0);
 const menuHeight = ref(0);
 let lastOpenEvent: MouseEvent | null = null;
+let previousFocus: HTMLElement | null = null;
 let resizeObserver: ResizeObserver | undefined;
 let mediaQuery: MediaQueryList | undefined;
 
@@ -106,7 +121,9 @@ function onBackdropClick(e: MouseEvent) {
 
 function open(event: MouseEvent) {
   lastOpenEvent = event;
+  previousFocus = document.activeElement as HTMLElement | null;
   isOpen.value = true;
+  emit('update:open', true);
 
   nextTick(() => {
     const menu = target.value;
@@ -152,9 +169,14 @@ function open(event: MouseEvent) {
 }
 
 function close() {
+  if (!isOpen.value) return;
   isOpen.value = false;
   stylePosition.value = {};
   lastOpenEvent = null;
+  clearMenuTypeahead();
+  emit('update:open', false);
+  restoreFocus(previousFocus);
+  previousFocus = null;
 }
 
 watch(isOpen, (openNow) => {
@@ -187,6 +209,7 @@ onUnmounted(() => {
   document.removeEventListener('mousedown', onDocumentPointerDown);
   document.removeEventListener('keydown', onDocumentKeydown);
   resizeObserver?.disconnect();
+  clearMenuTypeahead();
 });
 
 defineExpose({ open, close });

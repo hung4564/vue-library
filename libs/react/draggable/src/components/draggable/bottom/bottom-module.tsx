@@ -1,7 +1,7 @@
-import { ReactNode, useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useStoreReactive } from '../../../store';
+import { useStoreReactive } from '../../../store/useStoreReactive';
 
 export interface BottomModuleProps {
   containerId: string;

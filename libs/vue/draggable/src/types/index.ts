@@ -1,4 +1,5 @@
 export type {
+  BottomConfig,
   ContainerStore,
   ContainerStoreAction,
   ContainerStoreOtherAction,
@@ -6,10 +7,13 @@ export type {
   InitOption,
   ItemGroupConfig,
   ItemGroupKey,
+  ItemLayoutState,
   LocationSideBar,
+  PanelSnapshot,
   SidebarConfig,
 } from '@hungpvq/draggable';
 export {
+  createEmptyBottom,
   createEmptyContainer,
   createEmptyDrawer,
   createEmptyItemGroup,

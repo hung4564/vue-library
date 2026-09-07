@@ -1,4 +1,7 @@
-export * from './MapButton';
-export * from './MapCard';
-export * from './MapHeader';
-export * from './MapSidebarToggle';
+export { MapButton, type MapButtonProps } from './MapButton';
+export { MapCard, type MapCardProps } from './MapCard';
+export { MapHeader, type MapHeaderProps } from './MapHeader';
+export {
+  MapSidebarToggle,
+  type MapSidebarToggleProps,
+} from './MapSidebarToggle';

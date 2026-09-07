@@ -1,12 +1,13 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
-export interface MapButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+export type MapButtonProps = {
   height?: number;
   width?: number;
   disabled?: boolean;
   children?: ReactNode;
-}
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function MapButton({
+function MapButton({
   height = 32,
   width = 32,
   disabled = false,
@@ -41,3 +42,5 @@ export function MapButton({
     </button>
   );
 }
+
+export { MapButton };

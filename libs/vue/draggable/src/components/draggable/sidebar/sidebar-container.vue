@@ -26,6 +26,7 @@ const contextMenuRef = ref<
     }
   | undefined
 >();
+const menuOpen = ref(false);
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 const props = defineProps({
   ...withShareComponent,
@@ -102,6 +103,9 @@ function selectSideBar(nextId: string) {
 <template>
   <div
     class="sidebar-container auto-sidebar-container"
+    role="complementary"
+    :aria-label="`Sidebar ${location}`"
+    :aria-labelledby="titleTo"
     :class="{
       expand,
       show,
@@ -129,6 +133,8 @@ function selectSideBar(nextId: string) {
                 @click="openMenu"
                 v-if="showSwitcher"
                 aria-label="Open sidebar menu"
+                aria-haspopup="menu"
+                :aria-expanded="menuOpen ? 'true' : 'false'"
                 role="button"
               >
                 <SidebarOpenMenu :size="16" />
@@ -152,13 +158,18 @@ function selectSideBar(nextId: string) {
       <ComponentMapSidebarToggle
         @click="onToggleExpand"
         :expand="expand"
-        aria-controls="contentTo"
-        aria-label="Toggle expand"
+        :aria-controls="contentTo"
+        :aria-expanded="expand ? 'true' : 'false'"
+        :aria-label="expand ? 'Collapse sidebar' : 'Expand sidebar'"
         role="button"
       ></ComponentMapSidebarToggle>
     </div>
   </div>
-  <ContextMenu ref="contextMenuRef">
+  <ContextMenu
+    ref="contextMenuRef"
+    aria-label="Switch sidebar panel"
+    @update:open="menuOpen = $event"
+  >
     <ul class="context-menu">
       <ContextMenuItem
         v-for="option in allItems"

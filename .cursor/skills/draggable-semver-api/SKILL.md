@@ -35,13 +35,15 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 
 ## Treat as public / breaking
 
-- Anything reached via root `export *` unless listed as experimental on stable-api.md
+- Symbols on the [Stable API allowlist](../../libs/draggable/core/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
 - Package `exports` paths: `.`, `./style.css`
 - Store id `drag:core` and documented notify path prefixes
 - `DraggableItemType` / `LocationSideBar` / `ItemGroupKey` string values
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
 - Peer minimum raises; exact `@hungpvq/draggable` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
+
+Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**.
 
 ## Safe patterns
 

@@ -1,12 +1,13 @@
-import { HTMLAttributes, ReactNode, useMemo } from 'react';
-export interface MapCardProps extends HTMLAttributes<HTMLDivElement> {
+import { useMemo, type HTMLAttributes, type ReactNode } from 'react';
+
+export type MapCardProps = {
   height?: string | number;
   width?: string | number;
   highlight?: boolean;
   children?: ReactNode;
-}
+} & HTMLAttributes<HTMLDivElement>;
 
-export function MapCard({
+function MapCard({
   height,
   width,
   highlight = false,
@@ -54,3 +55,5 @@ export function MapCard({
     </div>
   );
 }
+
+export { MapCard };

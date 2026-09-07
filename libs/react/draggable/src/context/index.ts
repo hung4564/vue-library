@@ -1,1 +1,1 @@
-export * from './ContainerContext';
+export { ContainerProvider, useContainerId } from './ContainerContext';

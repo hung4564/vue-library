@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useIcon } from '../../../hook';
@@ -13,8 +14,8 @@ import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import {
   useDragComponent,
   useSidebarItem,
-  useStoreReactive,
 } from '../../../store';
+import { useStoreReactive } from '../../../store/useStoreReactive';
 import { LocationSideBar } from '../../../types';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
@@ -67,6 +68,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
 
   const { CloseIcon, SidebarOpenMenu } = useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function openMenu(e: ReactMouseEvent) {
     contextMenuRef.current?.open(e);
@@ -118,6 +120,9 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
     <>
       <div
         className={classes}
+        role="complementary"
+        aria-label={`Sidebar ${location}`}
+        aria-labelledby={titleTo}
         style={
           {
             '--sidebar-width': sidebarWidth,
@@ -138,6 +143,8 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
                       <MapButton
                         onClick={openMenu}
                         aria-label="Open sidebar menu"
+                        aria-haspopup="menu"
+                        aria-expanded={menuOpen}
                         role="button"
                       >
                         <SidebarOpenMenu size={'16px'} />
@@ -165,13 +172,18 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
               onClick={onToggleExpand}
               expand={expand}
               aria-controls={contentTo}
-              aria-label="Toggle expand"
+              aria-expanded={expand}
+              aria-label={expand ? 'Collapse sidebar' : 'Expand sidebar'}
               role="button"
             />
           </div>
         )}
       </div>
-      <ContextMenu ref={contextMenuRef}>
+      <ContextMenu
+        ref={contextMenuRef}
+        ariaLabel="Switch sidebar panel"
+        onOpenChange={setMenuOpen}
+      >
         <ul className="context-menu">
           {allItems.map((item) => (
             <ContextMenuItem

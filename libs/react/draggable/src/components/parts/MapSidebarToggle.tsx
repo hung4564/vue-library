@@ -6,6 +6,7 @@ export interface MapSidebarToggleProps {
   onClick?: () => void;
   'aria-controls'?: string;
   'aria-label'?: string;
+  'aria-expanded'?: boolean | 'true' | 'false';
   role?: string;
 }
 
