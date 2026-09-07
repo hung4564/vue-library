@@ -195,6 +195,11 @@ const containerId = ref('my-container');
 - Import styles at the app root — see [Styles](#styles).
 - UI CSS lives in `@hungpvq/draggable`; the Vue/React packages re-export it via `/style.css`.
 
+## Stable API & SemVer
+
+- [Stable API allowlist](./stable-api.md)
+- [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
+
 ## Components
 
 - [DraggableContainer](./draggable-container.md)

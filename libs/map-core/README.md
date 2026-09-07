@@ -197,7 +197,7 @@ Documented `--map-*` tokens and `style.css` entries:
 
 ## 7. Reducing “everything is breaking”
 
-1. Publish a **Stable API** page (controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`).
+1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`.
 2. Mark the rest `@experimental` / “unsupported in minor” — only effective if the team follows it (barrel `export *` still looks public to consumers).
 3. Prefer subpaths over time (`@hungpvq/map-core/theme`, `.../registry`) and deprecate root deep exports slowly.
 4. Prefer peer ranges like `^1.0.1` over long-lived exact `1.0.1` once release process is stable.
@@ -207,4 +207,4 @@ Documented `--map-*` tokens and `style.css` entries:
 > **Major** if compile, registry/CSS/control/menu protocol, peer minimum, or documented behavior breaks.  
 > **Minor** if additive only.  
 > **Patch** if fix within the published contract.  
-> **Every symbol from today’s barrels is public** until a Stable allowlist + experimental policy exists.
+> **Every symbol from today’s barrels looks public**; prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Unlisted exports are experimental.

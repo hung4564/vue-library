@@ -185,6 +185,16 @@ const customHandler = new MapErrorHandler({
 customHandler.handle(new Error('Something went wrong'));
 ```
 
+## 🧪 Testing
+
+Unit tests live next to sources as `*.spec.ts` and run with Vitest (`environment: 'node'`). Cover behavioral domains (utils, store/services, toolbar/menu, workers, MapLibre fakes) — not line-by-line.
+
+**Out of unit scope:** full interactive draw UX, real Worker threads, canvas screenshot fidelity, and SCSS.
+
+```bash
+npx nx test @hungpvq/map-core
+```
+
 ## 🤝 Contributing
 
 This is an extracted core library from `@hungpvq/vue-map-core`. Changes should maintain framework-agnostic nature.
@@ -196,4 +206,6 @@ MIT License
 ## 🔗 Related Packages
 
 - `@hungpvq/vue-map-core` - Vue implementation
-- `@hungpvq/react-map-core` - React implementation (coming soon)
+- `@hungpvq/react-map-core` - React implementation
+- `@hungpvq/map-dataset` - Dataset tree, builders, identify
+- Docs hub: [docs/index.md](./docs/index.md) · [Stable API](./docs/core/stable-api.md)

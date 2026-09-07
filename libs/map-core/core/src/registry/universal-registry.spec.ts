@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { MapControlHandle } from './control';
 import { runMapControlAction } from './control-action';
 import { UniversalRegistry } from './universal-registry';
@@ -6,6 +6,7 @@ import { UniversalRegistry } from './universal-registry';
 function fakeControl(
   id: string,
   run: (type?: string, event?: unknown) => void = () => undefined,
+  overrides: Partial<MapControlHandle> = {},
 ): MapControlHandle {
   return {
     id,
@@ -20,6 +21,7 @@ function fakeControl(
     getPanelPosition: () => ({}),
     setPanelPosition: () => undefined,
     runAction: run,
+    ...overrides,
   };
 }
 
@@ -85,7 +87,11 @@ describe('UniversalRegistry', () => {
     const mapId = 'spec-clear-map';
     UniversalRegistry.registerMethod('spec-keep', () => 'global');
     UniversalRegistry.registerMethodForMap(mapId, 'spec-keep', () => 'map');
-    UniversalRegistry.registerMenuHandlerForMap(mapId, 'spec-fit', () => undefined);
+    UniversalRegistry.registerMenuHandlerForMap(
+      mapId,
+      'spec-fit',
+      () => undefined,
+    );
     UniversalRegistry.registerControl(
       mapId,
       'mapHomeControl',
@@ -97,6 +103,54 @@ describe('UniversalRegistry', () => {
     expect(UniversalRegistry.getMethod('spec-keep', mapId)?.()).toBe('global');
     expect(UniversalRegistry.hasMenuHandler('spec-fit', mapId)).toBe(false);
     expect(UniversalRegistry.listControls(mapId)).toEqual([]);
+  });
+
+  it('open/close/unregister and getKeysForMap for controls/methods', () => {
+    const mapId = 'spec-panel-map';
+    const open = vi.fn();
+    const close = vi.fn();
+    UniversalRegistry.registerControl(
+      mapId,
+      'mapGotoControl',
+      fakeControl('mapGotoControl', undefined, { open, close }),
+    );
+    UniversalRegistry.registerMethodForMap(mapId, 'spec-tool', () => 1);
+
+    expect(UniversalRegistry.getKeysForMap(mapId, 'control')).toEqual([
+      'mapGotoControl',
+    ]);
+    expect(UniversalRegistry.getKeysForMap(mapId, 'method')).toEqual([
+      'spec-tool',
+    ]);
+    expect(UniversalRegistry.getKeysForMap(mapId, 'component')).toEqual([]);
+
+    UniversalRegistry.openControl(mapId, 'mapGotoControl');
+    UniversalRegistry.closeControl(mapId, 'mapGotoControl');
+    expect(open).toHaveBeenCalledOnce();
+    expect(close).toHaveBeenCalledOnce();
+
+    UniversalRegistry.unregisterControl(mapId, 'mapGotoControl');
+    expect(
+      UniversalRegistry.getControl('mapGotoControl', mapId),
+    ).toBeUndefined();
+    UniversalRegistry.clearMap(mapId);
+  });
+
+  it('setControlPosition forwards to the handle', () => {
+    const mapId = 'spec-pos-map';
+    const setPanelPosition = vi.fn();
+    UniversalRegistry.registerControl(
+      mapId,
+      'mapGotoControl',
+      fakeControl('mapGotoControl', undefined, { setPanelPosition }),
+    );
+
+    UniversalRegistry.setControlPosition(mapId, 'mapGotoControl', {
+      top: 10,
+      right: 20,
+    });
+    expect(setPanelPosition).toHaveBeenCalledWith({ top: 10, right: 20 });
+    UniversalRegistry.clearMap(mapId);
   });
 });
 
@@ -116,5 +170,11 @@ describe('runMapControlAction', () => {
     expect(calls).toEqual([[undefined, 'evt']]);
 
     UniversalRegistry.clearMap(mapId);
+  });
+
+  it('no-ops when the control is missing', () => {
+    expect(() =>
+      runMapControlAction('missing-map', 'mapHomeControl'),
+    ).not.toThrow();
   });
 });
