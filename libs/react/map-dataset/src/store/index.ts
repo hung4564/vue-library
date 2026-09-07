@@ -12,6 +12,7 @@ export type MapLayerStore = {
   datasetIds: { value: string[] };
   version: number;
   listeners: Set<() => void>;
+  allLayerShow: boolean;
 };
 
 function notify(store: MapLayerStore) {
@@ -32,6 +33,7 @@ export function useMapDatasetStore(mapId: string) {
       datasetIds: { value: [] },
       version: 0,
       listeners: new Set(),
+      allLayerShow: true,
     };
   });
 }

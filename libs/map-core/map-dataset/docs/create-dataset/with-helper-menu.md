@@ -372,11 +372,11 @@ identify.addMenus([
 
 ### `createMenuItemToggleShow`
 
-Visibility toggle on the layer title row. Renders the registry component `layer-action-toggle-show` (eye icon), not a plain click handler.
+Visibility toggle on the layer title row. Renders the registry component `layer-action-toggle-show` (`LIST_VIEW_MENU_COMPONENT_KEY.toggleShow`), not a plain click handler.
 
 | | |
 | --- | --- |
-| **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
+| **Signature** | `(menu?: Partial<Omit<MenuItemCustomComponentBottomOrExtra, 'type' \| 'click'>>) => MenuAction` |
 | **Location** | `extra` |
 | **Needs** | List node with `WithToggleShow` (`show` / `toggleShow`) |
 
@@ -386,6 +386,45 @@ list.addMenus([
   createMenuItemToggleShow({ order: 1, name: 'Visibility' }),
 ]);
 ```
+
+### Customize the toggle UI
+
+Two registry keys:
+
+| Key | Constant | Role |
+| --- | --- | --- |
+| `layer-action-toggle-show` | `toggleShow` | Full logic + default button (or custom via menu `componentKey`) |
+| `layer-action-toggle-show-button` | `toggleShowButton` | Button UI only (per-layer default and “show all”) |
+
+**Map-wide button** (every layer using the default toggle, plus show-all): override `toggleShowButton` with `registerComponentForMap`.
+
+**One layer:** pass a custom `componentKey` on the menu item and register a component that wraps `ToggleShow` (reuse logic; customize UI via slot / `renderButton`).
+
+```ts
+import { LIST_VIEW_MENU_COMPONENT_KEY, createMenuItemToggleShow } from '@hungpvq/map-dataset';
+import { UniversalRegistry } from '@hungpvq/vue-map-core'; // or react-map-core
+
+createMenuItemToggleShow({
+  componentKey: 'demo-layer-toggle-show',
+});
+
+function onMapLoaded(map: MapSimple) {
+  UniversalRegistry.registerComponentForMap(
+    map.id,
+    LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
+    SampleToggleShowButton,
+  );
+  UniversalRegistry.registerComponentForMap(
+    map.id,
+    'demo-layer-toggle-show',
+    SampleLayerToggleShow,
+  );
+}
+```
+
+Register in `onMapLoaded` so map-scoped entries survive remount — see [UniversalRegistry components](/map/core/registry-components).
+
+Demo: Vue / React `#/dataset-menu`.
 
 ---
 
@@ -706,6 +745,11 @@ LIST_VIEW_MENU_ID = {
 LIST_VIEW_MENU_COMPONENT_KEY = {
   addToGroup: 'layer-action-add-to-group',
   exportGeo: 'layer-action-export-geo',
+  identify: 'layer-action-identify',
+  toggleShow: 'layer-action-toggle-show',
+  toggleShowButton: 'layer-action-toggle-show-button',
+  setOpacity: 'layer-action-set-opacity',
+  // … layerDetail, styleControl, legends, …
 };
 ```
 
@@ -792,13 +836,15 @@ createMenuBuilder()
   .build();
 ```
 
-Register once (same as `createDatasetRegistryPlugin()` does for add-to-group):
+Register once (same as `createDatasetRegistryPlugin()` does for add-to-group). Prefer `registerComponentForMap` + `onMapLoaded` for page-only overrides — see [UniversalRegistry components](/map/core/registry-components).
 
 ```ts
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import SampleCustomMenu from './sample-custom-menu.vue';
 
 UniversalRegistry.registerComponent('sample-layer-menu', SampleCustomMenu);
+// or per map:
+// UniversalRegistry.registerComponentForMap(mapId, 'sample-layer-menu', SampleCustomMenu);
 ```
 
 **Vue component**

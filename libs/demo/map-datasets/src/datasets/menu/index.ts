@@ -31,8 +31,13 @@ import {
   DEMO_BBOX,
   DEMO_LIST_BBOX,
   DEMO_POLYGON,
+  demoPoint,
+  demoPolygon,
 } from '../../fixtures/geojson';
-import { DEMO_CUSTOM_MENU_HANDLER_KEY } from '../../registry/menu-handlers';
+import {
+  DEMO_CUSTOM_MENU_HANDLER_KEY,
+  DEMO_LAYER_TOGGLE_SHOW_KEY,
+} from '../../registry/menu-handlers';
 
 function createCustomMenuItem(
   icon: string,
@@ -362,8 +367,76 @@ export function createCustomChainSupportDataset() {
   return dataset;
 }
 
+/** Layer with a custom ToggleShow component (override menu componentKey). */
+export function createCustomToggleButtonDataset() {
+  const name = 'Custom toggle button (per layer)';
+  const dataset = createRootDataset(name);
+  const features = [
+    demoPolygon(
+      [
+        [
+          [106.15, 20.55],
+          [106.15, 20.68],
+          [106.32, 20.68],
+          [106.32, 20.55],
+          [106.15, 20.55],
+        ],
+      ],
+      { id: 'toggle-area-1', name: 'Custom toggle area' },
+    ),
+    demoPoint([106.235, 20.615], {
+      id: 'toggle-point-1',
+      name: 'Custom toggle point',
+    }),
+  ];
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features,
+  });
+  const bbox: [number, number, number, number] = [
+    106.15, 20.55, 106.32, 20.68,
+  ];
+  const bound = createDatasetPartBoundComponent(name, bbox);
+  const groupLayer = createGroupDataset(name);
+  const list = createDatasetPartListViewUiComponentBuilder(name)
+    .setColor('#2a9d8f')
+    .configDisabledDelete()
+    .addMenus([
+      createMenuItemToggleShow({
+        componentKey: DEMO_LAYER_TOGGLE_SHOW_KEY,
+      }),
+      createMenuItemStyleEdit(),
+      createMenuItemShowDetailInfoSource(),
+      createMenuItemToBoundActionForList({ bbox }),
+    ])
+    .build();
+  const layerArea = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .setOpacity(0.55)
+      .setFilter(['==', '$type', 'Polygon'])
+      .build(),
+  ]);
+  const layerPoint = createMultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(list.color)
+      .setFilter(['==', '$type', 'Point'])
+      .build(),
+  ]);
+  groupLayer.add(layerArea);
+  groupLayer.add(layerPoint);
+  groupLayer.add(list);
+  dataset.add(source);
+  dataset.add(bound);
+  dataset.add(groupLayer);
+  return dataset;
+}
+
 export const MENU_DEMO_DATASET_FACTORIES = [
   createDefaultMenuSupportDataset,
+  createCustomToggleButtonDataset,
   createDynamicBoundMenuDataset,
   createIdentifyMenuDataset,
   createCustomSupportDataset,

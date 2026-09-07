@@ -90,7 +90,7 @@ const updateValue = () => {
   <ModuleContainer v-bind="$attrs">
     <template #draggable="p">
       <DraggableItemSideBar
-        v-bind="p"
+        :containerId="p.containerId"
         v-model:show="show"
         v-if="layer_map_component.componentKey"
         @close="onClose"

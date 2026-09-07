@@ -56,6 +56,14 @@ export class UniversalRegistry {
     this.globalRegistry.set(this.NAMESPACES.COMPONENT + key, comp);
     this.notifyGlobal();
   }
+  static registerComponentForMap(
+    mapId: string,
+    key: string,
+    comp: ComponentType<any>,
+  ) {
+    const namespacedKey = this.NAMESPACES.COMPONENT + key;
+    getMapRegistryStore(mapId).set(namespacedKey, comp);
+  }
   static registerMethod(key: string, fn: (...args: any[]) => any) {
     this.globalRegistry.set(this.NAMESPACES.METHOD + key, fn);
     methodRegistry.registerMethod(key, fn);

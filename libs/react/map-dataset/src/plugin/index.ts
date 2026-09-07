@@ -7,6 +7,7 @@ import {
   LayerItemIcon,
   SetOpacity,
   ToggleShow,
+  ToggleShowButton,
 } from '../extra/component';
 import { AttributeTable } from '../modules/AttributeTable/AttributeTable';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
@@ -62,6 +63,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.toggleShow,
         ToggleShow,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
+        ToggleShowButton,
       );
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,

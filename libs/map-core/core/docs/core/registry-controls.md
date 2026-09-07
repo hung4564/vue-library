@@ -2,6 +2,8 @@
 
 Mounted ModuleContainer controls (popup, sidebar, float, and button-only) register themselves on the map via `UniversalRegistry.registerControl`. Apps can list them, open/close panels, move panels, and run button actions.
 
+Menu / UI components (`registerComponent` / `registerComponentForMap`): [UniversalRegistry components](./registry-components.md).
+
 ## List & inspect
 
 ```ts

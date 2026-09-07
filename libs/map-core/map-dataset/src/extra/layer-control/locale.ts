@@ -36,6 +36,13 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
     'Data may be too large, too deeply nested, or circular. Try a smaller file or EPSG:4326.',
 };
 
+export const LAYER_CONTROL_TOGGLE_LOCALE = {
+  hide: 'Hide layer',
+  show: 'Show layer',
+  'hide-all': 'Hide all layers',
+  'show-all': 'Show all layers',
+};
+
 export const LAYER_CONTROL_LOCALE = {
   map: {
     'layer-control': {
@@ -43,6 +50,7 @@ export const LAYER_CONTROL_LOCALE = {
       empty: 'No layers yet',
       'empty-hint': 'Create a layer to get started',
       'create-btn': 'Create Layer',
+      toggle: LAYER_CONTROL_TOGGLE_LOCALE,
       create: LAYER_CONTROL_CREATE_LOCALE,
       field: LAYER_CONTROL_FIELD_LOCALE,
       info: { title: 'Info' },

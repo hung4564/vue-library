@@ -122,6 +122,7 @@ function App() {
 }
 ```
 
-Open / move / run controls from code: [UniversalRegistry controls](./registry-controls.md).
+Open / move / run controls from code: [UniversalRegistry controls](./registry-controls.md).  
+Register menu / UI components: [UniversalRegistry components](./registry-components.md).
 
 Demo (Vue / React): [Vue `#/registry-control`](https://hung4564.github.io/demo-map/vue/#/registry-control) · [React `#/registry-control`](https://hung4564.github.io/demo-map/react/#/registry-control).

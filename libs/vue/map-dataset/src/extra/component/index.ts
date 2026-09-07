@@ -1,4 +1,6 @@
 export { default as ToggleShow } from './toggle-show.vue';
+export { default as ToggleShowButton } from './toggle-show-button.vue';
+export { useToggleShowAction } from './use-toggle-show';
 
 export { default as SetOpacity } from './set-opacity.vue';
 export { default as LayerItemIcon } from './layer-item-icon.vue';

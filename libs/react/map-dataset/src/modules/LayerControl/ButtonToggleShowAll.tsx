@@ -1,13 +1,18 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import type { IDataset, IListViewUI, IMapboxLayerView } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
 import {
-  isMapboxLayerView,
-  runAllComponentsWithCheck,
+  applyGlobalLayerVisibility,
+  LAYER_CONTROL_LOCALE,
+  LIST_VIEW_MENU_COMPONENT_KEY,
 } from '@hungpvq/map-dataset';
-import { BaseButton, getIsMulti, getMaps, useMap } from '@hungpvq/react-map-core';
-import { mdiEye, mdiEyeOff } from '@mdi/js';
-import Icon from '@mdi/react';
-import { useEffect, useState } from 'react';
+import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
+import { useEffect } from 'react';
+import { ToggleShowButton } from '../../extra/component/toggle-show-button';
+import {
+  notifyMapDatasetStore,
+  useMapDataset,
+  useMapDatasetStore,
+} from '../../store';
 
 export function ButtonToggleShowAll({
   mapId,
@@ -17,74 +22,46 @@ export function ButtonToggleShowAll({
   items: IListViewUI[];
 }) {
   const { callMap } = useMap({ mapId });
-  const [allLayerShow, setAllLayerShow] = useState(true);
-  const [allLayerMultiShow, setAllLayerMultiShow] = useState([true, true]);
-  const [isMulti, setIsMulti] = useState(false);
+  const { trans, setLocaleDefault } = useLang(mapId);
+  useMapDataset(mapId);
+  const store = useMapDatasetStore(mapId);
+  const allLayerShow = store.allLayerShow;
 
   useEffect(() => {
-    setIsMulti(getIsMulti(mapId));
-  }, [mapId]);
+    setLocaleDefault(LAYER_CONTROL_LOCALE);
+  }, [setLocaleDefault]);
 
-  function onToggleShow(value: boolean) {
-    setAllLayerShow(value);
-    callMap((map: MapSimple) => {
-      items.forEach((item) => {
-        item.show = value;
-        runAllComponentsWithCheck(
-          item.getParent() as IDataset,
-          (dataset): dataset is IDataset & IMapboxLayerView => isMapboxLayerView(dataset),
-          [(dataset) => dataset.toggleShow(map, value)],
-        );
+  useEffect(() => {
+    if (!store.allLayerShow) {
+      callMap((map: MapSimple) => {
+        applyGlobalLayerVisibility(items, map, false);
       });
-    });
-  }
+    }
+    // Re-hide when the list changes while global is off.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, mapId]);
 
-  function onToggleShowIndex(index: number, show: boolean) {
-    setAllLayerMultiShow((prev) => {
-      const next = [...prev];
-      next[index] = show;
-      return next;
+  function onToggleShow() {
+    const value = !store.allLayerShow;
+    store.allLayerShow = value;
+    notifyMapDatasetStore(store);
+    callMap((map: MapSimple) => {
+      applyGlobalLayerVisibility(items, map, value);
     });
-    const maps = getMaps(mapId);
-    const map = maps[index];
-    items.forEach((item) => {
-      if (item.shows == null) {
-        item.shows = [true, true];
-      }
-      item.shows[index] = show;
-      runAllComponentsWithCheck(
-        item.getParent() as IDataset,
-        (dataset): dataset is IDataset & IMapboxLayerView => isMapboxLayerView(dataset),
-        [(dataset) => dataset.toggleShow(map, show)],
-      );
-    });
-  }
-
-  if (isMulti) {
-    return (
-      <div className="toggle-buttons-container">
-        <BaseButton
-          className={allLayerMultiShow[0] ? '_active' : undefined}
-          onClick={() => onToggleShowIndex(0, !allLayerMultiShow[0])}
-        >
-          <span>#1</span>
-        </BaseButton>
-        <BaseButton
-          className={allLayerMultiShow[1] ? '_active' : undefined}
-          onClick={() => onToggleShowIndex(1, !allLayerMultiShow[1])}
-        >
-          <span>#2</span>
-        </BaseButton>
-      </div>
-    );
   }
 
   return (
-    <BaseButton
-      onClick={() => onToggleShow(!allLayerShow)}
-      title={!allLayerShow ? 'Ẩn toàn bộ các lớp' : 'Hiện toàn bộ các lớp'}
-    >
-      <Icon path={!allLayerShow ? mdiEye : mdiEyeOff} size="14px" />
-    </BaseButton>
+    <RegistryItem
+      componentKey={LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton}
+      defaultComponent={ToggleShowButton}
+      mapId={mapId}
+      show={allLayerShow}
+      title={trans(
+        allLayerShow
+          ? 'map.layer-control.toggle.hide-all'
+          : 'map.layer-control.toggle.show-all',
+      )}
+      onToggle={onToggleShow}
+    />
   );
 }

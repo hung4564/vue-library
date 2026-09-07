@@ -1,0 +1,35 @@
+import { BaseButton } from '@hungpvq/react-map-core';
+import {
+  ToggleShow,
+  type WithLayerItemActionType,
+} from '@hungpvq/react-map-dataset';
+
+/** Per-layer ToggleShow: reuse logic wrapper, only customize the button UI. */
+export function SampleLayerToggleShow(props: WithLayerItemActionType) {
+  return (
+    <ToggleShow
+      {...props}
+      renderButton={({ show, disabled, title, onToggle }) => (
+        <BaseButton
+          disabled={disabled}
+          title={title}
+          active={show}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggle();
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={show}
+            disabled={disabled}
+            tabIndex={-1}
+            readOnly
+            onClick={(event) => event.preventDefault()}
+            style={{ pointerEvents: 'none', margin: 0, cursor: 'inherit' }}
+          />
+        </BaseButton>
+      )}
+    />
+  );
+}

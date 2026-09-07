@@ -58,6 +58,7 @@ export const LIST_VIEW_MENU_COMPONENT_KEY = {
   exportGeo: 'layer-action-export-geo',
   identify: 'layer-action-identify',
   toggleShow: 'layer-action-toggle-show',
+  toggleShowButton: 'layer-action-toggle-show-button',
   setOpacity: 'layer-action-set-opacity',
   attributeTable: 'attribute-table',
   legendLinear: 'legend-linear',
@@ -168,9 +169,7 @@ export function createMenuItemToBoundActionForItem() {
                 );
           if (!feature?.geometry) return undefined;
           return {
-            value: createMenuClickFitBoundsBuilder()
-              .setDetail(feature)
-              .build(),
+            value: createMenuClickFitBoundsBuilder().setDetail(feature).build(),
           };
         })
         .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => {
@@ -272,7 +271,9 @@ export function createMenuItemStyleEdit(
 }
 
 export function createMenuItemToggleShow(
-  menu: Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click'>> = {},
+  menu: Partial<
+    Omit<MenuItemCustomComponentBottomOrExtra<IDataset>, 'click'>
+  > = {},
 ) {
   return createMenuBuilder()
     .item()
@@ -349,9 +350,7 @@ export function createMenuItemIdentifyForList(
       .build();
   }
 
-  return builder
-    .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.identify)
-    .build();
+  return builder.setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.identify).build();
 }
 
 export type ListViewGroupOption = { id: string; name: string };
@@ -474,11 +473,7 @@ export function isListViewReorderMenuHidden(
     menuId === LIST_VIEW_MENU_ID.moveUp ||
     menuId === LIST_VIEW_MENU_ID.moveDown
   ) {
-    return !!(
-      extra.readonly ||
-      extra.disabledMove ||
-      config?.disabled_move
-    );
+    return !!(extra.readonly || extra.disabledMove || config?.disabled_move);
   }
   if (menuId === LIST_VIEW_MENU_ID.addToGroup) {
     return !!(

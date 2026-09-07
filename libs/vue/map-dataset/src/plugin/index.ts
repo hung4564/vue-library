@@ -6,6 +6,7 @@ import ExportGeo from '../extra/component/export-geo.vue';
 import IdentifyLayerAction from '../extra/component/identify.vue';
 import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShow from '../extra/component/toggle-show.vue';
+import ToggleShowButton from '../extra/component/toggle-show-button.vue';
 import AttributeTable from '../modules/AttributeTable/AttributeTable.vue';
 import DatasetDetail from '../modules/DatasetControl/DatasetDetail.vue';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
@@ -60,6 +61,10 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.toggleShow,
         ToggleShow,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
+        ToggleShowButton,
       );
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,

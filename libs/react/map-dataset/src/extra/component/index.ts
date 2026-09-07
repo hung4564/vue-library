@@ -1,4 +1,5 @@
 export * from './toggle-show';
+export * from './toggle-show-button';
 export * from './set-opacity';
 export * from './layer-item-icon';
 export * from './add-to-group';

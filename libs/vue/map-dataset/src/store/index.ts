@@ -10,12 +10,17 @@ const KEY = 'dataset' as const;
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
   datasetIds: Ref<string[]>;
+  allLayerShow: Ref<boolean>;
 };
 
 export const useMapDatasetStore = (mapId: string) =>
   createMapScopedStore<MapLayerStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
-    return { datasets: {}, datasetIds: ref([]) };
+    return {
+      datasets: {},
+      datasetIds: ref([]),
+      allLayerShow: ref(true),
+    };
   });
 
 export const useMapDataset = (initialMapId?: string) => {
