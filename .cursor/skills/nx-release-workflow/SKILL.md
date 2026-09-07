@@ -72,3 +72,4 @@ Project names match package names (e.g. `@hungpvq/map-core`). Build output under
 - Prefer `map:lint` + `map:build` (or project-scoped nx) to validate changes.
 - After version bumps, ensure peer dependency ranges in sibling packages stay consistent.
 - Do not force-push or skip hooks unless the user explicitly requests it.
+- **Do not** hand-edit package `CHANGELOG.md` files unless the user explicitly asks. Leave changelog generation to `*:version` / Nx release (or a dedicated user request).

@@ -25,7 +25,13 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
   └─ No, only bug fix / docs / perf (documented behavior unchanged) → PATCH
 ```
 
-**Exception:** fixing a bug apps already rely on → prefer **minor** (or major if widespread). Document in CHANGELOG.
+**Exception:** fixing a bug apps already rely on → prefer **minor** (or major if widespread). Note the intent for release notes; do **not** hand-edit `CHANGELOG.md` unless asked.
+
+## CHANGELOG
+
+- **Do not** automatically create or append entries in any package `CHANGELOG.md` during feature/fix work.
+- CHANGELOG is owned by release tooling (`map:version` / Nx release) or an **explicit** user request.
+- When proposing a bump, state SemVer + suggested bullet points in chat / PR text only.
 
 ## Treat as public / breaking
 

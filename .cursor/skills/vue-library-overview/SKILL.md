@@ -56,6 +56,8 @@ npm run build / lint / ts-check   # run-many --all
 
 Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm run commit` / git-cz when helping authors.
 
+**CHANGELOG:** do not hand-edit package `CHANGELOG.md` unless the user asks; leave it to `*:version` / Nx release (see `nx-release-workflow`, SemVer skills).
+
 ## Docs hubs
 
 - Map SemVer + public surface: `libs/map-core/README.md`
