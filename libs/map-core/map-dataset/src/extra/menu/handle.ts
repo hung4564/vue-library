@@ -1,5 +1,4 @@
-// import { UniversalRegistry } from '@hungpvq/map-core';
-import { methodRegistry } from '@hungpvq/map-core';
+import { UniversalRegistry } from '@hungpvq/map-core';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { IDataset, MenuAction, MenuItemCommon } from '../../interfaces';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
@@ -39,11 +38,11 @@ export function createCommandHandler(
   return { canHandle, execute };
 }
 
-/** Xử lý string action → methodRegistry (map-scoped rồi global) */
+/** Xử lý string action → UniversalRegistry (map-scoped rồi global) */
 export const StringCommandHandler = createCommandHandler(
   (click): click is string => typeof click === 'string',
   async (click, context) => {
-    const handler = methodRegistry.getMenuHandler(click, context.mapId);
+    const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
     if (!handler) {
       logHelper(logger, 'handleMenuActionClick').warn(
         `No handler found for key: ${click}`,

@@ -1,4 +1,4 @@
-import { methodRegistry } from '../registry';
+import { UniversalRegistry } from '../registry';
 import { getMap } from '../store';
 import type { MapSimple } from '../types';
 import { copyText } from '../utils/map-info';
@@ -81,7 +81,7 @@ export function openGoogleEarth(target: MapContextMenuTarget) {
 }
 
 export function identifyFeaturesHere(props: MapMenuItemProps) {
-  const handler = methodRegistry.getMenuHandler(
+  const handler = UniversalRegistry.getMenuHandler(
     MAP_CONTEXT_MENU_ID.identifyHere,
     props.mapId,
   );

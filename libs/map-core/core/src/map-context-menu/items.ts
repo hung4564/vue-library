@@ -7,7 +7,7 @@ import {
   mdiMagnifyPlusOutline,
   mdiTarget,
 } from '@mdi/js';
-import { methodRegistry } from '../registry';
+import { UniversalRegistry } from '../registry';
 import { createMenuItemsAddGeojsonHere } from './add-geojson-here';
 import {
   centerMapHere,
@@ -114,7 +114,7 @@ export function createMenuItemQuickAnalysis(
 ) {
   const identify =
     mapId &&
-    methodRegistry.hasMenuHandler(MAP_CONTEXT_MENU_ID.identifyHere, mapId)
+    UniversalRegistry.hasMenuHandler(MAP_CONTEXT_MENU_ID.identifyHere, mapId)
       ? [createMenuItemIdentifyHere()]
       : [];
   const addGeojson = options?.exclude?.includes(

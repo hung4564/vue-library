@@ -3,6 +3,7 @@
  * Handles store operations, map instance registry, and cleanup
  */
 
+import { UniversalRegistry } from '../registry/universal-registry';
 import {
   hasMapCollection,
   hasMapInstance,
@@ -250,6 +251,7 @@ export class MapStoreManager {
   removeMap(mapId: string): void {
     this.log(mapId, 'debug', 'removeMap');
     this.runCleanup(mapId);
+    UniversalRegistry.clearMap(mapId);
     const root = this.adapter.getRootStore();
     delete root[mapId];
   }

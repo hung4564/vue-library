@@ -2,6 +2,8 @@
 
 Register Vue / React components for layer menus, legends, and other UI resolved by `RegistryItem` / `componentKey`.
 
+Methods, menu handlers, and control handles live on `UniversalRegistry` in `@hungpvq/map-core`. The Vue / React class **extends** that host and only adds component APIs — `getMethod` / `getMenuHandler` / `getControl` are the same resolve path (map-scoped first, then global).
+
 ```ts
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 // or `@hungpvq/react-map-core`

@@ -1,7 +1,7 @@
 import { mdiRadiusOutline } from '@mdi/js';
 import { circle } from '@turf/turf';
 import type { Feature, GeoJSON, Polygon } from 'geojson';
-import { methodRegistry } from '../registry';
+import { UniversalRegistry } from '../registry';
 import type { Color } from '../types';
 import { formatMapContextCoords } from './actions';
 import { createMapMenuBuilder } from './builder';
@@ -54,7 +54,7 @@ function addGeojsonHere(
   props: MapMenuItemProps,
   payload: AddGeojsonHerePayload,
 ) {
-  const handler = methodRegistry.getMenuHandler(
+  const handler = UniversalRegistry.getMenuHandler(
     MAP_CONTEXT_MENU_ID.addGeojsonHere,
     props.mapId,
   );
@@ -162,7 +162,7 @@ export function createMenuItemsAddGeojsonHere(
 ): MapContextMenuItem[] {
   if (
     !mapId ||
-    !methodRegistry.hasMenuHandler(MAP_CONTEXT_MENU_ID.addGeojsonHere, mapId)
+    !UniversalRegistry.hasMenuHandler(MAP_CONTEXT_MENU_ID.addGeojsonHere, mapId)
   ) {
     return [];
   }
