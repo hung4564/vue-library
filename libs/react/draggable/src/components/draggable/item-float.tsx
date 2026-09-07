@@ -14,6 +14,7 @@ import {
 } from '../../hook';
 import { MapButton } from '../parts/MapButton';
 export interface DraggableItemFloatProps {
+  id?: string;
   show?: boolean;
   expand?: boolean;
   title?: string;
@@ -24,6 +25,7 @@ export interface DraggableItemFloatProps {
   disabledHeader?: boolean;
   disabledClose?: boolean;
   disabledOrder?: boolean;
+  highlightMs?: number;
   top?: number;
   left?: number;
   bottom?: number;
@@ -39,6 +41,7 @@ export interface DraggableItemFloatProps {
 }
 
 export function DraggableItemFloat({
+  id: stableId,
   show: propShow,
   expand: propExpand,
   title = '',
@@ -49,6 +52,7 @@ export function DraggableItemFloat({
   disabledHeader,
   disabledClose,
   disabledOrder,
+  highlightMs,
   top,
   left,
   bottom,
@@ -70,11 +74,17 @@ export function DraggableItemFloat({
       close: onClose,
     },
   );
-  const { zIndex, itemId } = useInitItem(containerId, show, setShow, {
-    title,
-    type: 'item-float',
-  });
-  const { isHighlight, setHighLight } = useHighlight();
+  const { zIndex, itemId } = useInitItem(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-float',
+    },
+    stableId,
+  );
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,

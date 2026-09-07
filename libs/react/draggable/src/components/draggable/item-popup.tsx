@@ -1,4 +1,13 @@
-import { MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { clampBounds } from '@hungpvq/draggable';
+import {
+  MouseEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Rnd } from 'react-rnd';
 import { useContainerId } from '../../context/ContainerContext';
 import {
@@ -15,6 +24,7 @@ import {
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
 import { MapButton } from '../parts/MapButton';
+
 const STICKS_TO_RND: Record<string, string> = {
   t: 'top',
   r: 'right',
@@ -37,6 +47,7 @@ const RESIZE_KEYS = [
 ];
 
 export interface DraggableItemPopupProps {
+  id?: string;
   show?: boolean;
   expand?: boolean;
   title?: string;
@@ -47,6 +58,7 @@ export interface DraggableItemPopupProps {
   disabledHeader?: boolean;
   disabledClose?: boolean;
   disabledOrder?: boolean;
+  highlightMs?: number;
   sticks?: string[];
   top?: number;
   left?: number;
@@ -60,21 +72,28 @@ export interface DraggableItemPopupProps {
   onUpdateShow?: (value: boolean) => void;
   onClose?: () => void;
   onUpdateExpand?: (value: boolean) => void;
+  onBoundsChange?: (bounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
 }
 
 export function DraggableItemPopup({
+  id: stableId,
   show: propShow,
   expand: propExpand,
   title = '',
   containerId: propContainerId,
   componentCard,
   componentCardHeader,
-  disabledExpand,
   disabledHeader,
   disabledClose,
   disabledOrder,
+  highlightMs,
   sticks = ['bl', 'br'],
   top,
   left,
@@ -88,6 +107,7 @@ export function DraggableItemPopup({
   onUpdateShow,
   onClose,
   onUpdateExpand,
+  onBoundsChange,
   children,
   extraBtn,
 }: DraggableItemPopupProps) {
@@ -99,11 +119,17 @@ export function DraggableItemPopup({
       close: onClose,
     },
   );
-  const { zIndex, itemId } = useInitItem(containerId, show, setShow, {
-    title,
-    type: 'item-popup',
-  });
-  const { isHighlight, setHighLight } = useHighlight();
+  const { zIndex, itemId } = useInitItem(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-popup',
+    },
+    stableId,
+  );
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,
@@ -118,6 +144,14 @@ export function DraggableItemPopup({
   const [p_width, setPWidth] = useState(propWidth || 200);
   const [p_x, setPX] = useState(0);
   const [p_y, setPY] = useState(0);
+  const boundsRef = useRef({
+    x: 0,
+    y: 0,
+    width: propWidth || 200,
+    height: propHeight || 200,
+  });
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  onBoundsChangeRef.current = onBoundsChange;
   const { expand, setExpand } = useExpand(
     { expand: propExpand },
     {
@@ -151,9 +185,29 @@ export function DraggableItemPopup({
     return out;
   }, [sticks]);
 
+  const emitBounds = useCallback(
+    (x: number, y: number, width: number, height: number) => {
+      const next = clampBounds(
+        x,
+        y,
+        width,
+        height,
+        containerWidth,
+        containerHeight,
+      );
+      setPX(next.x);
+      setPY(next.y);
+      setPWidth(next.width);
+      setPHeight(next.height);
+      boundsRef.current = next;
+      onBoundsChangeRef.current?.(next);
+    },
+    [containerWidth, containerHeight],
+  );
+
   const handleResize = useCallback(
     (
-      _e: any,
+      _e: unknown,
       _dir: unknown,
       elementRef: HTMLElement,
       _delta: unknown,
@@ -169,26 +223,32 @@ export function DraggableItemPopup({
 
   const handleDragStop = useCallback(
     (_e: unknown, data: { x: number; y: number }) => {
-      setPX(data.x);
-      setPY(data.y);
+      emitBounds(
+        data.x,
+        data.y,
+        boundsRef.current.width,
+        boundsRef.current.height,
+      );
     },
-    [],
+    [emitBounds],
   );
 
   const handleResizeStop = useCallback(
     (
-      _e: any,
+      _e: unknown,
       _dir: unknown,
       elementRef: HTMLElement,
       _delta: unknown,
       position: { x: number; y: number },
     ) => {
-      setPWidth(elementRef.offsetWidth);
-      setPHeight(elementRef.offsetHeight);
-      setPX(position.x);
-      setPY(position.y);
+      emitBounds(
+        position.x,
+        position.y,
+        elementRef.offsetWidth,
+        elementRef.offsetHeight,
+      );
     },
-    [],
+    [emitBounds],
   );
 
   const handleClose = useCallback(
@@ -210,30 +270,24 @@ export function DraggableItemPopup({
       return;
     }
 
-    let x = 0;
-    let y = 0;
+    let x = boundsRef.current.x;
+    let y = boundsRef.current.y;
+    const w = propWidth || boundsRef.current.width || 200;
+    const h = propHeight || boundsRef.current.height || 200;
 
-    if (left != null) {
-      x = left;
-    }
-    if (top != null) {
-      y = top;
-    }
-    if (right != null) {
-      x = containerWidth - right - p_width;
-    }
-    if (bottom != null) {
-      y = containerHeight - bottom - p_height;
-    }
-    if (center || centerX) {
-      x = (containerWidth - p_width) / 2;
-    }
-    if (center || centerY) {
-      y = (containerHeight - p_height) / 2;
-    }
+    if (left != null) x = left;
+    if (top != null) y = top;
+    if (right != null) x = containerWidth - right - w;
+    if (bottom != null) y = containerHeight - bottom - h;
+    if (center || centerX) x = (containerWidth - w) / 2;
+    if (center || centerY) y = (containerHeight - h) / 2;
 
-    setPX(x);
-    setPY(y);
+    const next = clampBounds(x, y, w, h, containerWidth, containerHeight);
+    setPX(next.x);
+    setPY(next.y);
+    setPWidth(next.width);
+    setPHeight(next.height);
+    boundsRef.current = next;
     setInitDone(true);
   }, [
     show,
@@ -246,8 +300,8 @@ export function DraggableItemPopup({
     center,
     centerX,
     centerY,
-    p_width,
-    p_height,
+    propWidth,
+    propHeight,
   ]);
 
   function onToggleExpanded() {
@@ -278,6 +332,7 @@ export function DraggableItemPopup({
       onResizeStop={handleResizeStop}
       onDrag={onDragging}
       onDragStop={handleDragStop}
+      onMouseDown={onToFront}
     >
       <Card width={p_width} height={p_height} highlight={isHighlight}>
         <div className="draggable-popup-desktop">

@@ -39,14 +39,19 @@ const containerId = inject<Ref<string>>(
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
-const { zIndex, itemId } = useInitItem(containerId.value, show, {
-  title: props.title,
-  type: 'item-bottom',
-});
-const { isHighlight, setHighLight } = useHighlight();
+const { zIndex, itemId } = useInitItem(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-bottom',
+  },
+  props.id,
+);
+const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
   setHighLight,
   open,

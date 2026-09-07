@@ -41,9 +41,10 @@ export default defineConfig(() => ({
         '@hungpvq/shared-store',
         '@hungpvq/shared-store/react',
         'lodash',
+        'lodash/debounce',
         '@mdi/js',
         '@mdi/react',
-        'react-draggable-resizable',
+        'react-rnd',
       ],
       output: {
         assetFileNames: 'style.css',

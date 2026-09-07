@@ -12,8 +12,11 @@ export function useInitSidebar(
     type: 'item-sidebar';
     location: LocationSideBar;
   },
+  stableId?: string,
 ) {
-  const [itemId] = useState(`draggable-item-${getUUIDv4()}`);
+  const [itemId] = useState(
+    () => stableId || `draggable-item-${getUUIDv4()}`,
+  );
   const [zIndex, setZIndexState] = useState(0);
 
   function setZIndex(value: number) {

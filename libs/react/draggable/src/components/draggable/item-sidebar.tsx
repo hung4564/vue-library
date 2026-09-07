@@ -12,6 +12,7 @@ import { MapSidebarToggleProps } from '../parts/MapSidebarToggle';
 import { SidebarModule } from './sidebar/sidebar-module';
 
 export interface DraggableItemSideBarProps {
+  id?: string;
   show?: boolean;
   /** Plain title used in sidebar switch menu */
   title?: string;
@@ -30,6 +31,7 @@ export interface DraggableItemSideBarProps {
 }
 
 export function DraggableItemSideBar({
+  id: stableId,
   show: propShow,
   title = '',
   titleNode,
@@ -50,11 +52,17 @@ export function DraggableItemSideBar({
   );
   const c_location =
     propLocation != null ? propLocation : right ? 'right' : 'left';
-  const { location, itemId } = useInitSidebar(containerId, show, setShow, {
-    title,
-    type: 'item-sidebar',
-    location: c_location,
-  });
+  const { location, itemId } = useInitSidebar(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-sidebar',
+      location: c_location,
+    },
+    stableId,
+  );
   useInitAction(containerId, itemId, {
     open,
     close,

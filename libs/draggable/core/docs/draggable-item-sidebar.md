@@ -14,6 +14,7 @@ Only one sidebar is visible per edge. If several sidebars share the same `locati
 
 | Prop             | Description                                         | Type            | Required | Default Value |
 | ---------------- | --------------------------------------------------- | --------------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.        | `string`        | false    | auto UUID     |
 | `show`           | Controls the visibility of the sidebar.             | `boolean`       | false    | false         |
 | `expand`         | Whether the sidebar is expanded.                    | `boolean`       | false    | false         |
 | `width`          | Width of the sidebar.                               | `number,string` | false    | 'auto'        |

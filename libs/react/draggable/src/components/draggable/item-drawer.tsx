@@ -27,6 +27,7 @@ import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { MapButton } from '../parts/MapButton';
 
 export interface DraggableDrawerProps {
+  id?: string;
   show?: boolean;
   title?: string;
   containerId?: string;
@@ -34,6 +35,7 @@ export interface DraggableDrawerProps {
   componentCardHeader?: ShareHeaderComponent;
   disabledHeader?: boolean;
   disabledClose?: boolean;
+  highlightMs?: number;
   location?: LocationSideBar;
   size?: number;
   minSize?: number;
@@ -48,6 +50,7 @@ export interface DraggableDrawerProps {
 }
 
 export function DraggableDrawer({
+  id: stableId,
   show: propShow,
   title = '',
   containerId: propContainerId,
@@ -55,6 +58,7 @@ export function DraggableDrawer({
   componentCardHeader,
   disabledHeader,
   disabledClose,
+  highlightMs,
   location = 'right',
   size: propSize = 360,
   minSize = 200,
@@ -76,12 +80,17 @@ export function DraggableDrawer({
       close: onClose,
     },
   );
-  const { itemId } = useInitDrawer(containerId, setShow, {
-    title,
-    type: 'item-drawer',
-    location,
-  });
-  const { isHighlight, setHighLight } = useHighlight();
+  const { itemId } = useInitDrawer(
+    containerId,
+    setShow,
+    {
+      title,
+      type: 'item-drawer',
+      location,
+    },
+    stableId,
+  );
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,

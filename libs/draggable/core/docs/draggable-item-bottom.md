@@ -12,6 +12,7 @@ category: Component
 
 | Prop             | Description                                   | Type      | Required | Default Value |
 | ---------------- | --------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.  | `string`  | false    | auto UUID     |
 | `title`          | Title displayed in the bottom panel header.   | `string`  | false    | -             |
 | `disabledExpand` | Disables the expand/collapse feature.         | `boolean` | false    | false         |
 | `disabledHeader` | Hides the header section.                     | `boolean` | false    | false         |

@@ -12,8 +12,11 @@ export function useInitItem(
   optionDefault: InitOption = {
     type: 'item-popup',
   },
+  stableId?: string,
 ) {
-  const [itemId] = useState(`draggable-item-${getUUIDv4()}`);
+  const [itemId] = useState(
+    () => stableId || `draggable-item-${getUUIDv4()}`,
+  );
   const [zIndex, setZIndexState] = useState(10);
 
   function setZIndex(value: number) {

@@ -10,9 +10,10 @@ category: Component
 
 ## Props
 
-| Prop          | Description                                                                               | Type     | Required | Default Value |
-| ------------- | ----------------------------------------------------------------------------------------- | -------- | -------- | ------------- |
-| `containerId` | Unique identifier for the container. Useful when teleporting items outside the container. | `string` | false    | -             |
+| Prop                | Description                                                                               | Type     | Required | Default Value |
+| ------------------- | ----------------------------------------------------------------------------------------- | -------- | -------- | ------------- |
+| `containerId`       | Unique identifier for the container. Useful when teleporting items outside the container. | `string` | false    | -             |
+| `mobileBreakpoint`  | Root width (px) below which `WithMobileHandle` switches items to the bottom sheet.        | `number` | false    | `600`         |
 
 ## Events
 

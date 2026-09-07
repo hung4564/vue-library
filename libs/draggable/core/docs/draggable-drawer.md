@@ -22,6 +22,7 @@ Only one drawer is visible per edge. If several drawers share the same `location
 
 | Prop             | Description                                         | Type      | Required | Default Value |
 | ---------------- | --------------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.        | `string`  | false    | auto UUID     |
 | `show`           | Controls the visibility of the drawer layer.        | `boolean` | false    | false         |
 | `location`       | Drawer edge: `left`, `right`, `top`, `bottom`.      | `string`  | false    | `'right'`     |
 | `size`           | Drawer length in pixels.                            | `number`  | false    | 360           |

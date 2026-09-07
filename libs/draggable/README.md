@@ -21,8 +21,8 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/draggable` | `.` + `./style.css` | peer `@hungpvq/shared-store` |
-| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` often **exact `1.0.1`**, Vue + `vue-draggable-resizable` |
-| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` often **exact `1.0.1`**, React 18, `react-rnd` |
+| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`~1.0.1`**, `vue`, `vue-draggable-resizable` |
+| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`~1.0.1`**, React 18, `react-rnd` |
 
 **Monorepo rule:** Nx release group `draggable` uses `projectsRelationship: fixed`. Bumping `@hungpvq/draggable` major/minor requires the same release of Vue + React adapters. Do not publish core alone when peers pin an exact version.
 

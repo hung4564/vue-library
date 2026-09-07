@@ -10,8 +10,9 @@ export function useInitItem(
   optionDefault: InitOption = {
     type: 'item-popup',
   },
+  stableId?: string,
 ) {
-  const itemId = ref(`draggable-item-${getUUIDv4()}`);
+  const itemId = ref(stableId || `draggable-item-${getUUIDv4()}`);
   const zIndex = ref(10);
   function setZIndex(value: number) {
     zIndex.value = value;

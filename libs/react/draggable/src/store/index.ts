@@ -1,5 +1,6 @@
 import {
   configureDragStore,
+  useDragCommands,
   useDragComponent,
   useDragContainer,
   useDragIsMobile,
@@ -37,6 +38,7 @@ function notifyStoreChange(path?: string | string[]) {
 configureDragStore({ notify: notifyStoreChange });
 
 export {
+  useDragCommands,
   useDragComponent,
   useDragContainer,
   useDragIsMobile,

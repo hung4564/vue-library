@@ -1,5 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import {
   CSSProperties,
   ReactNode,
@@ -25,6 +25,7 @@ type ResultShow = {
 export interface DraggableContainerProps {
   containerId?: string;
   className?: string;
+  mobileBreakpoint?: number;
   children?: ReactNode;
   onInit?: (id: string) => void;
   onDestroy?: (id: string) => void;
@@ -34,6 +35,7 @@ export interface DraggableContainerProps {
 export function DraggableContainer({
   containerId: propContainerId,
   className,
+  mobileBreakpoint = 600,
   children,
   onInit,
   onDestroy,
@@ -54,15 +56,13 @@ export function DraggableContainer({
   onDestroyRef.current = onDestroy;
   const onChangeShowRef = useRef(onChangeShow);
   onChangeShowRef.current = onChangeShow;
+  const mobileBreakpointRef = useRef(mobileBreakpoint);
+  mobileBreakpointRef.current = mobileBreakpoint;
 
   useStoreReactive();
   const dragStore = useDragStore();
   const drawer = dragStore.container[containerId]?.drawer;
   const itemShows = store.getItemShows();
-
-  /** Breakpoint for WithMobileHandle — must use root width, not center
-   *  (center shrinks when drawers open and would oscillate desktop ↔ mobile). */
-  const MOBILE_BREAKPOINT = 600;
 
   const drawerStyle = useMemo(() => {
     const style: CSSProperties & Record<string, string> = {
@@ -85,7 +85,7 @@ export function DraggableContainer({
     storeRef.current.setParentProps({
       width: clientWidth,
       height: boxRef.current?.clientHeight || 0,
-      isMobile: layoutWidth < MOBILE_BREAKPOINT,
+      isMobile: layoutWidth < mobileBreakpointRef.current,
     });
   }, []);
 
@@ -106,7 +106,8 @@ export function DraggableContainer({
 
       if ('location' in item && typeof item.location === 'string') {
         const key = `${item.location}Count`;
-        const group = (acc[baseType] as Record<string, number> | undefined) ?? {};
+        const group =
+          (acc[baseType] as Record<string, number> | undefined) ?? {};
         group[key] = (group[key] || 0) + 1;
         acc[baseType] = group;
       } else {
@@ -146,6 +147,10 @@ export function DraggableContainer({
       observer?.disconnect();
     };
   }, [containerId, handleResize, onResize]);
+
+  useEffect(() => {
+    onResize();
+  }, [mobileBreakpoint, onResize]);
 
   return (
     <ContainerProvider containerId={containerId}>

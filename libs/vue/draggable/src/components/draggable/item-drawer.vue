@@ -57,7 +57,7 @@ const containerId = inject<Ref<string>>(
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 
 const location = computed(() => props.location as LocationSideBar);
@@ -66,12 +66,17 @@ const isHorizontal = computed(
 );
 
 const { show, open, close } = useShow(props, emit);
-const { itemId } = useInitDrawer(containerId.value, show, {
-  title: props.title,
-  type: 'item-drawer',
-  location,
-});
-const { isHighlight, setHighLight } = useHighlight();
+const { itemId } = useInitDrawer(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-drawer',
+    location,
+  },
+  props.id,
+);
+const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
   setHighLight,
   open,

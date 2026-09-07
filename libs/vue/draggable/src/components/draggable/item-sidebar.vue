@@ -32,7 +32,7 @@ const containerId = inject<Ref<string>>(
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
 const c_location = computed<LocationSideBar>(() =>
@@ -42,11 +42,16 @@ const c_location = computed<LocationSideBar>(() =>
       ? 'right'
       : 'left',
 );
-const { location, itemId } = useInitSidebar(containerId.value, show, {
-  title: props.title,
-  type: 'item-sidebar',
-  location: c_location,
-});
+const { location, itemId } = useInitSidebar(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-sidebar',
+    location: c_location,
+  },
+  props.id,
+);
 useInitAction(containerId.value, itemId.value, {
   open,
   close,

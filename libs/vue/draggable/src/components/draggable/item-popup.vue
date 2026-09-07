@@ -4,6 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { clampBounds } from '@hungpvq/draggable';
 import { inject, ref, Ref, watch } from 'vue';
 import MapButton from '../parts/MapButton.vue';
 
@@ -47,20 +48,38 @@ const props = defineProps({
   centerY: Boolean,
   center: Boolean,
 });
-const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
+const emit = defineEmits({
+  ...withShowEmit,
+  ...withExpandEmit,
+  'update:bounds': (value: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) =>
+    typeof value?.x === 'number' &&
+    typeof value?.y === 'number' &&
+    typeof value?.width === 'number' &&
+    typeof value?.height === 'number',
+});
 const containerId = inject<Ref<string>>(
   'containerId',
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
-const { zIndex, itemId } = useInitItem(containerId.value, show, {
-  title: props.title,
-  type: 'item-popup',
-});
-const { isHighlight, setHighLight } = useHighlight();
+const { zIndex, itemId } = useInitItem(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-popup',
+  },
+  props.id,
+);
+const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
   setHighLight,
   open,
@@ -81,8 +100,31 @@ const p_y = ref(0);
 /** Remount VDR when center size changes so it remeasures parent after drawer layout. */
 const layoutKey = ref(0);
 const { expand } = useExpand(props, emit, true);
+function emitBounds() {
+  emit('update:bounds', {
+    x: p_x.value,
+    y: p_y.value,
+    width: p_width.value,
+    height: p_height.value,
+  });
+}
+function applyClamp() {
+  const next = clampBounds(
+    p_x.value,
+    p_y.value,
+    p_width.value,
+    p_height.value,
+    containerWidth.value,
+    containerHeight.value,
+  );
+  p_x.value = next.x;
+  p_y.value = next.y;
+  p_width.value = next.width;
+  p_height.value = next.height;
+}
 function activateEv() {
   isActive.value = true;
+  onToFront();
 }
 function deactivateEv() {
   isActive.value = false;
@@ -92,8 +134,24 @@ const { componentCard, componentCardHeader } = useComponent({
   containerId: containerId.value,
 });
 function onResize(x: number, y: number, width: number, height: number) {
+  p_x.value = x;
+  p_y.value = y;
   p_width.value = width;
   p_height.value = height;
+}
+function onDragStop(x: number, y: number) {
+  p_x.value = x;
+  p_y.value = y;
+  applyClamp();
+  emitBounds();
+}
+function onResizeStop(x: number, y: number, width: number, height: number) {
+  p_x.value = x;
+  p_y.value = y;
+  p_width.value = width;
+  p_height.value = height;
+  applyClamp();
+  emitBounds();
 }
 function onClose() {
   show.value = false;
@@ -106,8 +164,8 @@ watch(
   { immediate: true },
 );
 watch([containerWidth, containerHeight], (next, prev) => {
-  if (!show.value) return;
-  init();
+  if (!show.value || !init_done.value) return;
+  applyClamp();
   const [nw, nh] = next;
   const [pw, ph] = prev || [0, 0];
   if (nw !== pw || nh !== ph) {
@@ -123,6 +181,9 @@ function init() {
     init_done.value = false;
     return;
   }
+
+  p_width.value = props.width || p_width.value || 200;
+  p_height.value = props.height || p_height.value || 200;
 
   if (props.left != null) {
     p_x.value = props.left;
@@ -142,6 +203,7 @@ function init() {
   if (props.center || props.centerY) {
     p_y.value = (containerHeight.value - p_height.value) / 2;
   }
+  applyClamp();
   init_done.value = true;
 }
 function onToggleExpanded() {
@@ -171,6 +233,8 @@ function onDragging() {
     :y="p_y"
     :z="zIndex"
     @resizing="onResize"
+    @dragstop="onDragStop"
+    @resizestop="onResizeStop"
     :active="isActive"
     @activated="activateEv()"
     @deactivated="deactivateEv()"

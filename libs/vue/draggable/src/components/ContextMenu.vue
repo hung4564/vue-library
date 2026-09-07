@@ -8,7 +8,12 @@
       :style="menuStyle"
       @click="onBackdropClick"
     >
-      <div class="context-menu-content">
+      <div
+        ref="content"
+        class="context-menu-content"
+        role="menu"
+        tabindex="-1"
+      >
         <slot />
       </div>
       <button
@@ -30,6 +35,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { focusFirst } from '@hungpvq/draggable';
 import {
   computed,
   CSSProperties,
@@ -37,6 +43,7 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  watch,
 } from 'vue';
 
 const props = defineProps({
@@ -44,6 +51,7 @@ const props = defineProps({
 });
 
 const target = ref<HTMLDivElement>();
+const content = ref<HTMLDivElement>();
 const isOpen = ref(false);
 const isMobile = ref(false);
 const stylePosition = ref<Record<string, string>>({});
@@ -67,6 +75,14 @@ function onDocumentPointerDown(e: MouseEvent) {
   if (!isOpen.value || !target.value) return;
   if (target.value.contains(e.target as Node)) return;
   close();
+}
+
+function onDocumentKeydown(e: KeyboardEvent) {
+  if (!isOpen.value) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    close();
+  }
 }
 
 function onBackdropClick(e: MouseEvent) {
@@ -126,11 +142,20 @@ function close() {
   lastOpenEvent = null;
 }
 
+watch(isOpen, (openNow) => {
+  if (openNow) {
+    nextTick(() => {
+      if (content.value) focusFirst(content.value);
+    });
+  }
+});
+
 onMounted(() => {
   mediaQuery = window.matchMedia('(max-width: 640px)');
   syncMobile(mediaQuery);
   mediaQuery.addEventListener('change', syncMobile);
   document.addEventListener('mousedown', onDocumentPointerDown);
+  document.addEventListener('keydown', onDocumentKeydown);
 
   if (target.value) {
     resizeObserver = new ResizeObserver(() => {
@@ -145,6 +170,7 @@ onMounted(() => {
 onUnmounted(() => {
   mediaQuery?.removeEventListener('change', syncMobile);
   document.removeEventListener('mousedown', onDocumentPointerDown);
+  document.removeEventListener('keydown', onDocumentKeydown);
   resizeObserver?.disconnect();
 });
 

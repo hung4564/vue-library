@@ -85,22 +85,22 @@ export const withExpandEmit = {
   'update:expand': (_value: boolean) => Boolean,
 };
 
-export const useHighlight = () => {
+export const useHighlight = (ms = 5000) => {
   const [isHighlight, setIsHighlight] = useState(false);
-  let timeout: ReturnType<typeof setTimeout> | null = null;
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setHighLight = (highlight?: boolean) => {
     const newValue = highlight !== undefined ? highlight : !isHighlight;
     setIsHighlight(newValue);
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
     if (newValue) {
-      timeout = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setIsHighlight(false);
-        timeout = null;
-      }, 5000);
+        timeoutRef.current = null;
+      }, ms);
     }
   };
 

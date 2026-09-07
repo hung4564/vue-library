@@ -1,3 +1,4 @@
+import { focusFirst } from '@hungpvq/draggable';
 import {
   forwardRef,
   useCallback,
@@ -22,6 +23,7 @@ export interface ContextMenuProps {
 export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
   function ContextMenu({ zIndex = 10000, children }, ref) {
     const targetRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [stylePosition, setStylePosition] = useState<React.CSSProperties>({});
     const [isMobile, setIsMobile] = useState(false);
@@ -85,13 +87,24 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
 
     useEffect(() => {
       if (!isOpen) return;
-      const handler = (e: MouseEvent) => {
+      if (contentRef.current) focusFirst(contentRef.current);
+      const onPointer = (e: MouseEvent) => {
         const el = targetRef.current;
         if (!el || el.contains(e.target as Node)) return;
         close();
       };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          close();
+        }
+      };
+      document.addEventListener('mousedown', onPointer);
+      document.addEventListener('keydown', onKey);
+      return () => {
+        document.removeEventListener('mousedown', onPointer);
+        document.removeEventListener('keydown', onKey);
+      };
     }, [isOpen, close]);
 
     const handleBackdropClick = useCallback(
@@ -114,7 +127,14 @@ export const ContextMenu = forwardRef<ContextMenuRef, ContextMenuProps>(
         }}
         onClick={handleBackdropClick}
       >
-        <div className="context-menu-content">{children}</div>
+        <div
+          ref={contentRef}
+          className="context-menu-content"
+          role="menu"
+          tabIndex={-1}
+        >
+          {children}
+        </div>
         {isMobile && (
           <button
             type="button"

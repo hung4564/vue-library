@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ContainerStoreAction } from '../types';
 import {
   configureDragStore,
+  useDragCommands,
   useDragComponent,
   useDragContainer,
   useDragIsMobile,
@@ -105,6 +106,14 @@ describe('useDragItem', () => {
     items.unRegisterItem('p1');
     expect(items.getItems('popup')).toEqual([]);
     expect(useDragContainer(CID).getItemAction('p1')).toBeUndefined();
+  });
+
+  it('does not duplicate id on registerItem', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    items.registerItem('p1', 'item-popup');
+    items.registerItem('p1', 'item-popup');
+    expect(items.getItems('popup')).toEqual(['p1']);
   });
 
   it('registerItemShow updates z-order (last = top)', () => {
@@ -314,5 +323,62 @@ describe('useDragComponent', () => {
     expect(api.getComponentCard()).toBeUndefined();
     expect(api.getComponentCardHeader()).toBeUndefined();
     expect(api.getComponentCardSidebarToggle()).toBeUndefined();
+  });
+});
+
+describe('useDragCommands', () => {
+  it('open/close use action helpers and fall back to setShow', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    const withHelpers = createFakeAction({ type: 'item-popup' });
+    const bare = createFakeAction({
+      type: 'item-popup',
+      open: undefined,
+      close: undefined,
+    });
+    items.registerItem('a', 'item-popup');
+    items.registerItem('b', 'item-popup');
+    items.registerAction('a', withHelpers);
+    items.registerAction('b', bare);
+
+    const cmds = useDragCommands(CID);
+    expect(cmds.getAction('a')).toBe(withHelpers);
+
+    cmds.open('a');
+    expect(withHelpers.open).toHaveBeenCalled();
+    cmds.close('a');
+    expect(withHelpers.close).toHaveBeenCalled();
+
+    cmds.open('b');
+    expect(bare.setShow).toHaveBeenCalledWith(true);
+    cmds.close('b');
+    expect(bare.setShow).toHaveBeenCalledWith(false);
+  });
+
+  it('setFront / setBack update z-order', () => {
+    initTestContainer();
+    const items = useDragItem(CID);
+    const a = createFakeAction({ type: 'item-popup' });
+    const b = createFakeAction({ type: 'item-popup' });
+    items.registerItem('a', 'item-popup');
+    items.registerItem('b', 'item-popup');
+    items.registerAction('a', a);
+    items.registerAction('b', b);
+    items.registerItemShow('a', true);
+    items.registerItemShow('b', true);
+
+    const cmds = useDragCommands(CID);
+    cmds.setBack('b');
+    expect(items.getItemsShow('popup')).toEqual(['b', 'a']);
+    cmds.setFront('b');
+    expect(items.getItemsShow('popup')).toEqual(['a', 'b']);
+  });
+
+  it('open/close are no-ops for unknown ids', () => {
+    initTestContainer();
+    const cmds = useDragCommands(CID);
+    expect(() => cmds.open('missing')).not.toThrow();
+    expect(() => cmds.close('missing')).not.toThrow();
+    expect(cmds.getAction('missing')).toBeUndefined();
   });
 });

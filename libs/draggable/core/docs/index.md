@@ -150,40 +150,30 @@ export function App() {
 }
 ```
 
-Visibility updates differ by framework: Vue uses `v-model:show` / `@update:show`; React uses `show` + `onUpdateShow`.
+Visibility updates differ by framework: Vue uses `v-model:show` / `@update:show`; React uses `show` + `onUpdateShow`. Prefer controlled `show` so store-driven open/close (ManagementControl, `useDragCommands`) stays in sync with the parent.
 
-### Vue — teleporting a popup
+### Stable item id + commands
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import { DraggableContainer, DraggableItemPopup } from '@hungpvq/vue-draggable';
-const containerId = ref('my-container');
-</script>
+Pass optional `id` on any item so remounts and imperative APIs share the same store key:
 
-<template>
-  <DraggableContainer :containerId="containerId">
-    <!-- Main content here -->
-  </DraggableContainer>
-  <Teleport :to="`#${containerId}`">
-    <DraggableItemPopup
-      show
-      title="Teleported Popup"
-      :top="20"
-      :left="300"
-      :containerId="containerId"
-    >
-      <div style="height: 100px">Teleported Popup Content</div>
-    </DraggableItemPopup>
-  </Teleport>
-</template>
+```ts
+import { useDragCommands } from '@hungpvq/vue-draggable'; // or react-draggable
+
+const cmds = useDragCommands('my-container');
+cmds.open('layers');
+cmds.setFront('layers');
+cmds.close('layers');
 ```
+
+Popup / modal emit `update:bounds` (React: `onBoundsChange`) on drag/resize **stop**. Drawer already has `update:size`.
+
+Theme tokens: [css-tokens.md](./css-tokens.md).
 
 ## FAQ
 
 ### Why is my draggable item not visible?
 
-- Ensure the `show` prop is set to `true`.
+- Ensure the `show` prop is set to `true` (and bind `v-model:show` / `onUpdateShow` if something else can close it).
 - Check container and item z-index and overflow settings.
 
 ### How do I render outside the default tree?
@@ -194,10 +184,12 @@ const containerId = ref('my-container');
 
 - Import styles at the app root — see [Styles](#styles).
 - UI CSS lives in `@hungpvq/draggable`; the Vue/React packages re-export it via `/style.css`.
+- Override `--draggable-*` (or `--map-*`) — see [css-tokens.md](./css-tokens.md).
 
 ## Stable API & SemVer
 
 - [Stable API allowlist](./stable-api.md)
+- [CSS tokens](./css-tokens.md)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
 
 ## Components

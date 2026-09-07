@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue';
 import { useDragContainer, useDragStore } from '../../store';
 import SidebarContainer from './sidebar/sidebar-container.vue';
@@ -19,8 +19,13 @@ const emit = defineEmits<{
 }>();
 const box = ref<HTMLDivElement>();
 const root = ref<HTMLDivElement>();
-const { containerId } = defineProps<{ containerId?: string }>();
-const p_container_id = ref(containerId || `draggable-container-${getUUIDv4()}`);
+const props = defineProps<{
+  containerId?: string;
+  mobileBreakpoint?: number;
+}>();
+const p_container_id = ref(
+  props.containerId || `draggable-container-${getUUIDv4()}`,
+);
 const init_done = ref(false);
 const store = useDragContainer(p_container_id.value);
 const dragStore = useDragStore();
@@ -28,7 +33,7 @@ let resizeObserver: ResizeObserver | undefined;
 
 /** Breakpoint for WithMobileHandle — must use root width, not center
  *  (center shrinks when drawers open and would oscillate desktop ↔ mobile). */
-const MOBILE_BREAKPOINT = 600;
+const mobileBreakpoint = computed(() => props.mobileBreakpoint ?? 600);
 
 const drawerStyle = computed(() => {
   const drawer = dragStore.container[p_container_id.value]?.drawer;
@@ -109,7 +114,7 @@ function onResize() {
   store.setParentProps({
     width: clientWidth,
     height: box.value?.clientHeight || 0,
-    isMobile: layoutWidth < MOBILE_BREAKPOINT,
+    isMobile: layoutWidth < mobileBreakpoint.value,
   });
 }
 </script>
@@ -124,14 +129,14 @@ function onResize() {
       class="drawer-slot drawer-slot-left"
       :id="`drawer-left-${p_container_id}`"
     />
-    <div class="draggable-container" ref="box" :id="containerId">
+    <div class="draggable-container" ref="box" :id="p_container_id">
       <template v-if="p_container_id && init_done">
         <SidebarContainer location="left" />
         <SidebarContainer location="right" />
         <SidebarContainer location="top" />
         <SidebarContainer location="bottom" />
       </template>
-      <slot v-if="p_container_id && init_done" :containerId="containerId" />
+      <slot v-if="p_container_id && init_done" :containerId="p_container_id" />
     </div>
     <div
       class="drawer-slot drawer-slot-right"

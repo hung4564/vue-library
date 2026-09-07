@@ -42,7 +42,7 @@ export const useDragStore = defineStore('drag:core', () => {
   };
 });
 
-function getStoreContainer(containerId: string, id: string) {
+function getStoreContainer(id: string) {
   const store = useDragStore();
   const container = store.container[id];
   if (!container) {
@@ -66,7 +66,7 @@ export const useSidebarItem = (containerId: string) => {
   const container = store.container[containerId];
 
   function setShowSideBarId(itemId: string, show: boolean) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     const action = p_store.actions[itemId];
     if (!action || !('location' in action)) {
       return;
@@ -86,12 +86,13 @@ export const useSidebarItem = (containerId: string) => {
   }
 
   return {
-    getStoreContainer: (id: string) => getStoreContainer(containerId, id),
+    getStoreContainer: (id: string) => getStoreContainer(id),
     registerSideBar(id: string, location: LocationSideBar) {
-      getStoreContainer(containerId, containerId).sideBar[location].items.push(
-        id,
-      );
-      notify(['drag:core', 'container', containerId]);
+      const layer = getStoreContainer(containerId).sideBar[location];
+      if (!layer.items.includes(id)) {
+        layer.items.push(id);
+        notify(['drag:core', 'container', containerId]);
+      }
     },
     registerSideBarShow(id: string, show: boolean) {
       setShowSideBarId(id, show);
@@ -113,7 +114,7 @@ export const useSidebarItem = (containerId: string) => {
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
-      getStoreContainer(containerId, containerId).actions[id] = action;
+      getStoreContainer(containerId).actions[id] = action;
       notify(['drag:core', 'container', containerId]);
     },
     moveSideBarLocation(id: string, next: LocationSideBar) {
@@ -141,7 +142,7 @@ export const useSidebarItem = (containerId: string) => {
 
 export const useDrawerItem = (containerId: string) => {
   function ensureDrawer(location: LocationSideBar) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     if (!p_store.drawer) {
       p_store.drawer = createEmptyDrawer();
     }
@@ -212,7 +213,7 @@ export const useDrawerItem = (containerId: string) => {
       notify(['drag:core', 'container', containerId]);
     },
     getDrawer() {
-      return getStoreContainer(containerId, containerId).drawer;
+      return getStoreContainer(containerId).drawer;
     },
     getDrawerForLocation(location: LocationSideBar) {
       return ensureDrawer(location).layer;
@@ -287,12 +288,12 @@ export const useDragItem = (containerId: string) => {
   }
 
   function getGroup(group: ItemGroupKey) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     return p_store[group];
   }
 
   function updateGroupIndex(group: ItemGroupKey) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     p_store[group].show.forEach((itemId, idx) => {
       const action = p_store.actions[itemId];
       if (action) action.setZIndex(idx + 10);
@@ -301,21 +302,24 @@ export const useDragItem = (containerId: string) => {
   }
 
   return {
-    getStoreContainer: (id: string) => getStoreContainer(containerId, id),
+    getStoreContainer: (id: string) => getStoreContainer(id),
     registerItem(id: string, type?: string) {
       const group = itemTypeToGroup(type);
-      getGroup(group).items.push(id);
-      notify(['drag:core', 'container', containerId]);
+      const layer = getGroup(group);
+      if (!layer.items.includes(id)) {
+        layer.items.push(id);
+        notify(['drag:core', 'container', containerId]);
+      }
     },
     registerAction(id: string, action: ContainerStoreAction) {
-      getStoreContainer(containerId, containerId).actions[id] = action;
+      getStoreContainer(containerId).actions[id] = action;
       notify(['drag:core', 'container', containerId]);
     },
     registerOtherAction(
       id: string,
       action: Partial<ContainerStoreOtherAction>,
     ) {
-      const p_store = getStoreContainer(containerId, containerId);
+      const p_store = getStoreContainer(containerId);
       p_store.actions[id] = { ...p_store.actions[id], ...action };
       notify(['drag:core', 'container', containerId]);
     },
@@ -499,4 +503,38 @@ export const useDragContainer = (containerId: string) => {
       notify(['drag:core', 'container', containerId]);
     },
   };
+};
+
+/** Imperative open/close/z-order by stable item id. */
+export const useDragCommands = (containerId: string) => {
+  const items = useDragItem(containerId);
+  const containerApi = useDragContainer(containerId);
+
+  function getAction(id: string) {
+    return containerApi.getItemAction(id);
+  }
+
+  function open(id: string) {
+    const action = getAction(id);
+    if (!action) return;
+    if (action.open) action.open();
+    else action.setShow(true);
+  }
+
+  function close(id: string) {
+    const action = getAction(id);
+    if (!action) return;
+    if (action.close) action.close();
+    else action.setShow(false);
+  }
+
+  function setFront(id: string) {
+    items.setToFront(id);
+  }
+
+  function setBack(id: string) {
+    items.setToBack(id);
+  }
+
+  return { open, close, setFront, setBack, getAction };
 };

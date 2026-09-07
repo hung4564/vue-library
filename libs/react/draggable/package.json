@@ -18,6 +18,7 @@
   "types": "./index.d.ts",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./index.cjs"
     },
@@ -26,7 +27,7 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/draggable": "1.0.1",
+    "@hungpvq/draggable": "~1.0.1",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-store": ">=0.0.1",
     "@mdi/js": "^7.4.47",
@@ -34,8 +35,7 @@
     "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-rnd": "^10.0.0",
-    "@vitejs/plugin-react": "^4.2.0"
+    "react-rnd": "^10.0.0"
   },
   "peerDependenciesMeta": {
     "react": {

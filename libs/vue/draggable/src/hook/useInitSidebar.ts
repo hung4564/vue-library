@@ -11,8 +11,9 @@ export function useInitSidebar(
     type: 'item-sidebar';
     location: LocationSideBar | Ref<LocationSideBar>;
   },
+  stableId?: string,
 ) {
-  const itemId = ref(`draggable-item-${getUUIDv4()}`);
+  const itemId = ref(stableId || `draggable-item-${getUUIDv4()}`);
   const zIndex = ref(0);
   function setZIndex(value: number) {
     zIndex.value = value;

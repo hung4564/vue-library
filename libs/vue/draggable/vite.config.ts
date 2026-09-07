@@ -41,6 +41,7 @@ export default defineConfig({
         '@hungpvq/shared-store',
         'vue-draggable-resizable',
         'lodash',
+        'lodash/debounce',
       ],
       output: {
         assetFileNames: 'style.css',

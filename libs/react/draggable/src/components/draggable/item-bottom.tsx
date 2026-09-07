@@ -22,6 +22,7 @@ import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { MapButton } from '../parts/MapButton';
 
 export interface DraggableItemBottomProps {
+  id?: string;
   show?: boolean;
   expand?: boolean;
   title?: string;
@@ -32,6 +33,7 @@ export interface DraggableItemBottomProps {
   disabledHeader?: boolean;
   disabledClose?: boolean;
   disabledOrder?: boolean;
+  highlightMs?: number;
   onUpdateShow?: (value: boolean) => void;
   onClose?: () => void;
   onUpdateExpand?: (value: boolean) => void;
@@ -40,6 +42,7 @@ export interface DraggableItemBottomProps {
 }
 
 export function DraggableItemBottom({
+  id: stableId,
   show: propShow,
   expand: propExpand,
   title = '',
@@ -49,6 +52,7 @@ export function DraggableItemBottom({
   disabledHeader,
   disabledClose,
   disabledOrder,
+  highlightMs,
   onUpdateShow,
   onClose,
   onUpdateExpand,
@@ -63,11 +67,17 @@ export function DraggableItemBottom({
       close: onClose,
     },
   );
-  const { zIndex, itemId } = useInitItem(containerId, show, setShow, {
-    title,
-    type: 'item-bottom',
-  });
-  const { isHighlight, setHighLight } = useHighlight();
+  const { zIndex, itemId } = useInitItem(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-bottom',
+    },
+    stableId,
+  );
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,

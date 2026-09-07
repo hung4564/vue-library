@@ -1,4 +1,12 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { clampBounds, focusFirst, trapTabKey } from '@hungpvq/draggable';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { Rnd } from 'react-rnd';
 import { useContainerId } from '../../context/ContainerContext';
@@ -6,6 +14,7 @@ import {
   ShareCardComponent,
   ShareHeaderComponent,
   useComponent,
+  useContainerOrder,
   useHighlight,
   useIcon,
   useInitAction,
@@ -38,6 +47,7 @@ const RESIZE_KEYS = [
 ];
 
 export interface DraggableModalProps {
+  id?: string;
   show?: boolean;
   title?: string;
   containerId?: string;
@@ -45,6 +55,7 @@ export interface DraggableModalProps {
   componentCardHeader?: ShareHeaderComponent;
   disabledHeader?: boolean;
   disabledClose?: boolean;
+  highlightMs?: number;
   sticks?: string[];
   top?: number;
   left?: number;
@@ -61,11 +72,18 @@ export interface DraggableModalProps {
   resizable?: boolean;
   onUpdateShow?: (value: boolean) => void;
   onClose?: () => void;
+  onBoundsChange?: (bounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
 }
 
 export function DraggableModal({
+  id: stableId,
   show: propShow,
   title = '',
   containerId: propContainerId,
@@ -73,6 +91,7 @@ export function DraggableModal({
   componentCardHeader,
   disabledHeader,
   disabledClose,
+  highlightMs,
   sticks = ['bl', 'br', 'tl', 'tr'],
   top,
   left,
@@ -89,6 +108,7 @@ export function DraggableModal({
   resizable = true,
   onUpdateShow,
   onClose,
+  onBoundsChange,
   children,
   extraBtn,
 }: DraggableModalProps) {
@@ -100,17 +120,25 @@ export function DraggableModal({
       close: onClose,
     },
   );
-  const { itemId, zIndex } = useInitItem(containerId, show, setShow, {
-    title,
-    type: 'item-modal',
-  });
+  const { itemId, zIndex } = useInitItem(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-modal',
+    },
+    stableId,
+  );
   const stackZIndex = MODAL_Z_INDEX + zIndex;
-  const { isHighlight, setHighLight } = useHighlight();
+  const titleId = `draggable-modal-title-${itemId}`;
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,
     close,
   });
+  const { onToFront } = useContainerOrder(containerId, itemId);
   const [initDone, setInitDone] = useState(false);
   const [layerEl, setLayerEl] = useState<HTMLElement | null>(null);
   const [layerWidth, setLayerWidth] = useState(0);
@@ -119,6 +147,16 @@ export function DraggableModal({
   const [p_width, setPWidth] = useState(propWidth || 480);
   const [p_x, setPX] = useState(0);
   const [p_y, setPY] = useState(0);
+  const modalRootRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const boundsRef = useRef({
+    x: 0,
+    y: 0,
+    width: propWidth || 480,
+    height: propHeight || 320,
+  });
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  onBoundsChangeRef.current = onBoundsChange;
 
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
     componentCard,
@@ -143,6 +181,19 @@ export function DraggableModal({
     return out;
   }, [sticks, resizable]);
 
+  const emitBounds = useCallback(
+    (x: number, y: number, width: number, height: number) => {
+      const next = clampBounds(x, y, width, height, layerWidth, layerHeight);
+      setPX(next.x);
+      setPY(next.y);
+      setPWidth(next.width);
+      setPHeight(next.height);
+      boundsRef.current = next;
+      onBoundsChangeRef.current?.(next);
+    },
+    [layerWidth, layerHeight],
+  );
+
   const handleResize = useCallback(
     (
       _e: unknown,
@@ -161,10 +212,14 @@ export function DraggableModal({
 
   const handleDragStop = useCallback(
     (_e: unknown, data: { x: number; y: number }) => {
-      setPX(data.x);
-      setPY(data.y);
+      emitBounds(
+        data.x,
+        data.y,
+        boundsRef.current.width,
+        boundsRef.current.height,
+      );
     },
-    [],
+    [emitBounds],
   );
 
   const handleResizeStop = useCallback(
@@ -175,12 +230,14 @@ export function DraggableModal({
       _delta: unknown,
       position: { x: number; y: number },
     ) => {
-      setPWidth(elementRef.offsetWidth);
-      setPHeight(elementRef.offsetHeight);
-      setPX(position.x);
-      setPY(position.y);
+      emitBounds(
+        position.x,
+        position.y,
+        elementRef.offsetWidth,
+        elementRef.offsetHeight,
+      );
     },
-    [],
+    [emitBounds],
   );
 
   const handleClose = useCallback(
@@ -216,6 +273,10 @@ export function DraggableModal({
   useEffect(() => {
     if (!show) {
       setInitDone(false);
+      if (previousFocusRef.current?.focus) {
+        previousFocusRef.current.focus();
+      }
+      previousFocusRef.current = null;
       return;
     }
 
@@ -226,26 +287,15 @@ export function DraggableModal({
 
     const width = propWidth || 480;
     const height = propHeight || 320;
-    setPWidth(width);
-    setPHeight(height);
-
     let x = 0;
     let y = 0;
     const hasX = left != null || right != null;
     const hasY = top != null || bottom != null;
 
-    if (left != null) {
-      x = left;
-    }
-    if (top != null) {
-      y = top;
-    }
-    if (right != null) {
-      x = layerWidth - right - width;
-    }
-    if (bottom != null) {
-      y = layerHeight - bottom - height;
-    }
+    if (left != null) x = left;
+    if (top != null) y = top;
+    if (right != null) x = layerWidth - right - width;
+    if (bottom != null) y = layerHeight - bottom - height;
     if (!hasX && (center || centerX)) {
       x = Math.max(0, (layerWidth - width) / 2);
     }
@@ -253,9 +303,34 @@ export function DraggableModal({
       y = Math.max(0, (layerHeight - height) / 2);
     }
 
-    setPX(x);
-    setPY(y);
+    const next = clampBounds(x, y, width, height, layerWidth, layerHeight);
+    setPWidth(next.width);
+    setPHeight(next.height);
+    setPX(next.x);
+    setPY(next.y);
+    boundsRef.current = next;
     setInitDone(true);
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (modalRootRef.current) focusFirst(modalRootRef.current);
+    }, 0);
+
+    function onKeydown(event: KeyboardEvent) {
+      if (!modalRootRef.current) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShow(false);
+        return;
+      }
+      trapTabKey(modalRootRef.current, event);
+    }
+
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
   }, [
     show,
     layerWidth,
@@ -269,6 +344,7 @@ export function DraggableModal({
     centerY,
     propWidth,
     propHeight,
+    setShow,
   ]);
 
   function onDragging() {
@@ -278,7 +354,15 @@ export function DraggableModal({
   if (!show || !initDone || !layerEl) return null;
 
   return createPortal(
-    <div className="draggable-modal-root" style={{ zIndex: stackZIndex }}>
+    <div
+      ref={modalRootRef}
+      className="draggable-modal-root"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
+      style={{ zIndex: stackZIndex }}
+    >
       {mask && (
         <div className="draggable-modal-mask" onClick={handleMaskClick} />
       )}
@@ -295,12 +379,13 @@ export function DraggableModal({
         onResizeStop={handleResizeStop}
         onDrag={onDragging}
         onDragStop={handleDragStop}
+        onMouseDown={onToFront}
       >
         <Card width={p_width} height={p_height} highlight={isHighlight}>
           <div className="draggable-modal-desktop">
             {!disabledHeader && (
               <Header
-                title={title}
+                title={<span id={titleId}>{title}</span>}
                 preTitle={
                   draggable ? (
                     <div className="draggable-popup-drag-container">

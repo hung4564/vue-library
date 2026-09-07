@@ -81,6 +81,17 @@ describe('useShow / useExpand / useHighlight', () => {
     expect(api().isHighlight.value).toBe(false);
     vi.useRealTimers();
   });
+
+  it('setHighLight respects custom ms', () => {
+    vi.useFakeTimers();
+    const { api } = mountSetup(() => useHighlight(1000));
+    api().setHighLight(true);
+    vi.advanceTimersByTime(999);
+    expect(api().isHighlight.value).toBe(true);
+    vi.advanceTimersByTime(1);
+    expect(api().isHighlight.value).toBe(false);
+    vi.useRealTimers();
+  });
 });
 
 describe('WithMobileHandle', () => {
@@ -134,6 +145,18 @@ describe('init hooks', () => {
     expect(useDragItem(CID).getItemsShow('popup')).toContain(id);
     wrapper.unmount();
     expect(useDragItem(CID).getItems('popup')).not.toContain(id);
+  });
+
+  it('useInitItem uses stable id when provided', async () => {
+    useDragContainer(CID).initContainer();
+    const show = ref(false);
+    const { wrapper, api } = mountSetup(() =>
+      useInitItem(CID, show, { type: 'item-popup', title: 'P' }, 'stable-popup'),
+    );
+    await nextTick();
+    expect(api().itemId.value).toBe('stable-popup');
+    expect(useDragItem(CID).getItems('popup')).toEqual(['stable-popup']);
+    wrapper.unmount();
   });
 
   it('useInitAction registers other actions on mount', async () => {
