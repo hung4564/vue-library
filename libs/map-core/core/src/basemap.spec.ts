@@ -5,7 +5,9 @@ import { INIT_BASEMAPS } from './basemap';
 import type { BaseMapItem } from './types';
 
 class StubAdapter extends BaseMapAdapter {
-  protected async onApplyBaseMap() {}
+  protected async onApplyBaseMap() {
+    return undefined;
+  }
 }
 
 describe('INIT_BASEMAPS', () => {

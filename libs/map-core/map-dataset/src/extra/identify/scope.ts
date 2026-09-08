@@ -1,3 +1,4 @@
+import { UniversalRegistry } from '@hungpvq/map-core';
 import type {
   IDataset,
   IIdentifyView,
@@ -104,12 +105,17 @@ export function findListIdentifyView(
     (IDataset & IIdentifyView) | undefined;
 }
 
-/** True when the list has no identify sibling (layer does not support identify). */
+/**
+ * True when Identify-for-list should stay hidden:
+ * no layer, no identify sibling, no `mapId`, or IdentifyControl not mounted.
+ */
 export function isIdentifyForListMenuHidden(
   ctx: MenuConditionContext,
 ): boolean {
   if (!ctx.layer) return true;
-  return !findListIdentifyView(ctx.layer as IDataset);
+  if (!findListIdentifyView(ctx.layer as IDataset)) return true;
+  if (!ctx.mapId) return true;
+  return !UniversalRegistry.getControl(IDENTIFY_CONTROL.id, ctx.mapId);
 }
 
 /**

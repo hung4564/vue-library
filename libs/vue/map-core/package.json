@@ -26,8 +26,8 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/map-core": "1.0.1",
-    "@hungpvq/vue-draggable": "~1.0.0",
+    "@hungpvq/map-core": "~1.0.1",
+    "@hungpvq/vue-draggable": "~1.1.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-core": ">=0.0.1",

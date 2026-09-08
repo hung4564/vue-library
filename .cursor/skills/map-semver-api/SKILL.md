@@ -15,6 +15,11 @@ Packages are on **1.0.x**. SemVer is strict: breaking → **major**, additive �
 
 1. `libs/map-core/README.md` — full SemVer / breaking checklist
 2. `libs/map-core/core/docs/core/stable-api.md` — Stable allowlist vs experimental
+3. Matching `public-api.spec.ts` for the package you touch (runtime `Object.keys` lock):
+   - `libs/map-core/core/src/public-api.spec.ts`
+   - `libs/map-core/map-dataset/src/public-api.spec.ts`
+   - `libs/vue/map-core/src/public-api.spec.ts` / `libs/vue/map-dataset/src/public-api.spec.ts`
+   - `libs/react/map-core/src/public-api.spec.ts` / `libs/react/map-dataset/src/public-api.spec.ts`
 
 ## Bump flowchart
 
@@ -43,11 +48,17 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 - Peer minimum raises; optional peer → required
 - Vue/React dataset packages **re-export** `@hungpvq/map-dataset` — breaks propagate
 
+## Export lock rule
+
+- Add/remove a **runtime** root export → update Stable **or** Experimental allowlist in that package’s `public-api.spec.ts` **and** `stable-api.md` when Stable.
+- Experimental may change in a **minor**; removing experimental from the barrel is a future **major**.
+
 ## Safe patterns
 
 - Alias: `export { Old as New }`, mark `Old` `@deprecated` for ≥1 minor, remove in a later **major**
 - Prefer adding over renaming protocol strings
-- Bumping `@hungpvq/map-core` major/minor usually requires same-release bump of adapters + dataset + draw (exact/`~` peers). Do not publish core alone.
+- Bumping `@hungpvq/map-core` **minor/major** usually requires same-release bump of adapters + dataset + draw (`~1.0.1` peers allow patch-only drift). Do not publish a breaking/minor core alone.
+- Prefer in-family peers `~1.0.1` (not long-lived exact `1.0.1`).
 
 ## When proposing a change, state
 
@@ -55,4 +66,4 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 2. Stable vs experimental  
 3. Suggested SemVer bump  
 4. Peer / coordinated release needed (yes/no)  
-5. Docs to update (`stable-api.md`, registry docs, README checklist)
+5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist)

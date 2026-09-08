@@ -6,6 +6,20 @@
       "docs": "/map/"
     },
     {
+      "name": "Minimal starter",
+      "package": "Map - Core",
+      "docs": "/map/core/minimal-starter",
+      "category": "Core",
+      "order": 1.1
+    },
+    {
+      "name": "Stable API",
+      "package": "Map - Core",
+      "docs": "/map/core/stable-api",
+      "category": "Core",
+      "order": 1.2
+    },
+    {
       "name": "Map",
       "package": "Map - Core",
       "docs": "/map/core/module/core/",

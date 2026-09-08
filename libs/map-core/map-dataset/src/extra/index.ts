@@ -1,3 +1,4 @@
+export * from './menu';
 export * from './attribute-table';
 export * from './create-control';
 export * from './data';
@@ -8,4 +9,3 @@ export * from './field';
 export * from './geo-export';
 export * from './identify';
 export * from './layer-control';
-export * from './menu';

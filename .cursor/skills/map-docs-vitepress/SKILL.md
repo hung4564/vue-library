@@ -22,10 +22,12 @@ description: >-
 Prefer editing package-local markdown that the sites consume:
 
 - Hub: `libs/map-core/core/docs/index.md`
-- Stable API: `libs/map-core/core/docs/core/stable-api.md`
+- Minimal starter: `libs/map-core/core/docs/core/minimal-starter.md`
+- Stable API: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
 - SemVer checklist: `libs/map-core/README.md`
 - Registry / CSS: docs under `libs/map-core/core/docs/core/` (e.g. registry-controls, css-variables)
 - Module docs: often `index.md` beside modules or under package `docs/`
+- VitePress sidebar entries: `docs/.vitepress/metadata/metadata_map.json`
 
 ## Source-of-truth docs (draggable)
 
@@ -38,7 +40,7 @@ Prefer editing package-local markdown that the sites consume:
 - Adapter experimental barrels: `libs/vue/draggable/src/experimental.ts`, `libs/react/draggable/src/experimental.ts`
 
 Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys, a11y helpers).
-When adding a root export: update `public-api.spec.ts` + `stable-api.md` together.
+When adding a root export: update `public-api.spec.ts` + `stable-api.md` together (map and draggable).
 
 ## Writing guidelines
 
@@ -51,7 +53,8 @@ When adding a root export: update `public-api.spec.ts` + `stable-api.md` togethe
 ## When changing API
 
 1. Update Stable allowlist or SemVer checklist if needed.
-2. For draggable: also update `a11y.md` / `context-menu.md` if focus/ARIA/menu keyboard changes; keep `public-api.spec.ts` in sync.
-3. Update registry/CSS docs if ids or tokens change.
-4. Optionally refresh demo snippets under vitepress demo scripts / linked md.
-5. Run `map:site:dev` or `docs:dev` only when verifying docs (user may not need a full site build every time).
+2. For map: keep `public-api.spec.ts` in sync; add VitePress sidebar rows in `metadata_map.json` for new hub pages (e.g. Stable API, Minimal starter).
+3. For draggable: also update `a11y.md` / `context-menu.md` if focus/ARIA/menu keyboard changes; keep `public-api.spec.ts` in sync.
+4. Update registry/CSS docs if ids or tokens change.
+5. Optionally refresh demo snippets under vitepress demo scripts / linked md.
+6. Run `map:site:dev` or `docs:dev` only when verifying docs (user may not need a full site build every time).

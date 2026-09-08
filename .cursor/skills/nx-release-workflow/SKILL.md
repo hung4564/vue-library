@@ -34,7 +34,7 @@ npm run map:release:local
 
 (`--git-commit=false --git-tag=false` then publish to local registry.)
 
-**Coordination:** if `@hungpvq/map-core` bumps major/minor, bump adapters + dataset + draw in the **same** release when peers are exact/`~`. Do not publish core alone.
+**Coordination:** in-family map peers use `~1.0.1` (patch drift OK). If `@hungpvq/map-core` bumps **minor/major**, bump adapters + dataset + draw in the **same** release. Do not publish a breaking/minor core alone.
 
 ## Draggable group
 

@@ -2,6 +2,8 @@
 
 [`CreateControl`](./module/CreateControl.md) reads GIS files, parses them to GeoJSON, and reprojects CRS **off the main thread** using a Web Worker. You do not start the worker yourself — it starts the first time a file is read, text is pasted, a sample URL is fetched, a layer is created with a CRS other than EPSG:4326, or bbox / auto-style work runs.
 
+**Not required** for [Minimal starter](/map/core/minimal-starter) (inline FeatureCollection / in-memory GeoJSON via `createGeoJsonDataset`). Use this worker when uploading or parsing files / heavy geo.
+
 If the worker cannot start, the same work still runs on the main thread (large files can freeze the UI). Configure the app so the worker file is actually reachable.
 
 Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`, name **GIS**) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).

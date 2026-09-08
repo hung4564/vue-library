@@ -28,6 +28,9 @@
             <RouterLink to="/map-core">Map - Core </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/minimal">Minimal starter </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/worker-sample">Worker - Sample </RouterLink>
           </v-list-item>
           <v-list-item>

@@ -362,7 +362,7 @@ identify.addMenus([
 | [`createMenuItemStyleEdit`](#createmenuitemstyleedit) | `layer` | `extra` (unset → default) | `LIST_VIEW_MENU_ID.layer.styleEdit` | — |
 | [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource) | `layer` | unset | `LIST_VIEW_MENU_ID.layer.info` | — |
 | [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist) | `layer` | `extra` | `LIST_VIEW_MENU_ID.layer.fillBound` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper |
-| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `layer` | `extra` (or `menu`) | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling |
+| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `layer` | `extra` (or `menu`) | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling or without IdentifyControl mounted |
 | [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.moveUp` / `.moveDown` | List UI unless `configDisabledMove()` |
 | [`createMenuItemAddToGroup`](#createmenuitemaddtogroup) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.addToGroup` | List UI unless `configDisabledAddToGroup()` |
 | [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.exportGeo` | List UI unless `configDisabledExport()` |
@@ -549,7 +549,7 @@ Per-layer Identify toggle (same click mode as [`IdentifyControl`](../module/Iden
 
 **Options:** `location?: MenuActionLocation` (`'extra' \| 'menu' \| 'bottom' \| 'prebottom'`), `name`, `icon`, `hidden`, `disabled`, `order`.
 
-**Hidden** when `isIdentifyForListMenuHidden(ctx)` (no identify sibling). Extra `options.hidden` is composed after that check.
+**Hidden** when `isIdentifyForListMenuHidden(ctx)` (no identify sibling, missing `mapId`, or `IdentifyControl` not registered on that map). Extra `options.hidden` is composed after that check.
 
 **Active (primary):** while this list’s identify scope is on, the button/row uses `_active` / primary color. Only one layer is active at a time.
 

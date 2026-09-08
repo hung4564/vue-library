@@ -10,7 +10,7 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/libs/react/map-core',
   plugins: [
-    react(),
+    react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] }),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
@@ -62,6 +62,18 @@ export default defineConfig(() => ({
       output: {
         assetFileNames: 'style.css',
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/react/map-core',
+      provider: 'v8' as const,
     },
   },
 }));

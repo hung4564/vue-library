@@ -23,12 +23,12 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/map-core` | `.` + `./style.css` + `./worker` | maplibre `^5`, turf `^6` |
-| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` | depends on `map-core@1.0.1` |
-| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` often **exact `1.0.1`** |
-| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css` + **full re-export** of `@hungpvq/map-dataset` | peers pin core/dataset |
-| `@hungpvq/vue-map-draw` | `.` + `./style.css` | peer `vue-map-core ~1.0.1`, `map-core 1.0.1` |
+| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` | depends on `map-core@~1.0.1` |
+| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`** |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css` + **full re-export** of `@hungpvq/map-dataset` | peers/deps `~1.0.1` for core/dataset |
+| `@hungpvq/vue-map-draw` | `.` + `./style.css` | peer `vue-map-core ~1.0.1`, `map-core ~1.0.1` |
 
-**Monorepo rule:** bumping `@hungpvq/map-core` major/minor usually requires bumping adapters + dataset + draw in the same release (exact/`~` peers). Do not publish core alone.
+**Monorepo rule:** bumping `@hungpvq/map-core` **minor/major** usually requires bumping adapters + dataset + draw in the same release (`~` peers allow patch-only drift). Do not publish a breaking/minor core alone.
 
 ## 1. Bump decision — quick flowchart
 
@@ -197,10 +197,10 @@ Documented `--map-*` tokens and `style.css` entries:
 
 ## 7. Reducing “everything is breaking”
 
-1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`.
+1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`. Runtime locks: `public-api.spec.ts` in map-core, map-dataset, vue/react map-core, vue/react map-dataset.
 2. Mark the rest `@experimental` / “unsupported in minor” — only effective if the team follows it (barrel `export *` still looks public to consumers).
 3. Prefer subpaths over time (`@hungpvq/map-core/theme`, `.../registry`) and deprecate root deep exports slowly.
-4. Prefer peer ranges like `^1.0.1` over long-lived exact `1.0.1` once release process is stable.
+4. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.
 
 ## 8. Team policy (one line)
 

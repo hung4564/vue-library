@@ -22,6 +22,8 @@ Vue / React map libraries built on MapLibre GL.
 
 ## Getting started in 5 minutes
 
+Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)** (Map + one GeoJSON, no GIS worker).
+
 ### 1. Install
 
 **Vue**
@@ -68,11 +70,11 @@ createDatasetRegistryPlugin().install();
 
 See [Map Core](./core/) for the `Map` snippet and [Map Dataset](./dataset/) for adding a GeoJSON layer (`createGeoJsonDataset` + `useMapDataset`).
 
-Minimal path: `Map` → `LayerControl` → on map load, `addDataset(createGeoJsonDataset({ ... }))`.
+Minimal path: `Map` → `LayerControl` → on map load, `addDataset(createGeoJsonDataset({ ... }))`. Full copy-paste: [Minimal starter](./core/minimal-starter.md).
 
 ### 5. GIS worker (when parsing files / heavy geo)
 
-Add the Vite plugin from `@hungpvq/map-dataset/vite` — details: [Worker](./dataset/worker).
+Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungpvq/map-dataset/vite` when uploading / parsing files — details: [Worker](./dataset/worker).
 
 ## If UI / worker seems broken
 

@@ -39,6 +39,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 ```bash
 npm run map:lint          # lint + typecheck tagged map (exclude demo)
 npm run map:build         # lint + build map libs
+npm run map:test          # vitest tagged map (excl. demo) — includes public-api locks
 npm run map:dev-vue       # nx serve vue-demo-map
 npm run map:dev-react     # nx serve react-demo-map
 npm run map:site:dev      # link docs + VitePress demo-map
@@ -61,7 +62,8 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 ## Docs hubs
 
 - Map SemVer + public surface: `libs/map-core/README.md`
-- Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md`
+- Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*)
+- Map minimal starter: `libs/map-core/core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
 - Map docs index: `libs/map-core/core/docs/index.md`
 - Draggable SemVer + public surface: `libs/draggable/README.md`
 - Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
