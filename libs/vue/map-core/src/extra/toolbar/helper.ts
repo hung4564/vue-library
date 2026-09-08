@@ -14,11 +14,6 @@ import { onMounted, onUnmounted, provide, ref } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { useMapToolbarModule } from './store';
 
-export {
-  createSubscribable,
-  createToolbarControl,
-  createToolbarModule,
-} from '@hungpvq/map-core';
 export type { ToolbarButtonConfig } from '@hungpvq/map-core';
 
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(

@@ -1,9 +1,9 @@
+import type { IDraftRecord, MapDrawOption } from '@hungpvq/map-draw';
 import { useShow } from '@hungpvq/vue-map-core';
-import { Ref, ref } from 'vue';
+import { type Ref, ref } from 'vue';
 import { isDraftOption, useConfigDrawControl } from '../../../store';
-import { IDraftRecord, MapDrawOption } from '../../../types';
 
-export function useDrawDrafts(
+function useDrawDrafts(
   mapId: string,
   drawOptions: Ref<MapDrawOption | undefined>,
   callbacks: {
@@ -67,3 +67,5 @@ export function useDrawDrafts(
     save,
   };
 }
+
+export { useDrawDrafts };

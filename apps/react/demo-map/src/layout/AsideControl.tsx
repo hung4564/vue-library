@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { to: '/registry-control', label: 'UniversalRegistry - Controls' },
   { to: '/dataset-data-management', label: 'Dataset - Data management' },
   { to: '/story-telling', label: 'Story telling' },
+  { to: '/draw', label: 'Draw' },
 ];
 
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {

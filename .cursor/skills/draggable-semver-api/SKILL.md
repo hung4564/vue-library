@@ -46,6 +46,7 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
 - Peer minimum raises; exact `@hungpvq/draggable` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
+- Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
 
 Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
 

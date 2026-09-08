@@ -87,7 +87,10 @@
   }
 }
 .hungpvq-draggable-card {
-  background-color: var(--map-card-bg, var(--card-background-color, rgba(32, 43, 54, 0.9)));
+  background-color: var(
+    --map-card-bg,
+    var(--card-background-color, rgba(32, 43, 54, 0.9))
+  );
   color: var(--map-card-text, var(--card-color, #fff));
   box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
   border-radius: var(--map-radius-sm, 4px);
@@ -144,7 +147,9 @@
 .hungpvq-draggable-card button {
   color: var(--map-card-text, var(--map-text-primary, #333));
 }
-
+.hungpvq-draggable-card .card-container hr.map-divider:first-child {
+  display: none;
+}
 .btn-close {
   overflow: hidden;
   position: absolute;

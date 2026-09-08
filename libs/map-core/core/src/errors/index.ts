@@ -66,12 +66,13 @@ export class MapEventError extends MapError {
     message: string,
     options?: {
       context?: Record<string, any>;
+      recoverable?: boolean;
       cause?: unknown;
     },
   ) {
     super(message, 'MAP_EVENT_ERROR', {
       ...options,
-      recoverable: false,
+      recoverable: options?.recoverable ?? false,
     });
   }
 }

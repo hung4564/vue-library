@@ -105,7 +105,7 @@ export const identifyResolver = new FallbackResolver<IdentifyContext>([
       });
       queueAttributeTableSelectRows(
         mapId,
-        features.map((feature) => String(feature.id)),
+        features.map((feature: { id: string | number }) => String(feature.id)),
       );
     },
   },

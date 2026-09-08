@@ -14,9 +14,9 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 
 | Area | Paths | npm scope examples |
 |------|-------|-------------------|
-| Map engine | `libs/map-core/core`, `libs/map-core/map-dataset` | `@hungpvq/map-core`, `@hungpvq/map-dataset` |
+| Map engine | `libs/map-core/core`, `map-dataset`, `map-draw` | `@hungpvq/map-core`, `map-dataset`, `map-draw` |
 | Vue map | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/vue-map-*` |
-| React map | `libs/react/map-core`, `map-dataset`, `map-devtools` | `@hungpvq/react-map-*` |
+| React map | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/react-map-*` |
 | Draggable | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
 | Share / UI | `libs/share/*`, `libs/ui/core`, `libs/router` | `@hungpvq/shared*`, UI kit |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*` | VitePress sites |
@@ -28,11 +28,13 @@ Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Rele
 1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic).
 2. **Map shell, controls, hooks (Vue)** → `libs/vue/map-*`.
 3. **Same for React** → `libs/react/map-*` (keep parity with Vue when the feature is dual).
-4. **Draw / edit** → `libs/vue/map-draw` only (React draw not shipped yet).
-5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`.
+4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (React Inspect thinner). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
+5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
 
-Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset`.
+Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
+
+**Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
 
 ## Common scripts (root `package.json`)
 

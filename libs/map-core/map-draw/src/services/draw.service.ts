@@ -1,23 +1,14 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { logHelper } from '@hungpvq/map-core';
-import { errorHandler } from '@hungpvq/vue-map-core';
+import { errorHandler, logHelper } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { DrawError } from '../errors';
 import { logger } from '../logger';
-import { DrawSaveFc, DrawSaveFcParams, MapDrawStore } from '../types';
+import type { DrawSaveFc, DrawSaveFcParams, MapDrawStore } from '../types';
 
 /**
  * Service for managing map drawing operations and data conversion.
  */
 export class DrawService {
-  /**
-   * Updates the store state based on the type of feature modification.
-   *
-   * @param store - The draw store.
-   * @param type - The type of modification ('added', 'updated', 'deleted').
-   * @param feature - The feature being modified.
-   * @param mapId - The ID of the map.
-   */
   static setFeature(
     store: MapDrawStore,
     type: 'added' | 'updated' | 'deleted',
@@ -34,13 +25,20 @@ export class DrawService {
     switch (type) {
       case 'added':
         store.state.featuresAdded[feature.id!] = true;
+        delete store.state.featuresUpdated[feature.id!];
+        delete store.state.featuresDeleted[feature.id!];
         break;
       case 'updated':
-        if (store.state.featuresAdded[feature.id!]) return;
+        // Edit flow loads an existing feature via draw.create — prefer update.
+        delete store.state.featuresAdded[feature.id!];
         store.state.featuresUpdated[feature.id!] = true;
         break;
       case 'deleted':
-        if (store.state.featuresAdded[feature.id!]) return;
+        if (store.state.featuresAdded[feature.id!]) {
+          delete store.state.featuresAdded[feature.id!];
+          return;
+        }
+        delete store.state.featuresUpdated[feature.id!];
         store.state.featuresDeleted[feature.id!] = feature;
         break;
 
@@ -72,7 +70,7 @@ export class DrawService {
         if (!feature.properties) {
           feature.properties = {};
         }
-        feature.properties.id = feature.id;
+        feature.properties['id'] = feature.id;
       } else if (drawControlUpdatedFeatures[id_feature]) {
         result.updated[id_feature] = feature;
       }

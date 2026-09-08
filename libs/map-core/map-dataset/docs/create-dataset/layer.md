@@ -16,7 +16,7 @@ createMultiMapboxLayerComponent(name: string, layers?: BaseLayerSpec[])
 import {
   createMultiMapboxLayerComponent,
   LayerSimpleMapboxBuild,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const layer = createMultiMapboxLayerComponent('cities', [
   new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),

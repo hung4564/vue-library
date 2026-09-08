@@ -26,6 +26,8 @@ Prefer editing package-local markdown that the sites consume:
 - Stable API: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
 - SemVer checklist: `libs/map-core/README.md`
 - Registry / CSS: docs under `libs/map-core/core/docs/core/` (e.g. registry-controls, css-variables)
+- **Dataset:** `libs/map-core/map-dataset/docs` → junction via `scripts/link-docs.js` → `/map/dataset/`
+- **Draw:** `libs/map-core/map-draw/docs` → junction → `/map/draw/` (Inspect is a **section** under draw hub, not a separate InspectControl.md page)
 - Module docs: often `index.md` beside modules or under package `docs/`
 - VitePress sidebar entries: `docs/.vitepress/metadata/metadata_map.json`
 
@@ -45,6 +47,7 @@ When adding a root export: update `public-api.spec.ts` + `stable-api.md` togethe
 ## Writing guidelines
 
 - Document **control ids**, action types, and import paths consumers need.
+- Split examples: UI/hooks from `@hungpvq/vue-*` / `react-*`; builders/types/services from `@hungpvq/map-core` / `map-dataset` / `map-draw` / `draggable`. Adapters must not re-export core.
 - Mark experimental surfaces clearly; do not promote undocumented barrel exports to Stable without updating `stable-api.md`.
 - Dual-framework features: mention Vue and React entry points / demos when both exist.
 - Prefer short examples over long tutorials; link demos for full apps.

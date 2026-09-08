@@ -18,6 +18,11 @@ import {
 } from '@hungpvq/demo-map-datasets';
 import {
   ComponentManagementControl,
+  IdentifyControl,
+  LayerControl,
+  useMapDataset,
+} from '@hungpvq/vue-map-dataset';
+import {
   createDatasetParDraftDataManagementGeojsonLocalComponent,
   createDatasetParDraftDataManagementListLocalComponent,
   createDatasetPartDataManagementGeojsonLocalComponent,
@@ -28,18 +33,14 @@ import {
   createMenuBuilder,
   createMultiMapboxLayerComponent,
   createRootDataset,
-  IdentifyControl,
-  LayerControl,
   LayerSimpleMapboxBuild,
-  useMapDataset,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import {
-  DrawControl,
   DrawingType,
   getFirstFeatureByMap,
-  MapDrawOption,
-  useMapDraw,
-} from '@hungpvq/vue-map-draw';
+  type MapDrawOption,
+} from '@hungpvq/map-draw';
+import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import { mdiPencil } from '@mdi/js';
 import type { Feature } from 'geojson';
 import { ComponentPublicInstance, ref } from 'vue';

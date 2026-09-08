@@ -3,13 +3,13 @@
 How a dataset appears in `LayerControl`. Prefer the builder.
 
 ```ts
+import { createMultiLegend } from '@hungpvq/vue-map-dataset';
 import {
   createDatasetPartListViewUiComponent,
   createDatasetPartListViewUiComponentBuilder,
   createMenuBuilder,
   createMenuItemToggleShow,
-  createMultiLegend,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import { mdiDownload } from '@mdi/js';
 
 // Shortcut (defaults: opacity menu, move up/down, add to group)
@@ -72,7 +72,7 @@ List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **
 import {
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartSubListViewUiComponentBuilder,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const group = createDatasetPartGroupSubListViewUiComponentBuilder('Group')
   .setColor('#00bfff')

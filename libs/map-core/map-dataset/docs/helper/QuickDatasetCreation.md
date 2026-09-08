@@ -5,7 +5,10 @@ One-call helpers that build a root dataset (source + list UI + layer).
 For a full Map + LayerControl walkthrough with **inline GeoJSON and no GIS worker**, see [Minimal starter](/map/core/minimal-starter).
 
 ```typescript
-import { createGeoJsonDataset, createRasterUrlDataset } from '@hungpvq/vue-map-dataset';
+import {
+  createGeoJsonDataset,
+  createRasterUrlDataset,
+} from '@hungpvq/map-dataset';
 
 const points = createGeoJsonDataset({
   name: 'Cities',
@@ -38,7 +41,7 @@ Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartB
 To change the fit target later without rebuilding the menu:
 
 ```ts
-import { findSiblingOrNearestLeaf } from '@hungpvq/vue-map-dataset';
+import { findSiblingOrNearestLeaf } from '@hungpvq/map-dataset';
 
 const bound = findSiblingOrNearestLeaf(
   list,

@@ -24,7 +24,7 @@ import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
   createMenuBuilder,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import { mdiPen, mdiStar } from '@mdi/js';
 
 function createLayerWithMenus() {
@@ -76,7 +76,10 @@ type MenuConditionContext = {
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { Map } from '@hungpvq/vue-map-core';
-import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
+import {
+  LayerControl,
+  useMapDataset,
+} from '@hungpvq/vue-map-dataset';
 import type { MapSimple } from '@hungpvq/map-core';
 
 const menuUi = reactive({
@@ -138,7 +141,10 @@ provideMenuConditionContext(() => {
 ```tsx
 import { useState } from 'react';
 import { Map } from '@hungpvq/react-map-core';
-import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
+import {
+  LayerControl,
+  useMapDataset,
+} from '@hungpvq/react-map-dataset';
 import type { MapSimple } from '@hungpvq/map-core';
 
 function Page() {
@@ -207,7 +213,7 @@ List UI also injects `readonly`, `disabledMove`, `disabledCreateGroup`. Do not r
 ## `createMenuBuilder()`
 
 ```ts
-import { createMenuBuilder } from '@hungpvq/vue-map-dataset';
+import { createMenuBuilder } from '@hungpvq/map-dataset';
 
 const item = createMenuBuilder().item() /* .set… */ .build();
 const divider = createMenuBuilder().divider().setLocation('menu').build();
@@ -269,7 +275,7 @@ createDatasetPartListViewUiComponentBuilder('Layer')
 Compose one or more actions for `setClick`.
 
 ```ts
-import { createMenuClickBuilder } from '@hungpvq/vue-map-dataset';
+import { createMenuClickBuilder } from '@hungpvq/map-dataset';
 
 createMenuBuilder()
   .item()
@@ -335,7 +341,7 @@ import {
   createMenuItemAddToGroup,
   createMenuItemExportGeo,
   createMenuItemAttributeTable,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 list.addMenus([
   createMenuItemToggleShow(),
@@ -520,7 +526,7 @@ list.addMenus([
 ]);
 
 // Dynamic: omit bbox, keep a bound part, update later
-import { createDatasetPartBoundComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartBoundComponent } from '@hungpvq/map-dataset';
 
 const bound = createDatasetPartBoundComponent('Cities', [
   105.83, 21.02, 105.85, 21.04,

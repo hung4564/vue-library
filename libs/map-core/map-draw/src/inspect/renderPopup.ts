@@ -57,7 +57,7 @@ function renderFeatures(features: GeoJSONFeatureWithSourceLayer[]) {
     .join('');
 }
 
-function renderPopup(features: GeoJSONFeatureWithSourceLayer[]) {
+export function renderPopup(features: GeoJSONFeatureWithSourceLayer[]) {
   return `<div class="maplibregl-inspect_popup-container"><div class="maplibregl-inspect_popup" style="max-height: 200px; overflow-y: auto;">${renderFeatures(
     features,
   )}</div></div>`;

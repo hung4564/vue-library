@@ -10,7 +10,16 @@ import {
   WithMapPropType,
   type MapSimple,
 } from '@hungpvq/map-core';
-import { INSPECT_CONTROL_LOCALE } from '../../locale';
+import {
+  brightColor,
+  generateColoredLayers,
+  generateInspectStyle,
+  getSourcesFromMap,
+  isInspectStyle,
+  markInspectStyle,
+  renderPopup as _renderPopup,
+  type InspectStyleSpecification,
+} from '@hungpvq/map-draw';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -32,15 +41,7 @@ import {
   type StyleSpecification,
 } from 'maplibre-gl';
 import { ref, shallowRef } from 'vue';
-import { brightColor } from './colors';
-import {
-  getSourcesFromMap,
-  isInspectStyle,
-  markInspectStyle,
-  type InspectStyleSpecification,
-} from './inspect';
-import _renderPopup from './renderPopup';
-import { generateColoredLayers, generateInspectStyle } from './stylegen';
+import { INSPECT_CONTROL_LOCALE } from '../../locale';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

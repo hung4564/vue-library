@@ -33,7 +33,8 @@ Returns `{ componentKey: 'legend-color' | 'legend-text' | 'legend-linear', attr:
 Several legends stacked.
 
 ```ts
-import { createMultiLegend, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/vue-map-dataset';
+import { createMultiLegend } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 
 const list = createDatasetPartListViewUiComponentBuilder('Layer')
   .configInitShowLegend()

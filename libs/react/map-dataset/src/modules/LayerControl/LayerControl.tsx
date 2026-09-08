@@ -33,6 +33,7 @@ import { useMapDataset } from '../../store';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
 import { LayerList } from './LayerList';
+import { warnIfDatasetRegistryMissing } from './warn-registry';
 
 type LayerControlSlot = ReactNode | ((props: { mapId: string }) => ReactNode);
 
@@ -61,6 +62,11 @@ export function LayerControl(props: LayerControlProps) {
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
+
+  useEffect(() => {
+    warnIfDatasetRegistryMissing();
+  }, []);
+
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapLayerControl',
     panelKind: 'sidebar',

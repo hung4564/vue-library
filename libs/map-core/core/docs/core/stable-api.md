@@ -43,7 +43,7 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 | Area | Stable surface |
 |------|----------------|
 | Service | `DatasetService` (`addDataset` / `removeDataset` / `getAllComponentsByType` — dependency order) |
-| Builders | `createGeoJsonDataset`, `createRasterUrlDataset`, other documented `create*Dataset` / menu helpers (many still Experimental until promoted) |
+| Builders | `createGeoJsonDataset`, `createRasterUrlDataset`, `LayerSimpleMapboxBuild` |
 | Protocol | `IDataset`, list/identify capability interfaces used by UI; `MenuContextSource`, `MenuItemProps`, … via explicit `export type` |
 | Menu ids | `LIST_VIEW_MENU_ID`, `LIST_VIEW_MENU_COMPONENT_KEY` **string values** |
 | Vite | `mapDatasetGisWorker()` / `@hungpvq/map-dataset/vite` |
@@ -53,7 +53,7 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 | Area | Stable surface |
 |------|----------------|
 | Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents) |
-| Hooks | `useMap`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
+| Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
 | Registry | Framework `UniversalRegistry` (inherits core + `registerComponent*`), `RegistryItem` |
 | Controls | Documented ModuleContainer controls and their **control ids** / action types (see [registry-controls](./registry-controls.md)): BaseMap*, Theme, Zoom, Home, Identify-related hosts live on dataset packages, etc. |
 | Types | First-party: `WithShowProps` (from `useShow`); prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
@@ -63,8 +63,28 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap | `createDatasetRegistryPlugin()` |
-| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl` |
-| GIS re-exports | Stable symbols of `@hungpvq/map-dataset` (`DatasetService`, `createGeoJsonDataset`, `LIST_VIEW_MENU_*`, …) |
+| Hooks | `useMapDataset` |
+| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl`, `CreateControl`, `ComponentManagementControl` |
+| Core boundary | Builders, services, protocols, locale bags, menu ids, and shared types are imported directly from `@hungpvq/map-dataset` |
+
+## `@hungpvq/map-draw`
+
+| Area | Stable surface |
+|------|----------------|
+| Service | `DrawService` (`setFeature` / `convertData` / `saveDraw` / `clearDraw`) |
+| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption` (via `export type`) |
+| Styles / query | `getDrawStyles`, `getFeatureByMap`, `getFirstFeatureByMap` |
+
+## `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`
+
+| Area | Stable surface |
+|------|----------------|
+| Shell | `DrawControl`, `InspectControl` (React Inspect is style-toggle thin), `useMapDraw`, `isDraftOption` |
+| Control ids | `mapDrawDraftList`, `mapInspectControl` |
+| Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
+| Core boundary | Protocol/types/helpers from `@hungpvq/map-draw` — adapters do **not** re-export core |
+
+Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/` (Inspect is a section under draw, not a separate docs page).
 
 ## CSS
 

@@ -8,7 +8,8 @@ The `ModuleContainer` provides a standardized way to create custom map controls 
 
 ```vue
 <script setup lang="ts">
-import { ModuleContainer, MapControlButton, WithMapPropType, defaultMapProps } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
 import { useMap } from '@hungpvq/vue-map-core';
 
 const props = withDefaults(
@@ -54,8 +55,8 @@ import {
   MapControlButton,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 
 type Props = WithMapPropType & {
   title?: string;
@@ -94,7 +95,8 @@ function CustomControl(props: Props) {
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ModuleContainer, MapControlButton, WithMapPropType, defaultMapProps } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
 import { useMap } from '@hungpvq/vue-map-core';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -143,8 +145,8 @@ import {
   MapControlButton,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 
 function SettingsControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
@@ -194,7 +196,8 @@ function SettingsControl(props: WithMapPropType) {
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ModuleContainer, MapControlButton, WithMapPropType, defaultMapProps } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
 import { useMap } from '@hungpvq/vue-map-core';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -277,8 +280,8 @@ import {
   MapControlButton,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 
 function LayerControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
@@ -379,7 +382,8 @@ This example demonstrates how to use a draggable popup inside a custom map contr
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ModuleContainer, MapControlButton, WithMapPropType, defaultMapProps } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
 import { useMap } from '@hungpvq/vue-map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 
@@ -419,8 +423,8 @@ import {
   MapControlButton,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 
 function DraggablePopupControl(props: WithMapPropType) {

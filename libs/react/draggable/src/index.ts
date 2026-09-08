@@ -81,30 +81,6 @@ export { useContainerReactive, useStoreReactive } from './store/useStoreReactive
 // --- Stable: React context ---
 export { ContainerProvider, useContainerId } from './context';
 
-// --- Stable: type re-exports from core ---
-export type {
-  BottomConfig,
-  ContainerStore,
-  ContainerStoreAction,
-  ContainerStoreOtherAction,
-  DrawerConfig,
-  InitOption,
-  ItemGroupConfig,
-  ItemGroupKey,
-  ItemLayoutState,
-  LocationSideBar,
-  PanelSnapshot,
-  SidebarConfig,
-} from '@hungpvq/draggable';
-export {
-  createEmptyBottom,
-  createEmptyContainer,
-  createEmptyDrawer,
-  createEmptyItemGroup,
-  createEmptySideBar,
-  itemTypeToGroup,
-} from '@hungpvq/draggable';
-
 // --- Experimental ---
 export {
   ContextMenu,

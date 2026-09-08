@@ -1,14 +1,32 @@
-import draggable from '../../libs/draggable/core/package.json';
-import reactDraggable from '../../libs/react/draggable/package.json';
-import reactMapCore from '../../libs/react/map-core/package.json';
-import reactMapDataset from '../../libs/react/map-dataset/package.json';
-import shared from '../../libs/share/shared/package.json';
-import sharedCore from '../../libs/share/core/package.json';
-import sharedFile from '../../libs/share/file/package.json';
-import vueDraggable from '../../libs/vue/draggable/package.json';
-import vueMapCore from '../../libs/vue/map-core/package.json';
-import vueMapDataset from '../../libs/vue/map-dataset/package.json';
-import vueMapDraw from '../../libs/vue/map-draw/package.json';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * Read package.json at runtime so Nx does not treat docs as a static
+ * dependency of each published library (avoids source ↔ lib cycles).
+ */
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
+
+function readPkg(relativePath: string): { name: string; version: string } {
+  const raw = readFileSync(join(repoRoot, relativePath), 'utf8');
+  const pkg = JSON.parse(raw) as { name: string; version: string };
+  return { name: pkg.name, version: pkg.version };
+}
+
+const draggable = readPkg('libs/draggable/core/package.json');
+const reactDraggable = readPkg('libs/react/draggable/package.json');
+const reactMapCore = readPkg('libs/react/map-core/package.json');
+const reactMapDataset = readPkg('libs/react/map-dataset/package.json');
+const shared = readPkg('libs/share/shared/package.json');
+const sharedCore = readPkg('libs/share/core/package.json');
+const sharedFile = readPkg('libs/share/file/package.json');
+const vueDraggable = readPkg('libs/vue/draggable/package.json');
+const vueMapCore = readPkg('libs/vue/map-core/package.json');
+const vueMapDataset = readPkg('libs/vue/map-dataset/package.json');
+const mapDraw = readPkg('libs/map-core/map-draw/package.json');
+const reactMapDraw = readPkg('libs/react/map-draw/package.json');
+const vueMapDraw = readPkg('libs/vue/map-draw/package.json');
 
 export type PackageVersion = {
   name: string;
@@ -25,6 +43,8 @@ export const packageVersions: Record<string, string> = {
   [vueMapCore.name]: vueMapCore.version,
   [vueMapDataset.name]: vueMapDataset.version,
   [vueMapDraw.name]: vueMapDraw.version,
+  [mapDraw.name]: mapDraw.version,
+  [reactMapDraw.name]: reactMapDraw.version,
   [reactMapCore.name]: reactMapCore.version,
   [reactMapDataset.name]: reactMapDataset.version,
 };
@@ -51,8 +71,10 @@ const mapPackages = pkgs(
   '@hungpvq/vue-map-core',
   '@hungpvq/vue-map-dataset',
   '@hungpvq/vue-map-draw',
+  '@hungpvq/map-draw',
   '@hungpvq/react-map-core',
   '@hungpvq/react-map-dataset',
+  '@hungpvq/react-map-draw',
 );
 
 const isDemoMap = (base: string) => base.includes('demo-map');
@@ -85,7 +107,11 @@ const docVersionGroups: DocVersionGroup[] = [
     match: (path, base) =>
       path.startsWith('/map/draw') ||
       (isDemoMap(base) && path.startsWith('/draw')),
-    packages: pkgs('@hungpvq/vue-map-draw'),
+    packages: pkgs(
+      '@hungpvq/map-draw',
+      '@hungpvq/vue-map-draw',
+      '@hungpvq/react-map-draw',
+    ),
   },
   {
     id: 'map',

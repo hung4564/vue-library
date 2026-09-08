@@ -7,7 +7,3 @@ export { default as LayerItemIcon } from './layer-item-icon.vue';
 export { default as AddToGroup } from './add-to-group.vue';
 export { default as ExportGeo } from './export-geo.vue';
 export { default as IdentifyLayerAction } from './identify.vue';
-export type {
-  WithLayerItemActionType,
-  WithLayerItemMenuComponentType,
-} from './types';

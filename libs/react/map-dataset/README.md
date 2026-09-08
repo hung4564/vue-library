@@ -33,9 +33,11 @@ import { Map } from '@hungpvq/react-map-core';
 import {
   LayerControl,
   useMapDataset,
+} from '@hungpvq/react-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/react-map-dataset';
+} from '@hungpvq/map-dataset';
 
 function Page() {
   function onMapLoaded(map: MapSimple) {
@@ -60,6 +62,9 @@ Pass app state into menu conditions:
 ```
 
 Or wrap with `MenuConditionProvider` from `@hungpvq/react-map-dataset`.
+
+Import dataset builders, services, protocols, locale bags, and shared types from
+`@hungpvq/map-dataset`.
 
 ## License
 

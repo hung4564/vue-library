@@ -226,7 +226,7 @@ export const DraggableGroupList = forwardRef<
       setTree((prev) => {
         let next = [...prev];
 
-        if (from.kind === to.kind && (from.kind === 'root' || from.groupId === to.groupId)) {
+        if (from.kind === to.kind && (from.kind === 'root' || (from.kind === 'group' && to.kind === 'group' && from.groupId === to.groupId))) {
           if (from.kind === 'root') {
             next = reorder(next, oldIndex, newIndex);
           } else {

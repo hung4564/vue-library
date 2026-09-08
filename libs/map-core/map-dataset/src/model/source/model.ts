@@ -21,12 +21,12 @@ export function createDatasetPartGeojsonSourceComponent(
 
   return createNamedComponent('GeojsonSourceComponent', {
     ...base,
-    getMapboxSource: () => ({
-      type: 'geojson' as const,
-      data: base.getData() || {
+    getMapboxSource: (): GeoJSONSourceSpecification => ({
+      type: 'geojson',
+      data: (base.getData() ?? {
         type: 'FeatureCollection',
         features: [],
-      },
+      }) as GeoJSONSourceSpecification['data'],
       ...(options?.promoteId != null ? { promoteId: options.promoteId } : {}),
       ...(options?.generateId ? { generateId: true } : {}),
     }),
@@ -48,7 +48,9 @@ export function createDatasetPartGeojsonSourceComponent(
       ];
     },
     getDataInfo() {
-      const spec = this.getMapboxSource();
+      const spec = this.getMapboxSource() as GeoJSONSourceSpecification & {
+        id?: string;
+      };
       const data = base.getData();
       const stats = getGeojsonStats(data);
 
@@ -94,7 +96,8 @@ export function createDatasetPartRasterSourceComponent(
 
   return createNamedComponent('RasterSourceComponent', {
     ...base,
-    getMapboxSource: () => base.getData(),
+    getMapboxSource: (): RasterSourceSpecification =>
+      base.getData() as RasterSourceSpecification,
     getFieldsInfo() {
       return [
         { trans: 'map.layer-control.field.name', value: 'name' },
@@ -111,7 +114,9 @@ export function createDatasetPartRasterSourceComponent(
       ];
     },
     getDataInfo() {
-      const raster = this.getMapboxSource();
+      const raster = this.getMapboxSource() as RasterSourceSpecification & {
+        id?: string;
+      };
       return {
         name: base.getName(),
         type: raster.type,
@@ -138,9 +143,9 @@ export function createDatasetPartVectorTileComponent(
   >(name, data);
   return createNamedComponent('GeojsonSourceComponent', {
     ...base,
-    getMapboxSource: () => ({
+    getMapboxSource: (): VectorSourceSpecification => ({
       type: 'vector',
-      ...base.getData(),
+      ...(base.getData() ?? {}),
     }),
 
     getFieldsInfo() {
@@ -158,7 +163,9 @@ export function createDatasetPartVectorTileComponent(
       ];
     },
     getDataInfo() {
-      const spec = this.getMapboxSource();
+      const spec = this.getMapboxSource() as VectorSourceSpecification & {
+        id?: string;
+      };
       return {
         name: base.getName(),
         type: spec.type,

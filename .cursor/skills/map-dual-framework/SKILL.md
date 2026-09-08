@@ -14,10 +14,13 @@ description: >-
 ```
 libs/map-core/core          → engine, store, theme, UniversalRegistry (host)
 libs/map-core/map-dataset   → datasets, menus, identify, style protocol, GIS worker
+libs/map-core/map-draw      → DrawService, DrawingType, styles, inspect helpers
 libs/vue|react/map-core     → Map shell, controls, hooks; extend registry with components
-libs/vue|react/map-dataset  → dataset UI + createDatasetRegistryPlugin(); re-export map-dataset
-libs/vue/map-draw           → draw/edit (Vue only for now)
+libs/vue|react/map-dataset  → dataset UI + createDatasetRegistryPlugin() only
+libs/vue|react/map-draw     → DrawControl / InspectControl (React Inspect thinner)
 ```
+
+**Import rule:** adapters must **not** re-export core. Apps import builders/types/services from `@hungpvq/map-core` / `@hungpvq/map-dataset` / `@hungpvq/map-draw`, and UI/hooks from `@hungpvq/vue-*` or `@hungpvq/react-*`.
 
 Prefer importing `UniversalRegistry` / `runMapControlAction` from `@hungpvq/map-core` in framework-agnostic code.
 
@@ -32,7 +35,16 @@ When adding a dual feature:
 5. Update docs for both demos if user-facing.
 6. Check SemVer (`map-semver-api`) — new control id is usually **minor**; rename is **major**.
 
-Skip React only when the area is explicitly Vue-only (e.g. `vue-map-draw`) or the user scopes to one framework.
+Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup) or the user scopes to one framework.
+
+## Draw checklist
+
+- Docs SoT: `libs/map-core/map-draw/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
+- Control ids (must match Vue ↔ React): `mapDrawDraftList`, `mapInspectControl`.
+- Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DrawingType`, `MAP_DRAW_EVENT`, locales, CSS `./style.css`.
+- React Inspect is intentionally thinner (style toggle); full popup stays Vue-first.
+- Demo route: Vue/React `/#/draw` only (no separate inspect demo page).
+- Peers: `@hungpvq/map-draw`, `@mapbox/mapbox-gl-draw`, `maplibre-gl`.
 
 ## Registry conventions
 
@@ -52,7 +64,7 @@ Skip React only when the area is explicitly Vue-only (e.g. `vue-map-draw`) or th
 Path aliases resolve `@hungpvq/react-*` into `libs/`. Exclude `libs/` from Fast Refresh or named exports break in the browser:
 
 ```ts
-react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })
+react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] });
 ```
 
 Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).

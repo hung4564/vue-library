@@ -15,6 +15,7 @@ export const DRAW_CONTROL_LOCALE = {
         },
         action: {
           fillBound: 'Fill bound',
+          discard: 'Discard',
         },
       },
     },

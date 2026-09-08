@@ -77,6 +77,9 @@
               >Dataset - Data management
             </RouterLink>
           </v-list-item>
+          <v-list-item>
+            <RouterLink to="/draw">Draw </RouterLink>
+          </v-list-item>
         </v-list>
       </DraggableItemSideBar>
     </template>

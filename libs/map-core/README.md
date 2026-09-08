@@ -6,9 +6,10 @@ Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 |---------|-------------|
 | [`@hungpvq/map-core`](./core/) | Engine helpers, store, theme, locale, registry types, workers |
 | [`@hungpvq/map-dataset`](./map-dataset/) | Dataset tree, builders, identify, style, GIS worker |
+| [`@hungpvq/map-draw`](./map-draw/) | DrawService, DrawingType, styles, inspect helpers |
 | [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/) | Map container, controls, hooks |
-| [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI (+ re-exports `@hungpvq/map-dataset`) |
-| [`@hungpvq/vue-map-draw`](../vue/map-draw/) | Draw / edit (**Vue only** for now) |
+| [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores |
+| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (React Inspect thinner) |
 
 **Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Demos:** [Vue](https://hung4564.github.io/demo-map/vue/) · [React](https://hung4564.github.io/demo-map/react/)
 
@@ -24,9 +25,10 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 |---------|----------------|-----------------|
 | `@hungpvq/map-core` | `.` + `./style.css` + `./worker` | maplibre `^5`, turf `^6` |
 | `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` | depends on `map-core@~1.0.1` |
-| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`** |
-| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css` + **full re-export** of `@hungpvq/map-dataset` | peers/deps `~1.0.1` for core/dataset |
-| `@hungpvq/vue-map-draw` | `.` + `./style.css` | peer `vue-map-core ~1.0.1`, `map-core ~1.0.1` |
+| `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
+| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | peers/deps `~1.0.1` for core/dataset |
+| `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
 
 **Monorepo rule:** bumping `@hungpvq/map-core` **minor/major** usually requires bumping adapters + dataset + draw in the same release (`~` peers allow patch-only drift). Do not publish a breaking/minor core alone.
 
@@ -62,7 +64,7 @@ Examples of public surface:
 
 - **`@hungpvq/map-core`:** `MapInitializer`, `MapStoreManager`, `getMap`, `registerMapAccessor`, `UniversalRegistry`, `MapControlHandle`, `runMapControlAction`, `bootstrapMapTheme`, `MAP_THEME_*`, locale bags, services, measurement/print/legend, utils, `MAP_STORE_KEY`, errors, …
 - **`@hungpvq/map-dataset`:** `IDataset`, builders (`createGeoJsonDataset`, …), `DatasetService`, `LayerSimpleMapboxBuild`, `LIST_VIEW_MENU_*`, visitors, style-control configs, …
-- **Framework packages:** controls, hooks, `UniversalRegistry`, `createDatasetRegistryPlugin`, stores — and dataset UI packages **re-export all of** `@hungpvq/map-dataset`
+- **Framework packages:** controls, hooks, `UniversalRegistry`, `createDatasetRegistryPlugin`, and adapter stores. Dataset builders/services/types come directly from `@hungpvq/map-dataset`.
 
 Breaking if you:
 
@@ -130,8 +132,8 @@ Documented `--map-*` tokens and `style.css` entries:
 
 ### G. Cross-package coupling
 
-- [ ] Breaking change in `@hungpvq/map-dataset` also breaks `vue-map-dataset` / `react-map-dataset` (full re-export) — bump majors together
-- [ ] Apps importing builders from `@hungpvq/vue-map-dataset` instead of `@hungpvq/map-dataset` still break when dataset breaks
+- [ ] Breaking change in `@hungpvq/map-dataset` can still require coordinated adapter changes through peer APIs
+- [ ] Apps must import builders/services/types from `@hungpvq/map-dataset`, not framework adapters
 
 ## 3. NON-BREAKING → minor
 

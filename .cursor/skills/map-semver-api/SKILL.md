@@ -18,8 +18,9 @@ Packages are on **1.0.x**. SemVer is strict: breaking → **major**, additive �
 3. Matching `public-api.spec.ts` for the package you touch (runtime `Object.keys` lock):
    - `libs/map-core/core/src/public-api.spec.ts`
    - `libs/map-core/map-dataset/src/public-api.spec.ts`
-   - `libs/vue/map-core/src/public-api.spec.ts` / `libs/vue/map-dataset/src/public-api.spec.ts`
-   - `libs/react/map-core/src/public-api.spec.ts` / `libs/react/map-dataset/src/public-api.spec.ts`
+   - `libs/map-core/map-draw/src/public-api.spec.ts`
+   - `libs/vue/map-core/src/public-api.spec.ts` / `libs/vue/map-dataset/src/public-api.spec.ts` / `libs/vue/map-draw/src/public-api.spec.ts`
+   - `libs/react/map-core/src/public-api.spec.ts` / `libs/react/map-dataset/src/public-api.spec.ts` / `libs/react/map-draw/src/public-api.spec.ts`
 
 ## Bump flowchart
 
@@ -46,7 +47,7 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 - `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values**
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`
 - Peer minimum raises; optional peer → required
-- Vue/React dataset packages **re-export** Stable (+ Experimental) `@hungpvq/map-dataset` symbols by name — breaks propagate
+- Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import those from `@hungpvq/map-core` / `map-dataset` / `map-draw` / `draggable` directly
 
 Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**.
 
@@ -69,4 +70,12 @@ Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may 
 2. Stable vs experimental  
 3. Suggested SemVer bump  
 4. Peer / coordinated release needed (yes/no)  
-5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist)
+5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-core/map-draw/docs`)
+
+## Draw Stable surface (quick)
+
+- Core: `DrawService`, `DrawingType` / `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, draw styles helpers
+- Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` (no core re-exports)
+- Ids: `mapDrawDraftList`, `mapInspectControl`
+- Package CSS entry: `./style.css`
+- Consumer docs: `libs/map-core/map-draw/docs` (Inspect = section in hub, not `InspectControl.md`)

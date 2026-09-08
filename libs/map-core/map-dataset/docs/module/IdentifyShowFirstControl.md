@@ -17,7 +17,10 @@ On map click, identifies the first hit and runs the identify resolver (default: 
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import { IdentifyShowFirstControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
+import {
+  IdentifyShowFirstControl,
+  ComponentManagementControl,
+} from '@hungpvq/vue-map-dataset';
 </script>
 
 <template>

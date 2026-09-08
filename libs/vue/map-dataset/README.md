@@ -45,9 +45,11 @@ import { Map } from '@hungpvq/vue-map-core';
 import {
   LayerControl,
   useMapDataset,
+} from '@hungpvq/vue-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import { ref } from 'vue';
 
 const mapId = ref(getUUIDv4());
@@ -68,12 +70,15 @@ function onMapLoaded(map: MapSimple) {
 - `DatasetControl` / `ComponentManagementControl` (dialogs from menus)
 - **Export** GeoJSON as GeoJSON / KML / CSV / Shapefile
 - **Attribute table** for GeoJSON feature properties
-- Dataset builders (GeoJSON, raster, list UI, highlight, …)
+- Adapter hooks and stores for adding datasets and rendering UI
 - Layer menus: extra / bottom / context menu
 - `setHidden` / `setDisabled` with `menuContext` (Pinia, props, …)
 - `setComponentMenuKey` for custom context-menu UI
 - Built-in **Move up/down** and **Add to group**
 - List-node events: `toggleShow`, `changeOpacity`
+
+Import dataset builders, services, protocols, locale bags, and shared types from
+`@hungpvq/map-dataset`.
 
 ## License
 

@@ -1,8 +1,8 @@
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { DatasetService } from '@hungpvq/map-dataset';
-import { createMapScopedStore, useMapStore } from '@hungpvq/react-map-core';
-import { useCallback, useEffect, useState } from 'react';
+import { createMapScopedStore, getMap } from '@hungpvq/react-map-core';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '../logger';
 
 const KEY = 'dataset' as const;
@@ -25,7 +25,8 @@ export function notifyMapDatasetStore(store: MapLayerStore) {
   notify(store);
 }
 
-export function useMapDatasetStore(mapId: string) {
+/** Imperative store accessor (safe outside React render). */
+export function getMapDatasetStore(mapId: string) {
   return createMapScopedStore<MapLayerStore>(mapId, KEY as string & object, () => {
     logHelper(logger, mapId, 'store').debug('init');
     return {
@@ -38,16 +39,21 @@ export function useMapDatasetStore(mapId: string) {
   });
 }
 
+export function useMapDatasetStore(mapId: string) {
+  return getMapDatasetStore(mapId);
+}
+
 export function useMapDataset(initialMapId?: string) {
+  const mapIdRef = useRef(initialMapId ?? '');
   const [mapId, setMapIdState] = useState(initialMapId ?? '');
   const [version, setVersion] = useState(0);
   const store = useMapDatasetStore(mapId);
-  const { getMap } = useMapStore(mapId);
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     if (initialMapId) {
+      mapIdRef.current = initialMapId;
       setMapIdState(initialMapId);
     }
   }, [initialMapId]);
@@ -61,71 +67,78 @@ export function useMapDataset(initialMapId?: string) {
     };
   }, [mapId, store, bump]);
 
-  const addDataset = useCallback(
-    async (layer: IDataset) => {
-      if (!mapId) return;
-      getMap(async (map: MapSimple) => {
-        await DatasetService.addDataset(store, map, layer);
-        notify(store);
-      });
-    },
-    [mapId, store, getMap],
-  );
+  const setMapId = useCallback((pMapId: string) => {
+    mapIdRef.current = pMapId;
+    setMapIdState(pMapId);
+  }, []);
 
-  const removeDataset = useCallback(
-    async (layer: IDataset) => {
-      if (!mapId) return;
-      getMap(async (map: MapSimple) => {
-        await DatasetService.removeDataset(store, map, layer);
-        notify(store);
-      });
-    },
-    [mapId, store, getMap],
-  );
+  const addDataset = useCallback(async (layer: IDataset) => {
+    const id = mapIdRef.current;
+    if (!id) return;
+    const layerStore = getMapDatasetStore(id);
+    getMap(id, async (map: MapSimple) => {
+      await DatasetService.addDataset(layerStore, map, layer);
+      notify(layerStore);
+    });
+  }, []);
 
-  const removeComponent = useCallback(
-    (component: IDataset) => {
-      if (!mapId) return;
-      getMap(async (map: MapSimple) => {
-        DatasetService.removeComponent(map, component);
-        notify(store);
-      });
-    },
-    [mapId, store, getMap],
-  );
+  const removeDataset = useCallback(async (layer: IDataset) => {
+    const id = mapIdRef.current;
+    if (!id) return;
+    const layerStore = getMapDatasetStore(id);
+    getMap(id, async (map: MapSimple) => {
+      await DatasetService.removeDataset(layerStore, map, layer);
+      notify(layerStore);
+    });
+  }, []);
+
+  const removeComponent = useCallback((component: IDataset) => {
+    const id = mapIdRef.current;
+    if (!id) return;
+    getMap(id, async (map: MapSimple) => {
+      DatasetService.removeComponent(map, component);
+      notify(getMapDatasetStore(id));
+    });
+  }, []);
 
   const getAllComponentsByType = useCallback(
     <T extends IDataset>(targetType: string) => {
-      if (!mapId) return [];
-      return DatasetService.getAllComponentsByType<T>(store, targetType);
+      const id = mapIdRef.current;
+      if (!id) return [];
+      return DatasetService.getAllComponentsByType<T>(
+        getMapDatasetStore(id),
+        targetType,
+      );
     },
-    [mapId, store],
+    [],
   );
 
   const getDatasetIds = useCallback(() => {
-    if (!mapId) return { value: [] as string[] };
-    return store.datasetIds;
-  }, [mapId, store]);
+    const id = mapIdRef.current;
+    if (!id) return { value: [] as string[] };
+    return getMapDatasetStore(id).datasetIds;
+  }, []);
 
   const getDatasets = useCallback(() => {
-    if (!mapId) return [];
-    return store.datasetIds.value.map((id: string) => store.datasets[id]);
-  }, [mapId, store]);
+    const id = mapIdRef.current;
+    if (!id) return [];
+    const layerStore = getMapDatasetStore(id);
+    return layerStore.datasetIds.value.map((did: string) => layerStore.datasets[did]);
+  }, []);
 
   useEffect(() => {
     bump();
   }, [mapId, bump]);
 
   return {
-    setMapId(pMapId: string) {
-      setMapIdState(pMapId);
-    },
+    setMapId,
     getDatasets,
     addDataset,
     getDatasetIds,
     removeComponent,
     removeDataset,
-    getStoreDataset: () => (mapId ? store : undefined),
+    getStoreDataset: () =>
+      mapIdRef.current ? getMapDatasetStore(mapIdRef.current) : undefined,
     getAllComponentsByType,
     datasetVersion: version,
   };

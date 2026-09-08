@@ -4,36 +4,37 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ContextMenu } from '@hungpvq/vue-draggable';
+import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
-  Feature,
-  FeatureCollection,
-  fitBounds,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
-import { DRAW_CONTROL_LOCALE } from '../../locale';
+  DrawingTypeName,
+  getDrawStyles,
+  MapDraw,
+  StaticMode,
+  type MapDrawConfig,
+  type MapDrawOption,
+  type MapDrawOptions,
+} from '@hungpvq/map-draw';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
   useLang,
   useMap,
 } from '@hungpvq/vue-map-core';
-import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw';
+import type { Feature, FeatureCollection } from 'geojson';
 import { computed, nextTick, ref } from 'vue';
-import { DrawingTypeName } from '..';
+import { DRAW_CONTROL_LOCALE } from '../../locale';
 import { isDraftOption } from '../../store';
-import { MapDrawConfig, MapDrawOption } from '../../types';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
-import StaticMode from './models/static-mode';
-import { getDrawStyles } from './theme';
 
 type DrawControlMapboxDrawControls = Omit<
-  MapboxDrawOptions,
+  MapDrawOptions,
   'displayControlsDefault'
 >;
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -46,7 +47,7 @@ const props = withDefaults(
   },
 );
 const drawOptions = ref(props.drawOptions);
-const control = new MapboxDraw({
+const control = new MapDraw({
   displayControlsDefault: false,
   boxSelect: false,
   styles: getDrawStyles(
@@ -55,7 +56,7 @@ const control = new MapboxDraw({
   ),
   ...props.drawControlOptions,
   modes: {
-    ...MapboxDraw.modes,
+    ...MapDraw.modes,
     static: StaticMode,
     ...props.drawControlOptions?.modes,
   },
@@ -72,7 +73,7 @@ function onStart(config: MapDrawOption) {
     map.on('draw.create', onDrawCreated);
     map.on('draw.update', onDrawUpdated);
     map.on('draw.delete', onDrawDeleted);
-    if (!map.hasControl(control as any)) map.addControl(control as any);
+    if (!map.hasControl(control as never)) map.addControl(control as never);
   });
   onSelectMethod('select');
 }
@@ -84,7 +85,7 @@ function close() {
     map.off('draw.create', onDrawCreated);
     map.off('draw.update', onDrawUpdated);
     map.off('draw.delete', onDrawDeleted);
-    if (map.hasControl(control as any)) map.removeControl(control as any);
+    if (map.hasControl(control as never)) map.removeControl(control as never);
   });
 }
 
@@ -125,7 +126,7 @@ function onSelectMethod(value: 'select' | 'delete') {
     case 'select':
     case 'delete':
       addEventClick();
-      control?.changeMode('static');
+      control.changeMode('static');
       break;
     default:
       break;
@@ -133,6 +134,7 @@ function onSelectMethod(value: 'select' | 'delete') {
 }
 function onDraw(type: string) {
   current_feature.value = undefined;
+  method.value = 'create';
   control.changeMode(type);
   isDraw.value = true;
 }
@@ -168,7 +170,7 @@ async function redrawSource() {
 function clearDraw() {
   current_feature.value = undefined;
   if (drawOptions.value?.cleanAfterDone) {
-    control?.deleteAll();
+    control.deleteAll();
   }
   nextTick(() => {
     onSelectMethod('select');
@@ -189,7 +191,10 @@ const contextMenuRef = ref<
 const drawSupportItem = computed(() => {
   return drawSupport.value.map((x) => {
     if (typeof x === 'string') {
-      return { id: x, name: DrawingTypeName[x] || x };
+      return {
+        id: x,
+        name: DrawingTypeName[x as keyof typeof DrawingTypeName] || x,
+      };
     }
     return x;
   });

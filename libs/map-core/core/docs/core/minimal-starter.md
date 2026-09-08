@@ -19,10 +19,10 @@ Same as the hub [Getting started](../index.md): install packages, import `style.
 import type { MapSimple } from '@hungpvq/map-core';
 import { Map } from '@hungpvq/vue-map-core';
 import {
-  createGeoJsonDataset,
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset';
 import type { FeatureCollection } from 'geojson';
 
 const sample: FeatureCollection = {
@@ -58,15 +58,16 @@ function onMapLoaded(map: MapSimple) {
 
 ## React
 
+Call `useMapDataset()` at the component top level (Rules of Hooks). On map load, `setMapId` then `addDataset` — `setMapId` is synchronous so both work in the same callback.
+
 ```tsx
 import type { MapSimple } from '@hungpvq/map-core';
 import { Map } from '@hungpvq/react-map-core';
 import {
-  createGeoJsonDataset,
-  DatasetService,
   LayerControl,
-  useMapDatasetStore,
+  useMapDataset,
 } from '@hungpvq/react-map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset';
 import type { FeatureCollection } from 'geojson';
 
 const sample: FeatureCollection = {
@@ -80,23 +81,23 @@ const sample: FeatureCollection = {
   ],
 };
 
-async function addLayer(map: MapSimple) {
-  const store = useMapDatasetStore(map.id);
-  await DatasetService.addDataset(
-    store,
-    map,
-    createGeoJsonDataset({
-      name: 'Sample points',
-      geojson: sample,
-      type: 'point',
-      color: '#e74c3c',
-    }),
-  );
-}
-
 export function MinimalMap() {
+  const { addDataset, setMapId } = useMapDataset();
+
+  function onMapLoaded(map: MapSimple) {
+    setMapId(map.id);
+    void addDataset(
+      createGeoJsonDataset({
+        name: 'Sample points',
+        geojson: sample,
+        type: 'point',
+        color: '#e74c3c',
+      }),
+    );
+  }
+
   return (
-    <Map onMapLoaded={addLayer}>
+    <Map onMapLoaded={onMapLoaded}>
       <LayerControl position="top-left" show />
     </Map>
   );
@@ -109,5 +110,5 @@ export function MinimalMap() {
 |------|-----|
 | Inline FeatureCollection / small in-memory data | **This page** (no worker) |
 | Upload KML/SHP/CSV, large files, off-main-thread parse | [GIS worker](/map/dataset/worker) + CreateControl |
-| Draw / edit geometries | [Draw](/map/draw/) (**Vue only** for now) |
+| Draw / edit geometries | [Draw](/map/draw/) (Vue full + React mount/save) |
 | Identify / style / attribute table UX | Dataset controls + registry plugin (already required above) |

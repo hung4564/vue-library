@@ -117,12 +117,14 @@ import {
   LayerHighlight,
   ComponentManagementControl,
   useMapDataset,
+} from '@hungpvq/vue-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartGeojsonSourceComponent,
   createMultiMapboxLayerComponent,
   LayerSimpleMapboxBuild,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import { ref } from 'vue';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
@@ -169,9 +171,11 @@ import {
   LayerHighlight,
   ComponentManagementControl,
   useMapDataset,
+} from '@hungpvq/react-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/react-map-dataset';
+} from '@hungpvq/map-dataset';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 

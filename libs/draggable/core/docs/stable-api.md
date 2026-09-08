@@ -46,7 +46,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 | Hooks | Same Stable hook set as Vue (plus React `useContainerSize` module) |
 | React-only | `ContainerProvider` / `useContainerId`, `useStoreReactive`, `useContainerReactive` |
 | Store | Re-exports of Stable core store APIs after React `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
-| Types | Core type/factory re-exports (`createEmpty*`, `itemTypeToGroup`, â€¦) |
+| Types | Import from `@hungpvq/draggable` (adapters do **not** re-export core types/factories) |
 | Props / events | Documented `id`, `show` + `onUpdateShow`, `containerId`, `location`, `mobileBreakpoint`, `highlightMs`, size/position props; popup/modal `onBoundsChange`; controlled bounds sync after mount |
 | Package exports | `.`, `./style.css` |
 

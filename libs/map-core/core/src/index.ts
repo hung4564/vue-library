@@ -266,7 +266,14 @@ export type {
   CrsItem,
   DraftCoordinatesNumber,
   EventBboxRangerHandle,
+  ExprHandlerFn,
+  ExprReturn,
+  IView,
+  IViewProps,
+  IViewSetting,
   IViewSettingField,
+  LayerBranch,
+  LayerObjectKeys,
   LegendElement,
   LegendLayerSpecification,
   MapCompareSetting,
@@ -292,11 +299,13 @@ export type {
   ModuleStrategy,
   Position,
   PrintOption,
+  PropsLegendOption,
   ToolbarButtonConfig,
   ToolbarModuleOptions,
   ToolbarSingleOptions,
   WithMapPropType,
 } from './types';
+export type { FormatType } from './print/ExportFile';
 export type {
   MapControlAction,
   MapControlActionMeta,

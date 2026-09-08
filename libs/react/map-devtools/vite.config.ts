@@ -29,18 +29,31 @@ export default defineConfig(() => ({
       entry: 'src/index.ts',
       name: '@hungpvq/react-map-devtools',
       fileName: 'index',
-      formats: ['es' as const],
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       external: [
         'react',
         'react-dom',
         'react/jsx-runtime',
+        '@hungpvq/map-core',
         '@hungpvq/react-map-core',
         '@hungpvq/shared',
         '@hungpvq/shared-store',
         '@hungpvq/shared-log',
       ],
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/react/map-devtools',
+      provider: 'v8' as const,
     },
   },
 }));

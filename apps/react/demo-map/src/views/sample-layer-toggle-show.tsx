@@ -1,8 +1,6 @@
 import { BaseButton } from '@hungpvq/react-map-core';
-import {
-  ToggleShow,
-  type WithLayerItemActionType,
-} from '@hungpvq/react-map-dataset';
+import { ToggleShow } from '@hungpvq/react-map-dataset';
+import { type WithLayerItemActionType } from '@hungpvq/map-dataset';
 
 /** Per-layer ToggleShow: reuse logic wrapper, only customize the button UI. */
 export function SampleLayerToggleShow(props: WithLayerItemActionType) {

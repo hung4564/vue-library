@@ -6,8 +6,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { lineString, point, polygon } from '@turf/helpers';
-import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import type { Feature, FeatureCollection, Geometry, Position } from 'geojson';
 import { saveAs } from 'file-saver';
 import { useMemo } from 'react';
 
@@ -27,14 +26,38 @@ export interface FieldGeometryProps {
   onClickRemove?: (index: number) => void;
 }
 
+function toPointFeature(coordinates: Position): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Point', coordinates },
+  };
+}
+
+function toLineStringFeature(coordinates: Position[]): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'LineString', coordinates },
+  };
+}
+
+function toPolygonFeature(coordinates: Position[][]): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Polygon', coordinates },
+  };
+}
+
 function toGeometry(coordinates: Coord[]) {
   const validCoords = coordinates.filter(
     (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
   );
   if (!validCoords.length) return undefined;
-  if (validCoords.length === 1) return point(validCoords[0]);
-  if (validCoords.length === 2) return lineString(validCoords);
-  return polygon([[...validCoords, validCoords[0]]]);
+  if (validCoords.length === 1) return toPointFeature(validCoords[0]);
+  if (validCoords.length === 2) return toLineStringFeature(validCoords);
+  return toPolygonFeature([[...validCoords, validCoords[0]]]);
 }
 
 export function FieldGeometry({

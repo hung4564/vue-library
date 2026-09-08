@@ -1,20 +1,17 @@
-import { getUUIDv4 } from '@hungpvq/shared';
 import { logHelper } from '@hungpvq/map-core';
+import {
+  DrawService,
+  MAP_DRAW_EVENT,
+  type IDraftRecord,
+  type MapDrawDraftOption,
+  type MapDrawEvent,
+  type MapDrawOption,
+  type MapDrawStore,
+} from '@hungpvq/map-draw';
 import { createMapScopedStore, useMapMittStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { onMounted, onUnmounted } from 'vue';
 import { logger } from '../logger';
-import { DrawService } from '../services/draw.service';
-import {
-  DrawSaveFc,
-  DrawSaveFcParams,
-  IDraftRecord,
-  MAP_DRAW_EVENT,
-  MapDrawDraftOption,
-  MapDrawEvent,
-  MapDrawOption,
-  MapDrawStore,
-} from '../types';
 
 const KEY = 'draw' as const;
 export const useMapDrawStore = (mapId: string) =>
@@ -26,7 +23,6 @@ export const useMapDrawStore = (mapId: string) =>
         featuresDeleted: {},
         featuresUpdated: {},
       },
-      action: {},
     };
   });
 export function useConfigDrawControl(
@@ -96,9 +92,10 @@ export function isDraftOption(
   return !!opt && 'draft' in opt;
 }
 export const useMapDraw = (mapId: string) => {
-  const emit = useMapMittStore<MapDrawEvent>(mapId);
-  const store = useMapDrawStore(mapId);
   const start = (config: MapDrawOption) => {
+    // Resolve by mapId each call — avoid stale store/mitt after map remount.
+    const store = useMapDrawStore(mapId);
+    const emit = useMapMittStore<MapDrawEvent>(mapId);
     store.config = config;
     logHelper(logger, mapId, 'useMapDraw').debug('start', { config });
     emit.emit(MAP_DRAW_EVENT.START, config);

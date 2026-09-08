@@ -12,7 +12,7 @@ import { DatasetIdentifyPage } from './views/dataset-identify';
 import { DatasetIdentifyPresentPage } from './views/dataset-identify-present';
 import { DatasetListPage } from './views/dataset-list';
 import { DatasetMenuPage } from './views/dataset-menu';
-import { InspectPage } from './views/inspect';
+import { DrawPage } from './views/draw';
 import { MapCorePage } from './views/map-core';
 import { MinimalPage } from './views/minimal';
 import { MapDatasetPage } from './views/map-dataset';
@@ -58,7 +58,7 @@ root.render(
           />
           <Route path="story-telling" element={<StoryTellingPage />} />
           <Route path="story-telling-gps" element={<StoryTellingPage />} />
-          <Route path="inspect" element={<InspectPage />} />
+          <Route path="draw" element={<DrawPage />} />
         </Route>
       </Routes>
     </HashRouter>

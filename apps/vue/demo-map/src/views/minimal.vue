@@ -10,10 +10,10 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import {
-  createGeoJsonDataset,
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset';
 import type { FeatureCollection } from 'geojson';
 import AsideControl from '../layout/aside-control.vue';
 

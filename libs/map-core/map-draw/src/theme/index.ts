@@ -6,6 +6,7 @@ const DEFAULT_WHITE = '#fff';
 type Layer = Omit<LayerSpecification, 'source'> & {
   filter?: FilterSpecification;
 };
+
 export const getDrawStyles = (
   primaryColor = DEFAULT_BLUE,
   activeColor = DEFAULT_ORANGE,

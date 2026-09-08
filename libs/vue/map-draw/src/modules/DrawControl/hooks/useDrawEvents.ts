@@ -1,19 +1,27 @@
 import { EventClick } from '@hungpvq/map-core';
+import {
+  MapDraw,
+  type DrawCreateEvent,
+  type DrawDeleteEvent,
+  type DrawUpdateEvent,
+  type MapDrawOption,
+} from '@hungpvq/map-draw';
 import { useEventMap } from '@hungpvq/vue-map-core';
-import MapboxDraw, {
-  DrawCreateEvent,
-  DrawDeleteEvent,
-  DrawUpdateEvent,
-} from '@mapbox/mapbox-gl-draw';
-import { Feature } from 'geojson';
-import { MapMouseEvent } from 'maplibre-gl';
-import { nextTick, Ref, ref } from 'vue';
+import type { Feature } from 'geojson';
+import type { MapMouseEvent } from 'maplibre-gl';
+import { nextTick, type Ref, ref } from 'vue';
 import { useConfigDrawControl } from '../../../store';
-import { MapDrawOption } from '../../../types';
 
-export function useDrawEvents(
+function ensureFeatureId(feature: Feature): Feature {
+  if (feature.id == null && feature.properties?.['id'] != null) {
+    feature.id = feature.properties['id'] as string | number;
+  }
+  return feature;
+}
+
+function useDrawEvents(
   mapId: string,
-  control: MapboxDraw,
+  control: MapDraw,
   drawOptions: Ref<MapDrawOption | undefined>,
   callbacks: {
     onSelectMethod: (value: 'select' | 'delete') => void;
@@ -33,7 +41,13 @@ export function useDrawEvents(
 
   function onDrawCreated(event: DrawCreateEvent) {
     for (const feature of event.features) {
-      setFeature('added', feature);
+      // Selecting an existing feature for edit also fires draw.create —
+      // treat that as update, not a new add.
+      if (method.value === 'select') {
+        setFeature('updated', ensureFeatureId(feature));
+      } else {
+        setFeature('added', feature);
+      }
     }
   }
 
@@ -62,13 +76,16 @@ export function useDrawEvents(
         { point: [e.lngLat.lng, e.lngLat.lat] },
         callbacks.getContext(),
       ));
-    current_feature.value = feature;
     if (!feature) {
+      current_feature.value = undefined;
       return;
     }
+    ensureFeatureId(feature);
+    current_feature.value = feature;
     switch (method.value) {
       case 'select': {
-        const feature_ids = control?.add({
+        setFeature('updated', feature);
+        const feature_ids = control.add({
           type: 'FeatureCollection',
           features: [feature],
         });
@@ -76,15 +93,24 @@ export function useDrawEvents(
         if (feature_ids && feature_ids.length > 0) {
           isDraw.value = true;
           removeEventClick();
-          control.changeMode('direct_select', {
-            featureId: feature_ids[0],
-          });
+          // mapbox-gl-draw: direct_select does not support Point
+          if (feature.geometry?.type === 'Point') {
+            control.changeMode('simple_select', {
+              featureIds: feature_ids,
+            });
+          } else {
+            control.changeMode('direct_select', {
+              featureId: feature_ids[0],
+            });
+          }
         }
         break;
       }
 
       case 'delete': {
-        control?.delete(control.getSelectedIds());
+        if (feature.id != null) {
+          control.delete(String(feature.id));
+        }
         action.deleteFeature &&
           (await action.deleteFeature(feature, callbacks.getContext()));
         await callbacks.redrawSource();
@@ -105,3 +131,5 @@ export function useDrawEvents(
     method,
   };
 }
+
+export { useDrawEvents };

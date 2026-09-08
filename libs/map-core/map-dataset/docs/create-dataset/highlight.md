@@ -7,7 +7,7 @@ Paint selected / identified features. Needs [`LayerHighlight`](../module/LayerHi
 ## Default
 
 ```ts
-import { createDatasetPartHighlightComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartHighlightComponent } from '@hungpvq/map-dataset';
 
 dataset.add(createDatasetPartHighlightComponent());
 ```
@@ -30,7 +30,7 @@ createDatasetPartFeatureStateHighlightComponent(color = '#E63946', data?, option
 ## Custom animation
 
 ```ts
-import { createDatasetPartCustomAnimateHighlightComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartCustomAnimateHighlightComponent } from '@hungpvq/map-dataset';
 import type { MapSimple } from '@hungpvq/map-core';
 
 createDatasetPartCustomAnimateHighlightComponent<{ color: string; startTime: number }>(

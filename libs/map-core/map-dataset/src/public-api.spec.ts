@@ -15,6 +15,7 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'DatasetService',
   'LIST_VIEW_MENU_COMPONENT_KEY',
   'LIST_VIEW_MENU_ID',
+  'LayerSimpleMapboxBuild',
   'createGeoJsonDataset',
   'createRasterUrlDataset',
 ] as const;
@@ -55,7 +56,6 @@ export const MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'LAYER_INFO_CONTROL_LOCALE',
   'LINE_CONFIG',
   'LayerRasterMapboxBuild',
-  'LayerSimpleMapboxBuild',
   'MAP_CONTEXT_MENU_ID',
   'RASTER_CONFIG',
   'RASTER_XYZ_SAMPLES',

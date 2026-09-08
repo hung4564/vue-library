@@ -1,12 +1,12 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
 import {
-  createGeoJsonDataset,
   LayerControl,
+  useMapDataset,
 } from '@hungpvq/react-map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset';
 import type { FeatureCollection } from 'geojson';
 import { MapPageShell } from '../components/MapPageShell';
-import { addDatasetToMap } from '../data/dataset-utils';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 
@@ -28,10 +28,11 @@ const SAMPLE: FeatureCollection = {
 
 export function MinimalPage() {
   useDatasetRegistry();
+  const { addDataset, setMapId } = useMapDataset();
 
   function onMapLoaded(map: MapSimple) {
-    void addDatasetToMap(
-      map.id,
+    setMapId(map.id);
+    void addDataset(
       createGeoJsonDataset({
         name: 'Sample points',
         geojson: SAMPLE,

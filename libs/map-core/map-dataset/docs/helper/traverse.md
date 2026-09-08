@@ -8,7 +8,7 @@ import {
   findAllComponentsByType,
   findFirstLeafByType,
   findRoot,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 traverseTree(root, (node, level) => {
   console.info(node.getName(), level);

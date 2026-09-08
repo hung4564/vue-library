@@ -35,7 +35,10 @@ When [`MapContextMenuControl`](/map/core/module/MapContextMenuControl) is on the
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
-import { LayerControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
+import {
+  LayerControl,
+  ComponentManagementControl,
+} from '@hungpvq/vue-map-dataset';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 

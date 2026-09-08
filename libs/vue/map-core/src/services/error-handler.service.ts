@@ -2,7 +2,6 @@ import type { ErrorHandlerOptions, MapError } from '@hungpvq/map-core';
 import {
   errorHandler as coreErrorHandler,
   logHelper,
-  MapErrorHandler,
 } from '@hungpvq/map-core';
 import { logger } from '../logger';
 
@@ -25,6 +24,3 @@ coreErrorHandler.configure({
 } as ErrorHandlerOptions);
 
 export const errorHandler = coreErrorHandler;
-
-/** @deprecated Use errorHandler directly — kept for backwards compatibility */
-export { MapErrorHandler };

@@ -1,11 +1,25 @@
 import { MapError } from '../errors';
 
 function isDevEnvironment(): boolean {
-  try {
-    return Boolean(import.meta.env?.DEV);
-  } catch {
-    return process.env.NODE_ENV !== 'production';
+  const meta = import.meta as ImportMeta & {
+    env?: { DEV?: boolean; MODE?: string };
+  };
+  if (meta.env && typeof meta.env.DEV === 'boolean') {
+    return meta.env.DEV;
   }
+  if (meta.env && typeof meta.env.MODE === 'string') {
+    return meta.env.MODE !== 'production';
+  }
+  const nodeProcess = (
+    globalThis as typeof globalThis & {
+      process?: { env?: Record<string, string | undefined> };
+    }
+  ).process;
+  const nodeEnv = nodeProcess?.env?.['NODE_ENV'];
+  if (typeof nodeEnv === 'string') {
+    return nodeEnv !== 'production';
+  }
+  return false;
 }
 
 /**

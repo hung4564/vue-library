@@ -37,6 +37,7 @@ export default defineConfig({
       external: [
         'vue',
         '@hungpvq/map-core',
+        '@hungpvq/map-draw',
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
         '@hungpvq/shared-core',
@@ -44,7 +45,6 @@ export default defineConfig({
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         'maplibre-gl',
-        '@mapbox/mapbox-gl-draw',
         '@mdi/js',
         'lodash',
         'randomcolor',
@@ -55,6 +55,18 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/vue/map-draw',
+      provider: 'v8' as const,
     },
   },
 });

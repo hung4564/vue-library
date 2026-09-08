@@ -101,7 +101,7 @@ Each type has its own API and usage. See the corresponding documentation files i
 ## Example: Adding a Source Leaf
 
 ```typescript
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset';
 
 const source = createDatasetPartGeojsonSourceComponent('my-source', {
   type: 'FeatureCollection',
@@ -121,7 +121,10 @@ const source = createDatasetPartGeojsonSourceComponent('my-source', {
 ## Example: Adding a Layer Leaf
 
 ```typescript
-import { createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+import {
+  createMultiMapboxLayerComponent,
+  LayerSimpleMapboxBuild,
+} from '@hungpvq/map-dataset';
 
 const singleLayer = createMultiMapboxLayerComponent('single-layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build()]);
 ```
@@ -129,7 +132,7 @@ const singleLayer = createMultiMapboxLayerComponent('single-layer', [new LayerSi
 ## Example: Adding a List UI Leaf
 
 ```typescript
-import { createDatasetPartListViewUiComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartListViewUiComponent } from '@hungpvq/map-dataset';
 
 const listView = createDatasetPartListViewUiComponent('My Layer');
 listView.color = '#ff6b6b';

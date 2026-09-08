@@ -21,7 +21,7 @@ Turn off: `.configDisabledAttributeTable()`, or `menuContext: { disabledAttribut
 Pass `columns` to limit fields and/or map labels. Omit it to show every property plus **Geometry**.
 
 ```ts
-import { createMenuItemAttributeTable } from '@hungpvq/vue-map-dataset';
+import { createMenuItemAttributeTable } from '@hungpvq/map-dataset';
 
 // Limit + labels
 list.addMenu(
@@ -54,7 +54,7 @@ import {
   exportDatasetGeo,
   filterAttributeTableRows,
   getDatasetFeatureCollection,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const fc = await getDatasetFeatureCollection(list);
 if (!fc) return;

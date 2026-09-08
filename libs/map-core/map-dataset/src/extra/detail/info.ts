@@ -153,7 +153,7 @@ export function getDatasetDetailInfo(dataset: IDataset): DatasetDetailInfo {
     out,
     FIELD.filter,
     layers
-      .map((layer) => layer.filter)
+      .map((layer) => ('filter' in layer ? layer.filter : undefined))
       .filter(Boolean)
       .map((filter) => JSON.stringify(filter)),
   );

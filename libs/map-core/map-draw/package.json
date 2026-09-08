@@ -1,0 +1,36 @@
+{
+  "name": "@hungpvq/map-draw",
+  "version": "1.0.1",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    }
+  },
+  "dependencies": {
+    "@hungpvq/map-core": "~1.0.1",
+    "@hungpvq/shared": ">=0.0.1",
+    "@hungpvq/shared-log": ">=0.0.1"
+  },
+  "peerDependencies": {
+    "@mapbox/mapbox-gl-draw": ">=1.4.3",
+    "maplibre-gl": "^5.4.0",
+    "randomcolor": "^0.6.2"
+  }
+}

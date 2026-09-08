@@ -3,7 +3,11 @@
 Fluent MapLibre layer spec: `point` (circle), `line`, `area` (fill), `symbol`.
 
 ```typescript
-import { LayerSimpleMapboxBuild, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/vue-map-dataset';
+import {
+  LayerSimpleMapboxBuild,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 
 const spec = new LayerSimpleMapboxBuild()
   .setStyleType('point')

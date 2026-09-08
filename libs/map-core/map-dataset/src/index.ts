@@ -395,3 +395,4 @@ export type {
   GeojsonDatasetOption,
   RasterUrlDatasetOption,
 } from './builder';
+export type { DatasetStoreLike } from './services/dataset.service';

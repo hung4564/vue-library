@@ -19,7 +19,10 @@ Does **not** emit Vue/React events. Detail UI is opened through `ComponentManage
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import { DatasetControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
+import {
+  DatasetControl,
+  ComponentManagementControl,
+} from '@hungpvq/vue-map-dataset';
 </script>
 
 <template>

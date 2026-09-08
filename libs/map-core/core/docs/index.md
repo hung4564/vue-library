@@ -8,7 +8,7 @@ Vue / React map libraries built on MapLibre GL.
 |---------|-------------|
 | [`@hungpvq/vue-map-core`](./core/) / [`@hungpvq/react-map-core`](./core/) | Map container, controls, hooks |
 | [`@hungpvq/vue-map-dataset`](./dataset/) / [`@hungpvq/react-map-dataset`](./dataset/) | Layers, identify, create dataset |
-| [`@hungpvq/vue-map-draw`](./draw/) | Draw / edit geometries (**Vue only** for now) |
+| [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/) | Draw / edit (Inspect documented under draw) |
 
 ## Live demos
 
@@ -29,13 +29,13 @@ Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)**
 **Vue**
 
 ```bash
-npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/map-core @hungpvq/map-dataset
+npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/vue-map-draw @hungpvq/map-core @hungpvq/map-dataset @hungpvq/map-draw
 ```
 
 **React**
 
 ```bash
-npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/map-core @hungpvq/map-dataset
+npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/react-map-draw @hungpvq/map-core @hungpvq/map-dataset @hungpvq/map-draw
 ```
 
 ### 2. Import CSS (once)

@@ -221,10 +221,23 @@
       "order": 5
     },
     {
+      "name": "Protocol",
+      "package": "Map - Draw",
+      "docs": "/map/draw/protocol",
+      "order": 5.1
+    },
+    {
       "name": "Component",
       "package": "Map - Draw",
       "docs": "/map/draw/module/",
       "order": 5.2
+    },
+    {
+      "name": "DrawControl",
+      "package": "Map - Draw",
+      "docs": "/map/draw/module/DrawControl",
+      "category": "Component",
+      "order": 5.21
     },
     {
       "name": "Getting start",

@@ -1,28 +1,144 @@
 <script setup lang="ts">
-import { BaseMapControl } from '@hungpvq/vue-map-core';
-import { Map } from '@hungpvq/vue-map-core';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
-  DrawControl,
   DrawingType,
-  type DrawOption,
-} from '@hungpvq/vue-map-draw';
+  getFirstFeatureByMap,
+  type MapDrawOption,
+} from '@hungpvq/map-draw';
+import { BaseMapControl, getMap, Map } from '@hungpvq/vue-map-core';
+import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
+import type { Feature, FeatureCollection } from 'geojson';
+import type { GeoJSONSource } from 'maplibre-gl';
 import AsideControl from '../../layout/aside-control.vue';
-const drawOptions: DrawOption = {
-  drawSupports: [DrawingType.POINT],
-  async save(geojson) {
-    console.info('save', geojson);
-  },
+
+const MAP_ID = 'demo';
+const RESULT_SOURCE = 'demo-draw-result';
+const RESULT_LAYERS = [
+  'demo-draw-result-fill',
+  'demo-draw-result-line',
+  'demo-draw-result-point',
+] as const;
+
+const { start } = useMapDraw(MAP_ID);
+const collection: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [],
 };
+
+function featureKey(feature: Feature): string | undefined {
+  const id = feature.id ?? feature.properties?.['id'];
+  return id == null ? undefined : String(id);
+}
+
+function ensureResultLayers(map: MapSimple) {
+  if (map.getSource(RESULT_SOURCE)) return;
+  map.addSource(RESULT_SOURCE, {
+    type: 'geojson',
+    data: collection,
+    promoteId: 'id',
+  });
+  map.addLayer({
+    id: RESULT_LAYERS[0],
+    type: 'fill',
+    source: RESULT_SOURCE,
+    filter: ['==', '$type', 'Polygon'],
+    paint: { 'fill-color': '#3bb2d0', 'fill-opacity': 0.35 },
+  });
+  map.addLayer({
+    id: RESULT_LAYERS[1],
+    type: 'line',
+    source: RESULT_SOURCE,
+    filter: [
+      'any',
+      ['==', '$type', 'LineString'],
+      ['==', '$type', 'Polygon'],
+    ],
+    paint: { 'line-color': '#3bb2d0', 'line-width': 2 },
+  });
+  map.addLayer({
+    id: RESULT_LAYERS[2],
+    type: 'circle',
+    source: RESULT_SOURCE,
+    filter: ['==', '$type', 'Point'],
+    paint: {
+      'circle-radius': 6,
+      'circle-color': '#3bb2d0',
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff',
+    },
+  });
+}
+
+function paintResult(mapId: string) {
+  getMap(mapId, (map) => {
+    ensureResultLayers(map);
+    (map.getSource(RESULT_SOURCE) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: [...collection.features],
+    });
+  });
+}
+
+function upsertFeature(feature: Feature) {
+  const key = featureKey(feature);
+  if (key == null) {
+    collection.features.push(feature);
+    return;
+  }
+  const idx = collection.features.findIndex((f) => featureKey(f) === key);
+  if (idx >= 0) collection.features[idx] = feature;
+  else collection.features.push(feature);
+}
+
+function onMapLoaded(map: MapSimple) {
+  ensureResultLayers(map);
+  start({
+    drawSupports: [
+      DrawingType.POINT,
+      DrawingType.LINE_STRING,
+      DrawingType.POLYGON,
+    ],
+    cleanAfterDone: true,
+    addFeature: async (feature) => {
+      upsertFeature(feature);
+    },
+    updateFeature: async (feature) => {
+      upsertFeature(feature);
+    },
+    deleteFeature: async (feature) => {
+      const key = featureKey(feature);
+      if (key == null) return;
+      collection.features = collection.features.filter(
+        (f) => featureKey(f) !== key,
+      );
+    },
+    selectFeature: async ({ point }, { mapId }) => {
+      let hit: Feature | undefined;
+      getMap(mapId, (m) => {
+        hit = getFirstFeatureByMap(m, point, [...RESULT_LAYERS]);
+      });
+      if (!hit) return undefined;
+      const key = featureKey(hit);
+      const fromStore = collection.features.find(
+        (f) => key != null && featureKey(f) === key,
+      );
+      return fromStore ?? hit;
+    },
+    redraw: (mapId) => paintResult(mapId),
+    callback(result) {
+      console.info('draw save', result);
+    },
+  } satisfies MapDrawOption);
+}
 </script>
+
 <template>
-  <Map>
+  <Map map-id="demo" @map-loaded="onMapLoaded">
     <AsideControl position="top-left" />
-    <DrawControl position="top-right" initShow :drawOptions="drawOptions" />
+    <DrawControl position="top-right" />
     <BaseMapControl position="bottom-left" />
   </Map>
 </template>
-
-<style></style>
 
 <style>
 * {

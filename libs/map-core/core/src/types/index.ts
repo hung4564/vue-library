@@ -26,7 +26,8 @@ export interface WithMapPropType {
   left?: number;
   right?: number;
 }
-import type { Map } from 'maplibre-gl';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import type { FilterSpecification, Map } from 'maplibre-gl';
 
 /**
  * Map instance type with id
@@ -34,6 +35,9 @@ import type { Map } from 'maplibre-gl';
 export type MapSimple = Map & {
   id: string;
 };
+
+/** Internal helpers — not re-exported from the package root. */
+export type { Feature, FeatureCollection, FilterSpecification, Geometry };
 
 /**
  * Map callback function type

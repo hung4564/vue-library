@@ -8,8 +8,8 @@ import {
   mdiPlus,
   mdiUploadOutline,
 } from '@mdi/js';
-import { lineString, point, polygon } from '@turf/helpers';
 import FileSaver from 'file-saver';
+import type { Feature, Position } from 'geojson';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -35,8 +35,32 @@ const path = {
 
 const emit = defineEmits<{
   (_e: 'click:remove', _index: number): void;
-  (_e: 'click:fillbound', _geometry: any): void; // turf geometry
+  (_e: 'click:fillbound', _geometry: Feature): void;
 }>();
+
+function toPointFeature(coordinates: Position): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Point', coordinates },
+  };
+}
+
+function toLineStringFeature(coordinates: Position[]): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'LineString', coordinates },
+  };
+}
+
+function toPolygonFeature(coordinates: Position[][]): Feature {
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Polygon', coordinates },
+  };
+}
 
 const submit = (value: DraftCoordinatesNumber[] = []) => {
   model.value = [...value];
@@ -67,12 +91,12 @@ const convertGeometry = (coordinates: DraftCoordinatesNumber[]) => {
     return;
   }
   if (validCoords.length === 1) {
-    return point(validCoords[0]);
+    return toPointFeature(validCoords[0]);
   }
   if (validCoords.length === 2) {
-    return lineString(validCoords);
+    return toLineStringFeature(validCoords);
   }
-  return polygon([[...validCoords, validCoords[0]]]);
+  return toPolygonFeature([[...validCoords, validCoords[0]]]);
 };
 
 const onDownload = () => {

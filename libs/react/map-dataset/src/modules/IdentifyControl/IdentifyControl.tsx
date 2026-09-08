@@ -331,7 +331,7 @@ export function IdentifyControl(
           void onGetFeaturesRef.current(point);
         };
         if (menuProps.layer.point) {
-          run(menuProps.layer.point);
+          run(menuProps.layer.point as PointLike);
           return;
         }
         callMapRef.current((map) => {

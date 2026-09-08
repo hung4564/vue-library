@@ -31,7 +31,7 @@ import {
   useLayerLegend,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import { LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset';
 import { shallowRef } from 'vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);

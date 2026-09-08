@@ -39,11 +39,3 @@ export function installGlobalErrorCapture(handler: ErrorHandler): () => void {
     window.removeEventListener('unhandledrejection', onUnhandledRejection);
   };
 }
-
-function isDevEnvironment(): boolean {
-  try {
-    return Boolean(import.meta.env?.DEV);
-  } catch {
-    return process.env.NODE_ENV !== 'production';
-  }
-}

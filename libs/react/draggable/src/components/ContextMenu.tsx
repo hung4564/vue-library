@@ -63,14 +63,7 @@ const ContextMenu = forwardRef(function ContextMenu(
   }, []);
 
   const close = useCallback(() => {
-    setIsOpen((open) => {
-      if (!open) return open;
-      clearMenuTypeahead();
-      onOpenChangeRef.current?.(false);
-      restoreFocus(previousFocusRef.current);
-      previousFocusRef.current = null;
-      return false;
-    });
+    setIsOpen((open) => (open ? false : open));
     setStylePosition({});
   }, []);
 
@@ -83,12 +76,26 @@ const ContextMenu = forwardRef(function ContextMenu(
         lastOpenEventRef.current = ev;
         previousFocusRef.current = document.activeElement as HTMLElement | null;
         setIsOpen(true);
-        onOpenChangeRef.current?.(true);
       },
       close,
     }),
     [close],
   );
+
+  // Notify parent outside setState updaters — calling setState on SidebarContainer
+  // from inside ContextMenu's updater triggers "Cannot update a component while rendering".
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (wasOpenRef.current === isOpen) return;
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = isOpen;
+    onOpenChangeRef.current?.(isOpen);
+    if (wasOpen && !isOpen) {
+      clearMenuTypeahead();
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+    }
+  }, [isOpen]);
 
   useLayoutEffect(() => {
     if (!isOpen || !targetRef.current) return;

@@ -28,7 +28,7 @@ import {
   createDatasetPartIdentifyComponentBuilder,
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const identify = createIdentifyMapboxComponent('identify', {
   field_id: 'id',

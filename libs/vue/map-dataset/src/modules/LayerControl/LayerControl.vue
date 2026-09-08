@@ -47,6 +47,7 @@ import { useMapDataset } from '../../store';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
+import { warnIfDatasetRegistryMissing } from './warn-registry';
 
 const props = withDefaults(
   defineProps<
@@ -76,6 +77,8 @@ defineSlots<{
 const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_CONTROL_LOCALE);
+warnIfDatasetRegistryMissing();
+
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,

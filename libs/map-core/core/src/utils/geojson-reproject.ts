@@ -361,10 +361,11 @@ function plainGeometry(geometry: unknown, depth = 0): Geometry | null {
 
 function plainFeature(feature: unknown): Feature {
   const raw = unwrapVueRaw(feature) as Feature;
+  const geometry = plainGeometry(raw?.geometry);
   const out: Feature = {
     type: 'Feature',
     properties: plainProperties(raw?.properties),
-    geometry: plainGeometry(raw?.geometry),
+    geometry: geometry as Feature['geometry'],
   };
   if (raw && 'id' in raw && raw.id !== undefined) out.id = raw.id;
   return out;

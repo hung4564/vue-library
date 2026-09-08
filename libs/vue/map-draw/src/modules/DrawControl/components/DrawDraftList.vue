@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Feature } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -8,8 +7,9 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
+import type { IDraftRecord } from '@hungpvq/map-draw';
+import type { Feature } from 'geojson';
 import { computed, type Ref } from 'vue';
-import { IDraftRecord } from '../../../types';
 
 const props = defineProps<{
   show: boolean;

@@ -102,7 +102,8 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 | `mapNavigationControl` | button | multi: `mapCompass`, `mapZoomIn`, `mapZoomOut` |
 | `mapMeasurementControl` | button | multi: `distance`, `area`, … |
 | `mapPrintAdvancedControl` | button | multi: `mapPrintShow`, `mapPrintSave`, … |
-| `mapInspectControl` | button | Vue draw only |
+| `mapInspectControl` | button | Draw packages (Vue + React); Inspect docs under `/map/draw/#inspect` |
+| `mapDrawDraftList` | popup | Draw draft list when draft mode is on |
 | `mapRegistryControl` | popup | Inspector for registered controls |
 
 Ids match toolbar / module ids where those exist.

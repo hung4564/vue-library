@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MapControlButton, MapControlGroupButton } from '@hungpvq/vue-map-core';
+import type { MapDrawOption } from '@hungpvq/map-draw';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,
@@ -13,7 +14,6 @@ import {
   mdiViewListOutline,
 } from '@mdi/js';
 import { isDraftOption } from '../../../store';
-import { MapDrawOption } from '../../../types';
 
 const props = defineProps<{
   drawOptions?: MapDrawOption;

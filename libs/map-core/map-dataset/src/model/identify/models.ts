@@ -366,7 +366,9 @@ export async function handleMultiIdentifyGetFirst(
   }
 
   const id =
-    flat[datasetPartIdentify?.config?.field_id || 'id'] ?? flat.id ?? x.id;
+    flat[datasetPartIdentify?.config?.field_id || 'id'] ??
+    flat['id'] ??
+    x.id;
   const name =
     flat[datasetPartIdentify?.config?.field_name || 'name'] ??
     flat[datasetPartIdentify?.config?.field_id || 'id'] ??

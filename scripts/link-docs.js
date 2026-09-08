@@ -15,6 +15,10 @@ const links = [
     target: path.resolve(__dirname, '../docs/pages/map/dataset'),
   },
   {
+    source: path.resolve(__dirname, '../libs/map-core/map-draw/docs'),
+    target: path.resolve(__dirname, '../docs/pages/map/draw'),
+  },
+  {
     source: path.resolve(__dirname, '../libs/draggable/core/docs'),
     target: path.resolve(__dirname, '../docs/pages/draggable'),
   },
@@ -76,10 +80,11 @@ function pointsToSource(target, source) {
   }
 }
 
-// Drop legacy nested copy/junction under core docs (source of truth is map-dataset/docs).
+// Drop legacy nested copy/junction under core docs (SoT is package docs/).
 removeStaleTarget(
   path.resolve(__dirname, '../libs/map-core/core/docs/dataset'),
 );
+removeStaleTarget(path.resolve(__dirname, '../libs/map-core/core/docs/draw'));
 
 links.forEach(({ source, target }) => {
   if (!fs.existsSync(source)) {

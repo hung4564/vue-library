@@ -5,7 +5,10 @@ In-memory payload on a node (`getData` / `setData`). Used by source, layer, high
 **Events:** none.
 
 ```ts
-import { createWithDataHelper, createDatasetLeaf } from '@hungpvq/vue-map-dataset';
+import {
+  createWithDataHelper,
+  createDatasetLeaf,
+} from '@hungpvq/map-dataset';
 
 const data = createWithDataHelper({ count: 0 });
 
@@ -31,7 +34,7 @@ import {
   createMenuItemToBoundActionForList,
   createRootDataset,
   createDatasetPartListViewUiComponent,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const dataset = createRootDataset('Cities');
 const bound = createDatasetPartBoundComponent('Cities', [
@@ -77,7 +80,7 @@ import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForItem,
   LIST_VIEW_MENU_ID,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const dataset = createRootDataset('Cities');
 

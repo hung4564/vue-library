@@ -126,7 +126,9 @@ function normalizeFeature(feature: Feature | GeoJSONFeature): Feature {
   const id =
     typeof feature.id === 'string' || typeof feature.id === 'number'
       ? feature.id
-      : propertyId;
+      : typeof propertyId === 'string' || typeof propertyId === 'number'
+        ? propertyId
+        : undefined;
   return {
     type: 'Feature',
     id,
@@ -436,7 +438,10 @@ export function resolveHighlightFeatureId(
   if (typeof feature.id === 'string' || typeof feature.id === 'number') {
     return feature.id;
   }
-  return scalarProperty(feature, 'id');
+  const propertyId = scalarProperty(feature, 'id');
+  return typeof propertyId === 'string' || typeof propertyId === 'number'
+    ? propertyId
+    : undefined;
 }
 
 export function applyHighlightFeatureState(

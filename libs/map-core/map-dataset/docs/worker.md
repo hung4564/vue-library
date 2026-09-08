@@ -119,7 +119,7 @@ Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' }
 
 ## Call the APIs yourself
 
-Re-exported from `@hungpvq/map-dataset` (and the Vue / React packages):
+Exported from `@hungpvq/map-dataset`:
 
 ```ts
 import {

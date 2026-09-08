@@ -1,6 +1,10 @@
-import { BaseMapStore, logHelper } from '@hungpvq/map-core';
+import {
+  type BaseMapAdapter,
+  BaseMapStore,
+  logHelper,
+} from '@hungpvq/map-core';
 import { createMapScopedStore } from '../../../store/store';
-import { BaseMapAdapter, DefaultBaseMapAdapter } from '../adapter/base';
+import { DefaultBaseMapAdapter } from '../adapter/base';
 import { logger } from '../logger';
 
 const KEY = 'basemap' as const;

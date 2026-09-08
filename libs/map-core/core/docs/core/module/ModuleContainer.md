@@ -48,7 +48,8 @@ const { moduleContainerProps } = useMap(props);
 
 ```vue
 <script setup lang="ts">
-import { MapControlButton, ModuleContainer, { ... defaultMapProps}, type WithMapPropType } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { MapControlButton, ModuleContainer, defaultMapProps } from '@hungpvq/vue-map-core';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -82,8 +83,8 @@ import {
   ModuleContainer,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { Icon } from '@mdi/react';
 import { mdiHome } from '@mdi/js';
 import type { ReactNode } from 'react';
