@@ -1,5 +1,5 @@
 import { logHelper, MAP_STORE_KEY, deepMergeLocale, createDefaultLangStore } from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 import {

@@ -1,7 +1,7 @@
 import { loggerFactory } from '@hungpvq/shared-log';
 import { logHelper, MAP_STORE_KEY, createMapMitt } from '@hungpvq/map-core';
 import { Emitter, EventType } from 'mitt';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store';
 
 const loggerEvent = loggerFactory
   .createLogger()

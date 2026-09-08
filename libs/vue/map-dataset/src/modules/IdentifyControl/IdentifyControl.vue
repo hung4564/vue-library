@@ -37,7 +37,7 @@ import {
   useMap,
   useRegisterMapControl,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
 import { mdiHandPointingUp } from '@mdi/js';
 import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';

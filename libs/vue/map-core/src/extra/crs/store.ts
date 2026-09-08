@@ -1,5 +1,5 @@
 import { logHelper, createDefaultCrsStore, MAP_STORE_KEY } from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store';
 import { logger } from './logger';
 import type { MapCrsStore } from '@hungpvq/map-core';
 

@@ -40,18 +40,21 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 
 ## Treat as public / breaking
 
-- Anything reached via root `export *` unless listed as experimental on stable-api.md
+- Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
 - Package `exports` paths: `.`, `./style.css`, `./worker`, `./vite`, `./assets/*`
 - Control ids (`mapLayerControl`, …), action types, `MapControlHandle` shape
 - `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values**
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`
 - Peer minimum raises; optional peer → required
-- Vue/React dataset packages **re-export** `@hungpvq/map-dataset` — breaks propagate
+- Vue/React dataset packages **re-export** Stable (+ Experimental) `@hungpvq/map-dataset` symbols by name — breaks propagate
+
+Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**.
 
 ## Export lock rule
 
-- Add/remove a **runtime** root export → update Stable **or** Experimental allowlist in that package’s `public-api.spec.ts` **and** `stable-api.md` when Stable.
-- Experimental may change in a **minor**; removing experimental from the barrel is a future **major**.
+- Root `src/index.ts` uses **explicit named exports** only (no public `export *`). Implementation aggregation: `src/internal-barrel.ts` (not a package entry). First-party types: explicit `export type { … }` only — do **not** `export type *` or re-export types from third-party JS libraries (`geojson`, `maplibre-gl`, …).
+- Add/remove a **runtime** root export → update `index.ts` named list + Stable **or** Experimental allowlist in that package’s `public-api.spec.ts` **and** `stable-api.md` when Stable.
+- Experimental may change in a **minor**; removing experimental from the root barrel is a **major**.
 
 ## Safe patterns
 

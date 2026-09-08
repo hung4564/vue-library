@@ -31,7 +31,7 @@ import {
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {

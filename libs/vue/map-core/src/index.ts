@@ -1,10 +1,142 @@
+/**
+ * Root barrel: explicit named exports (Stable + Experimental).
+ * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
+ * Aggregation lives in ./internal-barrel (not a public package entry).
+ */
 import './style.css';
 
-export * from './components';
-export * from './extra';
-export * from './field';
-export * from './hooks';
-export * from './modules';
-export * from './services';
-export * from './store';
-export * from './types';
+export {
+  BaseButton,
+  BaseMapAdapter,
+  BaseMapCard,
+  BaseMapControl,
+  BaseMapTagControl,
+  Collapse,
+  CompareBaseMapCard,
+  CompareBaseMapControl,
+  CompareSettingCard,
+  CompareSettingControl,
+  CrsControl,
+  CrsDisplaySettings,
+  DefaultBaseMapAdapter,
+  EventManagementControl,
+  FormView,
+  FullScreenControl,
+  GeoLocateControl,
+  GlobeControl,
+  GotoControl,
+  HomeControl,
+  InfoControl,
+  InputCheckbox,
+  InputChoose,
+  InputColorPicker,
+  InputCrs,
+  InputFile,
+  InputSelect,
+  InputSlider,
+  InputText,
+  InputTextArea,
+  KEY,
+  LegendControl,
+  MITT_KEY,
+  Map,
+  MapButton,
+  MapCard,
+  MapCommonButton,
+  MapCompare,
+  MapContextMenuControl,
+  MapControlButton
+} from './internal-barrel';
+
+export {
+  MapControlGroupButton,
+  MapErrorHandler,
+  MapIcon,
+  MapImage,
+  MapLegend,
+  MapMarkerView,
+  MapView,
+  MeasurementControl,
+  MeasurementHandle,
+  MeasurementService,
+  MeasurementSettingPopup,
+  ModuleContainer,
+  MouseCoordinatesControl,
+  PrintAdvancedControl,
+  PrintControl,
+  RegistryControl,
+  RegistryItem,
+  SettingControl,
+  ThemeControl,
+  ToolbarControl,
+  UniversalRegistry,
+  View,
+  WorkerControl,
+  ZoomControl,
+  addCursorCrosshair,
+  addStore,
+  createMapScopedStore,
+  createSubscribable,
+  createToolbarControl,
+  createToolbarModule,
+  defaultMapProps,
+  destroyMapScopedStore,
+  errorHandler,
+  getIsMulti,
+  getLegendName,
+  getMap,
+  getMapCompare,
+  getMapCompareSetting,
+  getMapStore,
+  getMaps
+} from './internal-barrel';
+
+export {
+  getStore,
+  isDisabledLegendLayer,
+  isSupportGenLayerLegend,
+  langStore,
+  makeShowProps,
+  removeCursorCrosshair,
+  useBaseMap,
+  useBaseMapAdapter,
+  useComponentName,
+  useCoordinate,
+  useEventListener,
+  useEventMap,
+  useEventMapItems,
+  useInitToolbarControl,
+  useLang,
+  useLayerLegend,
+  useMap,
+  useMapBaseMapStore,
+  useMapContainer,
+  useMapCrsCurrent,
+  useMapCrsDisplayEpsgs,
+  useMapCrsItems,
+  useMapCrsStore,
+  useMapEventStore,
+  useMapGLobalStore,
+  useMapImage,
+  useMapImages,
+  useMapInstance,
+  useMapMittStore,
+  useMapPrint,
+  useMapPrintStore,
+  useMapState,
+  useMapStore,
+  useMapToolbar,
+  useMapToolbarModule,
+  useMapToolbarStore,
+  useRegisterMapControl,
+  useShow,
+  useToolbarControl,
+  useUniversalRegistry
+} from './internal-barrel';
+
+export {
+  useWorkerMonitor,
+  withMapProps
+} from './internal-barrel';
+
+export type { WithShowProps } from './hooks/useShow';

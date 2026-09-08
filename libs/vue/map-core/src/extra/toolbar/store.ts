@@ -7,7 +7,7 @@ import {
   type MapToolbarStore,
 } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store';
 import { logger } from './logger';
 
 export type { MapToolbarStore };

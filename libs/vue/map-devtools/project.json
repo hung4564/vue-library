@@ -5,7 +5,7 @@
   "projectType": "library",
   "release": {
     "version": {
-      "manifestRootsToUpdate": ["{projectRoot}"],
+      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"
     }
@@ -23,7 +23,7 @@
     },
     "nx-release-publish": {
       "options": {
-        "packageRoot": "{projectRoot}"
+        "packageRoot": "dist/{projectRoot}"
       }
     }
   }

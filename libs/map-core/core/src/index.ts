@@ -1,39 +1,336 @@
-// Export adapters
-export * from './adapter';
-
-// Export errors
-export * from './errors';
-
-// Export services
-export * from './services';
-
-// Export utils
-export * from './utils';
-
-// Export model
-export * from './model';
-
-// Export types
-export * from './types';
-
-// Export default locales
-export * from './locale';
-
-// Theme (light / dark / auto)
-export * from './theme';
-
-// Export store
-export * from './basemap';
-export * from './store';
-
-// Export extra modules
-export * from './legend';
-export * from './map-context-menu';
-export * from './mitt';
-export * from './print';
-export * from './registry';
-export * from './resolver';
-export * from './toolbar';
-export * from './worker';
-
+/**
+ * Root barrel: explicit named exports (Stable + Experimental).
+ * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
+ * Aggregation lives in ./internal-barrel (not a public package entry).
+ */
 import './style/index.scss';
+
+export {
+  BASEMAP_CONTROL_LOCALE,
+  BASEMAP_PREFIX,
+  Base,
+  BaseMapAdapter,
+  BaseMapLayer,
+  BasemapError,
+  BasemapManager,
+  BasemapService,
+  CRS_CONTROL_LOCALE,
+  Circle,
+  CrosshairManager,
+  DEFAULT_COMPARE_SETTING,
+  DEFAULT_CRS_ITEMS,
+  DefaultBaseMapAdapter,
+  EMPTY_MAP_VIEW_INFO,
+  EVENT_CONTROL_LOCALE,
+  Event,
+  EventBboxRanger,
+  EventClick,
+  EventContextMenu,
+  EventManager,
+  EventMouseMove,
+  EventRightClick,
+  FallbackResolver,
+  Fill,
+  FormView,
+  Format,
+  GLOBE_CONTROL_LOCALE,
+  GOTO_CONTROL_LOCALE,
+  HOME_CONTROL_LOCALE,
+  INFO_CONTROL_LOCALE,
+  INITIAL_MAP_CRS_ITEMS,
+  INIT_BASEMAPS,
+  LEGEND_CONTROL_LOCALE,
+  LegendService,
+  Line,
+  MAP_ACTION_LOCALE,
+  MAP_CONTEXT_MENU_ID,
+  MAP_CORE_EVENT,
+  MAP_MODULE_CONTROL_ID_KEY
+} from './internal-barrel';
+
+export {
+  MAP_STORE_KEY,
+  MAP_THEME_CLASS,
+  MAP_THEME_COLOR_SCHEME,
+  MAP_THEME_IDS,
+  MAP_THEME_MODES,
+  MAP_THEME_STORAGE_KEY,
+  MEASUREMENT_CONTROL_LOCALE,
+  MapCompareSwiper,
+  MapCompareSwiperVertical,
+  MapError,
+  MapErrorHandler,
+  MapEventError,
+  MapInitializationError,
+  MapInitializer,
+  MapLegend,
+  MapMarkerView,
+  MapStoreManager,
+  MapView,
+  Measure,
+  MeasureArea,
+  MeasureAzimuth,
+  MeasureDistance,
+  MeasurePoint,
+  MeasurementHandle,
+  MeasurementService,
+  MittTypeBaseMapEventKey,
+  MittTypeMapCompareEventKey,
+  MittTypeMapCrsEventKey,
+  MittTypeMapEventEventKey,
+  MittTypeMapEventKey,
+  MittTypeMapLangEventKey,
+  PRINT_CONTROL_LOCALE,
+  PrintService,
+  PrintableAreaManager,
+  REGISTRY_CONTROL_LOCALE,
+  REGISTRY_GLOBAL_STORE_KEY,
+  REGISTRY_NAMESPACES,
+  SETTING_CONTROL_LOCALE,
+  Symbol,
+  THEME_CONTROL_LOCALE
+} from './internal-barrel';
+
+export {
+  TOOLBAR_STRATEGIES,
+  UniversalRegistry,
+  View,
+  WORKER_CONTROL_LOCALE,
+  WorkerMonitor,
+  addCursorCrosshair,
+  addImageForMap,
+  applyMapThemeClass,
+  applyWorkerMonitorMessage,
+  bboxFromGeojson,
+  bootstrapMapTheme,
+  buildCrsSearchCatalog,
+  buildMapCrsCatalog,
+  cache,
+  centerMapHere,
+  clearAddGeojsonHereItems,
+  connectWorkerMonitor,
+  convertGeometry,
+  copyMapPointAsGeojson,
+  copyMapPointCoords,
+  copyMapPointWkt,
+  copyText,
+  createAddGeojsonHereDef,
+  createBufferHereDef,
+  createDefaultCompareStore,
+  createDefaultCrsStore,
+  createDefaultEventStore,
+  createDefaultImageStore,
+  createDefaultLangStore,
+  createDefaultMapContextMenuItems,
+  createDefaultPrintStore,
+  createDefaultToolbarStore,
+  createMapMenuBuilder,
+  createMapMenuItemProps,
+  createMapMitt,
+  createMenuItemCenterMapHere,
+  createMenuItemCopyAsGeojson,
+  createMenuItemCopyCoords,
+  createMenuItemCopyWkt,
+  createMenuItemGoogleEarth
+} from './internal-barrel';
+
+export {
+  createMenuItemGoogleMaps,
+  createMenuItemIdentifyHere,
+  createMenuItemQuickAnalysis,
+  createMenuItemZoomInHere,
+  createMenuItemsAddGeojsonHere,
+  createPrintStoreApi,
+  createSubscribable,
+  createToolbarControl,
+  createToolbarModule,
+  createToolbarModuleApi,
+  createToolbarStoreApi,
+  createToolbarStrategy,
+  createWorkerMonitorLogMessage,
+  createWorkerMonitorProgressMessage,
+  cycleMapThemeMode,
+  deepMergeLocale,
+  degToDms,
+  degToDmsString,
+  deg_to_dms,
+  deg_to_dms_string,
+  dmsToDeg,
+  dms_to_des,
+  downloadDataUrl,
+  errorHandler,
+  exportFile,
+  exportMapbox,
+  exportMapboxWithOptions,
+  exprHandler,
+  filterMapControls,
+  filterVisibleMapMenuItems,
+  filterWorkerSnapshots,
+  fitBounds,
+  formatAreaText,
+  formatCoordPair,
+  formatCoordinate,
+  formatCrsLabel,
+  formatDegree,
+  formatDistanceText,
+  formatLngLatBounds,
+  formatMapContextCoords
+} from './internal-barrel';
+
+export {
+  formatNumber,
+  formatProjectionName,
+  formatWorkerDuration,
+  formatWorkerLogTime,
+  getChartRandomColor,
+  getCrsInputSuggestions,
+  getDefaultAddGeojsonHereItems,
+  getLegendName,
+  getLowestLayerId,
+  getMap,
+  getMapBoxCanvas,
+  getMapThemeLocaleKey,
+  getPrefersDark,
+  getStoredMapThemeMode,
+  handleMapMenuAction,
+  hasMapCollection,
+  hasMapInstance,
+  identifyFeaturesHere,
+  installGlobalErrorCapture,
+  isCallStackOverflow,
+  isCoordinatesNumber,
+  isDisabledLegendLayer,
+  isMapThemeId,
+  isMapThemeMode,
+  isMultiMapStore,
+  isSupportGenLayerLegend,
+  isWorkerBusy,
+  isWorkerMonitorLogMessage,
+  isWorkerMonitorProgressMessage,
+  latDMS,
+  lngDMS,
+  loadImage,
+  logHelper,
+  lookupCrsItem,
+  mapImageToDataURL,
+  mergeFilters,
+  normalizeEpsgCode,
+  normalizeEventFrom,
+  normalizeMapThemeModes,
+  openGoogleEarth
+} from './internal-barrel';
+
+export {
+  openGoogleMaps,
+  pointFeatureGeojson,
+  pointWkt,
+  readMapViewInfo,
+  registerMapAccessor,
+  removeCursorCrosshair,
+  reprojectGeojsonToWgs84,
+  resolveCrsDisplayItems,
+  resolveCrsItemForStore,
+  resolveCrsProjection,
+  resolveMapMenuCondition,
+  resolveMapTheme,
+  resolveSelectedWorkerId,
+  runMapControlAction,
+  runMonitoredTask,
+  runWorkerMonitor,
+  searchCrsCatalog,
+  setAddGeojsonHereItems,
+  setStoredMapThemeMode,
+  startBoxRangerMap,
+  styleImageToDataURL,
+  toCoordinatesNumberList,
+  toImageDataFromRGBAImage,
+  toPlainJson,
+  toggleMapThemeLightDark,
+  waitMapLoadDone,
+  workerLogsForDisplay,
+  workerProgressRatio,
+  zoomInMapHere
+} from './internal-barrel';
+
+/** First-party types only — do not re-export geojson / maplibre-gl types from the root. */
+export type {
+  AnyIEvent,
+  AnyToolbarOptions,
+  AnyToolbarStrategy,
+  BaseMapItem,
+  BaseMapStore,
+  Color,
+  ControlStrategy,
+  Coordinates,
+  CoordinatesNumber,
+  CrsItem,
+  DraftCoordinatesNumber,
+  EventBboxRangerHandle,
+  IViewSettingField,
+  LegendElement,
+  LegendLayerSpecification,
+  MapCompareSetting,
+  MapCompareStore,
+  MapControlButtonState,
+  MapControlButtonUIState,
+  MapCrsStore,
+  MapEventStore,
+  MapFCOnUseMap,
+  MapImageStore,
+  MapLangLocale,
+  MapLocateStore,
+  MapPrintStore,
+  MapSimple,
+  MapTranslateFunction,
+  MeasureActionItem,
+  MeasurementHandleType,
+  MittTypeBaseMap,
+  MittTypeMapCompare,
+  MittTypeMapCrs,
+  MittTypeMapEvent,
+  MittTypeMapLang,
+  ModuleStrategy,
+  Position,
+  PrintOption,
+  ToolbarButtonConfig,
+  ToolbarModuleOptions,
+  ToolbarSingleOptions,
+  WithMapPropType,
+} from './types';
+export type {
+  MapControlAction,
+  MapControlActionMeta,
+  MapControlHandle,
+  MapControlPanelKind,
+  MapControlPanelPosition,
+  RegistryNamespaceKind,
+} from './registry';
+export type {
+  AddGeojsonHerePayload,
+  MapAddGeojsonHereDef,
+  MapAddGeojsonHereLayerType,
+  MapContextMenuItem,
+  MapContextMenuItemId,
+  MapContextMenuTarget,
+  MapMenuItemProps,
+} from './map-context-menu';
+export type {
+  AddStoreOptions,
+  IMapStoreAdapter,
+  LoggerFunction,
+  MapRootStore,
+  MapStore,
+} from './store';
+export type { ErrorHandlerOptions } from './services/error-handler.service';
+export type { MapEventCallbacks } from './services/map-initializer.service';
+export type { MapThemeMode } from './theme';
+export type { MapToolbarStore, ToolbarKind } from './toolbar';
+export type { IEvent } from './model/Event';
+export type { GeojsonBbox } from './utils/fillBound';
+export type { MapViewInfo } from './utils/map-info';
+export type {
+  WorkerLogEntry,
+  WorkerRuntimeStatus,
+  WorkerSnapshot,
+  WorkerTaskSnapshot,
+} from './worker/types';

@@ -6,7 +6,7 @@ import {
   createDefaultImageStore,
   type MapImageStore,
 } from '@hungpvq/map-core';
-import { createMapScopedStore, useMapStore } from '../../store';
+import { createMapScopedStore, useMapStore } from '../../store/store';
 import { logger } from './logger';
 
 export type { MapImageStore };

@@ -16,7 +16,7 @@ Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 
 # Checklist SemVer / Breaking Change
 
-Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use `export *`, so **almost every exported symbol is public API** unless explicitly marked otherwise.
+Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use **explicit named exports** (see [stable-api.md](./core/docs/core/stable-api.md)); runtime surface is locked by `public-api.spec.ts`.
 
 ## 0. Surface map (version together)
 
@@ -56,7 +56,7 @@ Any checked item must **not** ship in `1.0.x` / as a `1.x` patch.
 
 ### B. Named exports (TypeScript / ESM)
 
-Treat everything reached via root `export *` as public.
+Treat everything listed in Stable ∪ Experimental `public-api.spec.ts` allowlists as the public runtime surface (named exports on `index.ts`).
 
 Examples of public surface:
 
@@ -198,13 +198,14 @@ Documented `--map-*` tokens and `style.css` entries:
 ## 7. Reducing “everything is breaking”
 
 1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`. Runtime locks: `public-api.spec.ts` in map-core, map-dataset, vue/react map-core, vue/react map-dataset.
-2. Mark the rest `@experimental` / “unsupported in minor” — only effective if the team follows it (barrel `export *` still looks public to consumers).
-3. Prefer subpaths over time (`@hungpvq/map-core/theme`, `.../registry`) and deprecate root deep exports slowly.
-4. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.
+2. **Named root barrels** (like draggable): `src/index.ts` exports only allowlisted symbols; `src/internal-barrel.ts` holds `export *` aggregation and is **not** a package entry. First-party types via explicit `export type { … }` only — do not re-export `geojson` / `maplibre-gl` types from the root.
+3. Mark non-Stable symbols **experimental** in `public-api.spec.ts` — may change in a **minor**; removing them from the root is a **major**.
+4. Prefer feature subpaths later (`@hungpvq/map-core/theme`, …) only as additive minors; do not drop named root exports without a major.
+5. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.
 
 ## 8. Team policy (one line)
 
 > **Major** if compile, registry/CSS/control/menu protocol, peer minimum, or documented behavior breaks.  
 > **Minor** if additive only.  
 > **Patch** if fix within the published contract.  
-> **Every symbol from today’s barrels looks public**; prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Unlisted exports are experimental.
+> Prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Root exports are **named**; unlisted runtime symbols must not appear on `index.ts`. Experimental allowlisted exports may change in a minor.

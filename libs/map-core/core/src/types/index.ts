@@ -26,8 +26,7 @@ export interface WithMapPropType {
   left?: number;
   right?: number;
 }
-import type { Feature, FeatureCollection, Geometry } from 'geojson';
-import type { FilterSpecification, Map } from 'maplibre-gl';
+import type { Map } from 'maplibre-gl';
 
 /**
  * Map instance type with id
@@ -66,11 +65,6 @@ export type CoordinatesNumber = [number, number];
 
 /** Draft point in the measurement form; empty rows are `[null, null]`. */
 export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
-
-/**
- * Re-export GeoJSON types
- */
-export type { Feature, FeatureCollection, FilterSpecification, Geometry };
 
 /**
  * Re-export event types

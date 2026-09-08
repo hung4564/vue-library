@@ -1,9 +1,11 @@
 /**
  * Locks `@hungpvq/vue-map-dataset` root **runtime** export surface.
- * Type-only exports are documented on `libs/map-core/core/docs/core/stable-api.md`
- * and are erased at runtime — intentionally omitted here.
+ * Type-only first-party exports use explicit `export type { … }` (see stable-api.md);
+ * do not re-export third-party (`geojson` / `maplibre-gl`) types from the root.
+ * Runtime type-only symbols are erased and omitted from this lock.
  *
- * Adding a runtime symbol: update Stable or Experimental list here + stable-api.md.
+ * Root `index.ts` must use **named** exports only (no public `export *`).
+ * Adding a runtime symbol: named export in `index.ts` + Stable or Experimental list here + stable-api.md.
  */
 import { describe, expect, it } from 'vitest';
 import * as api from './index';

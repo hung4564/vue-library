@@ -7,7 +7,7 @@ import {
   MittTypeMapCompareEventKey,
   type MittTypeMapCompare,
 } from '@hungpvq/map-core';
-import { createMapScopedStore, getStore } from '../../store';
+import { createMapScopedStore, getStore } from '../../store/store';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
 

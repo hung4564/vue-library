@@ -26,7 +26,16 @@ Prefer fast unit tests for:
 - `createDatasetRegistryPlugin().install()` smoke (Vue + React) — registry keys resolve
 - Pure utils (no MapLibre GL canvas) — mock map instances when needed
 
-Avoid heavy browser/MapLibre integration unless the user asks; demos and Playwright e2e are separate.
+### UI smoke (adapter packages)
+
+Allowed when covering Map shell / control registration under jsdom:
+
+- Enrich `src/test-setup.ts` MapLibre mock (`on` / `once` / `load`) + `ResizeObserver` / `matchMedia`
+- Stub `MapInitializer.validateWebglSupport` / `isWebglSupported` / optionally `setupMapEvents` to fire `onLoad`
+- Specs: `Map.ui.spec.ts(x)`, `controls.ui.spec.ts(x)` mounting `Map` + `LayerControl` + `IdentifyControl`
+- Assert registry `getControl(...)` and Teleport host nodes — not full identify query flows
+
+Avoid heavy browser/MapLibre GL integration beyond that; demos and Playwright e2e are separate.
 
 ## Commands
 
@@ -60,7 +69,7 @@ Map packages lock **runtime** root exports with `public-api.spec.ts` (Stable ∪
 | `@hungpvq/react-map-core` | `libs/react/map-core/src/public-api.spec.ts` |
 | `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts` |
 
-When changing `src/index.ts` barrels, update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`.
+When changing `src/index.ts` named exports (or `internal-barrel.ts` aggregation), update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
 
 ## Draggable public-api lock
 

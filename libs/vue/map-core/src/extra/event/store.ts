@@ -4,7 +4,7 @@ import {
   createDefaultEventStore,
   type MapEventStore,
 } from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store';
 import { logger } from './logger';
 export const useMapEventStore = (mapId: string) =>
   createMapScopedStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT, () => {
