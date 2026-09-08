@@ -17,7 +17,7 @@ libs/map-core/map-dataset   → datasets, menus, identify, style protocol, GIS w
 libs/map-core/map-draw      → DrawService, DrawingType, styles, inspect helpers
 libs/vue|react/map-core     → Map shell, controls, hooks; extend registry with components
 libs/vue|react/map-dataset  → dataset UI + createDatasetRegistryPlugin() only
-libs/vue|react/map-draw     → DrawControl / InspectControl (React Inspect thinner)
+libs/vue|react/map-draw     → DrawControl / InspectControl (shared InspectController)
 ```
 
 **Import rule:** adapters must **not** re-export core. Apps import builders/types/services from `@hungpvq/map-core` / `@hungpvq/map-dataset` / `@hungpvq/map-draw`, and UI/hooks from `@hungpvq/vue-*` or `@hungpvq/react-*`.
@@ -42,7 +42,7 @@ Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup)
 - Docs SoT: `libs/map-core/map-draw/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
 - Control ids (must match Vue ↔ React): `mapDrawDraftList`, `mapInspectControl`.
 - Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DrawingType`, `MAP_DRAW_EVENT`, locales, CSS `./style.css`.
-- React Inspect is intentionally thinner (style toggle); full popup stays Vue-first.
+- React Inspect uses the same `InspectController` as Vue (style + popup).
 - Demo route: Vue/React `/#/draw` only (no separate inspect demo page).
 - Peers: `@hungpvq/map-draw`, `@mapbox/mapbox-gl-draw`, `maplibre-gl`.
 

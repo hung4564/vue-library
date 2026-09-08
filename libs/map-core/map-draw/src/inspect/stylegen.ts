@@ -7,7 +7,8 @@ function circleLayer(color: string, source: string, vectorLayer?: string) {
     type: 'circle',
     paint: {
       'circle-color': color,
-      'circle-radius': 2,
+      // Slightly larger than upstream (2) so point hit-testing with selectThreshold works reliably
+      'circle-radius': 5,
     },
     filter: ['==', '$type', 'Point'],
   };

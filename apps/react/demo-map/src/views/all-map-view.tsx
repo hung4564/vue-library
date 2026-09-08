@@ -1,12 +1,4 @@
 import {
-  ComponentManagementControl,
-  DatasetControl,
-  IdentifyControl,
-  IdentifyShowFirstControl,
-  LayerControl,
-  LayerHighlight,
-} from '@hungpvq/react-map-dataset';
-import {
   BaseMapCard,
   BaseMapControl,
   CrsControl,
@@ -30,6 +22,15 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import {
+  ComponentManagementControl,
+  DatasetControl,
+  IdentifyControl,
+  IdentifyShowFirstControl,
+  LayerControl,
+  LayerHighlight,
+} from '@hungpvq/react-map-dataset';
+import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
@@ -43,12 +44,14 @@ export function AllMapView() {
         <AsideControl position="top-left" />
         <ComponentManagementControl />
         <MeasurementControl position="top-right" />
+        <IdentifyControl position="top-right" />
+        <DrawControl position="top-right" />
         <LayerControl
           position="top-left"
           show
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <IdentifyControl position="top-right" />
+        <InspectControl position="top-right" />
         <PrintAdvancedControl />
         <PrintControl />
         <GotoControl position="top-right" />

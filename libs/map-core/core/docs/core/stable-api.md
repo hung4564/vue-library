@@ -73,7 +73,8 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 |------|----------------|
 | Service | `DrawService` (`setFeature` / `convertData` / `saveDraw` / `clearDraw`) |
 | Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption` (via `export type`) |
-| Styles / query | `getDrawStyles`, `getFeatureByMap`, `getFirstFeatureByMap` |
+| Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` (required when adding draw to a map) |
+| Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
 
 ## `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`
 

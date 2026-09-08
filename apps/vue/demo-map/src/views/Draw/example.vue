@@ -3,6 +3,7 @@ import type { MapSimple } from '@hungpvq/map-core';
 import {
   DrawingType,
   getFirstFeatureByMap,
+  sameFeature,
   type MapDrawOption,
 } from '@hungpvq/map-draw';
 import { BaseMapControl, getMap, Map } from '@hungpvq/vue-map-core';
@@ -24,11 +25,6 @@ const collection: FeatureCollection = {
   type: 'FeatureCollection',
   features: [],
 };
-
-function featureKey(feature: Feature): string | undefined {
-  const id = feature.id ?? feature.properties?.['id'];
-  return id == null ? undefined : String(id);
-}
 
 function ensureResultLayers(map: MapSimple) {
   if (map.getSource(RESULT_SOURCE)) return;
@@ -80,12 +76,7 @@ function paintResult(mapId: string) {
 }
 
 function upsertFeature(feature: Feature) {
-  const key = featureKey(feature);
-  if (key == null) {
-    collection.features.push(feature);
-    return;
-  }
-  const idx = collection.features.findIndex((f) => featureKey(f) === key);
+  const idx = collection.features.findIndex((f) => sameFeature(f, feature));
   if (idx >= 0) collection.features[idx] = feature;
   else collection.features.push(feature);
 }
@@ -106,10 +97,8 @@ function onMapLoaded(map: MapSimple) {
       upsertFeature(feature);
     },
     deleteFeature: async (feature) => {
-      const key = featureKey(feature);
-      if (key == null) return;
       collection.features = collection.features.filter(
-        (f) => featureKey(f) !== key,
+        (f) => !sameFeature(f, feature),
       );
     },
     selectFeature: async ({ point }, { mapId }) => {
@@ -118,10 +107,7 @@ function onMapLoaded(map: MapSimple) {
         hit = getFirstFeatureByMap(m, point, [...RESULT_LAYERS]);
       });
       if (!hit) return undefined;
-      const key = featureKey(hit);
-      const fromStore = collection.features.find(
-        (f) => key != null && featureKey(f) === key,
-      );
+      const fromStore = collection.features.find((f) => sameFeature(f, hit!));
       return fromStore ?? hit;
     },
     redraw: (mapId) => paintResult(mapId),

@@ -1,69 +1,178 @@
-import type { WithMapPropType } from '@hungpvq/map-core';
 import {
+  EventClick,
+  EventMouseMove,
+  type MapControlButtonUIState,
+  type MapSimple,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import {
+  InspectController,
   brightColor,
-  generateColoredLayers,
   generateInspectStyle,
-  getSourcesFromMap,
-  isInspectStyle,
-  markInspectStyle,
-  type InspectStyleSpecification,
+  renderPopup as defaultRenderPopup,
+  type InspectControllerOptions,
 } from '@hungpvq/map-draw';
 import {
   MapControlButton,
   ModuleContainer,
   defaultMapProps,
+  useEventMap,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
-import { mdiMagnify } from '@mdi/js';
+import { mdiMap, mdiMapSearch } from '@mdi/js';
 import Icon from '@mdi/react';
-import type { StyleSpecification } from 'maplibre-gl';
-import { useCallback, useEffect, useRef } from 'react';
+import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { INSPECT_CONTROL_LOCALE } from '../../locale';
 
-export type InspectControlProps = WithMapPropType;
+/** Same icon pair as Vue InspectControl: map when idle, map-search when inspecting. */
+const INSPECT_ICONS = {
+  map: mdiMap,
+  inspect: mdiMapSearch,
+} as const;
+
+export type InspectControlProps = WithMapPropType & {
+  showInspectDefault?: boolean;
+  useInspectStyle?: boolean;
+  showInspectMapPopup?: boolean;
+  showInspectMapPopupOnHover?: boolean;
+  showMapPopup?: boolean;
+  showMapPopupOnHover?: boolean;
+  blockHoverPopupOnClick?: boolean;
+  buildInspectStyle?: InspectControllerOptions['buildInspectStyle'];
+  backgroundColor?: string;
+  assignLayerColor?: InspectControllerOptions['assignLayerColor'];
+  renderPopup?: InspectControllerOptions['renderPopup'];
+  selectThreshold?: number;
+  queryParameters?: QueryRenderedFeaturesOptions;
+};
 
 /**
- * Thin React InspectControl — same control id as Vue (`mapInspectControl`).
- * Full popup HTML parity remains Vue-first; this toggles inspect style layers.
+ * InspectControl — same control id and logic as Vue (`mapInspectControl`).
+ * Pointer UX uses EventClick / EventMouseMove + useEventMap.
  */
 export function InspectControl(props: InspectControlProps) {
-  const merged = { ...defaultMapProps, ...props };
-  const originalStyleRef = useRef<StyleSpecification | null>(null);
-  const [active, setActive] = useShow(false);
-  const { mapId, moduleContainerProps, callMap, order } = useMap({
-    ...merged,
-    controlId: 'mapInspectControl',
-  });
+  const merged = {
+    ...defaultMapProps,
+    showInspectDefault: false,
+    useInspectStyle: true,
+    showInspectMapPopup: true,
+    showInspectMapPopupOnHover: false,
+    showMapPopup: false,
+    showMapPopupOnHover: true,
+    blockHoverPopupOnClick: false,
+    buildInspectStyle: generateInspectStyle,
+    backgroundColor: '#fff',
+    assignLayerColor: brightColor,
+    renderPopup: defaultRenderPopup,
+    selectThreshold: 5,
+    queryParameters: {},
+    ...props,
+  };
+
+  const [active, setActive] = useShow(merged.showInspectDefault);
+  const iconPath = active ? INSPECT_ICONS.inspect : INSPECT_ICONS.map;
+  const controlSyncRef = useRef<() => void>(() => undefined);
+  const syncPointerEventsRef = useRef<() => void>(() => undefined);
+
+  const controller = useMemo(
+    () =>
+      new InspectController({
+        showInspectMap: merged.showInspectDefault,
+        useInspectStyle: merged.useInspectStyle,
+        showInspectMapPopup: merged.showInspectMapPopup,
+        showInspectMapPopupOnHover: merged.showInspectMapPopupOnHover,
+        showMapPopup: merged.showMapPopup,
+        showMapPopupOnHover: merged.showMapPopupOnHover,
+        blockHoverPopupOnClick: merged.blockHoverPopupOnClick,
+        buildInspectStyle: merged.buildInspectStyle,
+        backgroundColor: merged.backgroundColor,
+        assignLayerColor: merged.assignLayerColor,
+        renderPopup: merged.renderPopup,
+        selectThreshold: merged.selectThreshold,
+        queryParameters: merged.queryParameters,
+        onToggle: (show) => {
+          setActive(show);
+          syncPointerEventsRef.current();
+          controlSyncRef.current();
+        },
+      }),
+    // Intentional: create once; options are snapshotted at mount like Vue.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const clickEvent = useRef(
+    new EventClick().setHandler(controller.handlePointerEvent),
+  );
+  const moveEvent = useRef(
+    new EventMouseMove().setHandler(controller.handlePointerEvent),
+  );
+
+  const onInit = useCallback(
+    (map: MapSimple) => {
+      controller.attach(map);
+      syncPointerEventsRef.current();
+    },
+    [controller],
+  );
+  const onDestroy = useCallback(() => {
+    syncPointerEventsRef.current = () => undefined;
+    controller.detach();
+  }, [controller]);
+
+  const { mapId, moduleContainerProps, order } = useMap(
+    {
+      ...merged,
+      controlId: 'mapInspectControl',
+    },
+    onInit,
+    onDestroy,
+  );
   const { trans, setLocaleDefault } = useLang(mapId);
+
+  const { add: addEventClick, remove: removeEventClick } = useEventMap(
+    mapId,
+    clickEvent.current,
+    false,
+    'inspect-control',
+  );
+  const { add: addEventMouseMove, remove: removeEventMouseMove } = useEventMap(
+    mapId,
+    moveEvent.current,
+    false,
+    'inspect-control',
+  );
+
+  syncPointerEventsRef.current = () => {
+    removeEventClick();
+    removeEventMouseMove();
+    if (controller.needsClickEvent()) {
+      addEventClick();
+    }
+    if (controller.needsHoverEvent()) {
+      addEventMouseMove();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      removeEventClick();
+      removeEventMouseMove();
+    };
+  }, [removeEventClick, removeEventMouseMove]);
 
   useEffect(() => {
     setLocaleDefault(INSPECT_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
   const toggle = useCallback(() => {
-    callMap((map) => {
-      const style = map.getStyle() as InspectStyleSpecification;
-      if (isInspectStyle(style)) {
-        if (originalStyleRef.current) {
-          map.setStyle(originalStyleRef.current);
-        }
-        setActive(false);
-        return;
-      }
-      originalStyleRef.current = structuredClone(style);
-      const sources = getSourcesFromMap(map);
-      const colored = generateColoredLayers(sources, brightColor);
-      const next = markInspectStyle(
-        generateInspectStyle(style, colored, { backgroundColor: '#fff' }),
-      );
-      map.setStyle(next);
-      setActive(true);
-    });
-  }, [callMap, setActive]);
+    controller.toggle();
+  }, [controller]);
 
   useRegisterMapControl(mapId, {
     id: 'mapInspectControl',
@@ -71,7 +180,9 @@ export function InspectControl(props: InspectControlProps) {
     title: trans('map.inspect-control.button'),
     buttonPosition: merged.position,
     show: active,
-    setShow: (v) => setActive(v),
+    setShow: (v) => {
+      controller.setShowInspectMap(v);
+    },
     getProps: () => ({ position: merged.position }),
     actions: [{ type: 'mapInspectControl', run: () => toggle() }],
   });
@@ -79,15 +190,17 @@ export function InspectControl(props: InspectControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapInspectControl',
-    getState: () => ({
+    getState: (): MapControlButtonUIState => ({
       visible: true,
       active,
       title: trans('map.inspect-control.button'),
       order,
-      icon: { type: 'mdi' as const, path: mdiMagnify },
+      icon: { type: 'mdi', path: iconPath },
     }),
     onClick: () => toggle(),
   });
+
+  controlSyncRef.current = () => control.sync();
 
   useEffect(() => {
     control.sync();
@@ -102,7 +215,7 @@ export function InspectControl(props: InspectControlProps) {
           title={trans('map.inspect-control.button')}
           onClick={() => (state ? control.onAction() : toggle())}
         >
-          <Icon path={mdiMagnify} size={0.75} />
+          <Icon path={iconPath} size={0.75} />
         </MapControlButton>
       }
     />

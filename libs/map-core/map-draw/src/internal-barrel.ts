@@ -3,7 +3,7 @@ export { DrawService } from './services/draw.service';
 export { DrawingType, DrawingTypeName } from './drawing-type';
 export { getDrawStyles } from './theme';
 export { default as StaticMode } from './modes/static-mode';
-export { getFeatureByMap, getFirstFeatureByMap } from './utils';
+export { getFeatureByMap, getFirstFeatureByMap, getFeatureId, sameFeature } from './utils';
 export {
   MapDraw,
   DRAW_MODES,
@@ -39,3 +39,8 @@ export {
 export { generateInspectStyle, generateColoredLayers } from './inspect/stylegen';
 export { brightColor } from './inspect/colors';
 export { renderPopup } from './inspect/renderPopup';
+export {
+  InspectController,
+  buildInspectQueryBox,
+  type InspectControllerOptions,
+} from './inspect/controller';

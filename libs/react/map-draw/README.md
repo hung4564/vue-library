@@ -37,4 +37,4 @@ export function Example() {
 }
 ```
 
-Shared protocol: `@hungpvq/map-draw`. Docs: `/map/draw/` (Inspect under the same hub). Demo: `apps/react/demo-map` → `/#/draw`.
+Shared protocol: `@hungpvq/map-draw` (adapters do not re-export core). Docs: `/map/draw/` (Inspect under the same hub). Demo: `apps/react/demo-map` → `/#/draw`.

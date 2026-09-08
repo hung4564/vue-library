@@ -92,4 +92,4 @@ export function Example() {
 
 ## Inspect (same package)
 
-Export `InspectControl` from vue/react-map-draw with control id **`mapInspectControl`**. Vue includes popup/hover inspect UX; React ships a thin style-toggle shell. See hub [Inspect](../index.md#inspect).
+Export `InspectControl` from vue/react-map-draw with control id **`mapInspectControl`**. Both use shared `InspectController` from `@hungpvq/map-draw` (style toggle + popup/hover). See hub [Inspect](../index.md#inspect).

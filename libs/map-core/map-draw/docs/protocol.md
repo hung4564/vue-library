@@ -1,16 +1,20 @@
 # Draw protocol
 
-Shared types, services, and **`MapDraw`** (re-export of `@mapbox/mapbox-gl-draw`) live in `@hungpvq/map-draw`. UI adapters re-export Stable symbols and add framework store/hooks.
+Shared types, services, and **`MapDraw`** (re-export of `@mapbox/mapbox-gl-draw`) live in **`@hungpvq/map-draw`**.
+
+Adapters (`@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`) export **UI/hooks/locales only**. Import protocol, types, and helpers from `@hungpvq/map-draw` — adapters do **not** re-export core.
 
 ## Packages
 
 | Package | Role |
 | --- | --- |
-| `@hungpvq/map-draw` | `MapDraw` (`@mapbox/mapbox-gl-draw`), `DrawService`, `DrawingType`, theme, inspect helpers |
+| `@hungpvq/map-draw` | `MapDraw`, `DrawService`, `DrawingType`, `StaticMode`, `getDrawStyles`, id helpers, inspect helpers |
 | `@hungpvq/vue-map-draw` | `DrawControl`, `InspectControl`, `useMapDraw`, locales, CSS |
 | `@hungpvq/react-map-draw` | Same public control names; Inspect thinner |
 
 ## `MapDraw` (editing)
+
+Mounting draw almost always needs **`StaticMode`** + **`getDrawStyles`** (Stable):
 
 ```ts
 import { MapDraw, StaticMode, getDrawStyles } from '@hungpvq/map-draw';
@@ -43,12 +47,28 @@ Session config passed to `useMapDraw(mapId).start(config)` (and optionally Vue `
 
 Type name is **`MapDrawOption`** (not `DrawOption`). Engine options use **`MapDrawOptions`** (`MapboxDrawOptions`).
 
+## Stable feature ids
+
+For result GeoJSON layers (select / update / delete):
+
+1. After add, `DrawService` sets `properties.id = feature.id`.
+2. Use `promoteId: 'id'` on the GeoJSON source so `queryRenderedFeatures` exposes ids.
+3. Prefer helpers from `@hungpvq/map-draw`:
+   - `getFeatureId(feature)` — `feature.id` else `properties.id`
+   - `sameFeature(a, b)` — string-normalized id equality
+
+```ts
+import { getFeatureId, sameFeature } from '@hungpvq/map-draw';
+
+collection.features = collection.features.filter((f) => !sameFeature(f, hit));
+```
+
 ## Control ids
 
 | Id | Purpose |
 | --- | --- |
 | `mapDrawDraftList` | Draft feature list panel when draft mode is on |
-| `mapInspectControl` | Inspect button (Vue rich / React thin) |
+| `mapInspectControl` | Inspect button (Vue + React; shared `InspectController`) |
 
 Keep these ids identical across Vue and React.
 
@@ -56,7 +76,8 @@ Keep these ids identical across Vue and React.
 
 - `MAP_DRAW_EVENT` — mitt keys for draw **session** lifecycle (`start` / `end`).
 - `DrawService` — save collection + feature bookkeeping (framework-agnostic).
+  - Selecting an existing feature for edit marks **`updated`** (not `added`), even if Mapbox fires `draw.create`.
 
 ## DrawingType
 
-Use `DrawingType` / `DrawingTypeName` / `DRAW_MODES` from `@hungpvq/map-draw` (or adapter re-exports) for `drawSupports` and `changeMode`.
+Use `DrawingType` / `DrawingTypeName` / `DRAW_MODES` from **`@hungpvq/map-draw`** for `drawSupports` and `changeMode`.

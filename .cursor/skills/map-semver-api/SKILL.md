@@ -74,7 +74,7 @@ Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may 
 
 ## Draw Stable surface (quick)
 
-- Core: `DrawService`, `DrawingType` / `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, draw styles helpers
+- Core: `DrawService`, `DrawingType` / `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, `MapDraw`, `StaticMode`, `getDrawStyles`, `getFeatureId` / `sameFeature`
 - Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` (no core re-exports)
 - Ids: `mapDrawDraftList`, `mapInspectControl`
 - Package CSS entry: `./style.css`

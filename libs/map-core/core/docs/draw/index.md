@@ -123,9 +123,9 @@ Inspect is part of the **draw** packages (same control id on Vue and React): `ma
 
 | | Vue `@hungpvq/vue-map-draw` | React `@hungpvq/react-map-draw` |
 | --- | --- | --- |
-| Export | `InspectControl` | `InspectControl` (thin) |
-| Behavior | Style toggle + feature popup / hover UX | Style-toggle shell; same registry id |
-| Helpers | Shared inspect style helpers live in `@hungpvq/map-draw` | Same core helpers |
+| Export | `InspectControl` | `InspectControl` |
+| Behavior | Shared `InspectController` (style + popup/hover) | Same |
+| Helpers | `@hungpvq/map-draw` inspect helpers | Same |
 
 Mount next to `DrawControl` when you need layer inspect; there is no separate demo route — use `/#/draw` and add `<InspectControl />` in your app if needed.
 
@@ -149,4 +149,6 @@ Mount next to `DrawControl` when you need layer inspect; there is no separate de
 
 - Prefer `useMapDraw(mapId).start(config)` for sessions; optional `drawOptions` prop on Vue `DrawControl` is `MapDrawOption`.
 - Type is **`MapDrawOption`**, not `DrawOption`.
+- Import protocol/types/helpers from `@hungpvq/map-draw`; adapters do not re-export core.
+- Result layers: `promoteId: 'id'` + `getFeatureId` / `sameFeature` for select/update/delete.
 - Protocol details: [protocol](./protocol.md) · Component: [DrawControl](./module/DrawControl.md)

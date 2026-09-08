@@ -16,11 +16,15 @@ export {
   generateInspectStyle,
   getDrawStyles,
   getFeatureByMap,
+  getFeatureId,
   getFirstFeatureByMap,
   getSourcesFromMap,
+  InspectController,
+  buildInspectQueryBox,
   isInspectStyle,
   markInspectStyle,
   renderPopup,
+  sameFeature,
 } from './internal-barrel';
 
 export type {
@@ -35,6 +39,7 @@ export type {
   DrawSelectionChangeEvent,
   DrawUpdateEvent,
   IDraftRecord,
+  InspectControllerOptions,
   InspectStyleSpecification,
   MapDrawAction,
   MapDrawConfig,

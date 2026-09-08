@@ -15,7 +15,7 @@ import '@hungpvq/vue-map-draw/style.css';
 
 ## Usage
 
-Prefer `useMapDraw(mapId).start(config)` with **`MapDrawOption`** (CRUD + `drawSupports` + optional `callback`).
+Prefer `useMapDraw(mapId).start(config)` with **`MapDrawOption`** from `@hungpvq/map-draw` (CRUD + `drawSupports` + optional `callback`). Adapters do not re-export core protocol.
 
 ```vue
 <template>
