@@ -10,6 +10,7 @@ export const ATTRIBUTE_TABLE_LOCALE = {
       showSelected: 'Selected',
       clear: 'Clear selection',
       export: 'Export',
+      'export-selected': 'Export selected',
     },
   },
 };

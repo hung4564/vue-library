@@ -15,7 +15,12 @@
         :title="item.getName()"
         @click="emit('click', item)"
       >
-        <span>{{ item.getName() }}</span>
+        <template v-for="(part, i) in nameParts" :key="i">
+          <mark v-if="part.match" class="layer-item__search-match">{{
+            part.text
+          }}</mark>
+          <span v-else>{{ part.text }}</span>
+        </template>
       </span>
       <div class="v-spacer"></div>
       <div class="layer-item__title-action">
@@ -128,7 +133,7 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction, MenuContextSource } from '@hungpvq/map-dataset/menu';
 import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { findAllComponentsByType } from '@hungpvq/map-dataset';
+import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
@@ -143,6 +148,7 @@ const props = defineProps<{
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
   menuContext?: MenuContextSource;
+  searchQuery?: string;
 }>();
 const emit = defineEmits([
   'click',
@@ -175,6 +181,9 @@ const conditionCtx = computed(() =>
 const onRemove = () => {
   emit('click:remove', props.item);
 };
+const nameParts = computed(() =>
+  splitSearchHighlight(props.item.getName?.() ?? '', props.searchQuery ?? ''),
+);
 const button_menus = computed<MenuAction<any>[]>(() => {
   if (!props.item) {
     return [];

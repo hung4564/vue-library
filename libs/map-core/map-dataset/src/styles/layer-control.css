@@ -277,6 +277,17 @@ svg.layer-control__empty-icon {
   color: inherit;
 }
 
+.layer-item__search-match {
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 28%,
+    transparent
+  );
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
 .layer-item__title-action {
   display: flex;
   flex-grow: 0;

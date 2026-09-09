@@ -66,33 +66,67 @@ export function getMapBoxCanvas(
 }
 
 /**
- * Wait for map to finish loading
- *
- * @param map - The map instance
- * @param max - Maximum number of checks (default: 100)
- * @returns Promise that resolves when map is loaded or max checks reached
+ * Wait until the map reports loaded and (when available) tiles are loaded.
  */
-export function waitMapLoadDone(map: MapSimple, max = 100): Promise<boolean> {
+export function waitMapIdleAndTiles(
+  map: MapSimple,
+  max = 100,
+): Promise<boolean> {
   const check = (
     resolve: (value: boolean | PromiseLike<boolean>) => void,
     index = 1,
   ) => {
-    if (map.loaded()) resolve(true);
-    else if (index === max) {
-      resolve(true);
-    } else setTimeout(() => check(resolve, ++index), 100);
+    const tilesOk =
+      typeof (map as { areTilesLoaded?: () => boolean }).areTilesLoaded !==
+      'function'
+        ? true
+        : Boolean((map as { areTilesLoaded: () => boolean }).areTilesLoaded());
+    if (map.loaded() && tilesOk) resolve(true);
+    else if (index === max) resolve(true);
+    else setTimeout(() => check(resolve, ++index), 100);
   };
-
   return new Promise((resolve) => check(resolve, 1));
 }
 
+/** @deprecated Prefer `waitMapIdleAndTiles` (also checks tiles when available). */
+export function waitMapLoadDone(map: MapSimple, max = 100): Promise<boolean> {
+  return waitMapIdleAndTiles(map, max);
+}
+
+function applyCanvasWatermark(
+  source: HTMLCanvasElement,
+  watermark: string,
+): string {
+  const out = document.createElement('canvas');
+  out.width = source.width;
+  out.height = source.height;
+  const ctx = out.getContext('2d');
+  if (!ctx) return source.toDataURL();
+  ctx.drawImage(source, 0, 0);
+  const size = Math.max(12, Math.round(out.width / 48));
+  ctx.font = `${size}px sans-serif`;
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(watermark, out.width - 12, out.height - 12);
+  return out.toDataURL();
+}
+
+export type ExportMapboxOptions = {
+  /** Optional corner watermark painted after tiles idle. */
+  watermark?: string;
+  /** Pixel density hint for advanced export width/height conversion (default 96). */
+  dpi?: number;
+};
+
 /**
  * Export map as image data URL
- *
- * @param map - The map instance
- * @returns Promise that resolves with the image data URL
  */
-export function exportMapbox(map: MapSimple): Promise<string> {
+export async function exportMapbox(
+  map: MapSimple,
+  options: ExportMapboxOptions = {},
+): Promise<string> {
+  await waitMapIdleAndTiles(map);
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
     const canvas = map.getCanvas();
     container.style.width = canvas.clientWidth + 'px';
@@ -101,8 +135,10 @@ export function exportMapbox(map: MapSimple): Promise<string> {
   return new Promise((resolve) => {
     renderMap.once('idle', () => {
       const canvas = renderMap.getCanvas();
-
-      resolve(canvas.toDataURL());
+      const dataUrl = options.watermark
+        ? applyCanvasWatermark(canvas, options.watermark)
+        : canvas.toDataURL();
+      resolve(dataUrl);
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);
     });
@@ -111,14 +147,6 @@ export function exportMapbox(map: MapSimple): Promise<string> {
 
 /**
  * Export map as image data URL with custom dimensions and position
- *
- * @param map - The map instance
- * @param options - Export options
- * @param options.width - Width of the exported image
- * @param options.height - Height of the exported image
- * @param options.startX - Starting X position (currently unused but kept for compatibility)
- * @param options.startY - Starting Y position (currently unused but kept for compatibility)
- * @returns Promise that resolves with the image data URL
  */
 export async function exportMapboxWithOptions(
   map: MapSimple,
@@ -127,17 +155,23 @@ export async function exportMapboxWithOptions(
     height: number;
     startX: number;
     startY: number;
+    watermark?: string;
+    dpi?: number;
   },
 ): Promise<string> {
+  await waitMapIdleAndTiles(map);
+  const dpi = options.dpi ?? 96;
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
-    container.style.width = toPixels(+options.width, 1);
-    container.style.height = toPixels(+options.height, 1);
+    container.style.width = toPixels(+options.width, dpi / 96);
+    container.style.height = toPixels(+options.height, dpi / 96);
   });
   return new Promise((resolve) => {
     renderMap.once('idle', () => {
       const canvas = renderMap.getCanvas();
-
-      resolve(canvas.toDataURL());
+      const dataUrl = options.watermark
+        ? applyCanvasWatermark(canvas, options.watermark)
+        : canvas.toDataURL();
+      resolve(dataUrl);
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);
     });

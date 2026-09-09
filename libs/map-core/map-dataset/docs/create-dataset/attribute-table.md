@@ -2,7 +2,9 @@
 
 Tabular view of GeoJSON feature properties. The **Attribute table** item is added to the list ⋮ menu when the layer has a GeoJSON source or a data-management sibling. Raster / vector-tile layers hide it.
 
-Select rows (checkbox or click) to highlight them. **Zoom to selection** is off by default — turn it on to `fitBounds` when the selection changes. **Export** is the same format menu as the layer ⋮ **Export** item (GeoJSON, KML, CSV, Shapefile) and uses the same `exportDatasetGeo` / `createExportGeoSubmenu` path. It downloads the currently visible rows (search + All / Selected filter). Row actions come from identify menus plus [`menu` dataset](./with-helper-data.md#menu-createdatasetpartmenucomponent) entries with `for: 'item'`.
+Select rows (checkbox or click) to highlight them. **Zoom to selection** is off by default — turn it on to `fitBounds` when the selection changes. **Export** is the same format menu as the layer ⋮ **Export** item (GeoJSON, KML, CSV, Shapefile) and uses the same `exportDatasetGeo` / `createExportGeoSubmenu` path. If there are selected rows, export uses that selection; otherwise it exports the currently visible rows (search + All / Selected filter). Row actions come from identify menus plus [`menu` dataset](./with-helper-data.md#menu-createdatasetpartmenucomponent) entries with `for: 'item'`.
+
+Column headers support client-side sorting (`toggleAttributeTableSort` / `sortAttributeTableRows`).
 
 Needs `createDatasetRegistryPlugin()` and [`ComponentManagementControl`](../module/ComponentManagementControl.md) so the dialog can open. Mount [`LayerHighlight`](../module/LayerHighlight.md) if you want the selected row painted on the map.
 

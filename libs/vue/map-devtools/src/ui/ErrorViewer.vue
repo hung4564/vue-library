@@ -1,12 +1,23 @@
 <template>
   <div class="error-viewer">
     <div class="error-header">
-      <h3>Errors ({{ errors.length }})</h3>
-      <button @click="clearErrors" class="clear-btn">Clear</button>
+      <h3>Errors ({{ filteredErrors.length }})</h3>
+      <div class="error-header__actions">
+        <input
+          v-model="mapIdFilter"
+          class="error-filter"
+          type="search"
+          placeholder="Filter mapId"
+          aria-label="Filter by mapId"
+        />
+        <button type="button" class="clear-btn" @click="clearErrors">
+          Clear
+        </button>
+      </div>
     </div>
     <div class="error-list">
       <div
-        v-for="(error, index) in errors"
+        v-for="(error, index) in filteredErrors"
         :key="index"
         class="error-item"
         :class="`error-${error.recoverable ? 'recoverable' : 'fatal'}`"
@@ -16,6 +27,17 @@
           <span class="error-time">{{ formatTime(error.timestamp) }}</span>
         </div>
         <div class="error-message">{{ error.message }}</div>
+        <div
+          v-if="error.context && (error.context as { mapId?: string }).mapId"
+          class="error-mapid"
+        >
+          mapId: {{ (error.context as { mapId?: string }).mapId }}
+        </div>
+        <div class="error-item-actions">
+          <button type="button" class="copy-btn" @click="copyStack(error)">
+            Copy stack
+          </button>
+        </div>
         <details v-if="error.context" class="error-details">
           <summary>Context</summary>
           <pre>{{ JSON.stringify(error.context, null, 2) }}</pre>
@@ -25,24 +47,63 @@
           <pre>{{ error.stack }}</pre>
         </details>
       </div>
-      <div v-if="errors.length === 0" class="empty-state">No errors logged</div>
+      <div v-if="filteredErrors.length === 0" class="empty-state">
+        No errors logged
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { devtoolState } from '../store';
 
+const mapIdFilter = ref('');
 const errors = computed(() => devtoolState.errors);
+const filteredErrors = computed(() => {
+  const q = mapIdFilter.value.trim().toLowerCase();
+  if (!q) return errors.value;
+  return errors.value.filter((error) => {
+    const mapId = String(
+      (error.context as { mapId?: string } | undefined)?.mapId ?? '',
+    ).toLowerCase();
+    return (
+      mapId.includes(q) ||
+      error.message.toLowerCase().includes(q) ||
+      String(error.code ?? '')
+        .toLowerCase()
+        .includes(q)
+    );
+  });
+});
 
 function clearErrors() {
   devtoolState.errors = [];
 }
 
 function formatTime(timestamp: number): string {
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString();
+  return new Date(timestamp).toLocaleTimeString();
+}
+
+async function copyStack(error: {
+  message: string;
+  code?: string;
+  stack?: string;
+  context?: unknown;
+}) {
+  const text = [
+    error.code,
+    error.message,
+    error.stack,
+    error.context ? JSON.stringify(error.context, null, 2) : '',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+  try {
+    await navigator.clipboard?.writeText(text);
+  } catch {
+    // ignore
+  }
 }
 </script>
 
@@ -58,6 +119,7 @@ function formatTime(timestamp: number): string {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   padding: 12px;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -68,14 +130,36 @@ function formatTime(timestamp: number): string {
   font-weight: 600;
 }
 
-.clear-btn {
+.error-header__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.error-filter {
+  max-width: 140px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.clear-btn,
+.copy-btn {
   padding: 4px 12px;
-  background: #f44336;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+}
+
+.clear-btn {
+  background: #f44336;
+}
+
+.copy-btn {
+  background: #1976d2;
 }
 
 .clear-btn:hover {
@@ -127,6 +211,16 @@ function formatTime(timestamp: number): string {
   font-size: 13px;
   color: #333;
   margin-bottom: 8px;
+}
+
+.error-mapid {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.error-item-actions {
+  margin-bottom: 6px;
 }
 
 .error-details {

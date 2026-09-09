@@ -33,6 +33,10 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'file-drop': 'Drop files here or click to browse',
   parsing: 'Reading file…',
   'parse-error': 'Could not read this file',
+  'crs-mismatch':
+    'File CRS differs from selected CRS; data will be reprojected.',
+  'multi-file-error':
+    'Drop one GIS file, or a shapefile set (.shp + sidecars / .zip).',
   creating: 'Creating layer…',
   'create-error': 'Failed to create layer',
   'create-error-data-too-large':
@@ -63,6 +67,7 @@ export const LAYER_CONTROL_LOCALE = {
     'layer-control': {
       title: 'Layer Control',
       search: 'Search layers',
+      'search-empty': 'No layers match',
       empty: 'No layers yet',
       'empty-hint': 'Create a layer to get started',
       'create-btn': 'Create Layer',

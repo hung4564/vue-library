@@ -41,6 +41,11 @@ yarn add @hungpvq/react-map-core
 - ✅ **TypeScript support** - Full TypeScript support
 - ✅ **Vue 3 Composition API** - Modern Vue 3 Composition API
 
+## Export notes
+
+- Snapshots wait for map idle and loaded tiles through `waitMapIdleAndTiles`.
+- Print utilities support optional watermark text and DPI-aware export sizing.
+
 ## 🚀 Basic Usage
 
 ### Basic Print Control

@@ -30,6 +30,7 @@ export type IdentifyResultLayerItem = {
 export type IdentifyResultUpdatePayload = {
   show?: boolean;
   loading?: boolean;
+  error?: string | null;
   items?: IdentifyResultGrouped[];
   origin?: { latitude: number; longitude: number };
   layerItems?: IdentifyResultLayerItem[];

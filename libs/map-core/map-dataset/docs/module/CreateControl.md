@@ -23,6 +23,12 @@ npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
 
 Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dataset/create-control` — see [GIS worker](../worker.md).
 
+## UX notes
+
+- The dialog keeps a small draft in `sessionStorage` (type, name, CRS) via `loadCreateControlDraft` / `saveCreateControlDraft`.
+- If loaded file CRS differs from selected CRS, UI warns that data will be reprojected.
+- Multi-file upload accepts one GIS file, or one shapefile set (`.shp` + sidecars / `.zip`).
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

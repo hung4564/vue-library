@@ -225,6 +225,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   padding: 12px;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -233,6 +234,20 @@
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+}
+
+.error-viewer__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-viewer__filter {
+  max-width: 140px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 .error-viewer__clear {
@@ -294,6 +309,26 @@
   font-size: 13px;
   color: #333;
   margin-bottom: 8px;
+}
+
+.error-viewer__mapid {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.error-viewer__actions {
+  margin-bottom: 6px;
+}
+
+.error-viewer__copy {
+  padding: 4px 12px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .error-viewer__details {

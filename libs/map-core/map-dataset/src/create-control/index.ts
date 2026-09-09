@@ -3,6 +3,13 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  * VECTOR/RASTER samples live on `@hungpvq/map-dataset/vector-tile` and `/raster`.
  */
+export {
+  clearCreateControlDraft,
+  createControlDraftKey,
+  loadCreateControlDraft,
+  saveCreateControlDraft,
+} from './draft';
+export type { CreateControlDraft } from './draft';
 export { applyCreateControlSample } from './apply-sample';
 export { reportCreateLayerError } from './create-error';
 export type { CreateLayerErrorContext } from './create-error';

@@ -247,6 +247,7 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
     'PRINT_CONTROL_LOCALE',
     'PrintableAreaManager',
     'PrintService',
+    'waitMapIdleAndTiles',
     'waitMapLoadDone',
   ],
   theme: [

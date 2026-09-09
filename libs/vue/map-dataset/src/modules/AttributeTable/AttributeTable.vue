@@ -7,7 +7,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, takePendingAttributeTableSelectRows, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload } from '@hungpvq/map-dataset';
+import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, sortAttributeTableRows, takePendingAttributeTableSelectRows, toggleAttributeTableSort, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload, type AttributeTableSortState } from '@hungpvq/map-dataset';
 import { createExportGeoSubmenu, createMenuItemExportGeo, getDatasetFeatureCollection, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
 import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMenuAction, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
@@ -57,11 +57,23 @@ const filterItems = computed(() => [
 const searchedRows = computed(() =>
   filterAttributeTableRows(rows.value, query.value),
 );
+const sortState = ref<AttributeTableSortState | null>(null);
+const sortedSearchedRows = computed(() =>
+  sortAttributeTableRows(searchedRows.value, sortState.value),
+);
 const visibleRows = computed(() => {
-  if (rowFilter.value !== 'selected') return searchedRows.value;
+  if (rowFilter.value !== 'selected') return sortedSearchedRows.value;
   const selected = new Set(selectedIds.value);
-  return searchedRows.value.filter((row) => selected.has(row.id));
+  return sortedSearchedRows.value.filter((row) => selected.has(row.id));
 });
+const exportRows = computed(() => {
+  if (selectedIds.value.length === 0) return visibleRows.value;
+  const selected = new Set(selectedIds.value);
+  return rows.value.filter((row) => selected.has(row.id));
+});
+function onSortColumn(key: string) {
+  sortState.value = toggleAttributeTableSort(sortState.value, key);
+}
 const scrollEl = ref<HTMLElement | null>(null);
 const scrollTop = ref(0);
 const viewportHeight = ref(0);
@@ -220,7 +232,7 @@ function applySelection(focus?: AttributeTableRow) {
   );
   if (!zoomToSelection.value) return;
   callMap((map) => {
-    fitBounds(map, current.feature as Feature);
+    fitBounds(map, current.feature as Feature, { mapId: mapId.value });
   });
 }
 function toggleRow(row: AttributeTableRow) {
@@ -249,8 +261,8 @@ function clearSelection() {
 const exportMenuItem = createMenuItemExportGeo({
   filename: (layer) => `${layer.getName?.() || 'layer'}-table`,
   getCollection: () =>
-    visibleRows.value.length
-      ? attributeTableRowsToFeatureCollection(visibleRows.value)
+    exportRows.value.length
+      ? attributeTableRowsToFeatureCollection(exportRows.value)
       : null,
 });
 const exportChildren = computed(() =>
@@ -261,7 +273,7 @@ const exportMenuRef = ref<{
   close: () => void;
 }>();
 function onExportClick(event: MouseEvent) {
-  if (visibleRows.value.length === 0) return;
+  if (exportRows.value.length === 0) return;
   exportMenuRef.value?.open(event);
 }
 function onExportChild(action: MenuAction, event: MouseEvent) {
@@ -325,11 +337,15 @@ watch(zoomToSelection, (enabled) => {
               />
               <BaseButton
                 class="attribute-table__export"
-                :disabled="visibleRows.length === 0"
+                :disabled="exportRows.length === 0"
                 @click.stop="onExportClick"
               >
                 <SvgIcon :size="16" type="mdi" :path="mdiDownload" />
-                {{ trans('map.attribute-table.export') }}
+                {{
+                  selectedIds.length
+                    ? trans('map.attribute-table.export-selected')
+                    : trans('map.attribute-table.export')
+                }}
                 <SvgIcon :size="16" type="mdi" :path="mdiChevronDown" />
               </BaseButton>
             </div>
@@ -378,8 +394,20 @@ watch(zoomToSelection, (enabled) => {
                       @change="toggleSelectAll"
                     />
                   </th>
-                  <th v-for="column in tableColumns" :key="column.key">
-                    {{ column.label }}
+                  <th
+                    v-for="column in tableColumns"
+                    :key="column.key"
+                    :class="{ 'is-sorted': sortState?.key === column.key }"
+                    @click="onSortColumn(column.key)"
+                  >
+                    {{ column.label
+                    }}{{
+                      sortState?.key === column.key
+                        ? sortState.dir === 'asc'
+                          ? ' ↑'
+                          : ' ↓'
+                        : ''
+                    }}
                   </th>
                   <th v-if="itemMenus.length" class="attribute-table__actions" />
                 </tr>

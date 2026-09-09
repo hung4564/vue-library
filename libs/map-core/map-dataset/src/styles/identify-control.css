@@ -131,7 +131,8 @@
   cursor: pointer;
 }
 
-.identify-control-child-item:hover {
+.identify-control-child-item:hover,
+.identify-control-child-item.is-focused {
   background: var(--map-identify-item-hover, rgba(0, 0, 0, 0.04));
 }
 

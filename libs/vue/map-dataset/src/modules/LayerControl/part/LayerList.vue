@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerNameMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
@@ -24,6 +24,7 @@ import {
   computed,
   nextTick,
   onMounted,
+  onUnmounted,
   ref,
   shallowReactive,
   VNode,
@@ -86,21 +87,22 @@ const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
 const views = ref<Array<IListViewUI>>([]);
 const layerSearch = ref('');
+const debouncedSearch = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 const datasetIds = computed(() => {
   return getDatasetIds().value;
 });
 const listDisabledDrag = computed(
-  () => props.disabledDrag || Boolean(layerSearch.value.trim()),
+  () => props.disabledDrag || Boolean(debouncedSearch.value.trim()),
 );
 function getFilteredViews() {
-  const q = layerSearch.value.trim().toLowerCase();
-  if (!q) return views.value;
+  const q = debouncedSearch.value;
+  if (!q.trim()) return views.value;
   return views.value.filter((view) =>
-    String(view.getName?.() ?? '')
-      .toLowerCase()
-      .includes(q),
+    layerNameMatchesSearch(view.getName?.(), q),
   );
 }
+const filteredViews = computed(() => getFilteredViews());
 watch(
   datasetIds,
   () => {
@@ -108,11 +110,18 @@ watch(
   },
   { deep: true },
 );
-watch(layerSearch, () => {
-  nextTick(() => updateTree());
+watch(layerSearch, (value) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    debouncedSearch.value = value;
+    nextTick(() => updateTree());
+  }, 150);
 });
 onMounted(() => {
   updateList();
+});
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer);
 });
 const groupRef = ref<InstanceType<typeof DraggableGroupList> | undefined>(
   undefined,
@@ -164,7 +173,7 @@ function updateList() {
   });
 }
 function updateTree() {
-  if (groupRef.value) groupRef.value.update(getFilteredViews() as any);
+  if (groupRef.value) groupRef.value.update(filteredViews.value as any);
 }
 function getViewFromStore() {
   const viewSource = getAllComponentsByType<IListViewUI>('list');
@@ -280,8 +289,13 @@ function onLayerAction({
           {{ trans('map.layer-control.create-btn') }}
         </button>
       </div>
+      <div v-else-if="debouncedSearch.trim() && !filteredViews.length" class="layer-control__empty">
+        <div class="layer-control__empty-title">
+          {{ trans('map.layer-control.search-empty') }}
+        </div>
+      </div>
       <DraggableGroupList
-        v-show="views.length"
+        v-show="views.length && filteredViews.length"
         ref="groupRef"
         v-model:items="views"
         v-model:selected="layers_select"
@@ -302,6 +316,7 @@ function onLayerAction({
               :item="item"
               :defaultComponent="LayerItem"
               :is-selected="isSelected"
+              :searchQuery="debouncedSearch"
               @click="toggleSelect(item)"
               @click:remove="onRemoveLayer"
               @click:content-menu="handleContextClick"

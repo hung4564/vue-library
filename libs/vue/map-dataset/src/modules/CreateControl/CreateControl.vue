@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
-import { CREATE_CONTROL_LOCALE, reportCreateLayerError, suggestLayerName } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,
@@ -11,7 +11,7 @@ import {
   useMap,
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import { computed, onMounted, ref, type Ref } from 'vue';
+import { computed, onMounted, ref, watch, type Ref } from 'vue';
 import { useMapDataset } from '../../store';
 import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
 
@@ -77,6 +77,32 @@ const form = ref({
     ...helper.default_value,
   } as Record<string, any>,
 });
+
+onMounted(() => {
+  const draft = loadCreateControlDraft(mapId.value);
+  if (!draft) return;
+  if (draft.type === 'vector' || draft.type === 'raster') {
+    onChangeType(draft.type);
+  }
+  if (draft.name) form.value.config.name = draft.name;
+  if (draft.crs) form.value.config.crs = draft.crs;
+});
+
+watch(
+  () => ({
+    type: form.value.type,
+    name: form.value.config?.name,
+    crs: form.value.config?.crs,
+  }),
+  (snapshot) => {
+    saveCreateControlDraft(mapId.value, {
+      type: snapshot.type,
+      name: snapshot.name,
+      crs: snapshot.crs,
+    });
+  },
+  { deep: true },
+);
 
 const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
   value: x,

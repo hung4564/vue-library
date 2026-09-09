@@ -12,8 +12,10 @@ export {
   exportMapbox,
   exportMapboxWithOptions,
   getMapBoxCanvas,
+  waitMapIdleAndTiles,
   waitMapLoadDone,
 } from './utils';
+export type { ExportMapboxOptions } from './utils';
 
 export type { FormatType } from './ExportFile';
 export type { MapPrintStore, PrintOption, PrintOptions } from './types';

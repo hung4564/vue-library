@@ -1,5 +1,6 @@
 import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
 import { bbox as turfBbox } from '@turf/turf';
+import { UniversalRegistry } from '../registry/universal-registry';
 import type {
   CoordinatesNumber,
   Feature,
@@ -27,11 +28,18 @@ export interface FitBoundsOptions {
   zoom?: number;
   /**
    * Padding for MapLibre `fitBounds`.
-   * Default: inset plus open map sidebars so the target stays in the visible area.
+   * Default: inset plus open overlays so the target stays in the visible area.
    */
   padding?: number | PaddingOptions;
-  /** When true, skip measuring open sidebars (flat inset only). */
+  /** When true, skip measuring open overlays (flat inset only). */
   ignoreOverlays?: boolean;
+  /**
+   * Map id for registry-based overlay padding.
+   * When set with `controlIds`, open matching controls contribute estimated edge padding.
+   */
+  mapId?: string;
+  /** Limit registry padding to these control ids (requires `mapId`). */
+  controlIds?: string[];
 }
 
 export type GeojsonBbox = [number, number, number, number];
@@ -39,11 +47,20 @@ export type GeojsonBbox = [number, number, number, number];
 const DEFAULT_INSET = 50;
 /** Keep at least this much map visible on a side after overlay padding. */
 const MIN_VISIBLE_PX = 120;
+/** Fallback width/height when registry knows a control is open but DOM is missing. */
+const REGISTRY_SIDEBAR_PX = 360;
+const REGISTRY_FLOAT_PX = 320;
+const REGISTRY_POPUP_PX = 280;
 
 type EdgePadding = Required<PaddingOptions>;
+type EdgeAcc = { left: number; right: number; top: number; bottom: number };
 
 function basePadding(inset: number): EdgePadding {
   return { top: inset, bottom: inset, left: inset, right: inset };
+}
+
+function emptyEdges(): EdgeAcc {
+  return { left: 0, right: 0, top: 0, bottom: 0 };
 }
 
 function clampOverlay(
@@ -52,7 +69,10 @@ function clampOverlay(
   inset: number,
 ): number {
   if (!(overlayPx > 0) || !(axisSize > 0)) return 0;
-  const max = Math.max(inset, axisSize - Math.max(MIN_VISIBLE_PX, axisSize * 0.3));
+  const max = Math.max(
+    inset,
+    axisSize - Math.max(MIN_VISIBLE_PX, axisSize * 0.3),
+  );
   return Math.min(overlayPx, max);
 }
 
@@ -65,13 +85,142 @@ function resolveMapShell(container: HTMLElement): HTMLElement {
   );
 }
 
+function accumulateNearestEdge(
+  edges: EdgeAcc,
+  mapRect: DOMRect,
+  rect: DOMRect,
+  overlapW: number,
+  overlapH: number,
+  force?: 'left' | 'right' | 'top' | 'bottom',
+) {
+  if (force === 'left') {
+    edges.left = Math.max(edges.left, overlapW);
+    return;
+  }
+  if (force === 'right') {
+    edges.right = Math.max(edges.right, overlapW);
+    return;
+  }
+  if (force === 'top') {
+    edges.top = Math.max(edges.top, overlapH);
+    return;
+  }
+  if (force === 'bottom') {
+    edges.bottom = Math.max(edges.bottom, overlapH);
+    return;
+  }
+
+  const distLeft = Math.abs(rect.left - mapRect.left);
+  const distRight = Math.abs(rect.right - mapRect.right);
+  const distTop = Math.abs(rect.top - mapRect.top);
+  const distBottom = Math.abs(rect.bottom - mapRect.bottom);
+  const nearest = Math.min(distLeft, distRight, distTop, distBottom);
+  if (nearest === distLeft) edges.left = Math.max(edges.left, overlapW);
+  else if (nearest === distRight) edges.right = Math.max(edges.right, overlapW);
+  else if (nearest === distTop) edges.top = Math.max(edges.top, overlapH);
+  else edges.bottom = Math.max(edges.bottom, overlapH);
+}
+
+function measureOverlappingNode(
+  edges: EdgeAcc,
+  mapRect: DOMRect,
+  node: HTMLElement,
+  force?: 'left' | 'right' | 'top' | 'bottom',
+) {
+  const rect = node.getBoundingClientRect();
+  if (rect.width < 8 || rect.height < 8) return;
+
+  const overlapW =
+    Math.min(rect.right, mapRect.right) - Math.max(rect.left, mapRect.left);
+  const overlapH =
+    Math.min(rect.bottom, mapRect.bottom) - Math.max(rect.top, mapRect.top);
+  if (overlapW <= 0 || overlapH <= 0) return;
+
+  if (node.classList.contains('left-sidebar-container')) {
+    accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, 'left');
+  } else if (node.classList.contains('right-sidebar-container')) {
+    accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, 'right');
+  } else if (node.classList.contains('top-sidebar-container')) {
+    accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, 'top');
+  } else if (
+    node.classList.contains('bottom-sidebar-container') ||
+    node.classList.contains('bottom-container')
+  ) {
+    accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, 'bottom');
+  } else {
+    accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, force);
+  }
+}
+
+function accumulateFromDom(shell: HTMLElement, mapRect: DOMRect): EdgeAcc {
+  const edges = emptyEdges();
+  const selectors = [
+    '.sidebar-container.show.expand',
+    '.float-container',
+    '.draggable-popup-wrapper',
+    '.popup-mobile-container.bottom-container',
+    '.bottom-container.show',
+  ];
+  for (const selector of selectors) {
+    shell.querySelectorAll(selector).forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      const style = getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden') return;
+      if (style.opacity === '0') return;
+      measureOverlappingNode(edges, mapRect, node);
+    });
+  }
+  return edges;
+}
+
+function accumulateFromRegistry(
+  mapId: string | undefined,
+  controlIds: string[] | undefined,
+): EdgeAcc {
+  const edges = emptyEdges();
+  if (!mapId) return edges;
+  try {
+    const controls = UniversalRegistry.listControls(mapId);
+    const allow = controlIds?.length ? new Set(controlIds) : null;
+    for (const ctrl of controls) {
+      if (allow && !allow.has(ctrl.id)) continue;
+      if (!ctrl.isOpen() || ctrl.panelKind === 'button') continue;
+      const location = ctrl.getPanelPosition?.()?.location;
+      if (ctrl.panelKind === 'sidebar') {
+        const px = REGISTRY_SIDEBAR_PX;
+        if (location === 'right') edges.right = Math.max(edges.right, px);
+        else if (location === 'top') edges.top = Math.max(edges.top, px);
+        else if (location === 'bottom') edges.bottom = Math.max(edges.bottom, px);
+        else edges.left = Math.max(edges.left, px);
+      } else if (ctrl.panelKind === 'float') {
+        edges.left = Math.max(edges.left, REGISTRY_FLOAT_PX);
+      } else if (ctrl.panelKind === 'popup') {
+        edges.bottom = Math.max(edges.bottom, REGISTRY_POPUP_PX);
+      }
+    }
+  } catch {
+    // Registry may be unavailable in non-map contexts.
+  }
+  return edges;
+}
+
+function mergeEdges(a: EdgeAcc, b: EdgeAcc): EdgeAcc {
+  return {
+    left: Math.max(a.left, b.left),
+    right: Math.max(a.right, b.right),
+    top: Math.max(a.top, b.top),
+    bottom: Math.max(a.bottom, b.bottom),
+  };
+}
+
 /**
- * Measure open expanded sidebars overlapping the map and build fitBounds padding
- * so the camera centers on the remaining visible region.
+ * Measure open overlays (sidebar / float / popup / bottom) overlapping the map
+ * and build fitBounds padding so the camera centers on the remaining visible region.
  */
 export function getMapFitBoundsPadding(
   map: MapSimple,
   inset: number = DEFAULT_INSET,
+  options: Pick<FitBoundsOptions, 'mapId' | 'controlIds'> = {},
 ): EdgePadding {
   const padding = basePadding(inset);
   if (typeof document === 'undefined') return padding;
@@ -84,53 +233,16 @@ export function getMapFitBoundsPadding(
   if (!(mapRect.width > 0) || !(mapRect.height > 0)) return padding;
 
   const shell = resolveMapShell(container);
-  const sidebars = shell.querySelectorAll(
-    '.sidebar-container.show.expand',
+  const edges = mergeEdges(
+    accumulateFromDom(shell, mapRect),
+    accumulateFromRegistry(options.mapId, options.controlIds),
   );
 
-  let left = 0;
-  let right = 0;
-  let top = 0;
-  let bottom = 0;
-
-  sidebars.forEach((node) => {
-    if (!(node instanceof HTMLElement)) return;
-    const rect = node.getBoundingClientRect();
-    if (rect.width < 8 || rect.height < 8) return;
-
-    const overlapW =
-      Math.min(rect.right, mapRect.right) - Math.max(rect.left, mapRect.left);
-    const overlapH =
-      Math.min(rect.bottom, mapRect.bottom) - Math.max(rect.top, mapRect.top);
-    if (overlapW <= 0 || overlapH <= 0) return;
-
-    if (node.classList.contains('left-sidebar-container')) {
-      left = Math.max(left, overlapW);
-    } else if (node.classList.contains('right-sidebar-container')) {
-      right = Math.max(right, overlapW);
-    } else if (node.classList.contains('top-sidebar-container')) {
-      top = Math.max(top, overlapH);
-    } else if (node.classList.contains('bottom-sidebar-container')) {
-      bottom = Math.max(bottom, overlapH);
-    } else {
-      // Fallback: stick to nearest map edge
-      const distLeft = Math.abs(rect.left - mapRect.left);
-      const distRight = Math.abs(rect.right - mapRect.right);
-      const distTop = Math.abs(rect.top - mapRect.top);
-      const distBottom = Math.abs(rect.bottom - mapRect.bottom);
-      const nearest = Math.min(distLeft, distRight, distTop, distBottom);
-      if (nearest === distLeft) left = Math.max(left, overlapW);
-      else if (nearest === distRight) right = Math.max(right, overlapW);
-      else if (nearest === distTop) top = Math.max(top, overlapH);
-      else bottom = Math.max(bottom, overlapH);
-    }
-  });
-
   return {
-    top: inset + clampOverlay(top, mapRect.height, inset),
-    bottom: inset + clampOverlay(bottom, mapRect.height, inset),
-    left: inset + clampOverlay(left, mapRect.width, inset),
-    right: inset + clampOverlay(right, mapRect.width, inset),
+    top: inset + clampOverlay(edges.top, mapRect.height, inset),
+    bottom: inset + clampOverlay(edges.bottom, mapRect.height, inset),
+    left: inset + clampOverlay(edges.left, mapRect.width, inset),
+    right: inset + clampOverlay(edges.right, mapRect.width, inset),
   };
 }
 
@@ -140,7 +252,10 @@ function resolvePadding(
 ): number | PaddingOptions {
   if (options.padding != null) return options.padding;
   if (options.ignoreOverlays) return DEFAULT_INSET;
-  return getMapFitBoundsPadding(map, DEFAULT_INSET);
+  return getMapFitBoundsPadding(map, DEFAULT_INSET, {
+    mapId: options.mapId,
+    controlIds: options.controlIds,
+  });
 }
 
 /**

@@ -84,3 +84,9 @@ const menuUi = reactive({ role: 'admin', canUsePen: true });
 ```
 
 Read-only list: [`LayerInfoControl`](./LayerInfoControl.md).
+
+## Search behavior
+
+- Search input uses `data-map-layer-search` and is focused by `/` shortcut (`bindMapKeyboardShortcuts`).
+- Filtering is debounced on the client (~150ms) and matching text is highlighted in row titles.
+- When the query has no result, the panel shows `search-empty` instead of the regular empty-state.

@@ -44,12 +44,27 @@ setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 
 const show = ref(false);
 const loading = ref(false);
+const errorMessage = ref<string | null>(null);
 const items = ref<IdentifyResultGrouped[]>([]);
 const origin = reactive({ latitude: 0, longitude: 0 });
 const layerItems = ref<IdentifyResultLayerItem[]>([]);
 const selectedLayerId = ref(IDENTIFY_ALL_LAYERS_VALUE);
 const isEventClickActive = ref(false);
 const isEventClickBox = ref(false);
+const focusedChildKey = ref<string | null>(null);
+
+const flatChildren = computed(() => {
+  const out: Array<{
+    key: string;
+    child: IdentifyResultGrouped['items'][number];
+  }> = [];
+  for (const group of items.value) {
+    for (const child of group.items) {
+      out.push({ key: `${group.id}:${child.id}`, child });
+    }
+  }
+  return out;
+});
 
 const currentPoint = computed(() => {
   const point = formatCoordinate(origin);
@@ -67,7 +82,14 @@ function applyUpdate(payload?: IdentifyResultUpdatePayload) {
   if (!payload) return;
   if (payload.show != null) show.value = payload.show;
   if (payload.loading != null) loading.value = payload.loading;
-  if (payload.items !== undefined) items.value = payload.items;
+  if (payload.error !== undefined) errorMessage.value = payload.error;
+  if (payload.items !== undefined) {
+    items.value = payload.items;
+    if (!focusedChildKey.value && payload.items.length) {
+      const first = payload.items[0]?.items[0];
+      if (first) focusedChildKey.value = `${payload.items[0].id}:${first.id}`;
+    }
+  }
   if (payload.origin) {
     origin.latitude = payload.origin.latitude;
     origin.longitude = payload.origin.longitude;
@@ -157,6 +179,29 @@ function getItemMenus(identify: IIdentifyView) {
     (menu) => !isMenuItemHidden(menu, ctx),
   );
 }
+
+function onResultKeydown(event: KeyboardEvent) {
+  if (!flatChildren.value.length) return;
+  const keys = flatChildren.value.map((x) => x.key);
+  const index = focusedChildKey.value
+    ? keys.indexOf(focusedChildKey.value)
+    : -1;
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    const next = keys[Math.min(keys.length - 1, Math.max(0, index) + 1)];
+    focusedChildKey.value = next;
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    const next = keys[Math.max(0, (index < 0 ? 0 : index) - 1)];
+    focusedChildKey.value = next;
+  } else if (event.key === 'Enter' && focusedChildKey.value) {
+    event.preventDefault();
+    const hit = flatChildren.value.find((x) => x.key === focusedChildKey.value);
+    if (!hit) return;
+    const menus = getItemMenus(hit.child.identify);
+    if (menus[0]) onMenuAction(hit.child, menus[0], event);
+  }
+}
 </script>
 
 <template>
@@ -208,11 +253,20 @@ function getItemMenus(identify: IIdentifyView) {
             </div>
           </div>
           <hr class="identify-control-separator" />
-          <div class="identify-control-body">
+          <div
+            class="identify-control-body"
+            tabindex="0"
+            @keydown="onResultKeydown"
+          >
             <div v-if="loading" class="identify-control-state">
               <div class="identify-control-state__content">
                 <div class="identify-control-state__loading"></div>
                 <span>{{ trans('map.identify.loading') }}</span>
+              </div>
+            </div>
+            <div v-else-if="errorMessage" class="identify-control-state">
+              <div class="identify-control-state__content">
+                <span>{{ errorMessage || trans('map.identify.error') }}</span>
               </div>
             </div>
             <div v-else-if="!hasSelectedPoint" class="identify-control-state">
@@ -244,6 +298,11 @@ function getItemMenus(identify: IIdentifyView) {
                       v-for="child in item.items"
                       :key="child.id"
                       :title="child.name"
+                      :class="{
+                        'is-focused':
+                          focusedChildKey === `${item.id}:${child.id}`,
+                      }"
+                      @click="focusedChildKey = `${item.id}:${child.id}`"
                     >
                       <span class="identify-control-child-item__name">
                         {{ child.name }}

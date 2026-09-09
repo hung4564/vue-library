@@ -8,6 +8,7 @@ export const IDENTIFY_CONTROL_LOCALE = {
       no_selection: 'Please select a point on the map',
       no_data: 'No data found',
       loading: 'Loading...',
+      error: 'Identify failed',
     },
   },
 };

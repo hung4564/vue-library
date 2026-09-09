@@ -47,7 +47,7 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 | `./legend` | `LegendService`, `MapLegend`, paint helpers |
 | `./measurement` | `MeasurementService`, measure modes, format helpers |
 | `./menu` | Map context menu builders / actions |
-| `./print` | `PrintService`, export helpers |
+| `./print` | `PrintService`, export helpers (`exportMapbox*`, `waitMapIdleAndTiles`) |
 | `./theme` | Theme bootstrap / resolve / `MAP_THEME_*` |
 | `./toolbar` | Toolbar strategies / store APIs |
 

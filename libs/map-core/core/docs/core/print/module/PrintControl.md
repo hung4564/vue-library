@@ -15,6 +15,11 @@ and
 | ---------- | ----------------------------- | -------- | -------- | ------------- |
 | `fileName` | The name of the exported file | `string` | false    | `map`         |
 
+## Runtime behavior
+
+- Export waits for map loaded + tiles ready (`waitMapIdleAndTiles`) before snapshot.
+- `exportMapbox` supports optional watermark text (`{ watermark: '...' }`).
+
 ## Slots
 
 | Name      | Description             |

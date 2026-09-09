@@ -17,6 +17,11 @@ and
 | `disabledPrintableArea` | Disable the printable area overlay | `boolean` | false    | `false`       |
 | `fileName`              | The name of the exported file      | `string`  | false    | `map`         |
 
+## Runtime behavior
+
+- Export waits for map loaded + tiles ready (`waitMapIdleAndTiles`) before snapshot.
+- Advanced export supports optional `dpi` and watermark via print utils (`exportMapboxWithOptions`).
+
 ## Slots
 
 | Name      | Description             |

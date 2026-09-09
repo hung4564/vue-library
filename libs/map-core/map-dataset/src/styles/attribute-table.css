@@ -36,7 +36,7 @@
   flex: 0 0 auto;
   gap: 6px;
   padding: 4px 8px;
-  border: 1px solid hsla(0, 0%, 100%, 0.24);
+  border: 1px solid var(--map-border-color, #ccc);
   border-radius: 4px;
   white-space: nowrap;
 }
@@ -61,7 +61,8 @@
 
 .attribute-table__table th,
 .attribute-table__table td {
-  border-bottom: thin solid hsla(0, 0%, 100%, 0.12);
+  border-bottom: thin solid
+    var(--map-divider-color, var(--map-border-color, #eee));
   padding: 6px 10px;
   text-align: left;
   white-space: nowrap;
@@ -73,9 +74,16 @@
 .attribute-table__table th {
   position: sticky;
   top: 0;
-  background: #424242;
+  background: var(--map-surface-variant-color, #f5f5f5);
+  color: var(--map-text-primary, inherit);
   font-weight: 600;
   z-index: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.attribute-table__table th.is-sorted {
+  color: var(--map-accent-color, #1a73e8);
 }
 
 .attribute-table__check {
@@ -84,6 +92,7 @@
   text-align: center;
   padding-left: 8px;
   padding-right: 4px;
+  cursor: default;
 }
 
 .attribute-table__table tbody tr {
@@ -91,11 +100,12 @@
 }
 
 .attribute-table__table tbody tr:hover {
-  background: #616161;
+  background: var(--map-hover-color, #f5f5f5);
 }
 
 .attribute-table__table tbody tr.is-selected {
-  background: #1565c0;
+  background: var(--map-accent-color, #1a73e8);
+  color: var(--map-on-primary-color, #fff);
 }
 
 .attribute-table__actions {
