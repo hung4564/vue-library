@@ -27,12 +27,8 @@ root.add(leaf);
 Menus and events (same helpers as list UI):
 
 ```typescript
-import {
-  createDatasetLeaf,
-  createWithMenuHelper,
-  createWithEventHelper,
-  createMenuBuilder,
-} from '@hungpvq/map-dataset';
+import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/map-dataset';
+import { createWithMenuHelper, createMenuBuilder } from '@hungpvq/map-dataset/menu';
 
 const menu = createWithMenuHelper();
 const event = createWithEventHelper();

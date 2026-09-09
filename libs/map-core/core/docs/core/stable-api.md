@@ -71,15 +71,23 @@ Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barre
 
 ## `@hungpvq/map-dataset`
 
-Full runtime allowlist: `public-api.spec.ts` (~300 symbols). Highlights:
+**Breaking major:** domain symbols moved off the root onto named subpaths. Root no longer re-exports builders, identify, menu, style, create-control, or geo-export APIs. Full runtime allowlists: `public-api.spec.ts` (root + each subpath).
 
-| Area | Stable surface |
-|------|----------------|
-| Service | `DatasetService` |
-| Builders | `createGeoJsonDataset`, `createRasterUrlDataset`, `LayerSimpleMapboxBuild` |
-| Protocol | `IDataset` and capability interfaces via `export type` |
-| Menu ids | `LIST_VIEW_MENU_ID`, `LIST_VIEW_MENU_COMPONENT_KEY` **string values** |
-| Vite | `mapDatasetGisWorker()` / `@hungpvq/map-dataset/vite` |
+| Entry | Stable surface (highlights) |
+|-------|-----------------------------|
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, attribute-table, layer/dataset locales, `IDataset` (+ shared protocol types) |
+| `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker, `GEOJSON_STYLE_AUTO`, `geojsonLocalAdapter` |
+| `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
+| `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers |
+| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders |
+| `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
+| `./create-control` | `CREATE_CONTROL_*`, `parseGis*` / `loadGis*`, `getCreateControlSamples` |
+| `./geo-export` | `GEO_EXPORT_*`, `exportDatasetGeo`, `downloadBlob`, export menu helpers |
+| `./vite` | `mapDatasetGisWorker()` |
+| `./style.css` / `./assets/*` | package CSS and static assets |
+
+`LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values** remain SemVer-stable (import from `@hungpvq/map-dataset/menu`).
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 

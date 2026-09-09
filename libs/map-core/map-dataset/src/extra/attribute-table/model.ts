@@ -1,7 +1,7 @@
 import { runMapControlAction } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection } from 'geojson';
-import { exportFeatureCollectionGeo } from '../geo-export/dataset';
-import type { GeoExportFormat } from '../geo-export/types';
+import { exportFeatureCollectionGeo } from '../../geo-export/dataset';
+import type { GeoExportFormat } from '../../geo-export/types';
 
 export const ATTRIBUTE_TABLE_GEOMETRY_KEY = '__geometry';
 

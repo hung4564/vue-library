@@ -4,19 +4,8 @@ import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
 import { logHelper } from '@hungpvq/map-core';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
 import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
-import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset';
-import {
-  clearIdentifyScope,
-  handleMultiIdentify,
-  IDENTIFY_ALL_LAYERS_VALUE,
-  IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
-  IDENTIFY_RESULT_CONTROL,
-  identifyResolver,
-  type IdentifyLayerFilterPayload,
-  type IdentifyResultUpdatePayload,
-  type IdentifyScopeToggleResult,
-} from '@hungpvq/map-dataset';
+import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
+import { clearIdentifyScope, handleMultiIdentify, IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, identifyResolver, type IdentifyLayerFilterPayload, type IdentifyResultUpdatePayload, type IdentifyScopeToggleResult } from '@hungpvq/map-dataset/identify';
 import {
   defaultMapProps,
   MapCommonButton,

@@ -27,6 +27,38 @@
       "import": "./vite.js",
       "types": "./vite.d.ts"
     },
+    "./geojson": {
+      "import": "./geojson.js",
+      "types": "./geojson.d.ts"
+    },
+    "./raster": {
+      "import": "./raster.js",
+      "types": "./raster.d.ts"
+    },
+    "./vector-tile": {
+      "import": "./vector-tile.js",
+      "types": "./vector-tile.d.ts"
+    },
+    "./identify": {
+      "import": "./identify.js",
+      "types": "./identify.d.ts"
+    },
+    "./menu": {
+      "import": "./menu.js",
+      "types": "./menu.d.ts"
+    },
+    "./style": {
+      "import": "./style.js",
+      "types": "./style.d.ts"
+    },
+    "./create-control": {
+      "import": "./create-control.js",
+      "types": "./create-control.d.ts"
+    },
+    "./geo-export": {
+      "import": "./geo-export.js",
+      "types": "./geo-export.d.ts"
+    },
     "./assets/*": "./assets/*",
     "./style.css": {
       "default": "./style.css"

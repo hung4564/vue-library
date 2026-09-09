@@ -22,7 +22,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 
 const sample: FeatureCollection = {
@@ -67,7 +67,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/react-map-dataset';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 
 const sample: FeatureCollection = {

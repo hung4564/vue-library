@@ -13,7 +13,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 import AsideControl from '../layout/aside-control.vue';
 

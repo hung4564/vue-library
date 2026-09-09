@@ -1,13 +1,6 @@
 import { getChartRandomColor, MapError, toPlainJson } from '@hungpvq/map-core';
-import type { GeojsonDatasetOption } from '@hungpvq/map-dataset';
-import {
-  bboxFromGeojsonAsync,
-  createGeoJsonDataset,
-  detectGeojsonStyleTypesAsync,
-  GEOJSON_STYLE_AUTO,
-  isGeojsonStyleAuto,
-  reprojectGeojsonToWgs84Async,
-} from '@hungpvq/map-dataset';
+import type { GeojsonDatasetOption } from '@hungpvq/map-dataset/geojson';
+import { bboxFromGeojsonAsync, createGeoJsonDataset, detectGeojsonStyleTypesAsync, GEOJSON_STYLE_AUTO, isGeojsonStyleAuto, reprojectGeojsonToWgs84Async } from '@hungpvq/map-dataset/geojson';
 import { ConfigHelper } from '../_default';
 
 function stageError(stage: string, error: unknown): never {

@@ -32,6 +32,30 @@
       "@hungpvq/map-core/toolbar": ["libs/map-core/core/src/toolbar/index.ts"],
       "@hungpvq/map-core/worker": ["libs/map-core/core/src/worker-entry.ts"],
       "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],
+      "@hungpvq/map-dataset/geojson": [
+        "libs/map-core/map-dataset/src/geojson/index.ts"
+      ],
+      "@hungpvq/map-dataset/raster": [
+        "libs/map-core/map-dataset/src/raster/index.ts"
+      ],
+      "@hungpvq/map-dataset/vector-tile": [
+        "libs/map-core/map-dataset/src/vector-tile/index.ts"
+      ],
+      "@hungpvq/map-dataset/identify": [
+        "libs/map-core/map-dataset/src/identify/index.ts"
+      ],
+      "@hungpvq/map-dataset/menu": [
+        "libs/map-core/map-dataset/src/menu/index.ts"
+      ],
+      "@hungpvq/map-dataset/style": [
+        "libs/map-core/map-dataset/src/style/index.ts"
+      ],
+      "@hungpvq/map-dataset/create-control": [
+        "libs/map-core/map-dataset/src/create-control/index.ts"
+      ],
+      "@hungpvq/map-dataset/geo-export": [
+        "libs/map-core/map-dataset/src/geo-export/index.ts"
+      ],
       "@hungpvq/map-draw": ["libs/map-core/map-draw/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],

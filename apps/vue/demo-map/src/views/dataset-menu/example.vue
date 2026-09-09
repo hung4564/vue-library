@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';

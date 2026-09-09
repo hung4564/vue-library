@@ -1,11 +1,6 @@
-import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset';
-import {
-  IDENTIFY_CONTROL,
-  isListIdentifyActive,
-  resolveMenuItemLocation,
-  subscribeIdentifyScope,
-  toggleListIdentifyScope,
-} from '@hungpvq/map-dataset';
+import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset/menu';
+import { IDENTIFY_CONTROL, isListIdentifyActive, subscribeIdentifyScope, toggleListIdentifyScope } from '@hungpvq/map-dataset/identify';
+import { resolveMenuItemLocation } from '@hungpvq/map-dataset/menu';
 import { BaseButton, UniversalRegistry } from '@hungpvq/react-map-core';
 import { mdiCursorPointer } from '@mdi/js';
 import Icon from '@mdi/react';

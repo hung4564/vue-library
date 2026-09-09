@@ -1,4 +1,4 @@
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {

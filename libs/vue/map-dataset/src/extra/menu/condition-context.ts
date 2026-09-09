@@ -1,5 +1,5 @@
-import type { MenuContextSource } from '@hungpvq/map-dataset';
-import { resolveMenuContextSource } from '@hungpvq/map-dataset';
+import type { MenuContextSource } from '@hungpvq/map-dataset/menu';
+import { resolveMenuContextSource } from '@hungpvq/map-dataset/menu';
 import { inject, provide, type InjectionKey } from 'vue';
 
 export const MENU_CONDITION_CONTEXT_KEY: InjectionKey<MenuContextSource> =

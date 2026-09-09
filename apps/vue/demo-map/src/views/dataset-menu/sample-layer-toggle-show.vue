@@ -26,7 +26,8 @@
   </ToggleShow>
 </template>
 <script setup lang="ts">
-import type { IListViewUI, MenuAction, MenuActionLocation } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction, MenuActionLocation } from '@hungpvq/map-dataset/menu';
 import { BaseButton } from '@hungpvq/vue-map-core';
 import { ToggleShow } from '@hungpvq/vue-map-dataset';
 

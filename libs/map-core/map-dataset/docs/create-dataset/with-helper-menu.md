@@ -20,11 +20,8 @@ Define menus once on the dataset. Evaluate `hidden` / `disabled` at **render** w
 ### 1. Menus on the list
 
 ```ts
-import {
-  createRootDataset,
-  createDatasetPartListViewUiComponentBuilder,
-  createMenuBuilder,
-} from '@hungpvq/map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
+import { createMenuBuilder } from '@hungpvq/map-dataset/menu';
 import { mdiPen, mdiStar } from '@mdi/js';
 
 function createLayerWithMenus() {
@@ -213,7 +210,7 @@ List UI also injects `readonly`, `disabledMove`, `disabledCreateGroup`. Do not r
 ## `createMenuBuilder()`
 
 ```ts
-import { createMenuBuilder } from '@hungpvq/map-dataset';
+import { createMenuBuilder } from '@hungpvq/map-dataset/menu';
 
 const item = createMenuBuilder().item() /* .set… */ .build();
 const divider = createMenuBuilder().divider().setLocation('menu').build();
@@ -275,7 +272,7 @@ createDatasetPartListViewUiComponentBuilder('Layer')
 Compose one or more actions for `setClick`.
 
 ```ts
-import { createMenuClickBuilder } from '@hungpvq/map-dataset';
+import { createMenuClickBuilder } from '@hungpvq/map-dataset/menu';
 
 createMenuBuilder()
   .item()
@@ -327,21 +324,9 @@ createMenuClickBuilder()
 All return a `MenuAction`. Most accept an optional last argument that overlays fields (`order`, `name`, `hidden`, …) via `setAdditional`.
 
 ```ts
-import {
-  createMenuItemToggleShow,
-  createMenuItemSetOpacity,
-  createMenuItemStyleEdit,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemToBoundActionForList,
-  createMenuItemIdentifyForList,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-  createMenuItemMoveUp,
-  createMenuItemMoveDown,
-  createMenuItemAddToGroup,
-  createMenuItemExportGeo,
-  createMenuItemAttributeTable,
-} from '@hungpvq/map-dataset';
+import { createMenuItemToggleShow, createMenuItemSetOpacity, createMenuItemStyleEdit, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem, createMenuItemMoveUp, createMenuItemMoveDown, createMenuItemAddToGroup } from '@hungpvq/map-dataset/menu';
+import { createMenuItemExportGeo } from '@hungpvq/map-dataset/geo-export';
+import { createMenuItemAttributeTable } from '@hungpvq/map-dataset';
 
 list.addMenus([
   createMenuItemToggleShow(),
@@ -410,7 +395,7 @@ Two registry keys:
 **One layer:** pass a custom `componentKey` on the menu item and register a component that wraps `ToggleShow` (reuse logic; customize UI via slot / `renderButton`).
 
 ```ts
-import { LIST_VIEW_MENU_COMPONENT_KEY, createMenuItemToggleShow } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core'; // or react-map-core
 
 createMenuItemToggleShow({
@@ -661,10 +646,7 @@ Context-menu row with a custom submenu (`layer-action-add-to-group`): **New grou
 Build submenu items yourself with:
 
 ```ts
-import {
-  createAddToGroupSubmenu,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset';
+import { createAddToGroupSubmenu, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 
 const items = createAddToGroupSubmenu(
   [
@@ -806,12 +788,7 @@ resolveMenuContextSource(undefined); // {}
 `context` is an array of sources, merged left → right. `ctx.context` is a getter (fresh on each read).
 
 ```ts
-import {
-  createMenuConditionContext,
-  isMenuItemHidden,
-  isMenuItemDisabled,
-  resolveMenuCondition,
-} from '@hungpvq/map-dataset';
+import { createMenuConditionContext, isMenuItemHidden, isMenuItemDisabled, resolveMenuCondition } from '@hungpvq/map-dataset/menu';
 
 const ctx = createMenuConditionContext(layer, {
   mapId,
@@ -882,7 +859,8 @@ UniversalRegistry.registerComponent('sample-layer-menu', SampleCustomMenu);
 
 ```vue
 <script setup lang="ts">
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -925,10 +903,7 @@ Parent row click should toggle a submenu, not close the popup. Call close only a
 Built-in add-to-group: `LIST_VIEW_MENU_COMPONENT_KEY.addToGroup` (`'layer-action-add-to-group'`).
 
 ```ts
-import {
-  createAddToGroupSubmenu,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset';
+import { createAddToGroupSubmenu, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 
 const items = createAddToGroupSubmenu(
   [
@@ -967,7 +942,7 @@ Duplicate `id` is ignored on add.
 LayerControl already runs this on click. Use it only if you render a custom list:
 
 ```ts
-import { handleMenuAction } from '@hungpvq/map-dataset';
+import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 
 handleMenuAction(action, {
   layer: item,

@@ -1,4 +1,5 @@
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';

@@ -5,16 +5,10 @@ import type {
   MeasurementHandleType,
 } from '@hungpvq/map-core/measurement';
 import { getChartRandomColor } from '@hungpvq/map-core';
-import {
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-  LayerStyleType,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild, LayerStyleType } from '@hungpvq/map-dataset/style';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,

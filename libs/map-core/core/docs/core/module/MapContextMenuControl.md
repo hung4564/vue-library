@@ -61,11 +61,8 @@ import '@hungpvq/vue-map-core/style.css';
 Hide some items, add one with `createMenuBuilder` (or `createMapMenuBuilder` / `createMapContextMenuBuilder`):
 
 ```ts
-import {
-  createMenuBuilder,
-  createMapContextMenuBuilder,
-  type MapContextMenuTarget,
-} from '@hungpvq/map-dataset';
+import { createMenuBuilder, createMapContextMenuBuilder } from '@hungpvq/map-dataset/menu';
+import { type MapContextMenuTarget } from '@hungpvq/map-dataset';
 import { createMapMenuBuilder } from '@hungpvq/map-core/menu';
 
 const extra = createMenuBuilder<MapContextMenuTarget>()

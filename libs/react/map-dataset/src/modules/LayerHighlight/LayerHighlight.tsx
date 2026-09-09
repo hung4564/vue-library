@@ -1,16 +1,10 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
-import type {
-  HighlightHandle,
-  IdentifyMultiResult,
-  IHighlightView,
-} from '@hungpvq/map-dataset';
-import {
-  convertItemToFeature,
-  findSiblingOrNearestLeaf,
-  handleMultiIdentifyGetFirst,
-} from '@hungpvq/map-dataset';
+import type { HighlightHandle, IHighlightView } from '@hungpvq/map-dataset';
+import type { IdentifyMultiResult } from '@hungpvq/map-dataset/identify';
+import { convertItemToFeature, findSiblingOrNearestLeaf } from '@hungpvq/map-dataset';
+import { handleMultiIdentifyGetFirst } from '@hungpvq/map-dataset/identify';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/react-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONFeature, MapMouseEvent, PointLike } from 'maplibre-gl';

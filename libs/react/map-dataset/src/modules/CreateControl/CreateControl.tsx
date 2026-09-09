@@ -1,10 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import {
-  CREATE_CONTROL_LOCALE,
-  reportCreateLayerError,
-  suggestLayerName,
-} from '@hungpvq/map-dataset';
+import { CREATE_CONTROL_LOCALE, reportCreateLayerError, suggestLayerName } from '@hungpvq/map-dataset/create-control';
 import {
   BaseButton,
   InputSelect,

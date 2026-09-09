@@ -1,4 +1,4 @@
-import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { BaseButton, InputSelect, useShow } from '@hungpvq/react-map-core';
 import Icon from '@mdi/react';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';

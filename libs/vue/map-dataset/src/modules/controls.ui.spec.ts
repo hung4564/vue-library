@@ -1,5 +1,5 @@
 import { MapInitializer, UniversalRegistry } from '@hungpvq/map-core';
-import { IDENTIFY_CONTROL } from '@hungpvq/map-dataset';
+import { IDENTIFY_CONTROL } from '@hungpvq/map-dataset/identify';
 import { Map as MapShell } from '@hungpvq/vue-map-core';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';

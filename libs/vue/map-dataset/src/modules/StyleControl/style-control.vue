@@ -12,14 +12,8 @@ import {
 } from '@hungpvq/vue-map-core';
 
 import { MapSimple } from '@hungpvq/map-core';
-import {
-  ComponentType,
-  findSiblingOrNearestLeaf,
-  IDataset,
-  IMapboxLayerView,
-  isMapboxLayerView,
-  STYLE_CONTROL_LOCALE,
-} from '@hungpvq/map-dataset';
+import { ComponentType, findSiblingOrNearestLeaf, IDataset, IMapboxLayerView, isMapboxLayerView } from '@hungpvq/map-dataset';
+import { STYLE_CONTROL_LOCALE } from '@hungpvq/map-dataset/style';
 import { copyByJson } from '@hungpvq/shared';
 
 const emit = defineEmits(['close']);

@@ -4,7 +4,7 @@ import { isHasSetOpacity, runAllComponentsWithCheck } from '@hungpvq/map-dataset
 import { useMap } from '@hungpvq/react-map-core';
 import { useEffect, useState } from 'react';
 import { LayerItemSlider } from './layer-item-slider';
-import type { WithLayerItemActionType } from '@hungpvq/map-dataset';
+import type { WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 
 export function SetOpacity(props: WithLayerItemActionType) {
   const { callMap } = useMap(props);

@@ -23,8 +23,8 @@
 </template>
 
 <script setup lang="ts">
-import type { CreateControlDataTab } from '@hungpvq/map-dataset';
-import { CREATE_CONTROL_DEFAULT_DATA_TAB } from '@hungpvq/map-dataset';
+import type { CreateControlDataTab } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_DEFAULT_DATA_TAB } from '@hungpvq/map-dataset/create-control';
 import { useLang, useMap } from '@hungpvq/vue-map-core';
 import { watch } from 'vue';
 

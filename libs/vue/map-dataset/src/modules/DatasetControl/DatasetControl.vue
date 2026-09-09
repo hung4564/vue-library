@@ -7,14 +7,8 @@ export default {
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import {
-  DATASET_CONTROL_LOCALE,
-  createMenuClickAddComponentBuilder,
-  createMenuClickBuilder,
-  handleMenuActionClick,
-  LIST_VIEW_MENU_COMPONENT_KEY,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset';
+import { DATASET_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import { createMenuClickAddComponentBuilder, createMenuClickBuilder, handleMenuActionClick, LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   BaseButton,

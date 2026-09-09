@@ -1,5 +1,6 @@
-import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
-import { getMenuItemLocation } from '@hungpvq/map-dataset';
+import type { IDataset } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { getMenuItemLocation } from '@hungpvq/map-dataset/menu';
 import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
 import Icon from '@mdi/react';
 

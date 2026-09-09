@@ -47,14 +47,8 @@ If you add the menu yourself, also call `.configDisabledAttributeTable()` so the
 ## Call without a menu
 
 ```ts
-import {
-  attributeTableRowsToFeatureCollection,
-  buildAttributeTable,
-  exportAttributeTableRows,
-  exportDatasetGeo,
-  filterAttributeTableRows,
-  getDatasetFeatureCollection,
-} from '@hungpvq/map-dataset';
+import { attributeTableRowsToFeatureCollection, buildAttributeTable, exportAttributeTableRows, filterAttributeTableRows } from '@hungpvq/map-dataset';
+import { exportDatasetGeo, getDatasetFeatureCollection } from '@hungpvq/map-dataset/geo-export';
 
 const fc = await getDatasetFeatureCollection(list);
 if (!fc) return;

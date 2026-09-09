@@ -7,11 +7,9 @@ import {
   type AddGeojsonHerePayload,
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
-import {
-  LAYER_CONTROL_LOCALE,
-  createGeojsonHereDataset,
-  type MenuContextSource,
-} from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
+import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   BaseButton,

@@ -1,9 +1,5 @@
-import {
-  LAYER_CONTROL_LOCALE,
-  LIST_VIEW_MENU_COMPONENT_KEY,
-  setListViewIntendedShow,
-  type WithLayerItemActionType,
-} from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, setListViewIntendedShow } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY, type WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useMapDataset } from '../../store';

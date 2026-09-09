@@ -30,7 +30,7 @@ Turn off: `.configDisabledExport()`, or `menuContext: { disabledExport: true }`.
 Custom formats / filename:
 
 ```ts
-import { createMenuItemExportGeo } from '@hungpvq/map-dataset';
+import { createMenuItemExportGeo } from '@hungpvq/map-dataset/geo-export';
 
 list.addMenu(
   createMenuItemExportGeo({
@@ -45,10 +45,7 @@ If you add it yourself, also call `.configDisabledExport()` so the default item 
 ## Call without a menu
 
 ```ts
-import {
-  exportDatasetGeo,
-  getDatasetFeatureCollection,
-} from '@hungpvq/map-dataset';
+import { exportDatasetGeo, getDatasetFeatureCollection } from '@hungpvq/map-dataset/geo-export';
 
 const fc = await getDatasetFeatureCollection(list);
 await exportDatasetGeo(list, 'kml');

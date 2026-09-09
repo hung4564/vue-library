@@ -1,0 +1,125 @@
+import type { MapSimple } from '@hungpvq/map-core';
+import type {
+  GeoJSONSource,
+  GeoJSONSourceSpecification,
+} from 'maplibre-gl';
+import type { IMapboxSourceView } from '../interfaces';
+import { resolveDatasetBbox } from '../utils/bbox';
+import { createNamedComponent } from '../model/base';
+import { createDatasetPartMapboxSourceComponent } from '../model/source/base';
+
+export function createDatasetPartGeojsonSourceComponent(
+  name: string,
+  data?: GeoJSONSourceSpecification['data'],
+  options?: Pick<GeoJSONSourceSpecification, 'promoteId' | 'generateId'>,
+): IMapboxSourceView {
+  const base = createDatasetPartMapboxSourceComponent<
+    GeoJSONSourceSpecification['data'] | undefined
+  >(name, data);
+
+  return createNamedComponent('GeojsonSourceComponent', {
+    ...base,
+    getMapboxSource: (): GeoJSONSourceSpecification => ({
+      type: 'geojson',
+      data: (base.getData() ?? {
+        type: 'FeatureCollection',
+        features: [],
+      }) as GeoJSONSourceSpecification['data'],
+      ...(options?.promoteId != null ? { promoteId: options.promoteId } : {}),
+      ...(options?.generateId ? { generateId: true } : {}),
+    }),
+    getFieldsInfo() {
+      return [
+        { trans: 'map.layer-control.field.name', value: 'name' },
+        { trans: 'map.layer-control.field.type', value: 'type' },
+        { trans: 'map.layer-control.field.source-id', value: 'sourceId' },
+        { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
+        { trans: 'map.layer-control.field.features', value: 'features' },
+        { trans: 'map.layer-control.field.geometry', value: 'geometry' },
+        { trans: 'map.layer-control.field.promote-id', value: 'promoteId' },
+        { trans: 'map.layer-control.field.generate-id', value: 'generateId' },
+        {
+          trans: 'map.layer-control.field.geojson',
+          value: 'geojson',
+          inline: true,
+        },
+      ];
+    },
+    getDataInfo() {
+      const spec = this.getMapboxSource() as GeoJSONSourceSpecification & {
+        id?: string;
+      };
+      const data = base.getData();
+      const stats = getGeojsonStats(data);
+
+      return {
+        name: base.getName(),
+        type: spec.type,
+        sourceId: this.getSourceId(),
+        bbox: resolveDatasetBbox(base),
+        features: stats.featureCount,
+        geometry: stats.geometryTypes,
+        promoteId: spec.promoteId,
+        generateId: spec.generateId,
+        geojson:
+          typeof data === 'string'
+            ? data
+            : JSON.stringify(data ?? {}, undefined, 2),
+      };
+    },
+    updateData(
+      map: MapSimple,
+      data:
+        | GeoJSON.Feature<GeoJSON.Geometry>
+        | GeoJSON.FeatureCollection<GeoJSON.Geometry>
+        | string,
+    ) {
+      const source = map.getSource(base.id) as GeoJSONSource;
+      if (source) {
+        source.setData(data);
+      }
+      base.setData(data);
+    },
+  });
+}
+
+function getGeojsonStats(data: unknown): {
+  featureCount?: number;
+  geometryTypes?: string;
+} {
+  if (!data || typeof data === 'string') return {};
+  if (typeof data !== 'object') return {};
+
+  const types = new Set<string>();
+  const record = data as {
+    type?: string;
+    features?: unknown[];
+    geometry?: { type?: string };
+  };
+
+  if (record.type === 'FeatureCollection' && Array.isArray(record.features)) {
+    for (const feature of record.features) {
+      const geometryType = (feature as { geometry?: { type?: string } })
+        ?.geometry?.type;
+      if (geometryType) types.add(geometryType);
+    }
+    return {
+      featureCount: record.features.length,
+      geometryTypes: [...types].join(', ') || undefined,
+    };
+  }
+
+  if (record.type === 'Feature') {
+    const geometryType = record.geometry?.type;
+    if (geometryType) types.add(geometryType);
+    return {
+      featureCount: 1,
+      geometryTypes: [...types].join(', ') || undefined,
+    };
+  }
+
+  if (record.type) {
+    return { featureCount: 1, geometryTypes: record.type };
+  }
+  return {};
+}

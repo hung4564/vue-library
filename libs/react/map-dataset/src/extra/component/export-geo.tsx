@@ -1,13 +1,10 @@
-import type { MenuAction } from '@hungpvq/map-dataset';
-import {
-  createExportGeoSubmenu,
-  getExportGeoMenuOptions,
-  handleMenuAction,
-} from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { createExportGeoSubmenu, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
+import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { mdiChevronRight, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
-import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset';
+import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset/menu';
 
 export function ExportGeo(props: WithLayerItemMenuComponentType) {
   const [open, setOpen] = useState(false);

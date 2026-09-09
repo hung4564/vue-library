@@ -11,7 +11,7 @@ import { InputArrayXY } from '../field/InputArrayXY';
 import { InputImage } from '../field/InputImage';
 import { InputMultiple } from '../field/InputMultiple';
 import { DivColor, TextAfter, TextFormat } from '../label';
-import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset';
+import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset/style';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   'array-index': {

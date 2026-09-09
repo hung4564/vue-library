@@ -4,7 +4,8 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { FieldFeaturesDef, MenuItemClick, WithDataHelper } from '../extra';
+import type { FieldFeaturesDef, WithDataHelper } from '../extra';
+import type { MenuItemClick } from '../menu/types';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 
 import type { MapSimple } from '@hungpvq/map-core';

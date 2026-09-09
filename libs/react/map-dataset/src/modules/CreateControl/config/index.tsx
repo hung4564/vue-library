@@ -1,17 +1,5 @@
-import {
-  applyCreateControlSample,
-  CREATE_CONTROL_DEFAULT_DATA_TAB,
-  CREATE_CONTROL_SAMPLE_NONE,
-  GEOJSON_STYLE_AUTO,
-  GIS_FILE_ACCEPT,
-  getCreateControlDataTabs,
-  getCreateControlSampleUrl,
-  getCreateControlSamples,
-  loadGisFileAsync,
-  loadGisTextAsync,
-  loadGisUrlAsync,
-  type CreateControlDataTab,
-} from '@hungpvq/map-dataset';
+import { applyCreateControlSample, CREATE_CONTROL_DEFAULT_DATA_TAB, CREATE_CONTROL_SAMPLE_NONE, GIS_FILE_ACCEPT, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples, loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync, type CreateControlDataTab } from '@hungpvq/map-dataset/create-control';
+import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
 import {
   BaseButton,
   DragDropFile,

@@ -1,20 +1,9 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import {
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartMetadataComponent,
-  createDatasetPartRasterSourceComponent,
-  createDatasetPartSubListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuBuilder,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemToBoundActionForList,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
+import { createMenuBuilder, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { mdiPen, mdiStar } from '@mdi/js';
 import {
   DEMO_LIST_BBOX,

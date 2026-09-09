@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import type { MenuAction } from '@hungpvq/map-dataset';
-import {
-  LAYER_CONTROL_LOCALE,
-  handleMenuAction,
-  hasMoveLayer,
-  IGroupListViewUI,
-  IListViewUI,
-  listListViewGroups,
-  traverseTree,
-} from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
   BaseButton,

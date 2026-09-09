@@ -33,6 +33,14 @@ export default defineConfig(() => ({
       entry: {
         index: 'src/index.ts',
         vite: 'src/vite.ts',
+        geojson: 'src/geojson/index.ts',
+        raster: 'src/raster/index.ts',
+        'vector-tile': 'src/vector-tile/index.ts',
+        identify: 'src/identify/index.ts',
+        menu: 'src/menu/index.ts',
+        style: 'src/style/index.ts',
+        'create-control': 'src/create-control/index.ts',
+        'geo-export': 'src/geo-export/index.ts',
       },
       name: '@hungpvq/map-dataset',
       fileName: (_format, entryName) => `${entryName}.js`,
@@ -42,6 +50,7 @@ export default defineConfig(() => ({
       // External packages that should not be bundled into your library.
       external: [
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
         '@hungpvq/shared',
         '@hungpvq/shared-log',
         'maplibre-gl',

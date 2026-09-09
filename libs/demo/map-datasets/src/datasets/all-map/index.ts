@@ -1,28 +1,11 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { type MeasurementHandleType } from '@hungpvq/map-core/measurement';
-import {
-  createDatasetPartChangeColorHighlightComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartHighlightComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createDatasetPartListViewUiComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartMetadataComponent,
-  createDatasetPartRasterSourceComponent,
-  createDatasetPartSubListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuItemShowDetailForItem,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemStyleEdit,
-  createMenuItemToBoundActionForItem,
-  createMenuItemToBoundActionForList,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-  type LayerStyleType,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartChangeColorHighlightComponent, createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
+import { createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild, type LayerStyleType } from '@hungpvq/map-dataset/style';
 import { createLegend, createMultiLegend } from '../../legend/create-legend';
 
 export function createGroupListDemoDataset() {

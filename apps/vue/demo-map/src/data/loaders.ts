@@ -9,7 +9,7 @@ import {
   loadDemoDatasets,
   MENU_DEMO_DATASET_FACTORIES,
 } from '@hungpvq/demo-map-datasets';
-import type { MenuItemProps } from '@hungpvq/map-dataset';
+import type { MenuItemProps } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { addDatasetToMap } from './dataset-utils';
 

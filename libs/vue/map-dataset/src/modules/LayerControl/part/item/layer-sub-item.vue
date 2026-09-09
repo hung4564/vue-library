@@ -35,17 +35,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import type {
-  IListViewUI,
-  MenuAction,
-  MenuContextSource,
-} from '@hungpvq/map-dataset';
-import {
-  createMenuConditionContext,
-  getResolvedMenus,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-} from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction, MenuContextSource } from '@hungpvq/map-dataset/menu';
+import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import { BaseButton, RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDotsVertical } from '@mdi/js';

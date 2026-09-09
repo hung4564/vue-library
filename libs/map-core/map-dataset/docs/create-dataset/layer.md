@@ -13,10 +13,8 @@ createMultiMapboxLayerComponent(name: string, layers?: BaseLayerSpec[])
 `BaseLayerSpec` is a MapLibre `LayerSpecification` without a required `id` (an id is assigned if missing).
 
 ```ts
-import {
-  createMultiMapboxLayerComponent,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 
 const layer = createMultiMapboxLayerComponent('cities', [
   new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),

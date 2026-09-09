@@ -32,7 +32,7 @@
 
 <script setup>
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset';
+import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
 import { InputCrs, InputSelect, useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 

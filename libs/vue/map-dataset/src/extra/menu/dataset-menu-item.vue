@@ -5,7 +5,7 @@
   </BaseButton>
 </template>
 <script setup lang="ts">
-import type { MenuAction } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { BaseButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { computed } from 'vue';

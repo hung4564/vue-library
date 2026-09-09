@@ -1,12 +1,8 @@
-import {
-  createGeoJsonDataset,
-  createMenuItemIdentifyForList,
-  findFirstLeafByType,
-  LIST_VIEW_MENU_ID,
-  type IDataset,
-  type IIdentifyView,
-  type WithMenuHelper,
-} from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
+import { createMenuItemIdentifyForList, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
+import { findFirstLeafByType, type IDataset } from '@hungpvq/map-dataset';
+import type { WithMenuHelper } from '@hungpvq/map-dataset/menu';
+import { type IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { Feature, FeatureCollection, Polygon } from 'geojson';
 
 type PresentOptions = {

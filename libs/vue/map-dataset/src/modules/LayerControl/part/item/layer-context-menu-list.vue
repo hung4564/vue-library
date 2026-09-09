@@ -40,18 +40,9 @@
   </ul>
 </template>
 <script setup lang="ts">
-import type {
-  IListViewUI,
-  ListViewGroupOption,
-  MenuAction,
-} from '@hungpvq/map-dataset';
-import {
-  createMenuConditionContext,
-  getMenuItemLocation,
-  isMenuItemCustomComponent,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-} from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { ListViewGroupOption, MenuAction } from '@hungpvq/map-dataset/menu';
+import { createMenuConditionContext, getMenuItemLocation, isMenuItemCustomComponent, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import { RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCircleSmall } from '@mdi/js';

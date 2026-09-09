@@ -1,9 +1,6 @@
 import type { ComponentType, IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
-import {
-  findSiblingOrNearestLeaf,
-  isMapboxLayerView,
-  STYLE_CONTROL_LOCALE,
-} from '@hungpvq/map-dataset';
+import { findSiblingOrNearestLeaf, isMapboxLayerView } from '@hungpvq/map-dataset';
+import { STYLE_CONTROL_LOCALE } from '@hungpvq/map-dataset/style';
 import { copyByJson } from '@hungpvq/shared';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {

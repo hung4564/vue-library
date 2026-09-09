@@ -98,7 +98,7 @@ import type { MapSimple } from '@hungpvq/map-core';
 import { Map, BaseMapControl, MeasurementControl, PrintControl } from '@hungpvq/vue-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
 import { DrawControl } from '@hungpvq/vue-map-draw';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';;
 import type { FeatureCollection } from 'geojson';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';

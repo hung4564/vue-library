@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
-import {
-  LAYER_CONTROL_LOCALE,
-  convertListToTree,
-  handleMenuAction,
-  listListViewGroups,
-  TreeItem,
-} from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { LAYER_CONTROL_LOCALE, convertListToTree, listListViewGroups, TreeItem } from '@hungpvq/map-dataset';
+import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import {

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
-import {
-  CREATE_CONTROL_LOCALE,
-  reportCreateLayerError,
-  suggestLayerName,
-} from '@hungpvq/map-dataset';
+import { CREATE_CONTROL_LOCALE, reportCreateLayerError, suggestLayerName } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   BaseButton,

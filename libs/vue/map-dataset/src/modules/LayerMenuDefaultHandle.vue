@@ -1,19 +1,8 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { fitBounds } from '@hungpvq/map-core';
-import {
-  addListViewsToGroup,
-  addListViewsToNewGroup,
-  canMoveListView,
-  type IListViewUI,
-  LIST_VIEW_MENU_ID,
-  MenuClickAddComponent,
-  MenuClickFitBounds,
-  MenuClickHighlight,
-  MenuItemProps,
-  moveListView,
-  syncListViewLayerOrder,
-} from '@hungpvq/map-dataset';
+import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_ID, MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
 import {
   defaultMapProps,
   UniversalRegistry,

@@ -1,13 +1,7 @@
-import {
-  createDatasetPartDataManagementGeojsonLocalComponent,
-  createDatasetPartDataManagementListLocalComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartDataManagementGeojsonLocalComponent, createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartDataManagementListLocalComponent, createDatasetPartListViewUiComponentBuilder, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 
 export function createDataManagementGeojsonListDataset() {
   const dataset = createRootDataset('Default');

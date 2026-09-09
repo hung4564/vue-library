@@ -8,9 +8,9 @@ import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
-} from '../menu/builder';
-import { LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '../menu/items';
-import { hasGeojsonExportData } from '../geo-export/dataset';
+} from '../../menu/builder';
+import { LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '../../menu/items';
+import { hasGeojsonExportData } from '../../geo-export/dataset';
 import type { AttributeTableColumnsOption } from './model';
 
 export type AttributeTableMenuOptions = Partial<

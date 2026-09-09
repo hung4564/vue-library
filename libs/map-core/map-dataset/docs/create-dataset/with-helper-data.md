@@ -29,12 +29,8 @@ GeoJSON source wraps this: `source.getData()` is the FeatureCollection; `source.
 Stores a `BBox` directly in data. Invalid bbox throws.
 
 ```ts
-import {
-  createDatasetPartBoundComponent,
-  createMenuItemToBoundActionForList,
-  createRootDataset,
-  createDatasetPartListViewUiComponent,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartBoundComponent, createRootDataset, createDatasetPartListViewUiComponent } from '@hungpvq/map-dataset';
+import { createMenuItemToBoundActionForList } from '@hungpvq/map-dataset/menu';
 
 const dataset = createRootDataset('Cities');
 const bound = createDatasetPartBoundComponent('Cities', [
@@ -70,17 +66,9 @@ Stores default menus that list, identify, and the attribute table share. Data is
 Add the menu part to the same dataset tree. List, identify, and the table find it with `findFirstLeafByType(..., 'menu')`.
 
 ```ts
-import {
-  createRootDataset,
-  createDatasetPartMenuComponent,
-  createDatasetPartMenuComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartIdentifyComponentBuilder,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
+import { createDatasetPartMenuComponent, createDatasetPartMenuComponentBuilder, createMenuItemShowDetailInfoSource, createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 
 const dataset = createRootDataset('Cities');
 

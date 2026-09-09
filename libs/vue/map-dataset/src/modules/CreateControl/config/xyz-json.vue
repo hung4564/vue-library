@@ -51,14 +51,7 @@ import {
   useLang,
   useMap,
 } from '@hungpvq/vue-map-core';
-import {
-  applyCreateControlSample,
-  CREATE_CONTROL_SAMPLE_NONE,
-  CREATE_CONTROL_DEFAULT_DATA_TAB,
-  getCreateControlDataTabs,
-  getCreateControlSampleUrl,
-  getCreateControlSamples,
-} from '@hungpvq/map-dataset';
+import { applyCreateControlSample, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples } from '@hungpvq/map-dataset/create-control';
 import { computed, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
 

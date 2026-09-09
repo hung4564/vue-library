@@ -5,10 +5,8 @@ One-call helpers that build a root dataset (source + list UI + layer).
 For a full Map + LayerControl walkthrough with **inline GeoJSON and no GIS worker**, see [Minimal starter](/map/core/minimal-starter).
 
 ```typescript
-import {
-  createGeoJsonDataset,
-  createRasterUrlDataset,
-} from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
+import { createRasterUrlDataset } from '@hungpvq/map-dataset/raster';
 
 const points = createGeoJsonDataset({
   name: 'Cities',

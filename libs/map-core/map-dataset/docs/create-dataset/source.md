@@ -7,7 +7,7 @@ Data source for MapLibre layers. Put the source node **before** the layer node o
 ## GeoJSON
 
 ```ts
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 
 const source = createDatasetPartGeojsonSourceComponent(
   'my-source',
@@ -39,7 +39,7 @@ List ⋮ **Export** downloads this source as GeoJSON / KML / CSV / Shapefile. **
 ## Raster tiles
 
 ```ts
-import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
 
 const raster = createDatasetPartRasterSourceComponent('raster-source', {
   type: 'raster',
@@ -56,7 +56,7 @@ Second argument is a MapLibre `RasterSourceSpecification`.
 ## Vector tiles
 
 ```ts
-import { createDatasetPartVectorTileComponent } from '@hungpvq/map-dataset';
+import { createDatasetPartVectorTileComponent } from '@hungpvq/map-dataset/vector-tile';
 
 const vector = createDatasetPartVectorTileComponent('vector-source', {
   tiles: ['https://example.com/tiles/{z}/{x}/{y}.pbf'],

@@ -1,10 +1,6 @@
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
-import {
-  createMenuConditionContext,
-  getResolvedMenus,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-} from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
 import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';

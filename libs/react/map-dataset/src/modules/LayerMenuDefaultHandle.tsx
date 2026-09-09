@@ -1,20 +1,8 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { fitBounds } from '@hungpvq/map-core';
-import type {
-  MenuClickAddComponent,
-  MenuClickFitBounds,
-  MenuClickHighlight,
-  MenuItemProps,
-} from '@hungpvq/map-dataset';
-import {
-  addListViewsToGroup,
-  addListViewsToNewGroup,
-  canMoveListView,
-  type IListViewUI,
-  LIST_VIEW_MENU_ID,
-  moveListView,
-  syncListViewLayerOrder,
-} from '@hungpvq/map-dataset';
+import type { MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
+import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import {
   defaultMapProps,
   UniversalRegistry,

@@ -42,12 +42,12 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 ## Treat as public / breaking
 
 - Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root **and** `@hungpvq/map-core/<domain>` barrels are **named exports**, locked by `public-api.spec.ts`)
-- Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./assets/*`
+- Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./assets/*`, and dataset domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`)
 - Control ids (`mapLayerControl`, …), action types, `MapControlHandle` shape
-- `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values**
+- `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values** (from `@hungpvq/map-dataset/menu`)
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`
 - Peer minimum raises; optional peer → required
-- Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import platform APIs from `@hungpvq/map-core` and domain APIs from `@hungpvq/map-core/<domain>` (or `map-dataset` / `map-draw` / `draggable`)
+- Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import platform APIs from `@hungpvq/map-core` and domain APIs from `@hungpvq/map-core/<domain>` (or `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` / `map-draw` / `draggable`)
 
 Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Map packages currently keep that list **empty** — all published runtime exports are Stable.
 

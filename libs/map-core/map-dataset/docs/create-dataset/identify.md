@@ -22,13 +22,8 @@ Each hit is a flat `{ id, name, data }` feature under an identify node (`Identif
 ## Factories
 
 ```ts
-import {
-  createIdentifyMapboxComponent,
-  createIdentifyMapboxMergedComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-} from '@hungpvq/map-dataset';
+import { createIdentifyMapboxComponent, createIdentifyMapboxMergedComponent, createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem } from '@hungpvq/map-dataset/menu';
 
 const identify = createIdentifyMapboxComponent('identify', {
   field_id: 'id',

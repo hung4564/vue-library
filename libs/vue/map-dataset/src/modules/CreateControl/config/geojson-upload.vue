@@ -78,18 +78,7 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import { DragDropFile } from '@hungpvq/shared-file';
-import {
-  applyCreateControlSample,
-  CREATE_CONTROL_SAMPLE_NONE,
-  CREATE_CONTROL_DEFAULT_DATA_TAB,
-  GIS_FILE_ACCEPT,
-  getCreateControlDataTabs,
-  getCreateControlSampleUrl,
-  getCreateControlSamples,
-  loadGisFileAsync,
-  loadGisTextAsync,
-  loadGisUrlAsync,
-} from '@hungpvq/map-dataset';
+import { applyCreateControlSample, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, GIS_FILE_ACCEPT, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples, loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync } from '@hungpvq/map-dataset/create-control';
 import { computed, markRaw, onBeforeUnmount, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
 

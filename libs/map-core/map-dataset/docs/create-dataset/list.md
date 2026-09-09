@@ -4,12 +4,8 @@ How a dataset appears in `LayerControl`. Prefer the builder.
 
 ```ts
 import { createMultiLegend } from '@hungpvq/vue-map-dataset';
-import {
-  createDatasetPartListViewUiComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createMenuBuilder,
-  createMenuItemToggleShow,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
+import { createMenuBuilder, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { mdiDownload } from '@mdi/js';
 
 // Shortcut (defaults: opacity menu, move up/down, add to group)

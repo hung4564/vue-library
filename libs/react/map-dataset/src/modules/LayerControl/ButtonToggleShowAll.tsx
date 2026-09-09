@@ -1,10 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import {
-  applyGlobalLayerVisibility,
-  LAYER_CONTROL_LOCALE,
-  LIST_VIEW_MENU_COMPONENT_KEY,
-} from '@hungpvq/map-dataset';
+import { applyGlobalLayerVisibility, LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { useEffect } from 'react';
 import { ToggleShowButton } from '../../extra/component/toggle-show-button';

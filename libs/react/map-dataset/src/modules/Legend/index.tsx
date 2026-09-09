@@ -1,5 +1,5 @@
 import type { ComponentType } from '@hungpvq/map-dataset';
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { LayerLegendLinearGradient } from './parts/linear-gradient';
 import { LayerLegendSingleColor } from './parts/single-color';
 import { LayerLegendSingleText } from './parts/single-value';

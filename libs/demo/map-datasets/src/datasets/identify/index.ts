@@ -1,20 +1,9 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import {
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartHighlightComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuItemIdentifyForList,
-  createMenuItemShowDetailForItem,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemStyleEdit,
-  createMenuItemToBoundActionForItem,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { IDENTIFY_GROUP, NO_GROUP_IDENTIFY } from '../../fixtures/geojson';
 
 export function createSimpleIdentifyDataset() {

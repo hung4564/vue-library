@@ -4,7 +4,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/react-map-dataset';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';

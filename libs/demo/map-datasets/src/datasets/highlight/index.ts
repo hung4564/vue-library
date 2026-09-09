@@ -1,18 +1,9 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import type { IDataset, IHighlightView } from '@hungpvq/map-dataset';
-import {
-  createDatasetPartChangeColorHighlightComponent,
-  createDatasetPartFeatureStateHighlightComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartHighlightComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartShadowHighlightComponent,
-  createGroupDataset,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartChangeColorHighlightComponent, createDatasetPartFeatureStateHighlightComponent, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createDatasetPartShadowHighlightComponent, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import type { Feature } from 'geojson';
 import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
 import { createDatasetCustomHighlightComponent } from './helper';

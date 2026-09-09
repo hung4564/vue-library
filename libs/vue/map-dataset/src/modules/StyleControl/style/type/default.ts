@@ -11,7 +11,7 @@ import InputArrayXY from '../field/InputArrayXY.vue';
 import InputImage from '../field/InputImage.vue';
 import InputMultiple from '../field/InputMultiple.vue';
 import { divColor, textAfter, textFormat } from '../label';
-import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset';
+import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset/style';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = {
   'array-index': {

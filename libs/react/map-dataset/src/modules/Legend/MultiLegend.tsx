@@ -1,4 +1,4 @@
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { useUniversalRegistry } from '@hungpvq/react-map-core';
 
 type LegendType = 'linear' | 'color' | 'text';

@@ -38,6 +38,8 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 ```
 
+**Import paths (breaking major):** domain APIs live on subpaths — e.g. `createGeoJsonDataset` from `@hungpvq/map-dataset/geojson`, `LIST_VIEW_MENU_*` from `@hungpvq/map-dataset/menu`, `LayerSimpleMapboxBuild` from `@hungpvq/map-dataset/style`. Root keeps `DatasetService`, tree helpers, highlight, attribute-table, and shared `IDataset` types. See [Stable API](/map/core/stable-api).
+
 ```ts
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
@@ -118,13 +120,9 @@ import {
   ComponentManagementControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import {
-  createRootDataset,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartGeojsonSourceComponent,
-  createMultiMapboxLayerComponent,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder, createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { ref } from 'vue';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';

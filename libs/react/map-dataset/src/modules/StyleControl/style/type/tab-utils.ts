@@ -1,4 +1,4 @@
-import type { Tab } from '@hungpvq/map-dataset';
+import type { Tab } from '@hungpvq/map-dataset/style';
 
 export type TransFn = (key: string) => string;
 

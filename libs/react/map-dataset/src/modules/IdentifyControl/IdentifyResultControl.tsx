@@ -1,18 +1,8 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import type { IIdentifyView, MenuAction } from '@hungpvq/map-dataset';
-import {
-  createMenuConditionContext,
-  getResolvedMenus,
-  handleMenuAction,
-  IDENTIFY_ALL_LAYERS_VALUE,
-  IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
-  IDENTIFY_RESULT_CONTROL,
-  isMenuItemHidden,
-  type IdentifyResultGrouped,
-  type IdentifyResultLayerItem,
-  type IdentifyResultUpdatePayload,
-} from '@hungpvq/map-dataset';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { createMenuConditionContext, getResolvedMenus, handleMenuAction, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
+import { IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, type IdentifyResultGrouped, type IdentifyResultLayerItem, type IdentifyResultUpdatePayload } from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   BaseButton,

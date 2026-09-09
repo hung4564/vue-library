@@ -10,8 +10,9 @@
   />
 </template>
 <script setup lang="ts">
-import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
-import { getMenuItemLocation } from '@hungpvq/map-dataset';
+import type { IDataset } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { getMenuItemLocation } from '@hungpvq/map-dataset/menu';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 import DatasetMenuDivider from './dataset-menu-divider.vue';

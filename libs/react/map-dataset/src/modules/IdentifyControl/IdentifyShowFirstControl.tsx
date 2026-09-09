@@ -1,16 +1,9 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { logHelper, runMapControlAction } from '@hungpvq/map-core';
 import { EventClick } from '@hungpvq/map-core/event';
-import type {
-  IDataset,
-  IdentifyMultiResult,
-  IIdentifyView,
-} from '@hungpvq/map-dataset';
-import {
-  handleMultiIdentifyGetFirst,
-  IDENTIFY_CONTROL,
-  identifyResolver,
-} from '@hungpvq/map-dataset';
+import type { IDataset } from '@hungpvq/map-dataset';
+import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
+import { handleMultiIdentifyGetFirst, IDENTIFY_CONTROL, identifyResolver } from '@hungpvq/map-dataset/identify';
 import {
   defaultMapProps,
   useEventMap,

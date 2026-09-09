@@ -7,7 +7,7 @@ CRUD for dataset records. Prefer the local GeoJSON helper unless you need a cust
 ## Local GeoJSON (localStorage)
 
 ```ts
-import { createDatasetPartDataManagementGeojsonLocalComponent } from '@hungpvq/map-dataset';
+import { createDatasetPartDataManagementGeojsonLocalComponent } from '@hungpvq/map-dataset/geojson';
 
 const dataManagement = createDatasetPartDataManagementGeojsonLocalComponent('records', {
   key: 'my-layer-geojson', // localStorage key

@@ -1,14 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import {
-  DATASET_CONTROL_LOCALE,
-  createMenuClickAddComponentBuilder,
-  createMenuClickBuilder,
-  handleMenuActionClick,
-  LIST_VIEW_MENU_COMPONENT_KEY,
-  LIST_VIEW_MENU_ID,
-  traverseTree,
-} from '@hungpvq/map-dataset';
+import { DATASET_CONTROL_LOCALE, traverseTree } from '@hungpvq/map-dataset';
+import { createMenuClickAddComponentBuilder, createMenuClickBuilder, handleMenuActionClick, LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar, DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   BaseButton,

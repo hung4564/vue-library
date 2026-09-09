@@ -122,14 +122,8 @@ Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' }
 Exported from `@hungpvq/map-dataset`:
 
 ```ts
-import {
-  GIS_FILE_ACCEPT,
-  loadGisFileAsync,
-  loadGisTextAsync,
-  loadGisUrlAsync,
-  reprojectGeojsonToWgs84Async,
-  terminateGeojsonWorker,
-} from '@hungpvq/map-dataset';
+import { GIS_FILE_ACCEPT, loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync } from '@hungpvq/map-dataset/create-control';
+import { reprojectGeojsonToWgs84Async, terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 
 const { geojson, crs, format } = await loadGisFileAsync(file);
 const wgs84 = await reprojectGeojsonToWgs84Async(geojson!, crs);

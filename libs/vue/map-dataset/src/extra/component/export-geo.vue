@@ -35,12 +35,9 @@
   </li>
 </template>
 <script setup lang="ts">
-import type { MenuAction } from '@hungpvq/map-dataset';
-import {
-  createExportGeoSubmenu,
-  getExportGeoMenuOptions,
-  handleMenuAction,
-} from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { createExportGeoSubmenu, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
+import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiDownload } from '@mdi/js';
 import { computed, ref } from 'vue';

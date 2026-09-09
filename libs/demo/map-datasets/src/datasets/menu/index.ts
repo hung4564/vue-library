@@ -1,28 +1,9 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import {
-  createDatasetPartBoundComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartHighlightComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartMenuComponentBuilder,
-  createGroupDataset,
-  createMenuBuilder,
-  createMenuClickBuilder,
-  createMenuClickHighlightBuilder,
-  createMenuItemIdentifyForList,
-  createMenuItemShowDetailForItem,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemStyleEdit,
-  createMenuItemToBoundActionForItem,
-  createMenuItemToBoundActionForList,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-  LIST_VIEW_MENU_ID,
-  type MenuItemClick,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartBoundComponent, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   mdiAppleKeyboardCommand,
   mdiCrosshairsGps,

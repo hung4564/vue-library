@@ -1,5 +1,5 @@
-import type { RasterUrlDatasetOption } from '@hungpvq/map-dataset';
-import { createRasterUrlDataset } from '@hungpvq/map-dataset';
+import type { RasterUrlDatasetOption } from '@hungpvq/map-dataset/raster';
+import { createRasterUrlDataset } from '@hungpvq/map-dataset/raster';
 import { ConfigRasterJson, ConfigRasterSettings } from '../../config';
 import { ConfigHelper } from '../_default';
 

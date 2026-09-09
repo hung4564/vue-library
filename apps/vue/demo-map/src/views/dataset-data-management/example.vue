@@ -20,19 +20,11 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import {
-  createDatasetParDraftDataManagementGeojsonLocalComponent,
-  createDatasetParDraftDataManagementListLocalComponent,
-  createDatasetPartDataManagementGeojsonLocalComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartIdentifyComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuBuilder,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createDatasetParDraftDataManagementGeojsonLocalComponent, createDatasetPartDataManagementGeojsonLocalComponent, createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetParDraftDataManagementListLocalComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
+import { createMenuBuilder } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   DrawingType,
   getFirstFeatureByMap,
