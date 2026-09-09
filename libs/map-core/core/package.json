@@ -28,6 +28,46 @@
     "./worker": {
       "import": "./worker.js",
       "types": "./worker.d.ts"
+    },
+    "./basemap": {
+      "import": "./basemap.js",
+      "types": "./basemap.d.ts"
+    },
+    "./crs": {
+      "import": "./crs.js",
+      "types": "./crs.d.ts"
+    },
+    "./event": {
+      "import": "./event.js",
+      "types": "./event.d.ts"
+    },
+    "./image": {
+      "import": "./image.js",
+      "types": "./image.d.ts"
+    },
+    "./legend": {
+      "import": "./legend.js",
+      "types": "./legend.d.ts"
+    },
+    "./measurement": {
+      "import": "./measurement.js",
+      "types": "./measurement.d.ts"
+    },
+    "./menu": {
+      "import": "./menu.js",
+      "types": "./menu.d.ts"
+    },
+    "./print": {
+      "import": "./print.js",
+      "types": "./print.d.ts"
+    },
+    "./theme": {
+      "import": "./theme.js",
+      "types": "./theme.d.ts"
+    },
+    "./toolbar": {
+      "import": "./toolbar.js",
+      "types": "./toolbar.d.ts"
     }
   },
   "dependencies": {

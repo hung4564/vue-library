@@ -3,12 +3,11 @@
 </template>
 <script setup lang="ts">
 import {
-  EventClick,
-  EventMouseMove,
   logHelper,
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import type {
   HighlightHandle,
   IdentifyMultiResult,

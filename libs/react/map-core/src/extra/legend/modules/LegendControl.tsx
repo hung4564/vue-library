@@ -5,7 +5,7 @@ import {
   getLegendName,
   isSupportGenLayerLegend,
   type LegendLayerSpecification,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/legend';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';

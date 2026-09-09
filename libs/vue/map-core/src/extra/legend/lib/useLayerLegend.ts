@@ -8,7 +8,7 @@ import type {
 import type { VNode } from 'vue';
 import { h } from 'vue';
 
-import { MapLegend, type LegendElement } from '@hungpvq/map-core';
+import { MapLegend, type LegendElement } from '@hungpvq/map-core/legend';
 
 export function useLayerLegend() {
   function getLayerLegendVNode(

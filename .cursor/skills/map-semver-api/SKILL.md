@@ -41,21 +41,22 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 
 ## Treat as public / breaking
 
-- Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
-- Package `exports` paths: `.`, `./style.css`, `./worker`, `./vite`, `./assets/*`
+- Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root **and** `@hungpvq/map-core/<domain>` barrels are **named exports**, locked by `public-api.spec.ts`)
+- Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./assets/*`
 - Control ids (`mapLayerControl`, …), action types, `MapControlHandle` shape
 - `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values**
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`
 - Peer minimum raises; optional peer → required
-- Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import those from `@hungpvq/map-core` / `map-dataset` / `map-draw` / `draggable` directly
+- Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import platform APIs from `@hungpvq/map-core` and domain APIs from `@hungpvq/map-core/<domain>` (or `map-dataset` / `map-draw` / `draggable`)
 
-Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Map packages currently keep that list **empty** — all root runtime exports are Stable.
+Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Map packages currently keep that list **empty** — all published runtime exports are Stable.
 
 ## Export lock rule
 
-- Root `src/index.ts` uses **explicit named exports** only (no public `export *`). Implementation aggregation: `src/internal-barrel.ts` (not a package entry). First-party types: explicit `export type { … }` only — do **not** `export type *` or re-export types from third-party JS libraries (`geojson`, `maplibre-gl`, …).
-- Add/remove a **runtime** root export → update `index.ts` named list + Stable **or** Experimental allowlist in that package’s `public-api.spec.ts` **and** `stable-api.md` when Stable.
-- Experimental may change in a **minor**; removing experimental from the root barrel is a **major**.
+- Root and domain `src/index.ts` / `src/<domain>/index.ts` use **explicit named exports** only (no public `export *`). Implementation aggregation: `src/internal-barrel.ts` (not a package entry). First-party types: explicit `export type { … }` only — do **not** `export type *` or re-export types from third-party JS libraries (`geojson`, `maplibre-gl`, …).
+- Add/remove a **runtime** export on root **or** a subpath → update that entry’s named list + Stable **or** Experimental allowlist in `public-api.spec.ts` **and** `stable-api.md` when Stable.
+- Moving a symbol from root onto a subpath **without** a root re-export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
+- Experimental may change in a **minor**; removing experimental from a published barrel is a **major**.
 
 ## Safe patterns
 

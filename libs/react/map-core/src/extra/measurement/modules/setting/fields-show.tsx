@@ -1,4 +1,4 @@
-import type { IViewSettingField } from '@hungpvq/map-core';
+import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 
 export interface MeasurementSettingFieldsProps {
   fields?: IViewSettingField[];

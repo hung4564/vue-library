@@ -3,8 +3,8 @@
  */
 import { MapStore } from '../store';
 import { MAP_STORE_KEY } from './constants';
-import { MittTypeMapCrs, MittTypeMapCrsEventKey } from './crs';
-import { MittTypeMapEvent, MittTypeMapEventEventKey } from './event';
+import { MittTypeMapCrs, MittTypeMapCrsEventKey } from '../crs/types';
+import { MittTypeMapEvent, MittTypeMapEventEventKey } from '../event/types';
 import type { MapSimple } from './index';
 import { MittTypeMapLang, MittTypeMapLangEventKey } from './lang';
 

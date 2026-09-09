@@ -1,10 +1,6 @@
-import {
-  EventClick,
-  EventMouseMove,
-  type MapControlButtonUIState,
-  type MapSimple,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
+import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import {
   InspectController,
   brightColor,

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   type AnyToolbarOptions,
   type AnyToolbarStrategy,
@@ -10,12 +11,11 @@ import {
   type ToolbarModuleOptions,
   type ToolbarSingleOptions,
   createToolbarStrategy,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/toolbar';
 
 import { useMapToolbarModule } from './store';
 
-export type { ToolbarButtonConfig } from '@hungpvq/map-core';
+export type { ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
 
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(control: T) {
   type StateType = T extends ControlStrategy

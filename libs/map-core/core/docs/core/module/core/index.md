@@ -281,7 +281,7 @@ The map library supports extensive customization through CSS variables. All vari
     ```
 
     ```ts
-    import { bootstrapMapTheme } from '@hungpvq/map-core';
+    import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
     bootstrapMapTheme('auto'); // auto | light | dark | vibrant | ocean | forest | sunset | slate
     ```
 

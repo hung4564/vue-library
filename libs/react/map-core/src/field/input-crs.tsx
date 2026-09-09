@@ -1,4 +1,4 @@
-import type { CrsItem } from '@hungpvq/map-core';
+import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   buildCrsSearchCatalog,
   buildMapCrsCatalog,
@@ -6,7 +6,7 @@ import {
   getCrsInputSuggestions,
   lookupCrsItem,
   normalizeEpsgCode,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMapCrsItems } from '../extra/crs/useMapCrsItems';

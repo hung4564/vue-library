@@ -4,4 +4,4 @@ export type {
   LayerObjectKeys,
   LayerBranch,
   ExprReturn,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/legend';

@@ -3,7 +3,7 @@ import {
   type AnyIEvent,
   type MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { useMapMittStore } from '../../mitt';
 import { useMapEventStore } from '../store';
 

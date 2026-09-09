@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { bootstrapMapTheme } from '@hungpvq/map-core';
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { Devtools } from '@hungpvq/vue-map-devtools';
 import { RouterView } from 'vue-router';
 

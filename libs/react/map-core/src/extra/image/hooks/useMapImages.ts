@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import { styleImageToDataURL } from '@hungpvq/map-core';
+import { styleImageToDataURL } from '@hungpvq/map-core/image';
 import type { StyleImage } from 'maplibre-gl';
 import { getMap } from '../../../store/store';
 

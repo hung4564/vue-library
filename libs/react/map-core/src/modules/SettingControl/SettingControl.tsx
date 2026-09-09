@@ -1,4 +1,7 @@
-import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  SETTING_CONTROL_LOCALE,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';

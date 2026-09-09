@@ -1,4 +1,4 @@
-import { bootstrapMapTheme } from '@hungpvq/map-core';
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { Outlet } from 'react-router';
 import { Devtools } from '@hungpvq/react-map-devtools';
 import './app.module.css';

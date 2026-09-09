@@ -1,3 +1,5 @@
+export { THEME_CONTROL_LOCALE } from './locale';
+
 export const MAP_THEME_IDS = [
   'light',
   'dark',

@@ -5,15 +5,16 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
   EventBboxRangerHandle,
   EventClick,
-  logHelper,
+} from '@hungpvq/map-core/event';
+import {
   MAP_CONTEXT_MENU_ID,
   type MapMenuItemProps,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset';
 import {
   clearIdentifyScope,

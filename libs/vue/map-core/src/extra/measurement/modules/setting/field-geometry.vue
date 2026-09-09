@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
+import type {
+  CoordinatesNumber,
+  DraftCoordinatesNumber,
+} from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,

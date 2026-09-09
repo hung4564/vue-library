@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { exportMapbox, PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { exportMapbox, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';

@@ -1,4 +1,4 @@
-import type { MapControlButtonUIState } from '@hungpvq/map-core';
+import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import { Icon } from '@mdi/react';
 import React from 'react';
 import { MapControlButton } from './MapControlButton';

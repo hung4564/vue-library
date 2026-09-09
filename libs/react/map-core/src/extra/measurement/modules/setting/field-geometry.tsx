@@ -1,4 +1,7 @@
-import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
+import type {
+  CoordinatesNumber,
+  DraftCoordinatesNumber,
+} from '@hungpvq/map-core';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,

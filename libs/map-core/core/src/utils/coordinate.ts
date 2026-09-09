@@ -3,11 +3,9 @@
  * Provides functions for coordinate formatting and conversion
  */
 
-import {
-  type CoordinatesNumber,
-  type CrsItem,
-  type DraftCoordinatesNumber,
-} from '../types';
+import { type CoordinatesNumber, type DraftCoordinatesNumber } from '../types';
+
+import { type CrsItem } from '../crs/types';
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
 

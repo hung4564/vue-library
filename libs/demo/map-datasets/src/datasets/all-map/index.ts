@@ -1,7 +1,5 @@
-import {
-  getChartRandomColor,
-  type MeasurementHandleType,
-} from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
+import { type MeasurementHandleType } from '@hungpvq/map-core/measurement';
 import {
   createDatasetPartChangeColorHighlightComponent,
   createDatasetPartGeojsonSourceComponent,

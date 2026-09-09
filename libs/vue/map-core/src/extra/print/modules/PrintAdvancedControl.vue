@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { BaseButton, InputSelect, InputText } from '../../../field';
@@ -16,8 +17,8 @@ import {
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref } from 'vue';
-import type { PrintOption } from '@hungpvq/map-core';
-import { exportMapbox, exportMapboxWithOptions } from '@hungpvq/map-core';
+import type { PrintOption } from '@hungpvq/map-core/print';
+import { exportMapbox, exportMapboxWithOptions } from '@hungpvq/map-core/print';
 import { useMapPrint } from '../store';
 import { CrosshairManager, PrintableAreaManager } from './print';
 const props = withDefaults(

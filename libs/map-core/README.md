@@ -23,7 +23,7 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
-| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` | maplibre `^5`, turf `^6` |
+| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | maplibre `^5`, turf `^6` |
 | `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` | depends on `map-core@~1.0.1` |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
 | `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
@@ -144,6 +144,7 @@ Documented `--map-*` tokens and `style.css` entries:
 - [ ] New optional props / optional peers
 - [ ] Widen peer ranges when truly compatible (document)
 - [ ] New subpath exports while keeping the old root barrel
+- [ ] Moving symbols from root onto a subpath **without** a root re-export (breaking → **major**)
 - [ ] Deprecate via JSDoc `@deprecated` without removing
 - [ ] New packages (e.g. React draw) that are additive
 
@@ -202,7 +203,7 @@ Documented `--map-*` tokens and `style.css` entries:
 1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset`, `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*`, CSS tokens, `MapControlHandle`. Runtime locks: `public-api.spec.ts` in map-core, map-dataset, vue/react map-core, vue/react map-dataset.
 2. **Named root barrels** (like draggable): `src/index.ts` exports only allowlisted symbols; `src/internal-barrel.ts` holds `export *` aggregation and is **not** a package entry. First-party types via explicit `export type { … }` only — do not re-export `geojson` / `maplibre-gl` types from the root.
 3. Mark non-Stable symbols **experimental** in `public-api.spec.ts` — may change in a **minor**; removing them from the root is a **major**.
-4. Prefer feature subpaths later (`@hungpvq/map-core/theme`, …) only as additive minors; do not drop named root exports without a major.
+4. Feature subpaths (`@hungpvq/map-core/theme`, `./basemap`, …) are **public** entries. Moving symbols off the root onto a subpath without a root re-export is a **major**; adding a new subpath while keeping root is usually a **minor**.
 5. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.
 
 ## 8. Team policy (one line)

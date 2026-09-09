@@ -75,13 +75,12 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import type { BaseMapItem } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
-  logHelper,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/basemap';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';

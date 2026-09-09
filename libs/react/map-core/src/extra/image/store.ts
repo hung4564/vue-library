@@ -1,11 +1,9 @@
+import { logHelper, MapSimple, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
-  logHelper,
-  MapSimple,
-  MAP_STORE_KEY,
   addImageForMap,
   createDefaultImageStore,
   type MapImageStore,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/image';
 import { createMapScopedStore, useMapStore } from '../../store';
 import { loggerFactory } from '@hungpvq/shared-log';
 

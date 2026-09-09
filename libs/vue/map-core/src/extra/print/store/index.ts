@@ -2,13 +2,12 @@
  * Vue-specific print store
  */
 
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
   type MapPrintStore,
-  logHelper,
-  MAP_STORE_KEY,
   createDefaultPrintStore,
   createPrintStoreApi,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/print';
 import { createMapScopedStore } from '../../../store/store';
 import { loggerFactory } from '@hungpvq/shared-log';
 

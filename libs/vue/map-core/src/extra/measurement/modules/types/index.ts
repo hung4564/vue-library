@@ -1,1 +1,1 @@
-export type { IView, IViewProps } from '@hungpvq/map-core';
+export type { IView, IViewProps } from '@hungpvq/map-core/measurement';

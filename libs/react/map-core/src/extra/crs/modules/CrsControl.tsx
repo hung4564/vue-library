@@ -1,10 +1,11 @@
-import type { CrsItem, WithMapPropType } from '@hungpvq/map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';

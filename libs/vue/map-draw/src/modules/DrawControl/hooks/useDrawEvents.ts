@@ -1,4 +1,4 @@
-import { EventClick } from '@hungpvq/map-core';
+import { EventClick } from '@hungpvq/map-core/event';
 import {
   MapDraw,
   type DrawCreateEvent,

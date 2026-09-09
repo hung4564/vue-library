@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   clearAddGeojsonHereItems,
   getDefaultAddGeojsonHereItems,
@@ -12,8 +13,7 @@ import {
   setAddGeojsonHereItems,
   type AddGeojsonHerePayload,
   type MapMenuItemProps,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import {
   LAYER_CONTROL_LOCALE,
   createGeojsonHereDataset,

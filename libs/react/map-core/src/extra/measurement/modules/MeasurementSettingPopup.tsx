@@ -3,9 +3,9 @@ import {
   type DraftCoordinatesNumber,
   fitBounds,
   toCoordinatesNumberList,
-  type IViewSettingField,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { type IViewSettingField } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { defaultMapProps, useMap } from '../../../hooks';

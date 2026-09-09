@@ -32,10 +32,10 @@ import {
   type CoordinatesNumber,
   type DraftCoordinatesNumber,
   fitBounds,
-  IViewSettingField,
   toCoordinatesNumberList,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { IViewSettingField } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';

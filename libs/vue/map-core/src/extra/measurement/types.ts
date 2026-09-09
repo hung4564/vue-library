@@ -8,4 +8,4 @@ export type {
   MeasurementHandleType,
   IView,
   IViewProps,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/measurement';

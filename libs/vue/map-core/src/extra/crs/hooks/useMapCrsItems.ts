@@ -1,10 +1,10 @@
+import { logHelper } from '@hungpvq/map-core';
 import {
   type CrsItem,
   MittTypeMapCrsEventKey,
-  logHelper,
   normalizeEpsgCode,
   type MittTypeMapCrs,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';

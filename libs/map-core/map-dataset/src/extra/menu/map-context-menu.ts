@@ -1,4 +1,4 @@
-import type { MapContextMenuTarget } from '@hungpvq/map-core';
+import type { MapContextMenuTarget } from '@hungpvq/map-core/menu';
 import { createMenuBuilder } from './builder';
 
 /**
@@ -30,7 +30,7 @@ export {
   getDefaultAddGeojsonHereItems,
   MAP_CONTEXT_MENU_ID,
   setAddGeojsonHereItems,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 
 export { createGeojsonHereDataset } from './add-geojson-here';
 
@@ -41,4 +41,4 @@ export type {
   MapContextMenuItem,
   MapContextMenuItemId,
   MapContextMenuTarget,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';

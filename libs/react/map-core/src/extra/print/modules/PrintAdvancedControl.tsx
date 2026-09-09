@@ -1,3 +1,4 @@
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   CrosshairManager,
   PRINT_CONTROL_LOCALE,
@@ -5,9 +6,8 @@ import {
   exportMapbox,
   exportMapboxWithOptions,
   type PrintOption,
-  type MapControlButtonUIState,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/print';
+import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiClose,

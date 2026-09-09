@@ -71,19 +71,9 @@ export type CoordinatesNumber = [number, number];
 export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
 
 /**
- * Re-export event types
- */
-export * from './event';
-
-/**
  * Re-export constants
  */
 export * from './constants';
-
-/**
- * Re-export CRS types
- */
-export * from './crs';
 
 /**
  * Re-export language types
@@ -91,36 +81,6 @@ export * from './crs';
 export * from './lang';
 
 /**
- * Re-export toolbar types
- */
-export * from './toolbar';
-
-/**
  * Re-export store types
  */
 export * from './store';
-
-/**
- * Re-export basemap types
- */
-export * from './basemap';
-
-/**
- * Re-export measurement types
- */
-export * from './measurement';
-
-/**
- * Re-export print types
- */
-export * from './print';
-
-/**
- * Re-export legend types
- */
-export * from './legend';
-
-/**
- * Re-export image types
- */
-export * from './image';

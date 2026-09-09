@@ -4,12 +4,14 @@ Each **`mapId`** holds **one** MapLibre instance. There is no multi-map / swipe-
 
 ## Who exports what
 
-| Concern | Package |
-|---------|---------|
+| Concern | Package / entry |
+|---------|-----------------|
 | `getMap`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` | `@hungpvq/map-core` |
+| Domain features (basemap, crs, event, image, legend, measurement, menu, print, theme, toolbar) | `@hungpvq/map-core/<domain>` |
+| In-worker helpers | `@hungpvq/map-core/worker` |
 | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore`, `useMapContainer` | `@hungpvq/vue-map-core` / `@hungpvq/react-map-core` |
 
-Adapters **do not** re-export `getMap`. Apps and protocol code import it from `@hungpvq/map-core`.
+Adapters **do not** re-export `getMap` or domain protocol. Apps import platform APIs from `@hungpvq/map-core` and feature APIs from the matching subpath (see [Stable API](./stable-api.md)).
 
 ## Access the map
 

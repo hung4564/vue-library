@@ -1,14 +1,9 @@
-import type {
-  EventBboxRangerHandle,
-  MapMenuItemProps,
-  WithMapPropType,
-} from '@hungpvq/map-core';
-import {
-  EventBboxRanger,
-  EventClick,
-  logHelper,
-  MAP_CONTEXT_MENU_ID,
-} from '@hungpvq/map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
+import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
+import { logHelper } from '@hungpvq/map-core';
+import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
+import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
 import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset';
 import {
   clearIdentifyScope,

@@ -1,3 +1,4 @@
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
@@ -10,10 +11,9 @@ import {
   resolveMapTheme,
   setStoredMapThemeMode,
   toggleMapThemeLightDark,
-  type MapControlButtonUIState,
   type MapThemeMode,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/theme';
+import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import {
   mdiCircleHalfFull,
   mdiPalette,

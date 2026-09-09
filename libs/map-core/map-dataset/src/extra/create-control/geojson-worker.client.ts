@@ -3,12 +3,12 @@ import {
   bboxFromGeojson,
   isCallStackOverflow,
   MapError,
-  normalizeEpsgCode,
   reprojectGeojsonToWgs84,
   toPlainJson,
   WorkerMonitor,
   type GeojsonBbox,
 } from '@hungpvq/map-core';
+import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
 import {
   detectGeojsonStyleTypes,
   shouldUseGisWorkerForGeojson,

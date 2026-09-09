@@ -9,12 +9,12 @@ import {
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
   INFO_CONTROL_LOCALE,
-  exportMapbox,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { exportMapbox } from '@hungpvq/map-core/print';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {

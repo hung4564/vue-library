@@ -1,3 +1,7 @@
+/**
+ * Shell locales that ship with the root entry.
+ * Domain locales live next to their domain (`basemap/locale`, `crs/locale`, …).
+ */
 export const MAP_ACTION_LOCALE = {
   map: {
     action: {
@@ -71,139 +75,6 @@ export const SETTING_CONTROL_LOCALE = {
       },
       btn: {
         apply: 'Apply',
-      },
-    },
-  },
-};
-
-export const THEME_CONTROL_LOCALE = {
-  map: {
-    'theme-control': {
-      title: 'Theme',
-      auto: 'Theme: Auto (system)',
-      light: 'Theme: Light',
-      dark: 'Theme: Dark',
-      vibrant: 'Theme: Vibrant',
-      ocean: 'Theme: Ocean',
-      forest: 'Theme: Forest',
-      sunset: 'Theme: Sunset',
-      slate: 'Theme: Slate',
-    },
-  },
-};
-
-export const LEGEND_CONTROL_LOCALE = {
-  map: {
-    'legend-control': {
-      title: 'Legend',
-      onlyRendered: 'Only rendered',
-    },
-  },
-};
-
-export const EVENT_CONTROL_LOCALE = {
-  map: {
-    'event-control': {
-      title: 'Event Control',
-      field: {
-        name: 'Name',
-        id: 'ID',
-        from: 'From',
-      },
-    },
-  },
-};
-
-export const BASEMAP_CONTROL_LOCALE = {
-  map: {
-    basemap: {
-      title: 'Map basemap',
-      setting: 'Setting',
-    },
-  },
-};
-
-export const CRS_CONTROL_LOCALE = {
-  map: {
-    'crs-control': {
-      title: 'Crs setting',
-      filter: 'Search CRS…',
-      custom: 'Custom CRS',
-      field: {
-        name: 'name',
-        unit: 'unit',
-        epsg: 'epsg',
-        proj4js: 'proj4js',
-      },
-    },
-    'crs-display': {
-      title: 'Display coordinate systems',
-      add: 'Add CRS',
-      remove: 'Remove',
-      show: 'Show in measure',
-    },
-  },
-};
-
-export const PRINT_CONTROL_LOCALE = {
-  map: {
-    print: {
-      title: 'Print',
-      actions: { save: 'save', clear: 'clear', setting: 'Setting' },
-      setting: { title: 'Setting' },
-      field: {
-        ratio: 'Ratio',
-        orientation: 'Orientation',
-      },
-      btn: { apply: 'Print' },
-    },
-  },
-};
-
-export const MEASUREMENT_CONTROL_LOCALE = {
-  map: {
-    measurement: {
-      action: {
-        clear: 'Clear',
-        close: 'Close',
-        setting: 'Setting',
-        download: 'Download',
-        'add-point': 'Add point',
-        'fly-to': 'Fill bound',
-        add: 'Add',
-      },
-      title: 'Measurement',
-      result: 'Measurement Result',
-      field: {
-        'unit-distance': 'Unit distance',
-        'unit-area': 'Unit area',
-      },
-      tools: {
-        point: 'Measure Point',
-        distance: 'Measure Distance',
-        area: 'Measure Area',
-        azimuth: 'Measure azimuth',
-      },
-      unit: {
-        meter: 'Meter',
-        kilometer: 'Kilometer',
-        'square-meter': 'Square Meter',
-        hecta: 'Hecta',
-        'square-kilometer': 'Square Kilometer',
-      },
-      setting: {
-        title: 'Setting',
-        field: {
-          data: 'Data',
-        },
-        point: 'Point',
-        distance: 'Distance',
-        area: 'Area',
-        azimuth: 'Azimuth',
-      },
-      'no-data': {
-        text: 'Status',
-        value: 'Waiting...',
       },
     },
   },

@@ -2,4 +2,4 @@ export {
   isDisabledLegendLayer,
   getLegendName,
   isSupportGenLayerLegend,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/legend';

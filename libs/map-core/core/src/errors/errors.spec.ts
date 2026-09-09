@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  BasemapError,
-  MapError,
-  MapEventError,
-  MapInitializationError,
-} from './index';
+import { BasemapError } from '../basemap/errors';
+import { MapError, MapEventError, MapInitializationError } from './index';
 
 describe('MapError', () => {
   it('stores code, context, recoverable, and cause stack', () => {

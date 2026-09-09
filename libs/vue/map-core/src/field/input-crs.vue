@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CrsItem } from '@hungpvq/map-core';
+import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   buildCrsSearchCatalog,
   buildMapCrsCatalog,
@@ -7,7 +7,7 @@ import {
   getCrsInputSuggestions,
   lookupCrsItem,
   normalizeEpsgCode,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useMapCrsItems } from '../extra/crs/hooks';
 import { useMap } from '../hooks';

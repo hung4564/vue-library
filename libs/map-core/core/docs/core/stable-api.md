@@ -2,15 +2,15 @@
 
 Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
-Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable` — no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts`.
+Root and domain barrels use **explicit named exports** (no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts` (root **and** each domain subpath).
 
-**All current root runtime exports are Stable.** Each package keeps `*_EXPERIMENTAL_RUNTIME_EXPORTS = []` for the lock pattern; new symbols should be added to Stable unless intentionally staged as Experimental later.
+**All current root and subpath runtime exports are Stable.** Each package keeps `*_EXPERIMENTAL_RUNTIME_EXPORTS = []` for the lock pattern; new symbols should be added to Stable unless intentionally staged as Experimental later.
 
-**Runtime lock:** each package asserts `Object.keys(import * as api from './index')` equals Stable ∪ Experimental in `public-api.spec.ts` (type-only exports are erased at runtime and omitted from the lock). Root may export **first-party** types via explicit `export type { … }` — do **not** re-export types that already live in third-party packages (`geojson`, `maplibre-gl`, …); import those from the original package.
+**Runtime lock:** each entry asserts `Object.keys(import * as api from '<entry>')` equals its Stable ∪ Experimental allowlist in `public-api.spec.ts` (type-only exports are erased at runtime and omitted from the lock). Root and subpaths may export **first-party** types via explicit `export type { … }` — do **not** re-export types that already live in third-party packages (`geojson`, `maplibre-gl`, …); import those from the original package.
 
 | Package | Spec |
 |---------|------|
-| `@hungpvq/map-core` | `libs/map-core/core/src/public-api.spec.ts` |
+| `@hungpvq/map-core` | `libs/map-core/core/src/public-api.spec.ts` (root + subpaths) |
 | `@hungpvq/map-dataset` | `libs/map-core/map-dataset/src/public-api.spec.ts` |
 | `@hungpvq/map-draw` | `libs/map-core/map-draw/src/public-api.spec.ts` |
 | `@hungpvq/vue-map-core` | `libs/vue/map-core/src/public-api.spec.ts` |
@@ -22,8 +22,8 @@ Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable
 | `@hungpvq/react-map-draw` | `libs/react/map-draw/src/public-api.spec.ts` |
 | `@hungpvq/react-map-devtools` | `libs/react/map-devtools/src/public-api.spec.ts` |
 
-- Adding a **runtime** root export → add a **named** `export { X } from './internal-barrel'` (or from the feature module) in `src/index.ts`, update Stable in that package’s `public-api.spec.ts`, and this page when documenting the area.
-- Removing a root runtime export is a **major**.
+- Adding a **runtime** export → named export in the entry barrel + Stable (or Experimental) list in that package’s `public-api.spec.ts` + this page when documenting the area.
+- Removing a root **or** subpath runtime export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
 
 Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
@@ -33,20 +33,41 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 - **Adapters:** `@hungpvq/vue-map-core` / `@hungpvq/react-map-core` **extend** that class and only add `registerComponent` / `getComponent`.
 - Prefer `UniversalRegistry` / `runMapControlAction` from `@hungpvq/map-core` in framework-agnostic code (`map-dataset`, context menu).
 
-## `@hungpvq/map-core`
+## `@hungpvq/map-core` package entries
 
-Full runtime allowlist: `public-api.spec.ts` (~222 symbols). Highlights:
+| Entry | Role |
+|-------|------|
+| `.` | Platform shell: store/`getMap`, registry, errors, mitt, shared GIS utils, shell locales, host `WorkerMonitor` |
+| `./style.css` | Shared map CSS |
+| `./worker` | CSS/DOM-free worker helpers |
+| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError` |
+| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE` |
+| `./event` | `EventManager`, event models, bbox ranger |
+| `./image` | Map image load/store helpers |
+| `./legend` | `LegendService`, `MapLegend`, paint helpers |
+| `./measurement` | `MeasurementService`, measure modes, format helpers |
+| `./menu` | Map context menu builders / actions |
+| `./print` | `PrintService`, export helpers |
+| `./theme` | Theme bootstrap / resolve / `MAP_THEME_*` |
+| `./toolbar` | Toolbar strategies / store APIs |
+
+### Root (`.`) highlights
+
+Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~80 symbols).
 
 | Area | Stable surface |
 |------|----------------|
-| Map access | `getMap` → `MapSimple \| undefined` (one instance per `mapId`), `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
-| Theme | `bootstrapMapTheme`, `resolveMapTheme`, `applyMapThemeClass`, `MAP_THEME_*`, `MAP_THEME_STORAGE_KEY` |
-| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_NAMESPACES`, `filterMapControls` |
-| Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` (default `@hungpvq/shared-log` logging; optional `errorHandler.configure`) — [error-handling](./error-handling.md) |
-| Locale bags | Documented `*_LOCALE` constants used by controls |
-| Types (common) | Explicit `export type { … }`: `MapSimple`, `WithMapPropType`, `MapControlHandle`, … (first-party only) |
+| Map access | `getMap` → `MapSimple \| undefined`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
+| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` |
+| Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
+| Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
+| Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
+| Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
+| Types | `MapSimple`, `WithMapPropType`, `MapControlHandle`, … |
 
-**Removed from Stable (breaking):** Map Compare (`MapCompare*`, `Compare*`, `MAP_STORE_KEY.MAP_COMPARE`, …) and multi-map helpers (`getIsMulti`, `getMaps`, `initMaps`, `hasMapCollection`, `isMultiMapStore`, store `maps` / `isMulti`).
+Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.
+
+**Earlier removals (breaking):** Map Compare / multi-map helpers; domain symbols moved off root onto subpaths (this release).
 
 ## `@hungpvq/map-dataset`
 

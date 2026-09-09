@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core';
+import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core/legend';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';

@@ -37,7 +37,7 @@ Expands a row button group listing every mode in the `themes` prop. Pick a theme
 Bootstrap without the control:
 
 ```ts
-import { bootstrapMapTheme } from '@hungpvq/map-core';
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 
 bootstrapMapTheme('auto');
 // or force a named theme:

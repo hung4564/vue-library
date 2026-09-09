@@ -169,7 +169,11 @@ const props: WithMapPropType = {
 ### Error Handling
 
 ```typescript
-import { errorHandler, MapInitializationError, MapError } from '@hungpvq/map-core';
+import {
+  errorHandler,
+  MapInitializationError,
+  MapError,
+} from '@hungpvq/map-core';
 
 try {
   // Map initialization logic

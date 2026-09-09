@@ -6,7 +6,7 @@
 import type {
   BaseMapAdapter,
   BaseMapStore as BaseMapStoreCore,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/basemap';
 
 /**
  * React-specific BaseMapStore type

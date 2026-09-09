@@ -1,9 +1,9 @@
-import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core';
+import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core/basemap';
+import { logHelper } from '@hungpvq/map-core';
 import {
   BasemapManager,
-  logHelper,
   MittTypeBaseMapEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/basemap';
 import { useMapMittStore } from '../../../extra/mitt';
 import { onUnmounted, ref } from 'vue';
 import { logger } from '../logger';

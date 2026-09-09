@@ -12,7 +12,8 @@ Vue / React map libraries built on MapLibre GL.
 | [`@hungpvq/vue-map-devtools`](./core/devtools) / [`@hungpvq/react-map-devtools`](./core/devtools) | Debug panel (store, logs, errors) |
 
 Errors / `errorHandler`: [Error handling](./core/error-handling.md).  
-Map access / scoped stores: [Map store](./core/map-store.md).
+Map access / scoped stores: [Map store](./core/map-store.md).  
+Feature APIs (basemap, theme, …): import from `@hungpvq/map-core/<domain>` — [Stable API](./core/stable-api.md).
 
 ## Live demos
 

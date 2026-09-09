@@ -1,10 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import {
-  EventClick,
-  EventMouseMove,
-  logHelper,
-  type MapSimple,
-} from '@hungpvq/map-core';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import type {
   HighlightHandle,
   IdentifyMultiResult,

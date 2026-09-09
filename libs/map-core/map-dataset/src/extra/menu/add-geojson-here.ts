@@ -1,7 +1,7 @@
 import type {
   AddGeojsonHerePayload,
   MapAddGeojsonHereLayerType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import type { GeoJSON } from 'geojson';
 import { createGeoJsonDataset } from '../../builder/geojson';
 import type { IDataset } from '../../interfaces';

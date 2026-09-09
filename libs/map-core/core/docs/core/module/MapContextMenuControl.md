@@ -66,7 +66,7 @@ import {
   createMapContextMenuBuilder,
   type MapContextMenuTarget,
 } from '@hungpvq/map-dataset';
-import { createMapMenuBuilder } from '@hungpvq/map-core';
+import { createMapMenuBuilder } from '@hungpvq/map-core/menu';
 
 const extra = createMenuBuilder<MapContextMenuTarget>()
   .item()
@@ -102,7 +102,7 @@ const fromCore = createMapMenuBuilder()
 Without a menu UI, listen yourself:
 
 ```ts
-import { EventContextMenu } from '@hungpvq/map-core';
+import { EventContextMenu } from '@hungpvq/map-core/event';
 import { useEventMap } from '@hungpvq/vue-map-core';
 
 const { add, remove } = useEventMap(

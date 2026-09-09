@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
@@ -12,8 +13,7 @@ import {
   setStoredMapThemeMode,
   toggleMapThemeLightDark,
   type MapThemeMode,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/theme';
 import {
   mdiCircleHalfFull,
   mdiPalette,

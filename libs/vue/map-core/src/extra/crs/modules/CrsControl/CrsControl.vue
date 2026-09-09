@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
   type CrsItem,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';

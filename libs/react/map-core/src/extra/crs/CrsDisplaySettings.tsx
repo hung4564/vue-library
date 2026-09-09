@@ -5,7 +5,7 @@ import {
   lookupCrsItem,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { useEffect, useMemo, useState } from 'react';
 import { BaseButton, InputCrs } from '../../field';
 import { useLang } from '../lang';

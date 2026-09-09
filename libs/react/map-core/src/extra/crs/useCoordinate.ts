@@ -3,7 +3,8 @@
  * Full implementation would be in extra/crs (not migrated yet)
  */
 
-import { formatCoordinate, INITIAL_MAP_CRS_ITEMS, type CrsItem } from '@hungpvq/map-core';
+import { formatCoordinate } from '@hungpvq/map-core';
+import { INITIAL_MAP_CRS_ITEMS, type CrsItem } from '@hungpvq/map-core/crs';
 
 /**
  * React-specific hook for coordinate formatting.

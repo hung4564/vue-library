@@ -1,3 +1,19 @@
-export * from './CrosshairManager';
-export * from './ExportFile';
-export * from './PrintableAreaManager';
+/**
+ * Public entry for `@hungpvq/map-core/print`.
+ * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ */
+export { CrosshairManager } from './CrosshairManager';
+export { exportFile, Format } from './ExportFile';
+export { PRINT_CONTROL_LOCALE } from './locale';
+export { PrintableAreaManager } from './PrintableAreaManager';
+export { PrintService } from './print.service';
+export { createDefaultPrintStore, createPrintStoreApi } from './types';
+export {
+  exportMapbox,
+  exportMapboxWithOptions,
+  getMapBoxCanvas,
+  waitMapLoadDone,
+} from './utils';
+
+export type { FormatType } from './ExportFile';
+export type { MapPrintStore, PrintOption, PrintOptions } from './types';

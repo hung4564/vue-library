@@ -1,3 +1,4 @@
+import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
 import {
   type AnyToolbarOptions,
   type AnyToolbarStrategy,
@@ -8,13 +9,12 @@ import {
   type ToolbarSingleOptions,
   createToolbarStrategy,
   type ToolbarKind,
-  MAP_MODULE_CONTROL_ID_KEY,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/toolbar';
 import { onMounted, onUnmounted, provide, ref } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { useMapToolbarModule } from './store';
 
-export type { ToolbarButtonConfig } from '@hungpvq/map-core';
+export type { ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
 
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(
   control: T,

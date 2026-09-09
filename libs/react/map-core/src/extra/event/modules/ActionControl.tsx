@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-import type { IEvent, MittTypeMapEvent, WithMapPropType } from '@hungpvq/map-core';
-import { MittTypeMapEventEventKey } from '@hungpvq/map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import type { IEvent, MittTypeMapEvent } from '@hungpvq/map-core/event';
+import { MittTypeMapEventEventKey } from '@hungpvq/map-core/event';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { useMapMittStore } from '../../mitt';
 import { useEventMapItems } from '../hook';

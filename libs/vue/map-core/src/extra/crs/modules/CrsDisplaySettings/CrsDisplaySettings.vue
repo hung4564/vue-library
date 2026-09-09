@@ -6,7 +6,7 @@ import {
   lookupCrsItem,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { computed, ref } from 'vue';
 import { BaseButton, InputCrs } from '../../../../field';
 import { useLang } from '../../../../extra/lang';

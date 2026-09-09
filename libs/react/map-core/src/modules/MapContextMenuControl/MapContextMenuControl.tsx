@@ -1,16 +1,16 @@
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { EventContextMenu } from '@hungpvq/map-core/event';
 import {
   copyMapPointCoords,
   createDefaultMapContextMenuItems,
   createMapMenuItemProps,
-  EventContextMenu,
   filterVisibleMapMenuItems,
   formatMapContextCoords,
   handleMapMenuAction,
   resolveMapMenuCondition,
   type MapContextMenuItem,
   type MapContextMenuTarget,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import { mdiChevronRight, mdiMapMarkerOutline } from '@mdi/js';
 import Icon from '@mdi/react';

@@ -21,12 +21,9 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import type { BaseMapItem } from '@hungpvq/map-core';
-import {
-  INIT_BASEMAPS,
-  logHelper,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { MapControlGroupButton } from '../../../components';
 import { defaultMapProps, useMap } from '../../../hooks';

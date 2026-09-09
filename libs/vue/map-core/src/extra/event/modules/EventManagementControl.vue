@@ -5,13 +5,13 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   EVENT_CONTROL_LOCALE,
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';

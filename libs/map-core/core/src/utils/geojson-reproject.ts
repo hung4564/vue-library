@@ -2,8 +2,8 @@ import type { Feature, GeoJSON, Geometry, Position } from 'geojson';
 import proj4 from 'proj4';
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
-import { normalizeEpsgCode, resolveCrsProjection } from './crs-catalog';
-import { WGS84_LONGLAT } from './proj4-crs-catalog';
+import { normalizeEpsgCode, resolveCrsProjection } from '../crs/crs-catalog';
+import { WGS84_LONGLAT } from '../crs/proj4-crs-catalog';
 
 const COORDINATE_MAX_DEPTH = 6;
 const GEOMETRY_MAX_DEPTH = 16;
@@ -117,7 +117,9 @@ function cloneJsonValueIterative(root: unknown): unknown {
     return rootUnwrapped;
   }
 
-  const createTarget = (source: object): Record<string, unknown> | unknown[] => {
+  const createTarget = (
+    source: object,
+  ): Record<string, unknown> | unknown[] => {
     if (ArrayBuffer.isView(source) && !(source instanceof DataView)) {
       return Array.from(source as unknown as ArrayLike<number>);
     }
@@ -309,9 +311,7 @@ function cloneJsonArray(value: unknown, depth = 0): unknown {
   return out;
 }
 
-function plainProperties(
-  properties: unknown,
-): Record<string, unknown> | null {
+function plainProperties(properties: unknown): Record<string, unknown> | null {
   if (properties == null) return null;
   const raw = unwrapVueRaw(properties);
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
@@ -431,7 +431,9 @@ function createForward(from: string, to: string): ForwardFn {
     if (!Number.isFinite(x) || !Number.isFinite(y)) return position;
     try {
       const [lng, lat] = converter.forward([x, y]);
-      return position.length > 2 ? [lng, lat, ...position.slice(2)] : [lng, lat];
+      return position.length > 2
+        ? [lng, lat, ...position.slice(2)]
+        : [lng, lat];
     } catch (error) {
       throw new MapError(
         isCallStackOverflow(error)
@@ -450,9 +452,13 @@ function transformCoordinates(
   depth = 0,
 ): Position | Position[] | Position[][] | Position[][][] {
   if (depth > COORDINATE_MAX_DEPTH) {
-    throw new MapError('GeoJSON coordinates are too deeply nested', 'CRS_ERROR', {
-      recoverable: false,
-    });
+    throw new MapError(
+      'GeoJSON coordinates are too deeply nested',
+      'CRS_ERROR',
+      {
+        recoverable: false,
+      },
+    );
   }
   if (!Array.isArray(coordinates)) {
     throw new MapError('Invalid GeoJSON coordinates', 'CRS_ERROR', {

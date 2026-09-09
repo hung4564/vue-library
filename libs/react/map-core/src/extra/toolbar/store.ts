@@ -1,12 +1,14 @@
 import {
   logHelper,
   MAP_STORE_KEY,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import {
   createDefaultToolbarStore,
   createToolbarStoreApi,
   createToolbarModuleApi,
   type MapToolbarStore,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/toolbar';
 import { useMemo } from 'react';
 import { createMapScopedStore } from '../../store';
 import { loggerFactory } from '@hungpvq/shared-log';

@@ -1,13 +1,13 @@
 import {
   copyText,
   downloadDataUrl,
-  exportMapbox,
   INFO_CONTROL_LOCALE,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { exportMapbox } from '@hungpvq/map-core/print';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiCameraOutline,

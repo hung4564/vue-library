@@ -40,17 +40,21 @@ import { nextTick, ref, watch } from 'vue';
 
 import {
   CoordinatesNumber,
-  EventClick,
-  FormView,
-  MEASUREMENT_CONTROL_LOCALE,
   MapSimple,
   WithMapPropType,
-  buildMapCrsCatalog,
   convertGeometry,
   fitBounds,
   logHelper,
-  resolveCrsDisplayItems,
 } from '@hungpvq/map-core';
+import {
+  buildMapCrsCatalog,
+  resolveCrsDisplayItems,
+} from '@hungpvq/map-core/crs';
+import { EventClick } from '@hungpvq/map-core/event';
+import {
+  FormView,
+  MEASUREMENT_CONTROL_LOCALE,
+} from '@hungpvq/map-core/measurement';
 
 import { MapCommonButton, MapControlGroupButton } from '../../../components';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -79,7 +83,7 @@ import {
   MeasureAzimuth,
   MeasureDistance,
   MeasurePoint,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/measurement';
 import { logger } from '../logger';
 import { MeasureActionItem } from '../types';
 import { MapMarkerView, MapView, MeasurementHandle } from './helper';

@@ -5,7 +5,7 @@ import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang, useRegisterMapControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core';
+import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 
 export function GeoLocateControl(props: WithMapPropType) {
   const mergedProps = { ...defaultMapProps, ...props };

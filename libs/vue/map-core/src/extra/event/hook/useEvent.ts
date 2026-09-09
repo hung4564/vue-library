@@ -1,11 +1,10 @@
+import { logHelper, MapSimple } from '@hungpvq/map-core';
 import {
   type AnyIEvent,
   EventManager,
-  logHelper,
-  MapSimple,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { MapEventType } from 'maplibre-gl';
 import {
   computed,

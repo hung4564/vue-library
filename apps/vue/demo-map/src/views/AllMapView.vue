@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { MapSimple } from '@hungpvq/map-core';
 import type {
-  MapSimple,
   MeasureActionItem,
   MeasurementHandleType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/measurement';
 import { getChartRandomColor } from '@hungpvq/map-core';
 import {
   createDatasetPartGeojsonSourceComponent,

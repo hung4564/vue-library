@@ -5,14 +5,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import {
   type AnyIEvent,
   EventManager,
-  logHelper,
-  type MapSimple,
   type MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import type { MapEventType } from 'maplibre-gl';
 import { getMap } from '../../../store/store';
 import { useMapMittStore } from '../../mitt';

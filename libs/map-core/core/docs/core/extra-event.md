@@ -18,7 +18,12 @@ const { add: addContextMenu, remove: removeContextMenu } = useEventMap(
 **Import event models directly from `@hungpvq/map-core`:**
 
 ```ts
-import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import {
+  EventClick,
+  EventContextMenu,
+  EventBboxRanger,
+  EventMouseMove,
+} from '@hungpvq/map-core/event';
 ```
 
 - `EventClick` - Click event handler
@@ -58,7 +63,7 @@ The `useEventMap` hook provides a convenient way to add, remove, and check the s
 
 ```ts
 import { useEventMap } from '@hungpvq/vue-map-core';
-import { EventClick, EventContextMenu } from '@hungpvq/map-core';
+import { EventClick, EventContextMenu } from '@hungpvq/map-core/event';
 ```
 
 **Usage:**
@@ -83,7 +88,12 @@ You can use several built-in event models provided by the library:
 **Import:**
 
 ```ts
-import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import {
+  EventClick,
+  EventContextMenu,
+  EventBboxRanger,
+  EventMouseMove,
+} from '@hungpvq/map-core/event';
 ```
 
 **Available Events:**
@@ -102,7 +112,7 @@ You can create your own custom event by extending the base event class or by fol
 **Example:**
 
 ```ts
-import { IEvent } from '@hungpvq/map-core';
+import { IEvent } from '@hungpvq/map-core/event';
 
 class CustomEvent implements IEvent {
   id = 'custom-event';

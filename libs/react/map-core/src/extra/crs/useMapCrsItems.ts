@@ -11,7 +11,7 @@ import {
   MittTypeMapCrsEventKey,
   normalizeEpsgCode,
   type MittTypeMapCrs,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 
 export const useMapCrsItems = (
   mapId: string,

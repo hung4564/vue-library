@@ -28,7 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { MAP_ACTION_LOCALE, MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  MAP_ACTION_LOCALE,
+  MapSimple,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';

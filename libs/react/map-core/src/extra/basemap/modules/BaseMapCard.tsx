@@ -1,4 +1,4 @@
-import type { BaseMapItem } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
 import React, { useCallback, useEffect } from 'react';
 import { MapImage } from '../../../components';

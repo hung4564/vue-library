@@ -35,7 +35,7 @@ function getBasemaps() {
 #### React
 
 ```tsx
-import type { BaseMapItem } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { useBaseMap, useMap } from '@hungpvq/react-map-core';
 
 function BasemapTools({ mapId: mapIdProp }: { mapId: string }) {

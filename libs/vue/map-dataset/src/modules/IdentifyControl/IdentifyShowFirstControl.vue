@@ -5,11 +5,11 @@ export default {
 </script>
 <script setup lang="ts">
 import {
-  EventClick,
   logHelper,
   runMapControlAction,
   WithMapPropType,
 } from '@hungpvq/map-core';
+import { EventClick } from '@hungpvq/map-core/event';
 import type {
   IDataset,
   IdentifyMultiResult,

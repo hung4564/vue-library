@@ -6,5 +6,5 @@ export {
   MapMarkerView,
   addCursorCrosshair,
   removeCursorCrosshair,
-} from '@hungpvq/map-core';
-export type { MeasurementHandleType } from '@hungpvq/map-core';
+} from '@hungpvq/map-core/measurement';
+export type { MeasurementHandleType } from '@hungpvq/map-core/measurement';

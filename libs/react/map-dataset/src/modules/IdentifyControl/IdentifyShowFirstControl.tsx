@@ -1,5 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { EventClick, logHelper, runMapControlAction } from '@hungpvq/map-core';
+import { logHelper, runMapControlAction } from '@hungpvq/map-core';
+import { EventClick } from '@hungpvq/map-core/event';
 import type {
   IDataset,
   IdentifyMultiResult,

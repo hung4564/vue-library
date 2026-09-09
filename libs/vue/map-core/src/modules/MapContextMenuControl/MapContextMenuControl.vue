@@ -4,19 +4,19 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { EventContextMenu } from '@hungpvq/map-core/event';
 import {
   copyMapPointCoords,
   createDefaultMapContextMenuItems,
   createMapMenuItemProps,
-  EventContextMenu,
   filterVisibleMapMenuItems,
   formatMapContextCoords,
   handleMapMenuAction,
   resolveMapMenuCondition,
   type MapContextMenuItem,
   type MapContextMenuTarget,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiMapMarkerOutline } from '@mdi/js';

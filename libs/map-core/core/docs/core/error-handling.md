@@ -14,7 +14,11 @@ The singleton `errorHandler` already logs through `@hungpvq/shared-log` (`map:co
 ## Usage
 
 ```ts
-import { errorHandler, MapError, MapInitializationError } from '@hungpvq/map-core';
+import {
+  errorHandler,
+  MapError,
+  MapInitializationError,
+} from '@hungpvq/map-core';
 
 errorHandler.handle(new Error('Something went wrong'), { mapId: 'map-1' });
 

@@ -11,7 +11,7 @@ import {
   IEvent,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { onMounted } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { defaultMapProps, useMap } from '../../../hooks';

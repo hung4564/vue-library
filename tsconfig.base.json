@@ -18,6 +18,18 @@
       "@hungpvq/demo-map-datasets": ["libs/demo/map-datasets/src/index.ts"],
       "@hungpvq/draggable": ["libs/draggable/core/src/index.ts"],
       "@hungpvq/map-core": ["libs/map-core/core/src/index.ts"],
+      "@hungpvq/map-core/basemap": ["libs/map-core/core/src/basemap/index.ts"],
+      "@hungpvq/map-core/crs": ["libs/map-core/core/src/crs/index.ts"],
+      "@hungpvq/map-core/event": ["libs/map-core/core/src/event/index.ts"],
+      "@hungpvq/map-core/image": ["libs/map-core/core/src/image/index.ts"],
+      "@hungpvq/map-core/legend": ["libs/map-core/core/src/legend/index.ts"],
+      "@hungpvq/map-core/measurement": [
+        "libs/map-core/core/src/measurement/index.ts"
+      ],
+      "@hungpvq/map-core/menu": ["libs/map-core/core/src/menu/index.ts"],
+      "@hungpvq/map-core/print": ["libs/map-core/core/src/print/index.ts"],
+      "@hungpvq/map-core/theme": ["libs/map-core/core/src/theme/index.ts"],
+      "@hungpvq/map-core/toolbar": ["libs/map-core/core/src/toolbar/index.ts"],
       "@hungpvq/map-core/worker": ["libs/map-core/core/src/worker-entry.ts"],
       "@hungpvq/map-dataset": ["libs/map-core/map-dataset/src/index.ts"],
       "@hungpvq/map-draw": ["libs/map-core/map-draw/src/index.ts"],

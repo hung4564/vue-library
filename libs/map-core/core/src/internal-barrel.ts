@@ -1,7 +1,9 @@
-/** Internal aggregation only — not a package entry. Do not import from apps. */
-// Export adapters
-export * from './adapter';
-
+/**
+ * Internal aggregation for the **root** package entry only — not a package entry.
+ * Domain modules (basemap, crs, event, image, legend, measurement, menu, print,
+ * theme, toolbar) have their own subpath entries and must NOT be aggregated here.
+ * Do not import from apps.
+ */
 // Export errors
 export * from './errors';
 
@@ -17,22 +19,14 @@ export * from './model';
 // Export types
 export * from './types';
 
-// Export default locales
+// Export shell locales
 export * from './locale';
 
-// Theme (light / dark / auto)
-export * from './theme';
-
 // Export store
-export * from './basemap';
 export * from './store';
 
 // Export extra modules
-export * from './legend';
-export * from './map-context-menu';
 export * from './mitt';
-export * from './print';
 export * from './registry';
 export * from './resolver';
-export * from './toolbar';
 export * from './worker';

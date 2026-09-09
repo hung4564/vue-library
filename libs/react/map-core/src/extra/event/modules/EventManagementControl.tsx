@@ -5,7 +5,7 @@ import {
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { MapCommonButton } from '../../../components/MapCommonButton';
