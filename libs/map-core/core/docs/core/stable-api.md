@@ -104,7 +104,29 @@ Full root surfaces are Stable ∪ Experimental (~94 Vue / ~101 React runtime sym
 
 Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
 
-**Experimental** (same root barrel; may change in a **minor**): Vue `Input*` / `BaseButton` / `Collapse` / `MapButton` / `MapCard` / `MapIcon` / `MapImage` / `KEY` / `MITT_KEY`; React `Input*` / `BaseButton` / `BaseCollapse` / `DragDropFile` / `MapButton` / `MapCard` / `MapIcon` / `MapImage`.
+**Same root barrel = Stable ∪ Experimental.** Experimental symbols are listed below and in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`; they may change in a **minor**. Apps should not treat them as a SemVer-stable contract. Authoritative lock: `public-api.spec.ts`.
+
+### Experimental root exports (`@hungpvq/vue-map-core`)
+
+| Symbol | Notes |
+|--------|--------|
+| `BaseButton` | Field / control button |
+| `Collapse` | Collapse panel (React twin: `BaseCollapse`) |
+| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea` | Form field helpers |
+| `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
+| `KEY`, `MITT_KEY` | Vue-only store / mitt id constants (not field UI) |
+
+### Experimental root exports (`@hungpvq/react-map-core`)
+
+| Symbol | Notes |
+|--------|--------|
+| `BaseButton` | Field / control button |
+| `BaseCollapse` | Collapse panel (Vue twin: `Collapse`) |
+| `DragDropFile` | React-only file drop helper |
+| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextarea` | Form field helpers (`InputTextarea` spelling) |
+| `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
+
+Cross-framework naming drift is intentional for now (`Collapse` / `BaseCollapse`, `InputTextArea` / `InputTextarea`). Dataset / draw / `@hungpvq/map-core` Experimental allowlists are **empty / reserved**.
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`. Compare / multi-map UI and `getIsMulti` are not part of the adapters.
 
@@ -157,8 +179,7 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-Vue/React `@hungpvq/*-map-core` list field/UI helpers under `*_EXPERIMENTAL_RUNTIME_EXPORTS` (same root barrel; may change in a **minor**). Prefer new root symbols as Stable unless intentionally unstable. Removing an Experimental export from a published barrel remains a **major**.
-
+Vue/React `@hungpvq/*-map-core` publish field/UI helpers (and Vue `KEY` / `MITT_KEY`) on the **same root barrel** as Stable — see tables under [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Prefer new root symbols as Stable unless intentionally unstable. Removing an Experimental export from a published barrel remains a **major**. Other map packages keep `*_EXPERIMENTAL_RUNTIME_EXPORTS` empty/reserved.
 ## Enforcing the allowlist
 
 1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './internal-barrel'` (or from a feature module). Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.

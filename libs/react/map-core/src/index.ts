@@ -1,7 +1,8 @@
 /**
  * Root barrel: explicit named exports (Stable ∪ Experimental).
- * Experimental field/UI helpers may change in a minor — see
- * `libs/map-core/core/docs/core/stable-api.md` and `public-api.spec.ts`.
+ * Experimental symbols (Input*, BaseButton, Map*, DragDropFile, …) share this
+ * barrel and may change in a minor — full table in
+ * `libs/map-core/core/docs/core/stable-api.md`; lock in `public-api.spec.ts`.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
 import './style.css';

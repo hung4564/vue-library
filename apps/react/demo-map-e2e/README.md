@@ -8,4 +8,10 @@ npx nx e2e react-demo-map-e2e
 npm run map:e2e
 ```
 
-Starts Vite on port `4210` and asserts `/demo-map/react/#/minimal` renders `.map-container` + MapLibre canvas.
+Starts Vite on port `4210`. Specs:
+
+| Spec | Route | Checks |
+| --- | --- | --- |
+| `minimal.spec.ts` | `/#/minimal` | `.map-container` + MapLibre canvas |
+| `layer-identify.spec.ts` | `/#/dataset-identify` | LayerControl panel + Identify toolbar btn |
+| `create-control.spec.ts` | `/#/minimal` | Open CreateControl, paste raw GeoJSON, new layer row |

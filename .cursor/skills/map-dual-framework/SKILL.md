@@ -22,6 +22,8 @@ libs/vue|react/map-draw     → DrawControl / InspectControl (shared InspectCont
 
 **Import rule:** adapters must **not** re-export core. Apps import builders/types/services from `@hungpvq/map-core` / `@hungpvq/map-dataset` / `@hungpvq/map-draw`, and UI/hooks from `@hungpvq/vue-*` or `@hungpvq/react-*`.
 
+Never reintroduce adapter `builder/` / `model/` / `services/` barrels that only re-export `@hungpvq/map-dataset` (or core). Domain protocol stays on `@hungpvq/map-dataset/<domain>`; adapter `extra/` is framework menu-action UI only.
+
 Prefer importing `UniversalRegistry` / `runMapControlAction` from `@hungpvq/map-core` in framework-agnostic code.
 
 ## Parity workflow

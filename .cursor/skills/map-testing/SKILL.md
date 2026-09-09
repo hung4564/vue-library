@@ -45,7 +45,13 @@ npx nx e2e vue-demo-map-e2e
 npx nx e2e react-demo-map-e2e
 ```
 
-Smoke specs hit `/#/minimal/` (Vue) and `/#/minimal` (React) under `apps/*/demo-map-e2e`.
+Smoke specs under `apps/*/demo-map-e2e`:
+
+| Spec | Route | Focus |
+|------|-------|--------|
+| `minimal.spec.ts` | `/#/minimal` | Map shell + canvas |
+| `layer-identify.spec.ts` | `/#/dataset-identify` | LayerControl + IdentifyControl mount |
+| `create-control.spec.ts` | `/#/minimal` | CreateControl raw GeoJSON → new layer |
 
 ## Commands
 

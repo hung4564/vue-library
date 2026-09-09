@@ -1,3 +1,8 @@
+/**
+ * @experimental Field / lightweight UI helpers.
+ * Published on the package root (Stable ∪ Experimental). May change in a minor —
+ * see libs/map-core/core/docs/core/stable-api.md and public-api.spec.ts.
+ */
 export * from './base-button';
 export * from './base-collapse';
 export * from './drag-drop-file';

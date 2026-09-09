@@ -183,7 +183,11 @@ onUnmounted(() => {
           >
             <template #title>
               <slot name="titleList" :mapId="mapId">
-                <BaseButton @click.stop="openAddLayer()" v-if="!disabledCreate">
+                <BaseButton
+                  data-testid="map-layer-create"
+                  @click.stop="openAddLayer()"
+                  v-if="!disabledCreate"
+                >
                   <SvgIcon size="14" type="mdi" :path="path.layer.create" />
                 </BaseButton>
               </slot>

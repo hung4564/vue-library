@@ -206,6 +206,15 @@ Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatas
 
 Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Apps on npm need `mapDatasetGisWorker()`; this monorepo needs `worker.format: 'es'` (+ `nxViteTsPaths` on `worker.plugins`). Install optional GIS peers when using CreateControl — see [CreateControl](./module/CreateControl.md).
 
+## Domain `src/extra` vs adapter `extra`
+
+| Location | Role | Published? |
+| --- | --- | --- |
+| `libs/map-core/map-dataset/src/extra/` | Framework-agnostic helpers (attribute-table menus, field builders, locales, …) that feed the **domain root** Stable surface | **No** — not a package export; use `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` |
+| `libs/vue\|react/map-dataset/src/extra/` | Framework UI for menu actions / condition context (`ToggleShow`, `DatasetMenuButton`, …) | Internal only; surfaces via adapter root named exports |
+
+Import builders, identify, menu protocol, create-control GIS APIs from `@hungpvq/map-dataset/...` — never from adapter `extra/` barrels. Do not reintroduce adapter `builder` / `model` / `services` re-exports of domain code.
+
 ## Next
 
 - [GIS worker](./worker.md) — npm app vs Nx monorepo setup so parse + CRS stay off the main thread

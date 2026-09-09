@@ -166,7 +166,10 @@ export function LayerControl(props: LayerControlProps) {
                   titleSlot !== null && titleSlot !== undefined ? (
                     titleSlot
                   ) : !props.disabledCreate ? (
-                    <BaseButton onClick={() => toggleShowCreate(true)}>
+                    <BaseButton
+                      data-testid="map-layer-create"
+                      onClick={() => toggleShowCreate(true)}
+                    >
                       <Icon path={mdiPlus} size="14px" />
                     </BaseButton>
                   ) : null
