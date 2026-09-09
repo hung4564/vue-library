@@ -4,12 +4,7 @@
  */
 
 import { UniversalRegistry } from '../registry/universal-registry';
-import {
-  hasMapCollection,
-  hasMapInstance,
-  isMultiMapStore,
-  type MapSimple,
-} from '../types';
+import { hasMapInstance, type MapSimple } from '../types';
 import type { IMapStoreAdapter, MapFCOnUseMap } from './interface';
 import type {
   AddStoreOptions,
@@ -58,21 +53,9 @@ export class MapStoreManager {
     return {} as T;
   }
 
-  /**
-   * Collect maps from store
-   */
-  private collectMapsFromStore(mapId: string): MapSimple[] {
+  private getMapFromStore(mapId: string): MapSimple | undefined {
     const store = this.getMapStore(mapId);
-    if (!store) {
-      return [];
-    }
-    if (hasMapCollection(store)) {
-      return store.maps;
-    }
-    if (hasMapInstance(store)) {
-      return [store.map];
-    }
-    return [];
+    return hasMapInstance(store) ? store.map : undefined;
   }
 
   /**
@@ -127,39 +110,23 @@ export class MapStoreManager {
   }
 
   /**
-   * Check if store is multi-map
+   * Get map instance.
+   * If callback is provided, will wait for map to be ready.
    */
-  getIsMulti(id: string): boolean {
-    return isMultiMapStore(this.getMapStore(id));
-  }
-
-  /**
-   * Get maps from store
-   */
-  getMaps(id: string): MapSimple[] {
-    return this.collectMapsFromStore(id);
-  }
-
-  /**
-   * Get map instance(s)
-   * If callback is provided, will wait for map to be ready
-   */
-  getMap(id: string, cb?: MapFCOnUseMap): MapSimple | MapSimple[] | undefined {
-    const maps = this.collectMapsFromStore(id);
-    if (maps.length) {
-      if (cb) {
-        maps.forEach((mapInstance) => cb(mapInstance));
-      }
-      return maps.length > 1 ? maps : maps[0];
+  getMap(id: string, cb?: MapFCOnUseMap): MapSimple | undefined {
+    const map = this.getMapFromStore(id);
+    if (map) {
+      cb?.(map);
+      return map;
     }
 
     if (cb) {
       this.log(id, 'debug', 'getMap: waiting for map instance');
       const emitter = this.adapter.getEventEmitter(id);
       const handler = () => {
-        const readyMaps = this.collectMapsFromStore(id);
-        if (readyMaps.length) {
-          readyMaps.forEach((m) => cb(m));
+        const ready = this.getMapFromStore(id);
+        if (ready) {
+          cb(ready);
           emitter.off(MAP_CORE_EVENT.READY, handler);
         }
       };
@@ -222,26 +189,12 @@ export class MapStoreManager {
   }
 
   /**
-   * Initialize maps in store
-   */
-  initMaps(mapId: string, maps: MapSimple[]): void {
-    this.log(mapId, 'debug', 'init maps', maps);
-    const mapStore = this.ensureMapEntry(mapId);
-    mapStore.maps = maps;
-    mapStore.isMulti = maps.length > 1;
-    delete mapStore.map;
-    this.adapter.getEventEmitter(mapId).emit(MAP_CORE_EVENT.READY);
-  }
-
-  /**
    * Initialize single map in store
    */
   initMap(mapId: string, map: MapSimple): void {
     this.log(mapId, 'debug', 'init', map);
     const mapStore = this.ensureMapEntry(mapId);
     mapStore.map = map;
-    mapStore.isMulti = false;
-    delete mapStore.maps;
     this.adapter.getEventEmitter(mapId).emit(MAP_CORE_EVENT.READY);
   }
 

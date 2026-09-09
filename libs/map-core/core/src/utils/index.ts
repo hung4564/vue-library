@@ -1,6 +1,5 @@
 export * from './bbox-selector';
 export * from './color';
-export * from './compare-helpers';
 export * from './coordinate';
 export * from './crs-catalog';
 export * from './fillBound';

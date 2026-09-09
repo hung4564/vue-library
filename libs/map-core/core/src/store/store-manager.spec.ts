@@ -33,22 +33,17 @@ describe('MapStoreManager', () => {
     expect(manager.addStore('m1', 'events', { items: ['x'] })).toBe(created);
   });
 
-  it('initMap vs initMaps and getMap callback', () => {
+  it('initMap and getMap callback', () => {
     const adapter = createAdapter();
     const manager = new MapStoreManager(adapter);
     const mapA = { id: 'a' } as any;
-    const mapB = { id: 'b' } as any;
 
     manager.initMap('single', mapA);
-    expect(manager.getIsMulti('single')).toBe(false);
     expect(manager.getMap('single')).toBe(mapA);
 
     const seen: any[] = [];
-    manager.initMaps('multi', [mapA, mapB]);
-    expect(manager.getIsMulti('multi')).toBe(true);
-    expect(manager.getMaps('multi')).toEqual([mapA, mapB]);
-    manager.getMap('multi', (m) => seen.push(m));
-    expect(seen).toEqual([mapA, mapB]);
+    manager.getMap('single', (m) => seen.push(m));
+    expect(seen).toEqual([mapA]);
   });
 
   it('getMap waits for READY when map not ready yet', () => {

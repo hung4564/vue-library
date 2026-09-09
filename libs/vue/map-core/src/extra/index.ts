@@ -1,5 +1,4 @@
 export * from './basemap';
-export * from './compare';
 export * from './crs';
 export * from './event';
 export * from './image';

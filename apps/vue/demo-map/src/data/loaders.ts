@@ -1,6 +1,5 @@
 import {
   ALL_MAP_DATASET_FACTORIES,
-  COMPARE_DEMO_DATASET_FACTORIES,
   DATA_MANAGEMENT_DEMO_DATASET_FACTORIES,
   DEMO_CUSTOM_MENU_HANDLER_KEY,
   HIGHLIGHT_DEMO_DATASET_FACTORIES,
@@ -69,13 +68,6 @@ export async function loadAllMapDatasets(mapId: string) {
   await loadDemoDatasets(
     (dataset) => addDatasetToMap(mapId, dataset),
     [...ALL_MAP_DATASET_FACTORIES],
-  );
-}
-
-export async function loadCompareDatasets(mapId: string) {
-  await loadDemoDatasets(
-    (dataset) => addDatasetToMap(mapId, dataset),
-    [...COMPARE_DEMO_DATASET_FACTORIES],
   );
 }
 

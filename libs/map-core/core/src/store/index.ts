@@ -3,7 +3,7 @@ import type { MapFCOnUseMap, MapSimple } from '../types';
 export type MapAccessor = (
   mapId: string,
   cb?: MapFCOnUseMap,
-) => MapSimple | MapSimple[] | undefined;
+) => MapSimple | undefined;
 
 let registeredMapAccessor: MapAccessor | undefined;
 
@@ -14,7 +14,7 @@ export function registerMapAccessor(fn: MapAccessor) {
 export function getMap(
   mapId: string,
   cb?: MapFCOnUseMap,
-): MapSimple | MapSimple[] | undefined {
+): MapSimple | undefined {
   return registeredMapAccessor?.(mapId, cb);
 }
 

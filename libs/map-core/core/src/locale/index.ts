@@ -68,10 +68,6 @@ export const SETTING_CONTROL_LOCALE = {
         center: 'Center',
         sprite: 'Sprite url',
         glyphs: 'Glyphs url',
-        compare: 'compare',
-        split: 'split',
-        sync: 'sync',
-        vertical: 'vertical',
       },
       btn: {
         apply: 'Apply',

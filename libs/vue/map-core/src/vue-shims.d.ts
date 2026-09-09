@@ -1,5 +1,3 @@
-import { MapSimple } from '@hungpvq/map-core';
-
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';
   const component: DefineComponent<object, object, unknown>;
@@ -26,10 +24,6 @@ interface HTMLElement {
   msRequestFullscreen: any;
 }
 
-declare module '@mapbox/mapbox-gl-sync-move' {
-  const syncMove: (maps: MapSimple[]) => () => void;
-  export default syncMove;
-}
 declare global {
   interface Window {
     $_hungpv_drag: any;

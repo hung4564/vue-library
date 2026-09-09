@@ -2,7 +2,6 @@ export * from './lang';
 export * from './toolbar';
 export * from './crs';
 export * from './basemap';
-export * from './compare';
 export * from './event';
 export * from './image';
 export * from './legend';

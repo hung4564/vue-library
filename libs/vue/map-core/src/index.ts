@@ -12,10 +12,6 @@ export {
   BaseMapControl,
   BaseMapTagControl,
   Collapse,
-  CompareBaseMapCard,
-  CompareBaseMapControl,
-  CompareSettingCard,
-  CompareSettingControl,
   CrsControl,
   CrsDisplaySettings,
   DefaultBaseMapAdapter,
@@ -42,7 +38,6 @@ export {
   MapButton,
   MapCard,
   MapCommonButton,
-  MapCompare,
   MapContextMenuControl,
   MapControlButton
 } from './internal-barrel';
@@ -69,9 +64,6 @@ export {
   createMapScopedStore,
   defaultMapProps,
   destroyMapScopedStore,
-  getIsMulti,
-  getMapCompare,
-  getMapCompareSetting,
 } from './internal-barrel';
 
 export {

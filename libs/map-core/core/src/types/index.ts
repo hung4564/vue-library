@@ -81,11 +81,6 @@ export * from './event';
 export * from './constants';
 
 /**
- * Re-export compare types
- */
-export * from './compare';
-
-/**
  * Re-export CRS types
  */
 export * from './crs';

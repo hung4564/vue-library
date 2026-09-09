@@ -25,7 +25,7 @@ npm install @hungpvq/react-map-core
 - ✅ **Map container** - Main MapLibre GL wrapper component
 - ✅ **Navigation controls** - Zoom, Home, Fullscreen, Geolocate
 - ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel, worker monitor, right-click context menu
-- ✅ **Compare & CRS extras** - Optional extras for map compare and CRS
+- ✅ **CRS extras** - Optional CRS control and display settings
 - ✅ **Composable hooks** - `useMap`, `useShow` and more
 - ✅ **TypeScript support** - Full TypeScript types
 - ✅ **Vue 3 / React** - Framework wrappers over `@hungpvq/map-core`
@@ -69,8 +69,6 @@ You only need one of the above. Prefer the framework package so it stays aligned
   <!-- <CrsControl position="bottom-right" /> -->
   <!-- <EventManagementControl position="top-right" /> -->
   <!-- <ActionControl position="top-right" /> -->
-  <!-- <CompareSettingControl position="top-right" /> -->
-  <!-- <MapCompare /> -->
 </template>
 
 <script setup lang="ts">
