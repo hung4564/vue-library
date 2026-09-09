@@ -22,7 +22,7 @@ Feature APIs (basemap, theme, …): import from `@hungpvq/map-core/<domain>` —
 
 ## Versioning
 
-- SemVer / breaking-change checklist: [../../README.md](../../README.md#checklist-semver--breaking-change)
+- SemVer / breaking-change checklist: [libs/map-core/README.md](https://github.com/hung4564/vue-library/blob/main/libs/map-core/README.md#checklist-semver--breaking-change)
 - **Stable API allowlist:** [core/stable-api.md](./core/stable-api.md)
 - **Map store / `getMap`:** [core/map-store.md](./core/map-store.md)
 - **Error handling:** [core/error-handling.md](./core/error-handling.md)

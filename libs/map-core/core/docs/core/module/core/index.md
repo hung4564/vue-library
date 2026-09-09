@@ -285,7 +285,7 @@ The map library supports extensive customization through CSS variables. All vari
     bootstrapMapTheme('auto'); // auto | light | dark | vibrant | ocean | forest | sunset | slate
     ```
 
-See also [ThemeControl](./module/ThemeControl.md).
+See also [ThemeControl](../ThemeControl.md).
 
 For a full list of available CSS variables and advanced customization options, see the [CSS Variables Reference](../../css-variables.md).
 

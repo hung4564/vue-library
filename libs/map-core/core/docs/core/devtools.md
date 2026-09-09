@@ -4,8 +4,8 @@ Debug panel for map apps: **Store**, **Logs**, and **Errors**.
 
 | Package | Bootstrap | Panel |
 |---------|-----------|-------|
-| [`@hungpvq/vue-map-devtools`](../../../vue/map-devtools/) | `app.use(DevtoolsPlugin)` | Global `Devtools` and/or `<Devtools />` |
-| [`@hungpvq/react-map-devtools`](../../../react/map-devtools/) | `installDevtools()` | Mount `<Devtools />` yourself |
+| `@hungpvq/vue-map-devtools` | `app.use(DevtoolsPlugin)` | Global `Devtools` and/or `<Devtools />` |
+| `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` yourself |
 
 Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the matching framework map-core, and `@hungpvq/shared-log`.
 

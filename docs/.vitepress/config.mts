@@ -5,7 +5,12 @@ import { defineConfig, type DefaultTheme, type UserConfig } from 'vitepress';
 
 import { SharedFunctionsSideBar } from '../../libs/share/shared/metadata';
 import { getDraggableSideBar, getMapSideBar } from './metadata';
-import { navLabel, packageVersions } from './packages-versions';
+import { loadPackageVersions } from './packages-versions.load';
+import { navLabel as formatNavLabel } from './packages-versions';
+
+const packageVersions = loadPackageVersions();
+const navLabel = (text: string, packageName: string) =>
+  formatNavLabel(text, packageName, packageVersions);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDemoDraggable = process.env.VITEPRESS_SITE === 'demo-draggable';
@@ -30,6 +35,9 @@ function rewriteSidebar(
 }
 
 const sharedVite = {
+  define: {
+    __VP_PACKAGE_VERSIONS__: JSON.stringify(packageVersions),
+  },
   plugins: [UnoCSS()] as any[],
   resolve: {
     preserveSymlinks: true,
@@ -200,6 +208,8 @@ const demoMapConfig: UserConfig = {
     // they are rewritten to /... at render time below.
     /^\/map(\/|$)/,
     /^https?:\/\/hung4564\.github\.io\/demo-map\/(vue|react)/,
+    // Package READMEs live outside the VitePress srcDir.
+    /README(\.md)?(#|$)/,
   ],
   markdown: {
     config(md) {
