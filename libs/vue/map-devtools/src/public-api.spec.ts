@@ -7,15 +7,23 @@ import * as api from './index';
 
 /** Stable root runtime exports (SemVer contract for 1.x). */
 export const VUE_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
+  'clearDevtoolErrors',
+  'clearDevtoolLogs',
+  'DevtoolLogAdapter',
+  'devtoolLogAdapter',
   'Devtools',
   'DevtoolsPlugin',
+  'devtoolState',
+  'getDevtoolState',
+  'setDevtoolActiveTab',
+  'subscribeDevtoolState',
+  'toggleDevtoolOpen',
   'uninstallDevtools',
+  'useDevtoolState',
 ] as const;
 
-/** @experimental — may change in a minor. */
-export const VUE_MAP_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'DevtoolLogAdapter',
-] as const;
+/** Reserved for future experimental root exports (currently empty). */
+export const VUE_MAP_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

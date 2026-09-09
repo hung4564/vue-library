@@ -1,5 +1,5 @@
 /**
- * Root barrel: explicit named exports (Stable + Experimental).
+ * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`. Aggregation lives in ./internal-barrel.
  */
 export {

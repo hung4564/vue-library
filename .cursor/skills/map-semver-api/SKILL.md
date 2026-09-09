@@ -49,7 +49,7 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 - Peer minimum raises; optional peer → required
 - Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import those from `@hungpvq/map-core` / `map-dataset` / `map-draw` / `draggable` directly
 
-Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**.
+Experimental root exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Map packages currently keep that list **empty** — all root runtime exports are Stable.
 
 ## Export lock rule
 

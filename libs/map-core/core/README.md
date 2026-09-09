@@ -73,22 +73,29 @@ throw new MapEventError('Map event failed', {
 
 #### ErrorHandler
 
-Centralized error handler for map operations.
+Centralized error handler for map operations. The singleton already logs via `@hungpvq/shared-log` (`map:core` / `ErrorHandler`). Adapters do not re-export it — import from `@hungpvq/map-core` only. Docs: [error-handling.md](./docs/core/error-handling.md).
 
 ```typescript
 import { errorHandler, MapErrorHandler } from '@hungpvq/map-core';
 
-// Use default singleton
+// Default singleton (built-in logger)
 errorHandler.handle(new Error('Something went wrong'), {
   mapId: 'map-1',
 });
 
-// Subscribe to errors
+// Subscribe to errors (e.g. Devtools Errors tab)
 const unsubscribe = errorHandler.onError((error: MapError) => {
   console.error('Error occurred:', error);
 });
 
-// Create custom instance
+// Optional: wire production tracking on the singleton
+errorHandler.configure({
+  logToService: (error) => {
+    // Send to Sentry, LogRocket, etc.
+  },
+});
+
+// Or create an isolated custom instance
 const customHandler = new MapErrorHandler({
   isDevelopment: false,
   logError: (error) => {
@@ -167,22 +174,16 @@ errorHandler.onError((error: MapError) => {
 
 ### Custom Error Handler
 
-```typescript
-import { MapErrorHandler } from '@hungpvq/map-core';
+Prefer `errorHandler.configure({ logToService })` on the singleton so Devtools and map shell share the same handler. Use `new MapErrorHandler({ … })` only when you need an isolated instance.
 
-const customHandler = new MapErrorHandler({
-  isDevelopment: process.env.NODE_ENV === 'development',
-  logError: (error) => {
-    // Custom development logging
-    console.log('[DEV]', error);
-  },
+```typescript
+import { errorHandler } from '@hungpvq/map-core';
+
+errorHandler.configure({
   logToService: (error) => {
-    // Send to Sentry, LogRocket, etc.
     Sentry.captureException(error);
   },
 });
-
-customHandler.handle(new Error('Something went wrong'));
 ```
 
 ## 🧪 Testing

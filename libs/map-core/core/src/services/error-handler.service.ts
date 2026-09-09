@@ -1,4 +1,24 @@
+import { loggerFactory } from '@hungpvq/shared-log';
 import { MapError } from '../errors';
+import { logHelper } from '../utils/log';
+
+const errorLogger = loggerFactory.createLogger().setNamespace('map:core', 2);
+
+function defaultLogError(error: MapError): void {
+  logHelper(errorLogger, 'global', 'ErrorHandler').error('Error occurred', {
+    code: error.code,
+    message: error.message,
+    context: error.context,
+    stack: error.stack,
+  });
+}
+
+function defaultLogToService(error: MapError): void {
+  logHelper(errorLogger, 'global', 'ErrorHandler').warn(
+    'Error logging service not configured',
+    error,
+  );
+}
 
 function isDevEnvironment(): boolean {
   const meta = import.meta as ImportMeta & {
@@ -51,15 +71,21 @@ export class MapErrorHandler implements ErrorHandler {
 
   constructor(options: ErrorHandlerOptions = {}) {
     this.options = {
-      isDevelopment: options.isDevelopment ?? isDevEnvironment(),
-      logError: options.logError,
-      logToService: options.logToService,
+      isDevelopment: isDevEnvironment(),
+      logError: defaultLogError,
+      logToService: defaultLogToService,
       ...options,
     };
   }
 
   configure(options: Partial<ErrorHandlerOptions>): void {
-    this.options = { ...this.options, ...options };
+    this.options = {
+      ...this.options,
+      ...options,
+      logError: options.logError ?? this.options.logError ?? defaultLogError,
+      logToService:
+        options.logToService ?? this.options.logToService ?? defaultLogToService,
+    };
   }
 
   /**
@@ -85,28 +111,10 @@ export class MapErrorHandler implements ErrorHandler {
     const mapError = this.normalizeError(error, context);
     this.handledOnce.add(mapError);
 
-    // Log to console in dev
     if (this.options.isDevelopment) {
-      if (this.options.logError) {
-        this.options.logError(mapError);
-      } else {
-        console.error('Error occurred', {
-          code: mapError.code,
-          message: mapError.message,
-          context: mapError.context,
-          stack: mapError.stack,
-        });
-      }
-    }
-
-    // Log to external service in production
-    if (!this.options.isDevelopment) {
-      if (this.options.logToService) {
-        this.options.logToService(mapError);
-      } else {
-        // Default: log to console as warning
-        console.warn('Error logging service not configured:', mapError);
-      }
+      (this.options.logError ?? defaultLogError)(mapError);
+    } else {
+      (this.options.logToService ?? defaultLogToService)(mapError);
     }
 
     // Notify listeners

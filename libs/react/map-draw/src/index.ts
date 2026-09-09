@@ -1,5 +1,5 @@
 /**
- * Root barrel: explicit named exports (Stable + Experimental).
+ * Root barrel: explicit named exports (Stable).
  * Adapter-only surface — import protocol/types from `@hungpvq/map-draw`.
  */
 import './style.css';

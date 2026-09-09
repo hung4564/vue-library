@@ -1,5 +1,5 @@
 /**
- * Root barrel: explicit named exports (Stable + Experimental).
+ * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
@@ -79,7 +79,6 @@ export {
   getMapGlobalStore,
   getMapMittStore,
   getStore,
-  handleError,
   langStore
 } from './internal-barrel';
 

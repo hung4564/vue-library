@@ -20,7 +20,7 @@ const app = createApp(App);
 app.use(DevtoolsPlugin);
 ```
 
-`DevtoolsPlugin` registers the global `Devtools` component, attaches a log adapter, and installs global error capture via `errorHandler` from `@hungpvq/map-core`. Call `uninstallDevtools()` to tear down capture.
+`DevtoolsPlugin` registers the global `Devtools` component, attaches a log adapter, and installs global error capture via `errorHandler` from `@hungpvq/map-core` (see [Error handling](./error-handling.md)). Call `uninstallDevtools()` to tear down capture.
 
 ## React
 
@@ -38,22 +38,20 @@ installDevtools();
 
 ## Stable API
 
-| Package | Stable exports |
-|---------|----------------|
-| `@hungpvq/vue-map-devtools` | `Devtools`, `DevtoolsPlugin`, `uninstallDevtools` |
-| `@hungpvq/react-map-devtools` | `Devtools`, `installDevtools`, `uninstallDevtools` |
+| Export | Vue | React |
+|--------|-----|-------|
+| Panel | `Devtools` | `Devtools` |
+| Bootstrap | `DevtoolsPlugin` | `installDevtools` |
+| Teardown | `uninstallDevtools` | `uninstallDevtools` |
+| Log adapter | `DevtoolLogAdapter`, `devtoolLogAdapter` | same |
+| State | `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState` | same |
+| Actions | `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` | same |
 
 Runtime lock: `libs/vue/map-devtools/src/public-api.spec.ts`, `libs/react/map-devtools/src/public-api.spec.ts`.
-
-## Experimental (React)
-
-React also exposes experimental store helpers on the root barrel (may change in a minor): `useDevtoolState`, `getDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors`, `devtoolState`, `devtoolLogAdapter`, `DevtoolLogAdapter`.
-
-Vue experimental surface is thinner: `DevtoolLogAdapter` only.
 
 ## Demos
 
 - Vue: `apps/vue/demo-map` (`DevtoolsPlugin` in `main.ts`)
 - React: `apps/react/demo-map` (`installDevtools()` in `main.tsx`)
 
-See also [Stable API](./stable-api.md).
+See also [Stable API](./stable-api.md) · [Error handling](./error-handling.md).

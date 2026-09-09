@@ -2,7 +2,9 @@
 
 Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
-Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable` — no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts`. Symbols under **Experimental** may change in a **minor**.
+Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable` — no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts`.
+
+**All current root runtime exports are Stable.** Each package keeps `*_EXPERIMENTAL_RUNTIME_EXPORTS = []` for the lock pattern; new symbols should be added to Stable unless intentionally staged as Experimental later.
 
 **Runtime lock:** each package asserts `Object.keys(import * as api from './index')` equals Stable ∪ Experimental in `public-api.spec.ts` (type-only exports are erased at runtime and omitted from the lock). Root may export **first-party** types via explicit `export type { … }` — do **not** re-export types that already live in third-party packages (`geojson`, `maplibre-gl`, …); import those from the original package.
 
@@ -20,11 +22,10 @@ Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable
 | `@hungpvq/react-map-draw` | `libs/react/map-draw/src/public-api.spec.ts` |
 | `@hungpvq/react-map-devtools` | `libs/react/map-devtools/src/public-api.spec.ts` |
 
-- Adding a **runtime** root export → add a **named** `export { X } from './internal-barrel'` (or from the feature module) in `src/index.ts`, update Stable **or** Experimental in `public-api.spec.ts`, and this page if Stable.
-- Experimental symbols may change in a **minor**.
-- Removing experimental symbols from the root barrel is a **major**.
+- Adding a **runtime** root export → add a **named** `export { X } from './internal-barrel'` (or from the feature module) in `src/index.ts`, update Stable in that package’s `public-api.spec.ts`, and this page when documenting the area.
+- Removing a root runtime export is a **major**.
 
-Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
+Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
 ## Registry architecture
 
@@ -34,34 +35,44 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 
 ## `@hungpvq/map-core`
 
+Full runtime allowlist: `public-api.spec.ts` (~229 symbols). Highlights:
+
 | Area | Stable surface |
 |------|----------------|
 | Map access | `getMap`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY` |
 | Theme | `bootstrapMapTheme`, `resolveMapTheme`, `applyMapThemeClass`, `MAP_THEME_*`, `MAP_THEME_STORAGE_KEY` |
-| Registry | `UniversalRegistry` (method / menu-handler / control APIs), `runMapControlAction`, `MapControlHandle`, `REGISTRY_NAMESPACES`, `filterMapControls` |
-| Init / errors | `MapInitializer`, `MapError` family, `errorHandler` |
+| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_NAMESPACES`, `filterMapControls` |
+| Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` (default `@hungpvq/shared-log` logging; optional `errorHandler.configure`) — [error-handling](./error-handling.md) |
 | Locale bags | Documented `*_LOCALE` constants used by controls |
-| Types (common) | Explicit `export type { … }`: `MapSimple`, `WithMapPropType`, `MapControlHandle`, `MapMenuItemProps`, `AddGeojsonHerePayload`, `MapStore`, … (first-party only) |
+| Types (common) | Explicit `export type { … }`: `MapSimple`, `WithMapPropType`, `MapControlHandle`, … (first-party only) |
 
 ## `@hungpvq/map-dataset`
 
+Full runtime allowlist: `public-api.spec.ts` (~300 symbols). Highlights:
+
 | Area | Stable surface |
 |------|----------------|
-| Service | `DatasetService` (`addDataset` / `removeDataset` / `getAllComponentsByType` — dependency order) |
+| Service | `DatasetService` |
 | Builders | `createGeoJsonDataset`, `createRasterUrlDataset`, `LayerSimpleMapboxBuild` |
-| Protocol | `IDataset`, list/identify capability interfaces used by UI; `MenuContextSource`, `MenuItemProps`, … via explicit `export type` |
+| Protocol | `IDataset` and capability interfaces via `export type` |
 | Menu ids | `LIST_VIEW_MENU_ID`, `LIST_VIEW_MENU_COMPONENT_KEY` **string values** |
 | Vite | `mapDatasetGisWorker()` / `@hungpvq/map-dataset/vite` |
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
+Full root surfaces are Stable (see each `public-api.spec.ts`). Shared highlights:
+
 | Area | Stable surface |
 |------|----------------|
 | Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents) |
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
-| Registry | Framework `UniversalRegistry` (inherits core + `registerComponent*`), `RegistryItem` |
-| Controls | Documented ModuleContainer controls and their **control ids** / action types (see [registry-controls](./registry-controls.md)): BaseMap*, Theme, Zoom, Home, Identify-related hosts live on dataset packages, etc. |
-| Types | First-party: `WithShowProps` (from `useShow`); prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
+| Registry | Framework `UniversalRegistry`, `RegistryItem` |
+| Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl` |
+| Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
+
+Framework idioms (both Stable, different names): Vue `Collapse` / `InputTextArea` / `KEY` / `MITT_KEY` / `makeShowProps` / `withMapProps`; React `BaseCollapse` / `InputTextarea` / `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
+
+Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
 ## `@hungpvq/vue-map-dataset` / `@hungpvq/react-map-dataset`
 
@@ -69,28 +80,30 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 |------|----------------|
 | Bootstrap | `createDatasetRegistryPlugin()` |
 | Hooks | `useMapDataset` |
-| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl`, `CreateControl`, `ComponentManagementControl` |
-| Core boundary | Builders, services, protocols, locale bags, menu ids, and shared types are imported directly from `@hungpvq/map-dataset` |
+| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
+| Core boundary | Builders/services/types from `@hungpvq/map-dataset` |
+
+Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`; React `MenuConditionProvider`. React also has imperative `getMapDatasetStore` / `notifyMapDatasetStore`.
 
 ## `@hungpvq/map-draw`
 
 | Area | Stable surface |
 |------|----------------|
-| Service | `DrawService` (`setFeature` / `convertData` / `saveDraw` / `clearDraw`) |
-| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption` (via `export type`) |
-| Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` (required when adding draw to a map) |
+| Service | `DrawService` |
+| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption` |
+| Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` |
 | Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
 
 ## `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `DrawControl`, `InspectControl` (shared `InspectController`: style + popup/hover), `useMapDraw`, `isDraftOption` |
+| Shell | `DrawControl`, `InspectControl` (shared `InspectController`), `useMapDraw`, `isDraftOption`, `useConfigDrawControl`, `useMapDrawStore` |
 | Control ids | `mapDrawDraftList`, `mapInspectControl` |
 | Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
-| Core boundary | Protocol/types/helpers from `@hungpvq/map-draw` — adapters do **not** re-export core |
+| Core boundary | Protocol from `@hungpvq/map-draw` — adapters do **not** re-export core |
 
-Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/` (Inspect is a section under draw, not a separate docs page).
+Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 
 ## `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`
 
@@ -99,17 +112,18 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/` (Inspect is a sect
 | Vue bootstrap | `DevtoolsPlugin`, `uninstallDevtools` |
 | React bootstrap | `installDevtools`, `uninstallDevtools` |
 | Panel | `Devtools` |
+| Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |
 
-Adapters do **not** re-export `@hungpvq/map-core` (`errorHandler` comes from map-core). React may expose additional **experimental** store/hook helpers on the root barrel.
+Adapters do **not** re-export `@hungpvq/map-core` (`errorHandler` from map-core). See [Error handling](./error-handling.md).
 
 ## CSS
 
 Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables](./css-variables.md). `style.css` package entries are stable import paths.
 
-## Explicitly experimental
+## Experimental slot
 
-Still exported as **named** root exports (listed in each package’s `*_EXPERIMENTAL_RUNTIME_EXPORTS`). Treat as unstable (may change in a **minor**). Examples: deep visitors/utils, undocumented helpers, worker message shapes, draw internals, demo-only helpers, most menu builders until promoted to Stable.
+`*_EXPERIMENTAL_RUNTIME_EXPORTS` is currently **empty** on all map packages. Prefer adding new root symbols as Stable. If a future symbol is intentionally unstable, list it under Experimental (may change in a **minor**); removing it from the root remains a **major**.
 
 ## Enforcing the allowlist
 

@@ -30,7 +30,7 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 
 **Import guidance:** import protocol/types/services (`getMap`, `errorHandler`, builders, `DrawService`, …) from `@hungpvq/map-core` / `map-dataset` / `map-draw`; import UI and hooks from the matching `vue-*` / `react-*` package.
 
-**Docs hub:** [libs/map-core/core/docs/index.md](./libs/map-core/core/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/core/docs/core/stable-api.md) · **Devtools:** [devtools.md](./libs/map-core/core/docs/core/devtools.md) · **SemVer checklist:** [libs/map-core/README.md](./libs/map-core/README.md)
+**Docs hub:** [libs/map-core/core/docs/index.md](./libs/map-core/core/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/core/docs/core/stable-api.md) · **Error handling:** [error-handling.md](./libs/map-core/core/docs/core/error-handling.md) · **Devtools:** [devtools.md](./libs/map-core/core/docs/core/devtools.md) · **SemVer checklist:** [libs/map-core/README.md](./libs/map-core/README.md)
 
 ### 🎯 Draggable Libraries
 

@@ -1,5 +1,5 @@
 /**
- * Root barrel: explicit named exports (Stable + Experimental).
+ * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`.
  * Adapter-only surface — import protocol/types from `@hungpvq/map-draw`.
  * Store/locale first so DrawControl hooks can import them without TDZ cycles.

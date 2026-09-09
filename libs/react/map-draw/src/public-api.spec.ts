@@ -10,13 +10,12 @@ export const REACT_MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'INSPECT_CONTROL_LOCALE',
   'InspectControl',
   'isDraftOption',
-  'useMapDraw',
-] as const;
-
-export const REACT_MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'useConfigDrawControl',
+  'useMapDraw',
   'useMapDrawStore',
 ] as const;
+
+export const REACT_MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

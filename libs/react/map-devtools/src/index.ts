@@ -1,5 +1,5 @@
 /**
- * Root barrel: explicit named exports (Stable + Experimental).
+ * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`.
  */
 export type { LogEntry } from './log-adapter';

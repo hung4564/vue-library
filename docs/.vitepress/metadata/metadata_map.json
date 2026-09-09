@@ -27,6 +27,14 @@
       "order": 1.3
     },
     {
+      "name": "Error handling",
+      "package": "Map - Core",
+      "docs": "/map/core/error-handling",
+      "category": "Core",
+      "order": 1.4
+    },
+
+    {
       "name": "Map",
       "package": "Map - Core",
       "docs": "/map/core/module/core/",

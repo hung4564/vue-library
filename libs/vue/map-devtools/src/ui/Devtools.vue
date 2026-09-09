@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@hungpvq/vue-map-core';
-import { devtoolState } from '../store';
+import { devtoolState, toggleDevtoolOpen } from '../store';
 import ErrorViewer from './ErrorViewer.vue';
 import LogViewer from './LogViewer.vue';
 import StoreViewer from './StoreViewer.vue';
@@ -44,7 +44,7 @@ import StoreViewer from './StoreViewer.vue';
 const state = devtoolState;
 
 const toggle = () => {
-  state.isOpen = !state.isOpen;
+  toggleDevtoolOpen();
 };
 </script>
 

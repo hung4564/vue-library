@@ -1,5 +1,5 @@
 import { errorHandler } from '@hungpvq/map-core';
-import { reactive } from 'vue';
+import { reactive, toRefs } from 'vue';
 import { DevtoolLogAdapter, LogEntry } from './log-adapter';
 
 export interface ErrorRecord {
@@ -11,17 +11,60 @@ export interface ErrorRecord {
   timestamp: number;
 }
 
-export const devtoolState = reactive<{
+export type DevtoolTab = 'store' | 'logs' | 'errors';
+
+type DevtoolState = {
   isOpen: boolean;
-  activeTab: string;
+  activeTab: DevtoolTab;
   errors: ErrorRecord[];
   logs: LogEntry[];
-}>({
+};
+
+export const devtoolState = reactive<DevtoolState>({
   isOpen: false,
   activeTab: 'store',
   errors: [],
   logs: [],
 });
+
+const listeners = new Set<() => void>();
+
+function notify() {
+  listeners.forEach((listener) => listener());
+}
+
+export function subscribeDevtoolState(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+export function getDevtoolState(): DevtoolState {
+  return devtoolState;
+}
+
+export function toggleDevtoolOpen() {
+  devtoolState.isOpen = !devtoolState.isOpen;
+  notify();
+}
+
+export function setDevtoolActiveTab(activeTab: DevtoolTab) {
+  devtoolState.activeTab = activeTab;
+  notify();
+}
+
+export function clearDevtoolLogs() {
+  devtoolState.logs = [];
+  notify();
+}
+
+export function clearDevtoolErrors() {
+  devtoolState.errors = [];
+  notify();
+}
+
+export function useDevtoolState() {
+  return toRefs(devtoolState);
+}
 
 // Initialize error listener globally
 errorHandler.onError((error) => {
@@ -38,6 +81,7 @@ errorHandler.onError((error) => {
   if (devtoolState.errors.length > 50) {
     devtoolState.errors = devtoolState.errors.slice(0, 50);
   }
+  notify();
 });
 
 export const devtoolLogAdapter = new DevtoolLogAdapter();

@@ -1,13 +1,13 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
+  errorHandler,
   MapInitializationError,
   MapInitializer,
   type MapEventCallbacks,
 } from '@hungpvq/map-core';
 import mapboxgl, { MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { errorHandler } from '../services/error-handler.service';
 import { useMapContainer } from '../store/store';
 
 if (!mapboxgl) {

@@ -7,24 +7,23 @@ import * as api from './index';
 
 /** Stable root runtime exports (SemVer contract for 1.x). */
 export const REACT_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
-  'Devtools',
-  'installDevtools',
-  'uninstallDevtools',
-] as const;
-
-/** @experimental — may change in a minor. */
-export const REACT_MAP_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'DevtoolLogAdapter',
   'clearDevtoolErrors',
   'clearDevtoolLogs',
   'devtoolLogAdapter',
+  'DevtoolLogAdapter',
+  'Devtools',
   'devtoolState',
   'getDevtoolState',
+  'installDevtools',
   'setDevtoolActiveTab',
   'subscribeDevtoolState',
   'toggleDevtoolOpen',
+  'uninstallDevtools',
   'useDevtoolState',
 ] as const;
+
+/** Reserved for future experimental root exports (currently empty). */
+export const REACT_MAP_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

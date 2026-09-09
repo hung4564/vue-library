@@ -8,39 +8,37 @@ import * as api from './index';
 
 /** Stable root runtime exports (SemVer contract for 1.x). */
 export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
+  'AddToGroup',
   'AttributeTable',
   'ComponentManagementControl',
   'CreateControl',
+  'createDatasetRegistryPlugin',
+  'createLegend',
+  'createMultiLegend',
+  'DatasetControl',
+  'DatasetDetail',
+  'DatasetMenuButton',
+  'ExportGeo',
   'IdentifyControl',
+  'IdentifyLayerAction',
   'IdentifyResultControl',
   'IdentifyShowFirstControl',
   'LayerControl',
-  'StyleControl',
-  'createDatasetRegistryPlugin',
-  'useMapDataset',
-] as const;
-
-/** @experimental — may change in a minor. */
-export const VUE_MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'AddToGroup',
-  'DatasetControl',
-  'DatasetMenuButton',
-  'ExportGeo',
-  'IdentifyLayerAction',
   'LayerDetail',
   'LayerHighlight',
   'LayerInfoControl',
   'LayerItemIcon',
+  'LayerMenuDefaultHandle',
   'ListGroupItem',
   'ListItem',
   'MENU_CONDITION_CONTEXT_KEY',
+  'provideMenuConditionContext',
   'RecursiveList',
   'SetOpacity',
+  'StyleControl',
   'ToggleShow',
   'ToggleShowButton',
-  'createLegend',
-  'createMultiLegend',
-  'provideMenuConditionContext',
+  'useMapDataset',
   'useMapDatasetComponent',
   'useMapDatasetComponentStore',
   'useMapDatasetHighlight',
@@ -50,6 +48,9 @@ export const VUE_MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'useMenuConditionSource',
   'useToggleShowAction',
 ] as const;
+
+/** Reserved for future experimental root exports (currently empty). */
+export const VUE_MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

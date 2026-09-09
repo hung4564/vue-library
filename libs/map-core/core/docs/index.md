@@ -11,6 +11,8 @@ Vue / React map libraries built on MapLibre GL.
 | [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/) | Draw / edit (Inspect documented under draw) |
 | [`@hungpvq/vue-map-devtools`](./core/devtools) / [`@hungpvq/react-map-devtools`](./core/devtools) | Debug panel (store, logs, errors) |
 
+Errors / `errorHandler`: [Error handling](./core/error-handling.md).
+
 ## Live demos
 
 - [Vue](https://hung4564.github.io/demo-map/vue/)
