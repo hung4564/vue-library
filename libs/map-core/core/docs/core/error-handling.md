@@ -45,4 +45,4 @@ Or create a custom `MapErrorHandler` instance if you need an isolated handler (a
 
 [`vue-map-devtools` / `react-map-devtools`](./devtools.md) subscribe to the same `errorHandler` for the Errors tab.
 
-See also [Stable API](./stable-api.md) · package README ErrorHandler section.
+See also [Stable API](./stable-api.md) · [Map store](./map-store.md) · package README ErrorHandler section.

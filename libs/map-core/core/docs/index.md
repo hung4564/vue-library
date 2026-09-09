@@ -11,7 +11,8 @@ Vue / React map libraries built on MapLibre GL.
 | [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/) | Draw / edit (Inspect documented under draw) |
 | [`@hungpvq/vue-map-devtools`](./core/devtools) / [`@hungpvq/react-map-devtools`](./core/devtools) | Debug panel (store, logs, errors) |
 
-Errors / `errorHandler`: [Error handling](./core/error-handling.md).
+Errors / `errorHandler`: [Error handling](./core/error-handling.md).  
+Map access / scoped stores: [Map store](./core/map-store.md).
 
 ## Live demos
 
@@ -22,6 +23,8 @@ Errors / `errorHandler`: [Error handling](./core/error-handling.md).
 
 - SemVer / breaking-change checklist: [../../README.md](../../README.md#checklist-semver--breaking-change)
 - **Stable API allowlist:** [core/stable-api.md](./core/stable-api.md)
+- **Map store / `getMap`:** [core/map-store.md](./core/map-store.md)
+- **Error handling:** [core/error-handling.md](./core/error-handling.md)
 
 ## Getting started in 5 minutes
 

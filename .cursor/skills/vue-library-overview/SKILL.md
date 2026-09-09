@@ -67,6 +67,8 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 - Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md` (named root exports + runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*; aggregation in `internal-barrel.ts`)
 - Map minimal starter: `libs/map-core/core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
 - Map docs index: `libs/map-core/core/docs/index.md`
+- Map store / `getMap`: `libs/map-core/core/docs/core/map-store.md`
+- Map error handling: `libs/map-core/core/docs/core/error-handling.md`
 - Draggable SemVer + public surface: `libs/draggable/README.md`
 - Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
 - Draggable a11y: `libs/draggable/core/docs/a11y.md`

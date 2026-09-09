@@ -54,4 +54,4 @@ Runtime lock: `libs/vue/map-devtools/src/public-api.spec.ts`, `libs/react/map-de
 - Vue: `apps/vue/demo-map` (`DevtoolsPlugin` in `main.ts`)
 - React: `apps/react/demo-map` (`installDevtools()` in `main.tsx`)
 
-See also [Stable API](./stable-api.md) · [Error handling](./error-handling.md).
+See also [Stable API](./stable-api.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md).

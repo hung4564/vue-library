@@ -22,10 +22,11 @@ npm install @hungpvq/react-map-core
 
 ## 🎯 Features
 
-- ✅ **Map container** - Main MapLibre GL wrapper component
+- ✅ **Map container** - Main MapLibre GL wrapper component (one instance per `mapId`)
 - ✅ **Navigation controls** - Zoom, Home, Fullscreen, Geolocate
 - ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel, worker monitor, right-click context menu
 - ✅ **CRS extras** - Optional CRS control and display settings
+- ✅ **Store / `getMap`** - Scoped stores + map access from `@hungpvq/map-core` — [map-store](./map-store.md)
 - ✅ **Composable hooks** - `useMap`, `useShow` and more
 - ✅ **TypeScript support** - Full TypeScript types
 - ✅ **Vue 3 / React** - Framework wrappers over `@hungpvq/map-core`

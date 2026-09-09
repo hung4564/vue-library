@@ -19,7 +19,8 @@ yarn add @hungpvq/map-core
 ## 🎯 Features
 
 - ✅ **Error Classes** - MapError, MapInitializationError, MapEventError
-- ✅ **Error Handler** - Centralized error handling system
+- ✅ **Error Handler** - Centralized `errorHandler` with shared-log defaults ([docs](./docs/core/error-handling.md))
+- ✅ **Map store** - One MapLibre instance per `mapId`; `getMap` / `MapStoreManager` ([docs](./docs/core/map-store.md))
 - ✅ **Utilities** - Color utilities and helper functions
 - ✅ **Base Model** - Base class for map-related entities
 - ✅ **Types** - Framework-agnostic TypeScript types
@@ -106,6 +107,22 @@ const customHandler = new MapErrorHandler({
   },
 });
 ```
+
+### Map store
+
+One MapLibre instance per `mapId`. Docs: [map-store.md](./docs/core/map-store.md).
+
+```typescript
+import { getMap, MAP_STORE_KEY } from '@hungpvq/map-core';
+
+const map = getMap('map-1'); // MapSimple | undefined
+
+getMap('map-1', (ready) => {
+  // called when the map is registered
+});
+```
+
+Scoped feature state uses `MAP_STORE_KEY` via adapter helpers (`createMapScopedStore` / `getStore` on vue/react map-core).
 
 ### Utils
 

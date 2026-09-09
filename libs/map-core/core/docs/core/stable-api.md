@@ -25,7 +25,7 @@ Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable
 - Adding a **runtime** root export → add a **named** `export { X } from './internal-barrel'` (or from the feature module) in `src/index.ts`, update Stable in that package’s `public-api.spec.ts`, and this page when documenting the area.
 - Removing a root runtime export is a **major**.
 
-Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
+Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
 ## Registry architecture
 
@@ -35,16 +35,18 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 
 ## `@hungpvq/map-core`
 
-Full runtime allowlist: `public-api.spec.ts` (~229 symbols). Highlights:
+Full runtime allowlist: `public-api.spec.ts` (~222 symbols). Highlights:
 
 | Area | Stable surface |
 |------|----------------|
-| Map access | `getMap`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY` |
+| Map access | `getMap` → `MapSimple \| undefined` (one instance per `mapId`), `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
 | Theme | `bootstrapMapTheme`, `resolveMapTheme`, `applyMapThemeClass`, `MAP_THEME_*`, `MAP_THEME_STORAGE_KEY` |
 | Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_NAMESPACES`, `filterMapControls` |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` (default `@hungpvq/shared-log` logging; optional `errorHandler.configure`) — [error-handling](./error-handling.md) |
 | Locale bags | Documented `*_LOCALE` constants used by controls |
 | Types (common) | Explicit `export type { … }`: `MapSimple`, `WithMapPropType`, `MapControlHandle`, … (first-party only) |
+
+**Removed from Stable (breaking):** Map Compare (`MapCompare*`, `Compare*`, `MAP_STORE_KEY.MAP_COMPARE`, …) and multi-map helpers (`getIsMulti`, `getMaps`, `initMaps`, `hasMapCollection`, `isMultiMapStore`, store `maps` / `isMulti`).
 
 ## `@hungpvq/map-dataset`
 
@@ -60,19 +62,20 @@ Full runtime allowlist: `public-api.spec.ts` (~300 symbols). Highlights:
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
-Full root surfaces are Stable (see each `public-api.spec.ts`). Shared highlights:
+Full root surfaces are Stable (~94 Vue / ~101 React runtime symbols — see each `public-api.spec.ts`). Shared highlights:
 
 | Area | Stable surface |
 |------|----------------|
 | Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents) |
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
+| Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore` (not `getMap`) — [map-store](./map-store.md) |
 | Registry | Framework `UniversalRegistry`, `RegistryItem` |
 | Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl` |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
 Framework idioms (both Stable, different names): Vue `Collapse` / `InputTextArea` / `KEY` / `MITT_KEY` / `makeShowProps` / `withMapProps`; React `BaseCollapse` / `InputTextarea` / `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
 
-Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
+Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`. Compare / multi-map UI and `getIsMulti` are not part of the adapters.
 
 ## `@hungpvq/vue-map-dataset` / `@hungpvq/react-map-dataset`
 

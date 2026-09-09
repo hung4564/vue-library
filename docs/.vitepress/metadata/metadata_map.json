@@ -33,6 +33,13 @@
       "category": "Core",
       "order": 1.4
     },
+    {
+      "name": "Map store",
+      "package": "Map - Core",
+      "docs": "/map/core/map-store",
+      "category": "Core",
+      "order": 1.5
+    },
 
     {
       "name": "Map",
