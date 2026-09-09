@@ -133,7 +133,8 @@ export async function exportMapbox(
     container.style.height = canvas.clientHeight + 'px';
   });
   return new Promise((resolve) => {
-    renderMap.once('idle', () => {
+    const finish = async () => {
+      await waitMapIdleAndTiles(renderMap as unknown as MapSimple);
       const canvas = renderMap.getCanvas();
       const dataUrl = options.watermark
         ? applyCanvasWatermark(canvas, options.watermark)
@@ -141,6 +142,9 @@ export async function exportMapbox(
       resolve(dataUrl);
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);
+    };
+    renderMap.once('idle', () => {
+      void finish();
     });
   });
 }
@@ -166,7 +170,8 @@ export async function exportMapboxWithOptions(
     container.style.height = toPixels(+options.height, dpi / 96);
   });
   return new Promise((resolve) => {
-    renderMap.once('idle', () => {
+    const finish = async () => {
+      await waitMapIdleAndTiles(renderMap as unknown as MapSimple);
       const canvas = renderMap.getCanvas();
       const dataUrl = options.watermark
         ? applyCanvasWatermark(canvas, options.watermark)
@@ -174,6 +179,9 @@ export async function exportMapboxWithOptions(
       resolve(dataUrl);
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);
+    };
+    renderMap.once('idle', () => {
+      void finish();
     });
   });
 }

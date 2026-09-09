@@ -1,3 +1,4 @@
+import { WorkerMonitor, workerProgressRatio } from '@hungpvq/map-core';
 import {
   applyCreateControlSample,
   applyCreateControlLayerName,
@@ -10,6 +11,7 @@ import {
   getCreateControlDataTabs,
   getCreateControlSampleUrl,
   getCreateControlSamples,
+  isCreateControlCrsMismatch,
   layerNameFromFileName,
   layerNameFromUrl,
   loadGisFileAsync,
@@ -119,6 +121,14 @@ export function ConfigGeojsonLayerSettings({ config, onChange, trans }: ConfigFo
           value={String(config.crs ?? '4326')}
           onChange={(v) => onChange({ crs: v })}
         />
+        {isCreateControlCrsMismatch(
+          String(config.crs ?? ''),
+          typeof config.detectedCrs === 'string' ? config.detectedCrs : null,
+        ) ? (
+          <div className="create-control-crs-mismatch" role="status">
+            {trans('map.layer-control.create.crs-mismatch')}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -169,7 +179,11 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
 
   function syncGeojsonPreview(next: GeoJSON | null, crs?: string | null) {
     const patch: Record<string, unknown> = { geojson: next };
-    if (crs) patch.crs = crs;
+    if (crs) {
+      patch.crs = crs;
+      patch.detectedCrs = crs;
+    }
+    if (!next) patch.detectedCrs = undefined;
     onChange(patch);
   }
 
@@ -222,6 +236,16 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
     setParseStatusText(
       `${trans('map.layer-control.create.parsing')} (${formatCreateControlBytes(totalBytes)})`,
     );
+    const unsubProgress = WorkerMonitor.subscribe(() => {
+      const snap = WorkerMonitor.get('geojson');
+      const task = snap?.pending?.[0];
+      const ratio = workerProgressRatio(task?.progress);
+      if (ratio == null) return;
+      const pct = Math.round(ratio * 100);
+      setParseStatusText(
+        `${trans('map.layer-control.create.parsing')} ${pct}% (${formatCreateControlBytes(totalBytes)})`,
+      );
+    });
     try {
       setPasteText('');
       const { geojson: next, crs, format } = await loadGisFileAsync(files);
@@ -235,7 +259,10 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
           'vector',
         ),
       };
-      if (crs) patch.crs = crs;
+      if (crs) {
+        patch.crs = crs;
+        patch.detectedCrs = crs;
+      }
       onChange(patch);
       setLoadedSource(
         buildCreateControlLoadedSource({
@@ -262,6 +289,7 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
       syncGeojsonPreview(null);
       setLoadedSource(null);
     } finally {
+      unsubProgress();
       if (gen === parseGenerationRef.current) {
         setParsing(false);
         setParseStatusText('');
@@ -374,7 +402,10 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
             'vector',
           ),
         };
-        if (result.crs) patch.crs = result.crs;
+        if (result.crs) {
+          patch.crs = result.crs;
+          patch.detectedCrs = result.crs;
+        }
         onChange(patch);
         setLoadedSource(
           buildCreateControlLoadedSource({

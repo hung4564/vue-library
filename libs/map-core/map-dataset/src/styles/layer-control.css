@@ -16,10 +16,19 @@
 
 .layer-control__search {
   padding: var(--map-space-md, 8px) var(--map-space-lg, 12px) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--map-space-xs, 4px);
 }
 
 .layer-control__search .form-group {
   margin-bottom: var(--map-space-sm, 6px);
+  flex: 1;
+}
+
+.layer-control__search-clear {
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .layer-control__header {
@@ -286,6 +295,9 @@ svg.layer-control__empty-icon {
   color: inherit;
   padding: 0 1px;
   border-radius: 2px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .layer-item__title-action {

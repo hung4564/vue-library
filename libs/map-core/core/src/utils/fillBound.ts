@@ -50,7 +50,10 @@ const MIN_VISIBLE_PX = 120;
 /** Fallback width/height when registry knows a control is open but DOM is missing. */
 const REGISTRY_SIDEBAR_PX = 360;
 const REGISTRY_FLOAT_PX = 320;
-const REGISTRY_POPUP_PX = 280;
+/** Fallback when a popup/control is open but DOM metrics are missing. */
+const REGISTRY_POPUP_PX = 360;
+/** Large bottom-sheet style popups (attribute table / identify / detail). */
+const REGISTRY_LARGE_POPUP_PX = 420;
 
 type EdgePadding = Required<PaddingOptions>;
 type EdgeAcc = { left: number; right: number; top: number; bottom: number };
@@ -147,6 +150,21 @@ function measureOverlappingNode(
     node.classList.contains('bottom-container')
   ) {
     accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, 'bottom');
+  } else if (
+    node.classList.contains('draggable-popup-wrapper') ||
+    node.classList.contains('popup-mobile-container')
+  ) {
+    // Tall / wide popups (attribute table, identify) — prefer bottom padding.
+    const forceBottom =
+      overlapH >= mapRect.height * 0.35 || overlapW >= mapRect.width * 0.55;
+    accumulateNearestEdge(
+      edges,
+      mapRect,
+      rect,
+      overlapW,
+      overlapH,
+      forceBottom ? 'bottom' : force,
+    );
   } else {
     accumulateNearestEdge(edges, mapRect, rect, overlapW, overlapH, force);
   }
@@ -194,8 +212,17 @@ function accumulateFromRegistry(
         else edges.left = Math.max(edges.left, px);
       } else if (ctrl.panelKind === 'float') {
         edges.left = Math.max(edges.left, REGISTRY_FLOAT_PX);
-      } else if (ctrl.panelKind === 'popup') {
-        edges.bottom = Math.max(edges.bottom, REGISTRY_POPUP_PX);
+  } else if (ctrl.panelKind === 'popup') {
+        const largeIds = new Set([
+          'mapAttributeTable',
+          'mapIdentifyResultControl',
+          'mapLayerDetail',
+          'mapCreateControl',
+        ]);
+        const px = largeIds.has(ctrl.id)
+          ? REGISTRY_LARGE_POPUP_PX
+          : REGISTRY_POPUP_PX;
+        edges.bottom = Math.max(edges.bottom, px);
       }
     }
   } catch {

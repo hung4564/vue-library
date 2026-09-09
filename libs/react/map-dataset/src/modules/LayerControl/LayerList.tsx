@@ -1,11 +1,11 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import { BaseButton, InputText, useLang, useMap } from '@hungpvq/react-map-core';
-import { mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
+import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
@@ -46,17 +46,18 @@ export function LayerList({
     useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
   const [layerSearch, setLayerSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selected, setSelected] = useState<string[]>([]);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(layerSearch), 150);
+    return () => clearTimeout(timer);
+  }, [layerSearch]);
   const filteredViews = useMemo(() => {
-    const q = layerSearch.trim().toLowerCase();
-    if (!q) return views;
-    return views.filter((view) =>
-      String(view.getName?.() ?? '')
-        .toLowerCase()
-        .includes(q),
-    );
-  }, [views, layerSearch]);
-  const listDisabledDrag = Boolean(disabledDrag) || Boolean(layerSearch.trim());
+    if (!debouncedSearch.trim()) return views;
+    return views.filter((view) => layerMatchesSearch(view, debouncedSearch));
+  }, [views, debouncedSearch]);
+  const listDisabledDrag =
+    Boolean(disabledDrag) || Boolean(debouncedSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
   const contextMenuRef = useRef<ContextMenuRef>(null);
   const [menuContext, setMenuContext] = useState<{
@@ -96,7 +97,7 @@ export function LayerList({
     });
   }
   function onItemsChange(next: LayerListItem[]) {
-    if (layerSearch.trim()) return;
+    if (debouncedSearch.trim()) return;
     setViews(next);
     updateLayers(next);
   }
@@ -172,6 +173,15 @@ export function LayerList({
             aria-label="Search layers"
             data-map-layer-search
           />
+          {layerSearch.trim() ? (
+            <BaseButton
+              className="layer-control__search-clear"
+              aria-label="Clear search"
+              onClick={() => setLayerSearch('')}
+            >
+              <Icon path={mdiClose} size="14px" />
+            </BaseButton>
+          ) : null}
         </div>
         {!isEmpty && (
           <div className="layer-control__header">
@@ -221,7 +231,23 @@ export function LayerList({
               )}
             </div>
           )}
-          <div style={isEmpty ? { display: 'none' } : undefined}>
+          {!isEmpty &&
+            Boolean(debouncedSearch.trim()) &&
+            filteredViews.length === 0 && (
+              <div className="layer-control__empty layer-control__empty--search">
+                <div className="layer-control__empty-title">
+                  {trans('map.layer-control.search-empty')}
+                </div>
+              </div>
+            )}
+          <div
+            style={
+              isEmpty ||
+              (Boolean(debouncedSearch.trim()) && filteredViews.length === 0)
+                ? { display: 'none' }
+                : undefined
+            }
+          >
             <DraggableGroupList
               ref={groupRef}
               items={filteredViews}
@@ -237,6 +263,7 @@ export function LayerList({
                   readonly={readonly}
                   disabledMove={disabledMove}
                   disabledCreateGroup={disabledCreateGroup}
+                  searchQuery={debouncedSearch}
                   onTitleClick={toggleSelect}
                   onRemove={(layer) => {
                     removeComponent(layer);

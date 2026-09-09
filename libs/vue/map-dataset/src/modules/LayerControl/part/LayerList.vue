@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerNameMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
@@ -14,6 +14,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
+  mdiClose,
   mdiDelete,
   mdiDotsVertical,
   mdiGroup,
@@ -98,9 +99,7 @@ const listDisabledDrag = computed(
 function getFilteredViews() {
   const q = debouncedSearch.value;
   if (!q.trim()) return views.value;
-  return views.value.filter((view) =>
-    layerNameMatchesSearch(view.getName?.(), q),
-  );
+  return views.value.filter((view) => layerMatchesSearch(view, q));
 }
 const filteredViews = computed(() => getFilteredViews());
 watch(
@@ -253,6 +252,14 @@ function onLayerAction({
         :placeholder="trans('map.layer-control.search')"
         aria-label="Search layers"
       />
+      <BaseButton
+        v-if="layerSearch.trim()"
+        class="layer-control__search-clear"
+        aria-label="Clear search"
+        @click="layerSearch = ''"
+      >
+        <SvgIcon size="14" type="mdi" :path="mdiClose" />
+      </BaseButton>
     </div>
     <div v-if="views.length" class="layer-control__header">
       <slot name="title"></slot>

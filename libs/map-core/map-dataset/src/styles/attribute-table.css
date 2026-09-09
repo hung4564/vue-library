@@ -86,6 +86,27 @@
   color: var(--map-accent-color, #1a73e8);
 }
 
+.attribute-table__filters th {
+  top: 28px;
+  font-weight: 400;
+  cursor: default;
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+
+.attribute-table__column-filter {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--map-border-color, #ddd);
+  border-radius: var(--map-radius-sm, 4px);
+  background: var(--map-surface-color, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: var(--map-font-size-sm, 12px);
+  padding: 2px 6px;
+}
+
 .attribute-table__check {
   width: 36px;
   max-width: 36px;

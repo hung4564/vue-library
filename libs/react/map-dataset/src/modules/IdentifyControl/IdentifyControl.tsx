@@ -480,17 +480,18 @@ export function IdentifyControl(
       !identifyId || identifyId === IDENTIFY_ALL_LAYERS_VALUE
         ? undefined
         : identifyId;
-    const clearedOrigin = { latitude: 0, longitude: 0 };
     setFilterIdentifyId(id);
     filterIdentifyIdRef.current = id;
-    setOrigin(clearedOrigin);
-    originRef.current = clearedOrigin;
     syncResultPanel({
       selectedLayerId: id ?? IDENTIFY_ALL_LAYERS_VALUE,
-      items: [],
-      loading: false,
-      origin: clearedOrigin,
     });
+    const current = originRef.current;
+    if (current.latitude !== 0 || current.longitude !== 0) {
+      callMap((map) => {
+        const point = map.project([current.longitude, current.latitude]);
+        void onGetFeatures(point);
+      });
+    }
   }
 
   const toolbarConfig = useMemo(

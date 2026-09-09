@@ -36,7 +36,7 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'crs-mismatch':
     'File CRS differs from selected CRS; data will be reprojected.',
   'multi-file-error':
-    'Drop one GIS file, or a shapefile set (.shp + sidecars / .zip).',
+    'Drop one GIS file, a shapefile set (.shp + sidecars / .zip), or multiple GeoJSON/KML/GPX files.',
   creating: 'Creating layer…',
   'create-error': 'Failed to create layer',
   'create-error-data-too-large':

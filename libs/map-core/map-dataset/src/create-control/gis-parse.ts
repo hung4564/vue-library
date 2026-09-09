@@ -193,6 +193,28 @@ export async function parseGisFile(
   return result;
 }
 
+function mergeGisFeatureCollections(
+  parts: GisLoadResult[],
+): GisLoadResult {
+  const features: Feature[] = [];
+  let crs: string | null = null;
+  let format: GisFormat | undefined;
+  for (const part of parts) {
+    if (!part.geojson) continue;
+    const fc = asGisFeatureCollection(part.geojson);
+    if (!fc?.features?.length) continue;
+    features.push(...fc.features);
+    if (!crs && part.crs) crs = part.crs;
+    if (!format && part.format) format = part.format;
+  }
+  if (!features.length) return { geojson: null, crs, format };
+  return {
+    geojson: { type: 'FeatureCollection', features },
+    crs,
+    format: format || 'geojson',
+  };
+}
+
 export async function parseGisFiles(
   files: Array<Blob & { name?: string; type?: string }>,
   report?: GisProgress,
@@ -208,9 +230,20 @@ export async function parseGisFiles(
     return result;
   }
 
-  throw new Error(
-    'Drop one GIS file, a Shapefile set (.shp/.dbf/.prj), or a .zip / .kmz archive',
-  );
+  const total = files.length;
+  const parts: GisLoadResult[] = [];
+  for (let i = 0; i < files.length; i += 1) {
+    report?.(i, total, files[i]?.name || 'parse');
+    const part = await parseGisFile(files[i], report);
+    if (!part.geojson) {
+      throw new Error(
+        'Drop one GIS file, a Shapefile set (.shp/.dbf/.prj), a .zip / .kmz, or multiple GeoJSON/KML/GPX files',
+      );
+    }
+    parts.push(part);
+  }
+  report?.(total, total, 'merge');
+  return mergeGisFeatureCollections(parts);
 }
 
 export async function parseGisFromUrl(

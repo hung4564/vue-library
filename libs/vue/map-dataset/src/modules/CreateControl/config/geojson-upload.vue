@@ -145,6 +145,7 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import { DragDropFile } from '@hungpvq/shared-file';
+import { WorkerMonitor, workerProgressRatio } from '@hungpvq/map-core';
 import {
   applyCreateControlSample,
   applyCreateControlLayerName,
@@ -251,6 +252,10 @@ function syncGeojsonPreview(geojson, crs) {
   form.value.geojson = geojson ? markRaw(geojson) : geojson;
   if (crs) {
     form.value.crs = crs;
+    form.value.detectedCrs = crs;
+  }
+  if (!geojson) {
+    form.value.detectedCrs = undefined;
   }
 }
 
@@ -300,6 +305,14 @@ async function onChangeFile(input) {
       : `${files.length} files`;
   parsing.value = true;
   parseStatusText.value = `${trans.value('map.layer-control.create.parsing')} (${formatCreateControlBytes(totalBytes)})`;
+  const unsubProgress = WorkerMonitor.subscribe(() => {
+    const snap = WorkerMonitor.get('geojson');
+    const task = snap?.pending?.[0];
+    const ratio = workerProgressRatio(task?.progress);
+    if (ratio == null) return;
+    const pct = Math.round(ratio * 100);
+    parseStatusText.value = `${trans.value('map.layer-control.create.parsing')} ${pct}% (${formatCreateControlBytes(totalBytes)})`;
+  });
   try {
     pasteText.value = '';
     const { geojson, crs, format } = await loadGisFileAsync(files);
@@ -330,6 +343,7 @@ async function onChangeFile(input) {
     syncGeojsonPreview(null);
     loadedSource.value = null;
   } finally {
+    unsubProgress();
     if (gen === parseGeneration) {
       parsing.value = false;
       parseStatusText.value = '';

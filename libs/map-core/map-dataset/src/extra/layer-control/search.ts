@@ -15,6 +15,28 @@ export function layerNameMatchesSearch(
     .includes(q);
 }
 
+export function layerGroupName(
+  view: { group?: { name?: string } | string | null },
+): string | undefined {
+  const group = view.group;
+  if (!group) return undefined;
+  if (typeof group === 'string') return group;
+  return group.name;
+}
+
+/** Match layer name or parent group name. */
+export function layerMatchesSearch(
+  view: {
+    getName?: () => string;
+    group?: { name?: string } | string | null;
+  },
+  query: string,
+): boolean {
+  if (!normalizeLayerSearchQuery(query)) return true;
+  if (layerNameMatchesSearch(view.getName?.(), query)) return true;
+  return layerNameMatchesSearch(layerGroupName(view), query);
+}
+
 /**
  * Split a display name into plain / match segments for highlight rendering.
  */

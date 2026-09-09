@@ -1,7 +1,7 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { findAllComponentsByType } from '@hungpvq/map-dataset';
+import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
 import { BaseButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
 import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -18,6 +18,7 @@ export function LayerItem({
   readonly,
   disabledMove,
   disabledCreateGroup,
+  searchQuery,
   onRemove,
   onAction,
   onContextMenu,
@@ -28,6 +29,7 @@ export function LayerItem({
   readonly?: boolean;
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
+  searchQuery?: string;
   onRemove?: (item: IListViewUI) => void;
   onAction?: (payload: {
     event: React.MouseEvent;
@@ -90,6 +92,10 @@ export function LayerItem({
     .sort((a, b) => (a.order || 0) - (b.order || 0));
   const showBottom =
     !readonly && (!item.config?.disabled_opacity || bottomMenus.length > 0);
+  const nameParts = useMemo(
+    () => splitSearchHighlight(item.getName?.() ?? '', searchQuery ?? ''),
+    [item, searchQuery],
+  );
 
   return (
     <div className="layer-item-container">
@@ -109,7 +115,15 @@ export function LayerItem({
           title={item.getName()}
           onClick={() => onTitleClick?.()}
         >
-          <span>{item.getName()}</span>
+          {nameParts.map((part, i) =>
+            part.match ? (
+              <mark key={i} className="layer-item__search-match">
+                {part.text}
+              </mark>
+            ) : (
+              <span key={i}>{part.text}</span>
+            ),
+          )}
         </span>
         <div className="v-spacer" />
         <div className="layer-item__title-action">

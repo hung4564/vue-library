@@ -7,7 +7,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, sortAttributeTableRows, takePendingAttributeTableSelectRows, toggleAttributeTableSort, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload, type AttributeTableSortState } from '@hungpvq/map-dataset';
+import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, filterAttributeTableRowsByColumns, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, sortAttributeTableRows, takePendingAttributeTableSelectRows, toggleAttributeTableMultiSort, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableColumnFilters, type AttributeTableRow, type AttributeTableSelectRowsPayload, type AttributeTableSortState } from '@hungpvq/map-dataset';
 import { createExportGeoSubmenu, createMenuItemExportGeo, getDatasetFeatureCollection, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
 import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMenuAction, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
@@ -57,9 +57,13 @@ const filterItems = computed(() => [
 const searchedRows = computed(() =>
   filterAttributeTableRows(rows.value, query.value),
 );
-const sortState = ref<AttributeTableSortState | null>(null);
+const sortStates = ref<AttributeTableSortState[]>([]);
+const columnFilters = ref<AttributeTableColumnFilters>({});
+const filteredSearchedRows = computed(() =>
+  filterAttributeTableRowsByColumns(searchedRows.value, columnFilters.value),
+);
 const sortedSearchedRows = computed(() =>
-  sortAttributeTableRows(searchedRows.value, sortState.value),
+  sortAttributeTableRows(filteredSearchedRows.value, sortStates.value),
 );
 const visibleRows = computed(() => {
   if (rowFilter.value !== 'selected') return sortedSearchedRows.value;
@@ -71,8 +75,15 @@ const exportRows = computed(() => {
   const selected = new Set(selectedIds.value);
   return rows.value.filter((row) => selected.has(row.id));
 });
-function onSortColumn(key: string) {
-  sortState.value = toggleAttributeTableSort(sortState.value, key);
+function onSortColumn(key: string, event?: MouseEvent) {
+  sortStates.value = toggleAttributeTableMultiSort(
+    sortStates.value,
+    key,
+    Boolean(event?.shiftKey),
+  );
+}
+function onColumnFilter(key: string, value: string) {
+  columnFilters.value = { ...columnFilters.value, [key]: value };
 }
 const scrollEl = ref<HTMLElement | null>(null);
 const scrollTop = ref(0);
@@ -397,17 +408,41 @@ watch(zoomToSelection, (enabled) => {
                   <th
                     v-for="column in tableColumns"
                     :key="column.key"
-                    :class="{ 'is-sorted': sortState?.key === column.key }"
-                    @click="onSortColumn(column.key)"
+                    :class="{
+                      'is-sorted': sortStates.some((s) => s.key === column.key),
+                    }"
+                    @click="onSortColumn(column.key, $event)"
                   >
                     {{ column.label
                     }}{{
-                      sortState?.key === column.key
-                        ? sortState.dir === 'asc'
-                          ? ' ↑'
-                          : ' ↓'
-                        : ''
+                      (() => {
+                        const hit = sortStates.find((s) => s.key === column.key);
+                        if (!hit) return '';
+                        const idx = sortStates.indexOf(hit) + 1;
+                        return `${hit.dir === 'asc' ? ' ↑' : ' ↓'}${
+                          sortStates.length > 1 ? idx : ''
+                        }`;
+                      })()
                     }}
+                  </th>
+                  <th v-if="itemMenus.length" class="attribute-table__actions" />
+                </tr>
+                <tr class="attribute-table__filters">
+                  <th class="attribute-table__check" />
+                  <th v-for="column in tableColumns" :key="`f-${column.key}`">
+                    <input
+                      class="attribute-table__column-filter"
+                      type="search"
+                      :value="columnFilters[column.key] || ''"
+                      :placeholder="column.label"
+                      @click.stop
+                      @input="
+                        onColumnFilter(
+                          column.key,
+                          ($event.target as HTMLInputElement).value,
+                        )
+                      "
+                    />
                   </th>
                   <th v-if="itemMenus.length" class="attribute-table__actions" />
                 </tr>

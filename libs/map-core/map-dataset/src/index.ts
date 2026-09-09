@@ -86,12 +86,15 @@ export {
   exportAttributeTableRows,
   featureStatePulseAnimate,
   filterAttributeTableRows,
+  filterAttributeTableRowsByColumns,
   findAllComponentsByType,
   findAllDatasetsMatching,
   findFirstLeafByType,
   findRoot,
   findSiblingOrNearestLeaf,
   formatAttributeCell,
+  layerGroupName,
+  layerMatchesSearch,
   layerNameMatchesSearch,
   normalizeLayerSearchQuery,
 } from './internal-barrel';
@@ -138,6 +141,7 @@ export {
   syncListViewLayerOrder,
   takePendingAttributeTableSelectRows,
   toExpressionFilter,
+  toggleAttributeTableMultiSort,
   toggleAttributeTableSort,
   toggleShow,
 } from './internal-barrel';

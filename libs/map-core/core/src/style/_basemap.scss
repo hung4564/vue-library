@@ -74,7 +74,7 @@
     --map-basemap-tag-bg,
     var(--map-primary-color, #1a73e8)
   );
-  color: #fff;
+  color: var(--map-text-inverse, #fff);
   font-weight: bold;
 }
 

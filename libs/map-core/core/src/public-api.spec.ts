@@ -245,6 +245,7 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
     'Format',
     'getMapBoxCanvas',
     'PRINT_CONTROL_LOCALE',
+    'PRINT_PAPER_PRESETS',
     'PrintableAreaManager',
     'PrintService',
     'waitMapIdleAndTiles',

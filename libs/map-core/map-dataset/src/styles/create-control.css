@@ -75,6 +75,19 @@
   margin: 0 var(--map-space-lg, 12px);
 }
 
+.create-control-crs-mismatch {
+  margin-top: var(--map-space-xs, 4px);
+  padding: var(--map-space-sm, 6px) var(--map-space-md, 8px);
+  border-radius: var(--map-radius-sm, 4px);
+  font-size: var(--map-font-size-sm, 12px);
+  color: var(--map-warning-text, #b45309);
+  background: color-mix(
+    in srgb,
+    var(--map-warning-color, #f59e0b) 16%,
+    transparent
+  );
+}
+
 .create-control-status {
   font-size: var(--map-font-size-sm, 12px);
   color: var(--map-text-secondary, #666);

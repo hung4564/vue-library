@@ -2,6 +2,7 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   CrosshairManager,
   PRINT_CONTROL_LOCALE,
+  PRINT_PAPER_PRESETS,
   PrintableAreaManager,
   exportMapbox,
   exportMapboxWithOptions,
@@ -31,11 +32,20 @@ const DEFAULT_SETTING: PrintOption = {
   ratio: 1,
   orientation: 'portrait',
   format: 'png',
+  paper: 'custom',
+  dpi: 96,
+  watermark: '',
 };
 
 const ORIENTATION_ITEMS = [
   { value: 'landscape', text: 'Landscape' },
   { value: 'portrait', text: 'Portrait' },
+];
+
+const PAPER_ITEMS = [
+  { value: 'custom', text: 'Custom' },
+  { value: 'a4', text: 'A4' },
+  { value: 'letter', text: 'Letter' },
 ];
 
 export interface PrintAdvancedControlProps extends WithMapPropType {
@@ -156,10 +166,12 @@ export function PrintAdvancedControl({
       if (!printableArea.current) return;
       try {
         updatePrint({ loading: true });
-        const image = await exportMapboxWithOptions(
-          map,
-          printableArea.current.getCutSize(),
-        );
+        const setting = printRef.current.setting;
+        const image = await exportMapboxWithOptions(map, {
+          ...printableArea.current.getCutSize(),
+          watermark: setting.watermark || undefined,
+          dpi: setting.dpi,
+        });
         if (cb) await cb(image);
         else await onDownload(image);
       } finally {
@@ -172,7 +184,11 @@ export function PrintAdvancedControl({
     callMap(async (map) => {
       updatePrint({ loading: true });
       try {
-        const image = await exportMapbox(map);
+        const setting = printRef.current.setting;
+        const image = await exportMapbox(map, {
+          watermark: setting.watermark || undefined,
+          dpi: setting.dpi,
+        });
         if (cb) await cb(image);
         else await onDownload(image);
       } finally {
@@ -369,18 +385,45 @@ export function PrintAdvancedControl({
             show={print.setting_show}
             onUpdateShow={(v) => updatePrint({ setting_show: !!v })}
             title={trans('map.print.setting.title')}
-            height={220}
+            height={340}
             {...bind}
           >
         <div className="map-print-advanced-setting">
               <div>
+                <InputSelect
+                  label={trans('map.print.field.paper')}
+                  value={print.setting.paper || 'custom'}
+                  items={PAPER_ITEMS.map((item) => ({
+                    ...item,
+                    text:
+                      item.value === 'custom'
+                        ? trans('map.print.paper.custom')
+                        : item.value === 'a4'
+                          ? trans('map.print.paper.a4')
+                          : trans('map.print.paper.letter'),
+                  }))}
+                  onChange={(value) => {
+                    const paper = String(value) as PrintOption['paper'];
+                    const next: PrintOption = {
+                      ...print.setting,
+                      paper,
+                    };
+                    if (paper === 'a4' || paper === 'letter') {
+                      next.ratio = PRINT_PAPER_PRESETS[paper].ratio;
+                    }
+                    onChangeSetting(next);
+                  }}
+                />
+              </div>
+              <div>
                 <InputText
                   label={trans('map.print.field.ratio')}
                   value={String(print.setting.ratio)}
-                  onChange={(v) =>
+                  onChange={(value) =>
                     onChangeSetting({
-                      ...printRef.current.setting,
-                      ratio: Number(v) || 1,
+                      ...print.setting,
+                      paper: 'custom',
+                      ratio: Number(value) || 1,
                     })
                   }
                 />
@@ -390,19 +433,48 @@ export function PrintAdvancedControl({
                   label={trans('map.print.field.orientation')}
                   value={print.setting.orientation}
                   items={ORIENTATION_ITEMS}
-                  onChange={(v) =>
+                  onChange={(value) =>
                     onChangeSetting({
-                      ...printRef.current.setting,
-                      orientation: v as PrintOption['orientation'],
+                      ...print.setting,
+                      orientation: value as PrintOption['orientation'],
                     })
                   }
                 />
+              </div>
+              <div>
+                <InputText
+                  label={trans('map.print.field.dpi')}
+                  value={String(print.setting.dpi ?? 96)}
+                  onChange={(value) =>
+                    onChangeSetting({
+                      ...print.setting,
+                      dpi: Number(value) || 96,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <InputText
+                  label={trans('map.print.field.watermark')}
+                  value={print.setting.watermark || ''}
+                  onChange={(value) =>
+                    onChangeSetting({
+                      ...print.setting,
+                      watermark: value,
+                    })
+                  }
+                />
+                {print.setting.watermark ? (
+                  <div className="map-print-watermark-preview" aria-hidden="true">
+                    {print.setting.watermark}
+                  </div>
+                ) : null}
               </div>
               <div className="map-print-advanced-setting__grow" />
               {print.show ? (
                 <BaseButton
                   className="map-print-advanced-setting__apply"
-                  onClick={() => onSave()}
+                  onClick={() => void onSave()}
                 >
                   {trans('map.print.btn.apply')}
                 </BaseButton>

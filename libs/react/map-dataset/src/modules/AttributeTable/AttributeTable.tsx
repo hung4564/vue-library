@@ -1,7 +1,7 @@
 import { fitBounds, getMap, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, takePendingAttributeTableSelectRows, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload } from '@hungpvq/map-dataset';
+import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, filterAttributeTableRowsByColumns, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, sortAttributeTableRows, takePendingAttributeTableSelectRows, toggleAttributeTableMultiSort, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableColumnFilters, type AttributeTableRow, type AttributeTableSelectRowsPayload, type AttributeTableSortState } from '@hungpvq/map-dataset';
 import { createExportGeoSubmenu, createMenuItemExportGeo, getDatasetFeatureCollection, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
 import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMenuAction, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import {
@@ -137,11 +137,33 @@ export function AttributeTable(props: AttributeTableProps) {
     () => filterAttributeTableRows(rows, query),
     [rows, query],
   );
+  const [sortStates, setSortStates] = useState<AttributeTableSortState[]>([]);
+  const [columnFilters, setColumnFilters] = useState<AttributeTableColumnFilters>(
+    {},
+  );
+  const filteredSearchedRows = useMemo(
+    () => filterAttributeTableRowsByColumns(searchedRows, columnFilters),
+    [searchedRows, columnFilters],
+  );
+  const sortedSearchedRows = useMemo(
+    () => sortAttributeTableRows(filteredSearchedRows, sortStates),
+    [filteredSearchedRows, sortStates],
+  );
   const visibleRows = useMemo(() => {
-    if (rowFilter !== 'selected') return searchedRows;
+    if (rowFilter !== 'selected') return sortedSearchedRows;
     const selected = new Set(selectedIds);
-    return searchedRows.filter((row) => selected.has(row.id));
-  }, [searchedRows, rowFilter, selectedIds]);
+    return sortedSearchedRows.filter((row) => selected.has(row.id));
+  }, [sortedSearchedRows, rowFilter, selectedIds]);
+  const exportRows = useMemo(() => {
+    if (selectedIds.length === 0) return visibleRows;
+    const selected = new Set(selectedIds);
+    return rows.filter((row) => selected.has(row.id));
+  }, [selectedIds, visibleRows, rows]);
+  function onSortColumn(key: string, event?: React.MouseEvent) {
+    setSortStates((current) =>
+      toggleAttributeTableMultiSort(current, key, Boolean(event?.shiftKey)),
+    );
+  }
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(320);
@@ -262,11 +284,11 @@ export function AttributeTable(props: AttributeTableProps) {
       createMenuItemExportGeo({
         filename: (layer) => `${layer.getName?.() || 'layer'}-table`,
         getCollection: () =>
-          visibleRows.length
-            ? attributeTableRowsToFeatureCollection(visibleRows)
+          exportRows.length
+            ? attributeTableRowsToFeatureCollection(exportRows)
             : null,
       }),
-    [visibleRows],
+    [exportRows],
   );
   const exportChildren = useMemo(
     () => createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem)),
@@ -274,7 +296,7 @@ export function AttributeTable(props: AttributeTableProps) {
   );
   function onExportClick(event: React.MouseEvent) {
     event.stopPropagation();
-    if (visibleRows.length === 0) return;
+    if (exportRows.length === 0) return;
     exportMenuRef.current?.open(event);
   }
   function onExportChild(action: MenuAction, event: React.MouseEvent) {
@@ -343,11 +365,13 @@ export function AttributeTable(props: AttributeTableProps) {
                   />
                   <BaseButton
                     className="attribute-table__export"
-                    disabled={visibleRows.length === 0}
+                    disabled={exportRows.length === 0}
                     onClick={onExportClick}
                   >
                     <Icon path={mdiDownload} size="16px" />
-                    {trans('map.attribute-table.export')}
+                    {selectedIds.length
+                      ? trans('map.attribute-table.export-selected')
+                      : trans('map.attribute-table.export')}
                     <Icon path={mdiChevronDown} size="16px" />
                   </BaseButton>
                 </div>
@@ -397,8 +421,46 @@ export function AttributeTable(props: AttributeTableProps) {
                             onChange={toggleSelectAll}
                           />
                         </th>
+                        {columns.map((column) => {
+                          const hit = sortStates.find((s) => s.key === column.key);
+                          const idx = hit ? sortStates.indexOf(hit) + 1 : 0;
+                          return (
+                            <th
+                              key={column.key}
+                              className={hit ? 'is-sorted' : ''}
+                              onClick={(event) => onSortColumn(column.key, event)}
+                            >
+                              {column.label}
+                              {hit
+                                ? `${hit.dir === 'asc' ? ' ↑' : ' ↓'}${
+                                    sortStates.length > 1 ? idx : ''
+                                  }`
+                                : ''}
+                            </th>
+                          );
+                        })}
+                        {itemMenus.length > 0 ? (
+                          <th className="attribute-table__actions" />
+                        ) : null}
+                      </tr>
+                      <tr className="attribute-table__filters">
+                        <th className="attribute-table__check" />
                         {columns.map((column) => (
-                          <th key={column.key}>{column.label}</th>
+                          <th key={`f-${column.key}`}>
+                            <input
+                              className="attribute-table__column-filter"
+                              type="search"
+                              value={columnFilters[column.key] || ''}
+                              placeholder={column.label}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) =>
+                                setColumnFilters((prev) => ({
+                                  ...prev,
+                                  [column.key]: e.target.value,
+                                }))
+                              }
+                            />
+                          </th>
                         ))}
                         {itemMenus.length > 0 ? (
                           <th className="attribute-table__actions" />

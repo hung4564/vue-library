@@ -1,6 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import { CREATE_CONTROL_LOCALE, reportCreateLayerError, suggestLayerName } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
 import {
   BaseButton,
   InputSelect,
@@ -129,9 +129,32 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   useEffect(() => {
+    const draft = loadCreateControlDraft(mapId);
+    if (draft) {
+      if (draft.type === 'vector' || draft.type === 'raster') {
+        onChangeType(draft.type);
+      }
+      setForm((prev) => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          ...(draft.name ? { name: draft.name } : {}),
+          ...(draft.crs ? { crs: draft.crs } : {}),
+        },
+      }));
+      return;
+    }
     onChangeType(initialType);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    saveCreateControlDraft(mapId, {
+      type: form.type,
+      name: form.config.name,
+      crs: form.config.crs,
+    });
+  }, [form.type, form.config.name, form.config.crs, mapId]);
 
   return (
     <ModuleContainer

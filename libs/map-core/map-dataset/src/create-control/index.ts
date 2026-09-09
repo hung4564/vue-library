@@ -11,6 +11,10 @@ export {
 } from './draft';
 export type { CreateControlDraft } from './draft';
 export { applyCreateControlSample } from './apply-sample';
+export {
+  isCreateControlCrsMismatch,
+  normalizeCrsCode,
+} from './crs';
 export { reportCreateLayerError } from './create-error';
 export type { CreateLayerErrorContext } from './create-error';
 export {

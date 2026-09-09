@@ -18,7 +18,7 @@ import {
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref } from 'vue';
 import type { PrintOption } from '@hungpvq/map-core/print';
-import { exportMapbox, exportMapboxWithOptions } from '@hungpvq/map-core/print';
+import { exportMapbox, exportMapboxWithOptions, PRINT_PAPER_PRESETS } from '@hungpvq/map-core/print';
 import { useMapPrint } from '../store';
 import { CrosshairManager, PrintableAreaManager } from './print';
 const props = withDefaults(
@@ -49,7 +49,14 @@ const print = ref({
   show: false,
   loading: false,
   setting_show: false,
-  setting: { ratio: 1, orientation: 'portrait' } as PrintOption,
+  setting: {
+    ratio: 1,
+    orientation: 'portrait',
+    format: 'png',
+    paper: 'custom',
+    dpi: 96,
+    watermark: '',
+  } as PrintOption,
 });
 onBeforeUnmount(() => {
   onClosePrint();
@@ -68,7 +75,10 @@ function onSaveAll(cb?: (image: string) => Promise<void>) {
     print.value.loading = true;
     control.sync();
     try {
-      let image = await exportMapbox(map);
+      let image = await exportMapbox(map, {
+        watermark: print.value.setting.watermark || undefined,
+        dpi: print.value.setting.dpi,
+      });
       if (cb) {
         cb(image);
       } else await onDownload(image);
@@ -84,10 +94,11 @@ async function onSave(cb?: (image: string) => Promise<void>) {
     try {
       print.value.loading = true;
       control.sync();
-      let image = await exportMapboxWithOptions(
-        map,
-        printableArea.getCutSize(),
-      );
+      let image = await exportMapboxWithOptions(map, {
+        ...printableArea.getCutSize(),
+        watermark: print.value.setting.watermark || undefined,
+        dpi: print.value.setting.dpi,
+      });
       if (cb) {
         cb(image);
       } else {
@@ -173,6 +184,19 @@ const items = [
   { value: 'landscape', text: 'Landscape' },
   { value: 'portrait', text: 'Portrait' },
 ];
+const paperItems = [
+  { value: 'custom', text: 'Custom' },
+  { value: 'a4', text: 'A4' },
+  { value: 'letter', text: 'Letter' },
+];
+function onPaperChange(value: string) {
+  const paper = value as PrintOption['paper'];
+  print.value.setting.paper = paper;
+  if (paper === 'a4' || paper === 'letter') {
+    print.value.setting.ratio = PRINT_PAPER_PRESETS[paper].ratio;
+  }
+  onChangeSetting();
+}
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapPrintAdvancedControl',
@@ -300,16 +324,27 @@ useRegisterMapControl(mapId, {
       <DraggableItemPopup
         v-if="print.setting_show"
         v-bind="props"
-        :height="220"
+        :height="340"
         v-model:show="print.setting_show"
         :title="trans('map.print.setting.title')"
       >
         <div class="map-print-advanced-setting">
           <div>
+            <input-select
+              :model-value="print.setting.paper || 'custom'"
+              :items="paperItems"
+              :label="trans('map.print.field.paper')"
+              @update:model-value="onPaperChange"
+            />
+          </div>
+          <div>
             <input-text
               v-model="print.setting.ratio"
               :label="trans('map.print.field.ratio')"
-              @change="onChangeSetting()"
+              @change="
+                print.setting.paper = 'custom';
+                onChangeSetting();
+              "
             />
           </div>
           <div>
@@ -319,6 +354,27 @@ useRegisterMapControl(mapId, {
               :label="trans('map.print.field.orientation')"
               @change="onChangeSetting()"
             />
+          </div>
+          <div>
+            <input-text
+              v-model="print.setting.dpi"
+              :label="trans('map.print.field.dpi')"
+              @change="onChangeSetting()"
+            />
+          </div>
+          <div>
+            <input-text
+              v-model="print.setting.watermark"
+              :label="trans('map.print.field.watermark')"
+              @change="onChangeSetting()"
+            />
+            <div
+              v-if="print.setting.watermark"
+              class="map-print-watermark-preview"
+              aria-hidden="true"
+            >
+              {{ print.setting.watermark }}
+            </div>
           </div>
           <div class="map-print-advanced-setting__grow"></div>
           <base-button

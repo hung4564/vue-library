@@ -7,7 +7,7 @@ export { exportFile, Format } from './ExportFile';
 export { PRINT_CONTROL_LOCALE } from './locale';
 export { PrintableAreaManager } from './PrintableAreaManager';
 export { PrintService } from './print.service';
-export { createDefaultPrintStore, createPrintStoreApi } from './types';
+export { createDefaultPrintStore, createPrintStoreApi, PRINT_PAPER_PRESETS } from './types';
 export {
   exportMapbox,
   exportMapboxWithOptions,

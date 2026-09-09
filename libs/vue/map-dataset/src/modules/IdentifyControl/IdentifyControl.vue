@@ -231,14 +231,19 @@ function onLayerFilterChange(identifyId: string) {
       ? undefined
       : identifyId;
   filterIdentifyId.value = id;
-  origin.latitude = 0;
-  origin.longitude = 0;
   syncResultPanel({
     selectedLayerId: id ?? IDENTIFY_ALL_LAYERS_VALUE,
-    items: [],
-    loading: false,
-    origin: { latitude: 0, longitude: 0 },
   });
+  // Keep map highlight + last click; re-query with the new layer filter.
+  if (origin.latitude !== 0 || origin.longitude !== 0) {
+    callMap((map) => {
+      const point = map.project([origin.longitude, origin.latitude]);
+      onGetFeatures({
+        point,
+        lngLat: { lng: origin.longitude, lat: origin.latitude },
+      } as MapMouseEvent);
+    });
+  }
 }
 
 function runIdentifyAt(

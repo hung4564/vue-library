@@ -276,7 +276,11 @@ function onResultKeydown(event: KeyboardEvent) {
             </div>
             <div v-else-if="items.length === 0" class="identify-control-state">
               <div class="identify-control-state__content">
-                <span>{{ trans('map.identify.no_data') }}</span>
+                <span>{{
+                  selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
+                    ? trans('map.identify.no_data_filtered')
+                    : trans('map.identify.no_data')
+                }}</span>
               </div>
             </div>
             <template v-else>
