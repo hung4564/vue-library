@@ -4,6 +4,7 @@ import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
 import { logHelper } from '@hungpvq/map-core';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
 import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
 import { clearIdentifyScope, handleMultiIdentify, IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, identifyResolver, type IdentifyLayerFilterPayload, type IdentifyResultUpdatePayload, type IdentifyScopeToggleResult } from '@hungpvq/map-dataset/identify';
 import {
@@ -496,14 +497,14 @@ export function IdentifyControl(
     () => ({
       kind: 'single' as const,
       id: IDENTIFY_CONTROL.id,
-      getState: () => ({
-        visible: viewsRef.current.length > 0,
-        active: showRef.current,
-        loading: loadingRef.current,
-        title: trans('map.identify.title'),
-        order,
-        icon: { type: 'mdi' as const, path: mdiHandPointingUp },
-      }),
+      getState: () =>
+        mdiButtonState(mdiHandPointingUp, {
+          visible: viewsRef.current.length > 0,
+          active: showRef.current,
+          loading: loadingRef.current,
+          title: trans('map.identify.title'),
+          order,
+        }),
       onClick: () => handleToggle(),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

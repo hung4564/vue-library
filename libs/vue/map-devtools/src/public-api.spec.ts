@@ -15,6 +15,7 @@ export const VUE_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
   'DevtoolsPlugin',
   'devtoolState',
   'getDevtoolState',
+  'openMapDevtoolsErrors',
   'setDevtoolActiveTab',
   'subscribeDevtoolState',
   'toggleDevtoolOpen',

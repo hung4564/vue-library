@@ -7,7 +7,14 @@ export abstract class ConfigHelper<F = Record<string, unknown>> {
     return undefined;
   }
 
+  /** Locale keys under `map.layer-control.create.*` for failed checks. */
+  validationErrors(form: F & { name?: string }): string[] {
+    const errors: string[] = [];
+    if (!form.name) errors.push('validation-name');
+    return errors;
+  }
+
   validate(form: F & { name?: string }): boolean {
-    return !!form.name;
+    return this.validationErrors(form).length === 0;
   }
 }

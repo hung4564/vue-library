@@ -25,7 +25,7 @@ Root and domain barrels use **explicit named exports** (no public `export *`). A
 - Adding a **runtime** export → named export in the entry barrel + Stable (or Experimental) list in that package’s `public-api.spec.ts` + this page when documenting the area.
 - Removing a root **or** subpath runtime export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
 
-Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
+Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Peers and bundle](./peers-and-bundle.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
 ## Registry architecture
 
@@ -60,6 +60,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Map access | `getMap` → `MapSimple \| undefined`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
 | Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
+| A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
 | Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
@@ -67,7 +68,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.
 
-**Earlier removals (breaking):** Map Compare / multi-map helpers; domain symbols moved off root onto subpaths (this release).
+Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `compassIcon` (build control button state with MDI paths).
 
 ## `@hungpvq/map-dataset`
 
@@ -75,14 +76,14 @@ Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barre
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, attribute-table, layer/dataset locales, `IDataset` (+ shared protocol types) |
-| `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker, `GEOJSON_STYLE_AUTO`, `geojsonLocalAdapter` |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, attribute-table (`ATTRIBUTE_TABLE_ROW_HEIGHT`, `getVirtualRowWindow`, …), layer/dataset locales, `IDataset` (+ shared protocol types) |
+| `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO`, `geojsonLocalAdapter` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
 | `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers |
 | `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
-| `./create-control` | `CREATE_CONTROL_*`, `parseGis*` / `parseGisTextAsync` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse |
+| `./create-control` | `CREATE_CONTROL_*`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*`, `exportDatasetGeo`, `downloadBlob`, export menu helpers |
 | `./vite` | `mapDatasetGisWorker()` |
 | `./style.css` / `./assets/*` | package CSS and static assets |
@@ -95,7 +96,7 @@ Full root surfaces are Stable ∪ Experimental (~94 Vue / ~101 React runtime sym
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents) |
+| Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents); optional `keyboardShortcuts` (default true); mounts Experimental `MapErrorToast` |
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
 | Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore` (not `getMap`) — [map-store](./map-store.md) |
 | Registry | Framework `UniversalRegistry`, `RegistryItem` |
@@ -111,9 +112,10 @@ Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapConte
 | Symbol | Notes |
 |--------|--------|
 | `BaseButton` | Field / control button |
-| `Collapse` | Collapse panel (React twin: `BaseCollapse`) |
-| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea` | Form field helpers |
+| `BaseCollapse`, `Collapse` | Collapse panel — **canonical `BaseCollapse`**; `Collapse` alias |
+| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea`, `InputTextarea` | Form helpers — **canonical `InputTextArea`**; `InputTextarea` alias |
 | `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
+| `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
 | `KEY`, `MITT_KEY` | Vue-only store / mitt id constants (not field UI) |
 
 ### Experimental root exports (`@hungpvq/react-map-core`)
@@ -121,20 +123,25 @@ Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapConte
 | Symbol | Notes |
 |--------|--------|
 | `BaseButton` | Field / control button |
-| `BaseCollapse` | Collapse panel (Vue twin: `Collapse`) |
+| `BaseCollapse`, `Collapse` | Collapse panel — **canonical `BaseCollapse`**; `Collapse` alias |
 | `DragDropFile` | React-only file drop helper |
-| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextarea` | Form field helpers (`InputTextarea` spelling) |
+| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea`, `InputTextarea` | Form helpers — **canonical `InputTextArea`**; `InputTextarea` alias |
 | `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
+| `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
 
-Cross-framework naming drift is intentional for now (`Collapse` / `BaseCollapse`, `InputTextArea` / `InputTextarea`). Dataset / draw / `@hungpvq/map-core` Experimental allowlists are **empty / reserved**.
+Prefer canonical names in new code (`BaseCollapse`, `InputTextArea`). Both spellings are exported on Vue and React for parity. Framework-only symbols (`KEY` / `MITT_KEY`, `DragDropFile`, React context helpers) stay adapter-specific.
 
-Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`. Compare / multi-map UI and `getIsMulti` are not part of the adapters.
+**Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable/Experimental export names).
+
+Dataset / draw / `@hungpvq/map-core` Experimental allowlists are **empty / reserved**.
+
+Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
 ## `@hungpvq/vue-map-dataset` / `@hungpvq/react-map-dataset`
 
 | Area | Stable surface |
 |------|----------------|
-| Bootstrap | `createDatasetRegistryPlugin()` |
+| Bootstrap | `installMapApp`, `createMapAppPlugin` (Vue), `createDatasetRegistryPlugin()` |
 | Hooks | `useMapDataset` |
 | UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
 | Core boundary | Builders/services/types from `@hungpvq/map-dataset` |
@@ -168,8 +175,10 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 | Vue bootstrap | `DevtoolsPlugin`, `uninstallDevtools` |
 | React bootstrap | `installDevtools`, `uninstallDevtools` |
 | Panel | `Devtools` |
-| Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
+| Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `openMapDevtoolsErrors`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |
+
+`openMapDevtoolsErrors` opens the panel on the Errors tab. `MapErrorToast` (map-core Experimental) dispatches `hungpvq:map-open-devtools-errors`; stores listen and call `openMapDevtoolsErrors`.
 
 Adapters do **not** re-export `@hungpvq/map-core` (`errorHandler` from map-core). See [Error handling](./error-handling.md).
 

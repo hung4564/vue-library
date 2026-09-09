@@ -6,6 +6,7 @@ import {
   formatCrsLabel,
   searchCrsCatalog,
 } from '@hungpvq/map-core/crs';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
@@ -76,12 +77,11 @@ export function CrsControl(props: CrsControlProps) {
     kind: 'single',
     id: 'mapCrsControl',
     getState() {
-      return {
+      return mdiButtonState(mdiInboxOutline, {
         visible: true,
         title: trans('map.crs-control.title'),
         order,
-        icon: { type: 'mdi' as const, path: mdiInboxOutline },
-      };
+      });
     },
     onClick: handleToggle,
   });

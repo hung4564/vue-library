@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
+import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
 import '@hungpvq/map-core';
 import { useBreakpoints } from '@hungpvq/shared-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
-import { computed, provide, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import MapErrorToast from '../components/MapErrorToast.vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { useMapInstance } from '../hooks/useMapInstance';
 
@@ -21,6 +23,8 @@ const props = withDefaults(
     initOptions?: Partial<MapOptions>;
     dragId?: string;
     mapId?: string;
+    /** Bind Esc / `/` map shortcuts (default true). */
+    keyboardShortcuts?: boolean;
   }>(),
   {
     mapboxAccessToken: '',
@@ -28,6 +32,7 @@ const props = withDefaults(
       attributionControl: false,
       zoomControl: false,
     }),
+    keyboardShortcuts: true,
   },
 );
 
@@ -38,6 +43,16 @@ const emit = defineEmits<{
 }>();
 
 const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);
+
+let unbindShortcuts: (() => void) | undefined;
+onMounted(() => {
+  if (props.keyboardShortcuts === false) return;
+  unbindShortcuts = bindMapKeyboardShortcuts({ mapId: id.value });
+});
+onUnmounted(() => {
+  unbindShortcuts?.();
+  unbindShortcuts = undefined;
+});
 
 const draggableTo = computed(() => {
   return `map-draggable-${id.value}`;
@@ -108,6 +123,7 @@ provide('$map.registerModuleOrder', registerModuleOrder);
       </template>
       <slot v-if="loaded && loadedDrag" />
       <ActionControl v-if="loaded && loadedDrag" />
+      <MapErrorToast />
     </div>
   </div>
 </template>

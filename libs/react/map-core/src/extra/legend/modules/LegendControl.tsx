@@ -6,6 +6,7 @@ import {
   isSupportGenLayerLegend,
   type LegendLayerSpecification,
 } from '@hungpvq/map-core/legend';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
@@ -106,12 +107,12 @@ export function LegendControl(props: WithMapPropType) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLegendControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.legend-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiMapLegend },
-    }),
+    getState: () =>
+      mdiButtonState(mdiMapLegend, {
+        visible: true,
+        title: trans('map.legend-control.title'),
+        order,
+      }),
     onClick: () => setShow(!show),
   });
 

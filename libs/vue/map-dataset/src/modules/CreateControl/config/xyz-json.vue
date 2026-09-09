@@ -51,7 +51,7 @@ import {
   useLang,
   useMap,
 } from '@hungpvq/vue-map-core';
-import { applyCreateControlSample, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples } from '@hungpvq/map-dataset/create-control';
+import { applyCreateControlSample, applyCreateControlLayerName, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples, layerNameFromUrl } from '@hungpvq/map-dataset/create-control';
 import { computed, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
 
@@ -120,10 +120,19 @@ async function onLoadUrl() {
     if (sample) {
       const patch = await applyCreateControlSample(sample);
       Object.assign(form.value, patch);
-      form.value.name = sample.label;
+      form.value.name = applyCreateControlLayerName(
+        form.value.name,
+        sample.label,
+        'rasterxyz',
+      );
     } else {
       form.value.url = url;
       form.value.tiles = [url];
+      form.value.name = applyCreateControlLayerName(
+        form.value.name,
+        layerNameFromUrl(url),
+        'rasterxyz',
+      );
     }
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
   } catch (err) {

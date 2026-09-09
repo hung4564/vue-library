@@ -35,9 +35,27 @@ export {
 export type { GisLoadResult, GisProgress } from './gis-parse';
 export { CREATE_CONTROL_LOCALE, CREATE_CONTROL_SAMPLE_NONE } from './locale';
 export {
+  CREATE_CONTROL_MAX_FILE_BYTES,
+  assertCreateControlFileSize,
+  formatCreateControlBytes,
+} from './limits';
+export {
+  buildCreateControlLoadedSource,
+  shortenCreateControlUrl,
+  summarizeCreateControlGeojson,
+} from './loaded-source';
+export type {
+  CreateControlDataSourceKind,
+  CreateControlGeoSummary,
+  CreateControlLoadedSource,
+} from './loaded-source';
+export {
   SUGGESTED_LAYER_NAMES,
+  applyCreateControlLayerName,
   getCreateControlSampleUrl,
   getCreateControlSamples,
+  layerNameFromFileName,
+  layerNameFromUrl,
   suggestLayerName,
 } from './presets';
 export type { CreateControlLayerKind, CreateControlSample } from './presets';

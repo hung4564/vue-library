@@ -85,6 +85,7 @@ const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
 
 const creating = ref(false);
 const createError = ref('');
+const validationErrors = ref<string[]>([]);
 
 function onChangeType(type: unknown) {
   if (typeof type !== 'string') return;
@@ -95,6 +96,8 @@ function onChangeType(type: unknown) {
     form.value.config.name && form.value.config.name !== prevSuggested;
 
   helper.setType(layerType);
+  validationErrors.value = [];
+  createError.value = '';
 
   form.value = {
     type: layerType,
@@ -109,7 +112,9 @@ function onChangeType(type: unknown) {
 async function onAddLayer() {
   const handle = helper.create;
   if (!handle || creating.value) return;
-  if (!helper.validate(form.value.config)) return;
+  const errors = helper.validationErrors(form.value.config);
+  validationErrors.value = errors;
+  if (errors.length) return;
   creating.value = true;
   createError.value = '';
   try {
@@ -142,6 +147,7 @@ function reset() {
   helper.setType(initialState.type);
   createError.value = '';
   creating.value = false;
+  validationErrors.value = [];
   form.value = {
     type: initialState.type,
     config: {
@@ -218,19 +224,33 @@ onMounted(() => {
             </template>
           </div>
 
-          <div v-if="creating" class="create-control-status">
-            {{ trans('map.layer-control.create.creating') }}
+          <div class="create-control-actions">
+            <div
+              v-if="validationErrors.length"
+              class="create-control-validation"
+            >
+              <div
+                v-for="key in validationErrors"
+                :key="key"
+                class="create-control-validation__item"
+              >
+                {{ trans(`map.layer-control.create.${key}`) }}
+              </div>
+            </div>
+            <div v-if="createError" class="create-control-sample-error">
+              {{ createError }}
+            </div>
+            <div v-if="creating" class="create-control-actions__status">
+              {{ trans('map.layer-control.create.creating') }}
+            </div>
+            <BaseButton
+              :disabled="creating"
+              @click="onAddLayer()"
+              class="btn-container"
+            >
+              {{ trans('map.layer-control.create-btn') }}
+            </BaseButton>
           </div>
-          <div v-if="createError" class="create-control-sample-error">
-            {{ createError }}
-          </div>
-          <BaseButton
-            :disabled="creating"
-            @click="onAddLayer()"
-            class="btn-container"
-          >
-            {{ trans('map.layer-control.create-btn') }}
-          </BaseButton>
         </div>
       </DraggableItemPopup>
     </template>

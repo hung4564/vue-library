@@ -5,6 +5,8 @@
     :active="active"
     :height="groupSize"
     :title="tooltip || title"
+    :aria-label="tooltip || title"
+    :aria-pressed="active"
     :width="groupSize"
     :disabled="disabled"
     :loading="loading"
@@ -25,6 +27,8 @@
           :loading="loading"
           :width="size"
           :disabled="disabled"
+          :aria-label="tooltip || title"
+          :aria-pressed="active"
         >
           <slot>
             <MapIcon>

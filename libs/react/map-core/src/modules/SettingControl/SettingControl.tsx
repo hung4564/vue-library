@@ -2,6 +2,7 @@ import {
   SETTING_CONTROL_LOCALE,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
@@ -114,12 +115,12 @@ export function SettingControl(props: SettingControlProps) {
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapSettingControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.setting-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiCog },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCog, {
+        visible: true,
+        title: trans('map.setting-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
 

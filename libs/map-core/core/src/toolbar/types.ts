@@ -2,6 +2,39 @@
  * Framework-agnostic types for toolbar system
  */
 
+export type MapControlMdiIcon = {
+  type: 'mdi';
+  path: string;
+};
+
+export type MapControlCompassIcon = {
+  type: 'compass';
+  transform: string;
+};
+
+export type MapControlIcon = MapControlMdiIcon | MapControlCompassIcon;
+
+/** Build an MDI toolbar icon without `as const` at call sites. */
+export function mdiIcon(path: string): MapControlMdiIcon {
+  return { type: 'mdi', path };
+}
+
+/** Build a compass toolbar icon. */
+export function compassIcon(transform: string): MapControlCompassIcon {
+  return { type: 'compass', transform };
+}
+
+/**
+ * Build full button UI state with an MDI icon in one call.
+ * @example mdiButtonState(mdiInformationOutline, { title: 'Info', active: true, order: 1 })
+ */
+export function mdiButtonState(
+  path: string,
+  state: Omit<MapControlButtonUIState, 'icon'> = {},
+): MapControlButtonUIState {
+  return { ...state, icon: mdiIcon(path) };
+}
+
 /**
  * UI state for map control buttons
  */
@@ -9,15 +42,7 @@ export type MapControlButtonUIState = {
   visible?: boolean;
   loading?: boolean;
   title?: string;
-  icon?:
-    | {
-        type: 'mdi';
-        path: string;
-      }
-    | {
-        type: 'compass';
-        transform: string;
-      };
+  icon?: MapControlIcon;
   active?: boolean;
   disabled?: boolean;
   group?: string; // ví dụ: 'navigation'

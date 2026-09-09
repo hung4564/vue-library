@@ -14,6 +14,7 @@ import {
   type AddGeojsonHerePayload,
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
@@ -115,16 +116,12 @@ const { panelPosition } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerControl',
   getState() {
-    return {
+    return mdiButtonState(path.icon, {
       visible: !show.value,
       active: show.value,
       title: trans.value('map.layer-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     setShow();

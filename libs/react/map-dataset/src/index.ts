@@ -37,6 +37,7 @@ export {
   createLegend,
   createMultiLegend,
   getMapDatasetStore,
+  installMapApp,
   notifyMapDatasetStore,
   useMapDataset,
   useMapDatasetComponent,

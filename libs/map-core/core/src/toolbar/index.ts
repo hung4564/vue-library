@@ -13,6 +13,8 @@ export {
   TOOLBAR_STRATEGIES,
 } from './toolbar';
 
+export { compassIcon, mdiButtonState, mdiIcon } from './types';
+
 export type { Listener, MapToolbarStore, ToolbarKind } from './toolbar';
 export type {
   AnyToolbarOptions,
@@ -20,6 +22,9 @@ export type {
   ControlStrategy,
   MapControlButtonState,
   MapControlButtonUIState,
+  MapControlCompassIcon,
+  MapControlIcon,
+  MapControlMdiIcon,
   ModuleStrategy,
   Subscribable,
   Toolbar,

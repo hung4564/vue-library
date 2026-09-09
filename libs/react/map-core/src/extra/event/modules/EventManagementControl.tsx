@@ -6,6 +6,7 @@ import {
   type IEvent,
   type MittTypeMapEvent,
 } from '@hungpvq/map-core/event';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { MapCommonButton } from '../../../components/MapCommonButton';
@@ -81,10 +82,10 @@ export function EventManagementControl(props: EventManagementControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapEventManagementControl',
-    getState: () => ({
-      title: trans('map.event-control.title'),
-      icon: { type: 'mdi' as const, path: mdiCalendarSearch },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCalendarSearch, {
+        title: trans('map.event-control.title'),
+      }),
     onClick: () => toggleShow(),
   });
 

@@ -10,6 +10,7 @@ import {
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
@@ -85,16 +86,12 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: CONTROL_ID,
   getState() {
-    return {
+    return mdiButtonState(mdiConsole, {
       visible: true,
       active: show.value,
       title: trans.value('map.registry-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiConsole,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

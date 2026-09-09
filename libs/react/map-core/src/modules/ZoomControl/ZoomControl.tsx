@@ -8,6 +8,7 @@ import React, {
 import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { MAP_ACTION_LOCALE } from '@hungpvq/map-core';
+import { mdiIcon } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
@@ -138,7 +139,7 @@ export function ZoomControl({
       getState: () => ({
         visible: showZoom,
         title: trans('map.action.navigation-control-zoom-in'),
-        icon: { path: mdiPlus, type: 'mdi' as const },
+        icon: mdiIcon(mdiPlus),
       }),
       onClick: (e?: MouseEvent) => onZoomIn(e),
     }),
@@ -151,7 +152,7 @@ export function ZoomControl({
       getState: () => ({
         visible: showZoom,
         title: trans('map.action.navigation-control-zoom-out'),
-        icon: { path: mdiMinus, type: 'mdi' as const },
+        icon: mdiIcon(mdiMinus),
       }),
       onClick: (e?: MouseEvent) => onZoomOut(e),
     }),

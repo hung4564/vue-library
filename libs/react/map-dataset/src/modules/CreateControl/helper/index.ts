@@ -16,6 +16,7 @@ type ConfigHelperLike = {
   readonly create: (form: LayerForm & { name: string }) => IDataset | Promise<IDataset>;
   readonly componentKey?: string;
   validate(form: LayerForm): boolean;
+  validationErrors(form: LayerForm): string[];
 };
 
 export class LayerHelper {
@@ -39,6 +40,10 @@ export class LayerHelper {
 
   get componentKey() {
     return this.helper.componentKey;
+  }
+
+  validationErrors(form: LayerForm) {
+    return this.helper.validationErrors(form);
   }
 
   validate(form: LayerForm) {

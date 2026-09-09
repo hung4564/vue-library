@@ -30,8 +30,16 @@ export class ConfigGeojsonHelper extends ConfigHelper<GeojsonDatasetOption> {
     };
   }
 
+  override validationErrors(form: GeojsonDatasetOption & { name?: string }) {
+    const errors: string[] = [];
+    if (!form.name) errors.push('validation-name');
+    if (!form.geojson) errors.push('validation-data');
+    if (!form.type) errors.push('validation-type');
+    return errors;
+  }
+
   override validate(form: GeojsonDatasetOption & { name?: string }) {
-    return !!form.name && !!form.geojson && !!form.type;
+    return this.validationErrors(form).length === 0;
   }
 
   override get create() {

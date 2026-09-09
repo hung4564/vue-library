@@ -20,6 +20,7 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'url-error': 'Failed to load from URL',
   'loading-url': 'Loading…',
   load: 'Load',
+  cancel: 'Cancel',
   'layer-setting': 'Layer settings',
   'data-source': 'Data source',
   'tab-file': 'File',
@@ -27,13 +28,27 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'tab-url': 'URL',
   'paste-geojson': 'Paste GIS data',
   'paste-geojson-hint': 'GeoJSON, TopoJSON, KML, GPX, CSV, or WKT',
-  'file-hint': 'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile, or .zip (GeoJSON/KML/… or Shapefile)',
+  'file-hint':
+    'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile, or .zip',
+  'file-drop': 'Drop files here or click to browse',
   parsing: 'Reading file…',
   'parse-error': 'Could not read this file',
   creating: 'Creating layer…',
   'create-error': 'Failed to create layer',
   'create-error-data-too-large':
     'Data may be too large, too deeply nested, or circular. Try a smaller file or EPSG:4326.',
+  'loaded-title': 'Loaded data',
+  'loaded-from-file': 'From file',
+  'loaded-from-url': 'From URL',
+  'loaded-from-paste': 'From paste',
+  'clear-data': 'Clear',
+  'replace-file': 'Replace file',
+  'features-count': 'Features',
+  'geometry-types': 'Geometry',
+  'validation-name': 'Enter a layer name.',
+  'validation-data': 'Load or paste GIS data first.',
+  'validation-type': 'Choose a style type.',
+  'validation-url': 'Enter a tile URL.',
 };
 
 export const LAYER_CONTROL_TOGGLE_LOCALE = {
@@ -47,13 +62,14 @@ export const LAYER_CONTROL_LOCALE = {
   map: {
     'layer-control': {
       title: 'Layer Control',
+      search: 'Search layers',
       empty: 'No layers yet',
       'empty-hint': 'Create a layer to get started',
       'create-btn': 'Create Layer',
       toggle: LAYER_CONTROL_TOGGLE_LOCALE,
       create: LAYER_CONTROL_CREATE_LOCALE,
       field: LAYER_CONTROL_FIELD_LOCALE,
-      info: { title: 'Info' },
+      info: { title: 'Info', export: 'Export', fillBound: 'Fit bounds' },
     },
   },
 };

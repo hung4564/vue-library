@@ -6,6 +6,8 @@ export * from './MapCommonButton';
 export * from './MapControlButton';
 export * from './MapControlGroupButton';
 /** @experimental — may change in a minor (stable-api.md). */
+export * from './MapErrorToast';
+/** @experimental — may change in a minor (stable-api.md). */
 export * from './MapIcon';
 /** @experimental — may change in a minor (stable-api.md). */
 export * from './MapImage';

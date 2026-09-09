@@ -103,6 +103,7 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'BaseButton',
   'BaseCollapse',
+  'Collapse',
   'DragDropFile',
   'InputCheckbox',
   'InputChoose',
@@ -112,9 +113,11 @@ export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'InputSelect',
   'InputSlider',
   'InputText',
+  'InputTextArea',
   'InputTextarea',
   'MapButton',
   'MapCard',
+  'MapErrorToast',
   'MapIcon',
   'MapImage',
 ] as const;

@@ -94,6 +94,7 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 /** @experimental — may change in a minor. Field/UI helpers not part of the map shell contract. */
 export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'BaseButton',
+  'BaseCollapse',
   'Collapse',
   'InputCheckbox',
   'InputChoose',
@@ -104,9 +105,11 @@ export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'InputSlider',
   'InputText',
   'InputTextArea',
+  'InputTextarea',
   'KEY',
   'MapButton',
   'MapCard',
+  'MapErrorToast',
   'MapIcon',
   'MapImage',
   'MITT_KEY',

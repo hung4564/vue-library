@@ -4,10 +4,10 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
-import { BaseButton, useLang, useMap } from '@hungpvq/react-map-core';
+import { BaseButton, InputText, useLang, useMap } from '@hungpvq/react-map-core';
 import { mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { useMapDataset } from '../../store';
 import { ButtonToggleShowAll } from './ButtonToggleShowAll';
@@ -18,9 +18,7 @@ import {
 import type { GroupTree, LayerListItem } from './DraggableList/utils';
 import { LayerContextMenuList } from './layer-context-menu-list';
 import { LayerItem } from './layer-item';
-
 const HEADER_ICON = '16px';
-
 export function LayerList({
   mapId,
   readonly,
@@ -47,31 +45,37 @@ export function LayerList({
   const { getAllComponentsByType, removeComponent, datasetVersion } =
     useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
+  const [layerSearch, setLayerSearch] = useState('');
   const [selected, setSelected] = useState<string[]>([]);
+  const filteredViews = useMemo(() => {
+    const q = layerSearch.trim().toLowerCase();
+    if (!q) return views;
+    return views.filter((view) =>
+      String(view.getName?.() ?? '')
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [views, layerSearch]);
+  const listDisabledDrag = Boolean(disabledDrag) || Boolean(layerSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
   const contextMenuRef = useRef<ContextMenuRef>(null);
   const [menuContext, setMenuContext] = useState<{
     items: MenuAction<IListViewUI>[];
     view?: IListViewUI;
   }>({ items: [] });
-
   useEffect(() => {
     setLocaleDefault(LAYER_CONTROL_LOCALE);
   }, [setLocaleDefault]);
-
   function refresh() {
     const viewSource = getAllComponentsByType<IListViewUI>('list');
     const next = (viewSource.sort((a, b) => b.index - a.index) ||
       []) as LayerListItem[];
     setViews(next);
-    groupRef.current?.update(next);
   }
-
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasetVersion, mapId]);
-
   function updateLayers(items: LayerListItem[]) {
     callMap((map: MapSimple) => {
       let beforeId = '';
@@ -91,27 +95,23 @@ export function LayerList({
       });
     });
   }
-
   function onItemsChange(next: LayerListItem[]) {
+    if (layerSearch.trim()) return;
     setViews(next);
     updateLayers(next);
   }
-
   function onRemoveGroupLayer(group: GroupTree) {
     if (!group?.children?.length) return;
     group.children.forEach((view) => removeComponent(view));
   }
-
   function onRemoveAllLayer() {
     if (!views.length) return;
     views.forEach((view) => removeComponent(view));
     refresh();
   }
-
   function addNewGroup() {
     groupRef.current?.addNewGroup('');
   }
-
   function onLayerAction({
     event,
     action,
@@ -130,7 +130,6 @@ export function LayerList({
       value: item,
     });
   }
-
   function handleContextClick({
     event,
     item,
@@ -146,20 +145,16 @@ export function LayerList({
     });
     contextMenuRef.current?.open(event);
   }
-
   function getMenuGroups() {
     const treeGroups = groupRef.current?.getGroups() ?? [];
     return treeGroups.length > 0 ? treeGroups : listListViewGroups(views);
   }
-
   function closeContextMenu() {
     setMenuContext({ items: [], view: undefined });
     contextMenuRef.current?.close();
   }
-
   const isEmpty = views.length === 0;
   const showCreate = Boolean(onCreate) && !disabledCreate && !readonly;
-
   return (
     <MenuConditionProvider
       value={{
@@ -169,6 +164,15 @@ export function LayerList({
       }}
     >
       <div className="layer-control-container">
+        <div className="layer-control__search">
+          <InputText
+            value={layerSearch}
+            onChange={setLayerSearch}
+            placeholder={trans('map.layer-control.search')}
+            aria-label="Search layers"
+            data-map-layer-search
+          />
+        </div>
         {!isEmpty && (
           <div className="layer-control__header">
             {title}
@@ -220,9 +224,9 @@ export function LayerList({
           <div style={isEmpty ? { display: 'none' } : undefined}>
             <DraggableGroupList
               ref={groupRef}
-              items={views}
+              items={filteredViews}
               selected={selected}
-              disabledDrag={disabledDrag}
+              disabledDrag={listDisabledDrag}
               onSelectedChange={setSelected}
               onItemsChange={onItemsChange}
               onGroupRemove={onRemoveGroupLayer}
@@ -268,3 +272,4 @@ export function LayerList({
     </MenuConditionProvider>
   );
 }
+

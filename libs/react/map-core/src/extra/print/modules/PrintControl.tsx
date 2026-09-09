@@ -1,5 +1,6 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import { exportMapbox, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -69,13 +70,13 @@ export function PrintControl({
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapPrintControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.print.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiPrinterOutline },
-      loading: loadingRef.current,
-    }),
+    getState: () =>
+      mdiButtonState(mdiPrinterOutline, {
+        visible: true,
+        title: trans('map.print.title'),
+        order,
+        loading: loadingRef.current,
+      }),
     onClick: () => {
       onPrint();
     },

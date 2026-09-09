@@ -17,6 +17,7 @@ import {
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
@@ -108,15 +109,11 @@ const { panelPosition } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapWorkerControl',
   getState() {
-    return {
+    return mdiButtonState(mdiCogs, {
       title: trans.value('map.worker-control.title'),
       order: order.value,
       active: show.value || busy.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiCogs,
-      },
-    };
+    });
   },
   onClick() {
     toggleShow();

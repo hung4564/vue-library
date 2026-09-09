@@ -26,6 +26,7 @@ import {
   type MeasurementHandleType,
 } from '@hungpvq/map-core/measurement';
 import {
+  mdiIcon,
   type MapControlButtonUIState,
   type ToolbarButtonConfig,
 } from '@hungpvq/map-core/toolbar';
@@ -261,10 +262,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
             ? action.disabled({ coordinates: coordinatesRef.current })
             : false,
           title: trans(action.title),
-          icon: {
-            type: 'mdi' as const,
-            path: action.icon,
-          },
+          icon: mdiIcon(action.icon),
         };
       },
       onClick: async () => {

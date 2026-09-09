@@ -13,6 +13,7 @@ import {
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -155,12 +156,12 @@ export function WorkerControl(props: WorkerControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapWorkerControl',
-    getState: () => ({
-      title: trans('map.worker-control.title'),
-      order,
-      active: show || busy,
-      icon: { type: 'mdi' as const, path: mdiCogs },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCogs, {
+        title: trans('map.worker-control.title'),
+        order,
+        active: show || busy,
+      }),
     onClick: () => toggleShow(),
   });
   const controlRef = useRef(control);

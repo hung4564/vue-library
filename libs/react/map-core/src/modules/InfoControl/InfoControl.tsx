@@ -8,6 +8,7 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { exportMapbox } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiCameraOutline,
@@ -136,13 +137,13 @@ export function InfoControl(props: InfoControlProps) {
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapInfoControl',
-    getState: () => ({
-      visible: true,
-      active: show,
-      title: trans('map.info-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiInformationOutline },
-    }),
+    getState: () =>
+      mdiButtonState(mdiInformationOutline, {
+        visible: true,
+        active: show,
+        title: trans('map.info-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
   const controlRef = useRef(control);

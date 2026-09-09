@@ -4,6 +4,7 @@ import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
 } from '@hungpvq/map-core/basemap';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiLayersOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -113,15 +114,12 @@ export function BaseMapControl({
   useToolbarControl(mapId, props, {
     kind: 'single',
     id: 'mapBaseMapControl',
-    getState: () => ({
-      visible: true,
-      order,
-      title: title || trans('map.basemap.title'),
-      icon: {
-        type: 'mdi' as const,
-        path: mdiLayersOutline,
-      },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayersOutline, {
+        visible: true,
+        order,
+        title: title || trans('map.basemap.title'),
+      }),
     onClick: onToggleList,
   });
 

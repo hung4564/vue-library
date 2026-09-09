@@ -1,7 +1,7 @@
 import { fitBounds, getMap, type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, resolveAttributeTableSelectedRowIds, takePendingAttributeTableSelectRows, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload } from '@hungpvq/map-dataset';
+import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, takePendingAttributeTableSelectRows, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableRow, type AttributeTableSelectRowsPayload } from '@hungpvq/map-dataset';
 import { createExportGeoSubmenu, createMenuItemExportGeo, getDatasetFeatureCollection, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
 import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMenuAction, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import {
@@ -24,16 +24,14 @@ import {
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { Feature } from 'geojson';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 import { useMapDatasetHighlight } from '../../store';
-
 type AttributeTableProps = WithMapPropType & {
   layer: IDataset;
   columns?: AttributeTableColumnsOption;
   onClose?: () => void;
 };
-
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({
@@ -64,17 +62,14 @@ export function AttributeTable(props: AttributeTableProps) {
   selectedIdsRef.current = selectedIds;
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
-
   useEffect(() => {
     setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
   }, [setLocaleDefault]);
-
   const clearHighlight = useCallback(() => {
     if (getHighlightSourceRef.current() === 'attribute-table') {
       setFeatureHighlightRef.current(undefined, 'attribute-table');
     }
   }, []);
-
   const applySelection = useCallback(
     (ids: string[], focus?: AttributeTableRow) => {
       const selected = rowsRef.current.filter((row) => ids.includes(row.id));
@@ -95,7 +90,6 @@ export function AttributeTable(props: AttributeTableProps) {
     },
     [clearHighlight, mapId, props.layer],
   );
-
   useEffect(() => {
     const queued = takePendingAttributeTableSelectRows(mapId);
     if (queued) {
@@ -105,7 +99,6 @@ export function AttributeTable(props: AttributeTableProps) {
     // Mount-only: flush identify selection queued before this control registered.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapId]);
-
   useEffect(() => {
     let cancelled = false;
     void (async () => {
@@ -129,7 +122,6 @@ export function AttributeTable(props: AttributeTableProps) {
       clearHighlight();
     };
   }, [props.layer, props.columns, clearHighlight]);
-
   useEffect(() => {
     if (loading) return;
     const pending = pendingSelectIdsRef.current;
@@ -141,24 +133,51 @@ export function AttributeTable(props: AttributeTableProps) {
     setRowFilter(resolved.length > 0 ? 'selected' : 'all');
     applySelection(resolved);
   }, [loading, rows, applySelection, mapId]);
-
   const searchedRows = useMemo(
     () => filterAttributeTableRows(rows, query),
     [rows, query],
   );
-
   const visibleRows = useMemo(() => {
     if (rowFilter !== 'selected') return searchedRows;
     const selected = new Set(selectedIds);
     return searchedRows.filter((row) => selected.has(row.id));
   }, [searchedRows, rowFilter, selectedIds]);
-
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(320);
+  const syncScrollMetrics = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setScrollTop(el.scrollTop);
+    setViewportHeight(el.clientHeight);
+  }, []);
+  useLayoutEffect(() => {
+    syncScrollMetrics();
+  }, [visibleRows.length, syncScrollMetrics]);
+  const virtualWindow = useMemo(
+    () =>
+      getVirtualRowWindow(
+        visibleRows.length,
+        scrollTop,
+        viewportHeight || 320,
+        ATTRIBUTE_TABLE_ROW_HEIGHT,
+      ),
+    [visibleRows.length, scrollTop, viewportHeight],
+  );
+  const windowedRows = useMemo(
+    () => visibleRows.slice(virtualWindow.start, virtualWindow.end),
+    [visibleRows, virtualWindow.start, virtualWindow.end],
+  );
+  const bottomSpacerHeight = Math.max(
+    0,
+    virtualWindow.totalHeight -
+      virtualWindow.offsetY -
+      windowedRows.length * ATTRIBUTE_TABLE_ROW_HEIGHT,
+  );
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
-
   const allVisibleSelected =
     visibleRows.length > 0 &&
     visibleRows.every((row) => selectedSet.has(row.id));
-
   const title = useMemo(() => {
     const name = props.layer?.getName?.() || trans('map.attribute-table.title');
     if (!rows.length) return trans('map.attribute-table.title');
@@ -166,13 +185,11 @@ export function AttributeTable(props: AttributeTableProps) {
       ? `${name} (${rows.length}, ${selectedIds.length} selected)`
       : `${name} (${rows.length})`;
   }, [props.layer, rows.length, selectedIds.length, trans]);
-
   function handleClose() {
     clearHighlight();
     toggleShow(false);
     props.onClose?.();
   }
-
   const { panelBind } = useRegisterMapControl(mapId, {
     id: ATTRIBUTE_TABLE_CONTROL.id,
     panelKind: 'popup',
@@ -213,7 +230,6 @@ export function AttributeTable(props: AttributeTableProps) {
       },
     ],
   });
-
   function toggleRow(row: AttributeTableRow) {
     const exists = selectedIds.includes(row.id);
     const next = exists
@@ -222,7 +238,6 @@ export function AttributeTable(props: AttributeTableProps) {
     setSelectedIds(next);
     applySelection(next, exists ? undefined : row);
   }
-
   function toggleSelectAll() {
     if (allVisibleSelected) {
       const visible = new Set(visibleRows.map((row) => row.id));
@@ -237,12 +252,10 @@ export function AttributeTable(props: AttributeTableProps) {
     setSelectedIds(next);
     applySelection(next);
   }
-
   function clearSelection() {
     setSelectedIds([]);
     clearHighlight();
   }
-
   const exportMenuRef = useRef<ContextMenuRef>(null);
   const exportMenuItem = useMemo(
     () =>
@@ -259,13 +272,11 @@ export function AttributeTable(props: AttributeTableProps) {
     () => createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem)),
     [exportMenuItem],
   );
-
   function onExportClick(event: React.MouseEvent) {
     event.stopPropagation();
     if (visibleRows.length === 0) return;
     exportMenuRef.current?.open(event);
   }
-
   function onExportChild(action: MenuAction, event: React.MouseEvent) {
     event.stopPropagation();
     handleMenuAction(action, {
@@ -276,7 +287,6 @@ export function AttributeTable(props: AttributeTableProps) {
     });
     exportMenuRef.current?.close();
   }
-
   const itemMenuHost = getItemMenuHost(props.layer);
   const itemMenuConditionCtx = createMenuConditionContext(itemMenuHost, {
     mapId,
@@ -285,7 +295,6 @@ export function AttributeTable(props: AttributeTableProps) {
     (menu) =>
       menu.type !== 'divider' && !isMenuItemHidden(menu, itemMenuConditionCtx),
   );
-
   function onRowMenuAction(
     row: AttributeTableRow,
     menu: MenuAction,
@@ -300,16 +309,13 @@ export function AttributeTable(props: AttributeTableProps) {
       value: convertFeatureToItem(row.feature),
     });
   }
-
   useEffect(() => {
     if (zoomToSelection) applySelection(selectedIdsRef.current);
   }, [zoomToSelection, applySelection]);
-
   const filterItems = [
     { value: 'all', text: trans('map.attribute-table.showAll') },
     { value: 'selected', text: trans('map.attribute-table.showSelected') },
   ];
-
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -376,7 +382,11 @@ export function AttributeTable(props: AttributeTableProps) {
                   {trans('map.attribute-table.empty')}
                 </div>
               ) : (
-                <div className="attribute-table__scroll">
+                <div
+                  className="attribute-table__scroll"
+                  ref={scrollRef}
+                  onScroll={syncScrollMetrics}
+                >
                   <table className="attribute-table__table">
                     <thead>
                       <tr>
@@ -396,12 +406,27 @@ export function AttributeTable(props: AttributeTableProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {visibleRows.map((row) => (
+                      {virtualWindow.offsetY > 0 ? (
+                        <tr className="attribute-table__spacer" aria-hidden="true">
+                          <td
+                            colSpan={
+                              columns.length + 1 + (itemMenus.length > 0 ? 1 : 0)
+                            }
+                            style={{
+                              height: virtualWindow.offsetY,
+                              padding: 0,
+                              border: 0,
+                            }}
+                          />
+                        </tr>
+                      ) : null}
+                      {windowedRows.map((row) => (
                         <tr
                           key={row.id}
                           className={
                             selectedSet.has(row.id) ? 'is-selected' : ''
                           }
+                          style={{ height: ATTRIBUTE_TABLE_ROW_HEIGHT }}
                           onClick={() => toggleRow(row)}
                         >
                           <td
@@ -449,6 +474,20 @@ export function AttributeTable(props: AttributeTableProps) {
                           ) : null}
                         </tr>
                       ))}
+                      {bottomSpacerHeight > 0 ? (
+                        <tr className="attribute-table__spacer" aria-hidden="true">
+                          <td
+                            colSpan={
+                              columns.length + 1 + (itemMenus.length > 0 ? 1 : 0)
+                            }
+                            style={{
+                              height: bottomSpacerHeight,
+                              padding: 0,
+                              border: 0,
+                            }}
+                          />
+                        </tr>
+                      ) : null}
                     </tbody>
                   </table>
                 </div>
@@ -479,3 +518,4 @@ export function AttributeTable(props: AttributeTableProps) {
     />
   );
 }
+

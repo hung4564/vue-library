@@ -7,7 +7,7 @@ import {
   exportMapboxWithOptions,
   type PrintOption,
 } from '@hungpvq/map-core/print';
-import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import { type MapControlButtonUIState, mdiIcon } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiClose,
@@ -231,7 +231,7 @@ export function PrintAdvancedControl({
           getState: () => ({
             visible: !printRef.current.show,
             title: trans('map.print.title'),
-            icon: { type: 'mdi' as const, path: mdiPrinterEye },
+            icon: mdiIcon(mdiPrinterEye),
           }),
           onClick: () =>
             handlersRef.current.onShowPrint(printRef.current.setting),
@@ -241,7 +241,7 @@ export function PrintAdvancedControl({
           getState: () => ({
             visible: printRef.current.show,
             title: trans('map.print.actions.save'),
-            icon: { type: 'mdi' as const, path: mdiContentSaveOutline },
+            icon: mdiIcon(mdiContentSaveOutline),
             loading: printRef.current.loading,
           }),
           onClick: () => handlersRef.current.onSave(),
@@ -251,7 +251,7 @@ export function PrintAdvancedControl({
           getState: () => ({
             visible: printRef.current.show,
             title: trans('map.print.actions.clear'),
-            icon: { type: 'mdi' as const, path: mdiClose },
+            icon: mdiIcon(mdiClose),
             loading: printRef.current.loading,
           }),
           onClick: () => handlersRef.current.onClosePrint(),
@@ -262,7 +262,7 @@ export function PrintAdvancedControl({
             visible: true,
             active: printRef.current.setting_show,
             title: trans('map.print.actions.setting'),
-            icon: { type: 'mdi' as const, path: mdiCogOutline },
+            icon: mdiIcon(mdiCogOutline),
             loading: printRef.current.loading,
           }),
           onClick: () => handlersRef.current.toggleSetting(),

@@ -12,6 +12,7 @@ export {
   devtoolLogAdapter,
   devtoolState,
   getDevtoolState,
+  openMapDevtoolsErrors,
   setDevtoolActiveTab,
   subscribeDevtoolState,
   toggleDevtoolOpen,

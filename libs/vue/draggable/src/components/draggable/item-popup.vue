@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { clampBounds, focusFirst, restoreFocus } from '@hungpvq/draggable';
+import { clampBounds, focusFirst, restoreFocus, trapTabKey } from '@hungpvq/draggable';
 import { inject, nextTick, onBeforeUnmount, ref, Ref, watch } from 'vue';
 import MapButton from '../parts/MapButton.vue';
 
@@ -166,9 +166,14 @@ function onClose() {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (!show.value || event.key !== 'Escape') return;
+  if (!show.value) return;
   const root = panelRoot.value;
   if (!root) return;
+  if (event.key === 'Tab') {
+    trapTabKey(root, event);
+    return;
+  }
+  if (event.key !== 'Escape') return;
   const target = event.target as Node | null;
   if (target && !root.contains(target) && document.activeElement !== root) {
     return;

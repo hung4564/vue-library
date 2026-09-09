@@ -21,6 +21,7 @@ export const REACT_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'ExportGeo',
   'getMapDatasetStore',
   'IdentifyControl',
+  'installMapApp',
   'IdentifyLayerAction',
   'IdentifyResultControl',
   'IdentifyShowFirstControl',

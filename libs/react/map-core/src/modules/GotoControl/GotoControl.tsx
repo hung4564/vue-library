@@ -1,4 +1,5 @@
 import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { useEffect, useState } from 'react';
@@ -71,12 +72,12 @@ export function GotoControl(props: GotoControlProps) {
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapGotoControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.goto-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiMapMarkerOutline },
-    }),
+    getState: () =>
+      mdiButtonState(mdiMapMarkerOutline, {
+        visible: true,
+        title: trans('map.goto-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
 

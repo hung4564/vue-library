@@ -17,6 +17,7 @@ import {
 } from '@hungpvq/map-core/menu';
 import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
 import { clearIdentifyScope, handleMultiIdentify, IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, identifyResolver, type IdentifyLayerFilterPayload, type IdentifyResultUpdatePayload, type IdentifyScopeToggleResult } from '@hungpvq/map-dataset/identify';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -472,17 +473,13 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'single',
   id: IDENTIFY_CONTROL.id,
   getState() {
-    return {
+    return mdiButtonState(path.icon, {
       visible: hasViews.value,
       active: show.value,
       loading: loading.value,
       title: trans.value('map.identify.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     toggleShow();

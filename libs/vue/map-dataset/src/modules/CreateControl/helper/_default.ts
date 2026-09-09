@@ -3,11 +3,16 @@ import type { IDataset } from '@hungpvq/map-dataset';
 export abstract class ConfigHelper<F = Record<string, unknown>> {
   abstract get default_value(): Omit<F, 'name'>;
 
+  /** Locale keys under `map.layer-control.create.*` for failed checks. */
+  validationErrors(_form: F & { name?: string }): string[] {
+    const form = _form as F & { name?: string };
+    const errors: string[] = [];
+    if (!form.name) errors.push('validation-name');
+    return errors;
+  }
+
   validate(form: F & { name?: string }): boolean {
-    if (!form.name) {
-      return false;
-    }
-    return true;
+    return this.validationErrors(form).length === 0;
   }
 
   abstract get create(): (form: F & { name: string }) => IDataset | Promise<IDataset>;

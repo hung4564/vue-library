@@ -4,9 +4,9 @@ import {
 } from '@hungpvq/map-core';
 import type { FeatureCollection } from 'geojson';
 import { afterEach, describe, expect, it } from 'vitest';
+import { createGeoJsonDataset } from '../geojson/builder';
+import { findAllComponentsByType } from '../model/visitors/helpers';
 import {
-  createGeoJsonDataset,
-  findAllComponentsByType,
   IDENTIFY_CONTROL,
   isIdentifyForListMenuHidden,
 } from './scope';

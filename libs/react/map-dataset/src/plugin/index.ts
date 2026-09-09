@@ -1,4 +1,5 @@
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
 import {
   AddToGroup,
@@ -90,4 +91,24 @@ export function createDatasetRegistryPlugin() {
       );
     },
   };
+}
+
+export type InstallMapAppOptions = {
+  /** Register dataset UI components (default `true`). */
+  dataset?: boolean;
+  /** Call `bootstrapMapTheme()` (default `true`). */
+  theme?: boolean;
+};
+
+/**
+ * One-call DX bootstrap for React map apps (theme + dataset registry).
+ * Still import CSS once in the app entry.
+ */
+export function installMapApp(options: InstallMapAppOptions = {}): void {
+  if (options.theme !== false) {
+    bootstrapMapTheme();
+  }
+  if (options.dataset !== false) {
+    createDatasetRegistryPlugin().install();
+  }
 }

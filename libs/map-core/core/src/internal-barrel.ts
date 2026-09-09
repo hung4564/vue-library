@@ -30,3 +30,4 @@ export * from './mitt';
 export * from './registry';
 export * from './resolver';
 export * from './worker';
+export * from './a11y/map-keyboard';

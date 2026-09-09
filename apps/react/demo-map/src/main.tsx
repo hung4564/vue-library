@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
+import { installMapApp } from '@hungpvq/react-map-dataset';
 import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
-import { installDatasetRegistry } from './hooks/useDatasetRegistry';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
@@ -22,8 +22,8 @@ import { StoryTellingPage } from './views/story-telling';
 import { ToolbarPage } from './views/toolbar';
 import { WorkerSamplePage } from './views/worker-sample';
 
-// Match Vue: register legend/menu/style components before any map mounts
-installDatasetRegistry();
+// Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
+installMapApp({ theme: false });
 installDevtools();
 
 const root = ReactDOM.createRoot(

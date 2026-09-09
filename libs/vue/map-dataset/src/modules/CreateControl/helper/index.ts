@@ -45,6 +45,10 @@ export class LayerHelper {
     return this.dataSourceComponent;
   }
 
+  validationErrors(form: any): string[] {
+    return this.helper.validationErrors(form);
+  }
+
   validate(form: any): boolean {
     return this.helper.validate(form);
   }

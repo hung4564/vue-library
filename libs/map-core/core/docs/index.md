@@ -29,7 +29,7 @@ Feature APIs (basemap, theme, …): import from `@hungpvq/map-core/<domain>` —
 
 ## Getting started in 5 minutes
 
-Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)** (Map + one GeoJSON, no GIS worker).
+Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)** (Map + one GeoJSON, no GIS worker). Peers: [Peers and bundle](./core/peers-and-bundle.md).
 
 ### 1. Install
 

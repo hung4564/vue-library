@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { FeatureCollection } from 'geojson';
-import {
-  createGeoJsonDataset,
-  findAllComponentsByType,
-  LIST_VIEW_MENU_ID,
-} from './builder';
+import { LIST_VIEW_MENU_ID } from '../menu/items';
+import { findAllComponentsByType } from '../model/visitors/helpers';
+import { createGeoJsonDataset } from './builder';
 
 const pointCollection: FeatureCollection = {
   type: 'FeatureCollection',

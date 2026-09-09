@@ -7,6 +7,7 @@ import {
   type AddGeojsonHerePayload,
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
@@ -91,13 +92,13 @@ export function LayerControl(props: LayerControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.layer-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiLayers },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayers, {
+        visible: !show,
+        active: show,
+        title: trans('map.layer-control.title'),
+        order,
+      }),
     onClick: () => setShow(),
   });
 

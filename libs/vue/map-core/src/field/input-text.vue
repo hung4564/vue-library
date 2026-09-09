@@ -1,6 +1,7 @@
 <script lang="ts">
 export default {
   name: 'InputText',
+  inheritAttrs: false,
 };
 </script>
 <script setup lang="ts">

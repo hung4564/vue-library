@@ -60,6 +60,7 @@ export function CreateControl(props: CreateControlProps) {
 
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const itemsType = useMemo(
     () => (Object.keys(LAYER_TYPES) as LayerType[]).map((x) => ({ value: x, text: LAYER_TYPES[x] })),
@@ -73,6 +74,8 @@ export function CreateControl(props: CreateControlProps) {
     const keepName = form.config.name && form.config.name !== prevSuggested;
 
     setHelper(nextHelper);
+    setValidationErrors([]);
+    setCreateError('');
     setForm((prev) => ({
       type: layerType,
       config: {
@@ -84,7 +87,10 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   async function onAddLayer() {
-    if (creating || !helper.validate(form.config)) return;
+    if (creating) return;
+    const errors = helper.validationErrors(form.config);
+    setValidationErrors(errors);
+    if (errors.length) return;
     const name = String(form.config.name ?? '');
     setCreating(true);
     setCreateError('');
@@ -115,6 +121,7 @@ export function CreateControl(props: CreateControlProps) {
     setConfigKey((k) => k + 1);
     setCreating(false);
     setCreateError('');
+    setValidationErrors([]);
     setForm({
       type: initialType,
       config: { name: suggestLayerName(initialType), ...nextHelper.default_value },
@@ -197,21 +204,32 @@ export function CreateControl(props: CreateControlProps) {
                 ) : null}
               </div>
 
-              {creating ? (
-                <div className="create-control-status">
-                  {trans('map.layer-control.create.creating')}
-                </div>
-              ) : null}
-              {createError ? (
-                <div className="create-control-sample-error">{createError}</div>
-              ) : null}
-              <BaseButton
-                className="btn-container"
-                disabled={creating}
-                onClick={() => void onAddLayer()}
-              >
-                {trans('map.layer-control.create-btn')}
-              </BaseButton>
+              <div className="create-control-actions">
+                {validationErrors.length ? (
+                  <div className="create-control-validation">
+                    {validationErrors.map((key) => (
+                      <div key={key} className="create-control-validation__item">
+                        {trans(`map.layer-control.create.${key}`)}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {createError ? (
+                  <div className="create-control-sample-error">{createError}</div>
+                ) : null}
+                {creating ? (
+                  <div className="create-control-actions__status">
+                    {trans('map.layer-control.create.creating')}
+                  </div>
+                ) : null}
+                <BaseButton
+                  className="btn-container"
+                  disabled={creating}
+                  onClick={() => void onAddLayer()}
+                >
+                  {trans('map.layer-control.create-btn')}
+                </BaseButton>
+              </div>
             </div>
           </DraggableItemPopup>
         ) : null

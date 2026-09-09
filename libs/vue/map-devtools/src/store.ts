@@ -52,6 +52,20 @@ export function setDevtoolActiveTab(activeTab: DevtoolTab) {
   notify();
 }
 
+/** Open the Devtools panel on the Errors tab. */
+export function openMapDevtoolsErrors() {
+  devtoolState.isOpen = true;
+  setDevtoolActiveTab('errors');
+}
+
+const OPEN_DEVTOOLS_ERRORS_EVENT = 'hungpvq:map-open-devtools-errors';
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(OPEN_DEVTOOLS_ERRORS_EVENT, () => {
+    openMapDevtoolsErrors();
+  });
+}
+
 export function clearDevtoolLogs() {
   devtoolState.logs = [];
   notify();

@@ -13,6 +13,13 @@
       "order": 1.1
     },
     {
+      "name": "Peers and bundle",
+      "package": "Map - Core",
+      "docs": "/map/core/peers-and-bundle",
+      "category": "Core",
+      "order": 1.15
+    },
+    {
       "name": "Stable API",
       "package": "Map - Core",
       "docs": "/map/core/stable-api",

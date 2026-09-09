@@ -8,9 +8,34 @@ Related: [Getting started](../index.md) · [Quick Dataset Creation](/map/dataset
 
 ## Install + CSS + registry
 
-Same as the hub [Getting started](../index.md): install packages, import `style.css`, call `createDatasetRegistryPlugin()` once.
+Same as the hub [Getting started](../index.md): install packages, import `style.css`, then bootstrap once:
+
+```ts
+// Vue
+import { installMapApp } from '@hungpvq/vue-map-dataset';
+// or app.use(createMapAppPlugin())
+installMapApp(app); // theme + createDatasetRegistryPlugin
+
+// React
+import { installMapApp } from '@hungpvq/react-map-dataset';
+installMapApp();
+```
+
+Prefer `installMapApp` over calling `createDatasetRegistryPlugin()` alone. Theme: skip with `{ theme: false }` if the app already calls `bootstrapMapTheme('auto')`.
 
 **No** `@hungpvq/map-dataset/vite` / `mapDatasetGisWorker()` is required for this path.
+
+Peers: see [Peers and bundle](./peers-and-bundle.md) (minimal vs CreateControl optional GIS peers).
+
+## Keyboard shortcuts
+
+With default `Map` props (`keyboardShortcuts` true):
+
+- **Esc** — close the top open map panel
+- **`/`** — open LayerControl and focus layer search
+
+Opt out: `:keyboard-shortcuts="false"` / `keyboardShortcuts={false}`.
+
 
 ## Vue
 
@@ -109,6 +134,7 @@ export function MinimalMap() {
 | Need | Use |
 |------|-----|
 | Inline FeatureCollection / small in-memory data | **This page** (no worker) |
-| Upload KML/SHP/CSV, large files, off-main-thread parse | [GIS worker](/map/dataset/worker) + CreateControl |
+| Upload KML/SHP/CSV, large files, off-main-thread parse | [GIS worker](/map/dataset/worker) + CreateControl + [optional peers](./peers-and-bundle.md) |
 | Draw / edit geometries | [Draw](/map/draw/) (Vue full + React mount/save) |
-| Identify / style / attribute table UX | Dataset controls + registry plugin (already required above) |
+| Identify / style / attribute table UX | Dataset controls + `installMapApp` / registry plugin |
+

@@ -19,10 +19,16 @@ export class ConfigRasterJsonHelper extends ConfigHelper<RasterForm> {
     };
   }
 
-  override validate(form: RasterForm & { name?: string }) {
-    if (!form.name) return false;
+  override validationErrors(form: RasterForm & { name?: string }) {
+    const errors: string[] = [];
+    if (!form.name) errors.push('validation-name');
     const tiles = form.tiles ?? [];
-    return !!(form.url || tiles.length);
+    if (!form.url && !tiles.length) errors.push('validation-url');
+    return errors;
+  }
+
+  override validate(form: RasterForm & { name?: string }) {
+    return this.validationErrors(form).length === 0;
   }
 
   override get create() {

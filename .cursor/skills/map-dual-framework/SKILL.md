@@ -79,3 +79,7 @@ Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).
 - [ ] Types exported consistently from package entry
 - [ ] Demo or docs smoke path noted if UI-visible
 - [ ] New React Vite apps that alias `libs/` exclude Fast Refresh on `libs/`
+- [ ] Experimental field names: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea` on both adapters)
+- [ ] Run `nx test @hungpvq/map-core -- vue-react-parity.spec.ts` when adding dual controls or shared exports
+
+**Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable/Experimental allowlists).

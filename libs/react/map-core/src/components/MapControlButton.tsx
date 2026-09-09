@@ -38,12 +38,16 @@ export function MapControlButton({
   const isGroup = groupContext?.isGroup ?? false;
   const groupSize = groupContext?.groupSize ?? 0;
 
+  const label = tooltip || title;
+
   if (isGroup) {
     return (
       <MapButton
         active={active}
         height={groupSize}
-        title={tooltip || title}
+        title={label}
+        aria-label={label}
+        aria-pressed={active}
         width={groupSize}
         disabled={disabled}
         loading={loading}
@@ -56,7 +60,7 @@ export function MapControlButton({
 
   return (
     <div className="button-container">
-      <div title={tooltip || title}>
+      <div title={label}>
         {contentButton || (
           <MapButton
             active={active}
@@ -64,6 +68,8 @@ export function MapControlButton({
             loading={loading}
             width={size}
             disabled={disabled}
+            aria-label={label}
+            aria-pressed={active}
             {...props}
           >
             {children || <MapIcon>{icon}</MapIcon>}

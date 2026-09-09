@@ -1,8 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
+import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
 import '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/react-draggable';
 import { MapOptions } from 'maplibre-gl';
+import { MapErrorToast } from '../components/MapErrorToast';
 import { MapContextProvider } from '../context/MapContext';
 import { ActionControl } from '../extra/event';
 import { useBreakpoints } from '../hooks/useBreakpoints';
@@ -13,6 +15,8 @@ export interface MapProps {
   initOptions?: Partial<MapOptions>;
   dragId?: string;
   mapId?: string;
+  /** Bind Esc / `/` map shortcuts (default true). */
+  keyboardShortcuts?: boolean;
   onMapLoaded?: (map: MapSimple) => void;
   onMapDestroy?: (map: MapSimple) => void;
   onError?: (error: Error) => void;
@@ -26,6 +30,7 @@ export function Map({
   },
   dragId,
   mapId,
+  keyboardShortcuts = true,
   onMapLoaded,
   onMapDestroy,
   onError,
@@ -50,6 +55,11 @@ export function Map({
       onError,
     },
   );
+
+  useEffect(() => {
+    if (keyboardShortcuts === false) return;
+    return bindMapKeyboardShortcuts({ mapId: id });
+  }, [id, keyboardShortcuts]);
 
   const draggableTo = useMemo(() => `map-draggable-${id}`, [id]);
   const rightBottomTo = useMemo(() => `bottom-right-${id}`, [id]);
@@ -118,6 +128,7 @@ export function Map({
           {/* Render children after map is loaded */}
           {loaded && loadedDrag && children}
           {loaded && loadedDrag && <ActionControl mapId={id} />}
+          <MapErrorToast />
         </div>
       </div>
     </MapContextProvider>

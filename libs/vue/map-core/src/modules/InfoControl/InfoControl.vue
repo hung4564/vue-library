@@ -15,6 +15,7 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { exportMapbox } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -106,16 +107,12 @@ const rows = computed(() => [
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapInfoControl',
   getState() {
-    return {
+    return mdiButtonState(mdiInformationOutline, {
       visible: true,
       active: show.value,
       title: trans.value('map.info-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiInformationOutline,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

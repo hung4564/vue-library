@@ -14,6 +14,14 @@
   flex-grow: 1;
 }
 
+.layer-control__search {
+  padding: var(--map-space-md, 8px) var(--map-space-lg, 12px) 0;
+}
+
+.layer-control__search .form-group {
+  margin-bottom: var(--map-space-sm, 6px);
+}
+
 .layer-control__header {
   display: flex;
   align-items: center;

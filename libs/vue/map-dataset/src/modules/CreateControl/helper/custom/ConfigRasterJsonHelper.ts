@@ -22,16 +22,19 @@ export class ConfigRasterJsonHelper extends ConfigHelper<RasterUrlDatasetOption>
     };
   }
 
-  override validate(form: RasterUrlDatasetOption & { name?: string; url?: string }) {
-    if (!form.name) {
-      return false;
-    }
+  override validationErrors(
+    form: RasterUrlDatasetOption & { name?: string; url?: string },
+  ) {
+    const errors: string[] = [];
+    if (!form.name) errors.push('validation-name');
     const url = form.url;
     const tiles = form.tiles ?? [];
-    if (!url && !tiles.length) {
-      return false;
-    }
-    return true;
+    if (!url && !tiles.length) errors.push('validation-url');
+    return errors;
+  }
+
+  override validate(form: RasterUrlDatasetOption & { name?: string; url?: string }) {
+    return this.validationErrors(form).length === 0;
   }
 
   override get create() {

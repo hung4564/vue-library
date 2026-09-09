@@ -10,6 +10,7 @@ import './style.css';
 export {
   ActionControl,
   BaseButton,
+  BaseCollapse,
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
@@ -33,6 +34,7 @@ export {
   InputSlider,
   InputText,
   InputTextArea,
+  InputTextarea,
   KEY,
   LegendControl,
   MITT_KEY,
@@ -46,6 +48,7 @@ export {
 
 export {
   MapControlGroupButton,
+  MapErrorToast,
   MapIcon,
   MapImage,
   MeasurementControl,

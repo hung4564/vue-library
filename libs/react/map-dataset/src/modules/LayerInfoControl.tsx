@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { LAYER_INFO_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { DraggableItemFloat } from '@hungpvq/react-draggable';
 import {
@@ -41,13 +42,13 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerInfoControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.layer-info-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiLayers },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayers, {
+        visible: !show,
+        active: show,
+        title: trans('map.layer-info-control.title'),
+        order,
+      }),
     onClick: () => toggleShow(),
   });
 

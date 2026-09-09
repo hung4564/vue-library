@@ -1,4 +1,4 @@
-import { clampBounds, focusFirst, restoreFocus } from '@hungpvq/draggable';
+import { clampBounds, focusFirst, restoreFocus, trapTabKey } from '@hungpvq/draggable';
 import {
   type MouseEvent,
   type ReactNode,
@@ -280,9 +280,13 @@ export function DraggableItemPopup({
       if (panelRootRef.current) focusFirst(panelRootRef.current);
     }, 0);
     function onKeydown(event: KeyboardEvent) {
-      if (event.key !== 'Escape') return;
       const root = panelRootRef.current;
       if (!root) return;
+      if (event.key === 'Tab') {
+        trapTabKey(root, event);
+        return;
+      }
+      if (event.key !== 'Escape') return;
       const target = event.target as Node | null;
       if (target && !root.contains(target) && document.activeElement !== root) {
         return;

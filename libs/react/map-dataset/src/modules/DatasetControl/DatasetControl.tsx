@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { DATASET_CONTROL_LOCALE, traverseTree } from '@hungpvq/map-dataset';
 import { createMenuClickAddComponentBuilder, createMenuClickBuilder, handleMenuActionClick, LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
@@ -66,13 +67,13 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapDatasetControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.dataset-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiDatabaseOutline },
-    }),
+    getState: () =>
+      mdiButtonState(mdiDatabaseOutline, {
+        visible: !show,
+        active: show,
+        title: trans('map.dataset-control.title'),
+        order,
+      }),
     onClick: () => setShow(),
   });
 

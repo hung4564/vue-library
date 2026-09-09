@@ -4,6 +4,7 @@ import {
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -111,13 +112,13 @@ export function RegistryControl(props: RegistryControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: CONTROL_ID,
-    getState: () => ({
-      visible: true,
-      active: show,
-      title: trans('map.registry-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiConsole },
-    }),
+    getState: () =>
+      mdiButtonState(mdiConsole, {
+        visible: true,
+        active: show,
+        title: trans('map.registry-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
 

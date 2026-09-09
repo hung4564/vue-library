@@ -15,6 +15,7 @@ export const REACT_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
   'devtoolState',
   'getDevtoolState',
   'installDevtools',
+  'openMapDevtoolsErrors',
   'setDevtoolActiveTab',
   'subscribeDevtoolState',
   'toggleDevtoolOpen',
