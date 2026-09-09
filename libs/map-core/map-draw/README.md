@@ -4,7 +4,7 @@ Draw session protocol (`DrawService`, `MapDrawOption`), styles, id helpers, insp
 
 - Docs: VitePress `/map/draw/` · source [`docs/`](./docs/)
 - Vue UI: `@hungpvq/vue-map-draw` (UI/hooks only — import protocol from this package)
-- React UI: `@hungpvq/react-map-draw` (Inspect thinner)
+- React UI: `@hungpvq/react-map-draw` (shared InspectController: style + popup/hover)
 
 ```bash
 npm install @hungpvq/map-draw @mapbox/mapbox-gl-draw

@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
+import { getMap } from '@hungpvq/map-core';
 import { DatasetService, type IDataset } from '@hungpvq/map-dataset';
-import { getMap } from '@hungpvq/vue-map-core';
 import { useMapDatasetStore } from '@hungpvq/vue-map-dataset';
 
 export async function addDatasetToMap(mapId: string, dataset: IDataset) {

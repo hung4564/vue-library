@@ -11,7 +11,7 @@ import type {
   MapRootStore,
 } from '@hungpvq/map-core';
 import { useMapMittStore } from '../extra/mitt';
-import { useMapGLobalStore } from './global-store';
+import { useMapGlobalStore } from './global-store';
 import { logger } from './logger';
 
 /**
@@ -23,7 +23,7 @@ export class VueMapStoreAdapter implements IMapStoreAdapter {
    * Get root store instance (Vue store)
    */
   getRootStore(): MapRootStore {
-    return useMapGLobalStore();
+    return useMapGlobalStore();
   }
 
   /**

@@ -1,4 +1,4 @@
-import { errorHandler } from '@hungpvq/react-map-core';
+import { errorHandler } from '@hungpvq/map-core';
 import { DevtoolLogAdapter, LogEntry } from './log-adapter';
 
 export interface ErrorRecord {

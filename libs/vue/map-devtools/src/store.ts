@@ -1,4 +1,4 @@
-import { errorHandler } from '@hungpvq/vue-map-core';
+import { errorHandler } from '@hungpvq/map-core';
 import { reactive } from 'vue';
 import { DevtoolLogAdapter, LogEntry } from './log-adapter';
 

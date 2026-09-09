@@ -10,10 +10,15 @@ Root barrels use **explicit named exports** (same pattern as `@hungpvq/draggable
 |---------|------|
 | `@hungpvq/map-core` | `libs/map-core/core/src/public-api.spec.ts` |
 | `@hungpvq/map-dataset` | `libs/map-core/map-dataset/src/public-api.spec.ts` |
+| `@hungpvq/map-draw` | `libs/map-core/map-draw/src/public-api.spec.ts` |
 | `@hungpvq/vue-map-core` | `libs/vue/map-core/src/public-api.spec.ts` |
 | `@hungpvq/vue-map-dataset` | `libs/vue/map-dataset/src/public-api.spec.ts` |
+| `@hungpvq/vue-map-draw` | `libs/vue/map-draw/src/public-api.spec.ts` |
+| `@hungpvq/vue-map-devtools` | `libs/vue/map-devtools/src/public-api.spec.ts` |
 | `@hungpvq/react-map-core` | `libs/react/map-core/src/public-api.spec.ts` |
 | `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts` |
+| `@hungpvq/react-map-draw` | `libs/react/map-draw/src/public-api.spec.ts` |
+| `@hungpvq/react-map-devtools` | `libs/react/map-devtools/src/public-api.spec.ts` |
 
 - Adding a **runtime** root export → add a **named** `export { X } from './internal-barrel'` (or from the feature module) in `src/index.ts`, update Stable **or** Experimental in `public-api.spec.ts`, and this page if Stable.
 - Experimental symbols may change in a **minor**.
@@ -80,12 +85,23 @@ Related: [SemVer checklist](../../../README.md#checklist-semver--breaking-change
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `DrawControl`, `InspectControl` (React Inspect is style-toggle thin), `useMapDraw`, `isDraftOption` |
+| Shell | `DrawControl`, `InspectControl` (shared `InspectController`: style + popup/hover), `useMapDraw`, `isDraftOption` |
 | Control ids | `mapDrawDraftList`, `mapInspectControl` |
 | Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
 | Core boundary | Protocol/types/helpers from `@hungpvq/map-draw` — adapters do **not** re-export core |
 
 Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/` (Inspect is a section under draw, not a separate docs page).
+
+## `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`
+
+| Area | Stable surface |
+|------|----------------|
+| Vue bootstrap | `DevtoolsPlugin`, `uninstallDevtools` |
+| React bootstrap | `installDevtools`, `uninstallDevtools` |
+| Panel | `Devtools` |
+| Docs | [devtools.md](./devtools.md) |
+
+Adapters do **not** re-export `@hungpvq/map-core` (`errorHandler` comes from map-core). React may expose additional **experimental** store/hook helpers on the root barrel.
 
 ## CSS
 

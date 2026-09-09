@@ -1,5 +1,4 @@
-import { installGlobalErrorCapture } from '@hungpvq/map-core';
-import { errorHandler } from '@hungpvq/react-map-core';
+import { errorHandler, installGlobalErrorCapture } from '@hungpvq/map-core';
 import { ConsoleAdapter, LoggerFactory } from '@hungpvq/shared-log';
 import { devtoolLogAdapter } from './store';
 

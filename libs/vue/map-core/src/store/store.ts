@@ -11,7 +11,7 @@ import {
   type MapStore,
 } from '@hungpvq/map-core';
 import { VueMapStoreAdapter } from './vue-adapter';
-export { useMapGLobalStore } from './global-store';
+export { useMapGlobalStore } from './global-store';
 
 const storeAdapter = new VueMapStoreAdapter();
 const storeManager = new MapStoreManager(storeAdapter);

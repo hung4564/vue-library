@@ -9,7 +9,7 @@ Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 | [`@hungpvq/map-draw`](./map-draw/) | DrawService, DrawingType, styles, inspect helpers |
 | [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/) | Map container, controls, hooks |
 | [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores |
-| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (React Inspect thinner) |
+| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (shared InspectController) |
 
 **Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Demos:** [Vue](https://hung4564.github.io/demo-map/vue/) · [React](https://hung4564.github.io/demo-map/react/)
 

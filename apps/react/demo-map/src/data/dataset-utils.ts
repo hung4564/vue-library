@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
+import { getMap } from '@hungpvq/map-core';
 import { DatasetService, type IDataset } from '@hungpvq/map-dataset';
-import { getMap } from '@hungpvq/react-map-core';
 import {
   notifyMapDatasetStore,
   useMapDatasetStore,

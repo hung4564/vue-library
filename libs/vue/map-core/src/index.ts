@@ -68,20 +68,13 @@ export {
   createMapScopedStore,
   defaultMapProps,
   destroyMapScopedStore,
-  errorHandler,
   getIsMulti,
-  getLegendName,
-  getMap,
   getMapCompare,
   getMapCompareSetting,
-  getMapStore,
-  getMaps
 } from './internal-barrel';
 
 export {
   getStore,
-  isDisabledLegendLayer,
-  isSupportGenLayerLegend,
   langStore,
   makeShowProps,
   useBaseMap,
@@ -102,7 +95,7 @@ export {
   useMapCrsItems,
   useMapCrsStore,
   useMapEventStore,
-  useMapGLobalStore,
+  useMapGlobalStore,
   useMapImage,
   useMapImages,
   useMapInstance,

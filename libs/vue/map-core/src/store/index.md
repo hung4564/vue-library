@@ -9,7 +9,8 @@ category: Store
 ## Usage
 
 ```ts
-import { createMapScopedStore, destroyMapScopedStore, getMap, getStore } from '@hungpvq/vue-map-core';
+import { getMap } from '@hungpvq/map-core';
+import { createMapScopedStore, destroyMapScopedStore, getStore } from '@hungpvq/vue-map-core';
 ```
 
 ## Create new store

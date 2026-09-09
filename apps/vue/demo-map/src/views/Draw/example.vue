@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
+import { getMap } from '@hungpvq/map-core';
 import {
   DrawingType,
   getFirstFeatureByMap,
   sameFeature,
   type MapDrawOption,
 } from '@hungpvq/map-draw';
-import { BaseMapControl, getMap, Map } from '@hungpvq/vue-map-core';
+import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';

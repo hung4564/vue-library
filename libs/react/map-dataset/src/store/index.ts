@@ -1,7 +1,7 @@
-import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { DatasetService } from '@hungpvq/map-dataset';
-import { createMapScopedStore, getMap } from '@hungpvq/react-map-core';
+import { createMapScopedStore } from '@hungpvq/react-map-core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '../logger';
 

@@ -1,6 +1,5 @@
-import { installGlobalErrorCapture } from '@hungpvq/map-core';
+import { errorHandler, installGlobalErrorCapture } from '@hungpvq/map-core';
 import { ConsoleAdapter, LoggerFactory } from '@hungpvq/shared-log';
-import { errorHandler } from '@hungpvq/vue-map-core';
 import { App, Plugin } from 'vue';
 import { devtoolLogAdapter } from './store';
 import Devtools from './ui/Devtools.vue';

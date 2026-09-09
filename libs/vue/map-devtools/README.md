@@ -1,11 +1,19 @@
-# Vue Map Devtools
+# `@hungpvq/vue-map-devtools`
 
-> Vue 3 debug panel for `@hungpvq/vue-map-core` (store, logs, errors)
+Vue 3 debug panel for `@hungpvq/vue-map-core` (store, logs, errors).
 
-## Installation
+## Install
 
 ```bash
 npm install @hungpvq/vue-map-devtools
+```
+
+Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, Vue 3.3+.
+
+## Styles
+
+```ts
+import '@hungpvq/vue-map-devtools/style.css';
 ```
 
 ## Usage
@@ -32,3 +40,21 @@ import { Devtools } from '@hungpvq/vue-map-devtools';
   <Devtools />
 </template>
 ```
+
+Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
+
+## Stable API
+
+| Export | Role |
+|--------|------|
+| `DevtoolsPlugin` | Vue plugin: log adapter + error capture + global `Devtools` |
+| `uninstallDevtools` | Remove global error capture |
+| `Devtools` | Panel UI (Store / Logs / Errors) |
+
+Experimental: `DevtoolLogAdapter` — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
+
+## Demo
+
+`apps/vue/demo-map` — `app.use(DevtoolsPlugin)` in `src/main.ts`, optional `<Devtools />` in the app shell.
+
+Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).

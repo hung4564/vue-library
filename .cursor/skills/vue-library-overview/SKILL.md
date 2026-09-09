@@ -28,7 +28,7 @@ Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Rele
 1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic).
 2. **Map shell, controls, hooks (Vue)** → `libs/vue/map-*`.
 3. **Same for React** → `libs/react/map-*` (keep parity with Vue when the feature is dual).
-4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (React Inspect thinner). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
+4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (shared InspectController). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
 5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
 

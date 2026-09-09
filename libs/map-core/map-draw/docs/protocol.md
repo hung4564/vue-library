@@ -10,7 +10,7 @@ Adapters (`@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`) export **UI/hooks
 | --- | --- |
 | `@hungpvq/map-draw` | `MapDraw`, `DrawService`, `DrawingType`, `StaticMode`, `getDrawStyles`, id helpers, inspect helpers |
 | `@hungpvq/vue-map-draw` | `DrawControl`, `InspectControl`, `useMapDraw`, locales, CSS |
-| `@hungpvq/react-map-draw` | Same public control names; Inspect thinner |
+| `@hungpvq/react-map-draw` | Same public control names; shared InspectController (style + popup/hover) |
 
 ## `MapDraw` (editing)
 
