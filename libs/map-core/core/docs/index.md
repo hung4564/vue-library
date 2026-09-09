@@ -91,6 +91,15 @@ Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungp
 | Empty layer menus, missing style / export / attribute UI | Forgot `createDatasetRegistryPlugin()` |
 | Dialogs / management panels missing | Need `ComponentManagementControl` (or equivalent) on the map |
 | File parse hangs / blocks UI; worker never runs | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker) |
+| CreateControl fails on CSV/KML/Shapefile with missing peer | Install optional GIS peers — [CreateControl](./dataset/module/CreateControl) |
 | Install / peer errors | Align `@hungpvq/map-core` + dataset + vue/react peers; use documented import paths |
 
 More detail: [Map Dataset setup](./dataset/) · [Map Core](./core/) · [Stable API](./core/stable-api.md)
+
+## E2E smoke
+
+```bash
+npm run map:e2e
+```
+
+Playwright hits Vue `/#/minimal/` and React `/#/minimal` (`apps/vue/demo-map-e2e`, `apps/react/demo-map-e2e`).

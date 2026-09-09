@@ -7,12 +7,19 @@ UI packages:
 - Vue: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset)
 - React: [`@hungpvq/react-map-dataset`](../../react/map-dataset)
 
-**Docs:** [Getting started](./docs/index.md) · [GIS worker](./docs/worker.md)
+**Docs:** [Getting started](./docs/index.md) · [GIS worker](./docs/worker.md) · [CreateControl](./docs/module/CreateControl.md)
 
 ```bash
 npm install @hungpvq/map-dataset @hungpvq/map-core
 ```
 
+For **CreateControl** / GIS file import, also install optional format peers:
+
+```bash
+npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
+```
+
+Inline GeoJSON via `createGeoJsonDataset` does **not** need those peers.
 Create-layer / GIS parse runs in a Web Worker. Apps that install this package from npm must sync the worker file into `public/assets` — use the Vite plugin (do not copy by hand):
 
 ```ts

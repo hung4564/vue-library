@@ -5,12 +5,6 @@ import type {
   Geometry,
   Position,
 } from 'geojson';
-import { kml, gpx } from '@tmcw/togeojson';
-import { DOMParser } from '@xmldom/xmldom';
-import JSZip from 'jszip';
-import Papa from 'papaparse';
-import shpjs from 'shpjs';
-import { feature as topojsonFeature } from 'topojson-client';
 import { detectGeojsonCrs, isValidGeojson, parseGeojsonText } from '../geojson/geojson-parse';
 import {
   detectGisFormat,
@@ -32,7 +26,7 @@ export type GisLoadResult = {
   format?: GisFormat;
 };
 
-const parseShapefile = shpjs as unknown as (
+type ShapefileParse = (
   input:
     | ArrayBuffer
     | Uint8Array
@@ -43,9 +37,72 @@ const parseShapefile = shpjs as unknown as (
         cpg?: ArrayBuffer;
       },
 ) => Promise<GeoJSON | GeoJSON[]>;
+
+/** Formats that need optional peer packages (dynamic import). */
+const HEAVY_TEXT_FORMATS = new Set<GisFormat>([
+  'csv',
+  'kml',
+  'gpx',
+  'topojson',
+]);
+
 const LAT_KEYS = ['lat', 'latitude', 'y', 'latitud'];
 const LNG_KEYS = ['lon', 'lng', 'long', 'longitude', 'x', 'longitud', 'lonlat'];
 const WKT_KEYS = ['wkt', 'geom', 'geometry', 'the_geom', 'shape', 'wkb'];
+
+function missingPeer(name: string, useCase: string): Error {
+  return new Error(
+    `Optional peer "${name}" is required for ${useCase}. Install it in your app (e.g. npm i ${name}).`,
+  );
+}
+
+async function loadJsZip() {
+  try {
+    return (await import('jszip')).default;
+  } catch {
+    throw missingPeer('jszip', 'ZIP/KMZ GIS import');
+  }
+}
+
+async function loadShpjs(): Promise<ShapefileParse> {
+  try {
+    return (await import('shpjs')).default as unknown as ShapefileParse;
+  } catch {
+    throw missingPeer('shpjs', 'Shapefile GIS import');
+  }
+}
+
+async function loadPapa() {
+  try {
+    return (await import('papaparse')).default;
+  } catch {
+    throw missingPeer('papaparse', 'CSV GIS import');
+  }
+}
+
+async function loadTogeojson() {
+  try {
+    return await import('@tmcw/togeojson');
+  } catch {
+    throw missingPeer('@tmcw/togeojson', 'KML/GPX GIS import');
+  }
+}
+
+async function loadXmldom() {
+  try {
+    return await import('@xmldom/xmldom');
+  } catch {
+    throw missingPeer('@xmldom/xmldom', 'KML/GPX GIS import');
+  }
+}
+
+async function loadTopojsonClient() {
+  try {
+    return await import('topojson-client');
+  } catch {
+    throw missingPeer('topojson-client', 'TopoJSON GIS import');
+  }
+}
 
 export function asGisFeatureCollection(geojson: GeoJSON | null): FeatureCollection | null {
   if (!geojson) return null;
@@ -59,6 +116,10 @@ export function asGisFeatureCollection(geojson: GeoJSON | null): FeatureCollecti
   };
 }
 
+/**
+ * Sync parse for GeoJSON / GeoJSONL / WKT only (no optional peers).
+ * For CSV / KML / GPX / TopoJSON use {@link parseGisTextAsync}.
+ */
 export function parseGisText(
   text: string,
   hint: GisSourceHint & { strict?: boolean } = {},
@@ -72,7 +133,35 @@ export function parseGisText(
   report?.(0, 1, format || 'parse');
 
   try {
-    const result = parseTextByFormat(trimmed, format);
+    if (format && HEAVY_TEXT_FORMATS.has(format)) {
+      throw new Error(
+        `Format "${format}" requires parseGisTextAsync (optional GIS peers).`,
+      );
+    }
+    const result = parseTextByFormatSync(trimmed, format);
+    report?.(1, 1, format || 'parse');
+    return result;
+  } catch (error) {
+    if (hint.strict === false) return { geojson: null, crs: null };
+    throw error;
+  }
+}
+
+/** Full text parse including CSV / KML / GPX / TopoJSON (dynamic optional peers). */
+export async function parseGisTextAsync(
+  text: string,
+  hint: GisSourceHint & { strict?: boolean } = {},
+  report?: GisProgress,
+): Promise<GisLoadResult> {
+  const trimmed = text.trim();
+  if (!trimmed) return { geojson: null, crs: null };
+
+  const format =
+    detectGisFormat({ ...hint, text: trimmed }) ?? sniffGisText(trimmed);
+  report?.(0, 1, format || 'parse');
+
+  try {
+    const result = await parseTextByFormatAsync(trimmed, format);
     report?.(1, 1, format || 'parse');
     return result;
   } catch (error) {
@@ -99,8 +188,8 @@ export async function parseGisFile(
 
   const text = await file.text();
   report?.(1, 2, format || 'parse');
-  const result = parseGisText(text, { ...hint, strict: true }, report);
-  report?.(2, 2, result.format || 'parse');
+  const result = await parseGisTextAsync(text, { ...hint, strict: true }, report);
+  report?.(2, 2, format || 'parse');
   return result;
 }
 
@@ -151,7 +240,7 @@ export async function parseGisFromUrl(
 
   const text = await response.text();
   report?.(1, 2, format || 'parse');
-  return parseGisText(text, { ...hint, strict: true }, report);
+  return parseGisTextAsync(text, { ...hint, strict: true }, report);
 }
 
 export async function parseGisBuffer(
@@ -171,19 +260,21 @@ export async function parseGisBuffer(
     return parseShapefileParts([{ name: hint.name, buffer }], report);
   }
   const text = new TextDecoder().decode(buffer);
-  return parseGisText(text, { ...hint, strict: true }, report);
+  return parseGisTextAsync(text, { ...hint, strict: true }, report);
 }
 
-function parseTextByFormat(text: string, format: GisFormat | null): GisLoadResult {
+function parseTextByFormatSync(
+  text: string,
+  format: GisFormat | null,
+): GisLoadResult {
   switch (format) {
     case 'topojson':
-      return wrap(parseTopojson(text), 'topojson', '4326');
     case 'kml':
-      return wrap(xmlToGeojson(text, 'kml'), 'kml', '4326');
     case 'gpx':
-      return wrap(xmlToGeojson(text, 'gpx'), 'gpx', '4326');
     case 'csv':
-      return wrap(parseCsv(text), 'csv', '4326');
+      throw new Error(
+        `Format "${format}" requires parseGisTextAsync (optional GIS peers).`,
+      );
     case 'wkt':
       return wrap(wktToGeojson(text), 'wkt', '4326');
     case 'geojsonl':
@@ -194,17 +285,75 @@ function parseTextByFormat(text: string, format: GisFormat | null): GisLoadResul
       throw new Error('Binary GIS formats cannot be parsed as text');
     case 'geojson':
     case null:
-      return parseJsonOrFallback(text);
+      return parseJsonOrFallbackSync(text);
     default:
       throw new Error('Unsupported GIS format');
   }
 }
 
-function parseJsonOrFallback(text: string): GisLoadResult {
+async function parseTextByFormatAsync(
+  text: string,
+  format: GisFormat | null,
+): Promise<GisLoadResult> {
+  switch (format) {
+    case 'topojson':
+      return wrap(await parseTopojson(text), 'topojson', '4326');
+    case 'kml':
+      return wrap(await xmlToGeojson(text, 'kml'), 'kml', '4326');
+    case 'gpx':
+      return wrap(await xmlToGeojson(text, 'gpx'), 'gpx', '4326');
+    case 'csv':
+      return wrap(await parseCsv(text), 'csv', '4326');
+    case 'wkt':
+      return wrap(wktToGeojson(text), 'wkt', '4326');
+    case 'geojsonl':
+      return wrap(parseGeojsonl(text), 'geojsonl');
+    case 'shapefile':
+    case 'zip':
+    case 'kmz':
+      throw new Error('Binary GIS formats cannot be parsed as text');
+    case 'geojson':
+    case null:
+      return parseJsonOrFallbackAsync(text);
+    default:
+      throw new Error('Unsupported GIS format');
+  }
+}
+
+function parseJsonOrFallbackSync(text: string): GisLoadResult {
   try {
     const parsed = JSON.parse(text) as unknown;
     if (isTopojson(parsed)) {
-      return wrap(topojsonToCollection(parsed), 'topojson', '4326');
+      throw new Error(
+        'TopoJSON requires parseGisTextAsync (optional peer topojson-client).',
+      );
+    }
+    if (isValidGeojson(parsed)) {
+      return wrap(parsed, 'geojson');
+    }
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes('parseGisTextAsync')
+    ) {
+      throw error;
+    }
+    // try other text formats
+  }
+  const sniffed = sniffGisText(text);
+  if (sniffed && sniffed !== 'geojson') {
+    return parseTextByFormatSync(text, sniffed);
+  }
+  const geojson = parseGeojsonText(text);
+  if (!geojson) throw new Error('Unsupported or invalid GIS data');
+  return wrap(geojson, 'geojson');
+}
+
+async function parseJsonOrFallbackAsync(text: string): Promise<GisLoadResult> {
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (isTopojson(parsed)) {
+      return wrap(await topojsonToCollection(parsed), 'topojson', '4326');
     }
     if (isValidGeojson(parsed)) {
       return wrap(parsed, 'geojson');
@@ -214,7 +363,7 @@ function parseJsonOrFallback(text: string): GisLoadResult {
   }
   const sniffed = sniffGisText(text);
   if (sniffed && sniffed !== 'geojson') {
-    return parseTextByFormat(text, sniffed);
+    return parseTextByFormatAsync(text, sniffed);
   }
   const geojson = parseGeojsonText(text);
   if (!geojson) throw new Error('Unsupported or invalid GIS data');
@@ -243,16 +392,17 @@ function isTopojson(value: unknown): value is {
   );
 }
 
-function parseTopojson(text: string): FeatureCollection {
+async function parseTopojson(text: string): Promise<FeatureCollection> {
   const parsed = JSON.parse(text) as unknown;
   if (!isTopojson(parsed)) throw new Error('Invalid TopoJSON');
   return topojsonToCollection(parsed);
 }
 
-function topojsonToCollection(topology: {
+async function topojsonToCollection(topology: {
   type: 'Topology';
   objects: Record<string, unknown>;
-}): FeatureCollection {
+}): Promise<FeatureCollection> {
+  const { feature: topojsonFeature } = await loadTopojsonClient();
   const features: Feature[] = [];
   for (const key of Object.keys(topology.objects)) {
     const converted = topojsonFeature(
@@ -268,7 +418,14 @@ function topojsonToCollection(topology: {
   return { type: 'FeatureCollection', features };
 }
 
-function xmlToGeojson(text: string, kind: 'kml' | 'gpx'): FeatureCollection {
+async function xmlToGeojson(
+  text: string,
+  kind: 'kml' | 'gpx',
+): Promise<FeatureCollection> {
+  const [{ DOMParser }, { kml, gpx }] = await Promise.all([
+    loadXmldom(),
+    loadTogeojson(),
+  ]);
   const doc = new DOMParser().parseFromString(text, 'text/xml');
   const converted = kind === 'gpx' ? gpx(doc) : kml(doc);
   return asGisFeatureCollection(converted as GeoJSON) ?? {
@@ -282,6 +439,7 @@ async function parseKmzBuffer(
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   report?.(1, 2, 'kmz');
+  const JSZip = await loadJsZip();
   const zip = await JSZip.loadAsync(buffer);
   const kmlFile = Object.values(zip.files).find(
     (entry) =>
@@ -291,7 +449,7 @@ async function parseKmzBuffer(
   );
   if (!kmlFile) throw new Error('KMZ archive does not contain a KML file');
   const text = await kmlFile.async('string');
-  return wrap(xmlToGeojson(text, 'kml'), 'kmz', '4326');
+  return wrap(await xmlToGeojson(text, 'kml'), 'kmz', '4326');
 }
 
 /**
@@ -302,6 +460,7 @@ async function parseZipArchive(
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   report?.(1, 2, 'zip');
+  const JSZip = await loadJsZip();
   const zip = await JSZip.loadAsync(buffer);
   const entries = Object.values(zip.files).filter(
     (entry) => !entry.dir && !isIgnoredZipEntry(entry.name),
@@ -309,6 +468,7 @@ async function parseZipArchive(
 
   if (entries.some((entry) => fileExtension(entry.name) === 'shp')) {
     try {
+      const parseShapefile = await loadShpjs();
       const parsed = await parseShapefile(buffer);
       return wrap(normalizeShapefile(parsed), 'shapefile', '4326');
     } catch {
@@ -346,7 +506,10 @@ async function parseZipArchive(
       }
 
       const text = await entry.async('string');
-      const parsed = parseGisText(text, { name: entry.name, strict: true });
+      const parsed = await parseGisTextAsync(text, {
+        name: entry.name,
+        strict: true,
+      });
       if (parsed.geojson) results.push(parsed);
     } catch {
       // Skip unreadable members; other files in the archive may still load.
@@ -403,6 +566,7 @@ async function parseShapefileParts(
     parts[ext] = buffer;
   }
   if (!parts['shp']) throw new Error('Shapefile is missing the .shp file');
+  const parseShapefile = await loadShpjs();
   const parsed = await parseShapefile({
     shp: parts['shp'],
     dbf: parts['dbf'],
@@ -426,7 +590,8 @@ function normalizeShapefile(parsed: GeoJSON | GeoJSON[]): FeatureCollection {
   };
 }
 
-function parseCsv(text: string): FeatureCollection {
+async function parseCsv(text: string): Promise<FeatureCollection> {
+  const Papa = await loadPapa();
   const parsed = Papa.parse<Record<string, string>>(text, {
     header: true,
     skipEmptyLines: true,

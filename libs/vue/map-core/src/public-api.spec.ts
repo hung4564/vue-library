@@ -14,11 +14,9 @@ import * as api from './index';
 export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'ActionControl',
   'addStore',
-  'BaseButton',
   'BaseMapCard',
   'BaseMapControl',
   'BaseMapTagControl',
-  'Collapse',
   'createMapScopedStore',
   'CrsControl',
   'CrsDisplaySettings',
@@ -33,31 +31,16 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'GotoControl',
   'HomeControl',
   'InfoControl',
-  'InputCheckbox',
-  'InputChoose',
-  'InputColorPicker',
-  'InputCrs',
-  'InputFile',
-  'InputSelect',
-  'InputSlider',
-  'InputText',
-  'InputTextArea',
-  'KEY',
   'langStore',
   'LegendControl',
   'makeShowProps',
   'Map',
-  'MapButton',
-  'MapCard',
   'MapCommonButton',
   'MapContextMenuControl',
   'MapControlButton',
   'MapControlGroupButton',
-  'MapIcon',
-  'MapImage',
   'MeasurementControl',
   'MeasurementSettingPopup',
-  'MITT_KEY',
   'ModuleContainer',
   'MouseCoordinatesControl',
   'PrintAdvancedControl',
@@ -108,8 +91,26 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'ZoomControl',
 ] as const;
 
-/** Reserved for future experimental root exports (currently empty). */
-export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
+/** @experimental — may change in a minor. Field/UI helpers not part of the map shell contract. */
+export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'BaseButton',
+  'Collapse',
+  'InputCheckbox',
+  'InputChoose',
+  'InputColorPicker',
+  'InputCrs',
+  'InputFile',
+  'InputSelect',
+  'InputSlider',
+  'InputText',
+  'InputTextArea',
+  'KEY',
+  'MapButton',
+  'MapCard',
+  'MapIcon',
+  'MapImage',
+  'MITT_KEY',
+] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

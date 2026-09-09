@@ -6,7 +6,7 @@ import {
   parseGisFile,
   parseGisFiles,
   parseGisFromUrl,
-  parseGisText,
+  parseGisTextAsync,
 } from '../create-control/gis-parse';
 import type { GeoJSON } from 'geojson';
 // Vite workers cannot resolve workspace package names for most map-core
@@ -96,7 +96,7 @@ runWorkerMonitor<GeojsonWorkerRequest>(
       case 'parse-gis': {
         report(0, 1, 'parse');
         ctx.log(`parse text (${message.text.length} chars)`);
-        const parsed = parseGisText(
+        const parsed = await parseGisTextAsync(
           message.text,
           { name: message.filename, strict: true },
           report,

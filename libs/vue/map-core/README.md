@@ -270,4 +270,6 @@ MIT License
 
 - **[GitHub Repository](https://github.com/hung4564/vue-library)**
 - **[Documentation](./docs/)**
+- Stable / Experimental root exports: [stable-api.md](../../map-core/core/docs/core/stable-api.md) · lock in `src/public-api.spec.ts`
+- Demo e2e smoke: `npm run map:e2e`
 - **[Issues](https://github.com/hung4564/vue-library/issues)**

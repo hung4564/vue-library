@@ -14,7 +14,7 @@ import {
   shouldUseGisWorkerForGeojson,
 } from './geojson-parse';
 import type { LayerStyleType } from '../style/layer-simple-builder';
-import { parseGisFiles, parseGisFromUrl, parseGisText } from '../create-control/gis-parse';
+import { parseGisFiles, parseGisFromUrl, parseGisTextAsync } from '../create-control/gis-parse';
 import type { GisLoadResult } from '../create-control/gis-parse';
 import type {
   GeojsonWorkerRequest,
@@ -113,7 +113,8 @@ export async function loadGisTextAsync(
     },
     {
       engine: 'main',
-      run: async () => parseGisText(trimmed, { name: filename, strict: true }),
+      run: async () =>
+        parseGisTextAsync(trimmed, { name: filename, strict: true }),
     },
   );
 }

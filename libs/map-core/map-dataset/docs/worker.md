@@ -25,6 +25,15 @@ Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progres
 
 Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
 
+**Optional peers** (install in the app when using CreateControl / GIS file import):
+
+```bash
+npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
+```
+
+- Sync `parseGisText` handles GeoJSON / GeoJSONL / WKT only.
+- CSV / KML / GPX / TopoJSON / ZIP / Shapefile need `parseGisTextAsync` / `loadGis*Async` (dynamic import of the peers above).
+
 ## What runs in the worker
 
 - Fetch sample / remote GIS URLs
@@ -119,14 +128,27 @@ Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' }
 
 ## Call the APIs yourself
 
-Exported from `@hungpvq/map-dataset`:
+Exported from `@hungpvq/map-dataset/create-control` (and geo helpers from `/geojson`):
 
 ```ts
-import { GIS_FILE_ACCEPT, loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync } from '@hungpvq/map-dataset/create-control';
+import {
+  GIS_FILE_ACCEPT,
+  loadGisFileAsync,
+  loadGisTextAsync,
+  loadGisUrlAsync,
+  parseGisText,
+  parseGisTextAsync,
+} from '@hungpvq/map-dataset/create-control';
 import { reprojectGeojsonToWgs84Async, terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 
 const { geojson, crs, format } = await loadGisFileAsync(file);
 const wgs84 = await reprojectGeojsonToWgs84Async(geojson!, crs);
+
+// Sync path — GeoJSON / GeoJSONL / WKT only
+parseGisText(geojsonText);
+
+// CSV / KML / GPX / TopoJSON (needs optional peers)
+await parseGisTextAsync(csvText, { name: 'sample.csv' });
 ```
 
 `loadGeojsonFileAsync` / `loadGeojsonTextAsync` remain as aliases.
@@ -134,8 +156,10 @@ const wgs84 = await reprojectGeojsonToWgs84Async(geojson!, crs);
 | Function | Role |
 | --- | --- |
 | `loadGisFileAsync(file \| files)` | Read one file, a Shapefile sidecar set, parse, detect CRS |
-| `loadGisTextAsync(text)` | Parse pasted GIS text, detect CRS |
+| `loadGisTextAsync(text)` | Parse pasted GIS text (async peers), detect CRS |
 | `loadGisUrlAsync(url)` | Fetch in the worker, then parse |
+| `parseGisText(text)` | Sync parse for GeoJSON / GeoJSONL / WKT |
+| `parseGisTextAsync(text)` | Full text parse including CSV / KML / GPX / TopoJSON |
 | `parseGeojsonTextAsync(text)` | Same parse; returns GeoJSON only |
 | `reprojectGeojsonToWgs84Async(geojson, crs)` | Reproject to EPSG:4326 (no-op if already 4326) |
 | `bboxFromGeojsonAsync(geojson)` | Turf bbox (prefers worker) |

@@ -4,6 +4,25 @@ Dialog to add a GeoJSON / raster / vector dataset from the UI. `LayerControl` op
 
 GeoJSON / KML / GPX / Shapefile file read, parse, and CRS reproject run in a [Web Worker](../worker.md). Configure Vite `worker.format: 'es'` (and `nxViteTsPaths` on `worker.plugins` in this Nx workspace) or large files fall back to the main thread and can freeze the UI. Mount [WorkerControl](/map/core/module/WorkerControl) to watch progress and errors.
 
+## Optional GIS peers
+
+`@hungpvq/map-dataset` does **not** bundle GIS format parsers. Install them in the app when using CreateControl / file import:
+
+```bash
+npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
+```
+
+| Format | Peer(s) |
+| --- | --- |
+| GeoJSON / GeoJSONL / WKT | none (`parseGisText` sync) |
+| CSV | `papaparse` |
+| KML / GPX | `@tmcw/togeojson`, `@xmldom/xmldom` |
+| TopoJSON | `topojson-client` |
+| ZIP / KMZ | `jszip` (+ KML peers for KMZ) |
+| Shapefile | `shpjs` |
+
+Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dataset/create-control` — see [GIS worker](../worker.md).
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

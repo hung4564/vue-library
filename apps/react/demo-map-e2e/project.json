@@ -1,0 +1,8 @@
+{
+  "name": "react-demo-map-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/react/demo-map-e2e/src",
+  "tags": ["map", "react", "e2e"],
+  "implicitDependencies": ["react-demo-map"]
+}

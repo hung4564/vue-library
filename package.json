@@ -37,6 +37,7 @@
     "map:lint": "nx run-many --projects=tag:map --exclude=tag:demo --target=lint,typecheck,ts-check",
     "map:build": "nx run-many --projects=tag:map --exclude=tag:demo --target=lint,build",
     "map:test": "nx run-many --projects=tag:map --exclude=tag:demo --target=test",
+    "map:e2e": "nx run-many --projects=vue-demo-map-e2e,react-demo-map-e2e --target=e2e",
     "map:version": "nx release version --group=map",
     "map:release": "nx release --group=map",
     "map:release:local": "nx release version --group=map --git-commit=false --git-tag=false && nx release publish --group=map --registry=http://localhost:4873",

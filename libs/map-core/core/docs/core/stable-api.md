@@ -4,7 +4,7 @@ Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
 Root and domain barrels use **explicit named exports** (no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts` (root **and** each domain subpath).
 
-**All current root and subpath runtime exports are Stable.** Each package keeps `*_EXPERIMENTAL_RUNTIME_EXPORTS = []` for the lock pattern; new symbols should be added to Stable unless intentionally staged as Experimental later.
+**All current root and subpath runtime exports are Stable or Experimental.** Experimental symbols live on the same root barrel and are listed in each package’s `*_EXPERIMENTAL_RUNTIME_EXPORTS` (may change in a **minor**). Removing an Experimental export from a published barrel is still a **major**.
 
 **Runtime lock:** each entry asserts `Object.keys(import * as api from '<entry>')` equals its Stable ∪ Experimental allowlist in `public-api.spec.ts` (type-only exports are erased at runtime and omitted from the lock). Root and subpaths may export **first-party** types via explicit `export type { … }` — do **not** re-export types that already live in third-party packages (`geojson`, `maplibre-gl`, …); import those from the original package.
 
@@ -82,7 +82,7 @@ Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barre
 | `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers |
 | `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
-| `./create-control` | `CREATE_CONTROL_*`, `parseGis*` / `loadGis*`, `getCreateControlSamples` |
+| `./create-control` | `CREATE_CONTROL_*`, `parseGis*` / `parseGisTextAsync` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse |
 | `./geo-export` | `GEO_EXPORT_*`, `exportDatasetGeo`, `downloadBlob`, export menu helpers |
 | `./vite` | `mapDatasetGisWorker()` |
 | `./style.css` / `./assets/*` | package CSS and static assets |
@@ -91,7 +91,7 @@ Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barre
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
-Full root surfaces are Stable (~94 Vue / ~101 React runtime symbols — see each `public-api.spec.ts`). Shared highlights:
+Full root surfaces are Stable ∪ Experimental (~94 Vue / ~101 React runtime symbols — see each `public-api.spec.ts`). Shared highlights:
 
 | Area | Stable surface |
 |------|----------------|
@@ -102,7 +102,9 @@ Full root surfaces are Stable (~94 Vue / ~101 React runtime symbols — see each
 | Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl` |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
-Framework idioms (both Stable, different names): Vue `Collapse` / `InputTextArea` / `KEY` / `MITT_KEY` / `makeShowProps` / `withMapProps`; React `BaseCollapse` / `InputTextarea` / `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
+Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
+
+**Experimental** (same root barrel; may change in a **minor**): Vue `Input*` / `BaseButton` / `Collapse` / `MapButton` / `MapCard` / `MapIcon` / `MapImage` / `KEY` / `MITT_KEY`; React `Input*` / `BaseButton` / `BaseCollapse` / `DragDropFile` / `MapButton` / `MapCard` / `MapIcon` / `MapImage`.
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`. Compare / multi-map UI and `getIsMulti` are not part of the adapters.
 
@@ -155,7 +157,7 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-`*_EXPERIMENTAL_RUNTIME_EXPORTS` is currently **empty** on all map packages. Prefer adding new root symbols as Stable. If a future symbol is intentionally unstable, list it under Experimental (may change in a **minor**); removing it from the root remains a **major**.
+Vue/React `@hungpvq/*-map-core` list field/UI helpers under `*_EXPERIMENTAL_RUNTIME_EXPORTS` (same root barrel; may change in a **minor**). Prefer new root symbols as Stable unless intentionally unstable. Removing an Experimental export from a published barrel remains a **major**.
 
 ## Enforcing the allowlist
 

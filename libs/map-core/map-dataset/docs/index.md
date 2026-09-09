@@ -204,7 +204,7 @@ function Page() {
 
 Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatasetCreation.md).
 
-Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Apps on npm need `mapDatasetGisWorker()`; this monorepo needs `worker.format: 'es'` (+ `nxViteTsPaths` on `worker.plugins`).
+Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Apps on npm need `mapDatasetGisWorker()`; this monorepo needs `worker.format: 'es'` (+ `nxViteTsPaths` on `worker.plugins`). Install optional GIS peers when using CreateControl — see [CreateControl](./module/CreateControl.md).
 
 ## Next
 

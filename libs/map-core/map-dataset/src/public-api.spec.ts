@@ -323,6 +323,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'parseGisFiles',
   'parseGisFromUrl',
   'parseGisText',
+  'parseGisTextAsync',
   'reportCreateLayerError',
   'sniffGisText',
   'suggestLayerName',

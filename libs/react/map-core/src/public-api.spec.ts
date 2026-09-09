@@ -14,8 +14,6 @@ import * as api from './index';
 export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'ActionControl',
   'addStore',
-  'BaseButton',
-  'BaseCollapse',
   'BaseMapCard',
   'BaseMapControl',
   'BaseMapTagControl',
@@ -25,7 +23,6 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'DefaultBaseMapAdapter',
   'defaultMapProps',
   'destroyMapScopedStore',
-  'DragDropFile',
   'EventManagementControl',
   'FullScreenControl',
   'GeoLocateControl',
@@ -36,21 +33,10 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'GotoControl',
   'HomeControl',
   'InfoControl',
-  'InputCheckbox',
-  'InputChoose',
-  'InputColorPicker',
-  'InputCrs',
-  'InputFile',
-  'InputSelect',
-  'InputSlider',
-  'InputText',
-  'InputTextarea',
   'langStore',
   'LegendControl',
   'logger',
   'Map',
-  'MapButton',
-  'MapCard',
   'MapCommonButton',
   'MapContext',
   'MapContextMenuControl',
@@ -59,8 +45,6 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapControlButtonGroupContext',
   'MapControlGroupButton',
   'MapGlobalStoreProvider',
-  'MapIcon',
-  'MapImage',
   'MeasurementControl',
   'MeasurementSettingPopup',
   'ModuleContainer',
@@ -115,8 +99,25 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'ZoomControl',
 ] as const;
 
-/** Reserved for future experimental root exports (currently empty). */
-export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
+/** @experimental — may change in a minor. Field/UI helpers not part of the map shell contract. */
+export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'BaseButton',
+  'BaseCollapse',
+  'DragDropFile',
+  'InputCheckbox',
+  'InputChoose',
+  'InputColorPicker',
+  'InputCrs',
+  'InputFile',
+  'InputSelect',
+  'InputSlider',
+  'InputText',
+  'InputTextarea',
+  'MapButton',
+  'MapCard',
+  'MapIcon',
+  'MapImage',
+] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

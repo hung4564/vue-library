@@ -36,7 +36,16 @@ Allowed when covering Map shell / control registration under jsdom:
 - Specs: `Map.ui.spec.ts(x)`, `controls.ui.spec.ts(x)` mounting `Map` + `LayerControl` + `IdentifyControl`
 - Assert registry `getControl(...)` and Teleport host nodes — not full identify query flows
 
-Avoid heavy browser/MapLibre GL integration beyond that; demos and Playwright e2e are separate.
+Avoid heavy browser/MapLibre GL integration beyond that; demos use Playwright e2e:
+
+```bash
+npm run map:e2e
+# or
+npx nx e2e vue-demo-map-e2e
+npx nx e2e react-demo-map-e2e
+```
+
+Smoke specs hit `/#/minimal/` (Vue) and `/#/minimal` (React) under `apps/*/demo-map-e2e`.
 
 ## Commands
 

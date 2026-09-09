@@ -2,7 +2,7 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { nextTick, ref } from 'vue';
 import { defaultMapProps, useMap } from '../../hooks';
 

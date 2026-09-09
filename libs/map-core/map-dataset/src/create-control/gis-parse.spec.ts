@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { asGisFeatureCollection, parseGisText } from './gis-parse';
+import {
+  asGisFeatureCollection,
+  parseGisText,
+  parseGisTextAsync,
+} from './gis-parse';
 
 describe('parseGisText', () => {
   it('parses GeoJSON FeatureCollection', () => {
@@ -45,14 +49,6 @@ describe('parseGisText', () => {
     expect(fc?.features[0]?.geometry?.type).toBe('Point');
   });
 
-  it('parses CSV with lat/lng columns', () => {
-    const text = 'name,lat,lng\nA,10.8,106.7\nB,10.9,106.8\n';
-    const result = parseGisText(text, { name: 'sample.csv' });
-    const fc = asGisFeatureCollection(result.geojson);
-    expect(fc?.features.length).toBe(2);
-    expect(fc?.features[0]?.geometry?.type).toBe('Point');
-  });
-
   it('returns null geojson for empty input', () => {
     const result = parseGisText('   ');
     expect(result.geojson).toBeNull();
@@ -61,5 +57,22 @@ describe('parseGisText', () => {
   it('returns null when strict is false and input is invalid', () => {
     const result = parseGisText('not-valid-gis{{{', { strict: false });
     expect(result.geojson).toBeNull();
+  });
+
+  it('rejects CSV on sync path (use parseGisTextAsync)', () => {
+    const text = 'name,lat,lng\nA,10.8,106.7\n';
+    expect(() => parseGisText(text, { name: 'sample.csv' })).toThrow(
+      /parseGisTextAsync/,
+    );
+  });
+});
+
+describe('parseGisTextAsync', () => {
+  it('parses CSV with lat/lng columns', async () => {
+    const text = 'name,lat,lng\nA,10.8,106.7\nB,10.9,106.8\n';
+    const result = await parseGisTextAsync(text, { name: 'sample.csv' });
+    const fc = asGisFeatureCollection(result.geojson);
+    expect(fc?.features.length).toBe(2);
+    expect(fc?.features[0]?.geometry?.type).toBe('Point');
   });
 });

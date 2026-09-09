@@ -1,7 +1,7 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCoordinate } from '../../extra/crs';

@@ -41,5 +41,13 @@
     "mitt": "^3.0.1",
     "@hungpvq/shared-store": ">=0.0.1",
     "file-saver": "^2.0.5"
+  },
+  "peerDependenciesMeta": {
+    "@ckpack/vue-color": {
+      "optional": true
+    },
+    "file-saver": {
+      "optional": true
+    }
   }
 }

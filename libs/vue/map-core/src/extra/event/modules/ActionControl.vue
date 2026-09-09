@@ -5,7 +5,7 @@ export default {
 </script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/map-core';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
 
 import {
   IEvent,

@@ -30,6 +30,7 @@ export {
   parseGisFiles,
   parseGisFromUrl,
   parseGisText,
+  parseGisTextAsync,
 } from './gis-parse';
 export type { GisLoadResult, GisProgress } from './gis-parse';
 export { CREATE_CONTROL_LOCALE, CREATE_CONTROL_SAMPLE_NONE } from './locale';

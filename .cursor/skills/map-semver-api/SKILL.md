@@ -49,7 +49,7 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 - Peer minimum raises; optional peer → required
 - Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import platform APIs from `@hungpvq/map-core` and domain APIs from `@hungpvq/map-core/<domain>` (or `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` / `map-draw` / `draggable`)
 
-Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Map packages currently keep that list **empty** — all published runtime exports are Stable.
+Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`) may change in a **minor**. Vue/React `map-core` stage field/UI helpers (`Input*`, `BaseButton`, `MapCard`, …) as Experimental on the root barrel; other map packages may keep the list empty.
 
 ## Export lock rule
 

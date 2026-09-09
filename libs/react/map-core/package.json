@@ -53,6 +53,12 @@
     },
     "@vitejs/plugin-react": {
       "optional": true
+    },
+    "@uiw/react-color-sketch": {
+      "optional": true
+    },
+    "file-saver": {
+      "optional": true
     }
   }
 }
