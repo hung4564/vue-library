@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { type MapSimple } from '@hungpvq/map-core';
+import { getMap, type MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  getMap,
   GotoControl,
   HomeControl,
   Map,

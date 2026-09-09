@@ -1,10 +1,9 @@
-import type { MapSimple } from '@hungpvq/map-core';
+import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  getMap,
   GotoControl,
   HomeControl,
   Map,

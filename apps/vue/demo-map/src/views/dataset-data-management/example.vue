@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/map-core';
-import { getChartRandomColor } from '@hungpvq/map-core';
+import { getChartRandomColor, getMap, type MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
   BaseMapControl,
   EventManagementControl,
-  getMap,
   Map,
   WorkerControl,
 } from '@hungpvq/vue-map-core';
