@@ -35,17 +35,14 @@ type DrawControlMapboxDrawControls = Omit<
   'displayControlsDefault'
 >;
 
-const props = withDefaults(
-  defineProps<
-    WithMapPropType & {
-      drawOptions?: MapDrawOption;
-      drawControlOptions?: DrawControlMapboxDrawControls;
-    }
-  >(),
-  {
-    ...defaultMapProps,
-  },
-);
+interface DrawControlProps extends WithMapPropType {
+  drawOptions?: MapDrawOption;
+  drawControlOptions?: DrawControlMapboxDrawControls;
+}
+
+const props = withDefaults(defineProps<DrawControlProps>(), {
+  ...defaultMapProps,
+});
 const drawOptions = ref(props.drawOptions);
 const control = new MapDraw({
   displayControlsDefault: false,
@@ -217,7 +214,7 @@ function onFlyTo(value: Feature) {
   });
 }
 </script>
-<template setup>
+<template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <DrawToolbar

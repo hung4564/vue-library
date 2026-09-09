@@ -1,6 +1,6 @@
 # Map store & `getMap`
 
-Each **`mapId`** holds **one** MapLibre instance. There is no multi-map / swipe-compare model (`maps[]`, `getIsMulti`, `MapCompare`, … are removed).
+Each **`mapId`** holds **one** MapLibre instance.
 
 ## Who exports what
 

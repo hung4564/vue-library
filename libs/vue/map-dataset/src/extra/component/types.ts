@@ -4,7 +4,7 @@ import type { ListViewGroupOption, MenuAction, MenuActionLocation } from '@hungp
 /**
  * Local props interfaces for `defineProps<>` — Vue SFC compiler cannot resolve
  * these when imported only from `@hungpvq/map-dataset`.
- * Keep in sync with `libs/map-core/map-dataset/src/extra/menu/layer-item.ts`.
+ * Keep in sync with `libs/map-core/map-dataset/src/menu/layer-item.ts`.
  */
 export interface WithLayerItemActionType {
   item: MenuAction<IListViewUI>;
