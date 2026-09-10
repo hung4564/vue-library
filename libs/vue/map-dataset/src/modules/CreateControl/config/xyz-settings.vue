@@ -42,7 +42,8 @@
 </template>
 
 <script setup>
-import { InputText, useLang, useMap } from '@hungpvq/vue-map-core';
+import { useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
 
 const form = defineModel();
 const { mapId } = useMap();

@@ -147,6 +147,9 @@
 .hungpvq-draggable-card button {
   color: var(--map-card-text, var(--map-text-primary, #333));
 }
+.hungpvq-draggable-card button.map-control-button--filled {
+  color: var(--map-on-primary-color, var(--map-text-inverse, #fff));
+}
 .hungpvq-draggable-card .card-container hr.map-divider:first-child {
   display: none;
 }

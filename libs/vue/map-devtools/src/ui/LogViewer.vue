@@ -1,7 +1,7 @@
 <template>
   <div class="log-viewer">
     <div class="log-controls">
-      <BaseButton @click="clear">Clear</BaseButton>
+      <MapControlButton @click="clear" variant="text">Clear</MapControlButton>
       <label>
         <input type="checkbox" v-model="autoScroll" /> Auto-scroll
       </label>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed, h, nextTick, ref, watch } from 'vue';
 import { devtoolState } from '../store';
 import GroupItem from './GroupItem.vue';

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  useLang,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useRegisterMapControl } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
 import type { IDraftRecord } from '@hungpvq/map-draw';
@@ -84,7 +81,7 @@ const path = {
             {{ trans('map.draw-control.draftList.type.' + item.status) }}
           </td>
           <td class="table-col-action">
-            <BaseButton
+            <MapControlButton variant="plain"
               type="button"
               v-if="item.modified"
               @click="emit('fly-to', item.modified as any)"
@@ -97,8 +94,8 @@ const path = {
                 :path="path.fillBound"
                 :title="trans('map.draw-control.draftList.action.fillBound')"
               />
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton variant="plain"
               type="button"
               @click="emit('discard-item', item)"
               class="menu-item"
@@ -110,7 +107,7 @@ const path = {
                 :path="path.delete"
                 :title="trans('map.draw-control.draftList.action.discard')"
               />
-            </BaseButton>
+            </MapControlButton>
           </td>
         </tr>
       </tbody>

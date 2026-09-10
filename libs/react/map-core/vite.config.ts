@@ -32,12 +32,13 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        fields: 'src/fields.ts',
+      },
       name: '@hungpvq/react-map-core',
-      fileName: 'index',
-      // Change this to the formats you want to support.
-      // Don't forget to update your package.json as well.
+      fileName: (format, entryName) =>
+        entryName === 'index' ? 'index.js' : `${entryName}.js`,
       formats: ['es' as const],
     },
     rollupOptions: {

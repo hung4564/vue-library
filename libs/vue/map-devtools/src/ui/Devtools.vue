@@ -13,26 +13,23 @@
       <div class="devtools-panel">
         <div class="devtools-header">
           <div class="tabs">
-            <BaseButton
+            <MapControlButton
               :active="state.activeTab === 'store'"
-              @click="state.activeTab = 'store'"
-            >
+              @click="state.activeTab = 'store'" variant="text">
               Store
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton
               :active="state.activeTab === 'logs'"
-              @click="state.activeTab = 'logs'"
-            >
+              @click="state.activeTab = 'logs'" variant="text">
               Logs
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton
               :active="state.activeTab === 'errors'"
-              @click="state.activeTab = 'errors'"
-            >
+              @click="state.activeTab = 'errors'" variant="text">
               Errors
-            </BaseButton>
+            </MapControlButton>
           </div>
-          <BaseButton class="close-btn" @click="close">X</BaseButton>
+          <MapControlButton class="close-btn" @click="close" variant="text">X</MapControlButton>
         </div>
         <div class="devtools-content">
           <StoreViewer v-if="state.activeTab === 'store'" />
@@ -53,24 +50,21 @@
       <div class="devtools-bottom-body">
         <div class="devtools-header">
           <div class="tabs">
-            <BaseButton
+            <MapControlButton
               :active="state.activeTab === 'store'"
-              @click="state.activeTab = 'store'"
-            >
+              @click="state.activeTab = 'store'" variant="text">
               Store
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton
               :active="state.activeTab === 'logs'"
-              @click="state.activeTab = 'logs'"
-            >
+              @click="state.activeTab = 'logs'" variant="text">
               Logs
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton
               :active="state.activeTab === 'errors'"
-              @click="state.activeTab = 'errors'"
-            >
+              @click="state.activeTab = 'errors'" variant="text">
               Errors
-            </BaseButton>
+            </MapControlButton>
           </div>
         </div>
         <div class="devtools-content">
@@ -87,26 +81,23 @@
     >
       <div class="devtools-header">
         <div class="tabs">
-          <BaseButton
+          <MapControlButton
             :active="state.activeTab === 'store'"
-            @click="state.activeTab = 'store'"
-          >
+            @click="state.activeTab = 'store'" variant="text">
             Store
-          </BaseButton>
-          <BaseButton
+          </MapControlButton>
+          <MapControlButton
             :active="state.activeTab === 'logs'"
-            @click="state.activeTab = 'logs'"
-          >
+            @click="state.activeTab = 'logs'" variant="text">
             Logs
-          </BaseButton>
-          <BaseButton
+          </MapControlButton>
+          <MapControlButton
             :active="state.activeTab === 'errors'"
-            @click="state.activeTab = 'errors'"
-          >
+            @click="state.activeTab = 'errors'" variant="text">
             Errors
-          </BaseButton>
+          </MapControlButton>
         </div>
-        <BaseButton class="close-btn" @click="close">X</BaseButton>
+        <MapControlButton class="close-btn" @click="close" variant="text">X</MapControlButton>
       </div>
       <div class="devtools-content">
         <StoreViewer v-if="state.activeTab === 'store'" />
@@ -118,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import { DraggableItemBottom } from '@hungpvq/vue-draggable';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { devtoolState, toggleDevtoolOpen } from '../store';

@@ -4,7 +4,7 @@ Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
 Root and domain barrels use **explicit named exports** (no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts` (root **and** each domain subpath).
 
-**All current root and subpath runtime exports are Stable or Experimental.** Experimental symbols live on the same root barrel and are listed in each package’s `*_EXPERIMENTAL_RUNTIME_EXPORTS` (may change in a **minor**). Removing an Experimental export from a published barrel is still a **major**.
+**All current root and subpath runtime exports are Stable or Experimental.** For Vue/React `map-core`, Experimental field/UI helpers live on **`./fields`** (not the root). Other packages may list Experimental symbols in `*_EXPERIMENTAL_RUNTIME_EXPORTS` on a published barrel (may change in a **minor**). Removing an Experimental export from a published barrel is still a **major**.
 
 **Runtime lock:** each entry asserts `Object.keys(import * as api from '<entry>')` equals its Stable ∪ Experimental allowlist in `public-api.spec.ts` (type-only exports are erased at runtime and omitted from the lock). Root and subpaths may export **first-party** types via explicit `export type { … }` — do **not** re-export types that already live in third-party packages (`geojson`, `maplibre-gl`, …); import those from the original package.
 
@@ -92,46 +92,48 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
-Full root surfaces are Stable ∪ Experimental (~94 Vue / ~101 React runtime symbols — see each `public-api.spec.ts`). Shared highlights:
+Root barrels are **Stable only** (see each `public-api.spec.ts`). Field / lightweight UI helpers live on **`./fields`** (Experimental; may change in a **minor**).
+
+**Breaking (major):** importing former Experimental symbols (`Input*`, `MapCard`, `MapErrorToast`, …) from the package root fails — use `@hungpvq/vue-map-core/fields` / `@hungpvq/react-map-core/fields`. Former `BaseButton` is removed — use Stable root `MapControlButton`.
+
+Shared root highlights:
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents); optional `keyboardShortcuts` (default true); mounts Experimental `MapErrorToast` |
+| Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents); optional `keyboardShortcuts` (default true); mounts `MapErrorToast` internally from `./fields` |
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
 | Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore` (not `getMap`) — [map-store](./map-store.md) |
 | Registry | Framework `UniversalRegistry`, `RegistryItem` |
-| Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl` |
+| Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl`; action UI uses `MapControlButton` (`variant`: `icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`; `size`: `small` \| `medium` \| `large` \| number px — see [css-variables](./css-variables.md#core---mapcontrolbutton--mapbutton)) / `MapCommonButton` |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
 Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
 
-**Same root barrel = Stable ∪ Experimental.** Experimental symbols are listed below and in each `*_EXPERIMENTAL_RUNTIME_EXPORTS`; they may change in a **minor**. Apps should not treat them as a SemVer-stable contract. Authoritative lock: `public-api.spec.ts`.
+Package entries: `.` + `./style.css` + **`./fields`**.
 
-### Experimental root exports (`@hungpvq/vue-map-core`)
-
-| Symbol | Notes |
-|--------|--------|
-| `BaseButton` | Field / control button |
-| `BaseCollapse`, `Collapse` | Collapse panel — **canonical `BaseCollapse`**; `Collapse` alias |
-| `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea`, `InputTextarea` | Form helpers — **canonical `InputTextArea`**; `InputTextarea` alias |
-| `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
-| `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
-| `KEY`, `MITT_KEY` | Vue-only store / mitt id constants (not field UI) |
-
-### Experimental root exports (`@hungpvq/react-map-core`)
+### `@hungpvq/vue-map-core/fields` / `@hungpvq/react-map-core/fields`
 
 | Symbol | Notes |
 |--------|--------|
-| `BaseButton` | Field / control button |
 | `BaseCollapse`, `Collapse` | Collapse panel — **canonical `BaseCollapse`**; `Collapse` alias |
-| `DragDropFile` | React-only file drop helper |
 | `InputCheckbox`, `InputChoose`, `InputColorPicker`, `InputCrs`, `InputFile`, `InputSelect`, `InputSlider`, `InputText`, `InputTextArea`, `InputTextarea` | Form helpers — **canonical `InputTextArea`**; `InputTextarea` alias |
-| `MapButton`, `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
+| `MapButton` | Map-control chrome (`variant` / `size` same as `MapControlButton`; prefer Stable root `MapControlButton` in apps) |
+| `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
 | `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
+| `KEY`, `MITT_KEY` | Vue-only (on Vue `/fields`) |
+| `DragDropFile` | React-only (on React `/fields`) |
 
-Prefer canonical names in new code (`BaseCollapse`, `InputTextArea`). Both spellings are exported on Vue and React for parity. Framework-only symbols (`KEY` / `MITT_KEY`, `DragDropFile`, React context helpers) stay adapter-specific.
+```ts
+import { MapControlButton } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
+// or `@hungpvq/react-map-core` / `.../fields`
+```
 
-**Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable/Experimental export names).
+`MapControlButton`: `variant` + `size` (`small` \| `medium` \| `large` \| px). Prefer `size="small"` in dense layer rows; default `medium` matches draggable header chrome (32px).
+
+Prefer canonical names in new code (`MapControlButton`, `BaseCollapse`, `InputTextArea`). Authoritative lock: root Stable + `*_FIELDS_RUNTIME_EXPORTS` in each adapter `public-api.spec.ts`.
+
+**Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
 Dataset / draw / `@hungpvq/map-core` Experimental allowlists are **empty / reserved**.
 
@@ -177,7 +179,7 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 | Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |
 
-`openMapDevtoolsErrors` opens the panel on the Errors tab. `MapErrorToast` (map-core Experimental) dispatches `hungpvq:map-open-devtools-errors`; stores listen and call `openMapDevtoolsErrors`.
+`openMapDevtoolsErrors` opens the panel on the Errors tab. `MapErrorToast` (from `@hungpvq/*-map-core/fields`) dispatches `hungpvq:map-open-devtools-errors`; stores listen and call `openMapDevtoolsErrors`.
 
 Adapters do **not** re-export `@hungpvq/map-core` (`errorHandler` from map-core). See [Error handling](./error-handling.md).
 
@@ -187,7 +189,7 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-Vue/React `@hungpvq/*-map-core` publish field/UI helpers (and Vue `KEY` / `MITT_KEY`) on the **same root barrel** as Stable — see tables under [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Prefer new root symbols as Stable unless intentionally unstable. Removing an Experimental export from a published barrel remains a **major**. Other map packages keep `*_EXPERIMENTAL_RUNTIME_EXPORTS` empty/reserved.
+Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. Other map packages keep `*_EXPERIMENTAL_RUNTIME_EXPORTS` empty/reserved.
 ## Enforcing the allowlist
 
 1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './internal-barrel'` (or from a feature module). Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.

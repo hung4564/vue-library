@@ -115,9 +115,8 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'useWorkerMonitor',
 ] as const;
 
-/** Shared Experimental field helpers (aliases included). */
+/** Shared Experimental field helpers on `./fields` (aliases included). */
 export const MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL = [
-  'BaseButton',
   'BaseCollapse',
   'Collapse',
   'InputCheckbox',

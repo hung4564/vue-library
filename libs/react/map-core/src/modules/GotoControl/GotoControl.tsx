@@ -6,9 +6,10 @@ import { useEffect, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
-import { BaseButton, InputText } from '../../field';
+import { InputText } from '../../field';
 import { defaultMapProps, useMap, useShow } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { MapControlButton } from '../../components';
 
 export interface GotoControlProps extends WithMapPropType {
   show?: boolean;
@@ -153,9 +154,9 @@ export function GotoControl(props: GotoControlProps) {
                   />
                 </div>
               </div>
-              <BaseButton className="map-goto-control__btn" onClick={onSetSetting}>
+              <MapControlButton className="map-goto-control__btn" onClick={onSetSetting} variant="filled">
                 {trans('map.goto-control.btn.apply')}
-              </BaseButton>
+              </MapControlButton>
             </div>
           </DraggableItemPopup>
         ) : null

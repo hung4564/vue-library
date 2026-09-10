@@ -4,8 +4,9 @@ import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
+  Map,
 } from '@hungpvq/vue-map-core';
-import { Map, MapCard } from '@hungpvq/vue-map-core';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 const mapId = ref('');

@@ -25,10 +25,11 @@ import { computed, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton, Collapse } from '../../field';
+import { Collapse } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 import WorkerLogList from './WorkerLogList.vue';
+import { MapControlButton } from '../../components';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -193,25 +194,23 @@ function summaryText() {
               {{ summaryText() }}
             </span>
             <div class="map-worker-control__toolbar-actions">
-              <BaseButton
+              <MapControlButton
                 :title="trans('map.worker-control.action.clear')"
                 :disabled="!hasSelectedHistory"
-                @click.stop="selected && clearHistory(selected.id)"
-              >
+                @click.stop="selected && clearHistory(selected.id)" variant="plain">
                 <SvgIcon :size="16" type="mdi" :path="mdiEraser" />
-              </BaseButton>
-              <BaseButton
+              </MapControlButton>
+              <MapControlButton
                 v-if="manyWorkers"
                 :title="trans('map.worker-control.action.clearAll')"
                 :disabled="!hasAnyHistory"
-                @click.stop="clearHistory()"
-              >
+                @click.stop="clearHistory()" variant="plain">
                 <SvgIcon
                   :size="16"
                   type="mdi"
                   :path="mdiNotificationClearAll"
                 />
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
           <p v-if="!workers.length" class="map-worker-control__empty">

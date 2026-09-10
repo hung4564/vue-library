@@ -11,17 +11,8 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { createMenuConditionContext, getResolvedMenus, handleMenuAction, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import { IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, type IdentifyResultGrouped, type IdentifyResultLayerItem, type IdentifyResultUpdatePayload } from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  defaultMapProps,
-  InputSelect,
-  ModuleContainer,
-  UniversalRegistry,
-  useCoordinate,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { defaultMapProps, MapControlButton, ModuleContainer, UniversalRegistry, useCoordinate, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
@@ -217,20 +208,18 @@ function onResultKeydown(event: KeyboardEvent) {
         :title="trans('map.identify.title')"
       >
         <template #extra-btn>
-          <BaseButton
+          <MapControlButton
             @click.stop="onUseMapClick"
             :active="isEventClickActive"
-            :disabled="isEventClickActive"
-          >
+            :disabled="isEventClickActive" variant="plain">
             <SvgIcon size="16" type="mdi" :path="path.mapClick" />
-          </BaseButton>
-          <BaseButton
+          </MapControlButton>
+          <MapControlButton
             @click.stop="onUseBoxSelect"
             :active="isEventClickBox"
-            :disabled="isEventClickBox"
-          >
+            :disabled="isEventClickBox" variant="plain">
             <SvgIcon size="16" type="mdi" :path="path.boxSelect" />
-          </BaseButton>
+          </MapControlButton>
         </template>
         <div class="identify-control-container">
           <div class="identify-control-header">

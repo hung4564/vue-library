@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { LogEntry } from '../log-adapter';
 import { clearDevtoolLogs } from '../store';
@@ -134,7 +134,7 @@ export function LogViewer() {
   return (
     <div className="log-viewer">
       <div className="log-viewer__controls">
-        <BaseButton onClick={clearDevtoolLogs}>Clear</BaseButton>
+        <MapControlButton onClick={clearDevtoolLogs} variant="text">Clear</MapControlButton>
         <label>
           <input
             type="checkbox"

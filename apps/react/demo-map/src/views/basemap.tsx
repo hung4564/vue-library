@@ -3,9 +3,11 @@ import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Map,
-  MapCard,
+  Map
 } from '@hungpvq/react-map-core';
+import {
+  MapCard
+} from '@hungpvq/react-map-core/fields';
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';

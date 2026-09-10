@@ -41,7 +41,8 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { isCreateControlCrsMismatch } from '@hungpvq/map-dataset/create-control';
 import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
-import { InputCrs, InputSelect, useLang, useMap } from '@hungpvq/vue-map-core';
+import { useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputCrs, InputSelect } from '@hungpvq/vue-map-core/fields';
 import { computed } from 'vue';
 
 const form = defineModel();

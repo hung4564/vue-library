@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { getMap, type MapSimple } from '@hungpvq/map-core';
+import {
+  getMap,
+  type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
@@ -8,12 +10,14 @@ import {
   GotoControl,
   HomeControl,
   Map,
-  MapCard,
   MeasurementControl,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl,
+  ZoomControl
 } from '@hungpvq/vue-map-core';
+import {
+  MapCard
+} from '@hungpvq/vue-map-core/fields';
 import * as turf from '@turf/turf';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';

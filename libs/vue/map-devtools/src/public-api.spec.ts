@@ -12,7 +12,6 @@ export const VUE_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
   'DevtoolLogAdapter',
   'devtoolLogAdapter',
   'Devtools',
-  'DevtoolsPlugin',
   'devtoolState',
   'getDevtoolState',
   'installDevtools',

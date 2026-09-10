@@ -7,10 +7,11 @@ import {
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
 import { useEffect, useMemo, useState } from 'react';
-import { BaseButton, InputCrs } from '../../field';
+import { InputCrs } from '../../field';
 import { useLang } from '../lang';
 import { useMap } from '../../hooks';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from './useMapCrsItems';
+import { MapControlButton } from '../../components';
 
 export function CrsDisplaySettings() {
   const { mapId } = useMap();
@@ -65,9 +66,9 @@ export function CrsDisplaySettings() {
       </ul>
       <div className="crs-display-settings__add">
         <InputCrs value={draftEpsg} onChange={setDraftEpsg} />
-        <BaseButton className="crs-display-settings__add-btn" onClick={onAdd}>
+        <MapControlButton className="crs-display-settings__add-btn" onClick={onAdd} variant="text">
           {trans('map.crs-display.add')}
-        </BaseButton>
+        </MapControlButton>
       </div>
     </div>
   );

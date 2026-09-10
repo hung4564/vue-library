@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import { DraggableItemBottom } from '@hungpvq/react-draggable';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -44,19 +44,19 @@ function DevtoolsBody({
       <div className="devtools-header">
         <div className="devtools-tabs">
           {TABS.map((tab) => (
-            <BaseButton
+            <MapControlButton variant="text"
               key={tab.id}
               active={activeTab === tab.id}
               onClick={() => setDevtoolActiveTab(tab.id)}
             >
               {tab.label}
-            </BaseButton>
+            </MapControlButton>
           ))}
         </div>
         {showClose ? (
-          <BaseButton className="close-btn" onClick={onClose}>
+          <MapControlButton className="close-btn" onClick={onClose} variant="text">
             X
-          </BaseButton>
+          </MapControlButton>
         ) : null}
       </div>
       <div className="devtools-content">

@@ -1,5 +1,6 @@
 import { copyByJson } from '@hungpvq/shared';
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
+
 import type { ComponentType } from 'react';
 import type { Tab } from '@hungpvq/map-dataset/style';
 import type { TransFn } from '../style/type/tab-utils';
@@ -76,13 +77,12 @@ export function TabContent({
       {default_value != null && (
         <div className="full-width">
           <hr className="map-divider" />
-          <BaseButton
+          <MapControlButton
             onClick={onSetDefaultValue}
             disabled={form == null || form === default_value}
-            className="map-button text-center full-width"
-          >
+            className="map-button text-center full-width" variant="text">
             {trans('map.style-control.back-to-default')}
-          </BaseButton>
+          </MapControlButton>
         </div>
       )}
     </div>

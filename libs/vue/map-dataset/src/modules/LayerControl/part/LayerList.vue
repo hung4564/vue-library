@@ -4,14 +4,8 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  defaultMapProps,
-  InputText,
-  RegistryItem,
-  useLang,
-  useMap,
-} from '@hungpvq/vue-map-core';
+import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,
@@ -252,25 +246,24 @@ function onLayerAction({
         :placeholder="trans('map.layer-control.search')"
         aria-label="Search layers"
       />
-      <BaseButton
+      <MapControlButton
         v-if="layerSearch.trim()"
         class="layer-control__search-clear"
         aria-label="Clear search"
-        @click="layerSearch = ''"
-      >
+        @click="layerSearch = ''" variant="plain">
         <SvgIcon size="14" type="mdi" :path="mdiClose" />
-      </BaseButton>
+      </MapControlButton>
     </div>
     <div v-if="views.length" class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
       <ButtonToggleShowALl :items="views" />
-      <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
+      <MapControlButton @click="addNewGroup()" v-if="!disabledCreateGroup" variant="plain">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
-      </BaseButton>
-      <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
+      </MapControlButton>
+      <MapControlButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll" variant="plain">
         <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-      </BaseButton>
+      </MapControlButton>
     </div>
     <div class="layer-control__list">
       <div v-if="!views.length" class="layer-control__empty">

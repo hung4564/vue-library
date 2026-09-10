@@ -9,18 +9,8 @@ import {
   DraggableItemPopup,
   type ContextMenuRef,
 } from '@hungpvq/react-draggable';
-import {
-  BaseButton,
-  InputCheckbox,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  defaultMapProps,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-  useShow,
-} from '@hungpvq/react-map-core';
+import { defaultMapProps, MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl, useShow } from '@hungpvq/react-map-core';
+import { InputCheckbox, InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { Feature } from 'geojson';
@@ -363,17 +353,16 @@ export function AttributeTable(props: AttributeTableProps) {
                     placeholder={trans('map.attribute-table.search')}
                     onChange={setQuery}
                   />
-                  <BaseButton
+                  <MapControlButton
                     className="attribute-table__export"
                     disabled={exportRows.length === 0}
-                    onClick={onExportClick}
-                  >
+                    onClick={onExportClick} variant="outlined">
                     <Icon path={mdiDownload} size="16px" />
                     {selectedIds.length
                       ? trans('map.attribute-table.export-selected')
                       : trans('map.attribute-table.export')}
                     <Icon path={mdiChevronDown} size="16px" />
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
                 <div className="attribute-table__toolbar-row">
                   <InputCheckbox
@@ -388,13 +377,12 @@ export function AttributeTable(props: AttributeTableProps) {
                       setRowFilter(value === 'selected' ? 'selected' : 'all')
                     }
                   />
-                  <BaseButton
+                  <MapControlButton
                     className="attribute-table__clear"
                     disabled={selectedIds.length === 0}
-                    onClick={clearSelection}
-                  >
+                    onClick={clearSelection} variant="outlined">
                     {trans('map.attribute-table.clear')}
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
               </div>
               {loading ? (

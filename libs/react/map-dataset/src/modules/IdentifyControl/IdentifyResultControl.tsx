@@ -5,17 +5,17 @@ import { createMenuConditionContext, getResolvedMenus, handleMenuAction, isMenuI
 import { IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, type IdentifyResultGrouped, type IdentifyResultLayerItem, type IdentifyResultUpdatePayload } from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
-  BaseButton,
   defaultMapProps,
-  InputSelect,
+  MapControlButton,
   ModuleContainer,
   UniversalRegistry,
   useCoordinate,
   useLang,
   useMap,
   useRegisterMapControl,
-  useShow,
+  useShow
 } from '@hungpvq/react-map-core';
+import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -193,7 +193,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
             height={300}
             extraBtn={
               <>
-                <BaseButton
+                <MapControlButton variant="plain"
                   active={isEventClickActive}
                   disabled={isEventClickActive}
                   onClick={(e) => {
@@ -205,8 +205,8 @@ export function IdentifyResultControl(props: WithMapPropType) {
                   }}
                 >
                   <Icon path={mdiCursorPointer} size={ICON_SIZE} />
-                </BaseButton>
-                <BaseButton
+                </MapControlButton>
+                <MapControlButton variant="plain"
                   active={isEventClickBox}
                   disabled={isEventClickBox}
                   onClick={(e) => {
@@ -218,7 +218,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
                   }}
                 >
                   <Icon path={mdiSelect} size={ICON_SIZE} />
-                </BaseButton>
+                </MapControlButton>
               </>
             }
             {...bind}

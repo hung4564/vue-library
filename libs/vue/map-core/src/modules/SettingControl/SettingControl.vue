@@ -9,9 +9,10 @@ import type { SpriteSpecification } from 'maplibre-gl';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { BaseButton, InputText } from '../../field';
+import { InputText } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+import { MapControlButton } from '../../components';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -154,12 +155,11 @@ const { state, control } = useToolbarControl(mapId.value, props, {
             </div>
           </div>
 
-          <base-button
+          <map-control-button
             class="map-setting-control__apply"
-            @click="onSetSetting()"
-          >
+            @click="onSetSetting()" variant="filled">
             {{ trans('map.setting-control.btn.apply') }}
-          </base-button>
+          </map-control-button>
         </div>
       </DraggableItemPopup>
     </template>

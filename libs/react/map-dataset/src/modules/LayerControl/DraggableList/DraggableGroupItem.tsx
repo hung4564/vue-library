@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import {
   mdiChevronDown,
   mdiChevronUp,
@@ -51,21 +51,33 @@ export function DraggableGroupItem({
         </span>
         <div className="draggable-group__action">
           {!readonly && hasChildren && (
-            <BaseButton onClick={onUngroup} aria-label="Ungroup">
+            <MapControlButton
+              onClick={onUngroup}
+              aria-label="Ungroup"
+              variant="plain"
+              size="small"
+            >
               <Icon path={mdiUngroup} size={ICON_SIZE} />
-            </BaseButton>
+            </MapControlButton>
           )}
           {!readonly && (
-            <BaseButton onClick={onDelete} aria-label="Delete group">
+            <MapControlButton
+              onClick={onDelete}
+              aria-label="Delete group"
+              variant="plain"
+              size="small"
+            >
               <Icon path={mdiDelete} size={ICON_SIZE} />
-            </BaseButton>
+            </MapControlButton>
           )}
-          <BaseButton
+          <MapControlButton
+            variant="plain"
+            size="small"
             onClick={() => setIsGroupShow((prev) => !prev)}
             aria-label="Toggle group"
           >
             <Icon path={isGroupShow ? mdiChevronDown : mdiChevronUp} size={ICON_SIZE} />
-          </BaseButton>
+          </MapControlButton>
         </div>
       </div>
       {isGroupShow && <div className="draggable-group__divider" />}

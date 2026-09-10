@@ -1,11 +1,4 @@
-import {
-  InputCheckbox,
-  InputChoose,
-  InputColorPicker,
-  InputSelect,
-  InputSlider,
-  InputText,
-} from '@hungpvq/vue-map-core';
+import { InputCheckbox, InputChoose, InputColorPicker, InputSelect, InputSlider, InputText } from '@hungpvq/vue-map-core/fields';
 import InputArrayIndex from '../field/InputArrayIndex.vue';
 import InputArrayXY from '../field/InputArrayXY.vue';
 import InputImage from '../field/InputImage.vue';

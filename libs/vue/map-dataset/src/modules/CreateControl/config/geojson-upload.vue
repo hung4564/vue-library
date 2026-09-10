@@ -14,9 +14,9 @@
                   {{ loadedSource.detail }}
                 </p>
               </div>
-              <BaseButton type="button" @click="clearLoadedData">
+              <MapControlButton type="button" @click="clearLoadedData" variant="outlined">
                 {{ trans('map.layer-control.create.clear-data') }}
-              </BaseButton>
+              </MapControlButton>
             </div>
             <ul v-if="loadedMetaChips.length" class="create-control-loaded__meta">
               <li
@@ -28,9 +28,9 @@
               </li>
             </ul>
             <div class="create-control-loaded__actions">
-              <BaseButton type="button" @click="replaceFileMode = true">
+              <MapControlButton type="button" @click="replaceFileMode = true" variant="outlined">
                 {{ trans('map.layer-control.create.replace-file') }}
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
 
@@ -45,9 +45,9 @@
             />
             <div v-if="parsing" class="create-control-status--busy">
               <span>{{ parseStatusText || trans('map.layer-control.create.parsing') }}</span>
-              <BaseButton type="button" @click="cancelParsing">
+              <MapControlButton type="button" @click="cancelParsing" variant="outlined">
                 {{ trans('map.layer-control.create.cancel') }}
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
           <p v-if="!showFileSummary || replaceFileMode" class="create-control-status">
@@ -70,9 +70,9 @@
                   {{ loadedSource.detail }}
                 </p>
               </div>
-              <BaseButton type="button" @click="clearLoadedData">
+              <MapControlButton type="button" @click="clearLoadedData" variant="outlined">
                 {{ trans('map.layer-control.create.clear-data') }}
-              </BaseButton>
+              </MapControlButton>
             </div>
             <ul v-if="loadedMetaChips.length" class="create-control-loaded__meta">
               <li
@@ -114,17 +114,16 @@
               :label="trans('map.layer-control.field.url')"
               @update:model-value="onUrlInput"
             />
-            <BaseButton
+            <MapControlButton
               class="create-control-url-load"
               :disabled="loadingUrl || !dataUrl.trim()"
-              @click="onLoadUrl"
-            >
+              @click="onLoadUrl" variant="tonal">
               {{
                 loadingUrl
                   ? trans('map.layer-control.create.loading-url')
                   : trans('map.layer-control.create.load')
               }}
-            </BaseButton>
+            </MapControlButton>
           </div>
           <div v-if="urlError" class="create-control-sample-error">
             {{ urlError }}
@@ -136,14 +135,8 @@
 </template>
 
 <script setup>
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  InputTextArea,
-  useLang,
-  useMap,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputSelect, InputText, InputTextArea } from '@hungpvq/vue-map-core/fields';
 import { DragDropFile } from '@hungpvq/shared-file';
 import { WorkerMonitor, workerProgressRatio } from '@hungpvq/map-core';
 import {

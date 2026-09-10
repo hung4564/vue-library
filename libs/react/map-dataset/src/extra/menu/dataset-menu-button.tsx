@@ -1,7 +1,8 @@
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { getMenuItemLocation } from '@hungpvq/map-dataset/menu';
-import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
+import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
+
 import Icon from '@mdi/react';
 
 const ICON_SIZE = '14px';
@@ -46,7 +47,9 @@ export function DatasetMenuButton<T extends IDataset = IDataset>({
   const icon = 'icon' in menu ? menu.icon : undefined;
 
   return (
-    <BaseButton
+    <MapControlButton
+      variant="plain"
+      size="small"
       className="menu-item"
       disabled={disabled}
       title={title}
@@ -59,6 +62,6 @@ export function DatasetMenuButton<T extends IDataset = IDataset>({
       }}
     >
       {icon ? <Icon path={icon} size={ICON_SIZE} /> : title}
-    </BaseButton>
+    </MapControlButton>
   );
 }

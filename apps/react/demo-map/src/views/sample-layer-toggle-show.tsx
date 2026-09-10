@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import { ToggleShow } from '@hungpvq/react-map-dataset';
 import { type WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 
@@ -8,7 +8,7 @@ export function SampleLayerToggleShow(props: WithLayerItemActionType) {
     <ToggleShow
       {...props}
       renderButton={({ show, disabled, title, onToggle }) => (
-        <BaseButton
+        <MapControlButton variant="plain"
           disabled={disabled}
           title={title}
           active={show}
@@ -26,7 +26,7 @@ export function SampleLayerToggleShow(props: WithLayerItemActionType) {
             onClick={(event) => event.preventDefault()}
             style={{ pointerEvents: 'none', margin: 0, cursor: 'inherit' }}
           />
-        </BaseButton>
+        </MapControlButton>
       )}
     />
   );

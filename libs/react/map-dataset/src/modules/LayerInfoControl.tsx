@@ -18,7 +18,10 @@ import { LayerList } from './LayerControl/LayerList';
 
 export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerInfoControl' });
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapLayerInfoControl',
+  });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -44,7 +47,6 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
     id: 'mapLayerInfoControl',
     getState: () =>
       mdiButtonState(mdiLayers, {
-        visible: !show,
         active: show,
         title: trans('map.layer-info-control.title'),
         order,

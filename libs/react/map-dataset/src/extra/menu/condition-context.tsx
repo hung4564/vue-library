@@ -27,6 +27,6 @@ export function MenuConditionProvider({
   );
 }
 
-export function useMenuConditionContext(): Record<string, any> {
+export function useMenuConditionContext(): Record<string, unknown> {
   return resolveMenuContextSource(useContext(MenuConditionContext));
 }

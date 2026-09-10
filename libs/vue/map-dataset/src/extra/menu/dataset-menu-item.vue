@@ -1,12 +1,18 @@
 <template>
-  <BaseButton v-bind="$attrs" class="menu-item" :title="title">
+  <MapControlButton
+    size="small"
+    v-bind="$attrs"
+    class="menu-item"
+    :title="title"
+    variant="plain"
+  >
     <SvgIcon v-if="icon" size="14" type="mdi" :path="icon" />
     <span v-else>{{ title }}</span>
-  </BaseButton>
+  </MapControlButton>
 </template>
 <script setup lang="ts">
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { computed } from 'vue';
 

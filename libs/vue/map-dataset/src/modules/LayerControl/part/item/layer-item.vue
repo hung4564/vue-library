@@ -34,21 +34,25 @@
             @click="onLayerAction($event, menu)"
           />
         </template>
-        <BaseButton
+        <MapControlButton
           v-if="!item.config.disabled_delete && !props.readonly"
           :disabled="loading"
           @click.stop="onRemove"
+          variant="plain"
+          size="small"
         >
           <SvgIcon size="14" type="mdi" :path="path.delete" />
-        </BaseButton>
+        </MapControlButton>
         <slot name="extra-btn" :loading="loading" />
-        <BaseButton
+        <MapControlButton
           v-if="content_menus.length > 0"
+          variant="plain"
+          size="small"
           :disabled="loading"
           @click.prevent.stop="handleContextClick"
         >
           <SvgIcon size="14" type="mdi" :path="path.menu" />
-        </BaseButton>
+        </MapControlButton>
         <template v-if="!showBottom">
           <template v-for="(menu, i) in extra_bottoms" :key="i">
             <DatasetMenuButton
@@ -59,13 +63,18 @@
               @click="onLayerAction($event, menu)"
             />
           </template>
-          <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
+          <MapControlButton
+            @click.stop="onToggleLegend()"
+            v-if="isHasLegend"
+            variant="plain"
+            size="small"
+          >
             <SvgIcon
               size="14"
               type="mdi"
               :path="legendShow ? path.legendClose : path.legendOpen"
             />
-          </BaseButton>
+          </MapControlButton>
         </template>
       </div>
     </div>
@@ -89,20 +98,30 @@
           @click="onLayerAction($event, menu)"
         />
       </template>
-      <BaseButton @click.stop="onToggleChildren()" v-if="isHasChildren">
+      <MapControlButton
+        @click.stop="onToggleChildren()"
+        v-if="isHasChildren"
+        variant="plain"
+        size="small"
+      >
         <SvgIcon
           size="14"
           type="mdi"
           :path="childrenShow ? path.legendClose : path.legendOpen"
         />
-      </BaseButton>
-      <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
+      </MapControlButton>
+      <MapControlButton
+        @click.stop="onToggleLegend()"
+        v-if="isHasLegend"
+        variant="plain"
+        size="small"
+      >
         <SvgIcon
           size="14"
           type="mdi"
           :path="legendShow ? path.legendClose : path.legendOpen"
         />
-      </BaseButton>
+      </MapControlButton>
     </div>
 
     <div v-if="isHasLegend && legendShow">
@@ -131,10 +150,19 @@
 </template>
 <script setup lang="ts">
 import type { IListViewUI } from '@hungpvq/map-dataset';
+import {
+  findAllComponentsByType,
+  splitSearchHighlight,
+} from '@hungpvq/map-dataset';
 import type { MenuAction, MenuContextSource } from '@hungpvq/map-dataset/menu';
-import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
-import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
+import {
+  createMenuConditionContext,
+  getResolvedMenus,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+} from '@hungpvq/map-dataset/menu';
+import { MapControlButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed, onMounted, ref, watch } from 'vue';

@@ -2,15 +2,8 @@
 import { WithMapPropType } from '@hungpvq/map-core';
 import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { computed, onMounted, ref, watch, type Ref } from 'vue';
 import { useMapDataset } from '../../store';
 import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
@@ -269,13 +262,12 @@ onMounted(() => {
             <div v-if="creating" class="create-control-actions__status">
               {{ trans('map.layer-control.create.creating') }}
             </div>
-            <BaseButton
+            <MapControlButton
               :disabled="creating"
               @click="onAddLayer()"
-              class="btn-container"
-            >
+              class="btn-container" variant="filled">
               {{ trans('map.layer-control.create-btn') }}
-            </BaseButton>
+            </MapControlButton>
           </div>
         </div>
       </DraggableItemPopup>

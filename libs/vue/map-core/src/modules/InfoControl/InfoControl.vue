@@ -26,7 +26,8 @@ import {
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { BaseButton } from '../../field';
+import { MapControlButton } from '../../components';
+
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -178,13 +179,12 @@ function onScreenshot() {
         :title="trans('map.info-control.title')"
       >
         <template #extra-btn>
-          <BaseButton
+          <MapControlButton
             :title="trans('map.info-control.screenshot')"
             :disabled="capturing"
-            @click.stop="onScreenshot"
-          >
+            @click.stop="onScreenshot" variant="plain">
             <SvgIcon :size="16" type="mdi" :path="mdiCameraOutline" />
-          </BaseButton>
+          </MapControlButton>
         </template>
         <div class="map-info-control">
           <div class="map-info-control__rows">
@@ -195,13 +195,12 @@ function onScreenshot() {
             >
               <div class="map-info-control__label">{{ row.label }}</div>
               <div class="map-info-control__value">{{ row.value }}</div>
-              <BaseButton
+              <MapControlButton
                 class="map-info-control__copy"
                 :title="trans('map.info-control.copy')"
-                @click.stop="onCopy(row.value)"
-              >
+                @click.stop="onCopy(row.value)" variant="plain">
                 <SvgIcon :size="14" type="mdi" :path="mdiContentCopy" />
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
         </div>

@@ -20,9 +20,9 @@ import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
-  BaseButton,
   defaultMapProps,
   MapCommonButton,
+  MapControlButton,
   ModuleContainer,
   UniversalRegistry,
   useLang,
@@ -32,6 +32,7 @@ import {
   useToolbarControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiDelete,
@@ -117,7 +118,6 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerControl',
   getState() {
     return mdiButtonState(path.icon, {
-      visible: !show.value,
       active: show.value,
       title: trans.value('map.layer-control.title'),
       order: order.value,
@@ -180,13 +180,14 @@ onUnmounted(() => {
           >
             <template #title>
               <slot name="titleList" :mapId="mapId">
-                <BaseButton
+                <MapControlButton
                   data-testid="map-layer-create"
                   @click.stop="openAddLayer()"
                   v-if="!disabledCreate"
+                  variant="plain"
                 >
                   <SvgIcon size="14" type="mdi" :path="path.layer.create" />
-                </BaseButton>
+                </MapControlButton>
               </slot>
             </template>
           </LayerList>

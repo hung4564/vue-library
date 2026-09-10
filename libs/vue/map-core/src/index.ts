@@ -1,20 +1,15 @@
 /**
- * Root barrel: explicit named exports (Stable ∪ Experimental).
- * Experimental symbols (Input*, BaseButton, Map*, Vue KEY/MITT_KEY, …) share this
- * barrel and may change in a minor — full table in
- * `libs/map-core/core/docs/core/stable-api.md`; lock in `public-api.spec.ts`.
+ * Root barrel: explicit named Stable exports only.
+ * Experimental field/UI helpers live on `@hungpvq/vue-map-core/fields`.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
 import './style.css';
 
 export {
   ActionControl,
-  BaseButton,
-  BaseCollapse,
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Collapse,
   CrsControl,
   CrsDisplaySettings,
   DefaultBaseMapAdapter,
@@ -25,32 +20,12 @@ export {
   GotoControl,
   HomeControl,
   InfoControl,
-  InputCheckbox,
-  InputChoose,
-  InputColorPicker,
-  InputCrs,
-  InputFile,
-  InputSelect,
-  InputSlider,
-  InputText,
-  InputTextArea,
-  InputTextarea,
-  KEY,
   LegendControl,
-  MITT_KEY,
   Map,
-  MapButton,
-  MapCard,
   MapCommonButton,
   MapContextMenuControl,
-  MapControlButton
-} from './internal-barrel';
-
-export {
+  MapControlButton,
   MapControlGroupButton,
-  MapErrorToast,
-  MapIcon,
-  MapImage,
   MeasurementControl,
   MeasurementSettingPopup,
   ModuleContainer,
@@ -69,9 +44,6 @@ export {
   createMapScopedStore,
   defaultMapProps,
   destroyMapScopedStore,
-} from './internal-barrel';
-
-export {
   getStore,
   langStore,
   makeShowProps,
@@ -108,12 +80,9 @@ export {
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  useUniversalRegistry
-} from './internal-barrel';
-
-export {
+  useUniversalRegistry,
   useWorkerMonitor,
-  withMapProps
+  withMapProps,
 } from './internal-barrel';
 
 export type { WithShowProps } from './hooks/useShow';

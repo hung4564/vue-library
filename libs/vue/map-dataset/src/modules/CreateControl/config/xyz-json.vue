@@ -23,13 +23,12 @@
               :label="trans('map.layer-control.field.url')"
               @update:model-value="onUrlInput"
             />
-            <BaseButton
+            <MapControlButton
               class="create-control-url-load"
               :disabled="loadingUrl || !dataUrl.trim()"
-              @click="onLoadUrl"
-            >
+              @click="onLoadUrl" variant="tonal">
               {{ trans('map.layer-control.create.load') }}
-            </BaseButton>
+            </MapControlButton>
           </div>
           <div v-if="loadingUrl" class="create-control-status">
             {{ trans('map.layer-control.create.loading-url') }}
@@ -44,13 +43,8 @@
 </template>
 
 <script setup>
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  useLang,
-  useMap,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { applyCreateControlSample, applyCreateControlLayerName, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples, layerNameFromUrl } from '@hungpvq/map-dataset/create-control';
 import { computed, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';

@@ -1,7 +1,7 @@
 <template>
   <div class="store-viewer">
     <div class="store-controls">
-      <BaseButton @click="refresh">Refresh</BaseButton>
+      <MapControlButton variant="text" @click="refresh">Refresh</MapControlButton>
     </div>
     <div class="json-tree">
       <TreeItem :data="storeState" />
@@ -11,7 +11,8 @@
 
 <script setup lang="ts">
 import { GlobalStoreService } from '@hungpvq/shared-store';
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
+
 import { onMounted, shallowRef } from 'vue';
 import TreeItem from './TreeItem.vue';
 // Use shallowRef to avoid deep reactivity overhead for the snapshot

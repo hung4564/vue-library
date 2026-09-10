@@ -45,8 +45,6 @@ On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet wh
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
-Deprecated: `app.use(DevtoolsPlugin)` still works (calls `installDevtools` + registers a global `Devtools` component). Prefer `installDevtools` + import `<Devtools />`.
-
 ## Stable API
 
 | Export | Role |
@@ -54,9 +52,8 @@ Deprecated: `app.use(DevtoolsPlugin)` still works (calls `installDevtools` + reg
 | `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
 | `Devtools` | Panel UI (Store / Logs / Errors) |
-| `DevtoolsPlugin` | **Deprecated** — prefer `installDevtools` |
 
-Experimental: `DevtoolLogAdapter` — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
+See [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 

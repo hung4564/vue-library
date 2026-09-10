@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
-import { BaseButton, InputSelect, useShow } from '@hungpvq/vue-map-core';
+import { MapControlButton, useShow } from '@hungpvq/vue-map-core';
+import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { LayerSpecification } from 'maplibre-gl';
@@ -9,7 +10,7 @@ import SingleStyle from './single-style.vue';
 defineExpose({
   SvgIcon,
   SingleStyle,
-  BaseButton,
+  MapControlButton,
   InputSelect,
 });
 defineProps({
@@ -103,38 +104,36 @@ const onShowAddStyle = (value: boolean) => {
           :items="tabs"
         ></InputSelect>
       </div>
-      <BaseButton
+      <MapControlButton
         class="tab-item tab-add clickable"
         @click="onRemoveStyleLayer(tab)"
-        :disabled="!tab"
-      >
+        :disabled="!tab" variant="text">
         <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
-      </BaseButton>
-      <BaseButton
+      </MapControlButton>
+      <MapControlButton
         class="tab-item tab-add clickable"
-        @click="onShowAddStyle(!showAdd)"
-      >
+        @click="onShowAddStyle(!showAdd)" variant="text">
         <SvgIcon
           size="14"
           type="mdi"
           :path="!showAdd ? path.create : path.close"
         />
-      </BaseButton>
+      </MapControlButton>
     </div>
     <div class="style-container" v-if="showAdd">
       <div class="add-style-container">
-        <base-button @click="onAddStyleLayer('area')">
+        <map-control-button @click="onAddStyleLayer('area')" variant="text">
           {{ trans('map.style-control.add.area') }}
-        </base-button>
-        <base-button @click="onAddStyleLayer('line')">
+        </map-control-button>
+        <map-control-button @click="onAddStyleLayer('line')" variant="text">
           {{ trans('map.style-control.add.line') }}
-        </base-button>
-        <base-button @click="onAddStyleLayer('point')">
+        </map-control-button>
+        <map-control-button @click="onAddStyleLayer('point')" variant="text">
           {{ trans('map.style-control.add.point') }}
-        </base-button>
-        <base-button @click="onAddStyleLayer('symbol')">
+        </map-control-button>
+        <map-control-button @click="onAddStyleLayer('symbol')" variant="text">
           {{ trans('map.style-control.add.symbol') }}
-        </base-button>
+        </map-control-button>
       </div>
     </div>
     <div class="style-container" v-else-if="tab">

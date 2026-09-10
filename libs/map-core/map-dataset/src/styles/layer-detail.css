@@ -56,13 +56,6 @@
   min-width: 0;
 }
 
-.layer-detail-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 0;
-}
-
 .table-show-info {
   width: 100%;
   max-width: 100%;

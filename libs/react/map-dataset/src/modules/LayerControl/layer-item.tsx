@@ -2,7 +2,8 @@ import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
 import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
-import { BaseButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
+import { MapControlButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
+
 import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -138,12 +139,18 @@ export function LayerItem({
             />
           ))}
           {!readonly && !item.config?.disabled_delete && (
-            <BaseButton onClick={() => onRemove?.(item)}>
+            <MapControlButton
+              variant="plain"
+              size="small"
+              onClick={() => onRemove?.(item)}
+            >
               <Icon path={mdiDelete} size={ICON_SIZE} />
-            </BaseButton>
+            </MapControlButton>
           )}
           {contentMenus.length > 0 && (
-            <BaseButton
+            <MapControlButton
+              variant="plain"
+              size="small"
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -151,7 +158,7 @@ export function LayerItem({
               }}
             >
               <Icon path={mdiDotsVertical} size={ICON_SIZE} />
-            </BaseButton>
+            </MapControlButton>
           )}
           {!showBottom && (
             <>
@@ -166,12 +173,16 @@ export function LayerItem({
                 />
               ))}
               {item.legend && (
-                <BaseButton onClick={() => toggleLegend()}>
+                <MapControlButton
+                  variant="plain"
+                  size="small"
+                  onClick={() => toggleLegend()}
+                >
                   <Icon
                     path={legendShow ? mdiMenuDown : mdiMenuLeft}
                     size={ICON_SIZE}
                   />
-                </BaseButton>
+                </MapControlButton>
               )}
             </>
           )}
@@ -201,20 +212,28 @@ export function LayerItem({
             />
           ))}
           {children.length > 0 && (
-            <BaseButton onClick={() => toggleChildren()}>
+            <MapControlButton
+              variant="plain"
+              size="small"
+              onClick={() => toggleChildren()}
+            >
               <Icon
                 path={childrenShow ? mdiMenuDown : mdiMenuLeft}
                 size={ICON_SIZE}
               />
-            </BaseButton>
+            </MapControlButton>
           )}
           {item.legend && (
-            <BaseButton onClick={() => toggleLegend()}>
+            <MapControlButton
+              variant="plain"
+              size="small"
+              onClick={() => toggleLegend()}
+            >
               <Icon
                 path={legendShow ? mdiMenuDown : mdiMenuLeft}
                 size={ICON_SIZE}
               />
-            </BaseButton>
+            </MapControlButton>
           )}
         </div>
       )}

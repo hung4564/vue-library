@@ -50,7 +50,8 @@
   width: 100%;
 }
 
-.add-style-container > .map-control__button {
+.add-style-container > .map-control-button,
+.add-style-container > .button-container {
   padding: var(--map-space-md, 8px);
 }
 

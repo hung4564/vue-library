@@ -1,11 +1,17 @@
 <template>
-  <BaseButton :disabled="disabled" :title="title" @click.stop="onToggle">
+  <MapControlButton
+    :disabled="disabled"
+    :title="title"
+    @click.stop="onToggle"
+    variant="plain"
+    size="small"
+  >
     <SvgIcon size="14" type="mdi" :path="path.show" v-if="show" />
     <SvgIcon size="14" type="mdi" :path="path.hide" v-else />
-  </BaseButton>
+  </MapControlButton>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 

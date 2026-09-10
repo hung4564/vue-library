@@ -7,12 +7,11 @@
     :location="location"
   >
     <template #button="{ show, disabled: isDisabled, title, toggle }">
-      <BaseButton
+      <MapControlButton
         :disabled="isDisabled"
         :title="title"
         :active="show"
-        @click.stop="toggle"
-      >
+        @click.stop="toggle" variant="plain">
         <input
           class="sample-layer-toggle-show__checkbox"
           type="checkbox"
@@ -21,14 +20,14 @@
           tabindex="-1"
           @click.prevent
         />
-      </BaseButton>
+      </MapControlButton>
     </template>
   </ToggleShow>
 </template>
 <script setup lang="ts">
 import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction, MenuActionLocation } from '@hungpvq/map-dataset/menu';
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import { ToggleShow } from '@hungpvq/vue-map-dataset';
 
 defineOptions({ name: 'SampleLayerToggleShow', inheritAttrs: false });

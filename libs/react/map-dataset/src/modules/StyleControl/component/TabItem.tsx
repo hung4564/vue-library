@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import type { ComponentType } from 'react';
 import type { Tab } from '@hungpvq/map-dataset/style';
 import { resolveTabProps } from '../style/type/tab-utils';
@@ -35,12 +35,11 @@ export function TabItem({
         : 'None';
 
   return (
-    <BaseButton
+    <MapControlButton
       className={`tab-item${active ? ' tab-item-active' : ''}${
         disabled ? ' tab-item-disabled' : ''
       }`}
-      disabled={disabled}
-    >
+      disabled={disabled} variant="text">
       <div className="tab-item-title" title={String(text ?? '')}>
         {String(text ?? '')}
       </div>
@@ -56,6 +55,6 @@ export function TabItem({
           <p>{String(defaultShowInItem)}</p>
         )}
       </div>
-    </BaseButton>
+    </MapControlButton>
   );
 }

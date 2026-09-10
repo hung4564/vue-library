@@ -8,10 +8,11 @@ import {
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
 import { computed, ref } from 'vue';
-import { BaseButton, InputCrs } from '../../../../field';
+import { InputCrs } from '../../../../field';
 import { useLang } from '../../../../extra/lang';
 import { useMap } from '../../../../hooks';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks';
+import { MapControlButton } from '../../../../components';
 
 const { mapId } = useMap();
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -64,9 +65,9 @@ function onRemove(epsg: string) {
     </ul>
     <div class="crs-display-settings__add">
       <InputCrs v-model="draftEpsg" />
-      <BaseButton class="crs-display-settings__add-btn" @click="onAdd">
+      <MapControlButton class="crs-display-settings__add-btn" @click="onAdd" variant="text">
         {{ trans('map.crs-display.add') }}
-      </BaseButton>
+      </MapControlButton>
     </div>
   </div>
 </template>

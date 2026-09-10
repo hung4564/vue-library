@@ -311,11 +311,16 @@ svg.layer-control__empty-icon {
   line-height: 0;
 }
 
-.layer-item__title-action .map-control__button,
-.layer-item__action .map-control__button,
-.layer-sub-item__title-action .map-control__button,
-.draggable-group__action .map-control__button,
-.layer-control__header .map-control__button {
+.layer-item__title-action .map-control-button,
+.layer-item__action .map-control-button,
+.layer-sub-item__title-action .map-control-button,
+.draggable-group__action .map-control-button,
+.layer-control__header .map-control-button,
+.layer-item__title-action .button-container,
+.layer-item__action .button-container,
+.layer-sub-item__title-action .button-container,
+.draggable-group__action .button-container,
+.layer-control__header .button-container {
   line-height: 0;
 }
 

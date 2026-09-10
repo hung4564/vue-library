@@ -37,12 +37,33 @@ Use these variables to customize the look and feel of the entire map library.
 
 Below is the list of specific variables for each component and their default values (which usually point back to the Global Theme).
 
-### Core - MapButton
+### Core - MapControlButton / MapButton
 
-- `--map-button-bg`: `var(--map-surface-color, #ffffff)`
-- `--map-button-active-color`: `var(--map-primary-color, #004e98)`
-- `--map-button-hover-bg`: `var(--map-hover-color, #f5f5f5)`
-- `--map-button-disabled-color`: `var(--map-disabled-color, rgba(0,0,0,0.25))`
+Stable root: `MapControlButton` (Vue/React map-core). Experimental chrome: `MapButton` on `./fields` (also used internally by `MapControlButton`).
+
+**`variant`:** `icon` (default, circular toolbar) · `plain` (transparent icon) · `text` · `tonal` · `outlined` · `filled` (primary CTA; label uses `--map-on-primary-color`).
+
+**`size`:** `small` (24px) · `medium` (32px, default) · `large` (40px), or a numeric px value. Applies to **every** variant (`icon`/`plain` → square hit box; label variants → `min-height` + horizontal padding + font).
+
+```vue
+<MapControlButton variant="plain" size="small" />
+<MapControlButton variant="filled" size="large">Save</MapControlButton>
+```
+
+CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|medium|large}`.
+
+| Token / class | Role | Default |
+| --- | --- | --- |
+| `--map-button-size` | Label-variant min-height; set by size class | `32px` (`medium`) |
+| `--map-button-pad-x` | Label-variant horizontal padding | `12px` |
+| `--map-button-font-size` | Label-variant font size | `12px` |
+| `--map-button-bg` | Icon chrome background | `var(--map-surface-color, #ffffff)` |
+| `--map-button-active-color` | Active icon color | `var(--map-primary-color, #004e98)` |
+| `--map-button-hover-bg` | Default hover fill | `var(--map-hover-color, #f5f5f5)` |
+| `--map-button-disabled-color` | Disabled icon color | `var(--map-disabled-color, rgba(0,0,0,0.25))` |
+| `--map-on-primary-color` | `filled` label on accent | `var(--map-text-inverse, #fff)` |
+
+Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`).
 
 ### Core - General (Map/Card)
 

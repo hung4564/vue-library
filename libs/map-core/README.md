@@ -24,9 +24,9 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | maplibre `^5`, turf `^6` |
-| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); GIS parsers optional peers for create-control |
+| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
-| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
+| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
 | `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | peers/deps `~1.0.1` for core/dataset |
 | `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
 
@@ -58,7 +58,7 @@ Any checked item must **not** ship in `1.0.x` / as a `1.x` patch.
 
 ### B. Named exports (TypeScript / ESM)
 
-Treat everything listed in Stable ∪ Experimental `public-api.spec.ts` allowlists as the public runtime surface (named exports on `index.ts`).
+Treat everything listed in Stable ∪ Experimental `public-api.spec.ts` allowlists as the public runtime surface (named exports on each entry). Vue/React `map-core` Experimental field helpers are on **`./fields`**, not the root.
 
 Examples of public surface:
 
@@ -211,4 +211,4 @@ Documented `--map-*` tokens and `style.css` entries:
 > **Major** if compile, registry/CSS/control/menu protocol, peer minimum, or documented behavior breaks.  
 > **Minor** if additive only.  
 > **Patch** if fix within the published contract.  
-> Prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Root exports are **named**; unlisted runtime symbols must not appear on `index.ts`. Experimental allowlisted exports may change in a minor.
+> Prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Root exports are **named**; unlisted runtime symbols must not appear on `index.ts`. Experimental allowlisted exports (including `./fields` on Vue/React map-core) may change in a minor.

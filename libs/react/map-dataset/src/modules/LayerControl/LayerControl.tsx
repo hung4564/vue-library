@@ -1,8 +1,8 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
-  MAP_CONTEXT_MENU_ID,
   clearAddGeojsonHereItems,
   getDefaultAddGeojsonHereItems,
+  MAP_CONTEXT_MENU_ID,
   setAddGeojsonHereItems,
   type AddGeojsonHerePayload,
   type MapMenuItemProps,
@@ -13,17 +13,18 @@ import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
-  BaseButton,
+  defaultMapProps,
   MapCommonButton,
+  MapControlButton,
   ModuleContainer,
   UniversalRegistry,
-  defaultMapProps,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
+
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useRef, type ReactNode } from 'react';
@@ -57,7 +58,10 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
 
 export function LayerControl(props: LayerControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerControl' });
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapLayerControl',
+  });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
@@ -94,7 +98,6 @@ export function LayerControl(props: LayerControlProps) {
     id: 'mapLayerControl',
     getState: () =>
       mdiButtonState(mdiLayers, {
-        visible: !show,
         active: show,
         title: trans('map.layer-control.title'),
         order,
@@ -167,12 +170,13 @@ export function LayerControl(props: LayerControlProps) {
                   titleSlot !== null && titleSlot !== undefined ? (
                     titleSlot
                   ) : !props.disabledCreate ? (
-                    <BaseButton
+                    <MapControlButton
+                      variant="plain"
                       data-testid="map-layer-create"
                       onClick={() => toggleShowCreate(true)}
                     >
                       <Icon path={mdiPlus} size="14px" />
-                    </BaseButton>
+                    </MapControlButton>
                   ) : null
                 }
               />

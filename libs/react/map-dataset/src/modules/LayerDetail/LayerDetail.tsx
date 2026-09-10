@@ -20,15 +20,8 @@ import {
   DraggableItemPopup,
   type ContextMenuRef,
 } from '@hungpvq/react-draggable';
-import {
-  BaseButton,
-  InputTextarea,
-  ModuleContainer,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-  useShow,
-} from '@hungpvq/react-map-core';
+import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl, useShow } from '@hungpvq/react-map-core';
+import { InputTextarea } from '@hungpvq/react-map-core/fields';
 import { mdiContentCopy, mdiCrosshairsGps, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { Feature, Geometry } from 'geojson';
@@ -69,9 +62,9 @@ function TableTdCopy({
   return (
     <div className="layer-detail-row">
       <div className="layer-detail-row__copy">
-        <BaseButton onClick={() => copyText(value)} aria-label="Copy">
+        <MapControlButton variant="plain" onClick={() => copyText(value)} aria-label="Copy">
           <Icon path={mdiContentCopy} size={14 / 24} />
-        </BaseButton>
+        </MapControlButton>
       </div>
       {children}
     </div>
@@ -244,8 +237,8 @@ export function LayerDetail({
             extraBtn={
               <>
                 {canFillBound ? (
-                  <BaseButton
-                    className="layer-detail-action"
+                  <MapControlButton
+                    variant="plain"
                     title={trans('map.layer-control.info.fillBound')}
                     aria-label={trans('map.layer-control.info.fillBound')}
                     onClick={(e) => {
@@ -254,11 +247,11 @@ export function LayerDetail({
                     }}
                   >
                     <Icon path={mdiCrosshairsGps} size={16 / 24} />
-                  </BaseButton>
+                  </MapControlButton>
                 ) : null}
                 {canExport ? (
-                  <BaseButton
-                    className="layer-detail-action"
+                  <MapControlButton
+                    variant="plain"
                     title={trans('map.layer-control.info.export')}
                     aria-label={trans('map.layer-control.info.export')}
                     onClick={(e) => {
@@ -267,7 +260,7 @@ export function LayerDetail({
                     }}
                   >
                     <Icon path={mdiDownload} size={16 / 24} />
-                  </BaseButton>
+                  </MapControlButton>
                 ) : null}
               </>
             }

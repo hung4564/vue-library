@@ -3,8 +3,8 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import { PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { BaseButton, InputSelect, InputText } from '../../../field';
-import { MapCommonButton, MapControlGroupButton } from '../../../components';
+import { InputSelect, InputText } from '../../../field';
+import { MapCommonButton, MapControlButton, MapControlGroupButton } from '../../../components';
 import { ModuleContainer } from '../../../modules';
 import { useLang } from '../../../extra/lang';
 import { useRegisterMapControl } from '../../../extra/registry';
@@ -377,13 +377,12 @@ useRegisterMapControl(mapId, {
             </div>
           </div>
           <div class="map-print-advanced-setting__grow"></div>
-          <base-button
+          <map-control-button
             class="map-print-advanced-setting__apply"
             @click="onSave()"
-            v-if="print.show"
-          >
+            v-if="print.show" variant="filled">
             {{ trans('map.print.btn.apply') }}
-          </base-button>
+          </map-control-button>
         </div>
       </DraggableItemPopup>
     </template>

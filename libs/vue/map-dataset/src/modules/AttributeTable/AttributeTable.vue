@@ -13,16 +13,8 @@ import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMe
 import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  InputCheckbox,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import { InputCheckbox, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiDownload } from '@mdi/js';
 import type { Feature } from 'geojson';
@@ -346,11 +338,10 @@ watch(zoomToSelection, (enabled) => {
                 v-model="query"
                 :placeholder="trans('map.attribute-table.search')"
               />
-              <BaseButton
+              <MapControlButton
                 class="attribute-table__export"
                 :disabled="exportRows.length === 0"
-                @click.stop="onExportClick"
-              >
+                @click.stop="onExportClick" variant="outlined">
                 <SvgIcon :size="16" type="mdi" :path="mdiDownload" />
                 {{
                   selectedIds.length
@@ -358,7 +349,7 @@ watch(zoomToSelection, (enabled) => {
                     : trans('map.attribute-table.export')
                 }}
                 <SvgIcon :size="16" type="mdi" :path="mdiChevronDown" />
-              </BaseButton>
+              </MapControlButton>
             </div>
             <div class="attribute-table__toolbar-row">
               <InputCheckbox
@@ -371,13 +362,12 @@ watch(zoomToSelection, (enabled) => {
                 item-value="value"
                 item-text="text"
               />
-              <BaseButton
+              <MapControlButton
                 class="attribute-table__clear"
                 :disabled="selectedIds.length === 0"
-                @click="clearSelection"
-              >
+                @click="clearSelection" variant="outlined">
                 {{ trans('map.attribute-table.clear') }}
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
           <div v-if="loading" class="attribute-table__status">

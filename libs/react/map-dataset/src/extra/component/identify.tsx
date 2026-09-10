@@ -1,7 +1,8 @@
 import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset/menu';
 import { IDENTIFY_CONTROL, isListIdentifyActive, subscribeIdentifyScope, toggleListIdentifyScope } from '@hungpvq/map-dataset/identify';
 import { resolveMenuItemLocation } from '@hungpvq/map-dataset/menu';
-import { BaseButton, UniversalRegistry } from '@hungpvq/react-map-core';
+import { MapControlButton, UniversalRegistry } from '@hungpvq/react-map-core';
+
 import { mdiCursorPointer } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -82,16 +83,18 @@ export function IdentifyLayerAction(props: WithLayerItemMenuComponentType) {
   }
 
   return (
-    <BaseButton
+    <MapControlButton
       className={['menu-item', isActive ? '_active' : '']
         .filter(Boolean)
         .join(' ')}
       active={isActive}
       title={title}
       disabled={disabled}
+      variant="plain"
+      size="small"
       onClick={onToggle}
     >
       <Icon path={iconPath} size={ICON_SIZE_EXTRA} />
-    </BaseButton>
+    </MapControlButton>
   );
 }

@@ -29,9 +29,10 @@ import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
 import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton, BaseCollapse } from '../../field';
+import { BaseCollapse } from '../../field';
 import { defaultMapProps, useMap, useShow } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { MapControlButton } from '../../components';
 
 export interface WorkerControlProps extends WithMapPropType {
   show?: boolean;
@@ -233,7 +234,7 @@ export function WorkerControl(props: WorkerControlProps) {
                 <span />
               )}
               <div className="map-worker-control__toolbar-actions">
-                <BaseButton
+                <MapControlButton variant="plain"
                   title={trans('map.worker-control.action.clear')}
                   disabled={!hasSelectedHistory}
                   onClick={(e) => {
@@ -242,9 +243,9 @@ export function WorkerControl(props: WorkerControlProps) {
                   }}
                 >
                   <Icon path={mdiEraser} size="16px" />
-                </BaseButton>
+                </MapControlButton>
                 {manyWorkers ? (
-                  <BaseButton
+                  <MapControlButton variant="plain"
                     title={trans('map.worker-control.action.clearAll')}
                     disabled={!hasAnyHistory}
                     onClick={(e) => {
@@ -253,7 +254,7 @@ export function WorkerControl(props: WorkerControlProps) {
                     }}
                   >
                     <Icon path={mdiNotificationClearAll} size="16px" />
-                  </BaseButton>
+                  </MapControlButton>
                 ) : null}
               </div>
             </div>

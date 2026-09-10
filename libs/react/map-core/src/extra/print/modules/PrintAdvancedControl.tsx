@@ -20,13 +20,14 @@ import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
-import { BaseButton, InputSelect, InputText } from '../../../field';
+import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang';
 import { useRegisterMapControl } from '../../registry';
 import { useToolbarControl } from '../../toolbar';
 import { useMapPrint } from '../store';
+import { MapControlButton } from '../../../components';
 
 const DEFAULT_SETTING: PrintOption = {
   ratio: 1,
@@ -472,12 +473,12 @@ export function PrintAdvancedControl({
               </div>
               <div className="map-print-advanced-setting__grow" />
               {print.show ? (
-                <BaseButton
+                <MapControlButton variant="filled"
                   className="map-print-advanced-setting__apply"
                   onClick={() => void onSave()}
                 >
                   {trans('map.print.btn.apply')}
-                </BaseButton>
+                </MapControlButton>
               ) : null}
             </div>
           </DraggableItemPopup>

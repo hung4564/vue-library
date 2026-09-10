@@ -353,7 +353,8 @@
 .crs-item__add-btn,
 .crs-item__add .layer-item__button,
 .crs-item__add-picker .layer-item__button,
-.crs-display-settings .map-control__button {
+.crs-display-settings .map-control-button,
+.crs-display-settings .button-container {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -371,7 +372,8 @@
 .crs-item__add-btn:hover,
 .crs-item__add .layer-item__button:hover,
 .crs-item__add-picker .layer-item__button:hover,
-.crs-display-settings .map-control__button:hover {
+.crs-display-settings .map-control-button:hover,
+.crs-display-settings .button-container:hover {
   background-color: color-mix(in srgb, currentColor 12%, transparent);
 }
 

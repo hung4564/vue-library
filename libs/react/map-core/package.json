@@ -21,6 +21,10 @@
       "import": "./index.js",
       "require": "./index.cjs"
     },
+    "./fields": {
+      "import": "./fields.js",
+      "types": "./fields.d.ts"
+    },
     "./style.css": {
       "default": "./style.css"
     }

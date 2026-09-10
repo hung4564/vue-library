@@ -98,7 +98,7 @@ describe('Vue ↔ React dual-framework parity', () => {
     });
   });
 
-  it('map-core adapters publish shared Stable + Experimental symbols', () => {
+  it('map-core adapters publish shared Stable on root and Experimental on fields', () => {
     const vue = parseAllowlistExports(
       join(vueCore, 'public-api.spec.ts'),
     );
@@ -108,12 +108,12 @@ describe('Vue ↔ React dual-framework parity', () => {
     assertSubset('vue-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, vue);
     assertSubset('react-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, react);
     assertSubset(
-      'vue-map-core Experimental',
+      'vue-map-core fields Experimental',
       MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
       vue,
     );
     assertSubset(
-      'react-map-core Experimental',
+      'react-map-core fields Experimental',
       MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
       react,
     );

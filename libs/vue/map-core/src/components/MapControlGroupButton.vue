@@ -18,9 +18,7 @@
       <MapButton
         v-for="(item, i) in items"
         :key="i"
-        :height="Number(size)"
-        :width="Number(size)"
-        text
+        :size="resolvedSizePx"
         :title="item.title"
         @click="item.onClick"
       >
@@ -37,6 +35,12 @@
 import type { PropType } from 'vue';
 import MapButton from './MapButton.vue';
 import MapIcon from './MapIcon.vue';
+import {
+  isMapButtonSize,
+  resolveMapButtonSizePx,
+  type MapButtonSize,
+} from './map-button-variant';
+
 interface ButtonItem {
   title: string;
   icon: string;
@@ -53,22 +57,30 @@ export default {
       default: () => [],
     },
     row: Boolean,
-    size: { type: [Number, String], default: 32 },
+    /** small | medium | large | number (px) */
+    size: {
+      type: [Number, String] as PropType<MapButtonSize | string>,
+      default: 'medium',
+      validator: (v: unknown) => isMapButtonSize(v),
+    },
   },
   provide() {
     return {
       isGroup: true,
-      size: this.size,
+      size: this.resolvedSizePx,
     };
   },
   computed: {
+    resolvedSizePx(): number {
+      return resolveMapButtonSizePx(this.size);
+    },
     attrsClass(): unknown {
       return this.$attrs.class;
     },
     containerStyle(): Record<string, string | undefined> {
       return {
-        width: !this.row ? `${this.size}px` : undefined,
-        height: this.row ? `${this.size}px` : undefined,
+        width: !this.row ? `${this.resolvedSizePx}px` : undefined,
+        height: this.row ? `${this.resolvedSizePx}px` : undefined,
       };
     },
   },

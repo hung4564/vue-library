@@ -1,24 +1,18 @@
 /**
- * Root barrel: explicit named exports (Stable ∪ Experimental).
- * Experimental symbols (Input*, BaseButton, Map*, DragDropFile, …) share this
- * barrel and may change in a minor — full table in
- * `libs/map-core/core/docs/core/stable-api.md`; lock in `public-api.spec.ts`.
+ * Root barrel: explicit named Stable exports only.
+ * Experimental field/UI helpers live on `@hungpvq/react-map-core/fields`.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
 import './style.css';
 
 export {
   ActionControl,
-  BaseButton,
-  BaseCollapse,
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Collapse,
   CrsControl,
   CrsDisplaySettings,
   DefaultBaseMapAdapter,
-  DragDropFile,
   EventManagementControl,
   FullScreenControl,
   GeoLocateControl,
@@ -26,34 +20,16 @@ export {
   GotoControl,
   HomeControl,
   InfoControl,
-  InputCheckbox,
-  InputChoose,
-  InputColorPicker,
-  InputCrs,
-  InputFile,
-  InputSelect,
-  InputSlider,
-  InputText,
-  InputTextArea,
-  InputTextarea,
   LegendControl,
   Map,
-  MapButton,
-  MapCard,
   MapCommonButton,
   MapContext,
   MapContextMenuControl,
-  MapContextProvider
-} from './internal-barrel';
-
-export {
+  MapContextProvider,
   MapControlButton,
   MapControlButtonGroupContext,
   MapControlGroupButton,
-  MapErrorToast,
   MapGlobalStoreProvider,
-  MapIcon,
-  MapImage,
   MeasurementControl,
   MeasurementSettingPopup,
   ModuleContainer,
@@ -76,10 +52,7 @@ export {
   getMapGlobalStore,
   getMapMittStore,
   getStore,
-  langStore
-} from './internal-barrel';
-
-export {
+  langStore,
   logger,
   useBaseMap,
   useBaseMapAdapter,
@@ -117,7 +90,7 @@ export {
   useShow,
   useToolbarControl,
   useUniversalRegistry,
-  useWorkerMonitor
+  useWorkerMonitor,
 } from './internal-barrel';
 
 export type { WithShowProps } from './hooks/useShow';

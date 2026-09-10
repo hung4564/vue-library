@@ -1,17 +1,16 @@
 <template>
-  <BaseButton
+  <MapControlButton
     :disabled="disabled"
     :title="title"
     :active="show"
-    @click.stop="emit('toggle')"
-  >
+    @click.stop="emit('toggle')" variant="text">
     <span class="sample-toggle-show-button__label">
       {{ show ? 'ON' : 'OFF' }}
     </span>
-  </BaseButton>
+  </MapControlButton>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 
 defineOptions({ name: 'SampleToggleShowButton' });
 

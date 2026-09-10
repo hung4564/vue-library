@@ -16,7 +16,7 @@
   </TableTdCopy>
 </template>
 <script setup>
-import { InputTextArea } from '@hungpvq/vue-map-core';
+import { InputTextArea } from '@hungpvq/vue-map-core/fields';
 import { computed } from 'vue';
 import TableTdCopy from './table-td-copy.vue';
 const props = defineProps({

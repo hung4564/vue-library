@@ -2,6 +2,10 @@ import React, { useMemo } from 'react';
 import { MapButton } from './MapButton';
 import { MapControlButtonGroupContext } from './MapControlButton';
 import { MapIcon } from './MapIcon';
+import {
+  resolveMapButtonSizePx,
+  type MapButtonSize,
+} from './map-button-variant';
 
 export interface ButtonItem {
   title: string;
@@ -12,28 +16,29 @@ export interface ButtonItem {
 export interface MapControlGroupButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   items?: ButtonItem[];
   row?: boolean;
-  size?: number | string;
+  /** small | medium | large | number (px) */
+  size?: MapButtonSize | string;
   children?: React.ReactNode;
 }
 
 export function MapControlGroupButton({
   items = [],
   row = false,
-  size = 32,
+  size = 'medium',
   children,
   className = '',
   style,
   ...props
 }: MapControlGroupButtonProps) {
-  const sizeNum = typeof size === 'string' ? parseInt(size, 10) : size;
+  const sizePx = resolveMapButtonSizePx(size);
 
   const containerStyle = useMemo(
     () => ({
-      width: !row ? `${sizeNum}px` : undefined,
-      height: row ? `${sizeNum}px` : undefined,
+      width: !row ? `${sizePx}px` : undefined,
+      height: row ? `${sizePx}px` : undefined,
       ...style,
     }),
-    [row, sizeNum, style],
+    [row, sizePx, style],
   );
 
   const classes = [
@@ -47,7 +52,7 @@ export function MapControlGroupButton({
 
   return (
     <MapControlButtonGroupContext.Provider
-      value={{ isGroup: true, groupSize: sizeNum }}
+      value={{ isGroup: true, groupSize: sizePx }}
     >
       <div className={classes} style={containerStyle} {...props}>
         <div
@@ -59,8 +64,7 @@ export function MapControlGroupButton({
           {items.map((item, i) => (
             <MapButton
               key={i}
-              height={sizeNum}
-              width={sizeNum}
+              size={sizePx}
               title={item.title}
               onClick={item.onClick}
             >

@@ -3,42 +3,7 @@
   Prefer --map-* tokens; flatten nesting.
 */
 
-/* ---------- Field action button (.map-control__button) ---------- */
-.map-control__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  color: inherit;
-  font: inherit;
-  line-height: 1;
-}
-
-.map-control__button svg {
-  flex-shrink: 0;
-}
-
-.map-control__button .spin {
-  width: 14px;
-  height: 14px;
-}
-
-.map-control__button-active {
-  color: var(--map-accent-color, #1a73e8) !important;
-}
-
-.map-control__button-disabled {
-  pointer-events: none;
-  cursor: none;
-  opacity: 0.8;
-}
+/* ---------- Field action button styles removed; use Stable MapControlButton (.map-control-button) ---------- */
 
 /* ---------- Collapse ---------- */
 .collapse .collapse-header {

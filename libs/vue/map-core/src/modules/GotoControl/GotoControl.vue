@@ -5,9 +5,10 @@ import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { BaseButton, InputText } from '../../field';
+import { InputText } from '../../field';
 import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+import { MapControlButton } from '../../components';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -124,9 +125,9 @@ const { state, control } = useToolbarControl(mapId.value, props, {
             </div>
           </div>
 
-          <base-button class="map-goto-control__btn" @click="onSetSetting()">
+          <map-control-button class="map-goto-control__btn" @click="onSetSetting()" variant="filled">
             {{ trans('map.goto-control.btn.apply') }}
-          </base-button>
+          </map-control-button>
         </div>
       </DraggableItemPopup>
     </template>

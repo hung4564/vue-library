@@ -303,35 +303,10 @@
     1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) + 2px
   );
   margin: 0;
-  padding: 0 var(--map-space-lg, 12px);
-  white-space: nowrap;
   border-radius: 0 var(--map-radius-sm, 4px) var(--map-radius-sm, 4px) 0;
-  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
-  background: color-mix(
-    in srgb,
-    var(--map-accent-color, #1a73e8) 22%,
-    transparent
-  );
-  color: inherit;
-  font-size: var(--map-font-size-sm, 12px);
-  font-weight: var(--map-font-weight-semibold, 600);
-  letter-spacing: 0.02em;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    opacity 0.15s ease;
 }
 
-.create-control-url-row > .create-control-url-load:hover {
-  background: color-mix(
-    in srgb,
-    var(--map-accent-color, #1a73e8) 38%,
-    transparent
-  );
-  border-color: var(--map-accent-color, #1a73e8);
-}
-
-.create-control-url-row > .create-control-url-load.map-control__button-disabled,
+.create-control-url-row > .create-control-url-load.map-control-button-disabled,
 .create-control-url-row > .create-control-url-load:disabled {
   opacity: 0.45;
   pointer-events: none;

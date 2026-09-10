@@ -4,7 +4,8 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
-import { BaseButton, InputText, useLang, useMap } from '@hungpvq/react-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
+import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -174,13 +175,13 @@ export function LayerList({
             data-map-layer-search
           />
           {layerSearch.trim() ? (
-            <BaseButton
+            <MapControlButton variant="plain"
               className="layer-control__search-clear"
               aria-label="Clear search"
               onClick={() => setLayerSearch('')}
             >
               <Icon path={mdiClose} size="14px" />
-            </BaseButton>
+            </MapControlButton>
           ) : null}
         </div>
         {!isEmpty && (
@@ -189,17 +190,16 @@ export function LayerList({
             <div className="v-spacer" />
             <ButtonToggleShowAll mapId={mapId} items={views} />
             {!disabledCreateGroup && (
-              <BaseButton onClick={addNewGroup} aria-label="Create group">
+              <MapControlButton onClick={addNewGroup} aria-label="Create group" variant="plain">
                 <Icon path={mdiGroup} size={HEADER_ICON} />
-              </BaseButton>
+              </MapControlButton>
             )}
             {!disabledDeleteAll && (
-              <BaseButton
+              <MapControlButton
                 onClick={onRemoveAllLayer}
-                aria-label="Delete all layers"
-              >
+                aria-label="Delete all layers" variant="plain">
                 <Icon path={mdiDelete} size={HEADER_ICON} />
-              </BaseButton>
+              </MapControlButton>
             )}
           </div>
         )}

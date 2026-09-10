@@ -23,13 +23,8 @@ import {
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { ContextMenu, DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  ModuleContainer,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDownload } from '@mdi/js';
 import type { Feature, Geometry } from 'geojson';
@@ -190,24 +185,24 @@ const { panelBind } = useRegisterMapControl(mapId, {
           {{ trans('map.layer-control.info.title') }}
         </template>
         <template #extra-btn>
-          <BaseButton
+          <MapControlButton
             v-if="canFillBound"
-            class="layer-detail-action"
             :title="trans('map.layer-control.info.fillBound')"
             :aria-label="trans('map.layer-control.info.fillBound')"
             @click.stop="onFillBound"
+            variant="plain"
           >
             <SvgIcon :size="16" type="mdi" :path="mdiCrosshairsGps" />
-          </BaseButton>
-          <BaseButton
+          </MapControlButton>
+          <MapControlButton
             v-if="canExport"
-            class="layer-detail-action"
             :title="trans('map.layer-control.info.export')"
             :aria-label="trans('map.layer-control.info.export')"
             @click.stop="onExportClick"
+            variant="plain"
           >
             <SvgIcon :size="16" type="mdi" :path="mdiDownload" />
-          </BaseButton>
+          </MapControlButton>
         </template>
         <div class="table-show-info">
           <div class="table-content">

@@ -22,17 +22,11 @@ import {
   type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { GEOJSON_STYLE_AUTO, terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
-import {
-  BaseButton,
-  DragDropFile,
-  InputCrs,
-  InputSelect,
-  InputText,
-  InputTextarea,
-} from '@hungpvq/react-map-core';
+import { DragDropFile, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core/fields';
 import type { GeoJSON } from 'geojson';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DataSourceTabs } from './DataSourceTabs';
+import { MapControlButton } from '@hungpvq/react-map-core';
 
 function looksCompleteGis(text: string): boolean {
   const trimmed = text.trim();
@@ -454,9 +448,9 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                           <p className="create-control-loaded__detail">{loadedSource.detail}</p>
                         ) : null}
                       </div>
-                      <BaseButton type="button" onClick={clearLoadedData}>
+                      <MapControlButton type="button" onClick={clearLoadedData} variant="outlined">
                         {trans('map.layer-control.create.clear-data')}
-                      </BaseButton>
+                      </MapControlButton>
                     </div>
                     {metaChips.length ? (
                       <ul className="create-control-loaded__meta">
@@ -468,9 +462,9 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                       </ul>
                     ) : null}
                     <div className="create-control-loaded__actions">
-                      <BaseButton type="button" onClick={() => setReplaceFileMode(true)}>
+                      <MapControlButton variant="outlined" type="button" onClick={() => setReplaceFileMode(true)}>
                         {trans('map.layer-control.create.replace-file')}
-                      </BaseButton>
+                      </MapControlButton>
                     </div>
                   </div>
                 ) : null}
@@ -488,9 +482,9 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                           <span>
                             {parseStatusText || trans('map.layer-control.create.parsing')}
                           </span>
-                          <BaseButton type="button" onClick={cancelParsing}>
+                          <MapControlButton type="button" onClick={cancelParsing} variant="outlined">
                             {trans('map.layer-control.create.cancel')}
-                          </BaseButton>
+                          </MapControlButton>
                         </div>
                       ) : null}
                     </div>
@@ -516,9 +510,9 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                       <p className="create-control-loaded__detail">{loadedSource.detail}</p>
                     ) : null}
                   </div>
-                  <BaseButton type="button" onClick={clearLoadedData}>
+                  <MapControlButton type="button" onClick={clearLoadedData} variant="outlined">
                     {trans('map.layer-control.create.clear-data')}
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
                 {metaChips.length ? (
                   <ul className="create-control-loaded__meta">
@@ -563,7 +557,7 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                     value={dataUrl}
                     onChange={(v) => onUrlInput(v)}
                   />
-                  <BaseButton
+                  <MapControlButton variant="tonal"
                     className="create-control-url-load"
                     disabled={loadingUrl || !dataUrl.trim()}
                     onClick={() => void onLoadUrl()}
@@ -571,7 +565,7 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                     {loadingUrl
                       ? trans('map.layer-control.create.loading-url')
                       : trans('map.layer-control.create.load')}
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
                 {urlError ? (
                   <div className="create-control-sample-error">{urlError}</div>
@@ -738,7 +732,7 @@ export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormPr
                     value={dataUrl}
                     onChange={(v) => onUrlInput(v)}
                   />
-                  <BaseButton
+                  <MapControlButton variant="tonal"
                     className="create-control-url-load"
                     disabled={loadingUrl || !dataUrl.trim()}
                     onClick={() => void onLoadUrl()}
@@ -746,7 +740,7 @@ export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormPr
                     {loadingUrl
                       ? trans('map.layer-control.create.loading-url')
                       : trans('map.layer-control.create.load')}
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
                 {urlError ? (
                   <div className="create-control-sample-error">{urlError}</div>

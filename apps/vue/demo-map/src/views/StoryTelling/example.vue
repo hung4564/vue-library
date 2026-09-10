@@ -8,11 +8,13 @@ import {
   GotoControl,
   HomeControl,
   Map,
-  MapCard,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl,
+  ZoomControl
 } from '@hungpvq/vue-map-core';
+import {
+  MapCard
+} from '@hungpvq/vue-map-core/fields';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import {

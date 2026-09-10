@@ -1,15 +1,17 @@
 <template>
-  <BaseButton
+  <MapControlButton
     v-if="!isMenuLocation"
     class="menu-item"
     :class="{ _active: isActive }"
     :active="isActive"
     :title="title"
     :disabled="disabled"
+    variant="plain"
+    size="small"
     @click.stop="onToggle"
   >
     <SvgIcon size="14" type="mdi" :path="iconPath" />
-  </BaseButton>
+  </MapControlButton>
   <li
     v-else
     class="layer-context-menu__item"
@@ -26,7 +28,8 @@
 <script setup lang="ts">
 import { IDENTIFY_CONTROL, isListIdentifyActive, subscribeIdentifyScope, toggleListIdentifyScope } from '@hungpvq/map-dataset/identify';
 import { resolveMenuItemLocation } from '@hungpvq/map-dataset/menu';
-import { BaseButton, UniversalRegistry } from '@hungpvq/vue-map-core';
+import { MapControlButton, UniversalRegistry } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref } from 'vue';

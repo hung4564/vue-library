@@ -1,7 +1,8 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { BaseButton, RegistryItem } from '@hungpvq/react-map-core';
+import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
+
 import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useMemo } from 'react';
@@ -88,7 +89,9 @@ export function LayerSubItem({
             />
           ))}
           {contentMenus.length > 0 && (
-            <BaseButton
+            <MapControlButton
+              variant="plain"
+              size="small"
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -96,7 +99,7 @@ export function LayerSubItem({
               }}
             >
               <Icon path={mdiDotsVertical} size={ICON_SIZE} />
-            </BaseButton>
+            </MapControlButton>
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import Icon from '@mdi/react';
 
@@ -16,8 +16,14 @@ export function ToggleShowButton({
   onToggle,
 }: ToggleShowButtonProps) {
   return (
-    <BaseButton disabled={disabled} title={title} onClick={onToggle}>
+    <MapControlButton
+      disabled={disabled}
+      title={title}
+      onClick={onToggle}
+      variant="plain"
+      size="small"
+    >
       <Icon path={show ? mdiEye : mdiEyeOff} size="14px" />
-    </BaseButton>
+    </MapControlButton>
   );
 }

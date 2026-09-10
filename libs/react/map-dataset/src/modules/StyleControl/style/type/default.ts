@@ -1,11 +1,4 @@
-import {
-  InputCheckbox,
-  InputChoose,
-  InputColorPicker,
-  InputSelect,
-  InputSlider,
-  InputText,
-} from '@hungpvq/react-map-core';
+import { InputCheckbox, InputChoose, InputColorPicker, InputSelect, InputSlider, InputText } from '@hungpvq/react-map-core/fields';
 import { InputArrayIndex } from '../field/InputArrayIndex';
 import { InputArrayXY } from '../field/InputArrayXY';
 import { InputImage } from '../field/InputImage';

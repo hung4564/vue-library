@@ -13,8 +13,8 @@
           <InputText v-model="form.name" type="text" />
 
           <div class="button-container">
-            <BaseButton @click="save"> Save </BaseButton>
-            <BaseButton @click="cancel"> Cancel </BaseButton>
+            <MapControlButton variant="filled" @click="save"> Save </MapControlButton>
+            <MapControlButton variant="outlined" @click="cancel"> Cancel </MapControlButton>
           </div>
         </div>
       </DraggableItemPopup>
@@ -26,14 +26,8 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  defaultMapProps,
-  InputText,
-  ModuleContainer,
-  useMap,
-  useShow,
-} from '@hungpvq/vue-map-core';
+import { defaultMapProps, MapControlButton, ModuleContainer, useMap, useShow } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
 import { ref } from 'vue';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

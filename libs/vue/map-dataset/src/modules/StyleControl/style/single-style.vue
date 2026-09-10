@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
+import { Collapse, InputSlider } from '@hungpvq/vue-map-core/fields';
 import { convertTabWithDefaultConfig, DEFAULT_VALUE, TABS, type Tab, type TabConfig } from '@hungpvq/map-dataset/style';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';

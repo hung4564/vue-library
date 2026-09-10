@@ -28,9 +28,15 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        fields: 'src/fields.ts',
+      },
       name: 'vue-map-core',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {

@@ -1,4 +1,4 @@
-import { BaseButton } from '@hungpvq/react-map-core';
+import { MapControlButton } from '@hungpvq/react-map-core';
 
 export function SampleToggleShowButton({
   show,
@@ -12,7 +12,7 @@ export function SampleToggleShowButton({
   onToggle: () => void;
 }) {
   return (
-    <BaseButton
+    <MapControlButton variant="text"
       disabled={disabled}
       title={title}
       active={show}
@@ -31,6 +31,6 @@ export function SampleToggleShowButton({
       >
         {show ? 'ON' : 'OFF'}
       </span>
-    </BaseButton>
+    </MapControlButton>
   );
 }

@@ -1,10 +1,9 @@
 <template lang="">
-  <BaseButton
+  <MapControlButton
     class="tab-item"
     :class="{ 'tab-item-active': active, 'tab-item-disabled': disabled }"
     :disabled="disabled"
-    v-bind="$attrs"
-  >
+    v-bind="$attrs" variant="text">
     <div class="tab-item-title" :title="text">
       {{ text }}
     </div>
@@ -21,10 +20,10 @@
         :default_value="default_value"
       ></component>
     </div>
-  </BaseButton>
+  </MapControlButton>
 </template>
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 const props = defineProps({
   value: {},

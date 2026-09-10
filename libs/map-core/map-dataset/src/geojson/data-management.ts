@@ -24,7 +24,7 @@ import type { IMapboxSourceView } from '../interfaces';
 import { isDatasetSourceMap } from '../utils/check';
 import { getUUIDv4 } from '@hungpvq/shared';
 import booleanIntersects from '@turf/boolean-intersects';
-import { point as pointTurf } from '@turf/turf';
+import { point as pointTurf } from '@turf/helpers';
 
 export const geojsonLocalAdapter: <
   T extends Feature<Geometry, any> = Feature<Geometry, any>,

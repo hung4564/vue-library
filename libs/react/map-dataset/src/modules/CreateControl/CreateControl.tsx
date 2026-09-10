@@ -1,16 +1,8 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  defaultMapProps,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/react-map-core';
+import { defaultMapProps, MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/react-map-core';
+import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDataset } from '../../store';
 import { CreateConfigForm, hasCreateConfigSettings } from './config';
@@ -245,13 +237,13 @@ export function CreateControl(props: CreateControlProps) {
                     {trans('map.layer-control.create.creating')}
                   </div>
                 ) : null}
-                <BaseButton
+                <MapControlButton variant="filled"
                   className="btn-container"
                   disabled={creating}
                   onClick={() => void onAddLayer()}
                 >
                   {trans('map.layer-control.create-btn')}
-                </BaseButton>
+                </MapControlButton>
               </div>
             </div>
           </DraggableItemPopup>

@@ -20,7 +20,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang, useRegisterMapControl } from '../../extra';
 import { useToolbarControl } from '../../extra/toolbar';
-import { BaseButton } from '../../field';
+import { MapControlButton } from '../../components';
+
 import { defaultMapProps, useMap } from '../../hooks';
 import {
   ModuleContainer,
@@ -196,7 +197,7 @@ export function InfoControl(props: InfoControlProps) {
           width={360}
           height={340}
           extraBtn={
-            <BaseButton
+            <MapControlButton variant="plain"
               title={trans('map.info-control.screenshot')}
               disabled={capturing}
               onClick={(e) => {
@@ -205,7 +206,7 @@ export function InfoControl(props: InfoControlProps) {
               }}
             >
               <Icon path={mdiCameraOutline} size="16px" />
-            </BaseButton>
+            </MapControlButton>
           }
           {...bind}
           {...panelBind}
@@ -216,7 +217,7 @@ export function InfoControl(props: InfoControlProps) {
                 <div key={row.key} className="map-info-control__row">
                   <div className="map-info-control__label">{row.label}</div>
                   <div className="map-info-control__value">{row.value}</div>
-                  <BaseButton
+                  <MapControlButton variant="plain"
                     className="map-info-control__copy"
                     title={trans('map.info-control.copy')}
                     onClick={(e) => {
@@ -225,7 +226,7 @@ export function InfoControl(props: InfoControlProps) {
                     }}
                   >
                     <Icon path={mdiContentCopy} size={14 / 24} />
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
               ))}
             </div>

@@ -1,5 +1,5 @@
 import { convertTabWithDefaultConfig, DEFAULT_VALUE, TABS, type Tab, type TabConfig } from '@hungpvq/map-dataset/style';
-import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core';
+import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core/fields';
 import { copyByJson } from '@hungpvq/shared';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useEffect, useMemo, useState } from 'react';

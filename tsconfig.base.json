@@ -59,6 +59,7 @@
       "@hungpvq/map-draw": ["libs/map-core/map-draw/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],
+      "@hungpvq/react-map-core/fields": ["libs/react/map-core/src/fields.ts"],
       "@hungpvq/react-map-dataset": ["libs/react/map-dataset/src/index.ts"],
       "@hungpvq/react-map-devtools": ["libs/react/map-devtools/src/index.ts"],
       "@hungpvq/react-map-draw": ["libs/react/map-draw/src/index.ts"],
@@ -72,6 +73,7 @@
       "@hungpvq/ui-core": ["libs/ui/core/src/index.ts"],
       "@hungpvq/vue-draggable": ["libs/vue/draggable/src/index.ts"],
       "@hungpvq/vue-map-core": ["libs/vue/map-core/src/index.ts"],
+      "@hungpvq/vue-map-core/fields": ["libs/vue/map-core/src/fields.ts"],
       "@hungpvq/vue-map-dataset": ["libs/vue/map-dataset/src/index.ts"],
       "@hungpvq/vue-map-devtools": ["libs/vue/map-devtools/src/index.ts"],
       "@hungpvq/vue-map-draw": ["libs/vue/map-draw/src/index.ts"]

@@ -33,12 +33,10 @@ Desktop keeps the floating FAB + fixed panel.
 
 ```ts
 // Vue
-import { createApp } from 'vue';
 import { Devtools, installDevtools, uninstallDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
-const app = createApp(App);
 // mount <Devtools /> in the tree
 ```
 
@@ -53,8 +51,6 @@ installDevtools();
 
 `installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core` (see [Error handling](./error-handling.md)). It does **not** register a component — mount `<Devtools />` explicitly. Call `uninstallDevtools()` to tear down capture.
 
-Vue also still exports deprecated `DevtoolsPlugin` (`app.use(DevtoolsPlugin)`) which calls `installDevtools()` and registers a global `Devtools` component for older apps.
-
 ## Stable API
 
 | Export | Vue | React |
@@ -65,7 +61,6 @@ Vue also still exports deprecated `DevtoolsPlugin` (`app.use(DevtoolsPlugin)`) w
 | Log adapter | `DevtoolLogAdapter`, `devtoolLogAdapter` | same |
 | State | `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState` | same |
 | Actions | `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` | same |
-| Deprecated | `DevtoolsPlugin` | — |
 
 Runtime lock: `libs/vue/map-devtools/src/public-api.spec.ts`, `libs/react/map-devtools/src/public-api.spec.ts`.
 
