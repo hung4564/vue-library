@@ -138,6 +138,15 @@ vi.mock('maplibre-gl', () => {
     setLngLat() {
       return this;
     }
+    setRotation() {
+      return this;
+    }
+    addClassName() {
+      return this;
+    }
+    removeClassName() {
+      return this;
+    }
     addTo() {
       return this;
     }

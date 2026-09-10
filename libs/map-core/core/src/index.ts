@@ -71,6 +71,7 @@ export {
   formatProjectionName,
   formatWorkerDuration,
   formatWorkerLogTime,
+  GeoLocateSession,
 } from './internal-barrel';
 
 export {
@@ -145,6 +146,15 @@ export type {
 } from './store';
 export type { ErrorHandlerOptions } from './services/error-handler.service';
 export type { MapEventCallbacks } from './services/map-initializer.service';
+export type {
+  GeoLocateControlOptions,
+  GeoLocateFitBoundsOptions,
+  GeoLocatePermissions,
+  GeoLocatePermissionStatus,
+  GeoLocateSessionOptions,
+  GeoLocateUiState,
+  GeoLocateWatchState,
+} from './geolocate';
 export type { GeojsonBbox } from './utils/fillBound';
 export type { MapViewInfo } from './utils/map-info';
 export type {

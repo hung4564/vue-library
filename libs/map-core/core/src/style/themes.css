@@ -20,6 +20,7 @@
   --map-on-primary-color: #ffffff;
   --map-accent-color: #1a73e8;
   --map-geolocate-accuracy-color: #1da1f233;
+  --map-geolocate-dot-color: #1da1f2;
 
   /* Surfaces & Backgrounds */
   --map-surface-color: #ffffff;
@@ -103,6 +104,7 @@
   --map-on-primary-color: #001a33;
   --map-accent-color: #5eb1ff;
   --map-geolocate-accuracy-color: #5eb1ff33;
+  --map-geolocate-dot-color: #5eb1ff;
 
   --map-surface-color: #1a2332;
   --map-surface-variant-color: #243044;
@@ -141,6 +143,7 @@
   --map-on-primary-color: #ffffff;
   --map-accent-color: #d946ef;
   --map-geolocate-accuracy-color: #d946ef33;
+  --map-geolocate-dot-color: #d946ef;
 
   --map-surface-color: #faf5ff;
   --map-surface-variant-color: #f3e8ff;
@@ -179,6 +182,7 @@
   --map-on-primary-color: #ffffff;
   --map-accent-color: #06b6d4;
   --map-geolocate-accuracy-color: #06b6d433;
+  --map-geolocate-dot-color: #06b6d4;
 
   --map-surface-color: #ecfeff;
   --map-surface-variant-color: #cffafe;
@@ -217,6 +221,7 @@
   --map-on-primary-color: #ffffff;
   --map-accent-color: #22c55e;
   --map-geolocate-accuracy-color: #22c55e33;
+  --map-geolocate-dot-color: #22c55e;
 
   --map-surface-color: #f0fdf4;
   --map-surface-variant-color: #dcfce7;
@@ -255,6 +260,7 @@
   --map-on-primary-color: #ffffff;
   --map-accent-color: #f59e0b;
   --map-geolocate-accuracy-color: #f59e0b33;
+  --map-geolocate-dot-color: #f59e0b;
 
   --map-surface-color: #fff7ed;
   --map-surface-variant-color: #ffedd5;
@@ -293,6 +299,7 @@
   --map-on-primary-color: #0f172a;
   --map-accent-color: #38bdf8;
   --map-geolocate-accuracy-color: #38bdf833;
+  --map-geolocate-dot-color: #38bdf8;
 
   --map-surface-color: #1e293b;
   --map-surface-variant-color: #334155;

@@ -49,6 +49,8 @@ Use these variables to customize the look and feel of the entire map library.
 
 Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../src/style/themes.css) (e.g. `.map-theme-light`).
 
+GeoLocateControl also uses `--map-geolocate-dot-color` and `--map-geolocate-accuracy-color` (per theme).
+
 ```css
 :root {
   --map-primary-color: #0b3d91;

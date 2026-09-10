@@ -26,6 +26,7 @@ export * from './locale';
 export * from './store';
 
 // Export extra modules
+export * from './geolocate';
 export * from './mitt';
 export * from './registry';
 export * from './resolver';

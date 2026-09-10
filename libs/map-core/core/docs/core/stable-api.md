@@ -136,7 +136,7 @@ Prefer canonical names in new code (`MapControlButton`, `BaseCollapse`, `InputTe
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
-Dataset / draw / `@hungpvq/map-core` Experimental allowlists are **empty / reserved**.
+Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**).
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
@@ -190,7 +190,7 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. Other map packages keep `*_EXPERIMENTAL_RUNTIME_EXPORTS` empty/reserved.
+Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. `@hungpvq/map-core` Experimental: `GeoLocateSession`. Other map packages keep empty/reserved experimental lists.
 ## Enforcing the allowlist
 
 1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './internal-barrel'` (or from a feature module). Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.

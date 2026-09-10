@@ -1,186 +1,114 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/map-core';
-import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
-import { toValue, tryOnMounted, tryOnUnmounted } from '@hungpvq/shared';
-import { useGeolocation } from '@hungpvq/shared-core';
+import {
+  GeoLocateSession,
+  MAP_ACTION_LOCALE,
+  type GeoLocateControlOptions,
+  type GeoLocateUiState,
+  type MapSimple,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
-import { LngLatLike, MapLibreEvent, Marker } from 'maplibre-gl';
 import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
-const { coords, error, resume, pause } = useGeolocation({
-  immediate: false,
-});
+const props = withDefaults(
+  defineProps<WithMapPropType & GeoLocateControlOptions>(),
+  {
+    ...defaultMapProps,
+    trackUserLocation: true,
+    followUserLocation: true,
+    showAccuracyCircle: true,
+    showUserHeading: true,
+    showUserLocation: true,
+  },
+);
 
-const props = withDefaults(defineProps<WithMapPropType>(), {
-  ...defaultMapProps,
-});
-
-const { mapId, callMap, moduleContainerProps, order } = useMap(props);
+const { mapId, callMap, moduleContainerProps, order } = useMap(
+  { ...props, controlId: 'mapGeoLocateControl' },
+  undefined,
+  onDestroy,
+);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 
 setLocaleDefault(MAP_ACTION_LOCALE);
 
-const active = ref(false);
-const center = ref<LngLatLike>();
-const p_accuracy = ref(0);
-let p_dotElement: HTMLElement,
-  p_circleElement: HTMLElement,
-  p_userLocationDotMarker = ref<Marker | undefined>(undefined),
-  _accuracyCircleMarker = ref<Marker | undefined>(undefined);
-
-watch(coords, (value) => {
-  if (
-    value.longitude == Number.POSITIVE_INFINITY ||
-    value.latitude == Number.POSITIVE_INFINITY
-  ) {
-    return;
-  }
-  center.value = [value.longitude, value.latitude];
-  p_accuracy.value = value.accuracy;
-  if (center.value) onAddUi();
+const ui = ref<GeoLocateUiState>({
+  watchState: 'OFF',
+  active: false,
+  locating: false,
+  disabled: false,
+  errorMessage: null,
 });
 
-async function onClick() {
-  callMap((map) => {
-    if (!active.value) {
-      active.value = true;
-      resume().then((position) => {
-        if (position) {
-          const coords: GeolocationCoordinates = position.coords;
-          const lngLat: LngLatLike = [coords.longitude, coords.latitude];
-          map.flyTo({
-            center: lngLat,
-            zoom: 14,
-          });
-        }
-      });
-      return;
-    }
-    if (isOutOfMapMaxBounds(map, toValue(coords))) {
-      map.flyTo({
-        center: center.value,
-        zoom: 14,
-      });
-      return;
-    }
-    pause();
-    active.value = false;
-    center.value = undefined;
-    onDestroy();
-  });
+let session: GeoLocateSession | undefined;
+
+watch(
+  () =>
+    [
+      props.trackUserLocation,
+      props.followUserLocation,
+      props.showAccuracyCircle,
+      props.showUserHeading,
+      props.showUserLocation,
+      props.fitBoundsOptions,
+      props.positionOptions,
+      props.geolocation,
+    ] as const,
+  () => {
+    session?.destroy();
+    session = undefined;
+    ui.value = {
+      watchState: 'OFF',
+      active: false,
+      locating: false,
+      disabled: false,
+      errorMessage: null,
+    };
+  },
+);
+
+function sessionOptions() {
+  return {
+    trackUserLocation: props.trackUserLocation,
+    followUserLocation: props.followUserLocation,
+    showAccuracyCircle: props.showAccuracyCircle,
+    showUserHeading: props.showUserHeading,
+    showUserLocation: props.showUserLocation,
+    fitBoundsOptions: props.fitBoundsOptions,
+    positionOptions: props.positionOptions,
+    geolocation: props.geolocation,
+  };
 }
 
-tryOnUnmounted(() => {
-  onDestroy();
-});
+function getSession(map: MapSimple) {
+  if (!session) {
+    session = new GeoLocateSession({
+      map,
+      mapId: mapId.value,
+      ...sessionOptions(),
+      onStateChange(next) {
+        ui.value = next;
+      },
+    });
+  }
+  return session;
+}
 
 function onDestroy() {
-  callMap((map) => {
-    map.off('zoom', onZoom);
-  });
-  if (p_userLocationDotMarker.value) {
-    p_userLocationDotMarker.value.remove();
-  }
-  if (_accuracyCircleMarker.value) {
-    _accuracyCircleMarker.value.remove();
-  }
+  session?.destroy();
+  session = undefined;
 }
 
-tryOnMounted(() => {
-  if (!p_dotElement) {
-    p_dotElement = DOMcreate('div', 'mapboxgl-user-location');
-
-    p_dotElement.classList.add('mapboxgl-user-location');
-    p_dotElement.appendChild(DOMcreate('div', 'mapboxgl-user-location-dot'));
-    p_dotElement.appendChild(
-      DOMcreate('div', 'mapboxgl-user-location-heading'),
-    );
-  }
-  if (!p_circleElement) {
-    p_circleElement = DOMcreate(
-      'div',
-      'mapboxgl-user-location-accuracy-circle',
-    );
-  }
-});
-
-function onAddUi() {
+function onClick() {
+  GeoLocateSession.primeDeviceOrientationPermission();
   callMap((map) => {
-    if (!p_userLocationDotMarker.value) {
-      p_userLocationDotMarker.value = new Marker({
-        element: p_dotElement,
-        rotationAlignment: 'map',
-        pitchAlignment: 'map',
-      })
-        .setLngLat(center.value!)
-        .addTo(map);
-    } else {
-      p_userLocationDotMarker.value.setLngLat(center.value!).addTo(map);
-    }
-
-    if (!_accuracyCircleMarker.value) {
-      _accuracyCircleMarker.value = new Marker({
-        element: p_circleElement,
-        pitchAlignment: 'map',
-      })
-        .setLngLat(center.value!)
-        .addTo(map);
-    } else {
-      _accuracyCircleMarker.value.setLngLat(center.value!).addTo(map);
-    }
-
-    map.on('zoom', onZoom);
-    updateCircleRadius(map);
+    getSession(map).toggle();
   });
 }
 
-function updateCircleRadius(map: MapSimple) {
-  if (!p_accuracy.value || p_accuracy.value <= 1) {
-    p_circleElement.style.width = '1px';
-    p_circleElement.style.height = '1px';
-    return;
-  }
-  const y = map.getContainer().getBoundingClientRect().height / 2;
-  const a = map.unproject([0, y]);
-  const b = map.unproject([100, y]);
-  const metersPerPixel = a.distanceTo(b) / 100;
-  const circleDiameter = Math.ceil((2.0 * p_accuracy.value) / metersPerPixel);
-  p_circleElement.style.width = `${circleDiameter}px`;
-  p_circleElement.style.height = `${circleDiameter}px`;
-}
-
-function onZoom(event: MapLibreEvent) {
-  updateCircleRadius(event.target as MapSimple);
-}
-
-const DOMcreate = function (
-  tagName: string,
-  className: string,
-  container?: HTMLElement,
-) {
-  const el = window.document.createElement(tagName);
-  if (className !== undefined) el.className = className;
-  if (container) container.appendChild(el);
-  return el;
-};
-
-function isOutOfMapMaxBounds(
-  map: MapSimple,
-  coordinates: GeolocationCoordinates,
-) {
-  const bounds = map.getBounds();
-  return (
-    bounds &&
-    (coordinates.longitude < bounds.getWest() ||
-      coordinates.longitude > bounds.getEast() ||
-      coordinates.latitude < bounds.getSouth() ||
-      coordinates.latitude > bounds.getNorth())
-  );
-}
 useRegisterMapControl(mapId, {
   id: 'mapGeoLocateControl',
   panelKind: 'button',
@@ -188,6 +116,7 @@ useRegisterMapControl(mapId, {
   getProps: () => ({
     position: props.position,
     controlLayout: props.controlLayout,
+    ...sessionOptions(),
   }),
   actions: [
     {
@@ -201,19 +130,19 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGeoLocateControl',
   getState() {
-    const tooltipGeolocate = error.value
-      ? error.value.message ||
-        trans.value('map.action.geolocate-control-location-not-available')
-      : trans.value('map.action.geolocate-control-find-my-location');
+    const error = ui.value.errorMessage;
     return {
       visible: true,
-      active: active.value,
-      title: tooltipGeolocate,
-      disabled: !!error.value,
+      active: ui.value.active,
+      disabled: ui.value.disabled,
+      title: error
+        ? error ||
+          trans.value('map.action.geolocate-control-location-not-available')
+        : trans.value('map.action.geolocate-control-find-my-location'),
       order: order.value,
       icon: {
         type: 'mdi',
-        path: error.value ? mdiCrosshairsOff : mdiCrosshairsGps,
+        path: error ? mdiCrosshairsOff : mdiCrosshairsGps,
       },
     };
   },
@@ -221,6 +150,8 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     onClick();
   },
 });
+
+watch(ui, () => control.sync(), { deep: true });
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

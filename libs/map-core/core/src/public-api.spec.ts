@@ -123,8 +123,10 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'workerProgressRatio',
 ] as const;
 
-/** Reserved for future experimental root exports (currently empty). */
-export const MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
+/** Experimental root exports (may change in a minor). */
+export const MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'GeoLocateSession',
+] as const;
 
 /** Stable runtime exports per domain subpath entry. */
 export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
