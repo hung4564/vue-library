@@ -39,7 +39,7 @@ import {
   resolveMapButtonSizePx,
   type MapButtonSize,
   type MapButtonVariant,
-} from './map-button-variant';
+} from '@hungpvq/map-core';
 
 export default {
   name: 'MapButton',

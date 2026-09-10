@@ -192,3 +192,18 @@ export const MAP_CORE_EXPERIMENTAL_CANONICAL = {
   collapse: 'BaseCollapse',
   textArea: 'InputTextArea',
 } as const;
+
+/**
+ * MapControlButton / MapButton public prop contract (SoT in `@hungpvq/map-core` `ui/map-button`).
+ * Both adapters must import helpers from core — do not fork variant/size literals.
+ */
+export const MAP_CONTROL_BUTTON_VARIANTS = [
+  'icon',
+  'plain',
+  'text',
+  'tonal',
+  'outlined',
+  'filled',
+] as const;
+
+export const MAP_CONTROL_BUTTON_SIZES = ['small', 'medium', 'large'] as const;

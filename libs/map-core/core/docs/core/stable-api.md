@@ -62,6 +62,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
+| Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
 | Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
 | Types | `MapSimple`, `WithMapPropType`, `MapControlHandle`, … |

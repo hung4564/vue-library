@@ -82,4 +82,4 @@ Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).
 - [ ] Experimental field names on `./fields`: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea`); action buttons use Stable root `MapControlButton` (`variant` + `size`: `small` \| `medium` \| `large`, not `./fields`)
 - [ ] Run `nx test @hungpvq/map-core -- vue-react-parity.spec.ts` when adding dual controls or shared exports
 
-**Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable root + shared `/fields` Experimental allowlists).
+**Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable root + shared `/fields` Experimental allowlists + `MapControlButton` `variant`/`size` SoT in `@hungpvq/map-core` `ui/map-button`).

@@ -19,6 +19,8 @@ import { MapDatasetPage } from './views/map-dataset';
 import { MeasurementPage } from './views/measurement';
 import { RegistryControlPage } from './views/registry-control';
 import { StoryTellingPage } from './views/story-telling';
+import { StoryTellingGpsPage } from './views/story-telling-gps';
+import { LegendPage } from './views/legend';
 import { ToolbarPage } from './views/toolbar';
 import { WorkerSamplePage } from './views/worker-sample';
 
@@ -57,7 +59,8 @@ root.render(
             element={<DatasetDataManagementPage />}
           />
           <Route path="story-telling" element={<StoryTellingPage />} />
-          <Route path="story-telling-gps" element={<StoryTellingPage />} />
+          <Route path="story-telling-gps" element={<StoryTellingGpsPage />} />
+          <Route path="legend" element={<LegendPage />} />
           <Route path="draw" element={<DrawPage />} />
         </Route>
       </Routes>

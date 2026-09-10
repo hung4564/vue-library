@@ -30,6 +30,8 @@ const NAV_ITEMS = [
   { to: '/registry-control', label: 'UniversalRegistry - Controls' },
   { to: '/dataset-data-management', label: 'Dataset - Data management' },
   { to: '/story-telling', label: 'Story telling' },
+  { to: '/story-telling-gps', label: 'Story telling GPS' },
+  { to: '/legend', label: 'Legend' },
   { to: '/draw', label: 'Draw' },
 ];
 

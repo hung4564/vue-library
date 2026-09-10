@@ -28,7 +28,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/helpers';
 export function listToFeatureMapper<
-  E extends Identifiable = Record<string, any>,
+  E extends Identifiable = Identifiable,
 >(): IDataMapper<E, E> {
   return {
     toFeature(record) {
@@ -37,29 +37,31 @@ export function listToFeatureMapper<
       }
       const { geometry, ...properties } = record;
 
-      const feature: any = {
+      const feature: Feature<Geometry, GeoJsonProperties> = {
         type: 'Feature',
-        id: properties['id'],
-        geometry,
+        id: properties['id'] as string | number | undefined,
+        geometry: geometry as Geometry,
         properties,
       };
 
-      return feature;
+      return feature as unknown as E;
     },
     toItem(feature) {
       if (!feature) {
         return;
       }
-      const result: any = {
-        id: feature['properties']?.['id'] || feature.id,
-        geometry: feature['geometry'],
+      const result: Record<string, unknown> = {
+        id:
+          (feature as Feature).properties?.['id'] ||
+          (feature as Feature).id,
+        geometry: (feature as Feature).geometry,
       };
 
-      if (feature['properties']) {
-        Object.assign(result, feature['properties']);
+      if ((feature as Feature).properties) {
+        Object.assign(result, (feature as Feature).properties);
       }
 
-      return result;
+      return result as E;
     },
     toExternal(feature) {
       if (!feature) {
@@ -113,22 +115,22 @@ export const listLocalAdapter: <T extends Identifiable = Identifiable>(props: {
     async getDetail(item: Partial<T>) {
       const data = await list();
       const id = item.id!;
-      const found = data.find((f: any) => f.id === id);
+      const found = data.find((f) => f.id === id);
       return found;
     },
     async create(item) {
-      if (!item) return item;
-      if (!(item as any).id) (item as any).id = getUUIDv4();
+      if (!item) return item as unknown as T;
+      if (!item.id) (item as { id?: string }).id = getUUIDv4();
       tmp_data.push(item as unknown as T);
       saveToStorage(tmp_data);
       return item as unknown as T;
     },
     async update(item) {
-      if (!item) return item;
-      if (!(item as any).id) throw new Error('Item must have id to update');
-      const idx = tmp_data.findIndex((f: any) => f.id === (item as any).id);
+      if (!item) return item as unknown as T;
+      if (!item.id) throw new Error('Item must have id to update');
+      const idx = tmp_data.findIndex((f) => f.id === item.id);
       if (idx === -1)
-        throw new Error(`Feature with id ${(item as any).id} not found`);
+        throw new Error(`Feature with id ${String(item.id)} not found`);
 
       tmp_data[idx] = { ...tmp_data[idx], ...item };
       saveToStorage(tmp_data);
@@ -136,8 +138,8 @@ export const listLocalAdapter: <T extends Identifiable = Identifiable>(props: {
     },
 
     async delete(item) {
-      if (!item) return item;
-      tmp_data = tmp_data.filter((f: any) => f.id !== item.id!);
+      if (!item) return;
+      tmp_data = tmp_data.filter((f) => f.id !== item.id!);
       saveToStorage(tmp_data);
     },
   };

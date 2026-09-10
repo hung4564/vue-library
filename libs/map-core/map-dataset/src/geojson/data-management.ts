@@ -73,22 +73,22 @@ export const geojsonLocalAdapter: <
     async getDetail(item: Partial<T>) {
       const data = await list();
       const id = item.properties?.['id'] || item.id;
-      const found = data.find((f: any) => f.id === id);
+      const found = data.find((f) => f.id === id);
       return found;
     },
     async create(item) {
-      if (!item) return item;
-      if (!(item as any).id) (item as any).id = getUUIDv4();
+      if (!item) return item as unknown as T;
+      if (!item.id) (item as { id?: string }).id = getUUIDv4();
       tmp_data.push(item as unknown as T);
       saveToStorage(tmp_data);
       return item as unknown as T;
     },
     async update(item) {
-      if (!item) return item;
-      if (!(item as any).id) throw new Error('Item must have id to update');
-      const idx = tmp_data.findIndex((f: any) => f.id === (item as any).id);
+      if (!item) return item as unknown as T;
+      if (!item.id) throw new Error('Item must have id to update');
+      const idx = tmp_data.findIndex((f) => f.id === item.id);
       if (idx === -1)
-        throw new Error(`Feature with id ${(item as any).id} not found`);
+        throw new Error(`Feature with id ${String(item.id)} not found`);
 
       tmp_data[idx] = { ...tmp_data[idx], ...item };
       saveToStorage(tmp_data);
@@ -96,8 +96,8 @@ export const geojsonLocalAdapter: <
     },
 
     async delete(item) {
-      if (!item) return item;
-      tmp_data = tmp_data.filter((f: any) => f.id !== item.id);
+      if (!item) return;
+      tmp_data = tmp_data.filter((f) => f.id !== item.id);
       saveToStorage(tmp_data);
     },
   };

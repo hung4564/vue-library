@@ -8,7 +8,7 @@ import type {
 
 export function resolveMenuContextSource(
   source: MenuContextSource,
-): Record<string, any> {
+): Record<string, unknown> {
   let current: MenuContextSource = source;
   while (typeof current === 'function') {
     current = current();
@@ -27,7 +27,7 @@ export function createMenuConditionContext<T = IDataset>(
     layer,
     mapId: options?.mapId,
     get context() {
-      const merged: Record<string, any> = {};
+      const merged: Record<string, unknown> = {};
       for (const source of options?.context ?? []) {
         Object.assign(merged, resolveMenuContextSource(source));
       }

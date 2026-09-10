@@ -39,7 +39,7 @@ import {
   isMapButtonSize,
   resolveMapButtonSizePx,
   type MapButtonSize,
-} from './map-button-variant';
+} from '@hungpvq/map-core';
 
 interface ButtonItem {
   title: string;

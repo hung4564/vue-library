@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import {
   MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
   MAP_CORE_ADAPTER_SHARED_STABLE,
+  MAP_CONTROL_BUTTON_SIZES,
+  MAP_CONTROL_BUTTON_VARIANTS,
   MAP_DATASET_ADAPTER_SHARED_STABLE,
   MAP_DRAW_ADAPTER_SHARED_STABLE,
   MAP_DUAL_CONTROL_IDS,
@@ -145,5 +147,37 @@ describe('Vue ↔ React dual-framework parity', () => {
     );
     assertSubset('vue-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, vue);
     assertSubset('react-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, react);
+  });
+
+  it('MapControlButton variant/size SoT lives in map-core; adapters import it', () => {
+    const coreButtonPath = join(
+      repoLibs,
+      'map-core/core/src/ui/map-button.ts',
+    );
+    expect(existsSync(coreButtonPath)).toBe(true);
+    const coreButton = readFileSync(coreButtonPath, 'utf8');
+    for (const variant of MAP_CONTROL_BUTTON_VARIANTS) {
+      expect(coreButton.includes(`'${variant}'`)).toBe(true);
+    }
+    for (const size of MAP_CONTROL_BUTTON_SIZES) {
+      expect(coreButton.includes(`'${size}'`)).toBe(true);
+    }
+
+    const vueMapButton = readFileSync(
+      join(vueCore, 'components/MapButton.vue'),
+      'utf8',
+    );
+    const reactMapButton = readFileSync(
+      join(reactCore, 'components/MapButton.tsx'),
+      'utf8',
+    );
+    expect(vueMapButton).toContain("from '@hungpvq/map-core'");
+    expect(reactMapButton).toContain("from '@hungpvq/map-core'");
+    expect(existsSync(join(vueCore, 'components/map-button-variant.ts'))).toBe(
+      false,
+    );
+    expect(
+      existsSync(join(reactCore, 'components/map-button-variant.ts')),
+    ).toBe(false);
   });
 });

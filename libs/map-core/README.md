@@ -27,7 +27,7 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
 | `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
-| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | peers/deps `~1.0.1` for core/dataset |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable `~1.1.0` |
 | `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
 
 **Monorepo rule:** bumping `@hungpvq/map-core` **minor/major** usually requires bumping adapters + dataset + draw in the same release (`~` peers allow patch-only drift). Do not publish a breaking/minor core alone.

@@ -1,20 +1,17 @@
-import { mdiLoading } from '@mdi/js';
-import { Icon } from '@mdi/react';
-import React, { useMemo } from 'react';
 import {
   isMapButtonSquareVariant,
   mapButtonSizeClass,
   mapButtonVariantClass,
   resolveMapButtonSizePx,
   type MapButtonSize,
+  type MapButtonSizeName,
   type MapButtonVariant,
-} from './map-button-variant';
+} from '@hungpvq/map-core';
+import { mdiLoading } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import React, { useMemo } from 'react';
 
-export type {
-  MapButtonVariant,
-  MapButtonSize,
-  MapButtonSizeName,
-} from './map-button-variant';
+export type { MapButtonVariant, MapButtonSize, MapButtonSizeName };
 
 export interface MapButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** small | medium | large | number (px). Applies to every variant. */

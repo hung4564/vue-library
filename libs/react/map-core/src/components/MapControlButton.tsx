@@ -1,10 +1,10 @@
-import React, { createContext, useContext } from 'react';
-import { MapButton } from './MapButton';
 import {
   isMapButtonFluidVariant,
   type MapButtonSize,
   type MapButtonVariant,
-} from './map-button-variant';
+} from '@hungpvq/map-core';
+import React, { createContext, useContext } from 'react';
+import { MapButton } from './MapButton';
 import { MapIcon } from './MapIcon';
 
 interface MapControlButtonGroupContextValue {

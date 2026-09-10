@@ -8,10 +8,13 @@ Use these variables to customize the look and feel of the entire map library.
 
 ```css
 :root {
-  /* Brand / Primary */
+  /* Brand / Primary — chrome, active icons, navigation emphasis */
   --map-primary-color: #004e98;
   --map-primary-hover-color: #003a72;
   --map-on-primary-color: #ffffff;
+
+  /* Accent — CTA fills (`filled` / `tonal`), status-active, card highlights */
+  --map-accent-color: #1a73e8;
 
   /* Surfaces & Backgrounds */
   --map-surface-color: #ffffff;
@@ -30,6 +33,26 @@ Use these variables to customize the look and feel of the entire map library.
   /* States */
   --map-disabled-color: rgba(0, 0, 0, 0.25);
   --map-hover-color: #f5f5f5;
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+}
+```
+
+### Primary vs accent
+
+| Token | Role | Light default |
+| --- | --- | --- |
+| `--map-primary-color` | Brand / chrome: active toolbar icons (`--map-button-active-color`), nav emphasis | `#004e98` |
+| `--map-primary-hover-color` | Hover for primary surfaces | `#003a72` |
+| `--map-on-primary-color` | Foreground on solid primary/accent fills (e.g. `variant="filled"` label) | `#ffffff` |
+| `--map-accent-color` | CTA and interactive accent: `MapControlButton` `filled`/`tonal`, `--map-status-active-color`, card highlight tints | `#1a73e8` |
+
+Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../src/style/themes.css) (e.g. `.map-theme-light`).
+
+```css
+:root {
+  --map-primary-color: #0b3d91;
+  --map-accent-color: #2563eb;
 }
 ```
 
@@ -63,7 +86,7 @@ CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|m
 | `--map-button-disabled-color` | Disabled icon color | `var(--map-disabled-color, rgba(0,0,0,0.25))` |
 | `--map-on-primary-color` | `filled` label on accent | `var(--map-text-inverse, #fff)` |
 
-Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`).
+Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`). Size/variant helpers: `@hungpvq/map-core` (`resolveMapButtonSizePx`, `MAP_BUTTON_VARIANTS`, …).
 
 ### Core - General (Map/Card)
 

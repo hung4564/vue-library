@@ -48,7 +48,7 @@ import {
   isMapButtonFluidVariant,
   isMapButtonSize,
   isMapButtonVariant,
-} from './map-button-variant';
+} from '@hungpvq/map-core';
 
 export default {
   name: 'MapControlButton',

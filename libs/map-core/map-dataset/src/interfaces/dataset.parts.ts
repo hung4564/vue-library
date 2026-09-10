@@ -19,14 +19,14 @@ import type { IDatasetMap } from './dataset.map';
  * These types define the structure of menu items and actions in the dataset
  */
 
-export type MenuConditionContext<T = IDataset, C = Record<string, any>> = {
+export type MenuConditionContext<T = IDataset, C = Record<string, unknown>> = {
   layer: T;
   mapId?: string;
   /** External data from UI: React context, Pinia, props, etc. */
   context?: C;
 };
 
-export type MenuCondition<T = IDataset, C = Record<string, any>> =
+export type MenuCondition<T = IDataset, C = Record<string, unknown>> =
   | boolean
   | ((ctx: MenuConditionContext<T, C>) => boolean);
 
@@ -98,16 +98,16 @@ export type IBaseMapboxSourceView = IDatasetMap &
   WithDataHelper &
   IDataset & {
     getMapboxSource: () => SourceSpecification & { id?: string };
-    updateData?(map: MapSimple, data: any): void;
+    updateData?(map: MapSimple, data: unknown): void;
     getFieldsInfo(): IFieldInfo[];
-    getDataInfo(): any;
+    getDataInfo(): unknown;
     getSourceId(): string;
   };
 export type IMapboxSourceView = IBaseMapboxSourceView & {
   getMapboxSource: () => SourceSpecification & { id?: string };
-  updateData?(map: MapSimple, data: any): void;
+  updateData?(map: MapSimple, data: unknown): void;
   getFieldsInfo(): IFieldInfo[];
-  getDataInfo(): any;
+  getDataInfo(): unknown;
   getSourceId(): string;
 };
 
@@ -119,7 +119,7 @@ export type IMapboxLayerView = IDatasetMap &
     getLayers(): LayerSpecification[];
     moveLayer(map: MapSimple, beforeId: string): void;
     getComponentUpdate(): ComponentType;
-    updateValue(map: MapSimple, value: any): void;
+    updateValue(map: MapSimple, value: unknown): void;
   };
 export type IIdentifyViewBase = IDataset &
   WithMenuHelper & {

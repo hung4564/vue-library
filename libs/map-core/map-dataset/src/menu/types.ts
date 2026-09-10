@@ -8,8 +8,8 @@ import type {
 import type { createMenuClickBuilder } from './builder';
 
 export type MenuContextSource =
-  | Record<string, any>
-  | (() => Record<string, any> | undefined)
+  | Record<string, unknown>
+  | (() => Record<string, unknown> | undefined)
   | undefined;
 
 export type { MenuCondition, MenuConditionContext };

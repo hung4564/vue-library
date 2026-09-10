@@ -3,7 +3,8 @@ import type { Feature, Geometry } from 'geojson';
 export type ID = string | number;
 export type Identifiable = {
   id?: ID;
-  [key: string]: any;
+  geometry?: Geometry;
+  [key: string]: unknown;
 };
 
 export type IDataManagerProps<
@@ -16,8 +17,8 @@ export type IDataManagerProps<
   mapper?: IDataMapper<T, Adapter extends IDataAdapter<infer U> ? U : T>;
   hooks?: Hooks[];
 };
-export interface IDataAdapter<T> extends Record<string, (...args: any) => any> {
-  list(params?: any): Promise<T[]>;
+export interface IDataAdapter<T> {
+  list(params?: Record<string, unknown>): Promise<T[]>;
   create(item: Partial<T>): Promise<T>;
   getDetail(item: Partial<T>): Promise<T | undefined>;
   update(item: T | Partial<T>): Promise<T>;
@@ -45,7 +46,7 @@ export type HandleWithHooksFn<T extends Identifiable = Identifiable> = <
   action: Action,
   payload: HookPayload<T, Action>,
   hookPrefix: string,
-  executor: (payload: HookPayload<T, Action>) => Promise<any> | any,
+  executor: (payload: HookPayload<T, Action>) => Promise<unknown> | unknown,
 ) => Promise<HookPayload<T, Action> | void>;
 
 export type IDataManagementView<
@@ -86,7 +87,7 @@ export type IDraftDataManagementView<T extends Identifiable> = IDataset &
     getDraftItems(): IDraftRecord<T>[];
   };
 
-export type IDraftRecord<T = any> = {
+export type IDraftRecord<T = unknown> = {
   id: ID;
   original?: Feature<Geometry, Partial<T> | T>;
   modified?: Feature<Geometry, Partial<T> | T>;
@@ -109,13 +110,13 @@ export type HookPayload<
 export type IHookContext<
   T extends Identifiable,
   Action extends string,
-  IDataAdapterItem = any,
+  IDataAdapterItem = unknown,
 > = {
   payload?: HookPayload<T, Action>;
   adapter: IDataAdapter<IDataAdapterItem>;
   action: Action;
-  mapper: IDataMapper<any, any>;
-  result?: any;
+  mapper: IDataMapper<unknown, unknown>;
+  result?: unknown;
 };
 
 export type HookBeforeHandler<T extends Identifiable, Action extends string> = (

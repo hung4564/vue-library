@@ -1,11 +1,6 @@
 /**
- * Shared MapButton / MapControlButton variants + sizes (Vue + React).
- * - icon: circular fixed toolbar chrome (default)
- * - plain: transparent icon actions (list / header)
- * - text: transparent text label / tabs
- * - tonal: soft accent fill (e.g. Load beside input)
- * - outlined: bordered secondary
- * - filled: solid primary CTA
+ * Shared MapButton / MapControlButton variants + sizes (framework-agnostic).
+ * Used by Vue/React map-core adapters — single source of truth.
  *
  * Size: `small` | `medium` | `large` (or numeric px). Applies to every variant.
  */

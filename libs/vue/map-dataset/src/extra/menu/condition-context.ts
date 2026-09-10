@@ -17,6 +17,6 @@ export function useMenuConditionSource(): MenuContextSource {
   return inject(MENU_CONDITION_CONTEXT_KEY, undefined);
 }
 
-export function useMenuConditionContext(): Record<string, any> {
+export function useMenuConditionContext(): Record<string, unknown> {
   return resolveMenuContextSource(useMenuConditionSource());
 }

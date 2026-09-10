@@ -191,4 +191,26 @@ describe('DrawService', () => {
     expect(addFeature).toHaveBeenCalled();
     expect(addFeature.mock.calls[0][0].properties?.['id']).toBe('new-1');
   });
+
+  it('saveDraw no-ops when store has no config', async () => {
+    const store = emptyStore();
+    DrawService.setFeature(store, 'added', point('a'), 'map-1');
+    await expect(
+      DrawService.saveDraw(
+        store,
+        { type: 'FeatureCollection', features: [point('a')] },
+        'map-1',
+      ),
+    ).resolves.toBeUndefined();
+    expect(store.state.featuresAdded['a']).toBe(true);
+  });
+
+  it('setFeature updated does not clear a prior deleted record', () => {
+    const store = emptyStore();
+    const feature = point('c');
+    DrawService.setFeature(store, 'deleted', feature, 'map-1');
+    DrawService.setFeature(store, 'updated', feature, 'map-1');
+    expect(store.state.featuresDeleted['c']).toEqual(feature);
+    expect(store.state.featuresUpdated['c']).toBe(true);
+  });
 });
