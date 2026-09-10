@@ -40,4 +40,4 @@ import {
 <ComponentManagementControl />
 ```
 
-Needs `createDatasetRegistryPlugin()` so keys like `style-control`, `layer-detail`, `dataset-detail`, `attribute-table` resolve.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) so keys like `style-control`, `layer-detail`, `dataset-detail`, `attribute-table` resolve.

@@ -88,17 +88,29 @@ npm install @hungpvq/shared @hungpvq/shared-core @hungpvq/shared-file @hungpvq/s
 
 ## 🚀 Quick Start
 
-Register dataset UI once (`createDatasetRegistryPlugin()`), import CSS, then mount `Map` + `LayerControl`. Full walkthrough: [Minimal starter](./libs/map-core/core/docs/core/minimal-starter.md).
+Call `installMapApp` once (theme + dataset registry), import CSS, then mount `Map` + `LayerControl`. Full walkthrough: [Minimal starter](./libs/map-core/core/docs/core/minimal-starter.md).
 
 ### Vue — Map + GeoJSON layer
+
+```ts
+// main.ts
+import { createApp } from 'vue';
+import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
+import { installMapApp } from '@hungpvq/vue-map-dataset';
+import App from './App.vue';
+
+const app = createApp(App);
+app.use(createStoreRegistryPlugin());
+installMapApp(app);
+app.mount('#app');
+```
 
 ```vue
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { Map, BaseMapControl, MeasurementControl, PrintControl } from '@hungpvq/vue-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
-import { DrawControl } from '@hungpvq/vue-map-draw';
-import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';;
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
@@ -131,7 +143,6 @@ function onMapLoaded(map: MapSimple) {
   <Map @map-loaded="onMapLoaded">
     <LayerControl position="top-left" show />
     <BaseMapControl position="bottom-left" />
-    <DrawControl position="top-right" />
     <MeasurementControl position="top-right" />
     <PrintControl />
   </Map>
@@ -142,8 +153,7 @@ Dataset setup: [vue-map-dataset docs](./libs/vue/map-dataset/docs/index.md) (als
 
 ### Devtools (optional)
 
-- **Vue:** `app.use(DevtoolsPlugin)` from `@hungpvq/vue-map-devtools` (global `Devtools` and/or `<Devtools />`)
-- **React:** `installDevtools()` then mount `<Devtools />` from `@hungpvq/react-map-devtools`
+- **Vue / React:** `installDevtools()` then mount `<Devtools />` (`@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`)
 
 Details: [devtools.md](./libs/map-core/core/docs/core/devtools.md).
 

@@ -20,9 +20,7 @@ describe('warnIfDatasetRegistryMissing', () => {
     warnIfDatasetRegistryMissing();
 
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0]?.[0])).toContain(
-      'createDatasetRegistryPlugin',
-    );
+    expect(String(warn.mock.calls[0]?.[0])).toContain('installMapApp');
   });
 
   it('does not warn when component is registered', () => {

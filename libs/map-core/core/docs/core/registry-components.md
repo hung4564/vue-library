@@ -13,7 +13,7 @@ import { UniversalRegistry } from '@hungpvq/vue-map-core';
 
 | API | Scope | Use when |
 | --- | --- | --- |
-| `registerComponent(key, Comp)` | All maps | Defaults from plugins (`createDatasetRegistryPlugin`), app-wide overrides |
+| `registerComponent(key, Comp)` | All maps | Defaults from `installMapApp` / `createDatasetRegistryPlugin`, app-wide overrides |
 | `registerComponentForMap(mapId, key, Comp)` | One `mapId` | Page / demo overrides that must win over global (and not leak to other maps) |
 
 Lookup order in `getComponent(key, mapId)`: **map-specific first**, then global.

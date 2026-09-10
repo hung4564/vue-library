@@ -6,7 +6,7 @@ Select rows (checkbox or click) to highlight them. **Zoom to selection** is off 
 
 Column headers support client-side sorting (`toggleAttributeTableSort` / `sortAttributeTableRows`).
 
-Needs `createDatasetRegistryPlugin()` and [`ComponentManagementControl`](../module/ComponentManagementControl.md) so the dialog can open. Mount [`LayerHighlight`](../module/LayerHighlight.md) if you want the selected row painted on the map.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) and [`ComponentManagementControl`](../module/ComponentManagementControl.md) so the dialog can open. Mount [`LayerHighlight`](../module/LayerHighlight.md) if you want the selected row painted on the map.
 
 ## Built-in menu
 
@@ -72,4 +72,4 @@ Data comes from `data-management.list()` when that node exists; otherwise from t
 
 ## Vue / React
 
-No extra control. Mount `LayerControl` + `ComponentManagementControl` + `createDatasetRegistryPlugin()`.
+No extra control. Mount `LayerControl` + `ComponentManagementControl` + `installMapApp` (or `createDatasetRegistryPlugin`).

@@ -1,12 +1,26 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import debounce from 'lodash/debounce';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCoordinate } from '../../extra/crs';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+
+/** Local debounce (avoids lodash dependency). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): (...args: TArgs) => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return (...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  };
+}
 
 function getDecimalRoundNum(d: number) {
   const multiplier = Math.pow(10, Math.ceil(-Math.log(d) / Math.LN10));

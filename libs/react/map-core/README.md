@@ -36,7 +36,7 @@ export function App() {
 }
 ```
 
-For layers / identify / menus, use `@hungpvq/react-map-dataset` and call `createDatasetRegistryPlugin().install()` at bootstrap.
+For layers / identify / menus, use `@hungpvq/react-map-dataset` and call `installMapApp()` at bootstrap.
 
 ## Docs
 

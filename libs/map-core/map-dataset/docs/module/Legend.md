@@ -1,6 +1,6 @@
 # Legend helpers
 
-Attach a legend block to a list UI node. Components are registered by `createDatasetRegistryPlugin()`.
+Attach a legend block to a list UI node. Components are registered by `installMapApp` (or `createDatasetRegistryPlugin`).
 
 **Events:** none (pure data + UI).
 

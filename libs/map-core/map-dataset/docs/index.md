@@ -56,28 +56,28 @@ You only need one set. Prefer the framework packages (`vue-*` / `react-*`) so st
 
 ## Setup
 
-Register built-in UI pieces (legend, opacity, toggle show, **Add to group**, **Export**, **Attribute table**, style editor). Without this step those components do not render.
+Bootstrap once with `installMapApp` (theme + built-in UI: legend, opacity, toggle show, **Add to group**, **Export**, **Attribute table**, style editor). Without this step those components do not render. Prefer `installMapApp` over `createDatasetRegistryPlugin()` alone.
 
 ### Vue
 
 ```ts
 import { createApp } from 'vue';
 import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
-import { createDatasetRegistryPlugin } from '@hungpvq/vue-map-dataset';
+import { installMapApp } from '@hungpvq/vue-map-dataset';
 import App from './App.vue';
 
 const app = createApp(App);
 app.use(createStoreRegistryPlugin());
-app.use(createDatasetRegistryPlugin());
+installMapApp(app);
 app.mount('#app');
 ```
 
 ### React
 
 ```ts
-import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
+import { installMapApp } from '@hungpvq/react-map-dataset';
 
-createDatasetRegistryPlugin().install();
+installMapApp();
 ```
 
 ## Features

@@ -2,13 +2,27 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
-import debounce from 'lodash/debounce';
 import { nextTick, ref } from 'vue';
 import { defaultMapProps, useMap } from '../../hooks';
 
 import type { MapSimple } from '@hungpvq/map-core';
 import { useCoordinate } from '../../extra/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+
+/** Local debounce (avoids lodash dependency). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): (...args: TArgs) => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return (...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  };
+}
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

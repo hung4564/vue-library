@@ -24,7 +24,7 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | maplibre `^5`, turf `^6` |
-| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; GIS parsers optional peers for create-control |
+| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); GIS parsers optional peers for create-control |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
 | `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
 | `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | peers/deps `~1.0.1` for core/dataset |

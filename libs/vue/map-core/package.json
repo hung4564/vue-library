@@ -25,9 +25,6 @@
       "default": "./style.css"
     }
   },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  },
   "peerDependencies": {
     "@hungpvq/map-core": "~1.0.1",
     "@hungpvq/vue-draggable": "~1.1.0",

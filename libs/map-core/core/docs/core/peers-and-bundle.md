@@ -8,7 +8,7 @@ Related: [Minimal starter](./minimal-starter.md) · [Stable API](./stable-api.md
 
 Smallest useful client bundle for **inline GeoJSON / in-memory layers**:
 
-1. Peers: `maplibre-gl` (+ Vue or React).
+1. Peers: `maplibre-gl` (+ Vue or React). **Required** for `@hungpvq/map-core`, `@hungpvq/map-dataset`, and the framework adapters — install it in the app; it is not a transitive dependency of `map-dataset`.
 2. Packages: `@hungpvq/map-core` + `@hungpvq/vue-map-core` **or** `@hungpvq/react-map-core`.
 3. Optional dataset list UI: `@hungpvq/map-dataset` + matching adapter + `installMapApp` / `createMapAppPlugin`.
 4. Import CSS once (`*/style.css`). Follow [Minimal starter](./minimal-starter.md).
@@ -21,7 +21,7 @@ There is no separate npm “lite” package — use the root/`./style.css` entri
 
 | Package | Role |
 |---------|------|
-| `maplibre-gl` | Map engine (peer) |
+| `maplibre-gl` | Map engine (**peer** on map-core, map-dataset, adapters) |
 | `@hungpvq/map-core` | Store, registry, theme, a11y helpers |
 | `@hungpvq/vue-map-core` or `@hungpvq/react-map-core` | `Map` shell + controls |
 | `@hungpvq/map-dataset` + vue/react adapter | Datasets + LayerControl (optional for bare canvas) |

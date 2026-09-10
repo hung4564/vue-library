@@ -71,10 +71,10 @@
     "mitt": "^3.0.1",
     "@hungpvq/shared": ">=0.0.1",
     "@hungpvq/shared-log": ">=0.0.1",
-    "maplibre-gl": "^5.4.0",
     "@mdi/js": "^7.4.47"
   },
   "peerDependencies": {
+    "maplibre-gl": "^5.4.0",
     "@tmcw/togeojson": "^7.1.2",
     "@xmldom/xmldom": "^0.9.12",
     "jszip": "^3.10.1",

@@ -15,12 +15,12 @@ import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 ```
 
-Register built-in components once (legend, opacity, add-to-group, export, attribute table, …):
+Bootstrap once (`installMapApp` = theme + dataset registry: legend, opacity, add-to-group, export, attribute table, …):
 
 ```ts
-import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
+import { installMapApp } from '@hungpvq/react-map-dataset';
 
-createDatasetRegistryPlugin().install();
+installMapApp();
 ```
 
 Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that install the published package need `mapDatasetGisWorker()` from `@hungpvq/map-dataset/vite`. In this Nx workspace use `worker.format: 'es'` + `nxViteTsPaths()` on `worker.plugins` — see [GIS worker](../../map-core/map-dataset/docs/worker.md).

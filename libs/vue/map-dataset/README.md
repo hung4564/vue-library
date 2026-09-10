@@ -15,16 +15,16 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 ```
 
-Register once at app bootstrap:
+Bootstrap once at app entry (`installMapApp` = theme + dataset registry):
 
 ```ts
 import { createApp } from 'vue';
 import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
-import { createDatasetRegistryPlugin } from '@hungpvq/vue-map-dataset';
+import { installMapApp } from '@hungpvq/vue-map-dataset';
 
 const app = createApp(App);
 app.use(createStoreRegistryPlugin());
-app.use(createDatasetRegistryPlugin());
+installMapApp(app);
 ```
 
 Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that install the published package need `mapDatasetGisWorker()` from `@hungpvq/map-dataset/vite`. In this Nx workspace use `worker.format: 'es'` + `nxViteTsPaths()` on `worker.plugins` — see [GIS worker](../../map-core/map-dataset/docs/worker.md).

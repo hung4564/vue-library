@@ -4,7 +4,7 @@
  */
 export type { LogEntry } from './log-adapter';
 export { DevtoolLogAdapter } from './log-adapter';
-export { DevtoolsPlugin, uninstallDevtools } from './plugin';
+export { DevtoolsPlugin, installDevtools, uninstallDevtools } from './plugin';
 export type { DevtoolTab, ErrorRecord } from './store';
 export {
   clearDevtoolErrors,

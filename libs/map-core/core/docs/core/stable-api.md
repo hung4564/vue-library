@@ -172,8 +172,7 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 
 | Area | Stable surface |
 |------|----------------|
-| Vue bootstrap | `DevtoolsPlugin`, `uninstallDevtools` |
-| React bootstrap | `installDevtools`, `uninstallDevtools` |
+| Bootstrap (both) | `installDevtools`, `uninstallDevtools` |
 | Panel | `Devtools` (optional prop `containerId` for map `DraggableContainer`; mobile uses `DraggableItemBottom`) |
 | Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |

@@ -36,14 +36,16 @@ Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)**
 **Vue**
 
 ```bash
-npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/vue-map-draw @hungpvq/map-core @hungpvq/map-dataset @hungpvq/map-draw
+npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/map-core @hungpvq/map-dataset maplibre-gl
 ```
 
 **React**
 
 ```bash
-npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/react-map-draw @hungpvq/map-core @hungpvq/map-dataset @hungpvq/map-draw
+npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/map-core @hungpvq/map-dataset maplibre-gl
 ```
+
+Draw / edit is optional — add `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw` + `@hungpvq/map-draw` when you need [Draw](/map/draw/).
 
 ### 2. Import CSS (once)
 
@@ -57,21 +59,24 @@ import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 ```
 
-### 3. Register dataset UI
+### 3. Bootstrap once (`installMapApp`)
 
-Without this step, layer menus / style / export / attribute table **do not render**.
+Theme + dataset registry UI. Without this step, layer menus / style / export / attribute table **do not render**.
 
 ```ts
 // Vue
-import { createDatasetRegistryPlugin } from '@hungpvq/vue-map-dataset';
-app.use(createDatasetRegistryPlugin());
+import { installMapApp } from '@hungpvq/vue-map-dataset';
+// or app.use(createMapAppPlugin())
+installMapApp(app);
 ```
 
 ```ts
 // React
-import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
-createDatasetRegistryPlugin().install();
+import { installMapApp } from '@hungpvq/react-map-dataset';
+installMapApp();
 ```
+
+Prefer `installMapApp` over calling `createDatasetRegistryPlugin()` alone (registry-only / no theme). Full walkthrough: [Minimal starter](./core/minimal-starter.md).
 
 ### 4. Mount map + LayerControl
 
@@ -88,7 +93,7 @@ Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungp
 | Symptom | Check |
 |---------|--------|
 | Unstyled / broken layout | Forgot `style.css` import |
-| Empty layer menus, missing style / export / attribute UI | Forgot `createDatasetRegistryPlugin()` |
+| Empty layer menus, missing style / export / attribute UI | Forgot `installMapApp` (or `createDatasetRegistryPlugin`) |
 | Dialogs / management panels missing | Need `ComponentManagementControl` (or equivalent) on the map |
 | File parse hangs / blocks UI; worker never runs | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker) |
 | CreateControl fails on CSV/KML/Shapefile with missing peer | Install optional GIS peers — [CreateControl](./dataset/module/CreateControl) |

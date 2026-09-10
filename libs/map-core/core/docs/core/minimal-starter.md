@@ -21,7 +21,7 @@ import { installMapApp } from '@hungpvq/react-map-dataset';
 installMapApp();
 ```
 
-Prefer `installMapApp` over calling `createDatasetRegistryPlugin()` alone. Theme: skip with `{ theme: false }` if the app already calls `bootstrapMapTheme('auto')`.
+Prefer `installMapApp` over calling `createDatasetRegistryPlugin()` alone. Use the plugin only when you need registry UI **without** theme bootstrap. Theme: skip with `{ theme: false }` if the app already calls `bootstrapMapTheme('auto')`.
 
 **No** `@hungpvq/map-dataset/vite` / `mapDatasetGisWorker()` is required for this path.
 

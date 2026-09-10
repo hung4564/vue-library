@@ -4,7 +4,7 @@ Download a GeoJSON dataset as **GeoJSON**, **KML**, **CSV**, or **Shapefile (zip
 
 The **Export** item is added to the list ⋮ menu when the layer has a GeoJSON source or a data-management sibling. Raster / vector-tile layers hide it.
 
-Needs `createDatasetRegistryPlugin()` so the submenu renders.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) so the submenu renders.
 
 ## Formats
 
@@ -57,7 +57,7 @@ Pass `collection` to export a FeatureCollection you already have (the attribute 
 
 ## Vue / React
 
-No extra control. Mount `LayerControl` + `createDatasetRegistryPlugin()`. KML / Shapefile need:
+No extra control. Mount `LayerControl` + `installMapApp` (or `createDatasetRegistryPlugin`). KML / Shapefile need:
 
 ```bash
 npm install tokml @mapbox/shp-write

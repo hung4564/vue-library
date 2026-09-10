@@ -5,7 +5,6 @@ export default {
 </script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/map-core';
-import groupBy from 'lodash/groupBy';
 
 import {
   IEvent,
@@ -48,33 +47,34 @@ function setCurrentEvent(
   emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
 }
 function updateEventMap(events: IEvent[]) {
-  const listeners = groupBy<IEvent>(events, (event) => {
-    return event.event_map_type;
-  });
+  const listeners: Record<string, IEvent[]> = {};
+  for (const event of events) {
+    const key = event.event_map_type;
+    if (!listeners[key]) listeners[key] = [];
+    listeners[key].push(event);
+  }
   callMap((map) => {
     const key_add: string[] = [];
     if (!current_listener[map.id]) {
       current_listener[map.id] = {};
     }
-    for (const key in listeners) {
+    for (const key of Object.keys(listeners)) {
       key_add.push(key);
-      if (Object.prototype.hasOwnProperty.call(listeners, key)) {
-        const events = listeners[key];
-        const current = current_listener[map.id][key];
-        const new_current = events[0];
+      const events = listeners[key];
+      const current = current_listener[map.id][key];
+      const new_current = events[0];
 
-        if (current && current.id === new_current.id) {
-          continue;
-        }
-        if (current) {
-          current.removeFromMap(map);
-        }
-        current_listener[map.id][key] = new_current;
-        if (new_current) {
-          new_current.addToMap(map);
-        }
-        setCurrentEvent(mapId.value, key, new_current);
+      if (current && current.id === new_current.id) {
+        continue;
       }
+      if (current) {
+        current.removeFromMap(map);
+      }
+      current_listener[map.id][key] = new_current;
+      if (new_current) {
+        new_current.addToMap(map);
+      }
+      setCurrentEvent(mapId.value, key, new_current);
     }
     for (const key in current_listener[map.id]) {
       if (Object.prototype.hasOwnProperty.call(current_listener[map.id], key)) {

@@ -15,6 +15,6 @@ export function warnIfDatasetRegistryMissing() {
   }
   warnedMissingDatasetRegistry = true;
   console.warn(
-    '[LayerControl] Dataset registry UI is not registered. Call createDatasetRegistryPlugin().install() once or layer menus / style / attribute UI will be empty. See @hungpvq/react-map-dataset docs.',
+    '[LayerControl] Dataset registry UI is not registered. Call installMapApp() once (or createDatasetRegistryPlugin) or layer menus / style / attribute UI will be empty. See @hungpvq/react-map-dataset docs.',
   );
 }

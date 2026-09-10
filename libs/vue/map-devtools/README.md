@@ -20,16 +20,14 @@ import '@hungpvq/vue-map-devtools/style.css';
 
 ```ts
 import { createApp } from 'vue';
-import { DevtoolsPlugin } from '@hungpvq/vue-map-devtools';
+import { Devtools, installDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
+installDevtools();
 const app = createApp(App);
-app.use(DevtoolsPlugin);
 ```
 
-`DevtoolsPlugin` registers a global `Devtools` component, wires `@hungpvq/shared-log` into the panel, and captures map errors for the Errors tab.
-
-You can also mount the panel yourself:
+`installDevtools()` wires `@hungpvq/shared-log` into the panel and captures map errors for the Errors tab (same as React). Mount the panel yourself:
 
 ```vue
 <script setup lang="ts">
@@ -47,18 +45,21 @@ On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet wh
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
+Deprecated: `app.use(DevtoolsPlugin)` still works (calls `installDevtools` + registers a global `Devtools` component). Prefer `installDevtools` + import `<Devtools />`.
+
 ## Stable API
 
 | Export | Role |
 |--------|------|
-| `DevtoolsPlugin` | Vue plugin: log adapter + error capture + global `Devtools` |
+| `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
 | `Devtools` | Panel UI (Store / Logs / Errors) |
+| `DevtoolsPlugin` | **Deprecated** — prefer `installDevtools` |
 
 Experimental: `DevtoolLogAdapter` — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 
-`apps/vue/demo-map` — `app.use(DevtoolsPlugin)` in `src/main.ts`, optional `<Devtools />` in the app shell.
+`apps/vue/demo-map` — `installDevtools()` in `src/main.ts`, `<Devtools />` in the app shell.
 
 Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).
