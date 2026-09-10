@@ -8,7 +8,7 @@ React debug panel for `@hungpvq/react-map-core` (store, logs, errors).
 npm install @hungpvq/react-map-devtools
 ```
 
-Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+.
+Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+.
 
 ## Styles
 
@@ -33,9 +33,12 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
     <Devtools />
+    {/* optional: <Devtools containerId="map-draggable-my-map" /> */}
   </StrictMode>,
 );
 ```
+
+On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet when a `map-draggable-*` container exists (or `containerId` is set); otherwise a CSS sheet fallback. Desktop keeps the floating panel.
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 

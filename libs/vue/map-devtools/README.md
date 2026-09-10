@@ -8,7 +8,7 @@ Vue 3 debug panel for `@hungpvq/vue-map-core` (store, logs, errors).
 npm install @hungpvq/vue-map-devtools
 ```
 
-Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, Vue 3.3+.
+Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/vue-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, Vue 3.3+.
 
 ## Styles
 
@@ -38,8 +38,12 @@ import { Devtools } from '@hungpvq/vue-map-devtools';
 
 <template>
   <Devtools />
+  <!-- optional: pin bottom sheet to a map DraggableContainer -->
+  <!-- <Devtools container-id="map-draggable-my-map" /> -->
 </template>
 ```
+
+On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet when a `map-draggable-*` container exists (or `containerId` is set); otherwise a CSS sheet fallback. Desktop keeps the floating panel.
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 

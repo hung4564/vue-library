@@ -7,7 +7,27 @@ Debug panel for map apps: **Store**, **Logs**, and **Errors**.
 | `@hungpvq/vue-map-devtools` | `app.use(DevtoolsPlugin)` | Global `Devtools` and/or `<Devtools />` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` yourself |
 
-Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the matching framework map-core, and `@hungpvq/shared-log`.
+Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`.
+
+## Mobile
+
+On viewports **≤640px** (same tablet breakpoint as map):
+
+- If a map `DraggableContainer` is present (`map-draggable-*`, or pass `containerId`), the open panel uses **`DraggableItemBottom`** — the same bottom sheet shell as map controls (45% height, expand to full, close / Escape).
+- If no container is available yet, a CSS bottom sheet fallback (~85vh) is used.
+
+Desktop keeps the floating FAB + fixed panel.
+
+```vue
+<Devtools />
+<!-- or pin to a specific map drag container -->
+<Devtools container-id="map-draggable-my-map" />
+```
+
+```tsx
+<Devtools />
+<Devtools containerId="map-draggable-my-map" />
+```
 
 ## Vue
 

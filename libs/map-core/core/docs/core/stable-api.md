@@ -174,8 +174,8 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 |------|----------------|
 | Vue bootstrap | `DevtoolsPlugin`, `uninstallDevtools` |
 | React bootstrap | `installDevtools`, `uninstallDevtools` |
-| Panel | `Devtools` |
-| Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `openMapDevtoolsErrors`, `clearDevtoolLogs`, `clearDevtoolErrors` |
+| Panel | `Devtools` (optional prop `containerId` for map `DraggableContainer`; mobile uses `DraggableItemBottom`) |
+| Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |
 
 `openMapDevtoolsErrors` opens the panel on the Errors tab. `MapErrorToast` (map-core Experimental) dispatches `hungpvq:map-open-devtools-errors`; stores listen and call `openMapDevtoolsErrors`.
