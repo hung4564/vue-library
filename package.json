@@ -125,8 +125,8 @@
     "@react-router/dev": "^7.2.0",
     "@swc-node/register": "1.9.2",
     "@swc/cli": "~0.6.0",
-    "@swc/core": "1.5.7",
-    "@swc/helpers": "0.5.11",
+    "@swc/core": "1.13.5",
+    "@swc/helpers": "0.5.17",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/geojson-validation": "^1.0.2",
@@ -188,6 +188,9 @@
   },
   "nx": {
     "includedScripts": []
+  },
+  "overrides": {
+    "js-beautify": "1.15.4"
   },
   "config": {
     "commitizen": {
