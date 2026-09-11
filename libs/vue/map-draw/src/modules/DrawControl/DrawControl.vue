@@ -20,15 +20,27 @@ import {
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
 } from '@hungpvq/vue-map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { Feature, FeatureCollection } from 'geojson';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { DRAW_CONTROL_LOCALE } from '../../locale';
 import { isDraftOption } from '../../store';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
+import {
+  mdiClose,
+  mdiContentSave,
+  mdiContentSaveCheck,
+  mdiDeleteOutline,
+  mdiPencil,
+  mdiPlus,
+  mdiUndoVariant,
+  mdiViewListOutline,
+} from '@mdi/js';
 
 type DrawControlMapboxDrawControls = Omit<
   MapDrawOptions,
@@ -58,7 +70,7 @@ const control = new MapDraw({
     ...props.drawControlOptions?.modes,
   },
 });
-const { mapId, moduleContainerProps, callMap } = useMap(props);
+const { mapId, moduleContainerProps, callMap, order } = useMap(props);
 const { setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(DRAW_CONTROL_LOCALE);
 const isShow = ref(false);
@@ -213,6 +225,113 @@ function onFlyTo(value: Feature) {
     fitBounds(map, value);
   });
 }
+
+const { control: toolbarControl } = useToolbarControl(mapId.value, props, {
+  kind: 'module',
+  moduleId: 'mapDrawControl',
+  order: order.value,
+  orientation: 'row',
+  buttons: [
+    {
+      id: 'cancel',
+      getState: () =>
+        mdiButtonState(mdiClose, {
+          visible: isShow.value && isDraw.value,
+          title: 'Cancel',
+        }),
+      onClick: () => onCancel(),
+    },
+    {
+      id: 'save',
+      getState: () =>
+        mdiButtonState(mdiContentSave, {
+          visible: isShow.value && isDraw.value,
+          title: 'Save',
+        }),
+      onClick: () => {
+        void onSave();
+      },
+    },
+    {
+      id: 'close',
+      getState: () =>
+        mdiButtonState(mdiClose, {
+          visible: isShow.value && !isDraw.value,
+          title: 'Close',
+        }),
+      onClick: () => close(),
+    },
+    {
+      id: 'add',
+      getState: () =>
+        mdiButtonState(mdiPlus, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'create',
+          title: 'Draw',
+        }),
+      onClick: (e) => onStartDraw(e),
+    },
+    {
+      id: 'select',
+      getState: () =>
+        mdiButtonState(mdiPencil, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'select',
+          title: 'Select',
+        }),
+      onClick: () => onSelectMethod('select'),
+    },
+    {
+      id: 'delete',
+      getState: () =>
+        mdiButtonState(mdiDeleteOutline, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'delete',
+          title: 'Delete',
+        }),
+      onClick: () => onSelectMethod('delete'),
+    },
+    {
+      id: 'commit',
+      getState: () =>
+        mdiButtonState(mdiContentSaveCheck, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: isDraw.value || draftCounts.value === 0,
+          title: 'Commit drafts',
+        }),
+      onClick: () => onCommit(),
+    },
+    {
+      id: 'discard',
+      getState: () =>
+        mdiButtonState(mdiUndoVariant, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: isDraw.value || draftCounts.value === 0,
+          title: 'Discard drafts',
+        }),
+      onClick: () => onDiscard(),
+    },
+    {
+      id: 'list',
+      getState: () =>
+        mdiButtonState(mdiViewListOutline, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: draftCounts.value === 0,
+          title: 'Draft list',
+        }),
+      onClick: () => onShowListDraftItem(),
+    },
+  ],
+});
+watch([isShow, isDraw, method, draftCounts, drawOptions], () =>
+  toolbarControl.sync(),
+);
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

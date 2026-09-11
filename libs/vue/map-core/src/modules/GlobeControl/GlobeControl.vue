@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { GLOBE_CONTROL_LOCALE } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -59,16 +60,12 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGlobeControl',
   getState() {
-    return {
+    return mdiButtonState(mdiWeb, {
       visible: true,
       active: currentProjection.value === 'globe',
       title: trans.value('map.global-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiWeb,
-      },
-    };
+    });
   },
   onClick() {
     toggle();

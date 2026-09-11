@@ -77,6 +77,7 @@
 <script lang="ts" setup>
 import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
@@ -189,15 +190,11 @@ onBeforeUnmount(() => {
 useToolbarControl(mapId.value, props, {
   id: 'mapBaseMapControl',
   getState() {
-    return {
+    return mdiButtonState(path.layer, {
       visible: true,
       order: order.value,
       title: props.title || trans.value('map.basemap.title'),
-      icon: {
-        type: 'mdi',
-        path: path.layer,
-      },
-    };
+    });
   },
   onClick() {
     onToggleList();

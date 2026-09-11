@@ -2,25 +2,21 @@
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton>
-        <template v-if="showCompass">
-          <MapCommonButton
-            v-if="state && state.mapCompass"
-            :option="state.mapCompass"
-            @click.stop="control.onAction('mapCompass', $event)"
-          />
-        </template>
-        <template v-if="showZoom">
-          <MapCommonButton
-            v-if="state && state.mapZoomIn"
-            :option="state.mapZoomIn"
-            @click.stop="control.onAction('mapZoomIn', $event)"
-          />
-          <MapCommonButton
-            v-if="state && state.mapZoomOut"
-            :option="state.mapZoomOut"
-            @click.stop="control.onAction('mapZoomOut', $event)"
-          />
-        </template>
+        <MapCommonButton
+          v-if="state && state.mapCompass"
+          :option="state.mapCompass"
+          @click.stop="control.onAction('mapCompass', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapZoomIn"
+          :option="state.mapZoomIn"
+          @click.stop="control.onAction('mapZoomIn', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapZoomOut"
+          :option="state.mapZoomOut"
+          @click.stop="control.onAction('mapZoomOut', $event)"
+        />
       </MapControlGroupButton>
     </template>
     <slot />
@@ -33,6 +29,7 @@ import {
   MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -115,7 +112,7 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'module',
   moduleId: 'mapNavigationControl',
-  moduleOrder: order.value,
+  order: order.value,
   buttons: [
     {
       id: 'mapCompass',
@@ -131,20 +128,20 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     },
     {
       id: 'mapZoomIn',
-      getState: () => ({
-        visible: props.showZoom,
-        title: trans.value('map.action.navigation-control-zoom-in'),
-        icon: { path: mdiPlus, type: 'mdi' },
-      }),
+      getState: () =>
+        mdiButtonState(mdiPlus, {
+          visible: props.showZoom,
+          title: trans.value('map.action.navigation-control-zoom-in'),
+        }),
       onClick: (e) => onZoomIn(e),
     },
     {
       id: 'mapZoomOut',
-      getState: () => ({
-        visible: props.showZoom,
-        title: trans.value('map.action.navigation-control-zoom-out'),
-        icon: { path: mdiMinus, type: 'mdi' },
-      }),
+      getState: () =>
+        mdiButtonState(mdiMinus, {
+          visible: props.showZoom,
+          title: trans.value('map.action.navigation-control-zoom-out'),
+        }),
       onClick: (e) => onZoomOut(e),
     },
   ],

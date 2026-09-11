@@ -1,12 +1,17 @@
 <template>
   <div class="module__container">
     <Teleport
-      v-if="controlVisible && hasSlotBtn && isStandaloneButton"
+      v-if="controlVisible && hasCornerChrome && isStandaloneButton"
       :to="btnTo"
     >
-      <div :class="btnModuleClass" :style="{ order: order }">
+      <div
+        v-if="hasSlotBtn"
+        :class="btnModuleClass"
+        :style="{ order: controlOrder }"
+      >
         <slot name="btn" />
       </div>
+      <slot name="btnOutside" />
     </Teleport>
     <slot />
     <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
@@ -27,7 +32,7 @@ const props = defineProps({
   mapId: { type: String, default: '' },
   dragId: { type: String, default: '' },
   btnWidth: { type: Number, default: 40 },
-  order: { type: Number, default: 0 },
+  controlOrder: { type: Number, default: 0 },
   controlId: { type: String, default: '' },
   position: {
     type: String,
@@ -48,16 +53,20 @@ const props = defineProps({
     type: String,
     default: 'standalone',
     validator(value: string) {
-      return ['toolbar', 'standalone'].indexOf(value) !== -1;
+      return (
+        ['toolbar', 'standalone', 'button', 'menu'].indexOf(value) !== -1
+      );
     },
   },
-  top: Number,
-  bottom: Number,
-  left: Number,
-  right: Number,
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
-const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
+const hasSlotBtnOutside = computed(() => !!slots['btnOutside']);
+const hasCornerChrome = computed(
+  () => hasSlotBtn.value || hasSlotBtnOutside.value,
+);
+const isStandaloneButton = computed(
+  () => props.controlLayout !== 'toolbar' && props.controlLayout !== 'menu',
+);
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
 const i_map_id = inject<string>('$map.id');
@@ -71,8 +80,8 @@ const resolvedControlId = computed(
 const btnModuleClass = computed(() => {
   const id = resolvedControlId.value;
   return id
-    ? ['btn-module-container', `${id}-btn-module-container`]
-    : ['btn-module-container'];
+    ? ['btn-module-container', 'map-common-button', `${id}-btn-module-container`]
+    : ['btn-module-container', 'map-common-button'];
 });
 const c_containerId = computed<string>(() => {
   return props.dragId || i_dragId!;
@@ -108,10 +117,7 @@ const bindDrag = computed(() => {
   ] as const;
 
   configs.forEach(({ key, fallback }) => {
-    const val = (props as any)[key];
-    if (val !== undefined) {
-      result[key] = val;
-    } else if (props.position.includes(key)) {
+    if (props.position.includes(key)) {
       result[key] = fallback;
     }
   });

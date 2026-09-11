@@ -71,6 +71,25 @@ react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] });
 
 Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).
 
+## Map `buttonInMobile` (≤640px)
+
+`Map` prop `buttonInMobile`: `'button' | 'toolbar' | 'menu'` (default `'button'`). Resolved via `resolveControlLayout` → `ResolvedControlLayout` (`standalone` | `toolbar` | `menu`).
+
+| Value | Behavior |
+|-------|----------|
+| `button` | Corner `#btn` unchanged |
+| `toolbar` | Promote controls into one `ToolbarControl` host (except `controlLayout="button"`) |
+| `menu` | Hide per-control corner `#btn`; fan out clusters by `position` into corner stacks; outside-in More. Overflow/budget helpers live in `@hungpvq/map-core/toolbar`. |
+
+
+Rules:
+
+- Do **not** put overflow/More logic inside `MapControlGroupButton` for `menu` — overflow is per-corner in `ToolbarControl`.
+- `controlLayout="button"` never auto-promotes (stays standalone). Use it for status chrome (e.g. `MouseCoordinatesControl`).
+- Mount a single `<ToolbarControl />` for both `toolbar` and `menu`. Menu uses `ModuleContainer` `#btn` + `#btnOutside`.
+- Demo: `/#/mobile-menu`; opt-in toolbar: `/#/toolbar`.
+- Mirror Vue + React; shared helpers in `@hungpvq/map-core` / `@hungpvq/map-core/toolbar`.
+
 ## Checklist before finishing
 
 - [ ] Core logic not duplicated only in one framework package

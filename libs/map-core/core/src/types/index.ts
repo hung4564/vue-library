@@ -9,6 +9,21 @@ export type Position =
   'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 /**
+ * How a control button is placed: corner (`standalone`), shared toolbar,
+ * or always a corner button (`button`, not auto-promoted on mobile).
+ */
+export type ControlLayout = 'standalone' | 'toolbar' | 'button';
+
+/**
+ * Map `buttonInMobile` (viewports ≤640px):
+ * - `button` — leave corner buttons unchanged
+ * - `toolbar` — move supporting buttons into `ToolbarControl`
+ * - `menu` — keep corner groups, cap expand at 1/2×1/2 of the map, overflow in a More menu
+ */
+export type ButtonInMobile = 'button' | 'toolbar' | 'menu';
+
+
+/**
  * Base interface for map-related props
  */
 export interface WithMapPropType {
@@ -18,13 +33,9 @@ export interface WithMapPropType {
   position?: Position;
   controlVisible?: boolean;
   controlOrder?: number | string;
-  controlLayout?: 'standalone' | 'toolbar';
+  controlLayout?: ControlLayout;
   /** Control id for ModuleContainer btn class (`{controlId}-btn-module-container`) */
   controlId?: string;
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
 }
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import type { FilterSpecification, Map } from 'maplibre-gl';

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import { exportMapbox, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
@@ -69,16 +70,12 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapPrintControl',
   getState() {
-    return {
+    return mdiButtonState(path.print, {
       visible: true,
       title: trans.value('map.print.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: path.print,
-      },
       loading: print.value.loading,
-    };
+    });
   },
   onClick() {
     onSaveAll(onDownload);

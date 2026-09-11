@@ -49,7 +49,11 @@ const lngLat = ref({ latitude: 0, longitude: 0 });
 const currentZoom = ref(0);
 const isDMS = ref(false);
 const { callMap, mapId, moduleContainerProps } = useMap(
-  props,
+  {
+    ...props,
+    // Status chrome — never promote/hide under buttonInMobile toolbar|menu.
+    controlLayout: 'button',
+  },
   onInit,
   onDestroy,
 );

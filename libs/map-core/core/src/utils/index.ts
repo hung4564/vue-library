@@ -1,4 +1,5 @@
 export * from './color';
+export * from './control-layout';
 export * from './coordinate';
 export * from './fillBound';
 export * from './filter';

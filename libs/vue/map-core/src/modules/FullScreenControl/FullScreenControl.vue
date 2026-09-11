@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { useFullscreen } from '@hungpvq/shared-core';
 
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
@@ -56,18 +57,14 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapFullscreenControl',
   getState() {
     const active = isFullscreen.value;
-    return {
+    return mdiButtonState(active ? path.exitFullscreen : path.fullscreen, {
       visible: true,
       active,
       order: order.value,
       title: active
         ? trans.value('map.action.fullscreen-control-exit')
         : trans.value('map.action.fullscreen-control-enter'),
-      icon: {
-        type: 'mdi',
-        path: active ? path.exitFullscreen : path.fullscreen,
-      },
-    };
+    });
   },
 
   async onClick() {

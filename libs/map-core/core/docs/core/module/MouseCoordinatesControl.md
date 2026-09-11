@@ -9,6 +9,8 @@
 
 <!--@include: ./props.md-->
 
+`MouseCoordinatesControl` always uses `controlLayout="button"` so mobile `buttonInMobile` `toolbar` / `menu` modes do not hide this status chrome.
+
 and
 
 | Prop              | Description | Type      | Required | Default Value |

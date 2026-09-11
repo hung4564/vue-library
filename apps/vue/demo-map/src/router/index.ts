@@ -26,6 +26,10 @@ const router = createRouter({
       component: () => import('../views/toolbar.vue'),
     },
     {
+      path: '/mobile-menu/',
+      component: () => import('../views/mobile-menu.vue'),
+    },
+    {
       path: '/legend/',
       component: () => import('../views/legend.vue'),
     },

@@ -19,6 +19,7 @@ import {
   RegistryControl,
   SettingControl,
   ThemeControl,
+  ToolbarControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
@@ -40,8 +41,9 @@ export function AllMapView() {
 
   return (
     <MapPageShell>
-      <Map>
+      <Map buttonInMobile="toolbar">
         <AsideControl position="top-left" />
+        <ToolbarControl position="top-left" />
         <ComponentManagementControl />
         <MeasurementControl position="top-right" />
         <IdentifyControl position="top-right" />

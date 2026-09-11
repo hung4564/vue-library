@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref } from 'vue';
@@ -60,15 +61,11 @@ const onSetSetting = () => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGotoControl',
   getState() {
-    return {
+    return mdiButtonState(mdiMapMarkerOutline, {
       visible: true,
       title: trans.value('map.goto-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiMapMarkerOutline,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

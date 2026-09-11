@@ -7,6 +7,7 @@ import {
   searchCrsCatalog,
   type CrsItem,
 } from '@hungpvq/map-core/crs';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
@@ -105,14 +106,10 @@ const toggleDisplay = (epsg: string, checked: boolean) => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapCrsControl',
   getState() {
-    return {
+    return mdiButtonState(mdiInboxOutline, {
       visible: true,
       title: trans.value('map.crs-control.title'),
-      icon: {
-        type: 'mdi',
-        path: mdiInboxOutline,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

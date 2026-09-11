@@ -184,7 +184,12 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
   );
 
   const { callMap, mapId, moduleContainerProps } = useMap(
-    { ...mergedProps, controlId: 'mapMouseCoordinatesControl' },
+    {
+      ...mergedProps,
+      controlId: 'mapMouseCoordinatesControl',
+      // Status chrome — never promote/hide under buttonInMobile toolbar|menu.
+      controlLayout: 'button',
+    },
     onInit,
     onDestroy,
   );

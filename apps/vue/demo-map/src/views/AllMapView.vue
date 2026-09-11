@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
 import type {
   MeasureActionItem,
   MeasurementHandleType,
 } from '@hungpvq/map-core/measurement';
-import { getChartRandomColor } from '@hungpvq/map-core';
+import {
+  createDatasetPartListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
 import { createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
-import { LayerSimpleMapboxBuild, LayerStyleType } from '@hungpvq/map-dataset/style';
+import {
+  LayerSimpleMapboxBuild,
+  LayerStyleType,
+} from '@hungpvq/map-dataset/style';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -31,6 +39,7 @@ import {
   RegistryControl,
   SettingControl,
   ThemeControl,
+  ToolbarControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
@@ -143,8 +152,14 @@ function createDatasetMeasure(
 }
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    ref="mapRef"
+    @map-loaded="onMapLoaded"
+    :mapId="mapId"
+    button-in-mobile="toolbar"
+  >
     <AsideControl position="top-left" />
+    <ToolbarControl position="top-left" />
     <ComponentManagementControl />
     <MeasurementControl position="top-right" :actions="actionMeasures" />
     <DrawControl position="top-right" />

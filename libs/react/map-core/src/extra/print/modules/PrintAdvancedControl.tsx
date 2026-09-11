@@ -241,7 +241,8 @@ export function PrintAdvancedControl({
     () => ({
       kind: 'module' as const,
       moduleId: 'mapPrintAdvancedControl',
-      moduleOrder: order,
+      order: order,
+      orientation: 'row' as const,
       buttons: [
         {
           id: 'mapPrintShow',
@@ -342,7 +343,7 @@ export function PrintAdvancedControl({
       {...moduleContainerProps}
       btn={
         <MapControlGroupButton row>
-          {!print.show && moduleState?.mapPrintShow ? (
+          {moduleState?.mapPrintShow ? (
             <MapCommonButton
               option={moduleState.mapPrintShow}
               onClick={(e) => {
@@ -351,7 +352,7 @@ export function PrintAdvancedControl({
               }}
             />
           ) : null}
-          {print.show && moduleState?.mapPrintSave ? (
+          {moduleState?.mapPrintSave ? (
             <MapCommonButton
               option={moduleState.mapPrintSave}
               onClick={(e) => {
@@ -360,7 +361,7 @@ export function PrintAdvancedControl({
               }}
             />
           ) : null}
-          {print.show && moduleState?.mapPrintClose ? (
+          {moduleState?.mapPrintClose ? (
             <MapCommonButton
               option={moduleState.mapPrintClose}
               onClick={(e) => {

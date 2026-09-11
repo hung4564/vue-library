@@ -2,6 +2,8 @@
  * Framework-agnostic types for toolbar system
  */
 
+import type { Position } from '../types';
+
 export type MapControlMdiIcon = {
   type: 'mdi';
   path: string;
@@ -45,9 +47,12 @@ export type MapControlButtonUIState = {
   icon?: MapControlIcon;
   active?: boolean;
   disabled?: boolean;
-  group?: string; // ví dụ: 'navigation'
-  order?: number; // thứ tự trong group
-  priority?: number; // thứ tự giữa các group
+  group?: string;
+  order?: number;
+  /** Map corner used by `buttonInMobile="menu"` fan-out. */
+  position?: Position;
+  /** Cluster direction when rendered in menu/toolbar hosts. Default column. */
+  orientation?: 'row' | 'column';
 };
 
 /**
@@ -87,7 +92,7 @@ export interface Subscribable<T> {
 export type ToolbarButtonConfig = {
   id: string;
   getState: () => MapControlButtonUIState;
-  order?: number; // thứ tự trong group
+  order?: number;
   onClick?: (e: MouseEvent) => void;
 };
 
@@ -104,7 +109,9 @@ export type ToolbarSingleOptions = {
 export type ToolbarModuleOptions = {
   kind: 'module';
   moduleId: string;
-  moduleOrder?: number;
+  order?: number;
+  /** How this module’s buttons sit together (menu corner / toolbar cluster). */
+  orientation?: 'row' | 'column';
   buttons: ToolbarButtonConfig[];
 };
 

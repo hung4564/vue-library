@@ -65,6 +65,10 @@ Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORT
 - Bumping `@hungpvq/map-core` **minor/major** usually requires same-release bump of adapters + dataset + draw (`~1.0.1` peers allow patch-only drift). Do not publish a breaking/minor core alone.
 - Prefer in-family peers `~1.0.1` (not long-lived exact `1.0.1`).
 
+## Map chrome: `buttonInMobile`
+
+Renaming or removing `buttonInMobile` values / `resolveControlLayout` return shapes (`standalone` | `toolbar` | `menu`) is **major**. Adding a new value is usually **minor**. Removing published `@hungpvq/map-core/toolbar` overflow helpers is **major**; prefer alias deprecate first.
+
 ## When proposing a change, state
 
 1. Packages touched  

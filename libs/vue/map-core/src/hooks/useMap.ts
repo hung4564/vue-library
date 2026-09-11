@@ -1,7 +1,43 @@
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
-import type { WithMapPropType, Position } from '@hungpvq/map-core';
-import { computed, inject, onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import type {
+  ButtonInMobile,
+  ControlLayout,
+  WithMapPropType,
+  Position,
+  ResolvedControlLayout,
+} from '@hungpvq/map-core';
+import { resolveControlLayout } from '@hungpvq/map-core';
+import {
+  computed,
+  inject,
+  onMounted,
+  onUnmounted,
+  ref,
+  shallowRef,
+  toValue,
+  unref,
+  type ComputedRef,
+  type MaybeRefOrGetter,
+} from 'vue';
 import { getMap } from '../store/store';
+
+export function useResolvedControlLayout(
+  controlLayout?: MaybeRefOrGetter<ControlLayout | undefined>,
+): ComputedRef<ResolvedControlLayout> {
+  const isMobile = inject<ComputedRef<boolean> | boolean | undefined>(
+    '$map.isMobile',
+    undefined,
+  );
+  const buttonInMobile = inject<
+    ComputedRef<ButtonInMobile | undefined> | ButtonInMobile | undefined
+  >('$map.buttonInMobile', undefined);
+  return computed(() =>
+    resolveControlLayout(toValue(controlLayout), {
+      isMobile: !!unref(isMobile),
+      buttonInMobile: unref(buttonInMobile) ?? 'button',
+    }),
+  );
+}
 
 export const useMap = (
   props: WithMapPropType = {},
@@ -18,14 +54,16 @@ export const useMap = (
     '$map.registerModuleOrder',
   );
 
+  const resolvedLayout = useResolvedControlLayout(() => props.controlLayout);
+
   const autoOrder = ref<number>();
   if (
     (props.controlOrder === undefined || props.controlOrder == 0) &&
     registerOrder
   ) {
     const key =
-      props.controlLayout === 'toolbar'
-        ? props.controlLayout
+      resolvedLayout.value === 'toolbar'
+        ? 'toolbar'
         : `${props.position}`;
     autoOrder.value = registerOrder(key);
   }
@@ -54,26 +92,23 @@ export const useMap = (
   function callMap(cb: MapFCOnUseMap) {
     return getMap(c_mapId.value, cb);
   }
-  const moduleContainerProps = {
+  const moduleContainerProps = computed(() => ({
     mapId: props.mapId,
     dragId: props.dragId,
     btnWidth: props.btnWidth,
     position: props.position,
     controlVisible: props.controlVisible,
-    controlLayout: props.controlLayout,
+    controlLayout: resolvedLayout.value,
     controlId: props.controlId,
-    order: c_order.value,
-    top: props.top,
-    bottom: props.bottom,
-    left: props.left,
-    right: props.right,
-  };
+    controlOrder: c_order.value,
+  }));
   return {
     callMap,
     mapId: c_mapId,
     mapInstance,
     moduleContainerProps,
     order: c_order,
+    controlLayout: resolvedLayout,
   };
 };
 
@@ -92,20 +127,19 @@ export const withMapProps = {
     type: Boolean,
     default: true,
   },
-  order: {
-    type: Number,
+  controlOrder: {
+    type: [Number, String],
     default: 0,
   },
-  top: Number,
-  bottom: Number,
-  left: Number,
-  right: Number,
+  controlLayout: {
+    type: String,
+    default: 'standalone',
+    validator(value: string) {
+      return ['standalone', 'toolbar', 'button'].indexOf(value) !== -1;
+    },
+  },
 };
 
-// WithMapPropType is available directly from @hungpvq/map-core
-// Import it directly: import type { WithMapPropType } from '@hungpvq/map-core';
-
-// Valid positions array for validator (Vue-specific)
 const validPositions: Position[] = [
   'top-left',
   'top-right',

@@ -366,7 +366,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
     () => ({
       kind: 'module' as const,
       moduleId: 'mapMeasurementControl',
-      moduleOrder: order,
+      order: order,
+      orientation: 'row' as const,
       buttons: [
         ...buttonShow,
         ...buttonHandle,
@@ -567,7 +568,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
         <MapControlGroupButton row className="map-measurement-control">
           {moduleState &&
             Object.entries(moduleState).map(([id, btn]) =>
-              btn?.visible ? (
+              btn && btn.visible !== false ? (
                 <MapCommonButton
                   key={id}
                   option={btn}

@@ -12,6 +12,7 @@ import {
   type IEvent,
   type MittTypeMapEvent,
 } from '@hungpvq/map-core/event';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
@@ -94,13 +95,9 @@ const groupedViews = computed(() => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapEventManagementControl',
   getState() {
-    return {
+    return mdiButtonState(path.icon, {
       title: trans.value('map.event-control.title'),
-      icon: {
-        type: 'mdi',
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     toggleShow();

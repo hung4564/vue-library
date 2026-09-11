@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { MapSimple } from '@hungpvq/map-core';
+import type { ButtonInMobile, MapSimple } from '@hungpvq/map-core';
 import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
 import '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/react-draggable';
@@ -17,6 +17,8 @@ export interface MapProps {
   mapId?: string;
   /** Bind Esc / `/` map shortcuts (default true). */
   keyboardShortcuts?: boolean;
+  /** On viewports ≤640px: `button` unchanged, `toolbar` merge into ToolbarControl, `menu` cap groups at ½×½ map. */
+  buttonInMobile?: ButtonInMobile;
   onMapLoaded?: (map: MapSimple) => void;
   onMapDestroy?: (map: MapSimple) => void;
   onError?: (error: Error) => void;
@@ -31,6 +33,7 @@ export function Map({
   dragId,
   mapId,
   keyboardShortcuts = true,
+  buttonInMobile = 'button',
   onMapLoaded,
   onMapDestroy,
   onError,
@@ -84,8 +87,10 @@ export function Map({
       mapId: id,
       dragId: dragId || draggableTo,
       registerModuleOrder,
+      buttonInMobile,
+      isMobile,
     }),
-    [id, dragId, draggableTo, registerModuleOrder],
+    [id, dragId, draggableTo, registerModuleOrder, buttonInMobile, isMobile],
   );
 
   if (!isSupport) {

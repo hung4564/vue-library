@@ -8,6 +8,9 @@
 | `initOptions`       |             | `object` | `fasle`  | --            |
 | `dragId`            |             | `string` | `fasle`  | --            |
 | `mapId`             |             | `string` | `fasle`  | --            |
+| `buttonInMobile`    | Mobile (≤640px) control chrome: `button` \| `toolbar` \| `menu` | `string` | `false` | `'button'` |
+
+See [control props](./props.md) and [ToolbarControl](./ToolbarControl.md) for `buttonInMobile` / `controlLayout` behavior.
 
 ## Events
 

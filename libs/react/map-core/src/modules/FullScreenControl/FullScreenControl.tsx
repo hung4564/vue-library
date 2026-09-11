@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 
 export interface FullScreenControlProps extends WithMapPropType {
   type?: string;
@@ -69,30 +69,40 @@ export function FullScreenControl(props: FullScreenControlProps) {
     ],
   });
 
-  const buttonState: MapControlButtonUIState = {
-    visible: true,
-    active: isFullscreen,
-    order: order,
-    title: isFullscreen
-      ? trans('map.action.fullscreen-control-exit')
-      : trans('map.action.fullscreen-control-enter'),
-    icon: {
-      type: 'mdi',
-      path: isFullscreen ? mdiFullscreenExit : mdiFullscreen,
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapFullscreenControl',
+    getState: () =>
+      mdiButtonState(isFullscreen ? mdiFullscreenExit : mdiFullscreen, {
+        visible: true,
+        active: isFullscreen,
+        order,
+        title: isFullscreen
+          ? trans('map.action.fullscreen-control-exit')
+          : trans('map.action.fullscreen-control-enter'),
+      }),
+    onClick: () => {
+      void toggleFullscreen();
     },
-  };
+  });
+
+  useEffect(() => {
+    control.sync();
+  }, [isFullscreen, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapCommonButton
-          option={buttonState}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFullscreen();
-          }}
-        />
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              void control.onAction(e);
+            }}
+          />
+        ) : null
       }
     />
   );

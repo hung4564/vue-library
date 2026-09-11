@@ -51,7 +51,6 @@ export default {
   components: { MapButton, MapIcon },
   inheritAttrs: false,
   props: {
-    // {title:string,icon:string,onClick:(e)=>{}}
     items: {
       type: Array as PropType<ButtonItem[]>,
       default: () => [],

@@ -2,11 +2,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 
 export interface HomeControlProps extends WithMapPropType {
   zoom?: number;
@@ -70,27 +70,31 @@ export function HomeControl(props: HomeControlProps) {
     ],
   });
 
-  const buttonState: MapControlButtonUIState = {
-    visible: true,
-    title: trans('map.home.title'),
-    order: order,
-    icon: {
-      type: 'mdi',
-      path: mdiHome,
-    },
-  };
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapHomeControl',
+    getState: () =>
+      mdiButtonState(mdiHome, {
+        visible: true,
+        title: trans('map.home.title'),
+        order,
+      }),
+    onClick: () => onGoHome(),
+  });
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapCommonButton
-          option={buttonState}
-          onClick={(e) => {
-            e.stopPropagation();
-            onGoHome();
-          }}
-        />
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction(e);
+            }}
+          />
+        ) : null
       }
     />
   );

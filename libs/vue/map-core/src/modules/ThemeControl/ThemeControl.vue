@@ -14,6 +14,7 @@ import {
   toggleMapThemeLightDark,
   type MapThemeMode,
 } from '@hungpvq/map-core/theme';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   mdiCircleHalfFull,
   mdiPalette,
@@ -111,15 +112,11 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapThemeControl',
   getState() {
-    return {
+    return mdiButtonState(toggleIcon.value, {
       visible: true,
       order: order.value,
       title: trans.value(titleKey.value),
-      icon: {
-        type: 'mdi',
-        path: toggleIcon.value,
-      },
-    };
+    });
   },
   onClick() {
     toggleTheme();
@@ -180,12 +177,13 @@ onUnmounted(() => {
         <MapCommonButton
           v-for="themeId in themeModes"
           :key="themeId"
-          :option="{
-            visible: true,
-            active: mode === themeId,
-            title: trans(getMapThemeLocaleKey(themeId)),
-            icon: { type: 'mdi', path: MODE_ICONS[themeId] },
-          }"
+          :option="
+            mdiButtonState(MODE_ICONS[themeId], {
+              visible: true,
+              active: mode === themeId,
+              title: trans(getMapThemeLocaleKey(themeId)),
+            })
+          "
           @click.stop="setMode(themeId)"
         />
       </MapControlGroupButton>

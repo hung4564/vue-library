@@ -3,6 +3,7 @@ import {
   SETTING_CONTROL_LOCALE,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
@@ -81,15 +82,11 @@ const onSetSetting = () => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapSettingControl',
   getState() {
-    return {
+    return mdiButtonState(mdiCog, {
       visible: true,
       title: trans.value('map.setting-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiCog,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

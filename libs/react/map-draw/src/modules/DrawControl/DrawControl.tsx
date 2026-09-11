@@ -25,6 +25,7 @@ import {
   useMap,
   useRegisterMapControl,
   useShow,
+  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import {
   mdiClose,
@@ -65,7 +66,7 @@ function ensureFeatureId(feature: Feature): Feature {
 
 export function DrawControl(props: DrawControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, callMap } = useMap(merged);
+  const { mapId, moduleContainerProps, callMap, order } = useMap(merged);
   const { setLocaleDefault } = useLang(mapId);
 
   useEffect(() => {
@@ -314,6 +315,119 @@ export function DrawControl(props: DrawControlProps) {
     getProps: () => ({ draftCounts }),
     actions: [{ type: 'mapDrawDraftList', run: () => setShowList(true) }],
   });
+
+  const { control: toolbarControl } = useToolbarControl(mapId, merged, {
+    kind: 'module',
+    moduleId: 'mapDrawControl',
+    order: order,
+    orientation: 'row',
+    buttons: [
+      {
+        id: 'cancel',
+        getState: () => ({
+          visible: isShow && isDraw,
+          title: 'Cancel',
+          icon: { type: 'mdi' as const, path: mdiClose },
+        }),
+        onClick: () => onCancel(),
+      },
+      {
+        id: 'save',
+        getState: () => ({
+          visible: isShow && isDraw,
+          title: 'Save',
+          icon: { type: 'mdi' as const, path: mdiContentSave },
+        }),
+        onClick: () => {
+          void onSave();
+        },
+      },
+      {
+        id: 'close',
+        getState: () => ({
+          visible: isShow && !isDraw,
+          title: 'Close',
+          icon: { type: 'mdi' as const, path: mdiClose },
+        }),
+        onClick: () => close(),
+      },
+      {
+        id: 'add',
+        getState: () => ({
+          visible: isShow && !isDraw,
+          active: method === 'create',
+          title: 'Draw',
+          icon: { type: 'mdi' as const, path: mdiPlus },
+        }),
+        onClick: (e) => onStartDraw(e as unknown as ReactMouseEvent),
+      },
+      {
+        id: 'select',
+        getState: () => ({
+          visible: isShow && !isDraw,
+          active: method === 'select',
+          title: 'Select',
+          icon: { type: 'mdi' as const, path: mdiPencil },
+        }),
+        onClick: () => onSelectMethod('select'),
+      },
+      {
+        id: 'delete',
+        getState: () => ({
+          visible: isShow && !isDraw,
+          active: method === 'delete',
+          title: 'Delete',
+          icon: { type: 'mdi' as const, path: mdiDeleteOutline },
+        }),
+        onClick: () => onSelectMethod('delete'),
+      },
+      {
+        id: 'commit',
+        getState: () => ({
+          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
+          disabled: isDraw || draftCounts === 0,
+          title: 'Commit drafts',
+          icon: { type: 'mdi' as const, path: mdiContentSaveCheck },
+        }),
+        onClick: () => {
+          void commit().then(() => drawOptions?.redraw?.(mapId));
+        },
+      },
+      {
+        id: 'discard',
+        getState: () => ({
+          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
+          disabled: isDraw || draftCounts === 0,
+          title: 'Discard drafts',
+          icon: { type: 'mdi' as const, path: mdiUndoVariant },
+        }),
+        onClick: () => {
+          void discard();
+        },
+      },
+      {
+        id: 'list',
+        getState: () => ({
+          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
+          disabled: draftCounts === 0,
+          title: 'Draft list',
+          icon: { type: 'mdi' as const, path: mdiViewListOutline },
+        }),
+        onClick: () => setShowList(true),
+      },
+    ],
+  });
+
+  useEffect(() => {
+    toolbarControl.sync();
+  }, [
+    isShow,
+    isDraw,
+    method,
+    draftCounts,
+    drawOptions,
+    toolbarControl,
+  ]);
 
   const toolbar = drawOptions ? (
     <div className="d-flex button-custom-container button-draw-container">

@@ -37,6 +37,9 @@
             <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/mobile-menu">Map - Mobile menu </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/story-telling">Story telling </RouterLink>
           </v-list-item>
           <v-list-item>
@@ -98,6 +101,7 @@ import {
   useToolbarControl,
   withMapProps,
 } from '@hungpvq/vue-map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMenu } from '@mdi/js';
 import { RouterLink } from 'vue-router';
 export default {
@@ -136,14 +140,10 @@ export default {
     const { state, control } = useToolbarControl(mapId.value, props, {
       id: 'asideControl',
       getState() {
-        return {
+        return mdiButtonState(path.icon, {
           visible: true,
           title: trans.value('map.aside-control.title'),
-          icon: {
-            type: 'mdi',
-            path: path.icon,
-          },
-        };
+        });
       },
       onClick() {
         toggleShow();

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -66,15 +67,11 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapHomeControl',
   getState() {
-    return {
+    return mdiButtonState(mdiHome, {
       visible: true,
       title: trans.value('map.home.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiHome,
-      },
-    };
+    });
   },
   onClick() {
     onGoHome();

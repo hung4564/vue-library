@@ -4,6 +4,7 @@ import {
   createSubscribable,
   createToolbarControl,
   createToolbarModule,
+  createToolbarModuleApi,
   createToolbarStoreApi,
   createToolbarStrategy,
 } from './index';
@@ -61,6 +62,82 @@ describe('toolbar', () => {
     expect(toolbar.get('measure:distance')).toBeUndefined();
   });
 
+  it('keeps module button order even when getState omits order', () => {
+    const store = createDefaultToolbarStore();
+    const toolbar = createToolbarStoreApi(store);
+    const module = createToolbarModule({
+      moduleId: 'zoom',
+      order: 20,
+      toolbar,
+      buttons: [
+        { id: 'compass', getState: () => ({ title: 'N', visible: false }) },
+        { id: 'in', getState: () => ({ title: 'In' }) },
+        { id: 'out', getState: () => ({ title: 'Out' }) },
+      ],
+    });
+    module.mount();
+    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+      'zoom:compass',
+      'zoom:in',
+      'zoom:out',
+    ]);
+    expect(toolbar.get('zoom:compass')?.order).toBe(20);
+    expect(toolbar.get('zoom:in')?.order).toBe(20);
+    expect(toolbar.get('zoom:out')?.order).toBe(20);
+  });
+
+  it('sorts singles by control order among modules', () => {
+    const store = createDefaultToolbarStore();
+    const toolbar = createToolbarStoreApi(store);
+    const home = createToolbarControl({
+      id: 'home',
+      toolbar,
+      getState: () => ({ title: 'Home', order: 10 }),
+    });
+    const zoom = createToolbarModule({
+      moduleId: 'zoom',
+      order: 20,
+      toolbar,
+      buttons: [{ id: 'in', getState: () => ({ title: 'In' }) }],
+    });
+    const info = createToolbarControl({
+      id: 'info',
+      toolbar,
+      getState: () => ({ title: 'Info', order: 30 }),
+    });
+    info.mount();
+    zoom.mount();
+    home.mount();
+    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+      'home',
+      'zoom:in',
+      'info',
+    ]);
+  });
+
+  it('does not reorder getAll when a button is hidden', () => {
+    const store = createDefaultToolbarStore();
+    const toolbar = createToolbarStoreApi(store);
+    const module = createToolbarModule({
+      moduleId: 'print',
+      order: 5,
+      toolbar,
+      buttons: [
+        { id: 'show', getState: () => ({ title: 'Print', visible: false }) },
+        { id: 'save', getState: () => ({ title: 'Save', visible: true }) },
+        { id: 'close', getState: () => ({ title: 'Close', visible: true }) },
+        { id: 'setting', getState: () => ({ title: 'Setting', visible: true }) },
+      ],
+    });
+    module.mount();
+    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+      'print:show',
+      'print:save',
+      'print:close',
+      'print:setting',
+    ]);
+  });
+
   it('createToolbarStrategy defaults to single kind', () => {
     const store = createDefaultToolbarStore();
     const toolbar = createToolbarStoreApi(store);
@@ -71,5 +148,30 @@ describe('toolbar', () => {
     });
     expect(strategy).toHaveProperty('mount');
     expect(strategy).toHaveProperty('id', 'btn');
+  });
+
+  it('createToolbarModuleApi registers for toolbar and menu layouts', () => {
+    const store = createDefaultToolbarStore();
+    let layout: 'standalone' | 'toolbar' | 'menu' | 'button' = 'menu';
+    const api = createToolbarModuleApi(store, () => layout);
+    api.register({
+      id: 'home',
+      action: () => undefined,
+      title: 'Home',
+      position: 'bottom-right',
+    });
+    expect(store.buttons.get('home')?.position).toBe('bottom-right');
+
+    layout = 'standalone';
+    api.update('home', { title: 'Home2' });
+    expect(store.buttons.has('home')).toBe(false);
+
+    layout = 'toolbar';
+    api.register({
+      id: 'home',
+      action: () => undefined,
+      title: 'Home',
+    });
+    expect(store.buttons.has('home')).toBe(true);
   });
 });

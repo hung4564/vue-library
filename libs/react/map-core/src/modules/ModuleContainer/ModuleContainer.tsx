@@ -6,17 +6,18 @@ export interface ModuleContainerProps {
   mapId?: string;
   dragId?: string;
   btnWidth?: number;
-  order?: number;
+  controlOrder?: number;
   /** Control id → class `{controlId}-btn-module-container` */
   controlId?: string;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   controlVisible?: boolean;
-  controlLayout?: 'toolbar' | 'standalone';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+  controlLayout?: 'toolbar' | 'standalone' | 'button' | 'menu';
   btn?: React.ReactNode;
+  /**
+   * Teleported to the same corner host as `btn`, sibling outside
+   * `.btn-module-container` (absolute panels pin to the map corner).
+   */
+  btnOutside?: React.ReactNode;
   draggable?: (bindDrag: BindPosition) => React.ReactNode;
   children?: React.ReactNode;
 }
@@ -33,16 +34,13 @@ export function ModuleContainer({
   mapId: propsMapId,
   dragId: propsDragId,
   btnWidth = 40,
-  order = 0,
+  controlOrder = 0,
   controlId = '',
   position = 'bottom-right',
   controlVisible = true,
   controlLayout = 'standalone',
-  top,
-  bottom,
-  left,
-  right,
   btn,
+  btnOutside,
   draggable,
   children,
 }: ModuleContainerProps) {
@@ -51,7 +49,10 @@ export function ModuleContainer({
   const dragId = propsDragId || context.dragId;
 
   const hasBtn = !!btn;
-  const isStandaloneButton = controlLayout === 'standalone';
+  const hasBtnOutside = !!btnOutside;
+  const hasCornerChrome = hasBtn || hasBtnOutside;
+  const isStandaloneButton =
+    controlLayout !== 'toolbar' && controlLayout !== 'menu';
   const hasDraggable = !!draggable;
 
   const containerId = useMemo(() => dragId, [dragId]);
@@ -77,16 +78,13 @@ export function ModuleContainer({
     ] as const;
 
     configs.forEach(({ key, fallback }) => {
-      const val = { top, bottom, left, right }[key];
-      if (val !== undefined) {
-        result[key] = val;
-      } else if (position.includes(key)) {
+      if (position.includes(key)) {
         result[key] = fallback;
       }
     });
 
     return result;
-  }, [containerId, btnWidth, top, bottom, left, right, position]);
+  }, [containerId, btnWidth, position]);
 
   const [btnPortalTarget, setBtnPortalTarget] = useState<HTMLElement | null>(
     null,
@@ -138,19 +136,24 @@ export function ModuleContainer({
   }, [btnTo, draggableTo, mapId, btnPortalTarget, draggablePortalTarget]);
 
   const btnClassName = controlId
-    ? `btn-module-container ${controlId}-btn-module-container`
-    : 'btn-module-container';
+    ? `btn-module-container map-common-button ${controlId}-btn-module-container`
+    : 'btn-module-container map-common-button';
 
   return (
     <div className="module__container">
       {controlVisible &&
-        hasBtn &&
+        hasCornerChrome &&
         isStandaloneButton &&
         btnPortalTarget &&
         createPortal(
-          <div className={btnClassName} style={{ order }}>
-            {btn}
-          </div>,
+          <>
+            {hasBtn ? (
+              <div className={btnClassName} style={{ order: controlOrder }}>
+                {btn}
+              </div>
+            ) : null}
+            {btnOutside}
+          </>,
           btnPortalTarget,
         )}
       {children}

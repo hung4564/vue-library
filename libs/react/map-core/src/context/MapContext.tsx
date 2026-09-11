@@ -3,12 +3,15 @@
  * Provides mapId and other map-related values to child components
  */
 
-import { createContext, useContext } from 'react';
+import type { ButtonInMobile } from '@hungpvq/map-core';
+import { createContext, useContext, type ReactNode } from 'react';
 
 export interface MapContextValue {
   mapId: string;
   dragId: string;
   registerModuleOrder?: (key: string) => number;
+  buttonInMobile?: ButtonInMobile;
+  isMobile?: boolean;
 }
 
 export const MapContext = createContext<MapContextValue | null>(null);
@@ -32,7 +35,7 @@ export function MapContextProvider({
   children,
 }: {
   value: MapContextValue;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return <MapContext.Provider value={value}>{children}</MapContext.Provider>;
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import { PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { InputSelect, InputText } from '../../../field';
@@ -200,59 +201,48 @@ function onPaperChange(value: string) {
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapPrintAdvancedControl',
-  moduleOrder: order.value,
+  order: order.value,
   kind: 'module',
+  orientation: 'row',
   buttons: [
     {
       id: 'mapPrintShow',
-      getState: () => ({
-        visible: !print.value.show,
-        title: trans.value('map.print.title'),
-        icon: {
-          type: 'mdi',
-          path: path.print,
-        },
-      }),
+      getState: () =>
+        mdiButtonState(path.print, {
+          visible: !print.value.show,
+          title: trans.value('map.print.title'),
+        }),
       onClick: () => onShowPrint(print.value.setting),
     },
     {
       id: 'mapPrintSave',
-      getState: () => ({
-        visible: print.value.show,
-        title: trans.value('map.print.actions.save'),
-        icon: {
-          type: 'mdi',
-          path: path.save,
-        },
-        loading: print.value.loading,
-      }),
+      getState: () =>
+        mdiButtonState(path.save, {
+          visible: print.value.show,
+          title: trans.value('map.print.actions.save'),
+          loading: print.value.loading,
+        }),
       onClick: () => onSave(),
     },
     {
       id: 'mapPrintClose',
-      getState: () => ({
-        visible: print.value.show,
-        title: trans.value('map.print.actions.clear'),
-        icon: {
-          type: 'mdi',
-          path: path.close,
-        },
-        loading: print.value.loading,
-      }),
+      getState: () =>
+        mdiButtonState(path.close, {
+          visible: print.value.show,
+          title: trans.value('map.print.actions.clear'),
+          loading: print.value.loading,
+        }),
       onClick: () => onClosePrint(),
     },
     {
       id: 'mapPrintSetting',
-      getState: () => ({
-        visible: true,
-        active: print.value.setting_show,
-        title: trans.value('map.print.actions.setting'),
-        icon: {
-          type: 'mdi',
-          path: path.setting,
-        },
-        loading: print.value.loading,
-      }),
+      getState: () =>
+        mdiButtonState(path.setting, {
+          visible: true,
+          active: print.value.setting_show,
+          title: trans.value('map.print.actions.setting'),
+          loading: print.value.loading,
+        }),
       onClick: () => toggleSetting(),
     },
   ],
@@ -293,25 +283,21 @@ useRegisterMapControl(mapId, {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton row>
-        <template v-if="!print.show">
-          <MapCommonButton
-            v-if="state && state.mapPrintShow"
-            :option="state.mapPrintShow"
-            @click="control.onAction('mapPrintShow', $event)"
-          />
-        </template>
-        <template v-else>
-          <MapCommonButton
-            v-if="state && state.mapPrintSave"
-            :option="state.mapPrintSave"
-            @click="control.onAction('mapPrintSave', $event)"
-          />
-          <MapCommonButton
-            v-if="state && state.mapPrintClose"
-            :option="state.mapPrintClose"
-            @click="control.onAction('mapPrintClose', $event)"
-          />
-        </template>
+        <MapCommonButton
+          v-if="state && state.mapPrintShow"
+          :option="state.mapPrintShow"
+          @click="control.onAction('mapPrintShow', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapPrintSave"
+          :option="state.mapPrintSave"
+          @click="control.onAction('mapPrintSave', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapPrintClose"
+          :option="state.mapPrintClose"
+          @click="control.onAction('mapPrintClose', $event)"
+        />
         <MapCommonButton
           v-if="state && state.mapPrintSetting"
           :option="state.mapPrintSetting"

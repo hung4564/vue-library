@@ -62,14 +62,15 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
+| Control layout | `resolveControlLayout`, `ResolvedControlLayout` (`standalone` / `toolbar` / `menu`), `ControlLayout` (`standalone` / `toolbar` / `button`), `ButtonInMobile` / `BUTTON_IN_MOBILE_VALUES` (`button` / `toolbar` / `menu`). Map `buttonInMobile` on viewports ≤640px: `button` leaves corner controls unchanged; `toolbar` promotes into one `ToolbarControl` host except `controlLayout="button"`; `menu` fans out by `position` into corner stacks with outside-in overflow; bottom half budgets menu + same-edge `controlLayout="button"` chrome (see [ToolbarControl](./module/ToolbarControl.md)). Mount `ToolbarControl` in the map slot for `toolbar` and `menu`. |
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
 | Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
-| Types | `MapSimple`, `WithMapPropType`, `MapControlHandle`, … |
+| Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.
 
-Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `compassIcon` (build control button state with MDI paths).
+Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `compassIcon`; overflow helpers `groupToolbarButtons`, `splitToolbarOverflow`, `splitToolbarOverflowKeepGroups` (`prefer` `'start'`|`'end'`, `toolbarGroupHeightCost`), `maxVisibleToolbarButtons`, `maxVisibleButtonsInStackHeight`, `cornerVerticalMenuBudgetsPx`, `measureCornerStandaloneReserved`, `measureCornerMenuUsedPx`, `elementOuterSize`, `toolbarAvailableWidth`, `toolbarGroupHeightCost`, `TOOLBAR_EDGE_INSET_PX`, `TOOLBAR_STACK_GAP_PX`, `BUTTON_GROUP_OVERFLOW_FRACTION`, `TOOLBAR_CONTROL_LOCALE`.
 
 ## `@hungpvq/map-dataset`
 

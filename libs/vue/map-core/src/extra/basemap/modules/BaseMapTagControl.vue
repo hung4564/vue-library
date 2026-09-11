@@ -23,9 +23,12 @@
 <script lang="ts" setup>
 import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
+import { mdiLayersOutline } from '@mdi/js';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { MapControlGroupButton } from '../../../components';
+import { useToolbarControl } from '../../../extra/toolbar';
 import { defaultMapProps, useMap } from '../../../hooks';
 import { ModuleContainer } from '../../../modules';
 import { useBaseMap } from '../hooks';
@@ -43,7 +46,7 @@ const props = withDefaults(
     defaultBaseMap: 'Open Street Map',
   },
 );
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -72,6 +75,30 @@ function onClick(baseMap: BaseMapItem) {
   );
   setCurrent(baseMap);
 }
+const { control } = useToolbarControl(mapId.value, props, {
+  kind: 'module',
+  moduleId: 'mapBaseMapTagControl',
+  order: order.value,
+  orientation: 'row',
+  buttons: (props.baseMaps ?? []).map((baseMap) => ({
+    id: String(baseMap.id),
+    getState: () => {
+      const live =
+        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+      return mdiButtonState(mdiLayersOutline, {
+        visible: true,
+        active: current_baseMaps.value?.id === live.id,
+        title: live.title,
+      });
+    },
+    onClick: () => {
+      const live =
+        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+      onClick(live);
+    },
+  })),
+});
+watch([current_baseMaps, c_baseMaps], () => control.sync());
 onMounted(() => {
   init(props.baseMaps, props.defaultBaseMap);
 });

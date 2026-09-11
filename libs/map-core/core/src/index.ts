@@ -42,6 +42,7 @@ export {
   applyWorkerMonitorMessage,
   bboxFromGeojson,
   bindMapKeyboardShortcuts,
+  BUTTON_IN_MOBILE_VALUES,
   closeTopOpenMapControl,
   connectWorkerMonitor,
   convertGeometry,
@@ -101,6 +102,7 @@ export {
   readMapViewInfo,
   registerMapAccessor,
   reprojectGeojsonToWgs84,
+  resolveControlLayout,
   resolveMapButtonSizeName,
   resolveMapButtonSizePx,
   resolveSelectedWorkerId,
@@ -115,7 +117,9 @@ export {
 
 /** First-party types only — do not re-export geojson / maplibre-gl types from the root. */
 export type {
+  ButtonInMobile,
   Color,
+  ControlLayout,
   Coordinates,
   CoordinatesNumber,
   DraftCoordinatesNumber,
@@ -129,6 +133,7 @@ export type {
   Position,
   WithMapPropType,
 } from './types';
+export type { ResolvedControlLayout } from './utils/control-layout';
 export type {
   MapControlAction,
   MapControlActionMeta,

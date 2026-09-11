@@ -203,7 +203,7 @@ interface WithMapPropType {
   btnWidth?: number;
   position?: Position;
   controlVisible?: boolean;
-  order?: number;
+  controlOrder?: number | string;
 }
 ```
 

@@ -7,6 +7,7 @@ import {
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
@@ -131,7 +132,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGeoLocateControl',
   getState() {
     const error = ui.value.errorMessage;
-    return {
+    return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
       visible: true,
       active: ui.value.active,
       disabled: ui.value.disabled,
@@ -140,11 +141,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
           trans.value('map.action.geolocate-control-location-not-available')
         : trans.value('map.action.geolocate-control-find-my-location'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: error ? mdiCrosshairsOff : mdiCrosshairsGps,
-      },
-    };
+    });
   },
   onClick() {
     onClick();

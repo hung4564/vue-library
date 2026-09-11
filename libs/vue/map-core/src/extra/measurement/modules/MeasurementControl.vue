@@ -4,8 +4,8 @@
       <MapControlGroupButton row class="map-measurement-control">
         <template v-for="(btn, id) in state">
           <MapCommonButton
+            v-if="btn?.visible != false"
             :key="id"
-            v-if="btn?.visible"
             :option="btn"
             @click.stop="control.onAction(id, $event)"
           />
@@ -51,6 +51,7 @@ import {
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
 import { EventClick } from '@hungpvq/map-core/event';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   FormView,
   MEASUREMENT_CONTROL_LOCALE,
@@ -238,22 +239,14 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
           })
         : status === 'select';
 
-      return {
+      return mdiButtonState(action.icon, {
         visible,
-
         active: action.isActive?.() ?? false,
-
         disabled: action.disabled
           ? action.disabled({ coordinates: coordinates.value })
           : false,
-
         title: trans.value(action.title),
-
-        icon: {
-          type: 'mdi',
-          path: action.icon,
-        },
-      };
+      });
     },
 
     async onClick() {
@@ -277,7 +270,8 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapMeasurementControl',
   kind: 'module',
-  moduleOrder: order.value,
+  order: order.value,
+  orientation: 'row',
   buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
     toToolbarButton,
   ),

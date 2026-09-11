@@ -13,7 +13,7 @@ import {
   toggleMapThemeLightDark,
   type MapThemeMode,
 } from '@hungpvq/map-core/theme';
-import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   mdiCircleHalfFull,
   mdiPalette,
@@ -27,7 +27,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
-import { useLang, useRegisterMapControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -130,15 +130,21 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
 
   const titleKey = getMapThemeLocaleKey(toggleTarget);
 
-  const toggleState: MapControlButtonUIState = {
-    visible: true,
-    order,
-    title: trans(titleKey),
-    icon: {
-      type: 'mdi',
-      path: toggleIcon,
-    },
-  };
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapThemeControl',
+    getState: () =>
+      mdiButtonState(toggleIcon, {
+        visible: true,
+        order,
+        title: trans(titleKey),
+      }),
+    onClick: () => toggleTheme(),
+  });
+
+  useEffect(() => {
+    control.sync();
+  }, [mode, prefersDark, toggleIcon, titleKey, control]);
 
   return (
     <ModuleContainer
@@ -148,13 +154,15 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
           row
           className="map-theme-control-group button-group-hover-expand"
         >
-          <MapCommonButton
-            option={toggleState}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleTheme();
-            }}
-          />
+          {state ? (
+            <MapCommonButton
+              option={state}
+              onClick={(e) => {
+                e.stopPropagation();
+                control.onAction(e);
+              }}
+            />
+          ) : null}
           {themeModes.map((themeId) => (
             <MapCommonButton
               key={themeId}

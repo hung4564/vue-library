@@ -8,7 +8,10 @@ import React, {
 import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { MAP_ACTION_LOCALE } from '@hungpvq/map-core';
-import { mdiIcon } from '@hungpvq/map-core/toolbar';
+import {
+  mdiIcon,
+  type MapControlButtonUIState,
+} from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
@@ -163,57 +166,57 @@ export function ZoomControl({
     () => ({
       kind: 'module' as const,
       moduleId: 'mapNavigationControl',
-      moduleOrder: order,
+      order: order,
       buttons: [compassButton, zoomInButton, zoomOutButton],
     }),
     [order, compassButton, zoomInButton, zoomOutButton],
   );
 
-  const { control } = useToolbarControl(
+  const { control, state } = useToolbarControl(
     mapId,
     mergedProps,
     toolbarConfig,
   );
 
-  const compassState = showCompass ? compassButton.getState() : null;
-  const zoomInState = showZoom ? zoomInButton.getState() : null;
-  const zoomOutState = showZoom ? zoomOutButton.getState() : null;
+  const moduleState = state as
+    | Record<string, MapControlButtonUIState | undefined>
+    | undefined;
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
         <MapControlGroupButton>
-          {compassState && (
+          {moduleState?.mapCompass ? (
             <MapCommonButton
-              option={compassState}
+              option={moduleState.mapCompass}
               onClick={(e) => {
                 e.stopPropagation();
                 compassButton.onClick?.();
                 control.sync();
               }}
             />
-          )}
-          {zoomInState && (
+          ) : null}
+          {moduleState?.mapZoomIn ? (
             <MapCommonButton
-              option={zoomInState}
+              option={moduleState.mapZoomIn}
               onClick={(e) => {
                 e.stopPropagation();
                 zoomInButton.onClick?.(e.nativeEvent);
                 control.sync();
               }}
             />
-          )}
-          {zoomOutState && (
+          ) : null}
+          {moduleState?.mapZoomOut ? (
             <MapCommonButton
-              option={zoomOutState}
+              option={moduleState.mapZoomOut}
               onClick={(e) => {
                 e.stopPropagation();
                 zoomOutButton.onClick?.(e.nativeEvent);
                 control.sync();
               }}
             />
-          )}
+          ) : null}
         </MapControlGroupButton>
       }
     />

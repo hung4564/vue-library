@@ -27,6 +27,8 @@ export const MAP_DUAL_CONTROL_IDS = [
   'mapPrintAdvancedControl',
   'mapInspectControl',
   'mapDrawDraftList',
+  'mapDrawControl',
+  'mapBaseMapTagControl',
   'mapRegistryControl',
   'mapAttributeTable',
   'mapMeasurementSetting',

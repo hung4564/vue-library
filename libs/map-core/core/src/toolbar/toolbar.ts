@@ -40,6 +40,7 @@ export function createToolbarControl(
       action(e: MouseEvent) {
         onAction(e);
       },
+      order: state.order ?? 0,
     };
   }
 
@@ -51,7 +52,10 @@ export function createToolbarControl(
 
   function sync() {
     const state = getState();
-    toolbar.update(id, state);
+    toolbar.update(id, {
+      ...state,
+      order: state.order ?? 0,
+    });
     notify(state);
   }
 
@@ -65,26 +69,37 @@ export function createToolbarControl(
 export function createToolbarModule(
   options: {
     moduleId: string;
-    moduleOrder?: number;
+    order?: number;
+    orientation?: 'row' | 'column';
     toolbar: WithToolbar['toolbar'];
     buttons: ToolbarButtonConfig[];
   } & WithToolbar,
 ) {
   const { subscribe, notify } =
     createSubscribable<Record<string, MapControlButtonUIState>>();
+  function buttonLayout(btn: ToolbarButtonConfig) {
+    const state = btn.getState();
+    return {
+      state,
+      patch: {
+        group: options.moduleId,
+        order: options.order ?? 0,
+        orientation: options.orientation ?? 'column',
+      },
+    };
+  }
+
   function mount() {
     const states: Record<string, MapControlButtonUIState> = {};
     options.buttons.forEach((btn) => {
-      const state = btn.getState();
+      const { state, patch } = buttonLayout(btn);
       states[btn.id] = state;
       options.toolbar.register({
-        id: `${options.moduleId}:${btn.id}`,
-        visible: true,
-        action: (e) => btn.onClick?.(e),
-        group: options.moduleId,
-        priority: options.moduleOrder || 0,
-        order: btn.order,
         ...state,
+        id: `${options.moduleId}:${btn.id}`,
+        visible: state.visible ?? true,
+        action: (e) => btn.onClick?.(e),
+        ...patch,
       });
     });
     notify(states);
@@ -93,13 +108,11 @@ export function createToolbarModule(
   function sync() {
     const states: Record<string, MapControlButtonUIState> = {};
     options.buttons.forEach((btn) => {
-      const state = btn.getState();
+      const { state, patch } = buttonLayout(btn);
       states[btn.id] = state;
       options.toolbar.update(`${options.moduleId}:${btn.id}`, {
-        group: options.moduleId,
-        priority: options.moduleOrder || 0,
-        order: btn.order,
         ...state,
+        ...patch,
       });
     });
     notify(states);
@@ -158,6 +171,25 @@ export function createToolbarStrategy(
   return strategy.create(options as any);
 }
 
+function toolbarClusterKey(btn: { id: string; group?: string }) {
+  return btn.group || btn.id;
+}
+
+function compareToolbarButtons(
+  a: { id: string; group?: string; order?: number },
+  b: { id: string; group?: string; order?: number },
+) {
+  const oa = a.order ?? 0;
+  const ob = b.order ?? 0;
+  if (oa !== ob) return oa - ob;
+
+  const ga = toolbarClusterKey(a);
+  const gb = toolbarClusterKey(b);
+  if (ga !== gb) return ga.localeCompare(gb);
+
+  return 0;
+}
+
 export type Listener = () => void;
 
 export type MapToolbarStore = {
@@ -203,17 +235,7 @@ export function createToolbarStoreApi(store: MapToolbarStore) {
   }
 
   function getAll() {
-    return Array.from(store.buttons.values()).sort((a, b) => {
-      const pa = a.priority ?? 0;
-      const pb = b.priority ?? 0;
-      if (pa !== pb) return pa - pb;
-
-      const ga = a.group ?? '';
-      const gb = b.group ?? '';
-      if (ga !== gb) return ga.localeCompare(gb);
-
-      return (a.order ?? 0) - (b.order ?? 0);
-    });
+    return Array.from(store.buttons.values()).sort(compareToolbarButtons);
   }
 
   function get(id: string) {
@@ -222,17 +244,37 @@ export function createToolbarStoreApi(store: MapToolbarStore) {
   return { subscribe, register, unregister, update, getAll, get, notify };
 }
 
+function isStoreLayout(
+  layout: string | undefined,
+): layout is 'toolbar' | 'menu' {
+  return layout === 'toolbar' || layout === 'menu';
+}
+
 export function createToolbarModuleApi(
   store: MapToolbarStore,
-  controlLayout: 'standalone' | 'toolbar' | undefined,
+  controlLayout:
+    | 'standalone'
+    | 'toolbar'
+    | 'menu'
+    | 'button'
+    | undefined
+    | (() => 'standalone' | 'toolbar' | 'menu' | 'button' | undefined),
 ) {
+  function readLayout() {
+    return typeof controlLayout === 'function'
+      ? controlLayout()
+      : controlLayout;
+  }
+
   function notify() {
     store.listeners.forEach((fn) => fn());
   }
 
   function register(state: import('./types').MapControlButtonState) {
-    if (controlLayout == 'toolbar') {
+    if (isStoreLayout(readLayout())) {
       store.buttons.set(state.id, state);
+    } else {
+      store.buttons.delete(state.id);
     }
     notify();
   }
@@ -241,6 +283,11 @@ export function createToolbarModuleApi(
     id: string,
     patch: Partial<import('./types').MapControlButtonState>,
   ) {
+    if (!isStoreLayout(readLayout())) {
+      store.buttons.delete(id);
+      notify();
+      return;
+    }
     const btn = store.buttons.get(id);
     if (!btn) return;
     Object.assign(btn, patch);

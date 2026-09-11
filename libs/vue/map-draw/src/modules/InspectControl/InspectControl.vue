@@ -6,7 +6,7 @@ export default {
 <script setup lang="ts">
 import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
-import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   InspectController,
   brightColor,
@@ -163,16 +163,12 @@ useRegisterMapControl(mapId, {
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapInspectControl',
-  getState(): MapControlButtonUIState {
-    return {
+  getState() {
+    return mdiButtonState(!showInspect.value ? path.map : path.inspect, {
       visible: true,
       title: trans.value('map.inspect-control.button'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: !showInspect.value ? path.map : path.inspect,
-      },
-    };
+    });
   },
   onClick() {
     toggleInspect();

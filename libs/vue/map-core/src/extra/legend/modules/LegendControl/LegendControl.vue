@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core/legend';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
@@ -92,15 +93,11 @@ watch(onlyRender, (newValue) => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLegendControl',
   getState() {
-    return {
+    return mdiButtonState(mdiMapLegend, {
       visible: true,
       title: trans.value('map.legend-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiMapLegend,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();

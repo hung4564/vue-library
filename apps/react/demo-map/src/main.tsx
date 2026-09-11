@@ -22,6 +22,7 @@ import { StoryTellingPage } from './views/story-telling';
 import { StoryTellingGpsPage } from './views/story-telling-gps';
 import { LegendPage } from './views/legend';
 import { ToolbarPage } from './views/toolbar';
+import { MobileMenuPage } from './views/mobile-menu';
 import { WorkerSamplePage } from './views/worker-sample';
 
 // Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
@@ -43,6 +44,7 @@ root.render(
           <Route path="worker-sample" element={<WorkerSamplePage />} />
           <Route path="map-dataset" element={<MapDatasetPage />} />
           <Route path="toolbar" element={<ToolbarPage />} />
+          <Route path="mobile-menu" element={<MobileMenuPage />} />
           <Route path="basemap" element={<BasemapPage />} />
           <Route path="measurement" element={<MeasurementPage />} />
           <Route path="dataset-highlight" element={<DatasetHighlightPage />} />

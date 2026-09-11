@@ -2,11 +2,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import { GLOBE_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
+import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
 import { defaultMapProps, useMap } from '../../hooks';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 
 function getProjectionType(map: MapSimple): string | undefined {
   const type = map.getProjection()?.type;
@@ -69,28 +69,36 @@ export function GlobeControl(props: WithMapPropType) {
     ],
   });
 
-  const buttonState: MapControlButtonUIState = {
-    visible: true,
-    active: currentProjection === 'globe',
-    title: trans('map.global-control.title'),
-    order: order,
-    icon: {
-      type: 'mdi',
-      path: mdiWeb,
-    },
-  };
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapGlobeControl',
+    getState: () =>
+      mdiButtonState(mdiWeb, {
+        visible: true,
+        active: currentProjection === 'globe',
+        title: trans('map.global-control.title'),
+        order,
+      }),
+    onClick: () => toggle(),
+  });
+
+  useEffect(() => {
+    control.sync();
+  }, [currentProjection, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapCommonButton
-          option={buttonState}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggle();
-          }}
-        />
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction(e);
+            }}
+          />
+        ) : null
       }
     />
   );

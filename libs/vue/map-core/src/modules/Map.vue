@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/map-core';
+import type { ButtonInMobile, MapSimple } from '@hungpvq/map-core';
 import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
 import '@hungpvq/map-core';
 import { useBreakpoints } from '@hungpvq/shared-core';
@@ -25,6 +25,8 @@ const props = withDefaults(
     mapId?: string;
     /** Bind Esc / `/` map shortcuts (default true). */
     keyboardShortcuts?: boolean;
+    /** On viewports ≤640px: `button` unchanged, `toolbar` merge into ToolbarControl, `menu` cap groups at ½×½ map. */
+    buttonInMobile?: ButtonInMobile;
   }>(),
   {
     mapboxAccessToken: '',
@@ -33,6 +35,7 @@ const props = withDefaults(
       zoomControl: false,
     }),
     keyboardShortcuts: true,
+    buttonInMobile: 'button',
   },
 );
 
@@ -70,10 +73,13 @@ const leftTopTo = computed(() => {
   return `top-left-${id.value}`;
 });
 
+const isMobile = breakpoints.smallerOrEqual('tablet');
+
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
+provide('$map.buttonInMobile', computed(() => props.buttonInMobile ?? 'button'));
+provide('$map.isMobile', isMobile);
 
-const isMobile = breakpoints.smallerOrEqual('tablet');
 const loadedDrag = ref(false);
 
 function onDragLoadDone() {

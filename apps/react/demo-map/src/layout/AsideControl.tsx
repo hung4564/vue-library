@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { to: '/minimal', label: 'Minimal starter' },
   { to: '/worker-sample', label: 'Worker - Sample' },
   { to: '/toolbar', label: 'Map - Toolbar' },
+  { to: '/mobile-menu', label: 'Map - Mobile menu' },
   { to: '/basemap', label: 'BaseMap' },
   { to: '/measurement', label: 'Measurement' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },

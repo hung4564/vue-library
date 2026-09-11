@@ -13,10 +13,11 @@
 
 ## Slots
 
-| Name        | Description |
-| ----------- | ----------- |
-| `btn`       |             |
-| `draggable` |             |
+| Name         | Description |
+| ------------ | ----------- |
+| `btn`        | Control chrome inside `.btn-module-container` (flex `order` applies here) |
+| `btnOutside` | Same corner Teleport target as `btn`, but **sibling outside** `.btn-module-container` — use for absolute panels that must pin to the map corner host (e.g. toolbar/menu More). React: `btnOutside` prop |
+| `draggable`  |             |
 
 ## Usage
 
