@@ -37,8 +37,8 @@
   },
   "peerDependencies": {
     "vue": "^3.3.4",
-    "@hungpvq/map-core": "~1.0.1",
-    "@hungpvq/vue-draggable": "~1.2.0",
+    "@hungpvq/map-core": "^1.0.0",
+    "@hungpvq/vue-draggable": "^1.0.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@hungpvq/shared": "~0.3.0",
     "@hungpvq/shared-core": "~0.1.0",

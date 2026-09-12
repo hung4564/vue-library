@@ -1,6 +1,6 @@
 # Stable API (v1)
 
-Allowlist of symbols and protocols we treat as **Stable** for SemVer on **`<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->`**.
+Allowlist of symbols and protocols we treat as **Stable** for SemVer on **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->`**.
 
 Root barrels use **explicit named exports** (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package. Symbols listed under **Experimental** may change in a **minor**.
 

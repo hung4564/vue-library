@@ -96,10 +96,10 @@
   "release": {
     "projectsRelationship": "independent",
     "version": {
-      "preVersionCommand": "npx nx run-many -t build",
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true,
       "updateDependents": "never",
+      "versionPrefix": "^",
       "manifestRootsToUpdate": ["{projectRoot}"],
       "git": {
         "commit": false,
@@ -108,8 +108,9 @@
       }
     },
     "changelog": {
+      "automaticFromRef": true,
       "projectChangelogs": {
-        "createRelease": "github",
+        "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
           "authors": true,
           "commitReferences": true,
@@ -117,7 +118,6 @@
           "applyUsernameToAuthors": true
         }
       },
-      "automaticFromRef": true,
       "git": {
         "commit": true,
         "tag": true,
@@ -135,14 +135,22 @@
         "projectsRelationship": "fixed",
         "releaseTagPattern": "draggable@{version}",
         "version": {
+          "conventionalCommits": true,
           "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build",
-          "updateDependents": "auto"
+          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build"
         },
         "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
           "createRelease": "github",
-          "file": "{projectRoot}/CHANGELOG.md"
+          "renderOptions": {
+            "authors": true,
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
         }
       },
       "map": {
@@ -162,14 +170,22 @@
         "projectsRelationship": "fixed",
         "releaseTagPattern": "map@{version}",
         "version": {
+          "conventionalCommits": true,
           "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
-          "updateDependents": "auto"
+          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build"
         },
         "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
           "createRelease": "github",
-          "file": "{projectRoot}/CHANGELOG.md"
+          "renderOptions": {
+            "authors": true,
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
         }
       },
       "packages": {
@@ -198,7 +214,11 @@
         "projectsRelationship": "independent",
         "releaseTagPattern": "{projectName}@{version}",
         "version": {
-          "updateDependents": "never"
+          "updateDependents": "never",
+          "versionPrefix": "^"
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md"
         }
       }
     }

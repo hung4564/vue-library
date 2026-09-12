@@ -56,9 +56,55 @@ jobs:
         run: npx nx report
         shell: bash
 
-      - name: Build release group
-        run: npx nx run-many --projects=tag:${{ steps.meta.outputs.group }} --exclude=tag:demo --target=build
+      - name: Build release group (no cache — dist must match tag version)
+        run: npx nx run-many --projects=tag:${{ steps.meta.outputs.group }} --exclude=tag:demo --target=build --skip-nx-cache
         shell: bash
+
+      - name: Verify dist versions match tag
+        shell: bash
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          VER="${TAG#*@}"
+          GROUP="${{ steps.meta.outputs.group }}"
+          echo "Expecting $GROUP packages at version $VER"
+          node <<'NODE'
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+          const tag = process.env.TAG;
+          const ver = tag.split('@')[1];
+          const group = process.env.GROUP;
+          const projects = execSync(
+            `npx nx show projects --projects=tag:${group} --exclude=tag:demo`,
+            { encoding: 'utf8' },
+          )
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+          let fail = 0;
+          for (const name of projects) {
+            // project name == package name for these libs; resolve root via nx
+            const root = execSync(`npx nx show project ${name} --json`, {
+              encoding: 'utf8',
+            });
+            const { root: projectRoot } = JSON.parse(root);
+            const distPkg = `dist/${projectRoot}/package.json`;
+            if (!fs.existsSync(distPkg)) {
+              console.error(`MISSING ${distPkg}`);
+              fail = 1;
+              continue;
+            }
+            const pkg = JSON.parse(fs.readFileSync(distPkg, 'utf8'));
+            console.log(`${pkg.name}@${pkg.version} (${distPkg})`);
+            if (pkg.version !== ver) {
+              console.error(`ERROR: expected ${ver}, got ${pkg.version}`);
+              fail = 1;
+            }
+          }
+          process.exit(fail);
+          NODE
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          GROUP: ${{ steps.meta.outputs.group }}
 
       - name: Publish packages (${{ steps.meta.outputs.group }})
         run: npx nx release publish --group=${{ steps.meta.outputs.group }} --yes
@@ -66,3 +112,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+          NX_SKIP_NX_CACHE: true

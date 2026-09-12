@@ -198,7 +198,7 @@ Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fas
 - [Testing](./testing.md) (`draggable:test`, public-api locks)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
 
-Current line: **`<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->`** (fixed release group for core + Vue + React adapters).
+Current line: **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->`** (fixed release group for core + Vue + React adapters).
 
 **Next minor (prep):** [releases/v1.2.md](./releases/v1.2.md) — peer matrix `~1.2.0`, migration, release-day checklist. Index: [releases/](./releases/).
 

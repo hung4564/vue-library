@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import * as api from './index';
 
-/** Stable root runtime exports (SemVer contract for <!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->). */
+/** Stable root runtime exports (SemVer contract for <!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->). */
 export const DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
   // factories
   'createEmptyBottom',

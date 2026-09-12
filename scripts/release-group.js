@@ -6,13 +6,15 @@
  *
  * Extra steps Nx does not own:
  *   - sync SemVer markers in draggable docs
+ *   - sync peer/deps in consumer packages (Nx skips peerDependencies)
  *   - build + push GitHub Pages deploy submodule
  *
  * Flow:
  *   1) nx release version  (no git yet)
- *   2) docs sync (draggable) + site build/push
- *   3) nx release changelog + git commit/tag/push via Nx
- *   4) optional local publish (else CI on tag push)
+ *   2) sync-workspace-peers (consumers → ^MAJOR.0.0 / 1.x.x)
+ *   3) docs sync (draggable) + site build/push
+ *   4) nx release changelog + git commit/tag/push via Nx
+ *   5) optional local publish (else CI on tag push)
  *
  * Usage:
  *   node scripts/release-group.js draggable
@@ -172,12 +174,15 @@ if (opts.dryRun) {
 const version = readVersion(cfg.leadPkg);
 const expectedTag = `${opts.group}@${version}`;
 
-// 2) Docs sync (draggable markers)
+// 2) Sync consumers' peer/deps to ~MAJOR.MINOR.0 (cross-group; Nx skips peers)
+runNode(path.join(__dirname, 'sync-workspace-peers.js'), [opts.group]);
+
+// 3) Docs sync (draggable markers)
 if (cfg.syncDocs) {
   runNode(path.join(__dirname, 'sync-draggable-docs-version.js'), []);
 }
 
-// 3) Site build + push deploy submodule (before Nx commit so pointer can be included)
+// 4) Site build + push deploy submodule (before Nx commit so pointer can be included)
 if (!opts.skipSite) {
   if (opts.skipPush) {
     run(`npm run ${cfg.site}:site:build`);
@@ -191,15 +196,14 @@ if (!opts.skipSite) {
   }
 }
 
-// Stage docs sync + submodule pointer (Nx stages its own version/changelog files)
+// Stage docs sync + peer sync + submodule pointer (Nx stages its own version/changelog files)
 {
-  const extras = [];
-  if (cfg.syncDocs) extras.push('libs/draggable');
+  const extras = ['libs', 'apps'];
   if (!opts.skipSite) extras.push(`deploy/demo-${cfg.site}`);
-  if (extras.length) run(`git add -- ${extras.join(' ')}`);
+  run(`git add -- ${extras.join(' ')}`);
 }
 
-// 4) Changelog + Nx git commit / tag / push
+// 5) Changelog + Nx git commit / tag / push
 // git defaults: nx.json release.changelog.git + releaseTag.pattern
 {
   const parts = [
@@ -220,9 +224,9 @@ if (!opts.skipSite) {
   run(parts.join(' '));
 }
 
-console.log(`\nNx should have created tag ${expectedTag} (see nx.json releaseTag.pattern).\n`);
+console.log(`\nNx should have created tag ${expectedTag} (see nx.json releaseTagPattern).\n`);
 
-// 5) Optional local npm publish (CI normally publishes on tag)
+// 6) Optional local npm publish (CI normally publishes on tag)
 if (opts.localPublish) {
   const yes = opts.yes ? ' --yes' : '';
   run(`npx nx release publish --group=${opts.group}${yes}`);

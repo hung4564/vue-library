@@ -88,7 +88,7 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 - Map docs index: `libs/map-core/core/docs/index.md`
 - Map store / `getMap`: `libs/map-core/core/docs/core/map-store.md`
 - Map error handling: `libs/map-core/core/docs/core/error-handling.md`
-- Draggable SemVer + public surface: `libs/draggable/README.md` (line **<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->**)
+- Draggable SemVer + public surface: `libs/draggable/README.md` (line **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->**)
 - Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
 - Draggable a11y: `libs/draggable/core/docs/a11y.md`
 - Draggable testing: `libs/draggable/core/docs/testing.md`

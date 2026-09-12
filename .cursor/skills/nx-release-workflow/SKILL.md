@@ -11,6 +11,20 @@ description: >-
 
 Independent versioning via Nx release groups in root `nx.json`. Conventional Commits drive version when using release tooling.
 
+## `nx.json` release contract
+
+| Group | Relationship | Tag | GitHub Release | Peers within group |
+|-------|--------------|-----|----------------|--------------------|
+| `draggable` | fixed | `draggable@{version}` | yes (`createRelease`) | `versionPrefix: "^"` → `^MAJOR.0.0` (1.x.x) + `updateDependents: auto` |
+| `map` | fixed | `map@{version}` | yes | same |
+| `packages` | independent | `{projectName}@{version}` | no | `updateDependents: never` |
+
+- **Version step:** no commit/tag (`release.version.git`); stage only.
+- **Changelog step:** commit + tag + push (`release.changelog.git`) then GitHub Release.
+- **preVersionCommand:** build only that group (`tag:draggable` / `tag:map`), never `--all`.
+- Current version comes from **git-tag** matching `releaseTagPattern` (fallback: disk). Keep tags aligned with `package.json`.
+- Cross-group **peer** deps are synced by `scripts/sync-workspace-peers.js` after version (wired in `release-group.js`) → `^MAJOR.0.0`. Manual: `npm run draggable:peers:sync` / `map:peers:sync`.
+
 ## Pre-flight
 
 1. Clean working tree for the packages you release (or know what will be included).

@@ -35,6 +35,6 @@ There is **no** Playwright e2e project for demo-draggable yet. Prefer unit + `pu
 
 ## SemVer note
 
-Docs-only and test-only changes are **patch** on the current published line (`<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->`). Changing documented a11y/store behavior needs a SemVer decision — see [README checklist](../../README.md#checklist-semver--breaking-change).
+Docs-only and test-only changes are **patch** on the current published line (`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->`). Changing documented a11y/store behavior needs a SemVer decision — see [README checklist](../../README.md#checklist-semver--breaking-change).
 
 Next minor prep: [releases/v1.2.md](./releases/v1.2.md). Release flow: `npm run draggable:release` (`scripts/release-group.js`).

@@ -3,7 +3,7 @@
  *
  * Markers (replace inner text only):
  *   <!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->
- *   <!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->
+ *   <!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->
  *   <!-- docs-ver:draggable.exact -->1.1.0<!-- /docs-ver:draggable.exact -->
  *
  * Usage:
@@ -24,8 +24,8 @@ if (major == null || minor == null) {
 }
 
 const values = {
-  line: `${major}.${minor}.x`,
-  peer: `~${major}.${minor}.0`,
+  line: `${major}.x.x`,
+  peer: `^${major}.0.0`,
   exact: version,
 };
 

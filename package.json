@@ -28,6 +28,8 @@
     "draggable:release": "node scripts/release-group.js draggable",
     "draggable:release:local": "node scripts/release-group.js draggable --skip-site --skip-push --local-publish --yes",
     "draggable:docs:sync": "node scripts/sync-draggable-docs-version.js",
+    "draggable:peers:sync": "node scripts/sync-workspace-peers.js draggable",
+    "map:peers:sync": "node scripts/sync-workspace-peers.js map",
     "draggable:dev-vue": "nx serve demo-draggable",
     "draggable:dev-react": "nx serve react-demo-draggable",
     "draggable:site:dev": "node scripts/vitepress-demo-draggable.js dev",
