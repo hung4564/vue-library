@@ -436,6 +436,18 @@ describe('useDragCommands', () => {
     expect(() => cmds.close('missing')).not.toThrow();
     expect(cmds.getAction('missing')).toBeUndefined();
   });
+
+  it('registerItemShow notifies on the drag:core container path', () => {
+    const notify = vi.fn();
+    configureDragStore({ notify });
+    initTestContainer();
+    const items = useDragItem(CID);
+    items.registerItem('a', 'item-popup');
+    notify.mockClear();
+
+    items.registerItemShow('a', true);
+    expect(notify).toHaveBeenCalledWith(['drag:core', 'container', CID]);
+  });
 });
 
 describe('useDragLayout', () => {

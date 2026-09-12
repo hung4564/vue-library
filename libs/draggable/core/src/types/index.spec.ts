@@ -19,6 +19,7 @@ describe('itemTypeToGroup', () => {
     expect(itemTypeToGroup(undefined)).toBe('popup');
     expect(itemTypeToGroup('item-sidebar')).toBe('popup');
     expect(itemTypeToGroup('item-bottom')).toBe('popup');
+    expect(itemTypeToGroup('item-drawer')).toBe('popup');
     expect(itemTypeToGroup('other')).toBe('popup');
   });
 });

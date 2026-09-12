@@ -1,16 +1,16 @@
-# @hungpvq/react-draggable
+# `@hungpvq/react-draggable`
 
-React version of the draggable library, converted from Vue.
+React 18 adapter for `@hungpvq/draggable` (**1.1.x**).
 
-## Installation
+## Install
 
 ```bash
 npm install @hungpvq/react-draggable
 ```
 
-## Styles
+Peers: `react` / `react-dom` `^18`, `@hungpvq/draggable@~1.1.0`, `react-rnd`, plus shared packages listed in `package.json`.
 
-Import once at the app entry (`main.tsx`):
+## Styles
 
 ```ts
 import '@hungpvq/react-draggable/style.css';
@@ -20,69 +20,63 @@ import '@hungpvq/react-draggable/style.css';
 
 ```tsx
 import '@hungpvq/react-draggable/style.css';
-import { DraggableContainer, DraggableItemFloat } from '@hungpvq/react-draggable';
+import {
+  DraggableContainer,
+  DraggableItemFloat,
+  DraggableModal,
+} from '@hungpvq/react-draggable';
 
 function App() {
   return (
     <DraggableContainer>
-      <DraggableItemFloat title="My Panel" show={true}>
+      <DraggableItemFloat title="My Panel" show>
         <p>Content here</p>
       </DraggableItemFloat>
+      <DraggableModal title="Dialog" show width={480} height={280}>
+        <p>Modal body</p>
+      </DraggableModal>
     </DraggableContainer>
   );
 }
 ```
 
-## Components
+Prefer controlled `show` + `onUpdateShow` so store-driven open/close stays in sync.
 
-### DraggableContainer
+## Stable shells
 
-Main container component that manages all draggable items.
+| Component | Role |
+|-----------|------|
+| `DraggableContainer` | Root; optional `variant="plain"`, `mobileBreakpoint` |
+| `DraggableItemFloat` / `Popup` / `Modal` | Free panels |
+| `DraggableItemSideBar` / `DraggableDrawer` | Edge panels |
+| `DraggableItemBottom` | Exclusive bottom sheet |
 
-### DraggableItemFloat
+Store / commands: `useDragStore`, `useDragCommands`, `useDragLayout` (re-exported after React `configureDragStore`). Types/factories: import from `@hungpvq/draggable`.
 
-Floating draggable item that can be positioned anywhere.
+## Differences from Vue
 
-### DraggableItemPopup
+1. Reactivity via `@hungpvq/shared-store/react` (`useStoreReactive` / `useContainerReactive`)
+2. `ContainerProvider` / `useContainerId` instead of provide/inject
+3. Portals instead of Teleport
+4. Icons: `@mdi/react`
+5. Drag/resize peer: **`react-rnd`** (not `vue-draggable-resizable`)
 
-Popup draggable item with resize handles (requires react-draggable-resizable).
+`useStoreReactive` is exported from the package root / `store/useStoreReactive.ts` — do **not** re-export it from `store/index.ts` (circular barrel).
 
-### DraggableItemSideBar
+## Docs
 
-Sidebar draggable item that can be positioned on left, right, top, or bottom.
-
-### DraggableItemBottom
-
-Mobile-optimized bottom sheet component.
-
-## Store
-
-This library uses `@hungpvq/shared-store` which is framework-agnostic and works with both Vue and React:
-
-- **Vue**: Uses `reactive()` for automatic reactivity
-- **React**: Uses `@hungpvq/shared-store/react` (`useStoreSubscribe`) via `useStoreReactive()` / `useContainerReactive()`
-
-The store is shared between Vue and React versions, allowing you to use the same store instance across both frameworks if needed.
-
-## Differences from Vue Version
-
-1. **State Management**: Uses `@hungpvq/shared-store` + `@hungpvq/shared-store/react` for React reactivity
-2. **Context**: Uses React Context API instead of Vue provide/inject
-3. **Portals**: Uses React Portal instead of Vue Teleport
-4. **Icons**: Uses @mdi/react instead of vue-material-design-icons
-5. **Draggable Library**: Requires react-draggable-resizable (or similar) instead of vue-draggable-resizable
-
-## Notes
-
-- The store implementation uses `@hungpvq/shared-store` (core) and `@hungpvq/shared-store/react` (hooks)
-- React components automatically re-render when store changes via subscription pattern
-- Store mutations trigger notifications to subscribed React components
-- `useStoreReactive` is exported from the package root / `store/useStoreReactive.ts` — do not re-export it from `store/index.ts` (circular barrel)
-
-## Stable API & docs
-
-- [Stable API](../../draggable/core/docs/stable-api.md) — named root exports; experimental in `src/experimental.ts`; lock via `src/public-api.spec.ts`
-- [Accessibility](../../draggable/core/docs/a11y.md)
 - Hub: [docs/index.md](../../draggable/core/docs/index.md)
+- [Stable API](../../draggable/core/docs/stable-api.md) · [a11y](../../draggable/core/docs/a11y.md) · [testing](../../draggable/core/docs/testing.md)
+- SemVer: [libs/draggable/README.md](../../draggable/README.md)
 
 **Vite / monorepo:** apps that path-alias this package to `libs/` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh or named exports break in the browser. See `apps/react/demo-draggable/vite.config.ts` and skill `draggable-semver-api`.
+
+Internal chrome (`DragButton`, …) is **not** a public export.
+
+## Tests
+
+```bash
+npx nx test @hungpvq/react-draggable
+# or
+npm run draggable:test
+```

@@ -10,13 +10,14 @@ description: >-
 
 # Draggable SemVer & Stable API
 
-Packages are on **1.0.x**. SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
+Packages are on **1.1.x**. SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
 
 ## Required reading before API edits
 
 1. `libs/draggable/README.md` — full SemVer / breaking checklist
 2. `libs/draggable/core/docs/stable-api.md` — Stable allowlist vs experimental
 3. `libs/draggable/core/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
+4. `libs/draggable/core/docs/testing.md` — unit / public-api lock expectations
 
 ## Bump flowchart
 
@@ -44,9 +45,10 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
 - Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
-- Peer minimum raises; exact `@hungpvq/draggable` pins on adapters
+- Peer minimum raises; `@hungpvq/draggable` `~1.1.0` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
 - Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
+- Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
 
 Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
 

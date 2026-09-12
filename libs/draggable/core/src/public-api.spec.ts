@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import * as api from './index';
 
-/** Stable root runtime exports (SemVer contract for 1.x). */
+/** Stable root runtime exports (SemVer contract for 1.1.x). */
 export const DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
   // factories
   'createEmptyBottom',
@@ -49,5 +49,12 @@ describe('public API surface', () => {
     const keys = Object.keys(api).sort();
     const expected = [...DRAGGABLE_STABLE_RUNTIME_EXPORTS].sort();
     expect(keys).toEqual(expected);
+  });
+
+  it('exposes store configure + commands used by adapters', () => {
+    expect(typeof api.configureDragStore).toBe('function');
+    expect(typeof api.useDragCommands).toBe('function');
+    expect(typeof api.useDragLayout).toBe('function');
+    expect(typeof api.trapTabKey).toBe('function');
   });
 });

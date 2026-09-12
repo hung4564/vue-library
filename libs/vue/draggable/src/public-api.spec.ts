@@ -64,4 +64,20 @@ describe('public API surface', () => {
     ].sort();
     expect(keys).toEqual(expected);
   });
+
+  it('does not export internal Drag*/legacy Map* chrome', () => {
+    const keys = new Set(Object.keys(api));
+    for (const name of [
+      'DragButton',
+      'DragCard',
+      'DragHeader',
+      'DragSidebarToggle',
+      'MapButton',
+      'MapCard',
+      'MapHeader',
+      'MapSidebarToggle',
+    ]) {
+      expect(keys.has(name)).toBe(false);
+    }
+  });
 });

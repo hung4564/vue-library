@@ -1,10 +1,10 @@
 # Stable API (v1)
 
-Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
+Allowlist of symbols and protocols we treat as **Stable** for SemVer on **`1.1.x`**.
 
 Root barrels use **explicit named exports** (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package. Symbols listed under **Experimental** may change in a **minor**.
 
-Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md)
+Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md) · [Testing](./testing.md)
 
 ## Architecture
 
@@ -92,6 +92,10 @@ Still exported from the **root** barrel for 1.x compatibility; treat as unstable
 **ContextMenu** keyboard/a11y: Esc close, Arrow/Home/End, Enter/Space, typeahead, focus restore. Prefer `ContextMenuItem` inside `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu). See [context-menu.md](./context-menu.md), [a11y.md](./a11y.md), demo-draggable **Menu** (`#/menu`).
 
 Undocumented CSS class names / layout tokens not listed above remain experimental.
+
+## Internal chrome (not public)
+
+Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`. These are **not** root exports and must not be confused with `@hungpvq/vue-map-core` / `react-map-core` `MapControlButton` (or Experimental `MapButton` on `./fields`). Override sidebar toggle via the documented `componentSidebarToggle` prop / store card APIs only.
 
 ## Enforcing the allowlist
 

@@ -195,7 +195,10 @@ Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fas
 - [Stable API allowlist](./stable-api.md) (named exports + `public-api.spec.ts` lock; layout persist cookbook)
 - [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
 - [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
+- [Testing](./testing.md) (`draggable:test`, public-api locks)
 - [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
+
+Current line: **`1.1.x`** (fixed release group for core + Vue + React adapters).
 
 ## Components
 

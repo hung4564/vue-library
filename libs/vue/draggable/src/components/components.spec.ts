@@ -9,6 +9,7 @@ import ManagementControl from '../components/ManagementControl/index.vue';
 import DragButton from '../components/parts/DragButton.vue';
 import DragCard from '../components/parts/DragCard.vue';
 import DragHeader from '../components/parts/DragHeader.vue';
+import DragSidebarToggle from '../components/parts/DragSidebarToggle.vue';
 import { useDragStore } from '../store';
 
 beforeAll(() => {
@@ -66,11 +67,16 @@ describe('parts', () => {
     expect(wrapper.attributes('aria-disabled')).toBe('true');
   });
 
-  it('DragCard and DragHeader mount', () => {
+  it('DragCard, DragHeader, and DragSidebarToggle mount', () => {
     expect(mount(DragCard).exists()).toBe(true);
     expect(
       mount(DragHeader, { slots: { title: 'T' } }).text(),
     ).toContain('T');
+    const toggle = mount(DragSidebarToggle, {
+      props: { location: 'left', expand: true },
+    });
+    expect(toggle.exists()).toBe(true);
+    expect(toggle.find('button').exists()).toBe(true);
   });
 });
 

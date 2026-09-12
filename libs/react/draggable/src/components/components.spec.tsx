@@ -8,6 +8,7 @@ import { ManagementControl } from '../components/ManagementControl/ManagementCon
 import { DragButton } from '../components/parts/DragButton';
 import { DragCard } from '../components/parts/DragCard';
 import { DragHeader } from '../components/parts/DragHeader';
+import { DragSidebarToggle } from '../components/parts/DragSidebarToggle';
 import { useContainerId } from '../context/ContainerContext';
 import { useDragStore } from '../store';
 
@@ -69,9 +70,13 @@ describe('parts', () => {
     expect(btn.disabled).toBe(true);
   });
 
-  it('DragCard and DragHeader mount', () => {
+  it('DragCard, DragHeader, and DragSidebarToggle mount', () => {
     expect(render(<DragCard />).container.firstChild).toBeTruthy();
     expect(render(<DragHeader title="T" />).getByText('T')).toBeTruthy();
+    const { container } = render(
+      <DragSidebarToggle location="left" expand aria-label="Toggle sidebar" />,
+    );
+    expect(container.querySelector('button')).toBeTruthy();
   });
 });
 
