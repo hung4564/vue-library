@@ -211,6 +211,12 @@ if (!opts.skipSite) {
     `--group=${opts.group}`,
   ];
   if (opts.skipPush) parts.push('--git-push=false');
+  if (opts.skipPush) {
+    console.warn(
+      'Note: --skip-push sets --git-push=false. Nx rejects that when createRelease is "github" in nx.json.\n' +
+        'For a full release (changelog + GitHub Release), omit --skip-push. Use --skip-site if you only want to skip the demo site.',
+    );
+  }
   run(parts.join(' '));
 }
 
