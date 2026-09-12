@@ -14,9 +14,15 @@ function defaultLogError(error: MapError): void {
 }
 
 function defaultLogToService(error: MapError): void {
-  logHelper(errorLogger, 'global', 'ErrorHandler').warn(
-    'Error logging service not configured',
-    error,
+  // Still surface the error when no external sink is wired (avoid silent prod failures).
+  logHelper(errorLogger, 'global', 'ErrorHandler').error(
+    'Error occurred (logToService not configured)',
+    {
+      code: error.code,
+      message: error.message,
+      context: error.context,
+      stack: error.stack,
+    },
   );
 }
 
@@ -71,7 +77,6 @@ export class MapErrorHandler implements ErrorHandler {
 
   constructor(options: ErrorHandlerOptions = {}) {
     this.options = {
-      isDevelopment: isDevEnvironment(),
       logError: defaultLogError,
       logToService: defaultLogToService,
       ...options,
@@ -111,7 +116,13 @@ export class MapErrorHandler implements ErrorHandler {
     const mapError = this.normalizeError(error, context);
     this.handledOnce.add(mapError);
 
-    if (this.options.isDevelopment) {
+    // Resolve env at call time — library build-time DEV must not freeze prod path forever.
+    const isDev =
+      this.options.isDevelopment !== undefined
+        ? this.options.isDevelopment
+        : isDevEnvironment();
+
+    if (isDev) {
       (this.options.logError ?? defaultLogError)(mapError);
     } else {
       (this.options.logToService ?? defaultLogToService)(mapError);

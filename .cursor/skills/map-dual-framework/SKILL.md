@@ -54,6 +54,18 @@ Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup)
 - **Adapters:** vue/react `map-core` extend the class and add `registerComponent` / `getComponent`.
 - Dataset UI must keep `createDatasetRegistryPlugin()` (or equivalent) so menus/components resolve.
 - Do not rename documented control ids or menu component keys without a major bump.
+- **Component overrides (dataset UI, attribute-table parts, menu action UI, …):** prefer `UniversalRegistry.registerComponent` / `registerComponentForMap` + stable keys (`ATTRIBUTE_TABLE_COMPONENT_KEY`, `LIST_VIEW_MENU_COMPONENT_KEY`, …) and `RegistryItem`. Props are for data / toggles (`ui`, `columns`, `store`, …). Do **not** add a parallel “pass components via props” API unless the feature has no registry key yet.
+
+## Buttons: always `MapControlButton`
+
+In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including dataset, draw, devtools, controls, toolbars, pagers, menus chrome):
+
+- **Always** use Stable root `MapControlButton` from `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`.
+- Do **not** use raw `<button>`, `BaseButton`, ad-hoc button classes, or Experimental `./fields` button primitives for map chrome actions.
+- Prefer `variant` (`icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`) + `size` (`small` \| `medium` \| `large` \| px). Dense rows (attribute table, layer list): usually `size="small"`.
+- Variant/size SoT lives in `@hungpvq/map-core` `ui/map-button` (locked via dual parity tests).
+
+App/demos that mirror library UI should follow the same rule when building map chrome.
 
 ## Naming / structure cues
 
@@ -98,7 +110,8 @@ Rules:
 - [ ] Types exported consistently from package entry
 - [ ] Demo or docs smoke path noted if UI-visible
 - [ ] New React Vite apps that alias `libs/` exclude Fast Refresh on `libs/`
-- [ ] Experimental field names on `./fields`: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea`); action buttons use Stable root `MapControlButton` (`variant` + `size`: `small` \| `medium` \| `large`, not `./fields`)
+- [ ] Experimental field names on `./fields`: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea`)
+- [ ] Every new/changed map UI button uses `MapControlButton` (never raw `<button>` / removed `BaseButton`)
 - [ ] Run `nx test @hungpvq/map-core -- vue-react-parity.spec.ts` when adding dual controls or shared exports
 
 **Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable root + shared `/fields` Experimental allowlists + `MapControlButton` `variant`/`size` SoT in `@hungpvq/map-core` `ui/map-button`).

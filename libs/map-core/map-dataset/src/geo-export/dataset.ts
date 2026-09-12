@@ -36,8 +36,8 @@ export async function getDatasetFeatureCollection(
 ): Promise<FeatureCollection | null> {
   const management = findSiblingOrNearestLeaf(layer, isDataManagementView);
   if (management && isDataManagementView(management)) {
-    const list = await management.list();
-    return recordsToFeatureCollection(list ?? []);
+    const { items } = await management.list({ pageSize: 'all' });
+    return recordsToFeatureCollection(items ?? []);
   }
 
   const source = findGeojsonSource(layer);

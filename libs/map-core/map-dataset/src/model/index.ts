@@ -6,7 +6,6 @@ export * from './part-bound.model';
 export * from './part-metadata.model';
 export * from './source';
 export * from './visitors';
-export * from './data-management';
 
 export { createBase, createNamedComponent } from './base';
 export {

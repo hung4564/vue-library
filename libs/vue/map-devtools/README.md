@@ -36,12 +36,13 @@ import { Devtools } from '@hungpvq/vue-map-devtools';
 
 <template>
   <Devtools />
-  <!-- optional: pin bottom sheet to a map DraggableContainer -->
+  <!-- Map control popup (mount inside <Map>): -->
+  <!-- <Devtools mode="control" position="bottom-right" /> -->
   <!-- <Devtools container-id="map-draggable-my-map" /> -->
 </template>
 ```
 
-On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet when a `map-draggable-*` container exists (or `containerId` is set); otherwise a CSS sheet fallback. Desktop keeps the floating panel.
+On mobile (≤640px), overlay mode uses the map `DraggableItemBottom` sheet when a `map-draggable-*` container exists. Use `mode="control"` to render as a map corner control + `DraggableItemPopup`.
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
@@ -51,7 +52,9 @@ Tear down global error capture with `uninstallDevtools()` when the host app unmo
 |--------|------|
 | `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
-| `Devtools` | Panel UI (Store / Logs / Errors) |
+| `Devtools` | Panel UI (`mode?: 'overlay' \| 'control'`) |
+| `DevtoolsControl` | Map control + popup (same as `mode="control"`) |
+| `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
 
 See [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 

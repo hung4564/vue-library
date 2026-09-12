@@ -56,6 +56,12 @@
       "@hungpvq/map-dataset/geo-export": [
         "libs/map-core/map-dataset/src/geo-export/index.ts"
       ],
+      "@hungpvq/map-dataset/data-management": [
+        "libs/map-core/map-dataset/src/data-management/index.ts"
+      ],
+      "@hungpvq/map-dataset/attribute-table": [
+        "libs/map-core/map-dataset/src/attribute-table/index.ts"
+      ],
       "@hungpvq/map-draw": ["libs/map-core/map-draw/src/index.ts"],
       "@hungpvq/react-draggable": ["libs/react/draggable/src/index.ts"],
       "@hungpvq/react-map-core": ["libs/react/map-core/src/index.ts"],

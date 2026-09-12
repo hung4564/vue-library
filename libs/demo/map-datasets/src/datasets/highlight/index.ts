@@ -6,6 +6,7 @@ import { createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import type { Feature } from 'geojson';
 import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
+import { registerFactoryViewSource } from '../data-management/view-source-registry';
 import { createDatasetCustomHighlightComponent } from './helper';
 
 function createHighlightDemoDataset(config: {
@@ -601,3 +602,79 @@ export const HIGHLIGHT_DEMO_DATASET_FACTORIES = [
   createFeatureStateHighlight,
   createFeatureStateHighlightWithGroup,
 ] as const;
+
+const HIGHLIGHT_VIEW_SOURCE: Array<{
+  listName: string;
+  title: string;
+  factory: () => IDataset;
+}> = [
+  {
+    listName: 'Default highlight (blink + id)',
+    title: 'Highlight demo — default blink',
+    factory: createDefaultHighlight,
+  },
+  {
+    listName: 'Shadow highlight (static glow)',
+    title: 'Highlight demo — shadow',
+    factory: createShadowHighlight,
+  },
+  {
+    listName: 'Change color highlight',
+    title: 'Highlight demo — change color',
+    factory: createChangeColorHighlight,
+  },
+  {
+    listName: 'Custom animate highlight',
+    title: 'Highlight demo — custom animate',
+    factory: createCustomHighlight,
+  },
+  {
+    listName: 'Default + filterCreator "code"',
+    title: 'Highlight demo — filter by code',
+    factory: createHighlightWithPropertyName,
+  },
+  {
+    listName: 'Default + filterCreator "id"',
+    title: 'Highlight demo — filter by id',
+    factory: createHighlightWithExplicitIdField,
+  },
+  {
+    listName: 'Custom + filterCreator function',
+    title: 'Highlight demo — custom + filter fn',
+    factory: createCustomAnimateWithFilterFunction,
+  },
+  {
+    listName: 'Default + filterCreator function',
+    title: 'Highlight demo — default + filter fn',
+    factory: createDefaultHighlightWithFilterFunction,
+  },
+  {
+    listName: 'Custom + filterCreator "productCode"',
+    title: 'Highlight demo — productCode field',
+    factory: createCustomAnimateWithFieldName,
+  },
+  {
+    listName: 'Shadow + filterCreator "code"',
+    title: 'Highlight demo — shadow + code',
+    factory: createShadowWithPropertyFilter,
+  },
+  {
+    listName: 'Default + filterCreator(feature)',
+    title: 'Highlight demo — filter from clicked feature',
+    factory: createHighlightByClickedCategory,
+  },
+  {
+    listName: 'Feature state highlight',
+    title: 'Highlight demo — feature-state',
+    factory: createFeatureStateHighlight,
+  },
+  {
+    listName: 'Feature state + filterCreator "group"',
+    title: 'Highlight demo — feature-state + group',
+    factory: createFeatureStateHighlightWithGroup,
+  },
+];
+
+for (const entry of HIGHLIGHT_VIEW_SOURCE) {
+  registerFactoryViewSource(entry);
+}

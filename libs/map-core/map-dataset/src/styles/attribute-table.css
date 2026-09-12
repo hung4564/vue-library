@@ -3,8 +3,8 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  gap: var(--map-space-md, 8px);
-  overflow: visible;
+  gap: 0;
+  overflow: hidden;
 }
 
 .attribute-table__toolbar {
@@ -12,8 +12,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--map-space-sm, 4px);
-  padding: 0 var(--map-space-sm, 4px);
-  overflow: visible;
+  padding: var(--map-space-sm, 4px) var(--map-space-md, 8px);
+  border-bottom: 1px solid
+    var(--map-divider-color, var(--map-border-color, #eee));
+  background: var(--map-surface-color, #fff);
   position: relative;
   z-index: 2;
 }
@@ -22,41 +24,78 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: var(--map-space-sm, 4px) var(--map-space-md, 8px);
+}
+
+.attribute-table__toolbar-row--primary {
   gap: var(--map-space-md, 8px);
 }
 
-.attribute-table__toolbar-row .form-group {
+.attribute-table__toolbar-row--primary .form-group {
   margin: 0;
-  flex: 1 1 140px;
-  min-width: 120px;
+  flex: 1 1 180px;
+  min-width: 140px;
+}
+
+.attribute-table__toolbar-row--meta {
+  justify-content: flex-start;
+}
+
+.attribute-table__toolbar-row--meta .form-group {
+  margin: 0;
+  flex: 0 1 auto;
+  min-width: 110px;
 }
 
 .attribute-table__export,
-.attribute-table__clear {
+.attribute-table__clear,
+.attribute-table__pager-btn {
   flex: 0 0 auto;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid var(--map-border-color, #ccc);
-  border-radius: 4px;
+  gap: 4px;
   white-space: nowrap;
 }
 
 .attribute-table__status {
-  font-size: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--map-font-size-sm, 12px);
   opacity: 0.75;
-  padding: 0 var(--map-space-sm, 4px);
+  padding: var(--map-space-md, 8px);
+}
+
+.attribute-table__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.attribute-table__grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
 }
 
 .attribute-table__scroll {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+  /* Keep gutter stable so virtual-window height ↔ scrollbar cannot oscillate. */
+  scrollbar-gutter: stable;
 }
 
 .attribute-table__table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
-  font-size: 12px;
+  font-size: var(--map-font-size-sm, 12px);
 }
 
 .attribute-table__table th,
@@ -78,33 +117,15 @@
   color: var(--map-text-primary, inherit);
   font-weight: 600;
   z-index: 1;
-  cursor: pointer;
   user-select: none;
+}
+
+.attribute-table__table th.is-sortable {
+  cursor: pointer;
 }
 
 .attribute-table__table th.is-sorted {
   color: var(--map-accent-color, #1a73e8);
-}
-
-.attribute-table__filters th {
-  top: 28px;
-  font-weight: 400;
-  cursor: default;
-  padding-top: 2px;
-  padding-bottom: 4px;
-}
-
-.attribute-table__column-filter {
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  border: 1px solid var(--map-border-color, #ddd);
-  border-radius: var(--map-radius-sm, 4px);
-  background: var(--map-surface-color, #fff);
-  color: inherit;
-  font: inherit;
-  font-size: var(--map-font-size-sm, 12px);
-  padding: 2px 6px;
 }
 
 .attribute-table__check {
@@ -140,4 +161,51 @@
 .attribute-table__actions .menu-item {
   display: inline-flex;
   vertical-align: middle;
+}
+
+.attribute-table__pager {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--map-space-sm, 4px) var(--map-space-md, 8px);
+  padding: 6px var(--map-space-md, 8px);
+  border-top: 1px solid
+    var(--map-divider-color, var(--map-border-color, #eee));
+  background: var(--map-surface-variant-color, #f7f7f7);
+  font-size: var(--map-font-size-sm, 12px);
+}
+
+.attribute-table__pager-label {
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.attribute-table__pager-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.attribute-table__pager-size-label {
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.attribute-table__pager-size .form-group {
+  margin: 0;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.attribute-table__pager-size .form-group > label {
+  display: none;
+}
+
+.attribute-table__pager-size select,
+.attribute-table__pager-size .input-select {
+  min-width: 64px;
+  padding: 2px 6px;
+  font-size: var(--map-font-size-sm, 12px);
 }

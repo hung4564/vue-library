@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { createWithEventHelper } from '../../extra/event';
-import { createMenuItemAttributeTable } from '../../extra/attribute-table';
+import { createMenuItemAttributeTable } from '../../attribute-table';
 import { createMenuItemExportGeo } from '../../geo-export';
 import {
   addMenuBuilder,

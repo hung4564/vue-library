@@ -11,7 +11,9 @@
  * Experimental list here + stable-api.md.
  */
 import { describe, expect, it } from 'vitest';
+import * as attributeTableApi from './attribute-table';
 import * as createControlApi from './create-control';
+import * as dataManagementApi from './data-management';
 import * as geoExportApi from './geo-export';
 import * as geojsonApi from './geojson';
 import * as identifyApi from './identify';
@@ -23,11 +25,6 @@ import * as vectorTileApi from './vector-tile';
 
 /** Stable root runtime exports (SemVer contract). */
 export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
-  'ATTRIBUTE_TABLE_CONTROL',
-  'ATTRIBUTE_TABLE_GEOMETRY_KEY',
-  'ATTRIBUTE_TABLE_LOCALE',
-  'ATTRIBUTE_TABLE_ROW_HEIGHT',
-  'getVirtualRowWindow',
   'DATASET_CONTROL_LOCALE',
   'DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY',
   'DatasetComposite',
@@ -50,25 +47,19 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'applyHighlightFeatureState',
   'applyListViewMapVisibility',
   'applyToAllLeaves',
-  'attributeTableRowsToFeatureCollection',
-  'buildAttributeTable',
   'canMoveListView',
   'clearHighlightFeatureState',
-  'clearPendingAttributeTableSelectRows',
   'convertFeatureToItem',
   'convertItemToFeature',
   'convertListToTree',
   'createBase',
+  'createDataManagement',
   'createDataset',
   'createDatasetComponent',
   'createDatasetLeaf',
-  'createDatasetParDraftDataManagementListLocalComponent',
   'createDatasetPartBoundComponent',
   'createDatasetPartChangeColorHighlightComponent',
   'createDatasetPartCustomAnimateHighlightComponent',
-  'createDatasetPartDataManagementComponent',
-  'createDatasetPartDataManagementDraftComponent',
-  'createDatasetPartDataManagementListLocalComponent',
   'createDatasetPartFeatureStateHighlightComponent',
   'createDatasetPartGroupSubListViewUiComponent',
   'createDatasetPartGroupSubListViewUiComponentBuilder',
@@ -86,7 +77,6 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'createFeatureStateHighlightLayers',
   'createGroupDataset',
   'createHighlightFilter',
-  'createMenuItemAttributeTable',
   'createMultiMapboxLayerComponent',
   'createNamedComponent',
   'createRootDataset',
@@ -96,21 +86,16 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'defaultAnimate',
   'ensureHighlightLayers',
   'ensureHighlightSource',
-  'exportAttributeTableRows',
   'featureStatePulseAnimate',
-  'filterAttributeTableRows',
-  'filterAttributeTableRowsByColumns',
   'findAllComponentsByType',
   'findAllDatasetsMatching',
   'findFirstLeafByType',
   'findRoot',
   'findSiblingOrNearestLeaf',
-  'formatAttributeCell',
   'getDatasetDetailInfo',
   'getDatasetSourceKind',
   'getListViewGroupInfo',
   'hasMoveLayer',
-  'isAttributeTableMenuHidden',
   'isComposite',
   'isDataManagementView',
   'isDatasetHasMethod',
@@ -124,35 +109,23 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'isMapboxLayerView',
   'isValidBbox',
   'listListViewGroups',
-  'listLocalAdapter',
-  'listToFeatureMapper',
   'moveListView',
-  'originMapper',
   'layerGroupName',
   'layerMatchesSearch',
   'layerNameMatchesSearch',
   'normalizeLayerSearchQuery',
   'printTreeFromNode',
   'printTreeFromRoot',
-  'queueAttributeTableSelectRows',
-  'resolveAttributeTableColumns',
-  'resolveAttributeTableSelectedRowIds',
   'resolveDatasetBbox',
   'resolveHighlightFeatureId',
-  'runAfterHandlers',
   'runAllComponentsWithCheck',
-  'runBeforeHandlers',
   'setListViewIntendedShow',
   'setOpacity',
   'setPaintIfLayer',
-  'sortAttributeTableRows',
   'sortListViews',
   'splitSearchHighlight',
   'syncListViewLayerOrder',
-  'takePendingAttributeTableSelectRows',
   'toExpressionFilter',
-  'toggleAttributeTableMultiSort',
-  'toggleAttributeTableSort',
   'toggleShow',
   'traverseTree',
   'traverseTreeBFS',
@@ -168,8 +141,6 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'geojson': [
   'GEOJSON_STYLE_AUTO',
   'bboxFromGeojsonAsync',
-  'createDatasetParDraftDataManagementGeojsonLocalComponent',
-  'createDatasetPartDataManagementGeojsonLocalComponent',
   'createDatasetPartGeojsonSourceComponent',
   'createGeoJsonDataset',
   'createGeojsonHereDataset',
@@ -179,7 +150,6 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'detectGeojsonStyleTypesAsync',
   'fetchGeojsonFromUrl',
   'findGeojsonSource',
-  'geojsonLocalAdapter',
   'isGeojsonStyleAuto',
   'isValidGeojson',
   'loadGeojsonFileAsync',
@@ -191,6 +161,59 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'shouldUseGisWorkerForGeojson',
   'styleTypeToMapboxGeometryType',
   'terminateGeojsonWorker',
+  ],
+  'data-management': [
+  'createDataManagement',
+  'createDataManager',
+  'createHttpStore',
+  'createLocalStore',
+  'isDataManagementView',
+  'normalizeInitData',
+  'pickGeometry',
+  'resolveRecordId',
+  'toFeature',
+  'toFeatureCollection',
+  'toRecord',
+  ],
+  'attribute-table': [
+  'ATTRIBUTE_TABLE_COMPONENT_KEY',
+  'ATTRIBUTE_TABLE_CONTROL',
+  'ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE',
+  'ATTRIBUTE_TABLE_GEOMETRY_KEY',
+  'ATTRIBUTE_TABLE_LOCALE',
+  'ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS',
+  'ATTRIBUTE_TABLE_ROW_HEIGHT',
+  'ATTRIBUTE_TABLE_UI_DEFAULTS',
+  'attributeTableRowsToFeatureCollection',
+  'buildAttributeTable',
+  'clearPendingAttributeTableSelectRows',
+  'createAttributeTableController',
+  'createAttributeTableStoreFromDataset',
+  'createDataManagementAttributeTableStore',
+  'createDatasetPartAttributeTable',
+  'createLocalAttributeTableStore',
+  'createMenuItemAttributeTable',
+  'exportAttributeTableRows',
+  'filterAttributeTableRows',
+  'formatAttributeCell',
+  'getAttributeTableCellRaw',
+  'getVirtualRowWindow',
+  'isAttributeTableExportMenuMode',
+  'isAttributeTableMenuHidden',
+  'isAttributeTableView',
+  'queueAttributeTableSelectRows',
+  'resolveAttributeTableColumns',
+  'resolveAttributeTableColumnsOption',
+  'resolveAttributeTableComponentRef',
+  'resolveAttributeTableExportActions',
+  'resolveAttributeTableExportOption',
+  'resolveAttributeTableSelectedRowIds',
+  'resolveAttributeTableUi',
+  'resolveAttributeTableUiOption',
+  'sortAttributeTableRows',
+  'takePendingAttributeTableSelectRows',
+  'toggleAttributeTableMultiSort',
+  'toggleAttributeTableSort',
   ],
   'raster': [
   'RASTER_XYZ_SAMPLES',
@@ -380,6 +403,8 @@ const SUBPATH_MODULES: Record<
   Record<string, unknown>
 > = {
   geojson: geojsonApi,
+  'data-management': dataManagementApi,
+  'attribute-table': attributeTableApi,
   raster: rasterApi,
   'vector-tile': vectorTileApi,
   identify: identifyApi,
@@ -410,10 +435,19 @@ describe('public API surface', () => {
   });
 
   it('root entry does not re-export domain symbols', () => {
+    /** Intentional root re-exports for data-management consumers. */
+    const allowedOverlap = new Set([
+      'createDataManagement',
+      'isDataManagementView',
+    ]);
     const rootKeys = new Set(Object.keys(api));
     const overlap: string[] = [];
     for (const names of Object.values(MAP_DATASET_SUBPATH_RUNTIME_EXPORTS)) {
-      for (const name of names) if (rootKeys.has(name)) overlap.push(name);
+      for (const name of names) {
+        if (rootKeys.has(name) && !allowedOverlap.has(name)) {
+          overlap.push(name);
+        }
+      }
     }
     expect(overlap).toEqual([]);
   });

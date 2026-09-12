@@ -20,6 +20,10 @@ const REGISTERED_KEYS = [
   LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
   LIST_VIEW_MENU_COMPONENT_KEY.identify,
   LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTablePager,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableGrid,
 ] as const;
 
 describe('createDatasetRegistryPlugin', () => {

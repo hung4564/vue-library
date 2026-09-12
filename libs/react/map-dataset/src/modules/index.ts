@@ -1,4 +1,8 @@
 export { AttributeTable } from './AttributeTable/AttributeTable';
+export { AttributeTableGrid } from './AttributeTable/AttributeTableGrid';
+export { AttributeTablePager } from './AttributeTable/AttributeTablePager';
+export { AttributeTableToolbar } from './AttributeTable/AttributeTableToolbar';
+export { AttributeTableView } from './AttributeTable/AttributeTableView';
 export { ComponentManagementControl } from './ComponentManagementControl/ComponentManagementControl';
 export { CreateControl } from './CreateControl/CreateControl';
 export { DatasetControl, DatasetDetail } from './DatasetControl/DatasetControl';

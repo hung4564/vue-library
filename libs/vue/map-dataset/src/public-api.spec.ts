@@ -10,6 +10,10 @@ import * as api from './index';
 export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'AddToGroup',
   'AttributeTable',
+  'AttributeTableGrid',
+  'AttributeTablePager',
+  'AttributeTableToolbar',
+  'AttributeTableView',
   'ComponentManagementControl',
   'CreateControl',
   'createDatasetRegistryPlugin',

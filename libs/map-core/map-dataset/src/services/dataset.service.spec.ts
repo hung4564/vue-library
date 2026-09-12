@@ -127,8 +127,45 @@ describe('DatasetService', () => {
 
     DatasetService.removeComponent(map, layer);
 
-    // Direct remove + applyToAllLeaves on parent (same leaf when no parent)
+    // Direct remove + rtl leaf walk on parent (same leaf when no parent)
     expect(order).toEqual(['remove:layer-d', 'remove:layer-d']);
+  });
+
+  it('removeComponent removes layers before sources (rtl under parent)', () => {
+    const order: string[] = [];
+    const children: ReturnType<typeof createLeafDataset>[] = [];
+    const parent = {
+      id: 'root',
+      type: 'composite',
+      getName: () => 'root',
+      setName: () => undefined,
+      getParent: () => undefined,
+      setParent: () => undefined,
+      addDependsOn: () => undefined,
+      removeDependsOn: () => undefined,
+      getChildren: () => children,
+      add: () => undefined,
+      remove: vi.fn(),
+    } as unknown as IDataset & {
+      getChildren: () => IDataset[];
+      remove: ReturnType<typeof vi.fn>;
+    };
+
+    const source = createLeafDataset('source', { order });
+    const layer = createLeafDataset('layer', { order });
+    const list = createLeafDataset('list', { order });
+    // list has no map hooks — strip them so only source/layer remove
+    delete (list as { addToMap?: unknown }).addToMap;
+    delete (list as { removeFromMap?: unknown }).removeFromMap;
+    source.getParent = () => parent;
+    layer.getParent = () => parent;
+    list.getParent = () => parent;
+    children.push(source, layer, list);
+
+    DatasetService.removeComponent(map, list);
+
+    expect(order).toEqual(['remove:layer', 'remove:source']);
+    expect(parent.remove).toHaveBeenCalledWith(list);
   });
 
   it('assigns list indexes after existing lists', async () => {

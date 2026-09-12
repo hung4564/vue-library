@@ -30,7 +30,21 @@ export function createDatasetPartMapboxSourceComponent<T>(
     },
     removeFromMap(map: MapSimple) {
       const source_id = this.getSourceId();
-      if (source_id && map.getSource(source_id)) {
+      if (!source_id || !map.getSource(source_id)) return;
+
+      // Defensive: drop leftover layers still bound to this source
+      const layers = map.getStyle()?.layers ?? [];
+      for (const layer of layers) {
+        if (
+          'source' in layer &&
+          layer.source === source_id &&
+          map.getLayer(layer.id)
+        ) {
+          map.removeLayer(layer.id);
+        }
+      }
+
+      if (map.getSource(source_id)) {
         map.removeSource(source_id);
       }
     },

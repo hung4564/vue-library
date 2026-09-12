@@ -9,6 +9,10 @@ import '@hungpvq/map-dataset';
 export {
   AddToGroup,
   AttributeTable,
+  AttributeTableGrid,
+  AttributeTablePager,
+  AttributeTableToolbar,
+  AttributeTableView,
   ComponentManagementControl,
   CreateControl,
   DatasetControl,

@@ -3,7 +3,8 @@ name: vue-library-overview
 description: >-
   Orients agents to the vue-library Nx monorepo (@hungpvq map, draggable, share
   packages for Vue and React). Use when starting work in this repo, locating the
-  right package, choosing where to put GIS vs UI code, or picking npm/nx scripts.
+  right package, choosing where to put GIS vs UI code, picking npm/nx scripts,
+  or when adding logging (must use @hungpvq/shared-log, never raw console.*).
 ---
 
 # Vue Library Overview
@@ -35,6 +36,24 @@ Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Rele
 Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
+
+**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome.
+
+## Logging (`@hungpvq/shared-log`)
+
+**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves).
+
+```ts
+import { loggerFactory } from '@hungpvq/shared-log';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
+logger.info('layer selected', { mapId, layerId });
+```
+
+- Prefer a module-level `logger` with a stable namespace (`map:…`, `demo:…`, `draggable:…`).
+- Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces).
+- Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo).
+- Replacing an existing `console.*` while touching a file is required; do not add new `console.*`.
 
 ## Common scripts (root `package.json`)
 

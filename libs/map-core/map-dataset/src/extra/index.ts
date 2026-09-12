@@ -1,4 +1,3 @@
-export * from './attribute-table';
 export * from './data';
 export * from './dataset-control';
 export * from './detail';

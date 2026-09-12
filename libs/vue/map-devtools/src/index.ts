@@ -14,8 +14,12 @@ export {
   getDevtoolState,
   openMapDevtoolsErrors,
   setDevtoolActiveTab,
+  setDevtoolOpen,
   subscribeDevtoolState,
   toggleDevtoolOpen,
   useDevtoolState,
 } from './store';
+export { DEVTOOLS_CONTROL } from './control';
+export type { DevtoolsMode } from './control';
 export { default as Devtools } from './ui/Devtools.vue';
+export { default as DevtoolsControl } from './ui/DevtoolsControl.vue';

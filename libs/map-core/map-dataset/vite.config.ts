@@ -41,6 +41,8 @@ export default defineConfig(() => ({
         style: 'src/style/index.ts',
         'create-control': 'src/create-control/index.ts',
         'geo-export': 'src/geo-export/index.ts',
+        'data-management': 'src/data-management/index.ts',
+        'attribute-table': 'src/attribute-table/index.ts',
       },
       name: '@hungpvq/map-dataset',
       fileName: (_format, entryName) => `${entryName}.js`,

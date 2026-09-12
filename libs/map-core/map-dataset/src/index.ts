@@ -7,11 +7,6 @@
 import './styles/index.css';
 
 export {
-  ATTRIBUTE_TABLE_CONTROL,
-  ATTRIBUTE_TABLE_GEOMETRY_KEY,
-  ATTRIBUTE_TABLE_LOCALE,
-  ATTRIBUTE_TABLE_ROW_HEIGHT,
-  getVirtualRowWindow,
   DATASET_CONTROL_LOCALE,
   DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY,
   DatasetComposite,
@@ -34,11 +29,8 @@ export {
   applyHighlightFeatureState,
   applyListViewMapVisibility,
   applyToAllLeaves,
-  attributeTableRowsToFeatureCollection,
-  buildAttributeTable,
   canMoveListView,
   clearHighlightFeatureState,
-  clearPendingAttributeTableSelectRows,
   convertFeatureToItem,
   convertItemToFeature,
   convertListToTree,
@@ -46,16 +38,12 @@ export {
   createDataset,
   createDatasetComponent,
   createDatasetLeaf,
-  createDatasetParDraftDataManagementListLocalComponent,
   createDatasetPartBoundComponent,
   createDatasetPartChangeColorHighlightComponent,
 } from './internal-barrel';
 
 export {
   createDatasetPartCustomAnimateHighlightComponent,
-  createDatasetPartDataManagementComponent,
-  createDatasetPartDataManagementDraftComponent,
-  createDatasetPartDataManagementListLocalComponent,
   createDatasetPartFeatureStateHighlightComponent,
   createDatasetPartGroupSubListViewUiComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
@@ -73,7 +61,6 @@ export {
   createFeatureStateHighlightLayers,
   createGroupDataset,
   createHighlightFilter,
-  createMenuItemAttributeTable,
   createMultiMapboxLayerComponent,
   createNamedComponent,
   createRootDataset,
@@ -83,16 +70,12 @@ export {
   defaultAnimate,
   ensureHighlightLayers,
   ensureHighlightSource,
-  exportAttributeTableRows,
   featureStatePulseAnimate,
-  filterAttributeTableRows,
-  filterAttributeTableRowsByColumns,
   findAllComponentsByType,
   findAllDatasetsMatching,
   findFirstLeafByType,
   findRoot,
   findSiblingOrNearestLeaf,
-  formatAttributeCell,
   layerGroupName,
   layerMatchesSearch,
   layerNameMatchesSearch,
@@ -104,9 +87,7 @@ export {
   getDatasetSourceKind,
   getListViewGroupInfo,
   hasMoveLayer,
-  isAttributeTableMenuHidden,
   isComposite,
-  isDataManagementView,
   isDatasetHasMethod,
   isDatasetMapHasAddToMap,
   isDatasetMapHasRemoveFromMap,
@@ -118,31 +99,19 @@ export {
   isMapboxLayerView,
   isValidBbox,
   listListViewGroups,
-  listLocalAdapter,
-  listToFeatureMapper,
   moveListView,
-  originMapper,
   printTreeFromNode,
   printTreeFromRoot,
-  queueAttributeTableSelectRows,
-  resolveAttributeTableColumns,
-  resolveAttributeTableSelectedRowIds,
   resolveDatasetBbox,
   resolveHighlightFeatureId,
-  runAfterHandlers,
   runAllComponentsWithCheck,
-  runBeforeHandlers,
   setListViewIntendedShow,
   setOpacity,
   setPaintIfLayer,
-  sortAttributeTableRows,
   sortListViews,
   splitSearchHighlight,
   syncListViewLayerOrder,
-  takePendingAttributeTableSelectRows,
   toExpressionFilter,
-  toggleAttributeTableMultiSort,
-  toggleAttributeTableSort,
   toggleShow,
 } from './internal-barrel';
 
@@ -153,6 +122,11 @@ export {
   useHighlightAnimation,
 } from './internal-barrel';
 
+export {
+  createDataManagement,
+  isDataManagementView,
+} from './data-management';
+
 /** First-party types only — import geojson / maplibre types from their packages. */
 export type {
   IDataset,
@@ -162,14 +136,6 @@ export type {
   WithSetOpacity,
 } from './interfaces';
 export type { IListViewUI } from './model/list';
-export type {
-  AttributeTableColumn,
-  AttributeTableColumnsOption,
-  AttributeTableRow,
-  AttributeTableSelectRowsPayload,
-  AttributeTableSortDir,
-  AttributeTableSortState,
-} from './extra/attribute-table';
 export type { FieldFeaturesDef } from './extra/field';
 export type {
   HighlightFilterCreator,
@@ -186,3 +152,11 @@ export type {
   TreeItem,
 } from './utils';
 export type { DatasetStoreLike } from './services/dataset.service';
+export type {
+  CreateDataManagementOptions,
+  DataManagementPart,
+  DataRecord,
+  DataStore,
+  PageQuery,
+  PageResult,
+} from './data-management';

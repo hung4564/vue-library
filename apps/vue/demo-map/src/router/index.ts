@@ -71,6 +71,10 @@ const router = createRouter({
       component: () => import('../views/dataset-data-management/example.vue'),
     },
     {
+      path: '/dataset-attribute-table/',
+      component: () => import('../views/dataset-attribute-table/example.vue'),
+    },
+    {
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
     },

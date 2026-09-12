@@ -11,7 +11,7 @@ import type {
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type { IDataManagementView } from '../model/data-management/types';
+import type { DataManagementPart } from '../data-management/types';
 import type { IListViewUI } from '../model/list';
 
 export function isDatasetMapHasAddToMap(
@@ -64,7 +64,7 @@ export function isIdentifyMergeView(
 }
 export function isDataManagementView(
   dataset: unknown,
-): dataset is IDataManagementView {
+): dataset is DataManagementPart {
   return (dataset as IDataset)?.type === 'data-management';
 }
 export function isListView(dataset: unknown): dataset is IListViewUI {

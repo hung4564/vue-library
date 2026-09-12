@@ -10,6 +10,10 @@ import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShowButton from '../extra/component/toggle-show-button.vue';
 import ToggleShow from '../extra/component/toggle-show.vue';
 import AttributeTable from '../modules/AttributeTable/AttributeTable.vue';
+import AttributeTableGrid from '../modules/AttributeTable/AttributeTableGrid.vue';
+import AttributeTablePager from '../modules/AttributeTable/AttributeTablePager.vue';
+import AttributeTableToolbar from '../modules/AttributeTable/AttributeTableToolbar.vue';
+import AttributeTableView from '../modules/AttributeTable/AttributeTableView.vue';
 import DatasetDetail from '../modules/DatasetControl/DatasetDetail.vue';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
 import {
@@ -87,6 +91,22 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
         AttributeTable,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,
+        AttributeTableView,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar,
+        AttributeTableToolbar,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTablePager,
+        AttributeTablePager,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableGrid,
+        AttributeTableGrid,
       );
     },
   };

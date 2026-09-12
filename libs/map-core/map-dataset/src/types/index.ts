@@ -1,12 +1,5 @@
-type JSONPrimitive = string | number | boolean | null;
-type JSONValue = JSONPrimitive | JSONObject | JSONArray;
-interface JSONObject {
-  [key: string]: JSONValue;
-}
-type JSONArray = Array<JSONValue>;
-export type { JSONArray, JSONObject, JSONPrimitive, JSONValue };
-
+/** Attr bag for registry-mounted components (may hold live objects, not only JSON). */
 export type ComponentType = {
   componentKey: string;
-  attr?: JSONObject;
+  attr?: Record<string, unknown>;
 };

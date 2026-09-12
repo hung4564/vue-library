@@ -20,7 +20,9 @@ export function StoreViewer() {
   return (
     <div className="store-viewer">
       <div className="store-viewer__controls">
-        <MapControlButton variant="text" onClick={refresh}>Refresh</MapControlButton>
+        <MapControlButton variant="text" size="small" onClick={refresh}>
+          Refresh
+        </MapControlButton>
       </div>
       <div className="store-viewer__tree">
         <TreeItem data={storeState} />

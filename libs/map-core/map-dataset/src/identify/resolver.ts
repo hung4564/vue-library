@@ -4,7 +4,7 @@ import { IdentifyMultiResult } from '../interfaces';
 import type { IListViewUI } from '../model/list';
 import { findSiblingOrNearestLeaf } from '../model/visitors';
 import { isListView } from '../utils';
-import { queueAttributeTableSelectRows } from '../extra/attribute-table';
+import { queueAttributeTableSelectRows } from '../attribute-table';
 import { handleMenuAction, LIST_VIEW_MENU_ID } from '../menu';
 import { groupIdentifyResults, IDENTIFY_RESULT_CONTROL } from './result';
 

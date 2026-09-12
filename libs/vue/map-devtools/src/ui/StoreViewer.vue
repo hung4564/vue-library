@@ -1,7 +1,9 @@
 <template>
   <div class="store-viewer">
     <div class="store-controls">
-      <MapControlButton variant="text" @click="refresh">Refresh</MapControlButton>
+      <MapControlButton variant="text" size="small" @click="refresh">
+        Refresh
+      </MapControlButton>
     </div>
     <div class="json-tree">
       <TreeItem :data="storeState" />

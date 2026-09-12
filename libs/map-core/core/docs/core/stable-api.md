@@ -74,12 +74,14 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 ## `@hungpvq/map-dataset`
 
-**Breaking major:** domain symbols moved off the root onto named subpaths. Root no longer re-exports builders, identify, menu, style, create-control, or geo-export APIs. Full runtime allowlists: `public-api.spec.ts` (root + each subpath).
+**Breaking major:** domain symbols moved off the root onto named subpaths. Root no longer re-exports builders, identify, menu, style, create-control, geo-export, or attribute-table APIs. Full runtime allowlists: `public-api.spec.ts` (root + each subpath).
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, attribute-table (`ATTRIBUTE_TABLE_ROW_HEIGHT`, `getVirtualRowWindow`, …), layer/dataset locales, `IDataset` (+ shared protocol types) |
-| `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO`, `geojsonLocalAdapter` |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types) |
+| `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui` / `export`), `createMenuItemAttributeTable`, column/sort/export helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
+| `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
+| `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
 | `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers |
@@ -147,7 +149,7 @@ Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHand
 |------|----------------|
 | Bootstrap | `installMapApp`, `createMapAppPlugin` (Vue), `createDatasetRegistryPlugin()` |
 | Hooks | `useMapDataset` |
-| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable`, `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
+| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable` (+ `AttributeTableView` / toolbar / grid / pager), `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
 | Core boundary | Builders/services/types from `@hungpvq/map-dataset` |
 
 Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`; React `MenuConditionProvider`. React also has imperative `getMapDatasetStore` / `notifyMapDatasetStore`.
@@ -177,7 +179,9 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap (both) | `installDevtools`, `uninstallDevtools` |
-| Panel | `Devtools` (optional prop `containerId` for map `DraggableContainer`; mobile uses `DraggableItemBottom`) |
+| Panel | `Devtools` (optional `mode`: `overlay` \| `control`; `containerId` for overlay mobile sheet) |
+| Map control | `DevtoolsControl` / `DEVTOOLS_CONTROL.id` (`mapDevtools`) — popup via `DraggableItemPopup` |
+| Open helpers | `openMapDevtoolsErrors`, `setDevtoolOpen`, `toggleDevtoolOpen`, … |
 | Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |
 

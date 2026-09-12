@@ -11,6 +11,10 @@ import {
   ToggleShowButton,
 } from '../extra/component';
 import { AttributeTable } from '../modules/AttributeTable/AttributeTable';
+import { AttributeTableGrid } from '../modules/AttributeTable/AttributeTableGrid';
+import { AttributeTablePager } from '../modules/AttributeTable/AttributeTablePager';
+import { AttributeTableToolbar } from '../modules/AttributeTable/AttributeTableToolbar';
+import { AttributeTableView } from '../modules/AttributeTable/AttributeTableView';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
 import {
@@ -88,6 +92,22 @@ export function createDatasetRegistryPlugin() {
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
         AttributeTable,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,
+        AttributeTableView,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar,
+        AttributeTableToolbar,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTablePager,
+        AttributeTablePager,
+      );
+      UniversalRegistry.registerComponent(
+        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableGrid,
+        AttributeTableGrid,
       );
     },
   };

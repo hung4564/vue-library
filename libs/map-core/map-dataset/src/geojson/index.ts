@@ -6,11 +6,6 @@ export { createGeoJsonDataset } from './builder';
 export type { GeojsonDatasetOption } from './builder';
 export { createGeojsonHereDataset } from './here';
 export { createDatasetPartGeojsonSourceComponent } from './source';
-export {
-  createDatasetParDraftDataManagementGeojsonLocalComponent,
-  createDatasetPartDataManagementGeojsonLocalComponent,
-  geojsonLocalAdapter,
-} from './data-management';
 export { findGeojsonSource } from './find-source';
 export { fetchGeojsonFromUrl } from './fetch-geojson';
 export {

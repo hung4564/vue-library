@@ -4,129 +4,152 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
-import type { IDataset } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { ATTRIBUTE_TABLE_CONTROL, ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_ROW_HEIGHT, attributeTableRowsToFeatureCollection, buildAttributeTable, clearPendingAttributeTableSelectRows, convertFeatureToItem, filterAttributeTableRows, filterAttributeTableRowsByColumns, getVirtualRowWindow, resolveAttributeTableSelectedRowIds, sortAttributeTableRows, takePendingAttributeTableSelectRows, toggleAttributeTableMultiSort, type AttributeTableColumn, type AttributeTableColumnsOption, type AttributeTableColumnFilters, type AttributeTableRow, type AttributeTableSelectRowsPayload, type AttributeTableSortState } from '@hungpvq/map-dataset';
-import { createExportGeoSubmenu, createMenuItemExportGeo, getDatasetFeatureCollection, getExportGeoMenuOptions } from '@hungpvq/map-dataset/geo-export';
-import { createMenuConditionContext, getItemMenuHost, getResolvedMenus, handleMenuAction, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
-import { ContextMenu } from '@hungpvq/vue-draggable';
-import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
-import { InputCheckbox, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { fitBounds } from '@hungpvq/map-core';
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
+import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_CONTROL,
+  ATTRIBUTE_TABLE_LOCALE,
+  ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  clearPendingAttributeTableSelectRows,
+  createAttributeTableController,
+  resolveAttributeTableExportOption,
+  resolveAttributeTableUi,
+  resolveAttributeTableUiOption,
+  takePendingAttributeTableSelectRows,
+  type AttributeTableController,
+  type AttributeTableProps,
+  type AttributeTableRow,
+  type AttributeTableSelectRowsPayload,
+  type AttributeTableViewLabels,
+  type AttributeTableViewProps,
+} from '@hungpvq/map-dataset/attribute-table';
+import { GEO_EXPORT_FORMAT_META } from '@hungpvq/map-dataset/geo-export';
+import {
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+} from '@hungpvq/map-dataset/menu';
+import { ContextMenu, DraggableItemPopup } from '@hungpvq/vue-draggable';
+import {
+  ModuleContainer,
+  RegistryItem,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiChevronDown, mdiDownload } from '@mdi/js';
+import { mdiDownload } from '@mdi/js';
 import type { Feature } from 'geojson';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { useMapDatasetHighlight } from '../../store';
-const props = defineProps<
-  WithMapPropType & {
-    layer: IDataset;
-    columns?: AttributeTableColumnsOption;
-  }
->();
+import AttributeTableView from './AttributeTableView.vue';
+
+const props = defineProps<AttributeTableProps>();
 const emit = defineEmits<{ close: [] }>();
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const { setFeatureHighlight, getHighlightSource } =
   useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
+
 const show = ref(true);
-const loading = ref(true);
-const query = ref('');
-const tableColumns = ref<AttributeTableColumn[]>([]);
-const rows = ref<AttributeTableRow[]>([]);
-const selectedIds = ref<string[]>([]);
-const pendingSelectIds = ref<string[] | null>(null);
-const zoomToSelection = ref(false);
-const rowFilter = ref<'all' | 'selected'>('all');
-let cancelled = false;
-const filterItems = computed(() => [
-  { value: 'all', text: trans.value('map.attribute-table.showAll') },
-  { value: 'selected', text: trans.value('map.attribute-table.showSelected') },
-]);
-const searchedRows = computed(() =>
-  filterAttributeTableRows(rows.value, query.value),
+const tick = ref(0);
+const resolvedUi = computed(() =>
+  resolveAttributeTableUiOption(props.layer, props.ui),
 );
-const sortStates = ref<AttributeTableSortState[]>([]);
-const columnFilters = ref<AttributeTableColumnFilters>({});
-const filteredSearchedRows = computed(() =>
-  filterAttributeTableRowsByColumns(searchedRows.value, columnFilters.value),
-);
-const sortedSearchedRows = computed(() =>
-  sortAttributeTableRows(filteredSearchedRows.value, sortStates.value),
-);
-const visibleRows = computed(() => {
-  if (rowFilter.value !== 'selected') return sortedSearchedRows.value;
-  const selected = new Set(selectedIds.value);
-  return sortedSearchedRows.value.filter((row) => selected.has(row.id));
-});
-const exportRows = computed(() => {
-  if (selectedIds.value.length === 0) return visibleRows.value;
-  const selected = new Set(selectedIds.value);
-  return rows.value.filter((row) => selected.has(row.id));
-});
-function onSortColumn(key: string, event?: MouseEvent) {
-  sortStates.value = toggleAttributeTableMultiSort(
-    sortStates.value,
-    key,
-    Boolean(event?.shiftKey),
-  );
+function createController() {
+  const ui = resolvedUi.value;
+  return createAttributeTableController(props.layer, {
+    columns: props.columns,
+    store: props.store,
+    rowFilter: props.rowFilter,
+    export: resolveAttributeTableExportOption(props.layer, props.export),
+    sortable: resolveAttributeTableUi(ui).sort,
+  });
 }
-function onColumnFilter(key: string, value: string) {
-  columnFilters.value = { ...columnFilters.value, [key]: value };
+
+const controller = shallowRef<AttributeTableController>(createController());
+let unsub: (() => void) | undefined;
+
+function bindController(next: AttributeTableController) {
+  unsub?.();
+  controller.value = next;
+  unsub = next.subscribe(() => {
+    tick.value += 1;
+    applySelection();
+  });
+  tick.value += 1;
 }
-const scrollEl = ref<HTMLElement | null>(null);
-const scrollTop = ref(0);
-const viewportHeight = ref(0);
-const virtualWindow = computed(() =>
-  getVirtualRowWindow(
-    visibleRows.value.length,
-    scrollTop.value,
-    viewportHeight.value || 320,
-    ATTRIBUTE_TABLE_ROW_HEIGHT,
-  ),
-);
-const windowedRows = computed(() =>
-  visibleRows.value.slice(virtualWindow.value.start, virtualWindow.value.end),
-);
-const bottomSpacerHeight = computed(() =>
-  Math.max(
-    0,
-    virtualWindow.value.totalHeight -
-      virtualWindow.value.offsetY -
-      windowedRows.value.length * ATTRIBUTE_TABLE_ROW_HEIGHT,
-  ),
-);
-function syncScrollMetrics() {
-  const el = scrollEl.value;
-  if (!el) return;
-  scrollTop.value = el.scrollTop;
-  viewportHeight.value = el.clientHeight;
-}
-function onTableScroll() {
-  syncScrollMetrics();
-}
-watch(visibleRows, () => {
-  nextTick(() => syncScrollMetrics());
-});
-const selectedSet = computed(() => new Set(selectedIds.value));
-const allVisibleSelected = computed(
+
+watch(
   () =>
-    visibleRows.value.length > 0 &&
-    visibleRows.value.every((row) => selectedSet.value.has(row.id)),
+    [
+      props.layer,
+      props.columns,
+      props.store,
+      props.rowFilter,
+      props.export,
+      props.ui,
+    ] as const,
+  () => {
+    controller.value.dispose();
+    bindController(createController());
+    void controller.value.load('initial');
+  },
 );
+
+const state = computed(() => {
+  tick.value;
+  return controller.value.getState();
+});
+
+const labels = computed(
+  (): AttributeTableViewLabels => ({
+    search: trans.value('map.attribute-table.search'),
+    zoomToSelection: trans.value('map.attribute-table.zoomToSelection'),
+    showAll: trans.value('map.attribute-table.showAll'),
+    showSelected: trans.value('map.attribute-table.showSelected'),
+    clear: trans.value('map.attribute-table.clear'),
+    export: trans.value('map.attribute-table.export'),
+    exportSelected: trans.value('map.attribute-table.export-selected'),
+    exporting: trans.value('map.attribute-table.exporting'),
+    loading: trans.value('map.attribute-table.loading'),
+    empty: trans.value('map.attribute-table.empty'),
+    page: trans.value('map.attribute-table.page'),
+    of: trans.value('map.attribute-table.of'),
+    prev: trans.value('map.attribute-table.prev'),
+    next: trans.value('map.attribute-table.next'),
+    rowsPerPage: trans.value('map.attribute-table.rowsPerPage'),
+  }),
+);
+
+const exportActions = computed(() => {
+  tick.value;
+  return controller.value.getExportActions();
+});
+const exportMenuMode = computed(() => {
+  tick.value;
+  return controller.value.isExportMenuMode();
+});
+
 const title = computed(() => {
   const name =
     props.layer?.getName?.() || trans.value('map.attribute-table.title');
-  const count = rows.value.length;
-  const selected = selectedIds.value.length;
-  if (!count) return trans.value('map.attribute-table.title');
+  const count = state.value.total;
+  const selected = state.value.selectedIds.length;
+  if (!count && !state.value.loading) {
+    return trans.value('map.attribute-table.title');
+  }
+  if (!count) return name;
   return selected
     ? `${name} (${count}, ${selected} selected)`
     : `${name} (${count})`;
 });
+
 const { panelBind } = useRegisterMapControl(mapId, {
   id: ATTRIBUTE_TABLE_CONTROL.id,
   panelKind: 'popup',
@@ -135,7 +158,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
   show,
   setShow: (value) => {
     show.value = value;
-    if (!value) handleClose();
+    if (!value) clearAttributeTableHighlight();
   },
   getProps: () => ({
     position: props.position,
@@ -145,8 +168,9 @@ const { panelBind } = useRegisterMapControl(mapId, {
     {
       type: ATTRIBUTE_TABLE_CONTROL.id,
       run: () => {
+        // Toggle visibility only — do not emit close (that unmounts via ComponentManagement).
         show.value = !show.value;
-        if (!show.value) handleClose();
+        if (!show.value) clearAttributeTableHighlight();
       },
     },
     {
@@ -157,72 +181,32 @@ const { panelBind } = useRegisterMapControl(mapId, {
     },
   ],
 });
+
 function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
   const ids = (payload?.ids ?? []).map(String);
   clearPendingAttributeTableSelectRows(mapId.value);
-  pendingSelectIds.value = ids;
   show.value = true;
-  flushPendingSelection();
+  void controller.value.selectIds(ids);
 }
-function flushPendingSelection() {
-  if (!pendingSelectIds.value || loading.value) return;
-  const ids = resolveAttributeTableSelectedRowIds(
-    pendingSelectIds.value,
-    rows.value,
-  );
-  pendingSelectIds.value = null;
-  clearPendingAttributeTableSelectRows(mapId.value);
-  selectedIds.value = ids;
-  rowFilter.value = ids.length > 0 ? 'selected' : 'all';
-  applySelection();
-}
-onMounted(async () => {
-  const queued = takePendingAttributeTableSelectRows(mapId.value);
-  if (queued) {
-    pendingSelectIds.value = queued;
-    show.value = true;
-  }
-  try {
-    const collection = await getDatasetFeatureCollection(props.layer);
-    if (cancelled) return;
-    if (!collection) {
-      tableColumns.value = [];
-      rows.value = [];
-      return;
-    }
-    const table = buildAttributeTable(collection, props.columns);
-    tableColumns.value = table.columns;
-    rows.value = table.rows;
-  } finally {
-    if (!cancelled) {
-      loading.value = false;
-      flushPendingSelection();
-    }
-  }
-});
-onUnmounted(() => {
-  cancelled = true;
-  clearAttributeTableHighlight();
-});
 function clearAttributeTableHighlight() {
   if (getHighlightSource()?.value === 'attribute-table') {
     setFeatureHighlight(undefined, 'attribute-table');
   }
 }
+/** Dismiss popup and remove from ComponentManagement (X / explicit close). */
 function handleClose() {
+  show.value = false;
   clearAttributeTableHighlight();
   emit('close');
+  props.onClose?.();
 }
 function onUpdateShow(val: boolean) {
   show.value = val;
-  if (!val) handleClose();
-}
-function selectedRowsFrom(ids: string[]): AttributeTableRow[] {
-  const set = new Set(ids);
-  return rows.value.filter((row) => set.has(row.id));
+  if (!val) clearAttributeTableHighlight();
 }
 function applySelection(focus?: AttributeTableRow) {
-  const selected = selectedRowsFrom(selectedIds.value);
+  const s = controller.value.getState();
+  const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
   if (selected.length !== 1) {
     clearAttributeTableHighlight();
     return;
@@ -233,63 +217,34 @@ function applySelection(focus?: AttributeTableRow) {
     'attribute-table',
     props.layer,
   );
-  if (!zoomToSelection.value) return;
+  if (!s.zoomToSelection) return;
   callMap((map) => {
     fitBounds(map, current.feature as Feature, { mapId: mapId.value });
   });
 }
-function toggleRow(row: AttributeTableRow) {
-  const exists = selectedIds.value.includes(row.id);
-  selectedIds.value = exists
-    ? selectedIds.value.filter((id) => id !== row.id)
-    : [...selectedIds.value, row.id];
-  applySelection(exists ? undefined : row);
-}
-function toggleSelectAll() {
-  if (allVisibleSelected.value) {
-    const visible = new Set(visibleRows.value.map((row) => row.id));
-    selectedIds.value = selectedIds.value.filter((id) => !visible.has(id));
-    applySelection();
-    return;
-  }
-  const next = new Set(selectedIds.value);
-  visibleRows.value.forEach((row) => next.add(row.id));
-  selectedIds.value = Array.from(next);
-  applySelection();
-}
-function clearSelection() {
-  selectedIds.value = [];
-  clearAttributeTableHighlight();
-}
-const exportMenuItem = createMenuItemExportGeo({
-  filename: (layer) => `${layer.getName?.() || 'layer'}-table`,
-  getCollection: () =>
-    exportRows.value.length
-      ? attributeTableRowsToFeatureCollection(exportRows.value)
-      : null,
-});
-const exportChildren = computed(() =>
-  createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem)),
-);
+
 const exportMenuRef = ref<{
   open: (event: MouseEvent) => void;
   close: () => void;
 }>();
 function onExportClick(event: MouseEvent) {
-  if (exportRows.value.length === 0) return;
+  if (!controller.value.canExport() || controller.value.getState().exporting) {
+    return;
+  }
+  if (!controller.value.isExportMenuMode()) {
+    void controller.value.export(undefined, { event });
+    return;
+  }
   exportMenuRef.value?.open(event);
 }
-function onExportChild(action: MenuAction, event: MouseEvent) {
-  handleMenuAction(action, {
-    event,
-    layer: props.layer,
-    mapId: mapId.value,
-    value: props.layer,
-  });
+function onExportAction(actionId: string) {
+  void controller.value.export(actionId);
   exportMenuRef.value?.close();
 }
+
 const itemMenuHost = computed(() => getItemMenuHost(props.layer));
 const itemMenus = computed(() => {
+  if (resolvedUi.value?.rowMenus === false) return [];
   const host = itemMenuHost.value;
   const ctx = createMenuConditionContext(host, { mapId: mapId.value });
   return getResolvedMenus(props.layer, 'item').filter(
@@ -299,23 +254,46 @@ const itemMenus = computed(() => {
 const itemMenuConditionCtx = computed(() =>
   createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
 );
-function onRowMenuAction(
-  row: AttributeTableRow,
-  menu: MenuAction,
-  event: MouseEvent,
-) {
-  handleMenuAction(menu, {
-    event,
-    layer: itemMenuHost.value,
+
+const viewProps = computed(
+  (): AttributeTableViewProps => ({
     mapId: mapId.value,
-    value: convertFeatureToItem(row.feature),
-  });
-}
-function cellTitle(value: string) {
-  return value.length > 80 ? value : undefined;
-}
-watch(zoomToSelection, (enabled) => {
-  if (enabled) applySelection();
+    layer: props.layer,
+    controller: controller.value,
+    pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+    labels: labels.value,
+    ui: resolvedUi.value,
+    onExportClick,
+    itemMenus: itemMenus.value,
+    itemMenuHost: itemMenuHost.value,
+    isMenuDisabled: (menu) =>
+      isMenuItemDisabled(menu, itemMenuConditionCtx.value),
+    onRowMenuAction: (row, menu, event) => {
+      handleMenuAction(menu, {
+        event,
+        layer: itemMenuHost.value,
+        mapId: mapId.value,
+        value: convertFeatureToItem(row.feature),
+      });
+    },
+  }),
+);
+
+onMounted(async () => {
+  bindController(controller.value);
+  const queued = takePendingAttributeTableSelectRows(mapId.value);
+  if (queued) {
+    show.value = true;
+    await controller.value.load('initial');
+    await controller.value.selectIds(queued);
+    return;
+  }
+  await controller.value.load('initial');
+});
+onUnmounted(() => {
+  unsub?.();
+  controller.value.dispose();
+  clearAttributeTableHighlight();
 });
 </script>
 <template>
@@ -331,195 +309,40 @@ watch(zoomToSelection, (enabled) => {
         :title="title"
       >
         <template #title>{{ title }}</template>
-        <div class="attribute-table">
-          <div class="attribute-table__toolbar">
-            <div class="attribute-table__toolbar-row">
-              <InputText
-                v-model="query"
-                :placeholder="trans('map.attribute-table.search')"
-              />
-              <MapControlButton
-                class="attribute-table__export"
-                :disabled="exportRows.length === 0"
-                @click.stop="onExportClick" variant="outlined">
-                <SvgIcon :size="16" type="mdi" :path="mdiDownload" />
-                {{
-                  selectedIds.length
-                    ? trans('map.attribute-table.export-selected')
-                    : trans('map.attribute-table.export')
-                }}
-                <SvgIcon :size="16" type="mdi" :path="mdiChevronDown" />
-              </MapControlButton>
-            </div>
-            <div class="attribute-table__toolbar-row">
-              <InputCheckbox
-                v-model="zoomToSelection"
-                :label="trans('map.attribute-table.zoomToSelection')"
-              />
-              <InputSelect
-                v-model="rowFilter"
-                :items="filterItems"
-                item-value="value"
-                item-text="text"
-              />
-              <MapControlButton
-                class="attribute-table__clear"
-                :disabled="selectedIds.length === 0"
-                @click="clearSelection" variant="outlined">
-                {{ trans('map.attribute-table.clear') }}
-              </MapControlButton>
-            </div>
-          </div>
-          <div v-if="loading" class="attribute-table__status">
-            {{ trans('map.attribute-table.loading') }}
-          </div>
-          <div
-            v-else-if="visibleRows.length === 0"
-            class="attribute-table__status"
-          >
-            {{ trans('map.attribute-table.empty') }}
-          </div>
-          <div
-            v-else
-            ref="scrollEl"
-            class="attribute-table__scroll"
-            @scroll.passive="onTableScroll"
-          >
-            <table class="attribute-table__table">
-              <thead>
-                <tr>
-                  <th class="attribute-table__check">
-                    <input
-                      type="checkbox"
-                      :checked="allVisibleSelected"
-                      @change="toggleSelectAll"
-                    />
-                  </th>
-                  <th
-                    v-for="column in tableColumns"
-                    :key="column.key"
-                    :class="{
-                      'is-sorted': sortStates.some((s) => s.key === column.key),
-                    }"
-                    @click="onSortColumn(column.key, $event)"
-                  >
-                    {{ column.label
-                    }}{{
-                      (() => {
-                        const hit = sortStates.find((s) => s.key === column.key);
-                        if (!hit) return '';
-                        const idx = sortStates.indexOf(hit) + 1;
-                        return `${hit.dir === 'asc' ? ' ↑' : ' ↓'}${
-                          sortStates.length > 1 ? idx : ''
-                        }`;
-                      })()
-                    }}
-                  </th>
-                  <th v-if="itemMenus.length" class="attribute-table__actions" />
-                </tr>
-                <tr class="attribute-table__filters">
-                  <th class="attribute-table__check" />
-                  <th v-for="column in tableColumns" :key="`f-${column.key}`">
-                    <input
-                      class="attribute-table__column-filter"
-                      type="search"
-                      :value="columnFilters[column.key] || ''"
-                      :placeholder="column.label"
-                      @click.stop
-                      @input="
-                        onColumnFilter(
-                          column.key,
-                          ($event.target as HTMLInputElement).value,
-                        )
-                      "
-                    />
-                  </th>
-                  <th v-if="itemMenus.length" class="attribute-table__actions" />
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-if="virtualWindow.offsetY > 0"
-                  class="attribute-table__spacer"
-                  aria-hidden="true"
-                >
-                  <td
-                    :colspan="tableColumns.length + 1 + (itemMenus.length ? 1 : 0)"
-                    :style="{ height: virtualWindow.offsetY + 'px', padding: 0, border: 0 }"
-                  />
-                </tr>
-                <tr
-                  v-for="row in windowedRows"
-                  :key="row.id"
-                  :class="{ 'is-selected': selectedSet.has(row.id) }"
-                  :style="{ height: ATTRIBUTE_TABLE_ROW_HEIGHT + 'px' }"
-                  @click="toggleRow(row)"
-                >
-                  <td class="attribute-table__check" @click.stop>
-                    <input
-                      type="checkbox"
-                      :checked="selectedSet.has(row.id)"
-                      @change="toggleRow(row)"
-                    />
-                  </td>
-                  <td
-                    v-for="column in tableColumns"
-                    :key="column.key"
-                    :title="cellTitle(row.cells[column.key] ?? '')"
-                  >
-                    {{ row.cells[column.key] }}
-                  </td>
-                  <td
-                    v-if="itemMenus.length"
-                    class="attribute-table__actions"
-                    @click.stop
-                  >
-                    <DatasetMenuButton
-                      v-for="(menu, index) in itemMenus"
-                      :key="menu.id || index"
-                      :item="menu"
-                      :data="itemMenuHost"
-                      :mapId="mapId"
-                      :disabled="isMenuItemDisabled(menu, itemMenuConditionCtx)"
-                      @click="onRowMenuAction(row, menu, $event)"
-                    />
-                  </td>
-                </tr>
-                <tr
-                  v-if="bottomSpacerHeight > 0"
-                  class="attribute-table__spacer"
-                  aria-hidden="true"
-                >
-                  <td
-                    :colspan="tableColumns.length + 1 + (itemMenus.length ? 1 : 0)"
-                    :style="{ height: bottomSpacerHeight + 'px', padding: 0, border: 0 }"
-                  />
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <RegistryItem
+          :componentKey="ATTRIBUTE_TABLE_COMPONENT_KEY.view"
+          :defaultComponent="AttributeTableView"
+          :mapId="mapId"
+          v-bind="viewProps"
+        />
       </DraggableItemPopup>
-      <ContextMenu ref="exportMenuRef">
+      <ContextMenu
+        v-if="exportMenuMode"
+        ref="exportMenuRef"
+      >
         <ul class="context-menu layer-context-menu">
           <li
-            v-for="(child, index) in exportChildren"
-            :key="child.id || index"
+            v-for="item in exportActions"
+            :key="item.id"
             class="layer-context-menu__item"
-            @click.stop="onExportChild(child, $event)"
+            @click.stop="onExportAction(item.id)"
           >
             <div class="layer-context-menu__item-icon">
               <SvgIcon
-                size="16"
+                :size="16"
                 type="mdi"
-                :path="('icon' in child && child.icon) || mdiDownload"
+                :path="item.icon || mdiDownload"
               />
             </div>
-            <span>{{ 'name' in child ? child.name : '' }}</span>
+            <span>{{
+              item.label ||
+              (item.format
+                ? GEO_EXPORT_FORMAT_META[item.format].name
+                : item.id)
+            }}</span>
           </li>
         </ul>
       </ContextMenu>
     </template>
   </ModuleContainer>
 </template>
-

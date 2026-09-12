@@ -54,4 +54,5 @@ Registering only during the parent’s first render can disappear after StrictMo
 ## Related
 
 - Layer menus / `componentKey`: [Menus](/map/dataset/create-dataset/with-helper-menu)
+- Attribute table parts (`attribute-table`, `attribute-table-view`, `attribute-table-toolbar`, `attribute-table-grid`, `attribute-table-pager`): [Attribute table](/map/dataset/create-dataset/attribute-table)
 - Map control handles: [UniversalRegistry controls](./registry-controls.md)

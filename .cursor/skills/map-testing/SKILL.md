@@ -51,6 +51,7 @@ Smoke specs under `apps/*/demo-map-e2e`:
 |------|-------|--------|
 | `minimal.spec.ts` | `/#/minimal` | Map shell + canvas |
 | `layer-identify.spec.ts` | `/#/dataset-identify` | LayerControl + IdentifyControl mount |
+| `attribute-table.spec.ts` | `/#/dataset-attribute-table` | Open table + toolbar/grid smoke |
 | `create-control.spec.ts` | `/#/minimal` | CreateControl raw GeoJSON → new layer |
 
 ## Commands

@@ -3,16 +3,20 @@
     <div class="error-header">
       <h3>Errors ({{ filteredErrors.length }})</h3>
       <div class="error-header__actions">
-        <input
-          v-model="mapIdFilter"
-          class="error-filter"
-          type="search"
-          placeholder="Filter mapId"
+        <select
+          v-if="mapIds.length > 1"
+          v-model="selectedMapId"
+          class="error-mapid-select"
           aria-label="Filter by mapId"
-        />
-        <button type="button" class="clear-btn" @click="clearErrors">
+        >
+          <option value="all">All maps</option>
+          <option v-for="id in mapIds" :key="id" :value="id">
+            {{ shortMapId(id) }}
+          </option>
+        </select>
+        <MapControlButton variant="text" size="small" @click="clearErrors">
           Clear
-        </button>
+        </MapControlButton>
       </div>
     </div>
     <div class="error-list">
@@ -28,15 +32,19 @@
         </div>
         <div class="error-message">{{ error.message }}</div>
         <div
-          v-if="error.context && (error.context as { mapId?: string }).mapId"
+          v-if="errorMapId(error)"
           class="error-mapid"
         >
-          mapId: {{ (error.context as { mapId?: string }).mapId }}
+          mapId: {{ errorMapId(error) }}
         </div>
         <div class="error-item-actions">
-          <button type="button" class="copy-btn" @click="copyStack(error)">
+          <MapControlButton
+            variant="text"
+            size="small"
+            @click="copyStack(error)"
+          >
             Copy stack
-          </button>
+          </MapControlButton>
         </div>
         <details v-if="error.context" class="error-details">
           <summary>Context</summary>
@@ -55,26 +63,46 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { MapControlButton } from '@hungpvq/vue-map-core';
+import { computed, ref, watch } from 'vue';
 import { devtoolState } from '../store';
 
-const mapIdFilter = ref('');
+type DevtoolError = (typeof devtoolState.errors)[number];
+
+const selectedMapId = ref('all');
 const errors = computed(() => devtoolState.errors);
+
+function errorMapId(error: DevtoolError): string | null {
+  const id = (error.context as { mapId?: string } | undefined)?.mapId;
+  return id ? String(id) : null;
+}
+
+function shortMapId(id: string) {
+  return id.length > 13 ? `${id.slice(0, 8)}…` : id;
+}
+
+const mapIds = computed(() => {
+  const set = new Set<string>();
+  for (const error of errors.value) {
+    const id = errorMapId(error);
+    if (id) set.add(id);
+  }
+  return [...set].sort();
+});
+
+watch(mapIds, (ids) => {
+  if (selectedMapId.value !== 'all' && !ids.includes(selectedMapId.value)) {
+    selectedMapId.value = 'all';
+  }
+});
+
 const filteredErrors = computed(() => {
-  const q = mapIdFilter.value.trim().toLowerCase();
-  if (!q) return errors.value;
-  return errors.value.filter((error) => {
-    const mapId = String(
-      (error.context as { mapId?: string } | undefined)?.mapId ?? '',
-    ).toLowerCase();
-    return (
-      mapId.includes(q) ||
-      error.message.toLowerCase().includes(q) ||
-      String(error.code ?? '')
-        .toLowerCase()
-        .includes(q)
-    );
-  });
+  if (mapIds.value.length <= 1 || selectedMapId.value === 'all') {
+    return errors.value;
+  }
+  return errors.value.filter(
+    (error) => errorMapId(error) === selectedMapId.value,
+  );
 });
 
 function clearErrors() {
@@ -136,34 +164,13 @@ async function copyStack(error: {
   align-items: center;
 }
 
-.error-filter {
-  max-width: 140px;
+.error-mapid-select {
+  max-width: 160px;
   padding: 4px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 12px;
-}
-
-.clear-btn,
-.copy-btn {
-  padding: 4px 12px;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.clear-btn {
-  background: #f44336;
-}
-
-.copy-btn {
-  background: #1976d2;
-}
-
-.clear-btn:hover {
-  background: #d32f2f;
+  background: #fff;
 }
 
 .error-list {

@@ -33,12 +33,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
     <Devtools />
-    {/* optional: <Devtools containerId="map-draggable-my-map" /> */}
+    {/* Map control popup (inside <Map>): <Devtools mode="control" position="bottom-right" /> */}
+    {/* <Devtools containerId="map-draggable-my-map" /> */}
   </StrictMode>,
 );
 ```
 
-On mobile (≤640px), the open panel uses the map `DraggableItemBottom` sheet when a `map-draggable-*` container exists (or `containerId` is set); otherwise a CSS sheet fallback. Desktop keeps the floating panel.
+On mobile (≤640px), overlay mode uses `DraggableItemBottom` when a map drag container exists. Use `mode="control"` for a map corner button + `DraggableItemPopup`.
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
@@ -48,7 +49,9 @@ Tear down global error capture with `uninstallDevtools()` when the host app unmo
 |--------|------|
 | `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
-| `Devtools` | Panel UI (Store / Logs / Errors) |
+| `Devtools` | Panel UI (`mode?: 'overlay' \| 'control'`) |
+| `DevtoolsControl` | Map control + popup (same as `mode="control"`) |
+| `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
 
 Experimental root exports (store helpers / hooks such as `useDevtoolState`, `getDevtoolState`, …) may change in a minor — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 

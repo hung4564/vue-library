@@ -59,6 +59,14 @@
       "import": "./geo-export.js",
       "types": "./geo-export.d.ts"
     },
+    "./data-management": {
+      "import": "./data-management.js",
+      "types": "./data-management.d.ts"
+    },
+    "./attribute-table": {
+      "import": "./attribute-table.js",
+      "types": "./attribute-table.d.ts"
+    },
     "./assets/*": "./assets/*",
     "./style.css": {
       "default": "./style.css"

@@ -81,6 +81,11 @@
             </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/dataset-attribute-table"
+              >Dataset - Attribute table
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/draw">Draw </RouterLink>
           </v-list-item>
         </v-list>

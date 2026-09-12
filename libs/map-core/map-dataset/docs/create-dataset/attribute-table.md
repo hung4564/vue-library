@@ -1,12 +1,32 @@
 # Attribute table
 
+Import the full API from `@hungpvq/map-dataset/attribute-table`.
+
 Tabular view of GeoJSON feature properties. The **Attribute table** item is added to the list ⋮ menu when the layer has a GeoJSON source or a data-management sibling. Raster / vector-tile layers hide it.
 
-Select rows (checkbox or click) to highlight them. **Zoom to selection** is off by default — turn it on to `fitBounds` when the selection changes. **Export** is the same format menu as the layer ⋮ **Export** item (GeoJSON, KML, CSV, Shapefile) and uses the same `exportDatasetGeo` / `createExportGeoSubmenu` path. If there are selected rows, export uses that selection; otherwise it exports the currently visible rows (search + All / Selected filter). Row actions come from identify menus plus [`menu` dataset](./with-helper-data.md#menu-createdatasetpartmenucomponent) entries with `for: 'item'`.
+**Architecture:** Vue/React shells only call `createAttributeTableController`. Data + selection resolve both go through **`AttributeTableStore.list`** with an explicit `intent`:
 
-Column headers support client-side sorting (`toggleAttributeTableSort` / `sortAttributeTableRows`).
+| Intent | When | Cache hint |
+|--------|------|------------|
+| `'page'` | Browse / page / search / sort | page + search + sort |
+| `'select'` | Highlight / export selection missing on current page | sorted `ids` (separate from page cache) |
 
-Needs `installMapApp` (or `createDatasetRegistryPlugin`) and [`ComponentManagementControl`](../module/ComponentManagementControl.md) so the dialog can open. Mount [`LayerHighlight`](../module/LayerHighlight.md) if you want the selected row painted on the map.
+Default store: DM sibling → wrap `part.list`; else local GeoJSON; or inject `store`.
+
+Select rows to highlight. **Zoom to selection** is off by default.
+
+**Export** is configured on the controller / shell via `export` (`AttributeTableExportOptions`), not on the store:
+
+| Config | Behavior |
+|--------|----------|
+| default / omit | Submenu of all local geo formats |
+| `formats: ['geojson','csv']` | Submenu of those formats only (`false` = none) |
+| `actions` + optional `replaceActions` | Custom menu items (API, dialog, …) |
+| `onExport` | One click — no submenu (API download or open your dialog) |
+
+Shell menu comes from `controller.getExportActions()`; single-handler mode uses `controller.isExportMenuMode() === false`.
+
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Mount `LayerHighlight` to paint selection.
 
 ## Built-in menu
 
@@ -18,58 +38,202 @@ createDatasetPartListViewUiComponentBuilder('Cities')
 
 Turn off: `.configDisabledAttributeTable()`, or `menuContext: { disabledAttributeTable: true }`.
 
-## Columns
+## Columns + `ui` + custom store
 
-Pass `columns` to limit fields and/or map labels. Omit it to show every property plus **Geometry**.
+Column / UI / export defs resolve in this order (later wins):
+
+1. **Auto** — property keys from the FeatureCollection (columns only)
+2. **`createMenuItemAttributeTable({ columns, ui, export })`** / shell props
+3. **Dataset part** — `createDatasetPartAttributeTable({ columns, ui, export })` (highest)
 
 ```ts
-import { createMenuItemAttributeTable } from '@hungpvq/map-dataset';
+import {
+  createDatasetPartAttributeTable,
+  createMenuItemAttributeTable,
+  createLocalAttributeTableStore,
+} from '@hungpvq/map-dataset/attribute-table';
 
-// Limit + labels
+// Highest priority: attach next to list / source / data-management
+dataset.add(
+  createDatasetPartAttributeTable('table', {
+    columns: [
+      { key: 'name', label: 'Name' },
+      { key: 'id', label: 'ID', sortable: false },
+      '__geometry',
+    ],
+    ui: { sort: true, export: true },
+    export: { formats: ['geojson', 'csv'] },
+  }),
+);
+
 list.addMenu(
   createMenuItemAttributeTable({
     columns: [
-      { key: 'name', label: 'Name' },
-      { key: 'pop', label: 'Population' },
+      {
+        key: 'name',
+        label: 'Name',
+        format: (v) => String(v ?? '').toUpperCase(),
+      },
+      { key: 'pop', label: 'Population', sortable: false },
+      {
+        key: 'status',
+        label: 'Status',
+        // string = Registry componentKey; or pass a Vue/React component
+        cellComponent: 'my-status-cell',
+        headerComponent: 'my-status-header',
+      },
       '__geometry',
     ],
-  }),
-);
-
-// Same thing as a map of key → label (order is object key order)
-list.addMenu(
-  createMenuItemAttributeTable({
-    columns: { name: 'Name', pop: 'Population' },
+    ui: {
+      search: true,
+      export: true,
+      pager: true,
+      checkbox: true,
+      sort: true, // false → disable all column sorting
+    },
+    // optional: store: createLocalAttributeTableStore(fc),
   }),
 );
 ```
 
-If you add the menu yourself, also call `.configDisabledAttributeTable()` so the default item is not duplicated.
+**Custom `store`:** when you inject `store` on the menu / shell / controller, dataset-part **columns are not applied** — the store owns its column layout. Part `ui` / `export` still win over menu/shell via `resolveAttributeTableUiOption` / `resolveAttributeTableExportOption`.
 
-## Call without a menu
+Column options:
+
+| Field | Role |
+| --- | --- |
+| `format` | `(value, ctx) => string` — builds `row.cells[key]` (framework-agnostic) |
+| `sortable` | Default `true`; `false` disables header sort for that column |
+| `cellComponent` | Registry `componentKey` (`string`) **or** Vue/React component |
+| `headerComponent` | Registry `componentKey` (`string`) **or** Vue/React component |
+
+Custom cell props: `{ value, raw, row, column }` (`AttributeTableCellProps`).  
+Custom header props: `{ label, column, sortable, sortDir?, sortOrder?, sortCount?, onSort? }` (`AttributeTableHeaderProps`).  
+When `sortable`, call `onSort(append?)` from the header UI (Shift → multi-sort). Default (non-custom) headers still sort via `<th>` click.  
+Sort cycle per column: **none → asc → desc → none**.
+
+`ui` flags only show/hide built-ins (`sort` toggles sorting). **Do not** pass a top-level `components` prop — override chrome via Registry (below). Per-column cells/headers use `cellComponent` / `headerComponent` (string key → `UniversalRegistry.registerComponentForMap`).
+
+## Store API
 
 ```ts
-import { attributeTableRowsToFeatureCollection, buildAttributeTable, exportAttributeTableRows, filterAttributeTableRows } from '@hungpvq/map-dataset';
-import { exportDatasetGeo, getDatasetFeatureCollection } from '@hungpvq/map-dataset/geo-export';
+import {
+  createAttributeTableStoreFromDataset,
+  createLocalAttributeTableStore,
+  type AttributeTableStore,
+} from '@hungpvq/map-dataset/attribute-table';
 
-const fc = await getDatasetFeatureCollection(list);
-if (!fc) return;
-const { columns, rows } = buildAttributeTable(fc, {
-  name: 'Name',
-  pop: 'Population',
-});
-const visible = filterAttributeTableRows(rows, 'hanoi');
-await exportAttributeTableRows(visible, 'kml', 'cities-table');
-await exportDatasetGeo(list, 'shapefile', {
-  collection: attributeTableRowsToFeatureCollection(visible),
-  filename: 'cities-table',
-});
+// Default: DM → part.list; else local GeoJSON
+const store = createAttributeTableStoreFromDataset(list);
+
+await store.list({ intent: 'page', page: 1, pageSize: 50, search: 'ha' });
+await store.list({ intent: 'select', ids: ['1', '2'], pageSize: 'all' });
 ```
 
-Data comes from `data-management.list()` when that node exists; otherwise from the GeoJSON source (`getData()`, or a URL that is fetched).
+Custom store — always branch on `intent` (do not infer from `ids` alone):
 
-**Events:** the dialog emits Vue `close` / React `onClose` when dismissed. The list node itself has no extra events.
+```ts
+const store: AttributeTableStore = {
+  async list(query) {
+    if (query.intent === 'select') {
+      // fetch / filter by query.ids — cache separately
+    }
+    // page browse
+  },
+  // optional: invalidate() { /* drop your caches */ },
+};
+```
 
-## Vue / React
+**Freshness:** DM-backed stores call `part.list` every time (no row cache). Local stores from an `IDataset` re-read GeoJSON on each non-quiet `controller.load` / `list`. A static `FeatureCollection` seed is cached until `store.invalidate()` (also called by the controller on reload / page-change / initial load).
 
-No extra control. Mount `LayerControl` + `ComponentManagementControl` + `installMapApp` (or `createDatasetRegistryPlugin`).
+DM select convention: wrapper maps `ids` → `PageQuery.filter.ids` (LocalStore honors it).
+
+### Export (formats menu, custom actions, or one handler)
+
+```ts
+import { downloadBlob } from '@hungpvq/map-dataset/geo-export';
+import { createAttributeTableController } from '@hungpvq/map-dataset/attribute-table';
+
+// Default: local format submenu
+const local = createAttributeTableController(list);
+
+// Subset of local formats + a custom API item
+const mixed = createAttributeTableController(list, {
+  export: {
+    formats: ['geojson', 'csv'],
+    actions: [
+      {
+        id: 'api-csv',
+        label: 'CSV (API)',
+        async run(ctx) {
+          const res = await fetch(`/api/layers/${list.id}/export`, {
+            method: 'POST',
+            body: JSON.stringify({ ids: ctx.ids, search: ctx.search }),
+          });
+          downloadBlob(await res.blob(), `${ctx.filename}.csv`);
+        },
+      },
+    ],
+  },
+});
+
+// One click → your handler (API or open a dialog)
+const single = createAttributeTableController(list, {
+  export: {
+    async onExport(ctx) {
+      // await api… or openExportDialog(ctx)
+      await ctx.downloadLocal('geojson');
+    },
+  },
+});
+
+await mixed.export('format:csv'); // local
+await mixed.export('api-csv'); // custom action
+await single.export(); // onExport
+```
+
+## Controller (headless)
+
+```ts
+import { createAttributeTableController } from '@hungpvq/map-dataset/attribute-table';
+
+const controller = createAttributeTableController(list, {
+  columns: [{ key: 'name', label: 'Name' }],
+  // store: customStore,
+});
+await controller.load('initial');
+controller.subscribe(() => { /* re-render from controller.getState() */ });
+await controller.resolveFeaturesForSelection(['1']); // intent: 'select' if needed
+controller.dispose();
+```
+
+## Override parts via UniversalRegistry
+
+Prefer Registry for component swaps. Props are for data / toggles (`columns`, `store`, `ui`).
+
+| Key | Props type |
+| --- | --- |
+| `attribute-table` / `root` | `AttributeTableProps` |
+| `attribute-table-view` / `view` | `AttributeTableViewProps` — full body |
+| `attribute-table-toolbar` / `toolbar` | `AttributeTableToolbarProps` |
+| `attribute-table-grid` / `grid` | `AttributeTableGridProps` |
+| `attribute-table-pager` / `pager` | `AttributeTablePagerProps` |
+
+```ts
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
+import type { AttributeTableViewProps } from '@hungpvq/map-dataset/attribute-table';
+import { UniversalRegistry } from '@hungpvq/vue-map-core';
+
+function CustomTable(props: AttributeTableViewProps) {
+  const { rows, columns, loading } = props.controller.getState();
+  // props.controller.goNext() · props.controller.selectIds(…)
+}
+
+UniversalRegistry.registerComponentForMap(
+  mapId,
+  ATTRIBUTE_TABLE_COMPONENT_KEY.view,
+  CustomTable,
+);
+```
+
+Demo `/#/dataset-attribute-table`: registry overrides, `addComponent` (+ columns / ui / cell+header components), custom store via `store.list`, `queueAttributeTableSelectRows`, `runMapControlAction`.

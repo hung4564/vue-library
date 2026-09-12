@@ -15,7 +15,7 @@ Needs `installMapApp` (or `createDatasetRegistryPlugin`) so the submenu renders.
 | KML | `.kml` | Needs optional peer `tokml` |
 | Shapefile | `.zip` | Needs optional peer `@mapbox/shp-write` |
 
-Data comes from `data-management.list()` when that node exists; otherwise from the GeoJSON source (`getData()`, or a URL that is fetched).
+Data comes from `data-management.list({ pageSize: 'all' })` when that node exists; otherwise from the GeoJSON source (`getData()`, or a URL that is fetched).
 
 ## Built-in menu
 

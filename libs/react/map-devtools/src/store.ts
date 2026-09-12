@@ -46,6 +46,12 @@ export function toggleDevtoolOpen() {
   notify();
 }
 
+export function setDevtoolOpen(open: boolean) {
+  if (state.isOpen === open) return;
+  state = { ...state, isOpen: open };
+  notify();
+}
+
 export function setDevtoolActiveTab(activeTab: DevtoolTab) {
   state = { ...state, activeTab };
   notify();

@@ -1,51 +1,74 @@
+import { MapControlButton } from '@hungpvq/react-map-core';
+import { useEffect, useMemo, useState } from 'react';
 import { clearDevtoolErrors } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
-import { useMemo, useState } from 'react';
+
+type DevtoolError = ReturnType<typeof useDevtoolState>['errors'][number];
 
 function formatTime(timestamp: number) {
   return new Date(timestamp).toLocaleTimeString();
 }
 
+function errorMapId(error: DevtoolError): string | null {
+  const id = (error.context as { mapId?: string } | undefined)?.mapId;
+  return id ? String(id) : null;
+}
+
+function shortMapId(id: string) {
+  return id.length > 13 ? `${id.slice(0, 8)}…` : id;
+}
+
 export function ErrorViewer() {
   const { errors } = useDevtoolState();
-  const [mapIdFilter, setMapIdFilter] = useState('');
+  const [selectedMapId, setSelectedMapId] = useState('all');
+
+  const mapIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const error of errors) {
+      const id = errorMapId(error);
+      if (id) set.add(id);
+    }
+    return [...set].sort();
+  }, [errors]);
+
+  useEffect(() => {
+    if (selectedMapId !== 'all' && !mapIds.includes(selectedMapId)) {
+      setSelectedMapId('all');
+    }
+  }, [mapIds, selectedMapId]);
+
   const filteredErrors = useMemo(() => {
-    const q = mapIdFilter.trim().toLowerCase();
-    if (!q) return errors;
-    return errors.filter((error) => {
-      const mapId = String(
-        ((error.context as { mapId?: string } | undefined)?.mapId ?? ''),
-      ).toLowerCase();
-      return (
-        mapId.includes(q) ||
-        error.message.toLowerCase().includes(q) ||
-        String(error.code ?? '')
-          .toLowerCase()
-          .includes(q)
-      );
-    });
-  }, [errors, mapIdFilter]);
+    if (mapIds.length <= 1 || selectedMapId === 'all') return errors;
+    return errors.filter((error) => errorMapId(error) === selectedMapId);
+  }, [errors, mapIds.length, selectedMapId]);
 
   return (
     <div className="error-viewer">
       <div className="error-viewer__header">
         <h3>Errors ({filteredErrors.length})</h3>
         <div className="error-viewer__header-actions">
-          <input
-            type="search"
-            className="error-viewer__filter"
-            placeholder="Filter mapId"
-            aria-label="Filter by mapId"
-            value={mapIdFilter}
-            onChange={(e) => setMapIdFilter(e.target.value)}
-          />
-          <button
-            type="button"
-            className="error-viewer__clear"
+          {mapIds.length > 1 ? (
+            <select
+              className="error-viewer__mapid-select"
+              aria-label="Filter by mapId"
+              value={selectedMapId}
+              onChange={(e) => setSelectedMapId(e.target.value)}
+            >
+              <option value="all">All maps</option>
+              {mapIds.map((id) => (
+                <option key={id} value={id}>
+                  {shortMapId(id)}
+                </option>
+              ))}
+            </select>
+          ) : null}
+          <MapControlButton
+            variant="text"
+            size="small"
             onClick={clearDevtoolErrors}
           >
             Clear
-          </button>
+          </MapControlButton>
         </div>
       </div>
       <div className="error-viewer__list">
@@ -61,15 +84,15 @@ export function ErrorViewer() {
               </span>
             </div>
             <div className="error-viewer__message">{error.message}</div>
-            {error.context && (error.context as { mapId?: string }).mapId ? (
+            {errorMapId(error) ? (
               <div className="error-viewer__mapid">
-                mapId: {(error.context as { mapId?: string }).mapId}
+                mapId: {errorMapId(error)}
               </div>
             ) : null}
             <div className="error-viewer__actions">
-              <button
-                type="button"
-                className="error-viewer__copy"
+              <MapControlButton
+                variant="text"
+                size="small"
                 onClick={async () => {
                   const text = [
                     error.code,
@@ -87,7 +110,7 @@ export function ErrorViewer() {
                 }}
               >
                 Copy stack
-              </button>
+              </MapControlButton>
             </div>
             {error.context ? (
               <details className="error-viewer__details">

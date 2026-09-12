@@ -326,7 +326,7 @@ All return a `MenuAction`. Most accept an optional last argument that overlays f
 ```ts
 import { createMenuItemToggleShow, createMenuItemSetOpacity, createMenuItemStyleEdit, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem, createMenuItemMoveUp, createMenuItemMoveDown, createMenuItemAddToGroup } from '@hungpvq/map-dataset/menu';
 import { createMenuItemExportGeo } from '@hungpvq/map-dataset/geo-export';
-import { createMenuItemAttributeTable } from '@hungpvq/map-dataset';
+import { createMenuItemAttributeTable } from '@hungpvq/map-dataset/attribute-table';
 
 list.addMenus([
   createMenuItemToggleShow(),

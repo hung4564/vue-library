@@ -9,64 +9,75 @@ Debug panel for map apps: **Store**, **Logs**, and **Errors**.
 
 Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`.
 
-## Mobile
+## Display modes
 
-On viewports **≤640px** (same tablet breakpoint as map):
-
-- If a map `DraggableContainer` is present (`map-draggable-*`, or pass `containerId`), the open panel uses **`DraggableItemBottom`** — the same bottom sheet shell as map controls (45% height, expand to full, close / Escape).
-- If no container is available yet, a CSS bottom sheet fallback (~85vh) is used.
-
-Desktop keeps the floating FAB + fixed panel.
+| `mode` | Behavior | Where to mount |
+|--------|----------|----------------|
+| `overlay` (default) | Fixed FAB + floating panel; mobile uses `DraggableItemBottom` when a map drag container exists | Anywhere (e.g. app shell) |
+| `control` | Map corner control (`DEVTOOLS_CONTROL.id` = `mapDevtools`) + **`DraggableItemPopup`** | Inside `<Map>` |
 
 ```vue
+<!-- App shell -->
 <Devtools />
-<!-- or pin to a specific map drag container -->
-<Devtools container-id="map-draggable-my-map" />
+
+<!-- Or as a map control popup -->
+<Map>
+  <Devtools mode="control" position="bottom-right" />
+</Map>
 ```
 
 ```tsx
 <Devtools />
+
+<Map>
+  <Devtools mode="control" position="bottom-right" />
+</Map>
+```
+
+`DevtoolsControl` is also exported (same as `mode="control"`).
+
+## Mobile (overlay)
+
+On viewports **≤640px** (same tablet breakpoint as map):
+
+- If a map `DraggableContainer` is present (`map-draggable-*`, or pass `containerId`), the open panel uses **`DraggableItemBottom`**.
+- If no container is available yet, a CSS bottom sheet fallback (~85vh) is used.
+
+```vue
+<Devtools container-id="map-draggable-my-map" />
+```
+
+```tsx
 <Devtools containerId="map-draggable-my-map" />
 ```
 
 ## Bootstrap (Vue + React)
 
 ```ts
-// Vue
 import { Devtools, installDevtools, uninstallDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
-// mount <Devtools /> in the tree
+// mount <Devtools /> or <Devtools mode="control" /> inside Map
 ```
 
-```tsx
-// React
-import { Devtools, installDevtools, uninstallDevtools } from '@hungpvq/react-map-devtools';
-import '@hungpvq/react-map-devtools/style.css';
-
-installDevtools();
-// mount <Devtools /> in the tree
-```
-
-`installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core` (see [Error handling](./error-handling.md)). It does **not** register a component — mount `<Devtools />` explicitly. Call `uninstallDevtools()` to tear down capture.
+`installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core`. Call `uninstallDevtools()` to tear down capture.
 
 ## Stable API
 
-| Export | Vue | React |
-|--------|-----|-------|
-| Panel | `Devtools` | `Devtools` |
-| Bootstrap | `installDevtools` | `installDevtools` |
-| Teardown | `uninstallDevtools` | `uninstallDevtools` |
-| Log adapter | `DevtoolLogAdapter`, `devtoolLogAdapter` | same |
-| State | `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState` | same |
-| Actions | `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` | same |
+| Export | Notes |
+|--------|-------|
+| `Devtools` | `mode?: 'overlay' \| 'control'` |
+| `DevtoolsControl` | Explicit map-control popup |
+| `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
+| `installDevtools` / `uninstallDevtools` | Bootstrap |
+| `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers |
 
-Runtime lock: `libs/vue/map-devtools/src/public-api.spec.ts`, `libs/react/map-devtools/src/public-api.spec.ts`.
+Runtime lock: `public-api.spec.ts` in each adapter package.
 
 ## Demos
 
-- Vue: `apps/vue/demo-map` (`installDevtools()` in `main.ts`)
-- React: `apps/react/demo-map` (`installDevtools()` in `main.tsx`)
+- Vue: `apps/vue/demo-map`
+- React: `apps/react/demo-map`
 
-See also [Stable API](./stable-api.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md).
+See also [Stable API](./stable-api.md) · [Error handling](./error-handling.md).

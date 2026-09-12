@@ -1,4 +1,8 @@
 export { default as AttributeTable } from './AttributeTable/AttributeTable.vue';
+export { default as AttributeTableGrid } from './AttributeTable/AttributeTableGrid.vue';
+export { default as AttributeTablePager } from './AttributeTable/AttributeTablePager.vue';
+export { default as AttributeTableToolbar } from './AttributeTable/AttributeTableToolbar.vue';
+export { default as AttributeTableView } from './AttributeTable/AttributeTableView.vue';
 export { default as ComponentManagementControl } from './ComponentManagementControl/ComponentManagementControl.vue';
 export { default as CreateControl } from './CreateControl/CreateControl.vue';
 export { default as DatasetControl } from './DatasetControl/DatasetControl.vue';
