@@ -109,6 +109,7 @@
     },
     "changelog": {
       "projectChangelogs": {
+        "createRelease": "github",
         "renderOptions": {
           "authors": true,
           "commitReferences": true,
@@ -140,7 +141,8 @@
           "updateDependents": "auto"
         },
         "changelog": {
-          "projectChangelogs": true
+          "createRelease": "github",
+          "file": "{projectRoot}/CHANGELOG.md"
         }
       },
       "map": {
@@ -166,7 +168,8 @@
           "updateDependents": "auto"
         },
         "changelog": {
-          "projectChangelogs": true
+          "createRelease": "github",
+          "file": "{projectRoot}/CHANGELOG.md"
         }
       },
       "packages": {
