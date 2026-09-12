@@ -1,3 +1,26 @@
+## 1.2.0 (2026-09-12)
+
+### 🚀 Features
+
+- enhance ESLint rules and improve package configurations ([6a30edfc](https://github.com/hung4564/vue-library/commit/6a30edfc))
+- enhance package configurations and improve type safety ([1945262a](https://github.com/hung4564/vue-library/commit/1945262a))
+- add map-draw package and integrate drawing functionality ([6acae3e4](https://github.com/hung4564/vue-library/commit/6acae3e4))
+- **draggable:** enhance accessibility and documentation for draggable components ([fa27a190](https://github.com/hung4564/vue-library/commit/fa27a190))
+- **draggable:** enhance accessibility and context menu functionality ([117f8d86](https://github.com/hung4564/vue-library/commit/117f8d86))
+- **draggable:** enhance bottom panel functionality and exclusivity ([95411e28](https://github.com/hung4564/vue-library/commit/95411e28))
+- **draggable:** add MenuPage and context menu functionality ([f9a4f107](https://github.com/hung4564/vue-library/commit/f9a4f107))
+- **draggable:** introduce layout management and context menu enhancements ([18375fcb](https://github.com/hung4564/vue-library/commit/18375fcb))
+- **draggable:** add stable item ids, commands, bounds, and a11y polish Expose useDragCommands, optional id/mobileBreakpoint/highlightMs, popup/modal bounds events, clamp helpers, --draggable-* CSS tokens, modal/menu a11y, and peer/lint packaging fixes for Vue and React. ([263d0135](https://github.com/hung4564/vue-library/commit/263d0135))
+- remove @hungpvq/vue-content-menu ([5e396a97](https://github.com/hung4564/vue-library/commit/5e396a97))
+- add drawer, modal ([752668d0](https://github.com/hung4564/vue-library/commit/752668d0))
+- table export, select ([9e6db4e6](https://github.com/hung4564/vue-library/commit/9e6db4e6))
+- add style control ([4b4e8b62](https://github.com/hung4564/vue-library/commit/4b4e8b62))
+- split react ([91d47afb](https://github.com/hung4564/vue-library/commit/91d47afb))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.1.0 (2026-09-07)
 
 ### 🚀 Features

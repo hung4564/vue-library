@@ -4,9 +4,9 @@ Framework-agnostic draggable layout kit with Vue and React adapters.
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [`@hungpvq/draggable`](./core/) | **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->** | Types, store (`drag:core`), utils, shared CSS |
-| [`@hungpvq/vue-draggable`](../vue/draggable/) | **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->** | Vue container, items, hooks, store wiring |
-| [`@hungpvq/react-draggable`](../react/draggable/) | **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->** | React container, items, hooks, context, store wiring |
+| [`@hungpvq/draggable`](./core/) | **<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->** | Types, store (`drag:core`), utils, shared CSS |
+| [`@hungpvq/vue-draggable`](../vue/draggable/) | **<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->** | Vue container, items, hooks, store wiring |
+| [`@hungpvq/react-draggable`](../react/draggable/) | **<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->** | React container, items, hooks, context, store wiring |
 
 **Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Stable API:** [core/docs/stable-api.md](./core/docs/stable-api.md) · **Testing:** [core/docs/testing.md](./core/docs/testing.md) · **Next minor prep:** [core/docs/releases/v1.2.md](./core/docs/releases/v1.2.md) · **Demos:** [Vue](https://hung4564.github.io/demo-draggable/vue/) · [React](https://hung4564.github.io/demo-draggable/react/)
 
@@ -14,19 +14,19 @@ Framework-agnostic draggable layout kit with Vue and React adapters.
 
 # Checklist SemVer / Breaking Change
 
-Packages are on **`<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use **explicit named exports** (locked by `public-api.spec.ts`); treat Stable allowlist symbols as public API. Experimental symbols (`ManagementControl`, `ContextMenu`, …) may change in a **minor**.
+Packages are on **`<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use **explicit named exports** (locked by `public-api.spec.ts`); treat Stable allowlist symbols as public API. Experimental symbols (`ManagementControl`, `ContextMenu`, …) may change in a **minor**.
 
 ## 0. Surface map (version together)
 
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/draggable` | `.` + `./style.css` | peer `@hungpvq/shared-store` |
-| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
-| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd` |
+| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
+| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd` |
 
 **Monorepo rule:** Nx release group `draggable` uses `projectsRelationship: fixed`. Bumping `@hungpvq/draggable` major/minor requires the same release of Vue + React adapters. Do not publish core alone when peers use a `~` pin.
 
-Map adapters that peer on draggable (e.g. `@hungpvq/vue-map-dataset` → `vue-draggable <!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`) must stay compatible when you bump this group.
+Map adapters that peer on draggable (e.g. `@hungpvq/vue-map-dataset` → `vue-draggable <!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->`) must stay compatible when you bump this group.
 
 ## 1. Bump decision — quick flowchart
 
@@ -41,7 +41,7 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 
 ## 2. BREAKING checklist (→ major)
 
-Any checked item must **not** ship in `<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->` / as a `1.x` patch.
+Any checked item must **not** ship in `<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->` / as a `1.x` patch.
 
 ### A. Module / package graph
 
@@ -49,7 +49,7 @@ Any checked item must **not** ship in `<!-- docs-ver:draggable.line -->1.1.x<!--
 - [ ] Change `exports` so old import paths fail (`.`, `./style.css`)
 - [ ] Drop dual `import` / `require` while apps still use CJS
 - [ ] Rename npm scope / package name
-- [ ] Raise peer **minimum** outside the old range (e.g. React 18 → 19 required, `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->` → `~2.0.0`)
+- [ ] Raise peer **minimum** outside the old range (e.g. React 18 → 19 required, `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->` → `~2.0.0`)
 - [ ] Change optional peer → required
 
 ### B. Named exports (TypeScript / ESM)
@@ -163,7 +163,7 @@ Breaking if you:
 1. **Stable API allowlist:** [core/docs/stable-api.md](./core/docs/stable-api.md) — SemVer promises apply here.
 2. **Named root barrels** — packages use explicit exports (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package (`core` / `vue` / `react`).
 3. Mark the rest **experimental** (`experimental.ts` + docs table) — may change in a **minor**. Still re-exported from the root for 1.x compat.
-4. Prefer peer ranges like `^<!-- docs-ver:draggable.exact -->1.1.0<!-- /docs-ver:draggable.exact -->` over long-lived exact pins once release process is stable; adapters currently use `<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`.
+4. Prefer peer ranges like `^<!-- docs-ver:draggable.exact -->1.2.0<!-- /docs-ver:draggable.exact -->` over long-lived exact pins once release process is stable; adapters currently use `<!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->`.
 5. **React Vite demos:** exclude workspace `libs/` from `@vitejs/plugin-react` Fast Refresh (`react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })`). Otherwise browser ESM reports missing named exports from path-aliased source. See `apps/react/demo-draggable/vite.config.ts`.
 6. **React store:** do not re-export `useStoreReactive` from `store/index.ts` (circular with `useStoreReactive.ts`).
 7. **Internal chrome** (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public API — do not confuse with map-core `MapControlButton` / Experimental `MapButton`.

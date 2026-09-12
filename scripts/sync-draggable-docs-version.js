@@ -35,7 +35,7 @@ const files = [
   'libs/draggable/core/docs/index.md',
   'libs/draggable/core/docs/stable-api.md',
   'libs/draggable/core/docs/testing.md',
-  'libs/draggable/core/docs/releases/README.md',
+  'libs/draggable/core/docs/releases/index.md',
   'libs/vue/draggable/README.md',
   'libs/react/draggable/README.md',
   'libs/draggable/core/src/public-api.spec.ts',

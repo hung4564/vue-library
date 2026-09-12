@@ -10,7 +10,7 @@ description: >-
 
 # Draggable SemVer & Stable API
 
-Packages are on **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->** (published). SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
+Packages are on **<!-- docs-ver:draggable.line -->1.2.x<!-- /docs-ver:draggable.line -->** (published). SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
 
 ## Required reading before API edits
 
@@ -58,7 +58,7 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
 - Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
-- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->` pins on adapters
+- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->~1.2.0<!-- /docs-ver:draggable.peer -->` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
 - Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
 - Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes

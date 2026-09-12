@@ -136,6 +136,8 @@ const demoDraggableConfig: UserConfig = {
     /^\/vue/,
     /^\/react/,
     /^https?:\/\/hung4564\.github\.io\/demo-draggable\/(vue|react)/,
+    // Package README (SemVer checklist) lives outside VitePress srcDir.
+    /README(\.md)?(#|$)/,
   ],
   themeConfig: {
     search: { provider: 'local' },
