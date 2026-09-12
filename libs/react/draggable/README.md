@@ -1,6 +1,6 @@
 # `@hungpvq/react-draggable`
 
-React 18 adapter for `@hungpvq/draggable` (**1.1.x**).
+React 18 adapter for `@hungpvq/draggable` (**<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->**).
 
 ## Install
 
@@ -8,7 +8,7 @@ React 18 adapter for `@hungpvq/draggable` (**1.1.x**).
 npm install @hungpvq/react-draggable
 ```
 
-Peers: `react` / `react-dom` `^18`, `@hungpvq/draggable@~1.1.0`, `react-rnd`, plus shared packages listed in `package.json`.
+Peers: `react` / `react-dom` `^18`, `@hungpvq/draggable@<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`, `react-rnd`, plus shared packages listed in `package.json`.
 
 ## Styles
 

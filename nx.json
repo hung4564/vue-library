@@ -100,7 +100,12 @@
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true,
       "updateDependents": "never",
-      "manifestRootsToUpdate": ["{projectRoot}"]
+      "manifestRootsToUpdate": ["{projectRoot}"],
+      "git": {
+        "commit": false,
+        "tag": false,
+        "stageChanges": true
+      }
     },
     "changelog": {
       "projectChangelogs": {
@@ -111,7 +116,13 @@
           "applyUsernameToAuthors": true
         }
       },
-      "automaticFromRef": true
+      "automaticFromRef": true,
+      "git": {
+        "commit": true,
+        "tag": true,
+        "push": true,
+        "commitMessage": "chore(release): publish {version}"
+      }
     },
     "groups": {
       "draggable": {
@@ -121,6 +132,7 @@
           "@hungpvq/react-draggable"
         ],
         "projectsRelationship": "fixed",
+        "releaseTagPattern": "draggable@{version}",
         "version": {
           "fallbackCurrentVersionResolver": "disk",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
@@ -145,7 +157,8 @@
           "@hungpvq/react-map-draw",
           "@hungpvq/react-map-devtools"
         ],
-        "projectsRelationship": "independent",
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "map@{version}",
         "version": {
           "fallbackCurrentVersionResolver": "disk",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
@@ -180,6 +193,7 @@
           "!@hungpvq/react-draggable"
         ],
         "projectsRelationship": "independent",
+        "releaseTagPattern": "{projectName}@{version}",
         "version": {
           "updateDependents": "never"
         }

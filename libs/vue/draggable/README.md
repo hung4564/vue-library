@@ -1,6 +1,6 @@
 # `@hungpvq/vue-draggable`
 
-Vue 3 adapter for `@hungpvq/draggable` (**1.1.x**).
+Vue 3 adapter for `@hungpvq/draggable` (**<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->**).
 
 ## Install
 
@@ -8,7 +8,7 @@ Vue 3 adapter for `@hungpvq/draggable` (**1.1.x**).
 npm i @hungpvq/vue-draggable
 ```
 
-Peers: `vue`, `@hungpvq/draggable@~1.1.0`, `vue-draggable-resizable`, plus shared packages listed in `package.json`.
+Peers: `vue`, `@hungpvq/draggable@<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->`, `vue-draggable-resizable`, plus shared packages listed in `package.json`.
 
 ## Styles
 

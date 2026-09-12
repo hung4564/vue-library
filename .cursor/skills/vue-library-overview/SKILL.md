@@ -88,11 +88,13 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 - Map docs index: `libs/map-core/core/docs/index.md`
 - Map store / `getMap`: `libs/map-core/core/docs/core/map-store.md`
 - Map error handling: `libs/map-core/core/docs/core/error-handling.md`
-- Draggable SemVer + public surface: `libs/draggable/README.md` (line **1.1.x**)
+- Draggable SemVer + public surface: `libs/draggable/README.md` (line **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->**)
 - Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
 - Draggable a11y: `libs/draggable/core/docs/a11y.md`
 - Draggable testing: `libs/draggable/core/docs/testing.md`
+- Draggable next minor prep: `libs/draggable/core/docs/releases/v1.2.md`
 - Draggable docs index: `libs/draggable/core/docs/index.md`
+- Draggable release: `npm run draggable:release` → `scripts/release-group.js` (docs sync + site push + tag `draggable@<version>`)
 - Per-package READMEs under each lib
 
 ## React demos + workspace `libs/` source

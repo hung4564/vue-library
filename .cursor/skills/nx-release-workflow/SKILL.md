@@ -22,31 +22,32 @@ Independent versioning via Nx release groups in root `nx.json`. Conventional Com
 ```bash
 npm run map:lint
 npm run map:build
-npm run map:version          # nx release version --group=map
-npm run map:release          # nx release --group=map
-```
-
-Local registry (Verdaccio on `http://localhost:4873`):
-
-```bash
+npm run map:release            # Nx releaseTag map@<ver> + site push (scripts/release-group.js)
+npm run map:site:push -- --version 1.0.2
 npm run map:release:local
 ```
 
-(`--git-commit=false --git-tag=false` then publish to local registry.)
+**Coordination:** map group is **`fixed`** (lockstep). Tag via `releaseTagPattern` `map@{version}`.
 
-**Coordination:** in-family map peers use `~1.0.1` (patch drift OK). If `@hungpvq/map-core` bumps **minor/major**, bump adapters + dataset + **draw** (`@hungpvq/map-draw`, `@hungpvq/vue-map-draw`, `@hungpvq/react-map-draw`) in the **same** release. Do not publish a breaking/minor core alone.
+Tag pattern (nx.json): `draggable@{version}` / `map@{version}`. With conventional commits, current version comes from the latest matching git tag (must stay aligned with `package.json`).
 
 ## Draggable group
 
-Confirm bump with `draggable-semver-api` (`libs/draggable/README.md`, `libs/draggable/core/docs/stable-api.md`). Fixed group: bump core + Vue + React together.
+Confirm bump with `draggable-semver-api`. Fixed group: bump core + Vue + React together.
 
 ```bash
 npm run draggable:build
 npm run draggable:test
-npm run draggable:version
-npm run draggable:release
+npm run draggable:release          # version → docs sync → site → Nx changelog/commit/tag/push (draggable@<ver>)
+# flags: node scripts/release-group.js draggable minor --skip-site|--skip-push|--dry-run|--local-publish
+npm run draggable:docs:sync
+npm run draggable:site:push -- --version 1.2.0
 npm run draggable:release:local
 ```
+
+After release, GitHub Actions Publish matches tags `draggable@*` / `map@*` (same as `nx.json` `releaseTagPattern`) and runs `nx release publish --group=…`.
+
+**Bootstrap:** with conventional commits, Nx resolves the current version from git tags. If `package.json` is ahead of the latest `draggable@*` / `map@*` tag, create a one-time align tag (e.g. `git tag draggable@1.1.0`) before releasing.
 
 ## Share
 
@@ -68,8 +69,9 @@ Project names match package names (e.g. `@hungpvq/map-core`). Build output under
 
 ## Agent rules
 
-- Do **not** run `map:release` / publish to public npm unless the user explicitly asks.
+- Do **not** run `map:release` / `draggable:release` / publish to public npm unless the user explicitly asks.
 - Prefer `map:lint` + `map:build` (or project-scoped nx) to validate changes.
 - After version bumps, ensure peer dependency ranges in sibling packages stay consistent.
 - Do not force-push or skip hooks unless the user explicitly requests it.
 - **Do not** hand-edit package `CHANGELOG.md` files unless the user explicitly asks. Leave changelog generation to `*:version` / Nx release (or a dedicated user request).
+- Release orchestrator pushes `deploy/demo-*` submodules and tags `draggable@*` / `map@*` (triggers CI Publish) — requires clean intent and network credentials.

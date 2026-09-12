@@ -13,9 +13,10 @@ description: >-
 | Surface | How to run | Notes |
 |---------|------------|--------|
 | Main docs | `npm run docs:dev` / `docs:build` | `vitepress` on `docs/`; `docs:pre-link` → `scripts/link-docs.js` |
-| Map demo site | `npm run map:site:dev` / `map:site:build` | links docs + `scripts/vitepress-demo-map.js`; output `deploy/demo-map` |
-| Draggable demo site | `npm run draggable:site:dev` / `draggable:site:build` | `scripts/vitepress-demo-draggable.js`; `deploy/demo-draggable` |
+| Map demo site | `npm run map:site:dev` / `map:site:build` / `map:site:push` | links docs + VitePress; output `deploy/demo-map` |
+| Draggable demo site | `npm run draggable:site:dev` / `draggable:site:build` / `draggable:site:push` | VitePress + demos; `deploy/demo-draggable` |
 | Preview | `map:site:preview` / `draggable:site:preview` | serve deploy folders |
+| Release + site + group tag | `npm run map:release` / `draggable:release` | `scripts/release-group.js` → tag `map@*` / `draggable@*` (CI Publish) |
 
 ## Source-of-truth docs (map)
 

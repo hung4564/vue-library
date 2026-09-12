@@ -32,7 +32,7 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 | `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable `~1.1.0` |
 | `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
 
-**Monorepo rule:** bumping `@hungpvq/map-core` **minor/major** usually requires bumping adapters + dataset + draw in the same release (`~` peers allow patch-only drift). Do not publish a breaking/minor core alone.
+**Monorepo rule:** map release group is **`fixed`** (one version, tag `map@{version}` via Nx `releaseTag.pattern`). Bumping any map package bumps the whole group; in-family peers stay `~` aligned.
 
 ## 1. Bump decision — quick flowchart
 

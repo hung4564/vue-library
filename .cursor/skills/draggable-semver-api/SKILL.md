@@ -10,7 +10,7 @@ description: >-
 
 # Draggable SemVer & Stable API
 
-Packages are on **1.1.x**. SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
+Packages are on **<!-- docs-ver:draggable.line -->1.1.x<!-- /docs-ver:draggable.line -->** (published). SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
 
 ## Required reading before API edits
 
@@ -18,6 +18,19 @@ Packages are on **1.1.x**. SemVer is strict: breaking → **major**, additive �
 2. `libs/draggable/core/docs/stable-api.md` — Stable allowlist vs experimental
 3. `libs/draggable/core/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
 4. `libs/draggable/core/docs/testing.md` — unit / public-api lock expectations
+5. `libs/draggable/core/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
+
+## Release (docs site + git tag)
+
+Prefer the orchestrator (syncs `<!-- docs-ver:draggable.* -->` markers, builds/pushes `deploy/demo-draggable`, tags `draggable@<version>`, pushes — CI Publish runs on `draggable@*` / `map@*`):
+
+```bash
+npm run draggable:test
+npm run draggable:release          # node scripts/release-group.js draggable
+# or: node scripts/release-group.js draggable minor --skip-push
+```
+
+Docs-only version rewrite: `node scripts/sync-draggable-docs-version.js`
 
 ## Bump flowchart
 
@@ -45,9 +58,10 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
 - Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
-- Peer minimum raises; `@hungpvq/draggable` `~1.1.0` pins on adapters
+- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->~1.1.0<!-- /docs-ver:draggable.peer -->` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
 - Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
+- Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
 - Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
 
 Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
