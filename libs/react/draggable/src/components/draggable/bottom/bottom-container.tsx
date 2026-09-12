@@ -9,7 +9,7 @@ import {
 import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useExpand, useIcon } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useBottomItem } from '../../../store';
+import { useBottomItem, useDragContainer } from '../../../store';
 import { useStoreReactive } from '../../../store/useStoreReactive';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
@@ -22,6 +22,7 @@ export function BottomContainer() {
   const storeBottom = useBottomItem(containerId);
   const storeBottomRef = useRef(storeBottom);
   storeBottomRef.current = storeBottom;
+  const { getItemAction } = useDragContainer(containerId);
 
   const { expand, toggle: onToggleExpand } = useExpand({}, undefined, false);
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
@@ -43,7 +44,14 @@ export function BottomContainer() {
 
   function onClose() {
     const itemShow = getShow();
-    if (itemShow) storeBottomRef.current.registerBottomShow(itemShow, false);
+    if (itemShow) {
+      const action = getItemAction(itemShow);
+      if (action?.close) {
+        action.close();
+        return;
+      }
+      storeBottomRef.current.registerBottomShow(itemShow, false);
+    }
   }
 
   function openMenu(e: ReactMouseEvent) {

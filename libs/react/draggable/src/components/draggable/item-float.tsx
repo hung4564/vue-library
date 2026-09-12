@@ -125,7 +125,7 @@ export function DraggableItemFloat({
   const titleId = `float-title-${itemId}`;
 
   function handleClose() {
-    setShow(false);
+    close();
   }
 
   useEffect(() => {
@@ -147,14 +147,14 @@ export function DraggableItemFloat({
         return;
       }
       event.preventDefault();
-      setShow(false);
+      close();
     }
     document.addEventListener('keydown', onKeydown);
     return () => {
       window.clearTimeout(focusTimer);
       document.removeEventListener('keydown', onKeydown);
     };
-  }, [show, setShow]);
+  }, [show, close]);
 
   const style = useMemo(() => {
     const s: CSSProperties = { zIndex };

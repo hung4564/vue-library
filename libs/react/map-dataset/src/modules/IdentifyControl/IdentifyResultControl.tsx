@@ -118,7 +118,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
 
   const currentPoint = useMemo(() => {
     const point = formatCoordinate(origin);
-    return `${point.longitude}, &nbsp;${point.latitude}`;
+    return `${point.longitude}, ${point.latitude}`;
   }, [origin, formatCoordinate]);
 
   const hasSelectedPoint = origin.latitude !== 0 || origin.longitude !== 0;
@@ -228,7 +228,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
               <div className="identify-control-header">
                 <div className="identify-control-header__row">
                   <b>{trans('map.identify.point')}:</b>
-                  <span dangerouslySetInnerHTML={{ __html: currentPoint }} />
+                  <span>{currentPoint}</span>
                 </div>
                 {layerItems.length > 0 ? (
                   <div className="identify-control-header__layer">

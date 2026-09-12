@@ -25,7 +25,7 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useDragComponent, useSidebarItem } from '../../../store';
+import { useDragComponent, useDragContainer, useSidebarItem } from '../../../store';
 import MapButton from '../../parts/MapButton.vue';
 import MapSidebarToggle from '../../parts/MapSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
@@ -81,13 +81,21 @@ const { componentCard, componentCardHeader } = useComponent({
   containerId: containerId.value,
 });
 const storeDragItem = useSidebarItem(containerId.value);
+const { getItemAction } = useDragContainer(containerId.value);
 const ComponentMapSidebarToggle = computed(
   () => store.getComponentCardSidebarToggle() || MapSidebarToggle,
 );
 function onClose() {
-  show.value = false;
   const itemShow = getShowForLocation(props.location);
-  if (itemShow) storeDragItem.registerSideBarShow(itemShow, false);
+  if (itemShow) {
+    const action = getItemAction(itemShow);
+    if (action?.close) {
+      action.close();
+      return;
+    }
+    storeDragItem.registerSideBarShow(itemShow, false);
+  }
+  show.value = false;
 }
 
 function onKeydown(event: KeyboardEvent) {

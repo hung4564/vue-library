@@ -10,7 +10,7 @@
       "fallbackCurrentVersionResolver": "disk"
     }
   },
-  "tags": ["map"],
+  "tags": ["map", "vue"],
   "targets": {
     "ts-check": {
       "executor": "nx:run-commands",

@@ -260,9 +260,9 @@ export function DraggableItemPopup({
   const handleClose = useCallback(
     (e?: MouseEvent) => {
       e?.stopPropagation();
-      setShow(false);
+      close();
     },
-    [setShow],
+    [close],
   );
 
   const panelRootRef = useRef<HTMLDivElement>(null);
@@ -292,14 +292,14 @@ export function DraggableItemPopup({
         return;
       }
       event.preventDefault();
-      setShow(false);
+      close();
     }
     document.addEventListener('keydown', onKeydown);
     return () => {
       window.clearTimeout(focusTimer);
       document.removeEventListener('keydown', onKeydown);
     };
-  }, [show, setShow]);
+  }, [show, close]);
 
   useEffect(() => {
     if (!show) {

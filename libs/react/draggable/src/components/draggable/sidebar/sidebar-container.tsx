@@ -14,6 +14,7 @@ import { useContainerSize } from '../../../hook/useContainerSize';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import {
   useDragComponent,
+  useDragContainer,
   useSidebarItem,
 } from '../../../store';
 import { useStoreReactive } from '../../../store/useStoreReactive';
@@ -63,6 +64,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
     containerId,
   });
   const storeDragItem = useSidebarItem(containerId);
+  const { getItemAction } = useDragContainer(containerId);
   const store = useDragComponent();
   const ComponentMapSidebarToggle = (store.getComponentCardSidebarToggle() ||
     MapSidebarToggle) as ComponentType<MapSidebarToggleProps>;
@@ -83,9 +85,16 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
   }
 
   function onClose() {
-    setShow(false);
     const itemShow = getShowForLocation(location);
-    if (itemShow) storeDragItem.registerSideBarShow(itemShow, false);
+    if (itemShow) {
+      const action = getItemAction(itemShow);
+      if (action?.close) {
+        action.close();
+        return;
+      }
+      storeDragItem.registerSideBarShow(itemShow, false);
+    }
+    setShow(false);
   }
 
   useEffect(() => {

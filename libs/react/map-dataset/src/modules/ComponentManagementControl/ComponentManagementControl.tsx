@@ -19,6 +19,7 @@ export function ComponentManagementControl(props: WithMapPropType) {
           mapId={mapId}
           componentKey={item.componentKey}
           {...item.attr}
+          revision={item.revision}
           onClose={() => {
             removeComponent(item.id);
           }}

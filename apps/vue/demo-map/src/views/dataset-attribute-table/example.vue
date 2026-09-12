@@ -35,7 +35,7 @@ import {
   LayerControl,
   useMapDatasetComponent,
 } from '@hungpvq/vue-map-dataset';
-import { computed, ref, watch } from 'vue';
+import { computed, markRaw, ref, watch } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import SampleAttributeTableGrid from './sample-attribute-table-grid.vue';
@@ -44,6 +44,9 @@ import SampleAttributeTableToolbar from './sample-attribute-table-toolbar.vue';
 import SampleAttributeTableView from './sample-attribute-table-view.vue';
 import SampleAttributeTableCell from './sample-attribute-table-cell.vue';
 import SampleAttributeTableHeader from './sample-attribute-table-header.vue';
+
+const SampleCell = markRaw(SampleAttributeTableCell);
+const SampleHeader = markRaw(SampleAttributeTableHeader);
 
 const mapId = ref(getUUIDv4());
 const { addComponent } = useMapDatasetComponent(mapId.value);
@@ -171,12 +174,12 @@ function openAttributeTableWithCells() {
   UniversalRegistry.registerComponentForMap(
     mapId.value,
     SAMPLE_CELL_KEY,
-    SampleAttributeTableCell,
+    SampleCell,
   );
   UniversalRegistry.registerComponentForMap(
     mapId.value,
     SAMPLE_HEADER_KEY,
-    SampleAttributeTableHeader,
+    SampleHeader,
   );
   addComponent({
     componentKey: KEY.root,
@@ -193,8 +196,8 @@ function openAttributeTableWithCells() {
         {
           key: 'id',
           label: 'ID',
-          cellComponent: SampleAttributeTableCell,
-          headerComponent: SampleAttributeTableHeader,
+          cellComponent: SampleCell,
+          headerComponent: SampleHeader,
           sortable: false,
         },
         { key: '__geometry', label: 'Geometry', sortable: false },

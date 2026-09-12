@@ -1,5 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
+/**
+ * Visibility vs dismiss:
+ * - `setShow` / `update:show` — hide/show only (toggle, exclusive bottom/sidebar).
+ * - `close()` — dismiss request (X / Escape / management Hide); emits `close`.
+ */
 export function useShow(
   props: { show?: boolean },
   emit?: {
@@ -12,6 +17,8 @@ export function useShow(
   const [p_show, setPShow] = useState<boolean>(!!props.show || !!init);
   const emitRef = useRef(emit);
   emitRef.current = emit;
+  const showRef = useRef(p_show);
+  showRef.current = p_show;
 
   useEffect(() => {
     if (props.show !== undefined) {
@@ -20,11 +27,10 @@ export function useShow(
   }, [props.show]);
 
   const setShow = useCallback((val: boolean) => {
+    if (showRef.current === val) return;
+    showRef.current = val;
     setPShow(val);
     emitRef.current?.['update:show']?.(val);
-    if (!val) {
-      emitRef.current?.close?.();
-    }
   }, []);
 
   const open = useCallback(() => {
@@ -32,8 +38,14 @@ export function useShow(
   }, [setShow]);
 
   const close = useCallback(() => {
-    setShow(false);
-  }, [setShow]);
+    const wasOpen = showRef.current;
+    showRef.current = false;
+    setPShow(false);
+    if (wasOpen) {
+      emitRef.current?.['update:show']?.(false);
+    }
+    emitRef.current?.close?.();
+  }, []);
 
   return { show: p_show, setShow, open, close };
 }

@@ -49,10 +49,10 @@ import { useMapDatasetHighlight } from '../../store';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
-const emit = defineEmits<{ close: [] }>();
 const { mapId, moduleContainerProps, callMap } = useMap(props);
-const { setFeatureHighlight, getHighlightSource } =
-  useMapDatasetHighlight(mapId.value);
+const { setFeatureHighlight, getHighlightSource } = useMapDatasetHighlight(
+  mapId.value,
+);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
 
@@ -96,9 +96,19 @@ watch(
       props.ui,
     ] as const,
   () => {
+    // Re-open when addComponent updates the same `check` while hidden via toggle.
+    show.value = true;
     controller.value.dispose();
     bindController(createController());
     void controller.value.load('initial');
+  },
+);
+
+watch(
+  () => props.revision,
+  (revision, prev) => {
+    if (revision == null || revision === prev) return;
+    show.value = true;
   },
 );
 
@@ -107,25 +117,23 @@ const state = computed(() => {
   return controller.value.getState();
 });
 
-const labels = computed(
-  (): AttributeTableViewLabels => ({
-    search: trans.value('map.attribute-table.search'),
-    zoomToSelection: trans.value('map.attribute-table.zoomToSelection'),
-    showAll: trans.value('map.attribute-table.showAll'),
-    showSelected: trans.value('map.attribute-table.showSelected'),
-    clear: trans.value('map.attribute-table.clear'),
-    export: trans.value('map.attribute-table.export'),
-    exportSelected: trans.value('map.attribute-table.export-selected'),
-    exporting: trans.value('map.attribute-table.exporting'),
-    loading: trans.value('map.attribute-table.loading'),
-    empty: trans.value('map.attribute-table.empty'),
-    page: trans.value('map.attribute-table.page'),
-    of: trans.value('map.attribute-table.of'),
-    prev: trans.value('map.attribute-table.prev'),
-    next: trans.value('map.attribute-table.next'),
-    rowsPerPage: trans.value('map.attribute-table.rowsPerPage'),
-  }),
-);
+const labels = computed((): AttributeTableViewLabels => ({
+  search: trans.value('map.attribute-table.search'),
+  zoomToSelection: trans.value('map.attribute-table.zoomToSelection'),
+  showAll: trans.value('map.attribute-table.showAll'),
+  showSelected: trans.value('map.attribute-table.showSelected'),
+  clear: trans.value('map.attribute-table.clear'),
+  export: trans.value('map.attribute-table.export'),
+  exportSelected: trans.value('map.attribute-table.export-selected'),
+  exporting: trans.value('map.attribute-table.exporting'),
+  loading: trans.value('map.attribute-table.loading'),
+  empty: trans.value('map.attribute-table.empty'),
+  page: trans.value('map.attribute-table.page'),
+  of: trans.value('map.attribute-table.of'),
+  prev: trans.value('map.attribute-table.prev'),
+  next: trans.value('map.attribute-table.next'),
+  rowsPerPage: trans.value('map.attribute-table.rowsPerPage'),
+}));
 
 const exportActions = computed(() => {
   tick.value;
@@ -193,12 +201,14 @@ function clearAttributeTableHighlight() {
     setFeatureHighlight(undefined, 'attribute-table');
   }
 }
-/** Dismiss popup and remove from ComponentManagement (X / explicit close). */
+/**
+ * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
+ * stays registered and toggle show / selectRows keep working.
+ * Removal from ComponentManagement is via `onClose` from parent if needed.
+ */
 function handleClose() {
   show.value = false;
   clearAttributeTableHighlight();
-  emit('close');
-  props.onClose?.();
 }
 function onUpdateShow(val: boolean) {
   show.value = val;
@@ -255,29 +265,27 @@ const itemMenuConditionCtx = computed(() =>
   createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
 );
 
-const viewProps = computed(
-  (): AttributeTableViewProps => ({
-    mapId: mapId.value,
-    layer: props.layer,
-    controller: controller.value,
-    pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
-    labels: labels.value,
-    ui: resolvedUi.value,
-    onExportClick,
-    itemMenus: itemMenus.value,
-    itemMenuHost: itemMenuHost.value,
-    isMenuDisabled: (menu) =>
-      isMenuItemDisabled(menu, itemMenuConditionCtx.value),
-    onRowMenuAction: (row, menu, event) => {
-      handleMenuAction(menu, {
-        event,
-        layer: itemMenuHost.value,
-        mapId: mapId.value,
-        value: convertFeatureToItem(row.feature),
-      });
-    },
-  }),
-);
+const viewProps = computed((): AttributeTableViewProps => ({
+  mapId: mapId.value,
+  layer: props.layer,
+  controller: controller.value,
+  pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+  labels: labels.value,
+  ui: resolvedUi.value,
+  onExportClick,
+  itemMenus: itemMenus.value,
+  itemMenuHost: itemMenuHost.value,
+  isMenuDisabled: (menu) =>
+    isMenuItemDisabled(menu, itemMenuConditionCtx.value),
+  onRowMenuAction: (row, menu, event) => {
+    handleMenuAction(menu, {
+      event,
+      layer: itemMenuHost.value,
+      mapId: mapId.value,
+      value: convertFeatureToItem(row.feature),
+    });
+  },
+}));
 
 onMounted(async () => {
   bindController(controller.value);
@@ -316,10 +324,7 @@ onUnmounted(() => {
           v-bind="viewProps"
         />
       </DraggableItemPopup>
-      <ContextMenu
-        v-if="exportMenuMode"
-        ref="exportMenuRef"
-      >
+      <ContextMenu v-if="exportMenuMode" ref="exportMenuRef">
         <ul class="context-menu layer-context-menu">
           <li
             v-for="item in exportActions"
@@ -328,17 +333,11 @@ onUnmounted(() => {
             @click.stop="onExportAction(item.id)"
           >
             <div class="layer-context-menu__item-icon">
-              <SvgIcon
-                :size="16"
-                type="mdi"
-                :path="item.icon || mdiDownload"
-              />
+              <SvgIcon :size="16" type="mdi" :path="item.icon || mdiDownload" />
             </div>
             <span>{{
               item.label ||
-              (item.format
-                ? GEO_EXPORT_FORMAT_META[item.format].name
-                : item.id)
+              (item.format ? GEO_EXPORT_FORMAT_META[item.format].name : item.id)
             }}</span>
           </li>
         </ul>

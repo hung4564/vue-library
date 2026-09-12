@@ -10,7 +10,7 @@
       "fallbackCurrentVersionResolver": "disk"
     }
   },
-  "tags": ["map", "core", "react"],
+  "tags": ["map", "react"],
   "targets": {
     "nx-release-publish": {
       "options": {

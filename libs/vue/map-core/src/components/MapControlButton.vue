@@ -53,6 +53,9 @@ import {
 export default {
   name: 'MapControlButton',
   components: { MapButton, MapIcon },
+  // Keep `class` / listeners on MapButton — not on the square `.button-container`
+  // wrapper (otherwise styles like `.devtools-toggle { border }` ring the container).
+  inheritAttrs: false,
   props: {
     icon: {
       type: [String, Boolean],

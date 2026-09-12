@@ -96,7 +96,7 @@ function changeDisplayTypePixelValue() {
 }
 function changePixelValue() {
   const point = formatCoordinate(lngLat.value, isDMS.value);
-  currentPoint.value = point.longitude + ', &nbsp;' + point.latitude;
+  currentPoint.value = `${point.longitude}, ${point.latitude}`;
 }
 function onZoomEnd() {
   callMap((map) => {
@@ -125,7 +125,7 @@ function updateScale(map: MapSimple, container: HTMLElement) {
 
 function setScale(container: HTMLElement, maxDistance: number, unit: string) {
   const distance = getRoundNum(maxDistance);
-  if (container) container.innerHTML = `${distance}&nbsp;${unit}`;
+  if (container) container.textContent = `${distance}\u00A0${unit}`;
 }
 
 function getDecimalRoundNum(d: number) {
@@ -173,9 +173,10 @@ function getRoundNum(num: number) {
             <div
               style="margin-left: 4px"
               class="selectable"
-              v-html="currentPoint"
               :style="{ 'min-width': isDMS ? '220px' : '100px' }"
-            ></div>
+            >
+              {{ currentPoint }}
+            </div>
             <i
               :title="
                 isDMS

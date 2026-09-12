@@ -249,16 +249,16 @@ export function DraggableModal({
   const handleClose = useCallback(
     (e?: { stopPropagation?: () => void }) => {
       e?.stopPropagation?.();
-      setShow(false);
+      close();
     },
-    [setShow],
+    [close],
   );
 
   const handleMaskClick = useCallback(() => {
     if (maskClosable) {
-      setShow(false);
+      close();
     }
-  }, [maskClosable, setShow]);
+  }, [maskClosable, close]);
 
   useEffect(() => {
     const sync = () => {
@@ -359,7 +359,7 @@ export function DraggableModal({
       if (!modalRootRef.current) return;
       if (event.key === 'Escape') {
         event.preventDefault();
-        setShow(false);
+        close();
         return;
       }
       trapTabKey(modalRootRef.current, event);
@@ -383,7 +383,7 @@ export function DraggableModal({
     centerY,
     propWidth,
     propHeight,
-    setShow,
+    close,
     itemId,
   ]);
 

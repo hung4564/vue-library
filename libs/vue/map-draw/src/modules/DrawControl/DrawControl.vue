@@ -364,7 +364,7 @@ watch([isShow, isDraw, method, draftCounts, drawOptions], () =>
           "
           class="context-menu__item"
         >
-          <span v-html="option.name"></span>
+          <span>{{ option.name }}</span>
         </li>
       </ul>
     </ContextMenu>

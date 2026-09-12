@@ -59,7 +59,7 @@ const flatChildren = computed(() => {
 
 const currentPoint = computed(() => {
   const point = formatCoordinate(origin);
-  return point.longitude + ', &nbsp;' + point.latitude;
+  return `${point.longitude}, ${point.latitude}`;
 });
 const hasSelectedPoint = computed(
   () => origin.latitude !== 0 || origin.longitude !== 0,
@@ -225,7 +225,7 @@ function onResultKeydown(event: KeyboardEvent) {
           <div class="identify-control-header">
             <div class="identify-control-header__row">
               <b>{{ trans('map.identify.point') }}:</b>
-              <span v-html="currentPoint"></span>
+              <span>{{ currentPoint }}</span>
             </div>
             <div
               v-if="layerItems.length > 0"

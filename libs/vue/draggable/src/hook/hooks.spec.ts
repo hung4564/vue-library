@@ -49,7 +49,7 @@ function mountSetup<T>(setup: () => T) {
 }
 
 describe('useShow / useExpand / useHighlight', () => {
-  it('syncs show props and emits update/close', async () => {
+  it('syncs show props; close() emits dismiss', async () => {
     const emit = vi.fn();
     const props = { show: false };
     const { api } = mountSetup(() => useShow(props, emit));
@@ -58,8 +58,18 @@ describe('useShow / useExpand / useHighlight', () => {
     expect(api().show.value).toBe(true);
     expect(emit).toHaveBeenCalledWith('update:show', true);
     api().close();
+    expect(api().show.value).toBe(false);
     expect(emit).toHaveBeenCalledWith('update:show', false);
     expect(emit).toHaveBeenCalledWith('close');
+  });
+
+  it('setShow(false) hides without emitting close', async () => {
+    const emit = vi.fn();
+    const { api } = mountSetup(() => useShow({ show: true }, emit));
+    api().show.value = false;
+    expect(api().show.value).toBe(false);
+    expect(emit).toHaveBeenCalledWith('update:show', false);
+    expect(emit).not.toHaveBeenCalledWith('close');
   });
 
   it('initializes from parent show prop', () => {

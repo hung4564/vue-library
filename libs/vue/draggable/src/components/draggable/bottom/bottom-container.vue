@@ -24,7 +24,7 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useBottomItem } from '../../../store';
+import { useBottomItem, useDragContainer } from '../../../store';
 import MapButton from '../../parts/MapButton.vue';
 
 const contextMenuRef = ref<
@@ -48,12 +48,13 @@ if (!containerId || !containerId.value) {
 }
 
 const { getShow, getItems } = useBottomContainer(containerId.value);
-const { show } = useShow({}, null);
+const { show, close } = useShow({}, null);
 const { expand, toggle: onToggleExpand } = useExpand({}, null, false);
 const { componentCard, componentCardHeader } = useComponent({
   containerId: containerId.value,
 });
 const storeBottom = useBottomItem(containerId.value);
+const { getItemAction } = useDragContainer(containerId.value);
 
 const titleTo = computed(() => `bottom-title-${containerId.value}`);
 const contentTo = computed(() => `bottom-content-${containerId.value}`);
@@ -68,9 +69,16 @@ watch(
 );
 
 function onClose() {
-  show.value = false;
   const itemShow = getShow();
-  if (itemShow) storeBottom.registerBottomShow(itemShow, false);
+  if (itemShow) {
+    const action = getItemAction(itemShow);
+    if (action?.close) {
+      action.close();
+      return;
+    }
+    storeBottom.registerBottomShow(itemShow, false);
+  }
+  close();
 }
 
 function onKeydown(event: KeyboardEvent) {

@@ -237,9 +237,10 @@ function summaryText() {
                 class="map-worker-control__item"
                 :class="{ 'is-selected': selected?.id === worker.id }"
               >
-                <button
-                  type="button"
+                <MapControlButton
                   class="map-worker-control__pick"
+                  variant="plain"
+                  size="small"
                   @click="selectedId = worker.id"
                 >
                   <span class="map-worker-control__pick-name">{{
@@ -264,7 +265,7 @@ function summaryText() {
                         .join(' · ')
                     }}
                   </span>
-                </button>
+                </MapControlButton>
               </li>
             </ul>
           </template>

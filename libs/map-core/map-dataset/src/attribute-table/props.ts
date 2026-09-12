@@ -1,6 +1,7 @@
-import type { Position, ControlLayout } from '@hungpvq/map-core';
+import type { ControlLayout, Position } from '@hungpvq/map-core';
 import type { IDataset, MenuAction } from '../interfaces';
 import type { AttributeTableController } from './controller';
+import type { AttributeTableExportOptions } from './export-options';
 import type {
   AttributeTableColumn,
   AttributeTableColumnsOption,
@@ -8,7 +9,6 @@ import type {
 } from './model';
 import type { AttributeTableSortState } from './sort';
 import type { AttributeTableStore } from './store';
-import type { AttributeTableExportOptions } from './export-options';
 import type { VirtualRowWindow } from './virtual-rows';
 
 /**
@@ -122,6 +122,11 @@ export type AttributeTableProps = {
   controlVisible?: boolean;
   controlOrder?: number | string;
   btnWidth?: number;
+  /**
+   * Bumped by ComponentManagement on each `addComponent` upsert.
+   * AttributeTable watches this to set `show=true` when re-opened while hidden.
+   */
+  revision?: number;
   /** Vue: emitted on dismiss. React: use `onClose`. */
   onClose?: () => void;
 };

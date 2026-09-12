@@ -47,7 +47,7 @@ function getRoundNum(num: number) {
 
 function setScale(container: HTMLElement, maxDistance: number, unit: string) {
   const distance = getRoundNum(maxDistance);
-  if (container) container.innerHTML = `${distance}&nbsp;${unit}`;
+  if (container) container.textContent = `${distance}\u00A0${unit}`;
 }
 
 export interface MouseCoordinatesControlProps extends WithMapPropType {
@@ -134,7 +134,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
             isDMSRef.current,
           );
           setCurrentPoint(
-            formatted.longitude + ', &nbsp;' + formatted.latitude,
+            `${formatted.longitude}, ${formatted.latitude}`,
           );
         }
       }, 15),
@@ -165,7 +165,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
           centerLngLat,
           isDMSRef.current,
         );
-        setCurrentPoint(point.longitude + ', &nbsp;' + point.latitude);
+        setCurrentPoint(`${point.longitude}, ${point.latitude}`);
       }
       syncScale(map);
       // Portal may not have mounted yet; retry after paint like Vue nextTick.
@@ -211,7 +211,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
         lngLatRef.current,
         isDMSRef.current,
       );
-      setCurrentPoint(point.longitude + ', &nbsp;' + point.latitude);
+      setCurrentPoint(`${point.longitude}, ${point.latitude}`);
     }
   }, []);
 
@@ -247,12 +247,13 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
               <div className="mouse-coordinates-point">
                 <div
                   className="selectable"
-                  dangerouslySetInnerHTML={{ __html: currentPoint }}
                   style={{
                     minWidth: isDMS ? '220px' : '100px',
                     marginLeft: '4px',
                   }}
-                />
+                >
+                  {currentPoint}
+                </div>
                 <i
                   title={
                     isDMS

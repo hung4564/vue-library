@@ -16,6 +16,7 @@ import {
   onBeforeUnmount,
   onMounted,
   computed,
+  markRaw,
   ref,
   watch,
   type Component,
@@ -87,9 +88,13 @@ function isColumnSortable(column: AttributeTableColumn) {
 
 function resolveSlot(value: unknown) {
   const resolved = resolveAttributeTableComponentRef(value);
+  const defaultComponent = resolved.defaultComponent as Component | undefined;
   return {
     componentKey: resolved.componentKey,
-    defaultComponent: resolved.defaultComponent as Component | undefined,
+    defaultComponent:
+      defaultComponent && typeof defaultComponent === 'object'
+        ? markRaw(defaultComponent)
+        : defaultComponent,
   };
 }
 

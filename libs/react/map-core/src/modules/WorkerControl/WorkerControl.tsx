@@ -303,9 +303,10 @@ export function WorkerControl(props: WorkerControlProps) {
                             selected?.id === worker.id ? ' is-selected' : ''
                           }`}
                         >
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-worker-control__pick"
+                            variant="plain"
+                            size="small"
                             onClick={() => setSelectedId(worker.id)}
                           >
                             <span className="map-worker-control__pick-name">
@@ -322,7 +323,7 @@ export function WorkerControl(props: WorkerControlProps) {
                                 {meta}
                               </span>
                             ) : null}
-                          </button>
+                          </MapControlButton>
                         </li>
                       );
                     })}

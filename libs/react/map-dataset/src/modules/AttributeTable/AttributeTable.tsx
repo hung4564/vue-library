@@ -62,6 +62,8 @@ export function AttributeTable(props: AttributeTableProps) {
   getHighlightSourceRef.current = getHighlightSource;
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
+  const toggleShowRef = useRef(toggleShow);
+  toggleShowRef.current = toggleShow;
   const [tick, setTick] = useState(0);
   const exportMenuRef = useRef<ContextMenuRef>(null);
 
@@ -125,11 +127,14 @@ export function AttributeTable(props: AttributeTableProps) {
       applySelectionRef.current(next);
     });
 
+    // Re-open when addComponent updates the same `check` while hidden via toggle.
+    toggleShowRef.current(true);
+
     void (async () => {
       const queued = takePendingAttributeTableSelectRows(mapId);
       await next.load('initial');
       if (queued) {
-        toggleShow(true);
+        toggleShowRef.current(true);
         await next.selectIds(queued);
       }
     })();
@@ -147,8 +152,12 @@ export function AttributeTable(props: AttributeTableProps) {
     props.export,
     props.ui,
     mapId,
-    toggleShow,
   ]);
+
+  useEffect(() => {
+    if (props.revision == null) return;
+    toggleShowRef.current(true);
+  }, [props.revision]);
 
   const state = useMemo(() => {
     void tick;
@@ -192,10 +201,14 @@ export function AttributeTable(props: AttributeTableProps) {
       : `${name} (${count})`;
   }, [props.layer, state, trans]);
 
+  /**
+   * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
+   * stays registered and toggle show / selectRows keep working.
+   * Removal from ComponentManagement is via `onClose` from parent if needed.
+   */
   function handleClose() {
     clearHighlight();
     toggleShow(false);
-    props.onClose?.();
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {

@@ -150,6 +150,11 @@ function onResize(x: number, y: number, width: number, height: number) {
   p_x.value = x;
   p_y.value = y;
 }
+function onDragging(x: number, y: number) {
+  p_x.value = x;
+  p_y.value = y;
+  window?.getSelection()?.removeAllRanges();
+}
 function onDragStop(x: number, y: number) {
   p_x.value = x;
   p_y.value = y;
@@ -165,7 +170,7 @@ function onResizeStop(x: number, y: number, width: number, height: number) {
   emitBounds();
 }
 function onClose() {
-  show.value = false;
+  close();
 }
 function onMaskClick() {
   if (props.maskClosable) {
@@ -267,9 +272,6 @@ function init() {
   applyClamp();
   init_done.value = true;
 }
-function onDragging() {
-  window?.getSelection()?.removeAllRanges();
-}
 </script>
 
 <template>
@@ -303,9 +305,9 @@ function onDragging() {
         :y="p_y"
         :z="stackZIndex + 1"
         @resizing="onResize"
-        @resizestop="onResizeStop"
+        @resizeStop="onResizeStop"
         @dragging="onDragging"
-        @dragstop="onDragStop"
+        @dragStop="onDragStop"
         :active="isActive"
         @activated="activateEv()"
         @deactivated="deactivateEv()"

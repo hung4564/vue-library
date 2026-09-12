@@ -8,6 +8,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MapControlButton } from '../../components';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import {
   UniversalRegistry,
@@ -199,13 +200,14 @@ export function RegistryControl(props: RegistryControlProps) {
                 <p className="map-registry-control__hint">
                   {trans('map.registry-control.hint')}
                 </p>
-                <button
-                  type="button"
+                <MapControlButton
                   className="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   onClick={refresh}
                 >
                   {trans('map.registry-control.refresh')}
-                </button>
+                </MapControlButton>
               </header>
 
               <input
@@ -230,9 +232,10 @@ export function RegistryControl(props: RegistryControlProps) {
                         selectedId === ctrl.id ? ' is-selected' : ''
                       }`}
                     >
-                      <button
-                        type="button"
+                      <MapControlButton
                         className="map-registry-control__select"
+                        variant="plain"
+                        size="small"
                         onClick={() => {
                           setSelectedId(ctrl.id);
                           setActionType('');
@@ -249,7 +252,7 @@ export function RegistryControl(props: RegistryControlProps) {
                               : trans('map.registry-control.closedState')}
                           </span>
                         ) : null}
-                      </button>
+                      </MapControlButton>
                     </li>
                   ))}
                 </ul>
@@ -263,38 +266,42 @@ export function RegistryControl(props: RegistryControlProps) {
                   <div className="map-registry-control__actions">
                     {selected.panelKind !== 'button' ? (
                       <>
-                        <button
-                          type="button"
+                        <MapControlButton
                           className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
                           onClick={open}
                         >
                           {trans('map.registry-control.open')}
-                        </button>
-                        <button
-                          type="button"
+                        </MapControlButton>
+                        <MapControlButton
                           className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
                           onClick={close}
                         >
                           {trans('map.registry-control.close')}
-                        </button>
+                        </MapControlButton>
                         {(selected.panelKind === 'popup' ||
                           selected.panelKind === 'float') && (
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-registry-control__btn"
+                            variant="outlined"
+                            size="small"
                             onClick={movePopup}
                           >
                             {trans('map.registry-control.movePopup')}
-                          </button>
+                          </MapControlButton>
                         )}
                         {selected.panelKind === 'sidebar' && (
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-registry-control__btn"
+                            variant="outlined"
+                            size="small"
                             onClick={toggleSidebarSide}
                           >
                             {trans('map.registry-control.toggleSidebar')}
-                          </button>
+                          </MapControlButton>
                         )}
                       </>
                     ) : null}
@@ -306,13 +313,14 @@ export function RegistryControl(props: RegistryControlProps) {
                         items={actionTypeItems}
                         onChange={(value) => setActionType(String(value))}
                       />
-                      <button
-                        type="button"
+                      <MapControlButton
                         className="map-registry-control__btn"
+                        variant="outlined"
+                        size="small"
                         onClick={run}
                       >
                         {trans('map.registry-control.runAction')}
-                      </button>
+                      </MapControlButton>
                     </div>
                   </div>
                 </section>

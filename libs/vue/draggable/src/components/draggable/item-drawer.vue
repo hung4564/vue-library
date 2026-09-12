@@ -187,7 +187,7 @@ watch(
 );
 
 function onClose() {
-  show.value = false;
+  close();
 }
 
 function onKeydown(event: KeyboardEvent) {

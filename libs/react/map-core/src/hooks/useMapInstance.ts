@@ -6,13 +6,9 @@ import {
   MapInitializer,
   type MapEventCallbacks,
 } from '@hungpvq/map-core';
-import mapboxgl, { MapOptions } from 'maplibre-gl';
+import type { Map as MaplibreMap, MapOptions } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { useMapContainer } from '../store/store';
-
-if (!mapboxgl) {
-  throw new Error('mapboxgl is not installed.');
-}
 
 export interface UseMapInstanceProps {
   mapId?: string;
@@ -28,6 +24,7 @@ export interface UseMapInstanceCallbacks {
 
 /**
  * Hook to initialize and manage a MapLibre map instance.
+ * MapLibre is loaded dynamically on mount (SSR / import-time safe).
  *
  * @param props - Configuration properties for the map.
  * @param callbacks - Callback functions for map events.
@@ -40,78 +37,103 @@ export function useMapInstance(
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [isSupport, setIsSupport] = useState(true);
   const [loaded, setLoaded] = useState(false);
-  const [map, setMap] = useState<mapboxgl.Map | undefined>(undefined);
+  const [map, setMap] = useState<MaplibreMap | undefined>(undefined);
   const id = useRef(props.mapId || getUUIDv4());
   const store = useMapContainer(id.current);
+  const callbacksRef = useRef(callbacks);
+  callbacksRef.current = callbacks;
 
   useEffect(() => {
     if (!mapContainerRef.current) {
       return;
     }
 
-    let mapInstance: mapboxgl.Map | undefined;
+    let cancelled = false;
+    let mapInstance: MaplibreMap | undefined;
+    let cleanupEvents: (() => void) | undefined;
 
-    try {
-      // Use MapInitializer from map-core to validate WebGL support
-      MapInitializer.validateWebglSupport(id.current);
-      setIsSupport(true);
+    void (async () => {
+      try {
+        const maplibre = await import('maplibre-gl');
+        const mapboxgl = maplibre.default;
+        if (!mapboxgl) {
+          throw new Error('maplibre-gl is not installed.');
+        }
+        if (cancelled || !mapContainerRef.current) return;
 
-      // Use MapInitializer to create default options and style
-      const initOptions = MapInitializer.createDefaultOptions(
-        props.initOptions,
-      );
-      const mapStyle = MapInitializer.createMapStyle(initOptions.style);
+        MapInitializer.validateWebglSupport(id.current);
+        setIsSupport(true);
 
-      // Create map instance
-      mapInstance = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: mapStyle,
-        ...initOptions,
-      });
+        const initOptions = MapInitializer.createDefaultOptions(
+          props.initOptions,
+        );
+        const mapStyle = MapInitializer.createMapStyle(initOptions.style);
 
-      const mapSimpleInstance = mapInstance as MapSimple;
-      mapSimpleInstance.id = id.current;
-      setMap(mapInstance);
+        mapInstance = new mapboxgl.Map({
+          container: mapContainerRef.current,
+          style: mapStyle,
+          ...initOptions,
+        });
 
-      // Initialize in store
-      store.initMap(mapSimpleInstance);
+        if (cancelled) {
+          mapInstance.remove();
+          mapInstance = undefined;
+          return;
+        }
 
-      // Setup map events using MapInitializer
-      const eventCallbacks: MapEventCallbacks = {
-        onLoad: (map) => {
-          callbacks.onMapLoaded?.(map);
-          setLoaded(true);
-        },
-        onError: (error) => {
-          errorHandler.handle(error);
-          callbacks.onError?.(error);
-        },
-      };
+        const mapSimpleInstance = mapInstance as MapSimple;
+        mapSimpleInstance.id = id.current;
 
-      MapInitializer.setupMapEvents(mapSimpleInstance, eventCallbacks);
-    } catch (error) {
-      setIsSupport(false);
-      const mapError =
-        error instanceof MapInitializationError
-          ? error
-          : new MapInitializationError(
-              (error as Error).message || 'Failed to initialize map',
-              {
-                context: { mapId: id.current },
-                cause: error,
-              },
-            );
-      errorHandler.handle(mapError as Error);
-      callbacks.onError?.(mapError as Error);
-    }
+        if (cancelled) {
+          mapInstance.remove();
+          mapInstance = undefined;
+          return;
+        }
+
+        setMap(mapInstance);
+        store.initMap(mapSimpleInstance);
+
+        const eventCallbacks: MapEventCallbacks = {
+          onLoad: (loadedMap) => {
+            callbacksRef.current.onMapLoaded?.(loadedMap);
+            setLoaded(true);
+          },
+          onError: (error) => {
+            errorHandler.handle(error);
+            callbacksRef.current.onError?.(error);
+          },
+        };
+
+        cleanupEvents = MapInitializer.setupMapEvents(
+          mapSimpleInstance,
+          eventCallbacks,
+        );
+      } catch (error) {
+        if (cancelled) return;
+        setIsSupport(false);
+        const mapError =
+          error instanceof MapInitializationError
+            ? error
+            : new MapInitializationError(
+                (error as Error).message || 'Failed to initialize map',
+                {
+                  context: { mapId: id.current },
+                  cause: error,
+                },
+              );
+        errorHandler.handle(mapError as Error);
+        callbacksRef.current.onError?.(mapError as Error);
+      }
+    })();
 
     return () => {
+      cancelled = true;
+      cleanupEvents?.();
       setLoaded(false);
       if (mapInstance) {
         const mapSimpleInstance = mapInstance as MapSimple;
-        // Use MapInitializer to cleanup map
         MapInitializer.cleanupMap(mapSimpleInstance);
-        callbacks.onMapDestroy?.(mapSimpleInstance);
+        callbacksRef.current.onMapDestroy?.(mapSimpleInstance);
       }
       setMap(undefined);
       store.removeMap();

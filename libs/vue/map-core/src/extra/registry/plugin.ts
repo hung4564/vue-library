@@ -9,6 +9,7 @@ import {
 import { createStore } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { Component } from 'vue';
+import { markRaw } from 'vue';
 import { createMapScopedStore } from '../../store/store';
 
 const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
@@ -28,7 +29,10 @@ export class UniversalRegistry extends CoreUniversalRegistry {
   );
 
   static registerComponent(key: string, comp: Component) {
-    this.globalRegistry.set(REGISTRY_NAMESPACES.COMPONENT + key, comp);
+    this.globalRegistry.set(
+      REGISTRY_NAMESPACES.COMPONENT + key,
+      markRaw(comp),
+    );
   }
 
   static registerComponentForMap(mapId: string, key: string, comp: Component) {
@@ -39,7 +43,7 @@ export class UniversalRegistry extends CoreUniversalRegistry {
         `Key '${namespacedKey}' already exists for map ${mapId}, overwriting`,
       );
     }
-    mapRegistry.set(namespacedKey, comp);
+    mapRegistry.set(namespacedKey, markRaw(comp));
   }
 
   static getComponent(key: string, mapId?: string): Component | undefined {

@@ -9,6 +9,8 @@ const KEY = 'dataset-component' as const;
 export type ComponentItem = {
   id: string;
   check?: string;
+  /** Bumps on every add/upsert so hosts can re-open without remounting. */
+  revision?: number;
 } & ComponentType;
 
 export type MapDatasetComponentStore = {
@@ -28,15 +30,19 @@ function notify(store: MapDatasetComponentStore) {
 }
 
 export function useMapDatasetComponentStore(mapId: string) {
-  return createMapScopedStore<MapDatasetComponentStore>(mapId, KEY as string & object, () => {
-    logHelper(logger, mapId, 'store').debug('init component store');
-    return {
-      components: [],
-      componentIds: { value: [] },
-      version: 0,
-      listeners: new Set(),
-    };
-  });
+  return createMapScopedStore<MapDatasetComponentStore>(
+    mapId,
+    KEY as string & object,
+    () => {
+      logHelper(logger, mapId, 'store').debug('init component store');
+      return {
+        components: [],
+        componentIds: { value: [] },
+        version: 0,
+        listeners: new Set(),
+      };
+    },
+  );
 }
 
 export function useMapDatasetComponent(mapId: string) {
@@ -59,8 +65,12 @@ export function useMapDatasetComponent(mapId: string) {
           (x: ComponentItem) => x.check === component.check,
         );
         if (index >= 0) {
-          const id = store.components[index].id;
-          Object.assign(store.components[index], component);
+          const existing = store.components[index];
+          const id = existing.id;
+          Object.assign(existing, component, {
+            id,
+            revision: (existing.revision ?? 0) + 1,
+          });
           store.componentIds.value.splice(index, 1);
           store.componentIds.value.push(id);
           notify(store);
@@ -68,7 +78,7 @@ export function useMapDatasetComponent(mapId: string) {
         }
       }
       const id = generateId();
-      store.components.push({ ...component, id });
+      store.components.push({ ...component, id, revision: 1 });
       store.componentIds.value.push(id);
       notify(store);
       return id;

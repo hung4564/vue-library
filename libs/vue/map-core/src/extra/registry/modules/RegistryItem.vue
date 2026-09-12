@@ -2,7 +2,7 @@
   <component :is="resolvedComponent" v-bind="$attrs" :mapId="mapId"></component>
 </template>
 <script lang="ts" setup>
-import { computed, type Component } from 'vue';
+import { computed, markRaw, type Component } from 'vue';
 import { useMap } from '../../../hooks';
 import { useUniversalRegistry } from '../plugin';
 
@@ -17,10 +17,19 @@ defineOptions({
   inheritAttrs: false,
 });
 const { getComponent } = useUniversalRegistry(mapId.value);
+
+function asRawComponent(comp: Component | undefined) {
+  if (!comp || typeof comp !== 'object') return comp;
+  return markRaw(comp);
+}
+
 const resolvedComponent = computed(() => {
   if (!props.componentKey) {
-    return props.defaultComponent;
+    return asRawComponent(props.defaultComponent);
   }
-  return getComponent(props.componentKey) ?? props.defaultComponent;
+  return (
+    asRawComponent(getComponent(props.componentKey)) ??
+    asRawComponent(props.defaultComponent)
+  );
 });
 </script>

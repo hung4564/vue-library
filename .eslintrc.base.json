@@ -39,6 +39,61 @@
               {
                 "sourceTag": "*",
                 "onlyDependOnLibsWithTags": ["*"]
+              },
+              {
+                "sourceTag": "core",
+                "onlyDependOnLibsWithTags": [
+                  "core",
+                  "share",
+                  "store",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "ui",
+                  "draggable"
+                ]
+              },
+              {
+                "sourceTag": "vue",
+                "notDependOnLibsWithTags": ["react"]
+              },
+              {
+                "sourceTag": "vue",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "devtools"
+                ]
+              },
+              {
+                "sourceTag": "react",
+                "notDependOnLibsWithTags": ["vue"]
+              },
+              {
+                "sourceTag": "react",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "react",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "devtools"
+                ]
               }
             ]
           }

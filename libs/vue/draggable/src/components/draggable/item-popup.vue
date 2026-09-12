@@ -93,6 +93,8 @@ const { isLast, isFirst, isHasItems, onToBack, onToFront } = useContainerOrder(
 );
 const dragLayout = useDragLayout(containerId.value);
 const init_done = ref(false);
+/** After first layout, re-show keeps in-memory bounds (React `boundsRef` parity). */
+const hasPositioned = ref(false);
 const isActive = ref(false);
 const p_height = ref(props.height || 200);
 const old_height = ref(p_height.value);
@@ -143,6 +145,11 @@ function onResize(x: number, y: number, width: number, height: number) {
   p_width.value = width;
   p_height.value = height;
 }
+function onDragging(x: number, y: number) {
+  p_x.value = x;
+  p_y.value = y;
+  window?.getSelection()?.removeAllRanges();
+}
 function onDragStop(x: number, y: number) {
   p_x.value = x;
   p_y.value = y;
@@ -162,7 +169,7 @@ const titleId = `popup-title-${itemId.value}`;
 let previousFocus: HTMLElement | null = null;
 
 function onClose() {
-  show.value = false;
+  close();
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -186,12 +193,15 @@ watch(
   show,
   async (visible) => {
     document.removeEventListener('keydown', onKeydown);
-    init();
     if (!visible) {
+      // Persist before VDR unmounts so toggle show restores the same place.
+      if (hasPositioned.value) emitBounds();
+      init();
       restoreFocus(previousFocus);
       previousFocus = null;
       return;
     }
+    init();
     previousFocus = document.activeElement as HTMLElement | null;
     document.addEventListener('keydown', onKeydown);
     await nextTick();
@@ -236,6 +246,14 @@ function init() {
     p_x.value = saved.x;
     p_y.value = saved.y;
     applyClamp();
+    hasPositioned.value = true;
+    init_done.value = true;
+    return;
+  }
+
+  // Re-open after toggle: keep last x/y (do not re-apply ModuleContainer anchors).
+  if (hasPositioned.value) {
+    applyClamp();
     init_done.value = true;
     return;
   }
@@ -262,6 +280,8 @@ function init() {
     p_y.value = (containerHeight.value - p_height.value) / 2;
   }
   applyClamp();
+  hasPositioned.value = true;
+  emitBounds();
   init_done.value = true;
 }
 function onToggleExpanded() {
@@ -270,9 +290,6 @@ function onToggleExpanded() {
   }
   expand.value = !expand.value;
   p_height.value = expand.value ? old_height.value : 50;
-}
-function onDragging() {
-  window?.getSelection()?.removeAllRanges();
 }
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown);
@@ -294,8 +311,8 @@ onBeforeUnmount(() => {
     :y="p_y"
     :z="zIndex"
     @resizing="onResize"
-    @dragstop="onDragStop"
-    @resizestop="onResizeStop"
+    @dragStop="onDragStop"
+    @resizeStop="onResizeStop"
     :active="isActive"
     @activated="activateEv()"
     @deactivated="deactivateEv()"

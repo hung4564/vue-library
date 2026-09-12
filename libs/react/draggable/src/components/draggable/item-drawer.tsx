@@ -211,8 +211,8 @@ export function DraggableDrawer({
   }, [containerId, location]);
 
   const handleClose = useCallback(() => {
-    setShow(false);
-  }, [setShow]);
+    close();
+  }, [close]);
 
   useEffect(() => {
     if (!show) {
@@ -234,14 +234,14 @@ export function DraggableDrawer({
         return;
       }
       event.preventDefault();
-      setShow(false);
+      close();
     }
     document.addEventListener('keydown', onKeydown);
     return () => {
       window.clearTimeout(focusTimer);
       document.removeEventListener('keydown', onKeydown);
     };
-  }, [show, menuOpen, setShow]);
+  }, [show, menuOpen, close]);
 
   const openMenu = useCallback((e: ReactMouseEvent) => {
     contextMenuRef.current?.open(e);

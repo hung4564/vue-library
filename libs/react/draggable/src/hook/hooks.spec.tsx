@@ -68,6 +68,21 @@ describe('useShow / useExpand / useHighlight', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('setShow(false) hides without emitting close', () => {
+    const onUpdate = vi.fn();
+    const onClose = vi.fn();
+    const { result } = renderHook(() =>
+      useShow(
+        { show: true },
+        { 'update:show': onUpdate, close: onClose },
+      ),
+    );
+    act(() => result.current.setShow(false));
+    expect(result.current.show).toBe(false);
+    expect(onUpdate).toHaveBeenCalledWith(false);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it('initializes from parent show prop', () => {
     const { result } = renderHook(() => useShow({ show: true }));
     expect(result.current.show).toBe(true);

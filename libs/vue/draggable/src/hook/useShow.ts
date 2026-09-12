@@ -1,6 +1,13 @@
 import { computed, ref, watch } from 'vue';
 
-type LooseEmit = ((event: string, ...args: unknown[]) => void) | null;
+/**
+ * Accept Vue `defineEmits` call signatures. Typed emits are narrower than
+ * `(event: string, …)` and fail under strictFunctionTypes; the bivariance
+ * hack matches DOM EventListener / React SyntheticEvent patterns.
+ */
+type LooseEmit = {
+  bivarianceHack(event: string, ...args: unknown[]): void;
+}['bivarianceHack'] | null;
 type ShowProps = {
   show?: boolean;
   [key: string]: unknown;
@@ -10,6 +17,11 @@ type ExpandProps = {
   [key: string]: unknown;
 };
 
+/**
+ * Visibility vs dismiss:
+ * - `show` / `update:show` — hide/show only (toggle, exclusive bottom/sidebar).
+ * - `close()` — dismiss request (X / Escape / management Hide); emits `close`.
+ */
 export function useShow(props: ShowProps, emit?: LooseEmit, init?: boolean) {
   const p_show = ref<boolean>(!!props.show || !!init);
   watch(
@@ -25,18 +37,21 @@ export function useShow(props: ShowProps, emit?: LooseEmit, init?: boolean) {
       return p_show.value;
     },
     set(val) {
+      if (p_show.value === val) return;
       p_show.value = val;
       emit && emit('update:show', val);
-      if (!val) {
-        emit && emit('close');
-      }
     },
   });
   function open() {
     show.value = true;
   }
   function close() {
-    show.value = false;
+    const wasOpen = p_show.value;
+    p_show.value = false;
+    if (wasOpen) {
+      emit && emit('update:show', false);
+    }
+    emit && emit('close');
   }
   return { show, open, close };
 }

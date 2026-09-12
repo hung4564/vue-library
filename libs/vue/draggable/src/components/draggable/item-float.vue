@@ -81,7 +81,7 @@ const titleId = `float-title-${itemId.value}`;
 let previousFocus: HTMLElement | null = null;
 
 function onClose() {
-  show.value = false;
+  close();
 }
 
 function onKeydown(event: KeyboardEvent) {

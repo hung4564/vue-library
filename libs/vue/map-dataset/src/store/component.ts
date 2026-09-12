@@ -9,6 +9,8 @@ const KEY = 'dataset-component' as const;
 export type ComponentItem = {
   id: string;
   check?: string;
+  /** Bumps on every add/upsert so hosts can re-open without remounting. */
+  revision?: number;
 } & ComponentType;
 
 export type MapDatasetComponentStore = {
@@ -53,8 +55,12 @@ export const useMapDatasetComponent = (mapId: string) => {
         (x) => x.check == component.check,
       );
       if (index >= 0) {
-        const id = store.components[index].id;
-        Object.assign(store.components[index], component);
+        const existing = store.components[index];
+        const id = existing.id;
+        Object.assign(existing, component, {
+          id,
+          revision: (existing.revision ?? 0) + 1,
+        });
         store.componentIds.value.splice(index, 1);
         store.componentIds.value.push(id);
         return id;
@@ -64,6 +70,7 @@ export const useMapDatasetComponent = (mapId: string) => {
     store.components.push({
       ...component,
       id,
+      revision: 1,
     });
     store.componentIds.value.push(id);
     return id;
