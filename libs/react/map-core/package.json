@@ -16,15 +16,19 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
-  "sideEffects": ["**/*.css", "**/*.scss"],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./index.cjs"
     },
     "./fields": {
-      "import": "./fields.js",
-      "types": "./fields.d.ts"
+      "types": "./fields.d.ts",
+      "import": "./fields.js"
     },
     "./style.css": {
       "default": "./style.css"

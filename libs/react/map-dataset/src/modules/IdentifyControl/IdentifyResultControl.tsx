@@ -196,6 +196,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
                 <MapControlButton variant="plain"
                   active={isEventClickActive}
                   disabled={isEventClickActive}
+                  title={trans('map.identify.map_click')}
                   onClick={(e) => {
                     e.stopPropagation();
                     runIdentifyAction(
@@ -209,6 +210,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
                 <MapControlButton variant="plain"
                   active={isEventClickBox}
                   disabled={isEventClickBox}
+                  title={trans('map.identify.box_select')}
                   onClick={(e) => {
                     e.stopPropagation();
                     runIdentifyAction(
@@ -254,21 +256,23 @@ export function IdentifyResultControl(props: WithMapPropType) {
                   </div>
                 ) : null}
               </div>
-              <hr className="identify-control-separator" />
+              <hr className="identify-control-separator" aria-hidden="true" />
               <div
                 className="identify-control-body"
                 tabIndex={0}
+                role="region"
+                aria-label={trans('map.identify.title')}
                 onKeyDown={onResultKeydown}
               >
                 {loading ? (
-                  <div className="identify-control-state">
+                  <div className="identify-control-state" role="status" aria-live="polite">
                     <div className="identify-control-state__content">
-                      <div className="identify-control-state__loading" />
+                      <div className="identify-control-state__loading" aria-hidden="true" />
                       <span>{trans('map.identify.loading')}</span>
                     </div>
                   </div>
                 ) : errorMessage ? (
-                  <div className="identify-control-state">
+                  <div className="identify-control-state" role="alert">
                     <div className="identify-control-state__content">
                       <span>
                         {errorMessage || trans('map.identify.error')}

@@ -6,7 +6,7 @@ export default {
 <script setup lang="ts">
 import { clampBounds, focusFirst, restoreFocus, trapTabKey } from '@hungpvq/draggable';
 import { inject, nextTick, onBeforeUnmount, ref, Ref, watch } from 'vue';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
 import {
@@ -349,36 +349,36 @@ onBeforeUnmount(() => {
             <template #extra-btn>
               <slot name="extra-btn"></slot>
               <template v-if="isHasItems && !disabledOrder">
-                <map-button
+                <drag-button
                   aria-label="Send to back"
                   :disabled="isFirst"
                   @click="onToBack()"
                 >
                   <ToBackIcon :size="16" />
-                </map-button>
-                <map-button
+                </drag-button>
+                <drag-button
                   aria-label="Bring to front"
                   :disabled="isLast"
                   @click="onToFront()"
                 >
                   <ToFrontIcon :size="16" />
-                </map-button>
+                </drag-button>
               </template>
-              <map-button
+              <drag-button
                 :aria-label="expand ? 'Collapse panel' : 'Expand panel'"
                 :aria-expanded="expand ? 'true' : 'false'"
                 @click="onToggleExpanded"
               >
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
-              </map-button>
-              <map-button
+              </drag-button>
+              <drag-button
                 v-if="!disabledClose"
                 aria-label="Close panel"
                 @click.stop="onClose"
               >
                 <CloseIcon :size="16" />
-              </map-button>
+              </drag-button>
             </template>
           </component>
         </template>

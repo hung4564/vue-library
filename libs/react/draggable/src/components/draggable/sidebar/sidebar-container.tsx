@@ -17,15 +17,15 @@ import {
   useDragContainer,
   useSidebarItem,
 } from '../../../store';
-import { useStoreReactive } from '../../../store/useStoreReactive';
+import { useContainerReactive } from '../../../store/useStoreReactive';
 import { LocationSideBar } from '../../../types';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
-import { MapButton } from '../../parts/MapButton';
+import { DragButton } from '../../parts/DragButton';
 import {
-  MapSidebarToggle,
-  type MapSidebarToggleProps,
-} from '../../parts/MapSidebarToggle';
+  DragSidebarToggle,
+  type DragSidebarToggleProps,
+} from '../../parts/DragSidebarToggle';
 import { useSidebarBehavior } from './useSidebarBehavior';
 
 export interface SidebarContainerProps {
@@ -34,8 +34,8 @@ export interface SidebarContainerProps {
 
 export function SidebarContainer({ location }: SidebarContainerProps) {
   const containerId = useContainerId();
-  // Subscribe to store changes so we re-render when DraggableItemSideBar registers
-  useStoreReactive();
+  // Subscribe to this container only (not the full drag:core tree)
+  useContainerReactive(containerId);
   const { containerWidth, containerHeight } = useContainerSize(containerId);
   const sidebarWidth = useMemo(() => {
     if (containerWidth <= 600) return '100%';
@@ -66,8 +66,8 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
   const storeDragItem = useSidebarItem(containerId);
   const { getItemAction } = useDragContainer(containerId);
   const store = useDragComponent();
-  const ComponentMapSidebarToggle = (store.getComponentCardSidebarToggle() ||
-    MapSidebarToggle) as ComponentType<MapSidebarToggleProps>;
+  const ComponentSidebarToggle = (store.getComponentCardSidebarToggle() ||
+    DragSidebarToggle) as ComponentType<DragSidebarToggleProps>;
 
   const { CloseIcon, SidebarOpenMenu } = useIcon();
   const contextMenuRef = useRef<ContextMenuRef>(null);
@@ -184,18 +184,18 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
                 extraBtn={
                   <>
                     {showSwitcher && (
-                      <MapButton
+                      <DragButton
                         onClick={openMenu}
                         aria-label="Open sidebar menu"
                         aria-haspopup="menu"
                         aria-expanded={menuOpen}
                       >
                         <SidebarOpenMenu size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     )}
-                    <MapButton onClick={onClose} aria-label="Close sidebar">
+                    <DragButton onClick={onClose} aria-label="Close sidebar">
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   </>
                 }
               />
@@ -207,7 +207,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
         </div>
         {show && (
           <div className="complex-button-close">
-            <ComponentMapSidebarToggle
+            <ComponentSidebarToggle
               onClick={onToggleExpand}
               expand={expand}
               aria-controls={contentTo}

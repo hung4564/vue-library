@@ -1,7 +1,7 @@
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
 import { LocationSideBar, SidebarConfig } from '../../types';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 
 export interface ShowStatusSideBarProps {
@@ -44,9 +44,9 @@ export function ShowStatusSideBar({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+                <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                   <ShowIcon size={16} />
-                </MapButton>
+                </DragButton>
               ) : null
             }
           />

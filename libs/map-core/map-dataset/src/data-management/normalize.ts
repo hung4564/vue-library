@@ -54,12 +54,12 @@ export function resolveRecordId(
   idField = 'id',
 ): ID | undefined {
   if (input[idField] != null) return input[idField] as ID;
-  if (input.id != null) return input.id as ID;
-  const props = input.properties;
+  if (input['id'] != null) return input['id'] as ID;
+  const props = input['properties'];
   if (props && typeof props === 'object' && !Array.isArray(props)) {
     const p = props as Record<string, unknown>;
     if (p[idField] != null) return p[idField] as ID;
-    if (p.id != null) return p.id as ID;
+    if (p['id'] != null) return p['id'] as ID;
   }
   return undefined;
 }
@@ -73,7 +73,7 @@ export function toRecord(
   const idField = options.idField ?? 'id';
   const geometryFields = options.geometryFields ?? DEFAULT_GEOMETRY_FIELDS;
 
-  if (row.type === 'Feature') {
+  if (row['type'] === 'Feature') {
     const feature = row as unknown as Feature;
     const props =
       feature.properties && typeof feature.properties === 'object'
@@ -99,8 +99,8 @@ export function toRecord(
   record.geometry = geometry;
   const id = resolveRecordId(row, idField);
   if (id != null) record.id = id;
-  delete record.properties;
-  delete record.type;
+  delete record['properties'];
+  delete record['type'];
   return record;
 }
 
@@ -108,7 +108,7 @@ export function toFeature(record: DataRecord | undefined | null): Feature | unde
   if (!record) return undefined;
   const { geometry, id, ...rest } = record;
   const properties: Record<string, unknown> = { ...rest };
-  if (id != null && properties.id == null) properties.id = id;
+  if (id != null && properties['id'] == null) properties['id'] = id;
   return {
     type: 'Feature',
     id: id as string | number | undefined,

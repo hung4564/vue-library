@@ -14,7 +14,7 @@ import {
   Ref,
   watch,
 } from 'vue';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
 import {
@@ -336,13 +336,13 @@ function init() {
                 </template>
                 <template #extra-btn>
                   <slot name="extra-btn"></slot>
-                  <map-button
+                  <drag-button
                 v-if="!disabledClose"
                 aria-label="Close dialog"
                 @click.stop="onClose"
               >
                     <CloseIcon :size="16" />
-                  </map-button>
+                  </drag-button>
                 </template>
               </component>
             </template>

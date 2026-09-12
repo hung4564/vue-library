@@ -4,8 +4,6 @@
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
-import './styles/index.css';
-
 export {
   DATASET_CONTROL_LOCALE,
   DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY,

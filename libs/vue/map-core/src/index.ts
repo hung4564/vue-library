@@ -3,8 +3,6 @@
  * Experimental field/UI helpers live on `@hungpvq/vue-map-core/fields`.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
-import './style.css';
-
 export {
   ActionControl,
   BaseMapCard,

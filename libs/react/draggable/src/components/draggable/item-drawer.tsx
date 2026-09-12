@@ -23,11 +23,11 @@ import {
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
 import { useDrawerItem, useDragLayout } from '../../store';
-import { useStoreReactive } from '../../store/useStoreReactive';
+import { useContainerReactive } from '../../store/useStoreReactive';
 import { LocationSideBar } from '../../types';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { ContextMenuItem } from '../ContextMenuItem';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 
 export interface DraggableDrawerProps {
   id?: string;
@@ -75,7 +75,7 @@ export function DraggableDrawer({
   extraBtn,
 }: DraggableDrawerProps) {
   const containerId = useContainerId(propContainerId);
-  useStoreReactive();
+  useContainerReactive(containerId);
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
@@ -393,22 +393,22 @@ export function DraggableDrawer({
                     <>
                       {extraBtn}
                       {showSwitcher && (
-                        <MapButton
+                        <DragButton
                           onClick={openMenu}
                           aria-label="Open drawer menu"
                           aria-haspopup="menu"
                           aria-expanded={menuOpen}
                         >
                           <SidebarOpenMenu size={'16px'} />
-                        </MapButton>
+                        </DragButton>
                       )}
                       {!disabledClose && (
-                        <MapButton
+                        <DragButton
                           aria-label="Close drawer"
                           onClick={handleClose}
                         >
                           <CloseIcon size={'16px'} />
-                        </MapButton>
+                        </DragButton>
                       )}
                     </>
                   }

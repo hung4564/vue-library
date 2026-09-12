@@ -1,13 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type MapButtonProps = {
+export type DragButtonProps = {
   height?: number;
   width?: number;
   disabled?: boolean;
   children?: ReactNode;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-function MapButton({
+function DragButton({
   height = 32,
   width = 32,
   disabled = false,
@@ -15,7 +15,7 @@ function MapButton({
   className = '',
   style,
   ...props
-}: MapButtonProps) {
+}: DragButtonProps) {
   const bindStyle = {
     width: `${width}px`,
     height: `${height}px`,
@@ -43,4 +43,4 @@ function MapButton({
   );
 }
 
-export { MapButton };
+export { DragButton };

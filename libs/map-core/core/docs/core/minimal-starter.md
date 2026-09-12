@@ -8,12 +8,16 @@ Related: [Getting started](../index.md) · [Quick Dataset Creation](/map/dataset
 
 ## Install + CSS + registry
 
-Same as the hub [Getting started](../index.md): install packages, import `style.css`, then bootstrap once:
+Same as the hub [Getting started](../index.md): install packages, **import package CSS explicitly** (root JS barrels no longer pull styles), then bootstrap once:
 
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css'; // or react-map-core / react-map-dataset
+import '@hungpvq/vue-map-dataset/style.css';
+
 // Vue
 import { installMapApp } from '@hungpvq/vue-map-dataset';
-// or app.use(createMapAppPlugin())
 installMapApp(app); // theme + createDatasetRegistryPlugin
 
 // React

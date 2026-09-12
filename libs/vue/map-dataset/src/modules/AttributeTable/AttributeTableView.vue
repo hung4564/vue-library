@@ -5,6 +5,7 @@ export default { name: 'attribute-table-view' };
 import {
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   ATTRIBUTE_TABLE_ROW_HEIGHT,
+  formatAttributeTableSelectionStatus,
   getVirtualRowWindow,
   resolveAttributeTableUi,
   type AttributeTableGridProps,
@@ -84,15 +85,29 @@ const bottomSpacerHeight = computed(() =>
   ),
 );
 
+const tableLabel = computed(
+  () => props.layer?.getName?.() || props.labels.table,
+);
+
+const selectionStatusText = computed(() =>
+  formatAttributeTableSelectionStatus(
+    props.labels.selectionStatus,
+    state.value.selectedIds.length,
+    state.value.total,
+  ),
+);
+
 const toolbarProps = computed(
   (): AttributeTableToolbarProps => ({
     mapId: props.mapId,
     query: state.value.search,
     searchPlaceholder: props.labels.search,
+    searchLabel: props.labels.search,
     zoomToSelection: state.value.zoomToSelection,
     zoomLabel: props.labels.zoomToSelection,
     rowFilter: state.value.rowFilter,
     filterItems: filterItems.value,
+    rowFilterLabel: props.labels.rowFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.value.selectedIds.length === 0,
     exportLabel: state.value.exporting
@@ -149,6 +164,14 @@ const gridProps = computed(
     empty: visibleRows.value.length === 0,
     loadingLabel: props.labels.loading,
     emptyLabel: props.labels.empty,
+    tableLabel: tableLabel.value,
+    gridRegionLabel: props.labels.gridRegion,
+    selectAllLabel: props.labels.selectAll,
+    selectRowLabel: props.labels.selectRow,
+    actionsColumnLabel: props.labels.actionsColumn,
+    sortedAscLabel: props.labels.sortedAsc,
+    sortedDescLabel: props.labels.sortedDesc,
+    notSortedLabel: props.labels.notSorted,
     columns: state.value.columns,
     windowedRows: windowedRows.value,
     sortStates: state.value.sortStates,
@@ -188,6 +211,13 @@ watch(
 
 <template>
   <div class="attribute-table">
+    <div
+      class="attribute-table__sr-only"
+      role="status"
+      aria-live="polite"
+    >
+      {{ selectionStatusText }}
+    </div>
     <RegistryItem
       :componentKey="LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar"
       :defaultComponent="AttributeTableToolbar"

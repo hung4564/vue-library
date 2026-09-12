@@ -24,7 +24,7 @@ import {
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
 import { useDragLayout } from '../../store';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 
 const STICKS_TO_RND: Record<string, string> = {
   t: 'top',
@@ -461,23 +461,23 @@ export function DraggableItemPopup({
                   {extraBtn}
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton
+                      <DragButton
                         aria-label="Send to back"
                         disabled={isFirst}
                         onClick={onToBack}
                       >
                         <ToBackIcon size={'16px'} />
-                      </MapButton>
-                      <MapButton
+                      </DragButton>
+                      <DragButton
                         aria-label="Bring to front"
                         disabled={isLast}
                         onClick={onToFront}
                       >
                         <ToFrontIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     </>
                   )}
-                  <MapButton
+                  <DragButton
                     aria-label={expand ? 'Collapse panel' : 'Expand panel'}
                     aria-expanded={expand}
                     onClick={onToggleExpanded}
@@ -487,11 +487,11 @@ export function DraggableItemPopup({
                     ) : (
                       <CloseExpandedIcon size={'16px'} />
                     )}
-                  </MapButton>
+                  </DragButton>
                   {!disabledClose && (
-                    <MapButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
                 </>
               }

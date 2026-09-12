@@ -26,8 +26,8 @@ import {
 } from '../../../hook';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useDragComponent, useDragContainer, useSidebarItem } from '../../../store';
-import MapButton from '../../parts/MapButton.vue';
-import MapSidebarToggle from '../../parts/MapSidebarToggle.vue';
+import DragButton from '../../parts/DragButton.vue';
+import DragSidebarToggle from '../../parts/DragSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
 const contextMenuRef = ref<
   | {
@@ -82,8 +82,8 @@ const { componentCard, componentCardHeader } = useComponent({
 });
 const storeDragItem = useSidebarItem(containerId.value);
 const { getItemAction } = useDragContainer(containerId.value);
-const ComponentMapSidebarToggle = computed(
-  () => store.getComponentCardSidebarToggle() || MapSidebarToggle,
+const ComponentSidebarToggle = computed(
+  () => store.getComponentCardSidebarToggle() || DragSidebarToggle,
 );
 function onClose() {
   const itemShow = getShowForLocation(props.location);
@@ -185,7 +185,7 @@ function selectSideBar(nextId: string) {
             </template>
             <template #extra-btn>
               <slot name="extra-btn"></slot>
-              <map-button
+              <drag-button
                 @click="openMenu"
                 v-if="showSwitcher"
                 aria-label="Open sidebar menu"
@@ -193,10 +193,10 @@ function selectSideBar(nextId: string) {
                 :aria-expanded="menuOpen ? 'true' : 'false'"
               >
                 <SidebarOpenMenu :size="16" />
-              </map-button>
-              <map-button @click="onClose" aria-label="Close sidebar">
+              </drag-button>
+              <drag-button @click="onClose" aria-label="Close sidebar">
                 <CloseIcon :size="16" />
-              </map-button>
+              </drag-button>
             </template>
           </component>
           <div class="draggable-sidebar-content" :id="contentTo">
@@ -206,13 +206,13 @@ function selectSideBar(nextId: string) {
       </component>
     </div>
     <div class="complex-button-close" v-if="show">
-      <ComponentMapSidebarToggle
+      <ComponentSidebarToggle
         @click="onToggleExpand"
         :expand="expand"
         :aria-controls="contentTo"
         :aria-expanded="expand ? 'true' : 'false'"
         :aria-label="expand ? 'Collapse sidebar' : 'Expand sidebar'"
-      ></ComponentMapSidebarToggle>
+      ></ComponentSidebarToggle>
     </div>
   </div>
   <ContextMenu

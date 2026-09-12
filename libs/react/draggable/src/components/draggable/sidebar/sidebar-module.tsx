@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useStoreReactive } from '../../../store/useStoreReactive';
+import { useContainerReactive } from '../../../store/useStoreReactive';
 import { LocationSideBar } from '../../../types';
 export interface SidebarModuleProps {
   containerId: string;
@@ -18,7 +18,7 @@ export function SidebarModule({
   title,
   children,
 }: SidebarModuleProps) {
-  useStoreReactive();
+  useContainerReactive(containerId);
   const { getShowForLocation } = useSideBarContainer(containerId);
   const titleTo = useMemo(
     () => `sidebar-title-${containerId}-${location}`,

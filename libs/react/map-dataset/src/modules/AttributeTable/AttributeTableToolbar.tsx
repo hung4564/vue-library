@@ -16,6 +16,7 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
           <InputText
             value={props.query}
             placeholder={props.searchPlaceholder}
+            aria-label={props.searchLabel}
             onChange={props.onQueryChange}
           />
         ) : null}
@@ -55,6 +56,7 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
             <InputSelect
               value={props.rowFilter}
               items={props.filterItems}
+              aria-label={props.rowFilterLabel}
               onChange={(value) =>
                 props.onRowFilterChange(
                   value === 'selected' ? 'selected' : 'all',

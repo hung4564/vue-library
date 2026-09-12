@@ -1,7 +1,7 @@
 import { ComponentType } from 'react';
 import { useContainerId } from '../context/ContainerContext';
 import { useDragIsMobile } from '../store';
-import { useStoreReactive } from '../store/useStoreReactive';
+import { useContainerReactive } from '../store/useStoreReactive';
 
 export function WithMobileHandle<P, M>(
   Component: ComponentType<P>,
@@ -11,8 +11,8 @@ export function WithMobileHandle<P, M>(
 
   return function WithMobileHandleComponent(props: Props) {
     const containerId = useContainerId(props.containerId);
-    // Subscribe to store so we re-render when isMobile changes (setParentProps in DraggableContainer)
-    useStoreReactive();
+    // Subscribe to this container so we re-render when isMobile changes
+    useContainerReactive(containerId);
     const store = useDragIsMobile(containerId);
     const isMobile = store.getIsMobile();
     const Active = (

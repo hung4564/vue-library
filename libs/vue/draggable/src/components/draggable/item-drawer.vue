@@ -30,7 +30,7 @@ import {
 import { useInitDrawer } from '../../hook/useInitDrawer';
 import { useDragLayout, useDrawerItem } from '../../store';
 import { LocationSideBar } from '../../types';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 
@@ -338,7 +338,7 @@ const resizeHandleClass = computed(() => {
               </template>
               <template #extra-btn>
                 <slot name="extra-btn"></slot>
-                <map-button
+                <drag-button
                   v-if="showSwitcher"
                   aria-label="Open drawer menu"
                   aria-haspopup="menu"
@@ -346,14 +346,14 @@ const resizeHandleClass = computed(() => {
                   @click="openMenu"
                 >
                   <SidebarOpenMenu :size="16" />
-                </map-button>
-                <map-button
+                </drag-button>
+                <drag-button
                   v-if="!disabledClose"
                   aria-label="Close drawer"
                   @click="onClose"
                 >
                   <CloseIcon :size="16" />
-                </map-button>
+                </drag-button>
               </template>
             </component>
           </template>

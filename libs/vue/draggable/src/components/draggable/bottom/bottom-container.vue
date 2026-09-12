@@ -25,7 +25,7 @@ import {
 } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useBottomItem, useDragContainer } from '../../../store';
-import MapButton from '../../parts/MapButton.vue';
+import DragButton from '../../parts/DragButton.vue';
 
 const contextMenuRef = ref<
   | {
@@ -151,7 +151,7 @@ const shellStyle = computed(() => ({
             <span :id="titleTo"></span>
           </template>
           <template #extra-btn>
-            <map-button
+            <drag-button
               v-if="showSwitcher"
               aria-label="Open bottom menu"
               aria-haspopup="menu"
@@ -159,8 +159,8 @@ const shellStyle = computed(() => ({
               @click="openMenu"
             >
               <SidebarOpenMenu :size="16" />
-            </map-button>
-            <map-button
+            </drag-button>
+            <drag-button
               :aria-label="
                 expand ? 'Collapse bottom panel' : 'Expand bottom panel'
               "
@@ -170,10 +170,10 @@ const shellStyle = computed(() => ({
             >
               <FullscreenIcon v-if="expand" :size="16" />
               <OffFullscreenIcon v-else :size="16" />
-            </map-button>
-            <map-button aria-label="Close bottom" @click="onClose">
+            </drag-button>
+            <drag-button aria-label="Close bottom" @click="onClose">
               <CloseIcon :size="16" />
-            </map-button>
+            </drag-button>
           </template>
         </component>
         <div class="draggable-bottom-content" :id="contentTo"></div>

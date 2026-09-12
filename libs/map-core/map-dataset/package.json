@@ -16,57 +16,60 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
-  "sideEffects": ["**/*.css", "**/*.scss"],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
-      "require": "./index.cjs",
-      "types": "./index.d.ts"
+      "require": "./index.cjs"
     },
     "./package.json": "./package.json",
     "./vite": {
-      "import": "./vite.js",
-      "types": "./vite.d.ts"
+      "types": "./vite.d.ts",
+      "import": "./vite.js"
     },
     "./geojson": {
-      "import": "./geojson.js",
-      "types": "./geojson.d.ts"
+      "types": "./geojson.d.ts",
+      "import": "./geojson.js"
     },
     "./raster": {
-      "import": "./raster.js",
-      "types": "./raster.d.ts"
+      "types": "./raster.d.ts",
+      "import": "./raster.js"
     },
     "./vector-tile": {
-      "import": "./vector-tile.js",
-      "types": "./vector-tile.d.ts"
+      "types": "./vector-tile.d.ts",
+      "import": "./vector-tile.js"
     },
     "./identify": {
-      "import": "./identify.js",
-      "types": "./identify.d.ts"
+      "types": "./identify.d.ts",
+      "import": "./identify.js"
     },
     "./menu": {
-      "import": "./menu.js",
-      "types": "./menu.d.ts"
+      "types": "./menu.d.ts",
+      "import": "./menu.js"
     },
     "./style": {
-      "import": "./style.js",
-      "types": "./style.d.ts"
+      "types": "./style.d.ts",
+      "import": "./style.js"
     },
     "./create-control": {
-      "import": "./create-control.js",
-      "types": "./create-control.d.ts"
+      "types": "./create-control.d.ts",
+      "import": "./create-control.js"
     },
     "./geo-export": {
-      "import": "./geo-export.js",
-      "types": "./geo-export.d.ts"
+      "types": "./geo-export.d.ts",
+      "import": "./geo-export.js"
     },
     "./data-management": {
-      "import": "./data-management.js",
-      "types": "./data-management.d.ts"
+      "types": "./data-management.d.ts",
+      "import": "./data-management.js"
     },
     "./attribute-table": {
-      "import": "./attribute-table.js",
-      "types": "./attribute-table.d.ts"
+      "types": "./attribute-table.d.ts",
+      "import": "./attribute-table.js"
     },
     "./assets/*": "./assets/*",
     "./style.css": {

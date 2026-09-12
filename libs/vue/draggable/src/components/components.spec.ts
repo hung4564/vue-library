@@ -6,9 +6,9 @@ import ContextMenu from '../components/ContextMenu.vue';
 import ContextMenuItem from '../components/ContextMenuItem.vue';
 import DraggableContainer from '../components/draggable/draggable-container.vue';
 import ManagementControl from '../components/ManagementControl/index.vue';
-import MapButton from '../components/parts/MapButton.vue';
-import MapCard from '../components/parts/MapCard.vue';
-import MapHeader from '../components/parts/MapHeader.vue';
+import DragButton from '../components/parts/DragButton.vue';
+import DragCard from '../components/parts/DragCard.vue';
+import DragHeader from '../components/parts/DragHeader.vue';
 import { useDragStore } from '../store';
 
 beforeAll(() => {
@@ -47,8 +47,8 @@ afterEach(() => {
 });
 
 describe('parts', () => {
-  it('MapButton renders with size styles', () => {
-    const wrapper = mount(MapButton, {
+  it('DragButton renders with size styles', () => {
+    const wrapper = mount(DragButton, {
       props: { width: 40, height: 24 },
       slots: { default: 'Go' },
     });
@@ -57,8 +57,8 @@ describe('parts', () => {
     expect(wrapper.attributes('style')).toContain('24px');
   });
 
-  it('MapButton applies native disabled', () => {
-    const wrapper = mount(MapButton, {
+  it('DragButton applies native disabled', () => {
+    const wrapper = mount(DragButton, {
       props: { disabled: true },
       slots: { default: 'X' },
     });
@@ -66,10 +66,10 @@ describe('parts', () => {
     expect(wrapper.attributes('aria-disabled')).toBe('true');
   });
 
-  it('MapCard and MapHeader mount', () => {
-    expect(mount(MapCard).exists()).toBe(true);
+  it('DragCard and DragHeader mount', () => {
+    expect(mount(DragCard).exists()).toBe(true);
     expect(
-      mount(MapHeader, { slots: { title: 'T' } }).text(),
+      mount(DragHeader, { slots: { title: 'T' } }).text(),
     ).toContain('T');
   });
 });

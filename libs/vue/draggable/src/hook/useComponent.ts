@@ -1,7 +1,7 @@
 import { computed, type Component } from 'vue';
 
-import MapCard from '../components/parts/MapCard.vue';
-import MapHeader from '../components/parts/MapHeader.vue';
+import DragCard from '../components/parts/DragCard.vue';
+import DragHeader from '../components/parts/DragHeader.vue';
 import { useDragComponent } from '../store';
 
 export type ShareCardComponent = Component | string;
@@ -14,11 +14,11 @@ export function useComponent(props: {
 }) {
   const store = useDragComponent();
   const componentCard = computed(
-    () => props.componentCard || store.getComponentCard() || MapCard,
+    () => props.componentCard || store.getComponentCard() || DragCard,
   );
   const componentCardHeader = computed(
     () =>
-      props.componentCardHeader || store.getComponentCardHeader() || MapHeader,
+      props.componentCardHeader || store.getComponentCardHeader() || DragHeader,
   );
   return { componentCard, componentCardHeader };
 }

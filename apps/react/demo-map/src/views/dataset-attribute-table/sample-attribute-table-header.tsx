@@ -22,17 +22,18 @@ export function SampleAttributeTableHeader(props: AttributeTableHeaderProps) {
           : 'Sorting disabled for this column'
       }
       onClick={(event) => {
-        event.stopPropagation();
         if (!props.sortable || !props.onSort) return;
         props.onSort(event.shiftKey);
       }}
       style={{
-        display: 'inline-flex',
+        display: 'flex',
         alignItems: 'center',
         gap: 4,
+        boxSizing: 'border-box',
+        width: '100%',
         maxWidth: '100%',
         margin: 0,
-        padding: 0,
+        padding: '6px 10px',
         border: 0,
         background: 'transparent',
         font: 'inherit',

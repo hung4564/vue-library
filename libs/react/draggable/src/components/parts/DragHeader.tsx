@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 
-export type MapHeaderProps = {
+export type DragHeaderProps = {
   children?: ReactNode;
   preTitle?: ReactNode;
   title?: ReactNode;
   extraBtn?: ReactNode;
 };
 
-function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
+function DragHeader({ preTitle, title, extraBtn }: DragHeaderProps) {
   return (
     <>
       <hr className="map-divider" aria-hidden="true" />
@@ -24,4 +24,4 @@ function MapHeader({ preTitle, title, extraBtn }: MapHeaderProps) {
   );
 }
 
-export { MapHeader };
+export { DragHeader };

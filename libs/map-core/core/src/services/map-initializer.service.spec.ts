@@ -36,9 +36,11 @@ describe('MapInitializer', () => {
     const map = createFakeMap();
     const onLoad = vi.fn();
     const onError = vi.fn();
+    const onDestroy = vi.fn();
     const cleanup = MapInitializer.setupMapEvents(map as any, {
       onLoad,
       onError,
+      onDestroy,
     });
 
     (map as any).emit('load');
@@ -48,7 +50,11 @@ describe('MapInitializer', () => {
     expect(onError).toHaveBeenCalled();
 
     cleanup();
-    MapInitializer.cleanupMap(map as any);
+    MapInitializer.cleanupMap(map as any, { onDestroy });
+    expect(onDestroy).toHaveBeenCalledWith(map);
     expect(map.remove).toHaveBeenCalled();
+    expect(onDestroy.mock.invocationCallOrder[0]).toBeLessThan(
+      (map.remove as any).mock.invocationCallOrder[0],
+    );
   });
 });

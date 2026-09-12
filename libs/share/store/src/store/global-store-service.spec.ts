@@ -50,4 +50,17 @@ describe('GlobalStoreService path keys', () => {
     expect(listener).toHaveBeenCalledTimes(1);
     expect(store.get('root.child')).toBe('ok');
   });
+
+  it('sibling container path set does not notify another container listener', () => {
+    store.set('drag:core', { container: {} });
+    const containerA = jest.fn();
+    const containerB = jest.fn();
+    store.subscribe(['drag:core', 'container', 'a'], containerA);
+    store.subscribe(['drag:core', 'container', 'b'], containerB);
+
+    store.set(['drag:core', 'container', 'a'], { width: 1 });
+
+    expect(containerA).toHaveBeenCalledTimes(1);
+    expect(containerB).not.toHaveBeenCalled();
+  });
 });

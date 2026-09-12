@@ -43,7 +43,7 @@ export function buildInspectQueryBox(
   selectThreshold: number,
 ): PointLike | [PointLike, PointLike] {
   if (selectThreshold === 0) {
-    return point;
+    return [point.x, point.y];
   }
   return [
     [point.x - selectThreshold, point.y - selectThreshold],

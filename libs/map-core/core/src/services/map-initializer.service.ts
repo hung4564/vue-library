@@ -151,10 +151,16 @@ export class MapInitializer {
    * Cleanup map instance
    *
    * @param map - Map instance to cleanup
+   * @param callbacks - Optional destroy callback (invoked before map.remove)
    */
-  static cleanupMap(map: MapSimple): void {
-    if (map && typeof map.remove === 'function') {
-      map.remove();
+  static cleanupMap(map: MapSimple, callbacks?: MapEventCallbacks): void {
+    if (!map) return;
+    try {
+      callbacks?.onDestroy?.(map);
+    } finally {
+      if (typeof map.remove === 'function') {
+        map.remove();
+      }
     }
   }
 }

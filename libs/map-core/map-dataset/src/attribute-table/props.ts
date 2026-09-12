@@ -60,6 +60,19 @@ export type AttributeTableViewLabels = {
   prev: string;
   next: string;
   rowsPerPage: string;
+  /** Accessible name for the `<table>` / caption. */
+  table: string;
+  /** Accessible name for the scrollable rows region. */
+  gridRegion: string;
+  selectAll: string;
+  selectRow: string;
+  actionsColumn: string;
+  rowFilter: string;
+  sortedAsc: string;
+  sortedDesc: string;
+  notSorted: string;
+  /** Template with `{selected}` and `{total}` placeholders. */
+  selectionStatus: string;
 };
 
 /** Show/hide built-in controls. Component override stays on Registry. */
@@ -160,10 +173,13 @@ export type AttributeTableToolbarProps = {
   mapId?: string;
   query: string;
   searchPlaceholder: string;
+  /** Explicit accessible name for the search field (not placeholder-only). */
+  searchLabel: string;
   zoomToSelection: boolean;
   zoomLabel: string;
   rowFilter: AttributeTableRowFilter;
   filterItems: AttributeTableSelectItem[];
+  rowFilterLabel: string;
   clearLabel: string;
   clearDisabled: boolean;
   exportLabel: string;
@@ -204,6 +220,15 @@ export type AttributeTableGridProps = {
   empty: boolean;
   loadingLabel: string;
   emptyLabel: string;
+  /** Accessible name for the table (caption / aria-label). */
+  tableLabel: string;
+  gridRegionLabel: string;
+  selectAllLabel: string;
+  selectRowLabel: string;
+  actionsColumnLabel: string;
+  sortedAscLabel: string;
+  sortedDescLabel: string;
+  notSortedLabel: string;
   columns: AttributeTableColumn[];
   windowedRows: AttributeTableRow[];
   sortStates: AttributeTableSortState[];

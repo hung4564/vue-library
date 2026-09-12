@@ -1,6 +1,6 @@
 import { useIcon } from '../../hook';
 
-export interface MapSidebarToggleProps {
+export interface DragSidebarToggleProps {
   location?: string;
   expand?: boolean;
   onClick?: () => void;
@@ -10,11 +10,11 @@ export interface MapSidebarToggleProps {
   role?: string;
 }
 
-export function MapSidebarToggle({
+export function DragSidebarToggle({
   expand = false,
   onClick,
   ...props
-}: MapSidebarToggleProps) {
+}: DragSidebarToggleProps) {
   const { SidebarExpandedIcon, SidebarCloseExpandedIcon } = useIcon();
 
   return (

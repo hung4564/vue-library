@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer, useDragStore } from '../../store';
-import { useStoreReactive } from '../../store/useStoreReactive';
+import { useContainerReactive } from '../../store/useStoreReactive';
 import { SidebarContainer } from './sidebar/sidebar-container';
 import { BottomContainer } from './bottom/bottom-container';
 
@@ -63,7 +63,7 @@ export function DraggableContainer({
   const mobileBreakpointRef = useRef(mobileBreakpoint);
   mobileBreakpointRef.current = mobileBreakpoint;
 
-  useStoreReactive();
+  useContainerReactive(containerId);
   const dragStore = useDragStore();
   const drawer = dragStore.container[containerId]?.drawer;
   const itemShows = store.getItemShows();

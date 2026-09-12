@@ -146,7 +146,7 @@ export function createIdentifyMapboxComponent(
                   | string
                   | number
                   | undefined) ??
-                (x.id as string | number | undefined) ??
+                (x['id'] as string | number | undefined) ??
                 i,
               name: String(
                 x[datasetPartIdentify.config.field_name || 'name'] ?? '',
@@ -216,11 +216,11 @@ function handleMergedIdentifyGroup(
     pointOrBox,
   );
 
-  return mergedIdentify
-    .getMergedFeatures(mergeIdentifies, payload)
-    .then((response: unknown) => {
-      return mergedIdentify.splitResponse(mergeIdentifies, payload, response);
-    });
+  return Promise.resolve(
+    mergedIdentify.getMergedFeatures(mergeIdentifies, payload),
+  ).then((response: unknown) => {
+    return mergedIdentify.splitResponse(mergeIdentifies, payload, response);
+  });
 }
 
 export async function handleMultiIdentify(

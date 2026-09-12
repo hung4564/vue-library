@@ -1,6 +1,13 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-map-draw/style.css';
+import '@hungpvq/react-draggable/style.css';
 import { installMapApp } from '@hungpvq/react-map-dataset';
 import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';

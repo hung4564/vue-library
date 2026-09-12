@@ -11,8 +11,7 @@ export function createStoreRegistryPlugin() {
 }
 
 export function useStoreRegistry() {
-  // FIXME: cần xử lý trường hợp inject
-  //const registry = inject<GlobalStoreService>(STORE_KEY) || GlobalStoreService.getInstance();
+  // Inject deferred: always use singleton until inject(STORE_KEY) is wired.
   const registry = GlobalStoreService.getInstance();
   if (!registry)
     throw new Error(

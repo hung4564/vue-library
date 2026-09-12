@@ -81,7 +81,7 @@ Type-only exports are erased at runtime and are **not** in the lock arrays — s
 
 Workspace apps resolve `@hungpvq/react-*` to **source under `libs/`**. `@vitejs/plugin-react` Fast Refresh on those files rewrites exports and causes browser errors like:
 
-`does not provide an export named 'DraggableContainer' | 'MapHeader' | …`
+`does not provide an export named 'DraggableContainer' | 'DragHeader' | …`
 
 **Rule:** React Vite demos must exclude `libs/` from the React plugin:
 

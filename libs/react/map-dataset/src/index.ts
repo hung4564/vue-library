@@ -3,9 +3,6 @@
  * adapter helpers only. Import dataset builders, services, protocols, and
  * shared types from `@hungpvq/map-dataset`.
  */
-import './style.css';
-import '@hungpvq/map-dataset';
-
 export {
   AddToGroup,
   AttributeTable,

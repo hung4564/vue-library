@@ -1,6 +1,7 @@
 import {
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   ATTRIBUTE_TABLE_ROW_HEIGHT,
+  formatAttributeTableSelectionStatus,
   getVirtualRowWindow,
   resolveAttributeTableUi,
   type AttributeTableGridProps,
@@ -60,10 +61,18 @@ export function AttributeTableView(props: AttributeTableViewProps) {
       windowedRows.length * ATTRIBUTE_TABLE_ROW_HEIGHT,
   );
 
+  const tableLabel = props.layer?.getName?.() || props.labels.table;
+  const selectionStatusText = formatAttributeTableSelectionStatus(
+    props.labels.selectionStatus,
+    state.selectedIds.length,
+    state.total,
+  );
+
   const toolbarProps: AttributeTableToolbarProps = {
     mapId: props.mapId,
     query: state.search,
     searchPlaceholder: props.labels.search,
+    searchLabel: props.labels.search,
     zoomToSelection: state.zoomToSelection,
     zoomLabel: props.labels.zoomToSelection,
     rowFilter: state.rowFilter,
@@ -71,6 +80,7 @@ export function AttributeTableView(props: AttributeTableViewProps) {
       { value: 'all', text: props.labels.showAll },
       { value: 'selected', text: props.labels.showSelected },
     ],
+    rowFilterLabel: props.labels.rowFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.selectedIds.length === 0,
     exportLabel: state.exporting
@@ -123,6 +133,14 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     empty: visibleRows.length === 0,
     loadingLabel: props.labels.loading,
     emptyLabel: props.labels.empty,
+    tableLabel,
+    gridRegionLabel: props.labels.gridRegion,
+    selectAllLabel: props.labels.selectAll,
+    selectRowLabel: props.labels.selectRow,
+    actionsColumnLabel: props.labels.actionsColumn,
+    sortedAscLabel: props.labels.sortedAsc,
+    sortedDescLabel: props.labels.sortedDesc,
+    notSortedLabel: props.labels.notSorted,
     columns: state.columns,
     windowedRows,
     sortStates: state.sortStates,
@@ -153,6 +171,9 @@ export function AttributeTableView(props: AttributeTableViewProps) {
 
   return (
     <div className="attribute-table">
+      <div className="attribute-table__sr-only" role="status" aria-live="polite">
+        {selectionStatusText}
+      </div>
       <RegistryItem
         componentKey={LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar}
         defaultComponent={AttributeTableToolbar}

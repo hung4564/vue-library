@@ -133,6 +133,16 @@ const labels = computed((): AttributeTableViewLabels => ({
   prev: trans.value('map.attribute-table.prev'),
   next: trans.value('map.attribute-table.next'),
   rowsPerPage: trans.value('map.attribute-table.rowsPerPage'),
+  table: trans.value('map.attribute-table.table'),
+  gridRegion: trans.value('map.attribute-table.gridRegion'),
+  selectAll: trans.value('map.attribute-table.selectAll'),
+  selectRow: trans.value('map.attribute-table.selectRow'),
+  actionsColumn: trans.value('map.attribute-table.actionsColumn'),
+  rowFilter: trans.value('map.attribute-table.rowFilter'),
+  sortedAsc: trans.value('map.attribute-table.sortedAsc'),
+  sortedDesc: trans.value('map.attribute-table.sortedDesc'),
+  notSorted: trans.value('map.attribute-table.notSorted'),
+  selectionStatus: trans.value('map.attribute-table.selectionStatus'),
 }));
 
 const exportActions = computed(() => {

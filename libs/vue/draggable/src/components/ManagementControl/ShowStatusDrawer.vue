@@ -18,22 +18,22 @@
         :containerId="containerId"
       >
         <template #extra="{ item, show }">
-          <map-button
+          <drag-button
             @click.stop="onOpen(item)"
             v-if="!show"
             title="Show"
             aria-label="Show"
           >
             <ShowIcon :size="16" />
-          </map-button>
-          <map-button
+          </drag-button>
+          <drag-button
             @click.stop="onClose(item)"
             v-else
             title="Hide"
             aria-label="Hide"
           >
             <HideIcon :size="16" />
-          </map-button>
+          </drag-button>
         </template>
       </ItemList>
     </div>
@@ -45,7 +45,7 @@ import { computed } from 'vue';
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
 import { DrawerConfig, LocationSideBar } from '../../types';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 
 const props = defineProps<{

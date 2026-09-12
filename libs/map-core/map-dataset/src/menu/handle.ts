@@ -7,6 +7,7 @@ import type {
   CommandHandlerMenuExecute,
   MenuItemClick,
   MenuItemClickCommon,
+  MenuItemClickHandle,
   MenuItemHandle,
   MenuItemProps,
 } from './types';
@@ -42,10 +43,11 @@ export function createCommandHandler(
 export const StringCommandHandler = createCommandHandler(
   (click): click is string => typeof click === 'string',
   async (click, context) => {
-    const handler = UniversalRegistry.getMenuHandler(click, context.mapId);
+    const key = click as string;
+    const handler = UniversalRegistry.getMenuHandler(key, context.mapId);
     if (!handler) {
       logHelper(logger, 'handleMenuActionClick').warn(
-        `No handler found for key: ${click}`,
+        `No handler found for key: ${key}`,
       );
       return;
     }
@@ -54,16 +56,19 @@ export const StringCommandHandler = createCommandHandler(
 );
 
 export const FunctionCommandHandler = createCommandHandler(
-  (click): click is (props: MenuItemProps) => any =>
-    typeof click === 'function',
-  async (click, context) => {
-    return await click(context);
-  },
+  (click): click is MenuItemClickHandle => typeof click === 'function',
+  (async (click, context) => {
+    const result = await (click as MenuItemClickHandle)(
+      context as MenuItemProps,
+    );
+    if (isMenuClickBuilder(result)) return result;
+    return undefined;
+  }) as CommandHandlerMenu['execute'],
 );
 
 export const BuilderCommandHandler = createCommandHandler(
   (click): click is ReturnType<typeof createMenuClickBuilder> =>
-    click != null && typeof (click as any).build === 'function',
+    click != null && typeof (click as { build?: unknown }).build === 'function',
   async (click, context) => {
     const builtClick = (
       click as ReturnType<typeof createMenuClickBuilder>
@@ -77,15 +82,22 @@ export const TupleCommandHandler = createCommandHandler(
     entry,
   ): entry is [
     MenuItemClickCommon,
-    MenuItemHandle<any, any> | Partial<MenuItemProps>,
+    MenuItemHandle | Partial<MenuItemProps>,
   ] => Array.isArray(entry) && entry.length == 2,
-  async ([key, transformer], context) => {
-    let props: MenuItemProps<any, any> = context;
+  (async (entry, context) => {
+    const [key, transformer] = entry as [
+      MenuItemClickCommon,
+      MenuItemHandle | Partial<MenuItemProps>,
+    ];
+    let props: MenuItemProps = context as MenuItemProps;
     if (typeof transformer === 'function') {
-      const result = await transformer(context);
-      props = createMenuProps(context, result);
+      const result = await transformer(context as MenuItemProps);
+      props = createMenuProps(
+        context as MenuItemProps,
+        (result ?? undefined) as Partial<MenuItemProps> | undefined,
+      );
     } else if (transformer) {
-      props = createMenuProps(context, transformer);
+      props = createMenuProps(context as MenuItemProps, transformer);
     }
     const commandHandlers: CommandHandlerMenu[] = [
       BuilderCommandHandler,
@@ -100,13 +112,15 @@ export const TupleCommandHandler = createCommandHandler(
         return handler.execute(key, props);
       }
     }
-  },
+  }) as CommandHandlerMenu['execute'],
 );
 export const DirectCommandHandler = createCommandHandler(
   (click): click is CommandHandlerMenuExecute =>
-    click != null && typeof (click as any).execute === 'function',
+    click != null &&
+    typeof (click as CommandHandlerMenuExecute).execute === 'function',
   async (entry, context) => {
-    return entry.execute(entry, context);
+    const cmd = entry as CommandHandlerMenuExecute;
+    return cmd.execute(cmd, context);
   },
 );
 
@@ -126,7 +140,7 @@ async function resolveActionResult<P, T>(
 }
 
 /** Hàm chính handleMenuActionClick */
-export async function handleMenuActionClick<P = any, T = IDataset>(
+export async function handleMenuActionClick<P = unknown, T = IDataset>(
   action: MenuItemClick<P, T>,
   context: MenuItemProps<P, T>,
   depth = 0,

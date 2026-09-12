@@ -37,10 +37,6 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
-              },
-              {
                 "sourceTag": "core",
                 "onlyDependOnLibsWithTags": [
                   "core",
@@ -93,6 +89,57 @@
                   "dataset",
                   "draw",
                   "devtools"
+                ]
+              },
+              {
+                "sourceTag": "demo",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "react",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "devtools"
+                ]
+              },
+              {
+                "sourceTag": "share",
+                "onlyDependOnLibsWithTags": ["share", "store", "js"]
+              },
+              {
+                "sourceTag": "draggable",
+                "onlyDependOnLibsWithTags": [
+                  "draggable",
+                  "share",
+                  "store",
+                  "core",
+                  "js",
+                  "ui"
+                ]
+              },
+              {
+                "sourceTag": "map",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "react",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "devtools",
+                  "demo"
                 ]
               }
             ]

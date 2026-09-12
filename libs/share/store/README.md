@@ -2,6 +2,8 @@
 
 Framework-agnostic store (`GlobalStoreService`, `defineStore`, Vue plugin).
 
+**Stable API:** [docs/stable-api.md](./docs/stable-api.md) (locked by `public-api.spec.ts`).
+
 ## Install
 
 ```bash

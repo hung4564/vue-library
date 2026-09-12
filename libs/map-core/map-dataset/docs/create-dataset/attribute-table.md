@@ -237,3 +237,37 @@ UniversalRegistry.registerComponentForMap(
 ```
 
 Demo `/#/dataset-attribute-table`: registry overrides, `addComponent` (+ columns / ui / cell+header components), custom store via `store.list`, `queueAttributeTableSelectRows`, `runMapControlAction`.
+
+## Accessibility
+
+Panel chrome (dialog role, Escape, focus trap/restore, titled close) is owned by the **draggable** popup shell — see [`libs/draggable/core/docs/a11y.md`](../../../../draggable/core/docs/a11y.md). AttributeTable only owns the **content** contract below.
+
+### Roles and live regions
+
+| Surface | Contract |
+|---------|----------|
+| Selection / total | Polite `role="status"` live region (`selectionStatus` locale template with `{selected}` / `{total}`) |
+| Grid body | `role="region"` + `aria-label` (`gridRegion`); loading uses `aria-busy` |
+| Loading / empty | `role="status"` + `aria-live="polite"` |
+| Table | Native `<table>` + `aria-label` (layer name or `table` locale) |
+| Column headers | `scope="col"`; sortable headers expose `aria-sort` |
+| Sort control | `<button type="button">` inside `<th>` (keyboard + screen reader); Shift+click / Shift+Enter keeps multi-sort |
+| Rows | `aria-selected`; named row / select-all checkboxes |
+| Pager page text | `role="status"` + `aria-live="polite"` |
+| Search / row filter | Explicit `aria-label` (not placeholder-only) |
+
+Do **not** use `role="grid"` unless you intentionally adopt ARIA grid keyboard semantics. Custom header/cell registry slots should remain keyboard-activatable; the default path is accessible without overrides.
+
+### Keyboard (content)
+
+| Key | When focus is in the table region / focused row |
+|-----|--------------------------------------------------|
+| ArrowUp / ArrowDown | Move roving focus among **visible** (virtualized) rows |
+| Home / End | First / last visible row |
+| Space / Enter | Toggle selection on the focused row (ignored when target is a button, checkbox, link, or input) |
+| Tab | Moves through dialog chrome and focusable controls (sort buttons, checkboxes, pager); does not replace the shell Tab trap |
+| Escape | Closes the panel via the draggable shell when focus is inside it |
+
+### Locale keys (`map.attribute-table.*`)
+
+A11y-oriented keys: `table`, `gridRegion`, `selectAll`, `selectRow`, `actionsColumn`, `rowFilter`, `sortedAsc`, `sortedDesc`, `notSorted`, `selectionStatus` (plus existing `search`, `loading`, `empty`, pager labels, …). Helper: `formatAttributeTableSelectionStatus(template, selected, total)`.

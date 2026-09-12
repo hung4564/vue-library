@@ -8,7 +8,7 @@ import {
   useShow,
 } from '../../hook';
 import { LocationSideBar } from '../../types';
-import { MapSidebarToggleProps } from '../parts/MapSidebarToggle';
+import { DragSidebarToggleProps } from '../parts/DragSidebarToggle';
 import { SidebarModule } from './sidebar/sidebar-module';
 
 export interface DraggableItemSideBarProps {
@@ -21,7 +21,7 @@ export interface DraggableItemSideBarProps {
   containerId?: string;
   componentCard?: ShareCardComponent;
   componentCardHeader?: ShareHeaderComponent;
-  componentMapSidebarToggle?: ComponentType<MapSidebarToggleProps>;
+  componentSidebarToggle?: ComponentType<DragSidebarToggleProps>;
   width?: number | string;
   right?: boolean;
   location?: LocationSideBar;

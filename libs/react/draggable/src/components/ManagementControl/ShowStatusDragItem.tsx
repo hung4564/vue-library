@@ -1,6 +1,6 @@
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 
 export interface ShowStatusDragItemProps {
@@ -36,22 +36,22 @@ export function ShowStatusDragItem({
         renderExtra={(item, show) => (
           <>
             {show && (
-              <MapButton
+              <DragButton
                 onClick={() => onHighLight(item)}
                 title="Highlight"
                 aria-label="Highlight"
               >
                 <HighlightIcon size={16} />
-              </MapButton>
+              </DragButton>
             )}
             {!show ? (
-              <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+              <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                 <ShowIcon size={16} />
-              </MapButton>
+              </DragButton>
             ) : (
-              <MapButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
+              <DragButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
                 <HideIcon size={16} />
-              </MapButton>
+              </DragButton>
             )}
           </>
         )}

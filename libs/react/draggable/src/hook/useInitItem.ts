@@ -2,7 +2,7 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDragItem, useDragStore } from '../store';
-import { useStoreReactive } from '../store/useStoreReactive';
+import { useContainerReactive, useStoreReactive } from '../store/useStoreReactive';
 import { InitOption } from '../types';
 
 export function useInitItem(
@@ -52,7 +52,7 @@ export function useInitItem(
 }
 
 export function useContainerOrder(containerId: string, itemId: string) {
-  useStoreReactive();
+  useContainerReactive(containerId);
   const store = useDragItem(containerId);
   const dragStore = useDragStore();
   const group = itemTypeToGroup(
@@ -103,6 +103,7 @@ export function useContainerOrder(containerId: string, itemId: string) {
 }
 
 export function useManagement(containerId: string) {
+  // Management lists every panel group — keep root subscription
   useStoreReactive();
   const store = useDragStore();
   const container = store.container[containerId];

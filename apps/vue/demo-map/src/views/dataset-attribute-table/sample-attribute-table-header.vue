@@ -35,7 +35,7 @@ function onClick(event: MouseEvent) {
         ? 'Click to sort · Shift+click for multi-sort'
         : 'Sorting disabled for this column'
     "
-    @click.stop="onClick"
+    @click="onClick"
   >
     <span class="at-sample-header__label">{{ label }}</span>
     <span v-if="sortSuffix()" class="at-sample-header__sort">{{
@@ -46,12 +46,14 @@ function onClick(event: MouseEvent) {
 </template>
 <style scoped>
 .at-sample-header {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 4px;
+  box-sizing: border-box;
+  width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 6px 10px;
   border: 0;
   background: transparent;
   font: inherit;

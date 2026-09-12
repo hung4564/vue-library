@@ -22,6 +22,7 @@ const ui = computed(() => resolveAttributeTableUi(props.ui));
         v-if="ui.search"
         :model-value="props.query"
         :placeholder="props.searchPlaceholder"
+        :aria-label="props.searchLabel"
         @update:model-value="props.onQueryChange(String($event ?? ''))"
       />
       <MapControlButton
@@ -64,6 +65,7 @@ const ui = computed(() => resolveAttributeTableUi(props.ui));
         :items="props.filterItems"
         item-value="value"
         item-text="text"
+        :aria-label="props.rowFilterLabel"
         @update:model-value="
           props.onRowFilterChange(
             $event === 'selected' ? 'selected' : 'all',

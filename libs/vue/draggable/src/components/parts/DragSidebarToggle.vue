@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'MapSidebarToggle',
+  name: 'DragSidebarToggle',
 };
 </script>
 <script setup lang="ts">

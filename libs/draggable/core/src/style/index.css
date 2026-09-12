@@ -1,4 +1,4 @@
-/* ===== MapButton ===== */
+/* ===== DragButton ===== */
 .hungpvq-draggable-button {
   cursor: pointer;
   pointer-events: all;
@@ -79,7 +79,7 @@
   pointer-events: none;
 }
 
-/* ===== MapHeader ===== */
+/* ===== DragHeader ===== */
 .draggable-header .map-spacer {
   flex-grow: 1;
 }
@@ -123,7 +123,7 @@
   white-space: nowrap;
 }
 
-/* ===== MapCard ===== */
+/* ===== DragCard ===== */
 .hungpvq-draggable-card {
   background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
   color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));

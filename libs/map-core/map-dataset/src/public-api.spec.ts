@@ -114,8 +114,6 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'layerMatchesSearch',
   'layerNameMatchesSearch',
   'normalizeLayerSearchQuery',
-  'printTreeFromNode',
-  'printTreeFromRoot',
   'resolveDatasetBbox',
   'resolveHighlightFeatureId',
   'runAllComponentsWithCheck',
@@ -133,8 +131,11 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'useHighlightAnimation',
 ] as const;
 
-/** Reserved for future experimental root exports (currently empty). */
-export const MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
+/** Debug tree printers — may change or move to a subpath in a minor. */
+export const MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'printTreeFromNode',
+  'printTreeFromRoot',
+] as const;
 
 /** Stable runtime exports per domain subpath entry. */
 export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
@@ -196,6 +197,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'exportAttributeTableRows',
   'filterAttributeTableRows',
   'formatAttributeCell',
+  'formatAttributeTableSelectionStatus',
   'getAttributeTableCellRaw',
   'getVirtualRowWindow',
   'isAttributeTableExportMenuMode',

@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'MapHeader',
+  name: 'DragHeader',
 };
 </script>
 <script setup lang="ts"></script>

@@ -5,9 +5,9 @@ import { ContextMenu, type ContextMenuRef } from '../components/ContextMenu';
 import { ContextMenuItem } from '../components/ContextMenuItem';
 import { DraggableContainer } from '../components/draggable/draggable-container';
 import { ManagementControl } from '../components/ManagementControl/ManagementControl';
-import { MapButton } from '../components/parts/MapButton';
-import { MapCard } from '../components/parts/MapCard';
-import { MapHeader } from '../components/parts/MapHeader';
+import { DragButton } from '../components/parts/DragButton';
+import { DragCard } from '../components/parts/DragCard';
+import { DragHeader } from '../components/parts/DragHeader';
 import { useContainerId } from '../context/ContainerContext';
 import { useDragStore } from '../store';
 
@@ -51,11 +51,11 @@ afterEach(() => {
 });
 
 describe('parts', () => {
-  it('MapButton renders with size styles', () => {
+  it('DragButton renders with size styles', () => {
     const { getByText, container } = render(
-      <MapButton width={40} height={24}>
+      <DragButton width={40} height={24}>
         Go
-      </MapButton>,
+      </DragButton>,
     );
     expect(getByText('Go')).toBeTruthy();
     const btn = container.querySelector('button') as HTMLButtonElement;
@@ -63,15 +63,15 @@ describe('parts', () => {
     expect(btn.style.height).toBe('24px');
   });
 
-  it('MapButton applies native disabled', () => {
-    const { container } = render(<MapButton disabled>X</MapButton>);
+  it('DragButton applies native disabled', () => {
+    const { container } = render(<DragButton disabled>X</DragButton>);
     const btn = container.querySelector('button') as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
   });
 
-  it('MapCard and MapHeader mount', () => {
-    expect(render(<MapCard />).container.firstChild).toBeTruthy();
-    expect(render(<MapHeader title="T" />).getByText('T')).toBeTruthy();
+  it('DragCard and DragHeader mount', () => {
+    expect(render(<DragCard />).container.firstChild).toBeTruthy();
+    expect(render(<DragHeader title="T" />).getByText('T')).toBeTruthy();
   });
 });
 

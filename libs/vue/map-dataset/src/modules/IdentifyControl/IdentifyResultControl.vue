@@ -211,13 +211,17 @@ function onResultKeydown(event: KeyboardEvent) {
           <MapControlButton
             @click.stop="onUseMapClick"
             :active="isEventClickActive"
-            :disabled="isEventClickActive" variant="plain">
+            :disabled="isEventClickActive"
+            :title="trans('map.identify.map_click')"
+            variant="plain">
             <SvgIcon size="16" type="mdi" :path="path.mapClick" />
           </MapControlButton>
           <MapControlButton
             @click.stop="onUseBoxSelect"
             :active="isEventClickBox"
-            :disabled="isEventClickBox" variant="plain">
+            :disabled="isEventClickBox"
+            :title="trans('map.identify.box_select')"
+            variant="plain">
             <SvgIcon size="16" type="mdi" :path="path.boxSelect" />
           </MapControlButton>
         </template>
@@ -241,19 +245,30 @@ function onResultKeydown(event: KeyboardEvent) {
               />
             </div>
           </div>
-          <hr class="identify-control-separator" />
+          <hr class="identify-control-separator" aria-hidden="true" />
           <div
             class="identify-control-body"
             tabindex="0"
+            role="region"
+            :aria-label="trans('map.identify.title')"
             @keydown="onResultKeydown"
           >
-            <div v-if="loading" class="identify-control-state">
+            <div
+              v-if="loading"
+              class="identify-control-state"
+              role="status"
+              aria-live="polite"
+            >
               <div class="identify-control-state__content">
-                <div class="identify-control-state__loading"></div>
+                <div class="identify-control-state__loading" aria-hidden="true"></div>
                 <span>{{ trans('map.identify.loading') }}</span>
               </div>
             </div>
-            <div v-else-if="errorMessage" class="identify-control-state">
+            <div
+              v-else-if="errorMessage"
+              class="identify-control-state"
+              role="alert"
+            >
               <div class="identify-control-state__content">
                 <span>{{ errorMessage || trans('map.identify.error') }}</span>
               </div>

@@ -49,13 +49,13 @@ export type MenuDivider = MenuCommon & {
 };
 
 /** Common properties for all menu items */
-export type MenuItemCommon<P = any, T = IDataset> = MenuCommon & {
+export type MenuItemCommon<P = unknown, T = IDataset> = MenuCommon & {
   type: 'item';
   click: MenuItemClick<P, T>;
 };
 
 /** Menu item type for bottom or extra location */
-export type MenuItemBottomOrExtra<P = any, T = IDataset> = MenuItemCommon<
+export type MenuItemBottomOrExtra<P = unknown, T = IDataset> = MenuItemCommon<
   P,
   T
 > & {
@@ -66,7 +66,7 @@ export type MenuItemBottomOrExtra<P = any, T = IDataset> = MenuItemCommon<
 };
 
 /** Menu item type custom component for bottom or extra location */
-export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
+export type MenuItemCustomComponentBottomOrExtra<P = unknown, T = IDataset> = Omit<
   MenuItemCommon<P, T>,
   'click'
 > & {
@@ -76,7 +76,7 @@ export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
 };
 
 /** Menu item type for menu location */
-export type MenuItemContentMenu<P = any, T = IDataset> = Omit<
+export type MenuItemContentMenu<P = unknown, T = IDataset> = Omit<
   MenuItemCommon<P, T>,
   'click'
 > & {
@@ -88,7 +88,7 @@ export type MenuItemContentMenu<P = any, T = IDataset> = Omit<
   /** Registry key of a component that renders this item inside the context menu */
   componentMenuKey?: string;
 };
-export type MenuAction<P = any, T = IDataset> =
+export type MenuAction<P = unknown, T = IDataset> =
   | MenuDivider
   | MenuItemBottomOrExtra<P, T>
   | MenuItemContentMenu<P, T>
@@ -185,15 +185,15 @@ export type IdentifyResult = IdentifyMultiResult;
 export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 
 export type WithMenuHelper<T extends IDataset = IDataset> = {
-  addMenu(menu: MenuAction<T>): void;
-  addMenus(menusToAdd: MenuAction<T>[]): void;
-  getMenus(): MenuAction<T>[];
+  addMenu(menu: MenuAction<unknown, T>): void;
+  addMenus(menusToAdd: MenuAction<unknown, T>[]): void;
+  getMenus(): MenuAction<unknown, T>[];
   removeMenu: (id: string) => void;
   updateMenu: (
     id: string,
-    updater: (menu: MenuAction<T>) => MenuAction<T>,
+    updater: (menu: MenuAction<unknown, T>) => MenuAction<unknown, T>,
   ) => void;
-  getMenu(id: string): MenuAction<T> | undefined;
+  getMenu(id: string): MenuAction<unknown, T> | undefined;
   hasMenu(id: string): boolean;
 };
 

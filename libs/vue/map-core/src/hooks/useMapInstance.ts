@@ -98,6 +98,9 @@ export function useMapInstance(
             errorHandler.handle(error);
             emit('error', error);
           },
+          onDestroy: (m) => {
+            emit('map-destroy', m);
+          },
         };
 
         cleanupEvents = MapInitializer.setupMapEvents(
@@ -129,8 +132,9 @@ export function useMapInstance(
     loaded.value = false;
     if (map.value) {
       const mapInstance = map.value as MapSimple;
-      MapInitializer.cleanupMap(mapInstance);
-      emit('map-destroy', mapInstance);
+      MapInitializer.cleanupMap(mapInstance, {
+        onDestroy: (m) => emit('map-destroy', m),
+      });
     }
     map.value = undefined;
     store.removeMap();

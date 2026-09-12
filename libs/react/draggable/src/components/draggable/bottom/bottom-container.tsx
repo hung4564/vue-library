@@ -10,14 +10,14 @@ import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useExpand, useIcon } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useBottomItem, useDragContainer } from '../../../store';
-import { useStoreReactive } from '../../../store/useStoreReactive';
+import { useContainerReactive } from '../../../store/useStoreReactive';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
-import { MapButton } from '../../parts/MapButton';
+import { DragButton } from '../../parts/DragButton';
 
 export function BottomContainer() {
   const containerId = useContainerId();
-  useStoreReactive();
+  useContainerReactive(containerId);
   const { getShow, getItems } = useBottomContainer(containerId);
   const storeBottom = useBottomItem(containerId);
   const storeBottomRef = useRef(storeBottom);
@@ -123,16 +123,16 @@ export function BottomContainer() {
               extraBtn={
                 <>
                   {showSwitcher && (
-                    <MapButton
+                    <DragButton
                       onClick={openMenu}
                       aria-label="Open bottom menu"
                       aria-haspopup="menu"
                       aria-expanded={menuOpen}
                     >
                       <SidebarOpenMenu size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
-                  <MapButton
+                  <DragButton
                     onClick={onToggleExpand}
                     aria-label={
                       expand ? 'Collapse bottom panel' : 'Expand bottom panel'
@@ -145,10 +145,10 @@ export function BottomContainer() {
                     ) : (
                       <OffFullscreenIcon size={'16px'} />
                     )}
-                  </MapButton>
-                  <MapButton onClick={onClose} aria-label="Close bottom">
+                  </DragButton>
+                  <DragButton onClick={onClose} aria-label="Close bottom">
                     <CloseIcon size={'16px'} />
-                  </MapButton>
+                  </DragButton>
                 </>
               }
             />

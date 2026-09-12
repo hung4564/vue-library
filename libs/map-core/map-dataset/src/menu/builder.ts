@@ -14,17 +14,17 @@ import type {
 export function addMenuBuilder<
   TBuilder extends { build: (...args: any[]) => any },
 >(builder: TBuilder): WithMenuBuilder & TBuilder {
-  const _menus: MenuAction<IDataset>[] = [];
+  const _menus: MenuAction[] = [];
 
   // lưu build gốc ra trước
   const originalBuild = builder.build;
 
   return Object.assign(builder, {
-    addMenu(menu: MenuAction<IDataset>) {
+    addMenu(menu: MenuAction) {
       _menus.push(menu);
       return this;
     },
-    addMenus(menus: MenuAction<IDataset>[]) {
+    addMenus(menus: MenuAction[]) {
       _menus.push(...menus);
       return this;
     },
@@ -35,7 +35,7 @@ export function addMenuBuilder<
       }
       return dataset;
     },
-  });
+  }) as WithMenuBuilder & TBuilder;
 }
 export function createMenuBuilder<T = IDataset>() {
   return {
@@ -103,13 +103,17 @@ export function createMenuBuilder<T = IDataset>() {
         },
         setClick(
           click:
-            | MenuItemClick<T>
-            | ReturnType<typeof createMenuClickBuilder<T>>,
+            | MenuItemClick<unknown, T>
+            | ReturnType<typeof createMenuClickBuilder<unknown, T>>,
         ) {
           // nếu truyền vào builder thì gọi build()
           state.click =
-            typeof (click as any).build === 'function'
-              ? (click as ReturnType<typeof createMenuClickBuilder<T>>).build()
+            typeof (click as { build?: unknown }).build === 'function'
+              ? (
+                  click as ReturnType<
+                    typeof createMenuClickBuilder<unknown, T>
+                  >
+                ).build()
               : click;
           return this;
         },
@@ -121,7 +125,7 @@ export function createMenuBuilder<T = IDataset>() {
   };
 }
 
-export function createMenuClickBuilder<P = any, T = any>() {
+export function createMenuClickBuilder<P = unknown, T = IDataset>() {
   const actions: any[] = [];
 
   return {

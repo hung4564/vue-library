@@ -26,7 +26,7 @@ export default {
       default: false,
     },
   },
-  name: 'MapCard',
+  name: 'DragCard',
   data: () => ({}),
   computed: {
     cardStyle() {

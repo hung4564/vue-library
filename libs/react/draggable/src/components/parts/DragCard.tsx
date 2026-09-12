@@ -1,13 +1,13 @@
 import { useMemo, type HTMLAttributes, type ReactNode } from 'react';
 
-export type MapCardProps = {
+export type DragCardProps = {
   height?: string | number;
   width?: string | number;
   highlight?: boolean;
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>;
 
-function MapCard({
+function DragCard({
   height,
   width,
   highlight = false,
@@ -15,7 +15,7 @@ function MapCard({
   className = '',
   style,
   ...props
-}: MapCardProps) {
+}: DragCardProps) {
   const cardStyle = useMemo(
     () => ({
       height:
@@ -56,4 +56,4 @@ function MapCard({
   );
 }
 
-export { MapCard };
+export { DragCard };

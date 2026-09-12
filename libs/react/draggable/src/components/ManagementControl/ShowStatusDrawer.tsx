@@ -1,7 +1,7 @@
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
 import { DrawerConfig, LocationSideBar } from '../../types';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 
 export interface ShowStatusDrawerProps {
@@ -52,13 +52,13 @@ export function ShowStatusDrawer({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <MapButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+                <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
                   <ShowIcon size={16} />
-                </MapButton>
+                </DragButton>
               ) : (
-                <MapButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
+                <DragButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
                   <HideIcon size={16} />
-                </MapButton>
+                </DragButton>
               )
             }
           />

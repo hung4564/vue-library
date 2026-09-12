@@ -78,14 +78,14 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types) |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types). Experimental: `printTreeFromNode` / `printTreeFromRoot` |
 | `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui` / `export`), `createMenuItemAttributeTable`, column/sort/export helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
 | `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
 | `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (`data` / merge payload typed as `unknown` — types-only tightening vs former `any`) |
-| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders |
+| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*`, `exportDatasetGeo`, `downloadBlob`, export menu helpers |
@@ -96,7 +96,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
-Root barrels are **Stable only** (see each `public-api.spec.ts`). Field / lightweight UI helpers live on **`./fields`** (Experimental; may change in a **minor**).
+Root barrels are **Stable only** (see each `public-api.spec.ts`). Field / lightweight UI helpers live on **`./fields`** (Experimental; may change in a **minor**). React root also lists Experimental `logger` (Vue has no root `logger` export).
 
 **Breaking (major):** importing former Experimental symbols (`Input*`, `MapCard`, `MapErrorToast`, …) from the package root fails — use `@hungpvq/vue-map-core/fields` / `@hungpvq/react-map-core/fields`. Former `BaseButton` is removed — use Stable root `MapControlButton`.
 

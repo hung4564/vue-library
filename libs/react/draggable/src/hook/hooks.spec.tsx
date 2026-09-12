@@ -292,7 +292,7 @@ describe('useSideBarContainer / useComponent / order / size / management', () =>
     expect(api.getItemsForLocation('left')[0].id).toBe('s1');
   });
 
-  it('useComponent falls back to default MapCard/MapHeader', () => {
+  it('useComponent falls back to default DragCard/DragHeader', () => {
     const { result } = renderHook(() => useComponent({ containerId: CID }));
     expect(result.current.componentCard).toBeTruthy();
     expect(result.current.componentCardHeader).toBeTruthy();

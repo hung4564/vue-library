@@ -6,8 +6,6 @@
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
-import './style/index.scss';
-
 export {
   Base,
   EMPTY_MAP_VIEW_INFO,

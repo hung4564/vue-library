@@ -36,7 +36,10 @@ export type {
   AttributeTableResolvedExportAction,
 } from './export-options';
 
-export { ATTRIBUTE_TABLE_LOCALE } from './locale';
+export {
+  ATTRIBUTE_TABLE_LOCALE,
+  formatAttributeTableSelectionStatus,
+} from './locale';
 
 export {
   createMenuItemAttributeTable,

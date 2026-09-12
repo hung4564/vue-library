@@ -1,7 +1,7 @@
-export { MapButton, type MapButtonProps } from './MapButton';
-export { MapCard, type MapCardProps } from './MapCard';
-export { MapHeader, type MapHeaderProps } from './MapHeader';
+export { DragButton, type DragButtonProps } from './DragButton';
+export { DragCard, type DragCardProps } from './DragCard';
+export { DragHeader, type DragHeaderProps } from './DragHeader';
 export {
-  MapSidebarToggle,
-  type MapSidebarToggleProps,
-} from './MapSidebarToggle';
+  DragSidebarToggle,
+  type DragSidebarToggleProps,
+} from './DragSidebarToggle';

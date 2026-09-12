@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useStoreReactive } from '../../../store/useStoreReactive';
+import { useContainerReactive } from '../../../store/useStoreReactive';
 
 export interface BottomModuleProps {
   containerId: string;
@@ -16,7 +16,7 @@ export function BottomModule({
   title,
   children,
 }: BottomModuleProps) {
-  useStoreReactive();
+  useContainerReactive(containerId);
   const { getShow } = useBottomContainer(containerId);
   const titleTo = useMemo(() => `bottom-title-${containerId}`, [containerId]);
   const contentTo = useMemo(

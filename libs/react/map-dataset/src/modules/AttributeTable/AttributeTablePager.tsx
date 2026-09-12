@@ -12,10 +12,16 @@ export function AttributeTablePager(props: AttributeTablePagerProps) {
     ? props.pageSizeItems
     : [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS];
 
+  const pageStatus = `${props.pageLabel} ${props.page} ${props.ofLabel} ${props.totalPages}`;
+
   return (
     <div className="attribute-table__pager">
-      <span className="attribute-table__pager-label">
-        {props.pageLabel} {props.page} {props.ofLabel} {props.totalPages}
+      <span
+        className="attribute-table__pager-label"
+        role="status"
+        aria-live="polite"
+      >
+        {pageStatus}
       </span>
       <MapControlButton
         className="attribute-table__pager-btn"
@@ -43,6 +49,7 @@ export function AttributeTablePager(props: AttributeTablePagerProps) {
           value={props.pageSize}
           items={pageSizeItems}
           label={props.rowsPerPageLabel}
+          aria-label={props.rowsPerPageLabel}
           onChange={(value) => {
             props.onPageSizeChange(value);
           }}

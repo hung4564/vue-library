@@ -19,7 +19,7 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 export interface DraggableItemFloatProps {
   id?: string;
   show?: boolean;
@@ -197,7 +197,7 @@ export function DraggableItemFloat({
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton
+                  <DragButton
                     aria-label={expand ? 'Collapse panel' : 'Expand panel'}
                     aria-expanded={expand}
                     onClick={onToggleExpand}
@@ -207,29 +207,29 @@ export function DraggableItemFloat({
                     ) : (
                       <CloseExpandedIcon size={'16px'} />
                     )}
-                  </MapButton>
+                  </DragButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton
+                      <DragButton
                         aria-label="Send to back"
                         disabled={isFirst}
                         onClick={onToBack}
                       >
                         <ToBackIcon size={'16px'} />
-                      </MapButton>
-                      <MapButton
+                      </DragButton>
+                      <DragButton
                         aria-label="Bring to front"
                         disabled={isLast}
                         onClick={onToFront}
                       >
                         <ToFrontIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
                 </>
               }
@@ -246,7 +246,7 @@ export function DraggableItemFloat({
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton
+                  <DragButton
                     aria-label={expand ? 'Collapse panel' : 'Expand panel'}
                     aria-expanded={expand}
                     onClick={onToggleExpand}
@@ -256,29 +256,29 @@ export function DraggableItemFloat({
                     ) : (
                       <CloseExpandedIcon size={'16px'} />
                     )}
-                  </MapButton>
+                  </DragButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton
+                      <DragButton
                         aria-label="Send to back"
                         disabled={isFirst}
                         onClick={onToBack}
                       >
                         <ToBackIcon size={'16px'} />
-                      </MapButton>
-                      <MapButton
+                      </DragButton>
+                      <DragButton
                         aria-label="Bring to front"
                         disabled={isLast}
                         onClick={onToFront}
                       >
                         <ToFrontIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
                 </>
               }

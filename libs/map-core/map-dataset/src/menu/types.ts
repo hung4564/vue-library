@@ -14,9 +14,9 @@ export type MenuContextSource =
 
 export type { MenuCondition, MenuConditionContext };
 
-export type CommandHandlerMenuExecute<PDefault = any, TDefault = IDataset> = {
+export type CommandHandlerMenuExecute<PDefault = unknown, TDefault = IDataset> = {
   execute: <P = PDefault, T = TDefault>(
-    click: any,
+    click: unknown,
     baseProps: MenuItemProps<P, T>,
   ) =>
     | Promise<void | ReturnType<typeof createMenuClickBuilder<P, T>>>
@@ -24,13 +24,13 @@ export type CommandHandlerMenuExecute<PDefault = any, TDefault = IDataset> = {
     | ReturnType<typeof createMenuClickBuilder<P, T>>;
 };
 export type CommandHandlerMenu<
-  PDefault = any,
+  PDefault = unknown,
   TDefault = IDataset,
 > = CommandHandlerMenuExecute<PDefault, TDefault> & {
   canHandle: (click: unknown) => boolean;
 };
 
-export type MenuItemProps<P = any, T = IDataset> = {
+export type MenuItemProps<P = unknown, T = IDataset> = {
   layer: T;
   mapId: string;
   value?: P;
@@ -40,24 +40,24 @@ export type MenuItemProps<P = any, T = IDataset> = {
     [key: string]: unknown;
   };
 };
-export type MenuItemHandleResult<P = any, T = IDataset> =
+export type MenuItemHandleResult<P = unknown, T = IDataset> =
   | Partial<MenuItemProps<P, T>>
   | Promise<Partial<MenuItemProps<P, T>> | void>
   | void;
-export type MenuItemHandle<P = any, T = IDataset> = (
+export type MenuItemHandle<P = unknown, T = IDataset> = (
   args: MenuItemProps<P, T>,
 ) => MenuItemHandleResult<P, T>;
-export type MenuItemClickHandle<P = any, T = IDataset> = (
+export type MenuItemClickHandle<P = unknown, T = IDataset> = (
   args: MenuItemProps<P, T>,
 ) =>
   | ReturnType<typeof createMenuClickBuilder<P, T>>
   | Promise<ReturnType<typeof createMenuClickBuilder<P, T>>>
   | void
   | Promise<void>;
-export type MenuItemClickCommon<P = any, T = IDataset> =
+export type MenuItemClickCommon<P = unknown, T = IDataset> =
   | string
   | CommandHandlerMenuExecute<P, T>;
-export type MenuItemClick<P = any, T = IDataset> =
+export type MenuItemClick<P = unknown, T = IDataset> =
   | MenuItemClickCommon<P, T>
   | MenuItemClickHandle<P, T>
   | Array<
@@ -69,6 +69,6 @@ export type MenuItemClick<P = any, T = IDataset> =
     >;
 
 export interface WithMenuBuilder<T = IDataset> {
-  addMenu(menu: MenuAction<T>): this;
-  addMenus(menusToAdd: MenuAction<T>[]): this;
+  addMenu(menu: MenuAction<unknown, T>): this;
+  addMenus(menusToAdd: MenuAction<unknown, T>[]): this;
 }

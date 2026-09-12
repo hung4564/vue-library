@@ -21,7 +21,7 @@ const props = defineProps({
   ...withShowProps,
   ...withShareComponent,
   ...withShareProps,
-  componentMapSidebarToggle: { type: [String, Object] },
+  componentSidebarToggle: { type: [String, Object] },
   width: { type: [Number, String], default: 'auto' },
   right: Boolean,
   location: { type: [String] },

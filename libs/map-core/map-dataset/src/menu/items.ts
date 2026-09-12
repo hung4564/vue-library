@@ -90,18 +90,18 @@ export const LIST_VIEW_MENU_COMPONENT_KEY = {
 export function createWithMenuHelper<
   T extends IDataset = IDataset,
 >(): WithMenuHelper<T> {
-  const menus: MenuAction<T>[] = [];
+  const menus: MenuAction<unknown, T>[] = [];
   return {
     getMenus() {
       return menus;
     },
-    addMenu(menu: MenuAction<T>) {
+    addMenu(menu: MenuAction<unknown, T>) {
       if (menu.id && menus.some((m) => m.id === menu.id)) {
         return;
       }
       menus.push(menu);
     },
-    addMenus(menusToAdd: MenuAction<T>[]) {
+    addMenus(menusToAdd: MenuAction<unknown, T>[]) {
       for (const menu of menusToAdd) {
         if (menu.id && menus.some((m) => m.id === menu.id)) continue;
 
@@ -114,7 +114,7 @@ export function createWithMenuHelper<
         menus.splice(index, 1);
       }
     },
-    getMenu(id: string): MenuAction<T> | undefined {
+    getMenu(id: string): MenuAction<unknown, T> | undefined {
       return menus.find((m) => m.id === id);
     },
 
@@ -122,18 +122,21 @@ export function createWithMenuHelper<
       return menus.some((m) => m.id === id);
     },
 
-    updateMenu(id: string, updater: (menu: MenuAction<T>) => MenuAction<T>) {
+    updateMenu(
+      id: string,
+      updater: (menu: MenuAction<unknown, T>) => MenuAction<unknown, T>,
+    ) {
       const index = menus.findIndex((m) => m.id === id);
       if (index !== -1) {
-        menus[index] = updater(menus[index]);
+        menus[index] = updater(menus[index]!);
       }
     },
   };
 }
 export function createMenuItem<T extends IDataset>(
   item: MenuItemBottomOrExtra<T> | MenuItemCustomComponentBottomOrExtra<T>,
-): MenuAction<T> {
-  return item;
+): MenuAction<unknown, T> {
+  return item as MenuAction<unknown, T>;
 }
 
 export function createMenuItemToBoundActionForList(props?: {
@@ -189,7 +192,11 @@ export function createMenuItemToBoundActionForItem() {
           };
         })
         .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => {
-          const { geometry, ...properties } = value || {};
+          const row = (value ?? {}) as {
+            geometry?: Geometry;
+            [key: string]: unknown;
+          };
+          const { geometry, ...properties } = row;
           if (!geometry) return undefined;
           return {
             value: createMenuClickHighlightBuilder()
@@ -228,7 +235,15 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
         }))
         .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => ({
           value: createMenuClickHighlightBuilder()
-            .setDetail(convertItemToFeature(value))
+            .setDetail(
+              convertItemToFeature(
+                value as {
+                  id?: string | number;
+                  geometry: Geometry;
+                  [key: string]: unknown;
+                },
+              ),
+            )
             .setKey('detail')
             .build(),
         }));

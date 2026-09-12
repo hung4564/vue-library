@@ -10,6 +10,8 @@ export const IDENTIFY_CONTROL_LOCALE = {
       no_data_filtered: 'No features in the selected layer',
       loading: 'Loading...',
       error: 'Identify failed',
+      map_click: 'Identify by map click',
+      box_select: 'Identify by box select',
     },
   },
 };

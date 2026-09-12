@@ -150,7 +150,7 @@
           "fallbackCurrentVersionResolver": "disk",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
           "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
-          "updateDependents": "never"
+          "updateDependents": "auto"
         },
         "changelog": {
           "projectChangelogs": true

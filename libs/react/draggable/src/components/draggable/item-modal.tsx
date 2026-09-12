@@ -21,7 +21,7 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 import { useDragLayout } from '../../store';
 
 const MODAL_Z_INDEX = 10000;
@@ -442,9 +442,9 @@ export function DraggableModal({
                   <>
                     {extraBtn}
                     {!disabledClose && (
-                      <MapButton aria-label="Close dialog" onClick={handleClose}>
+                      <DragButton aria-label="Close dialog" onClick={handleClose}>
                         <CloseIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     )}
                   </>
                 }

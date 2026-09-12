@@ -16,59 +16,62 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
-  "sideEffects": ["**/*.css", "**/*.scss"],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
-      "require": "./index.cjs",
-      "types": "./index.d.ts"
+      "require": "./index.cjs"
     },
     "./style.css": {
       "default": "./style.css"
     },
     "./worker": {
-      "import": "./worker.js",
-      "types": "./worker.d.ts"
+      "types": "./worker.d.ts",
+      "import": "./worker.js"
     },
     "./basemap": {
-      "import": "./basemap.js",
-      "types": "./basemap.d.ts"
+      "types": "./basemap.d.ts",
+      "import": "./basemap.js"
     },
     "./crs": {
-      "import": "./crs.js",
-      "types": "./crs.d.ts"
+      "types": "./crs.d.ts",
+      "import": "./crs.js"
     },
     "./event": {
-      "import": "./event.js",
-      "types": "./event.d.ts"
+      "types": "./event.d.ts",
+      "import": "./event.js"
     },
     "./image": {
-      "import": "./image.js",
-      "types": "./image.d.ts"
+      "types": "./image.d.ts",
+      "import": "./image.js"
     },
     "./legend": {
-      "import": "./legend.js",
-      "types": "./legend.d.ts"
+      "types": "./legend.d.ts",
+      "import": "./legend.js"
     },
     "./measurement": {
-      "import": "./measurement.js",
-      "types": "./measurement.d.ts"
+      "types": "./measurement.d.ts",
+      "import": "./measurement.js"
     },
     "./menu": {
-      "import": "./menu.js",
-      "types": "./menu.d.ts"
+      "types": "./menu.d.ts",
+      "import": "./menu.js"
     },
     "./print": {
-      "import": "./print.js",
-      "types": "./print.d.ts"
+      "types": "./print.d.ts",
+      "import": "./print.js"
     },
     "./theme": {
-      "import": "./theme.js",
-      "types": "./theme.d.ts"
+      "types": "./theme.d.ts",
+      "import": "./theme.js"
     },
     "./toolbar": {
-      "import": "./toolbar.js",
-      "types": "./toolbar.d.ts"
+      "types": "./toolbar.d.ts",
+      "import": "./toolbar.js"
     }
   },
   "dependencies": {

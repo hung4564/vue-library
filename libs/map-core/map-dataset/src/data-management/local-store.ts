@@ -88,7 +88,7 @@ function applyIdsFilter(
   items: DataRecord[],
   filter?: Record<string, unknown>,
 ): DataRecord[] {
-  const raw = filter?.ids;
+  const raw = filter?.['ids'];
   if (raw == null) return items;
   const ids = (Array.isArray(raw) ? raw : [raw]).map(String);
   if (!ids.length) return items;
@@ -125,7 +125,7 @@ function applySort(
 
 function readRecordField(item: DataRecord, field: string): unknown {
   if (Object.prototype.hasOwnProperty.call(item, field)) return item[field];
-  const props = item.properties;
+  const props = item['properties'];
   if (props && typeof props === 'object' && !Array.isArray(props)) {
     return (props as Record<string, unknown>)[field];
   }

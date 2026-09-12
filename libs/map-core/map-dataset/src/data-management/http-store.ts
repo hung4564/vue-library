@@ -16,27 +16,27 @@ function defaultParseList(json: unknown): HttpListResponse {
     return { data: [], meta: { total: 0, page: 1, pageSize: 1 } };
   }
   const body = json as Record<string, unknown>;
-  if (Array.isArray(body.data)) {
-    const meta = (body.meta ?? {}) as Record<string, unknown>;
-    const data = body.data as DataRecord[];
+  if (Array.isArray(body['data'])) {
+    const meta = (body['meta'] ?? {}) as Record<string, unknown>;
+    const data = body['data'] as DataRecord[];
     return {
       data,
       meta: {
-        total: Number(meta.total ?? data.length),
-        page: Number(meta.page ?? 1),
-        pageSize: Number(meta.pageSize ?? meta.limit ?? (data.length || 1)),
+        total: Number(meta['total'] ?? data.length),
+        page: Number(meta['page'] ?? 1),
+        pageSize: Number(meta['pageSize'] ?? meta['limit'] ?? (data.length || 1)),
       },
     };
   }
-  if (Array.isArray(body.items)) {
-    const meta = (body.meta ?? {}) as Record<string, unknown>;
-    const data = body.items as DataRecord[];
+  if (Array.isArray(body['items'])) {
+    const meta = (body['meta'] ?? {}) as Record<string, unknown>;
+    const data = body['items'] as DataRecord[];
     return {
       data,
       meta: {
-        total: Number(meta.total ?? data.length),
-        page: Number(meta.page ?? 1),
-        pageSize: Number(meta.pageSize ?? meta.limit ?? (data.length || 1)),
+        total: Number(meta['total'] ?? data.length),
+        page: Number(meta['page'] ?? 1),
+        pageSize: Number(meta['pageSize'] ?? meta['limit'] ?? (data.length || 1)),
       },
     };
   }
@@ -121,7 +121,7 @@ export function createHttpStore(
         endpoint.searchParams.set('order', query.sort.dir);
       }
       if (query?.filter) {
-        const ids = query.filter.ids;
+        const ids = query.filter['ids'];
         if (Array.isArray(ids)) {
           endpoint.searchParams.set('ids', ids.map(String).join(','));
         } else if (ids != null) {
@@ -150,9 +150,9 @@ export function createHttpStore(
         .filter((x): x is DataRecord => !!x);
       return {
         items,
-        total: parsed.meta.total,
-        page: parsed.meta.page,
-        pageSize: parsed.meta.pageSize,
+        total: parsed.meta['total'],
+        page: parsed.meta['page'],
+        pageSize: parsed.meta['pageSize'],
       };
     },
 

@@ -2,30 +2,30 @@
   <div class="mgmt-groups">
     <ItemList :items="items" :itemShows="itemShows" :containerId="containerId">
       <template #extra="{ item, show }">
-        <map-button
+        <drag-button
           @click.stop="onHighLight(item)"
           v-if="show"
           title="Highlight"
           aria-label="Highlight"
         >
           <HighlightIcon :size="16" />
-        </map-button>
-        <map-button
+        </drag-button>
+        <drag-button
           @click.stop="onOpen(item)"
           v-if="!show"
           title="Show"
           aria-label="Show"
         >
           <ShowIcon :size="16" />
-        </map-button>
-        <map-button
+        </drag-button>
+        <drag-button
           @click.stop="onClose(item)"
           v-else
           title="Hide"
           aria-label="Hide"
         >
           <HideIcon :size="16" />
-        </map-button>
+        </drag-button>
       </template>
     </ItemList>
   </div>
@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 
 const { HighlightIcon, ShowIcon, HideIcon } = useIcon();

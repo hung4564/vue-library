@@ -1,10 +1,14 @@
 {
   "name": "@hungpvq/react-map-draw",
   "version": "1.0.1",
-  "author": { "name": "hung.pv" },
+  "author": {
+    "name": "hung.pv"
+  },
   "bugs": "https://github.com/hung4564/vue-library/issues",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/hung4564/vue-library"
@@ -14,10 +18,13 @@
   "types": "./index.d.ts",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./index.cjs"
     },
-    "./style.css": { "default": "./style.css" }
+    "./style.css": {
+      "default": "./style.css"
+    }
   },
   "peerDependencies": {
     "@hungpvq/map-core": "~1.0.1",
