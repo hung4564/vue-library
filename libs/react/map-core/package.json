@@ -36,7 +36,7 @@
   },
   "peerDependencies": {
     "@hungpvq/map-core": "~1.0.1",
-    "@hungpvq/react-draggable": "~1.1.0",
+    "@hungpvq/react-draggable": "~1.2.0",
     "@hungpvq/shared-store": "~0.2.0",
     "@hungpvq/shared": "~0.3.0",
     "@hungpvq/shared-log": "~0.0.1",

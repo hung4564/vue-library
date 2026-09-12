@@ -34,7 +34,7 @@
     "vue": "^3.3.4",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
-    "@hungpvq/vue-draggable": "~1.1.0",
+    "@hungpvq/vue-draggable": "~1.2.0",
     "@hungpvq/shared": "~0.3.0",
     "@hungpvq/shared-core": "~0.1.0",
     "@hungpvq/shared-file": "~0.2.0",
