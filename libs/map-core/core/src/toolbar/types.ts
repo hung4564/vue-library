@@ -127,7 +127,7 @@ export type ToolbarStrategy<TState> = Subscribable<TState> & {
   mount(): void;
   sync(): void;
   unmount(): void;
-  onAction: (...args: any[]) => Promise<void>;
+  onAction: (...args: unknown[]) => Promise<void>;
 };
 
 /**

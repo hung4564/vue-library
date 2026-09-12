@@ -227,7 +227,7 @@ function selectSideBar(nextId: string) {
         :active="option.id === activeSidebarId"
         @click="selectSideBar(option.id)"
       >
-        <span v-html="option.title"></span>
+        <span>{{ option.title }}</span>
       </ContextMenuItem>
     </ul>
   </ContextMenu>

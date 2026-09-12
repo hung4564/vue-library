@@ -16,6 +16,7 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": ["**/*.css", "**/*.scss"],
   "exports": {
     ".": {
       "import": "./index.js",

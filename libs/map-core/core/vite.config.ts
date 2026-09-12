@@ -47,9 +47,11 @@ export default defineConfig(() => ({
         toolbar: 'src/toolbar/index.ts',
       },
       name: '@hungpvq/map-core',
-      fileName: (format, entryName) =>
-        entryName === 'index' ? 'index.js' : `${entryName}.js`,
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -59,6 +61,9 @@ export default defineConfig(() => ({
         'mitt',
         '@hungpvq/shared-log',
         '@mdi/js',
+        '@turf/turf',
+        '@maplibre/maplibre-gl-style-spec',
+        'file-saver',
       ],
       output: {
         assetFileNames: 'style.css',

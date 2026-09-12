@@ -45,8 +45,11 @@ export default defineConfig(() => ({
         'attribute-table': 'src/attribute-table/index.ts',
       },
       name: '@hungpvq/map-dataset',
-      fileName: (_format, entryName) => `${entryName}.js`,
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -58,6 +61,15 @@ export default defineConfig(() => ({
         'maplibre-gl',
         '@mdi/js',
         'mitt',
+        '@turf/boolean-intersects',
+        '@turf/helpers',
+        '@turf/turf',
+        '@tmcw/togeojson',
+        '@xmldom/xmldom',
+        'jszip',
+        'papaparse',
+        'shpjs',
+        'topojson-client',
         'tokml',
         '@mapbox/shp-write',
         'vite',

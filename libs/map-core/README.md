@@ -19,6 +19,8 @@ Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 
 Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use **explicit named exports** (see [stable-api.md](./core/docs/core/stable-api.md)); runtime surface is locked by `public-api.spec.ts`.
 
+**Types note (1.0.x):** Identify protocol (`IdentifyFeatureRow.data`, merge payload/response) and `RegistryFn` / toolbar `onAction` use `unknown` instead of `any` (types-only; runtime unchanged). Consumers may need to narrow results.
+
 ## 0. Surface map (version together)
 
 | Package | Public entries | Peer lock notes |

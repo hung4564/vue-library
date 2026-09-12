@@ -2,6 +2,7 @@ import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
 import type {
   IDataset,
+  IdentifyFeatureRow,
   IdentifyMultiResult,
   IIdentifyView,
   IIdentifyViewWithMerge,
@@ -52,7 +53,7 @@ export function createDatasetPartIdentifyComponent(
     getFeatures(
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
-    ): Promise<{ id: string; name: string; data: any }[]> {
+    ): Promise<IdentifyFeatureRow[]> {
       throw new Error('Method getFeatures not implemented.');
     },
     async getList<Data>(mapId: string, features: MapGeoJSONFeature[]) {
@@ -71,8 +72,8 @@ export function createIdentifyMapboxComponent(
   const getFeatures = async (
     mapId: string,
     pointOrBox?: PointLike | [PointLike, PointLike],
-  ): Promise<{ id: string; name: string; data: any }[]> => {
-    return new Promise<{ id: string; name: string; data: any }[]>((resolve) => {
+  ): Promise<IdentifyFeatureRow[]> => {
+    return new Promise<IdentifyFeatureRow[]>((resolve) => {
       const results = runAllComponentsWithCheck(
         datasetPartIdentify.getParent() || datasetPartIdentify,
         (dataset): dataset is IDataset & IMapboxLayerView =>
@@ -123,7 +124,7 @@ export function createIdentifyMapboxComponent(
           resolve([]);
           return;
         }
-        let handle: (() => Promise<any[]>) | undefined;
+        let handle: (() => Promise<Record<string, unknown>[]>) | undefined;
         if (datasetPartIdentify.getList) {
           logHelper(
             loggerIdentify,
@@ -131,13 +132,25 @@ export function createIdentifyMapboxComponent(
             'dataset',
             datasetPartIdentify.id,
           ).debug('use get list of identify', datasetPartIdentify);
-          handle = () => datasetPartIdentify.getList!(mapId, features);
+          handle = () =>
+            datasetPartIdentify.getList!(
+              mapId,
+              features,
+            ) as Promise<Record<string, unknown>[]>;
         }
         if (handle)
           handle().then((unique) => {
-            const result = unique.map((x, i) => ({
-              id: x[datasetPartIdentify.config.field_id || 'id'] ?? x.id ?? i,
-              name: x[datasetPartIdentify.config.field_name || 'name'] ?? '',
+            const result: IdentifyFeatureRow[] = unique.map((x, i) => ({
+              id:
+                (x[datasetPartIdentify.config.field_id || 'id'] as
+                  | string
+                  | number
+                  | undefined) ??
+                (x.id as string | number | undefined) ??
+                i,
+              name: String(
+                x[datasetPartIdentify.config.field_name || 'name'] ?? '',
+              ),
               data: x,
             }));
             logHelper(
@@ -205,7 +218,7 @@ function handleMergedIdentifyGroup(
 
   return mergedIdentify
     .getMergedFeatures(mergeIdentifies, payload)
-    .then((response: any) => {
+    .then((response: unknown) => {
       return mergedIdentify.splitResponse(mergeIdentifies, payload, response);
     });
 }

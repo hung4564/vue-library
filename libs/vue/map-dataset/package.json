@@ -16,6 +16,7 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": ["**/*.css", "**/*.scss"],
   "exports": {
     ".": {
       "import": "./index.js",
@@ -26,6 +27,7 @@
     }
   },
   "peerDependencies": {
+    "vue": "^3.3.4",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "@hungpvq/vue-draggable": "~1.1.0",

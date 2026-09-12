@@ -10,7 +10,7 @@ import {
   type MapControlPanelPosition,
 } from './control';
 
-export type RegistryFn = (...args: any[]) => any;
+export type RegistryFn = (...args: unknown[]) => unknown;
 
 export type RegistryNamespaceKind =
   | 'component'

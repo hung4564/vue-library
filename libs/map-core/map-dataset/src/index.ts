@@ -131,6 +131,7 @@ export {
 export type {
   IDataset,
   IMapboxLayerView,
+  IdentifyFeatureRow,
   IdentifyMultiResult,
   IIdentifyView,
   WithSetOpacity,

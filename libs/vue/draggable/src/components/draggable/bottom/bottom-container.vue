@@ -192,7 +192,7 @@ const shellStyle = computed(() => ({
         :active="option.id === activeBottomId"
         @click="selectBottom(option.id)"
       >
-        <span v-html="option.title"></span>
+        <span>{{ option.title }}</span>
       </ContextMenuItem>
     </ul>
   </ContextMenu>

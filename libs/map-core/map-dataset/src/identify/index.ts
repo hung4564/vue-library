@@ -40,5 +40,6 @@ export type {
 
 export type {
   IIdentifyView,
+  IdentifyFeatureRow,
   IdentifyMultiResult,
 } from '../interfaces';

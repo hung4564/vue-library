@@ -33,7 +33,7 @@ export default defineConfig(() => ({
       entry: 'src/index.ts',
       name: '@hungpvq/react-map-dataset',
       fileName: 'index',
-      formats: ['es' as const],
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       external: [

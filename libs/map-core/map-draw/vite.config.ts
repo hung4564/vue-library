@@ -32,10 +32,12 @@ export default defineConfig(() => ({
     rollupOptions: {
       external: [
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
         '@hungpvq/shared',
         '@hungpvq/shared-log',
         'maplibre-gl',
         'randomcolor',
+        '@mapbox/mapbox-gl-draw',
       ],
     },
   },

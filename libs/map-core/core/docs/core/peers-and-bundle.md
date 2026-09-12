@@ -44,6 +44,10 @@ When using CreateControl file upload / `loadGis*` / worker parse, install option
 
 Wire the worker with `@hungpvq/map-dataset/vite` → `mapDatasetGisWorker()` when parsing off the main thread. Soft client size limit: `CREATE_CONTROL_MAX_FILE_BYTES` / `assertCreateControlFileSize` on `@hungpvq/map-dataset/create-control`. CreateControl remembers last name/type/CRS in `sessionStorage` (`load/saveCreateControlDraft`).
 
+## Bundle policy
+
+Declared **peerDependencies** (and workspace `@hungpvq/*` deps) must stay **external** in the published Rollup/Vite lib build — they are never bundled into `@hungpvq/map-*` dist. Install peers in the app; see lite vs full GIS recipes above.
+
 ## Theme
 
 `bootstrapMapTheme('auto')` follows `prefers-color-scheme` (light/dark). ThemeControl also listens to the media query when mode is `auto`.

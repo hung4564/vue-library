@@ -28,7 +28,8 @@ export function createToolbarControl(
 ) {
   const { id, toolbar, getState, onClick } = options;
   const { subscribe, notify } = createSubscribable<MapControlButtonUIState>();
-  async function onAction(e: MouseEvent) {
+  async function onAction(...args: unknown[]) {
+    const e = args[0] as MouseEvent;
     await onClick?.(e);
     sync();
   }
@@ -124,7 +125,9 @@ export function createToolbarModule(
     });
   }
 
-  async function onAction(id: string, e: MouseEvent) {
+  async function onAction(...args: unknown[]) {
+    const id = args[0] as string;
+    const e = args[1] as MouseEvent;
     await options.buttons.find((x) => x.id === id)?.onClick?.(e);
     sync();
   }

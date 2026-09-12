@@ -58,7 +58,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Area | Stable surface |
 |------|----------------|
 | Map access | `getMap` → `MapSimple \| undefined`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
-| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` |
+| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
@@ -84,7 +84,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (`data` / merge payload typed as `unknown` — types-only tightening vs former `any`) |
 | `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |

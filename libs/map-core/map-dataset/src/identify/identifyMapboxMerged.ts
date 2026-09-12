@@ -1,5 +1,6 @@
 import type {
   IDataset,
+  IdentifyFeatureRow,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
   IdentifyResult,
@@ -9,20 +10,20 @@ import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import { isMapboxLayerView } from '../utils/check';
 import { getMap } from '@hungpvq/map-core';
 
-// Tách hàm để loại bỏ các mục trùng lặp
-function removeDuplicates(
-  collected: {
-    identify: IIdentifyViewWithMerge;
-    identifyId: string;
-    feature: MapGeoJSONFeature;
-    rawId: string;
-  }[],
-): {
+type MergedFeatureRow = {
+  identify: IIdentifyViewWithMerge;
+  identifyId: string;
+  feature: IdentifyFeatureRow;
+};
+
+type CollectedFeature = {
   identify: IIdentifyViewWithMerge;
   identifyId: string;
   feature: MapGeoJSONFeature;
   rawId: string;
-}[] {
+};
+
+function removeDuplicates(collected: CollectedFeature[]): CollectedFeature[] {
   const seen = new Set<string>();
   return collected.filter(({ identifyId, rawId }) => {
     const key = `${identifyId}_${rawId}`;
@@ -32,24 +33,10 @@ function removeDuplicates(
   });
 }
 
-// Tách hàm để định dạng lại feature
 function formatFeature(
-  collected: {
-    identify: IIdentifyViewWithMerge;
-    identifyId: string;
-    feature: MapGeoJSONFeature;
-    rawId: string;
-  }[],
-  dataMap: Map<string, any>,
-): {
-  identify: IIdentifyViewWithMerge;
-  identifyId: string;
-  feature: {
-    id: string | number;
-    name: string;
-    data: any;
-  };
-}[] {
+  collected: CollectedFeature[],
+  dataMap: Map<string, unknown>,
+): MergedFeatureRow[] {
   return collected.map(({ identify, identifyId, feature, rawId }) => ({
     identify,
     identifyId,
@@ -64,33 +51,21 @@ function formatFeature(
   }));
 }
 
-// Tách hàm để xây dựng dataMap từ fetchedData
-function buildDataMap(fetchedData: any[]): Map<string, any> {
-  return new Map(fetchedData.map((item: any) => [String(item.id), item]));
-}
+export type MergeIdentifyPayload = {
+  mapId: string;
+  pointOrBox?: PointLike | [PointLike, PointLike];
+  layerIdMap: Record<string, IIdentifyViewWithMerge>;
+};
 
 export async function getMergedFeatures(
   identifies: IIdentifyViewWithMerge[],
-  payload: {
-    mapId: string;
-    pointOrBox?: PointLike | [PointLike, PointLike];
-    layerIdMap: Record<string, IIdentifyViewWithMerge>;
-  },
-): Promise<
-  {
-    identifyId: string;
-    identify: IIdentifyViewWithMerge;
-    feature: {
-      id: string | number;
-      name: string;
-      data: any;
-    };
-  }[]
-> {
+  payload: unknown,
+): Promise<MergedFeatureRow[]> {
+  const typed = payload as MergeIdentifyPayload;
   return new Promise((resolve) => {
-    const layerIdMap = payload.layerIdMap;
+    const layerIdMap = typed.layerIdMap;
 
-    getMap(payload.mapId, (map) => {
+    getMap(typed.mapId, (map) => {
       const allLayerIds = Object.keys(layerIdMap).filter((id) =>
         map.getLayer(id),
       );
@@ -99,16 +74,11 @@ export async function getMergedFeatures(
         return;
       }
       const queriedFeatures: MapGeoJSONFeature[] = map.queryRenderedFeatures(
-        payload.pointOrBox,
+        typed.pointOrBox,
         { layers: allLayerIds },
       );
 
-      const collected: {
-        identify: IIdentifyViewWithMerge;
-        identifyId: string;
-        feature: MapGeoJSONFeature;
-        rawId: string;
-      }[] = [];
+      const collected: CollectedFeature[] = [];
 
       const idSet = new Set<string>();
 
@@ -141,20 +111,15 @@ export async function getMergedFeatures(
 
 export const splitResponse = (
   identifies: IIdentifyViewWithMerge[],
-  payload: any,
-  response: {
-    identifyId: string;
-    identify: IIdentifyViewWithMerge;
-    feature: {
-      id: string | number;
-      name: string;
-      data: any;
-    };
-  }[],
+  payload: unknown,
+  response: unknown,
 ): IdentifyResult[] => {
+  void identifies;
+  void payload;
+  const rows = Array.isArray(response) ? (response as MergedFeatureRow[]) : [];
   const resultsMap = new Map<string, IdentifyResult>();
 
-  response.forEach(({ identifyId, identify, feature }) => {
+  rows.forEach(({ identifyId, identify, feature }) => {
     if (!resultsMap.has(identifyId)) {
       resultsMap.set(identifyId, {
         identify,
@@ -170,11 +135,12 @@ export const splitResponse = (
 
   return Array.from(resultsMap.values());
 };
+
 export const mergePayload = (
   identifies: IIdentifyViewWithMerge[],
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
-) => {
+): MergeIdentifyPayload & { identifies: IIdentifyViewWithMerge[] } => {
   const layerIdMap: Record<string, IIdentifyViewWithMerge> = {};
 
   identifies.forEach((identify) => {

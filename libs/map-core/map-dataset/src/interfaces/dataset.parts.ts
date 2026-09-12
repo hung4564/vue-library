@@ -121,6 +121,12 @@ export type IMapboxLayerView = IDatasetMap &
     getComponentUpdate(): ComponentType;
     updateValue(map: MapSimple, value: unknown): void;
   };
+export type IdentifyFeatureRow<TData = unknown> = {
+  id: string | number;
+  name: string;
+  data: TData;
+};
+
 export type IIdentifyViewBase = IDataset &
   WithMenuHelper & {
     config: {
@@ -140,8 +146,8 @@ export type IIdentifyViewBase = IDataset &
     getFeatures: (
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
-    ) => Promise<{ id: string; name: string; data: any }[]>; // Feature's result type
-    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>; // Feature's result type
+    ) => Promise<IdentifyFeatureRow[]>;
+    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>;
   };
 
 // IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase
@@ -151,23 +157,23 @@ export type IIdentifyViewWithoutMerge = IIdentifyViewBase;
 export type IIdentifyViewWithMerge = IIdentifyViewBase & {
   identifyGroupId: string;
   mergePayload(
-    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+    identifies: IIdentifyView[],
     mapId: string,
     pointOrBox?: PointLike | [PointLike, PointLike],
-  ): any; // Đảm bảo return kiểu hợp lý cho payload
+  ): unknown;
 
   splitResponse(
-    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
-    payload: any, // Kiểu của payload từ merge
-    response: any, // Response từ getMergedFeatures
-  ): IdentifyResult[]; // Trả về array kết quả từng identify
+    identifies: IIdentifyView[],
+    payload: unknown,
+    response: unknown,
+  ): IdentifyResult[];
 
-  getMergedFeatures(identifies: IIdentifyView[], payload: any): any; // Trả về kết quả đã merge
+  getMergedFeatures(identifies: IIdentifyView[], payload: unknown): unknown;
 };
 
 export type IdentifyMultiResult = {
-  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-  features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
+  identify: IIdentifyView;
+  features: IdentifyFeatureRow[];
 };
 
 /** @deprecated Prefer IdentifyMultiResult — same feature list shape. */

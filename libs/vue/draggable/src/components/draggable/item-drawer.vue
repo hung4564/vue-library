@@ -383,7 +383,7 @@ const resizeHandleClass = computed(() => {
         :active="option.id === activeDrawerId"
         @click="selectDrawer(option.id)"
       >
-        <span v-html="option.title"></span>
+        <span>{{ option.title }}</span>
       </ContextMenuItem>
     </ul>
   </ContextMenu>

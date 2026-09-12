@@ -37,9 +37,11 @@ export default defineConfig(() => ({
         fields: 'src/fields.ts',
       },
       name: '@hungpvq/react-map-core',
-      fileName: (format, entryName) =>
-        entryName === 'index' ? 'index.js' : `${entryName}.js`,
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -48,6 +50,8 @@ export default defineConfig(() => ({
         'react-dom',
         'react/jsx-runtime',
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
+        '@hungpvq/react-draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-core',
         '@hungpvq/shared-log',
@@ -59,6 +63,7 @@ export default defineConfig(() => ({
         '@mdi/js',
         '@mdi/react',
         '@uiw/react-color-sketch',
+        'file-saver',
       ],
       output: {
         assetFileNames: 'style.css',
