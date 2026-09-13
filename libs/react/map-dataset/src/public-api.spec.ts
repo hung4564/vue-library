@@ -22,6 +22,7 @@ export const REACT_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'DatasetControl',
   'DatasetDetail',
   'DatasetMenuButton',
+  'DatasetMenus',
   'ExportGeo',
   'ExportGeoForm',
   'ExportGeoFormatMenu',

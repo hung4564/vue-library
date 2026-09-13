@@ -14,6 +14,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { loadHighlightDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function DatasetHighlightPage() {
   useDatasetRegistry();
@@ -35,6 +36,7 @@ export function DatasetHighlightPage() {
         <ComponentManagementControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

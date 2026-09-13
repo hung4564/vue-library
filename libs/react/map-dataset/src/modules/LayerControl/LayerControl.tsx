@@ -8,9 +8,22 @@ import {
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import { LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import {
+  findAllComponentsByType,
+  LAYER_CONTROL_LOCALE,
+  type IDataset,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
-import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
+import {
+  getMenuItemLocation,
+  getResolvedMenus,
+  mergeMenusById,
+  MENU_CONTROL_ID,
+  resolveMenuContextSource,
+  type MenuAction,
+  type MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -27,8 +40,9 @@ import {
 
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDataset } from '../../store';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
@@ -70,6 +84,14 @@ export function LayerControl(props: LayerControlProps) {
     warnIfDatasetRegistryMissing();
   }, []);
 
+  const layerMenuContext = useMemo(
+    () => () => ({
+      control: MENU_CONTROL_ID.layerControl,
+      ...resolveMenuContextSource(props.menuContext),
+    }),
+    [props.menuContext],
+  );
+
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapLayerControl',
     panelKind: 'sidebar',
@@ -109,7 +131,7 @@ export function LayerControl(props: LayerControlProps) {
     control.sync();
   }, [show, control]);
 
-  const { addDataset } = useMapDataset(mapId);
+  const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId);
   const addDatasetRef = useRef(addDataset);
   addDatasetRef.current = addDataset;
 
@@ -126,6 +148,28 @@ export function LayerControl(props: LayerControlProps) {
       clearAddGeojsonHereItems(mapId);
     };
   }, [mapId]);
+
+  const titleMenuState = useMemo(() => {
+    void datasetVersion;
+    const roots = getDatasets().filter(Boolean) as IDataset[];
+    const lists: MenuAction[][] = [];
+    let firstData: IDataset | undefined = roots[0];
+    for (const root of roots) {
+      const listViews = findAllComponentsByType<IListViewUI>(root, 'list');
+      for (const list of listViews) {
+        if (!firstData) firstData = list;
+        lists.push(
+          getResolvedMenus(list, 'layer').filter(
+            (menu) => getMenuItemLocation(menu) === 'title',
+          ),
+        );
+      }
+    }
+    return {
+      menus: mergeMenusById(lists),
+      data: firstData,
+    };
+  }, [datasetVersion, getDatasets]);
 
   const titleSlot = renderSlot(props.titleList, mapId);
   const endSlot = renderSlot(props.endList, mapId);
@@ -154,11 +198,24 @@ export function LayerControl(props: LayerControlProps) {
               {trans('map.layer-control.title')}
             </span>
           }
+          afterTitle={
+            titleMenuState.data ? (
+              <MenuConditionProvider value={layerMenuContext}>
+                <DatasetMenus
+                  menus={titleMenuState.menus}
+                  data={titleMenuState.data}
+                  mapId={mapId}
+                  locations={['title']}
+                  menuContext={layerMenuContext}
+                />
+              </MenuConditionProvider>
+            ) : undefined
+          }
           containerId={bind.containerId}
           location={panelPosition.location || 'left'}
         >
           <div className="layer-control">
-            <MenuConditionProvider value={props.menuContext}>
+            <MenuConditionProvider value={layerMenuContext}>
               <LayerList
                 mapId={mapId}
                 disabledCreate={props.disabledCreate}

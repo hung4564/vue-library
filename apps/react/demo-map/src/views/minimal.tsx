@@ -9,6 +9,7 @@ import type { FeatureCollection } from 'geojson';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
@@ -48,6 +49,7 @@ export function MinimalPage() {
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <LayerControl position="top-left" show />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

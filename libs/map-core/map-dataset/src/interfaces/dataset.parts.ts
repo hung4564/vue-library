@@ -30,6 +30,32 @@ export type MenuCondition<T = IDataset, C = Record<string, unknown>> =
   | boolean
   | ((ctx: MenuConditionContext<T, C>) => boolean);
 
+/** Where a menu action renders (list row, overflow, panel title, …). */
+export type MenuActionLocation =
+  | 'extra'
+  | 'menu'
+  | 'bottom'
+  | 'prebottom'
+  | 'title';
+
+/** Stable ids for dataset UI hosts that render menus (injected as `context.control`). */
+export type MenuControlId =
+  | 'layer-control'
+  | 'layer-detail'
+  | 'identify'
+  | 'attribute-table'
+  | string;
+
+/** Placement overrides for one control id. */
+export type MenuControlPlacement = {
+  location?: MenuActionLocation;
+  /** When set, replaces `hidden` for that control only. */
+  hidden?: boolean;
+};
+
+/** Map of control id → placement. Unlisted controls keep the menu defaults. */
+export type MenuByControl = Partial<Record<string, MenuControlPlacement>>;
+
 /** Base type for all menu items */
 type MenuCommon = {
   order?: number;
@@ -37,10 +63,12 @@ type MenuCommon = {
   class?: string;
   disabled?: MenuCondition;
   hidden?: MenuCondition;
+  /**
+   * Per-control placement overrides (`context.control` from menu hosts).
+   * Applied at render via `applyMenuControlPlacement` / `partitionMenuActions`.
+   */
+  byControl?: MenuByControl;
 };
-
-/** Where a menu action renders in LayerControl. */
-export type MenuActionLocation = 'extra' | 'menu' | 'bottom' | 'prebottom';
 
 /** Divider menu item type */
 export type MenuDivider = MenuCommon & {
@@ -54,13 +82,13 @@ export type MenuItemCommon<P = unknown, T = IDataset> = MenuCommon & {
   click: MenuItemClick<P, T>;
 };
 
-/** Menu item type for bottom or extra location */
+/** Menu item type for bottom, extra, or title location */
 export type MenuItemBottomOrExtra<P = unknown, T = IDataset> = MenuItemCommon<
   P,
   T
 > & {
   type: 'item';
-  location?: Extract<MenuActionLocation, 'bottom' | 'extra'>;
+  location?: Extract<MenuActionLocation, 'bottom' | 'extra' | 'title'>;
   icon: string;
   name?: string;
 };
@@ -71,7 +99,10 @@ export type MenuItemCustomComponentBottomOrExtra<P = unknown, T = IDataset> = Om
   'click'
 > & {
   type: 'item';
-  location?: Extract<MenuActionLocation, 'bottom' | 'extra' | 'prebottom'>;
+  location?: Extract<
+    MenuActionLocation,
+    'bottom' | 'extra' | 'prebottom' | 'title'
+  >;
   componentKey: string;
 };
 
@@ -215,6 +246,8 @@ export type DatasetMenuEntry = {
   for: DatasetMenuFor;
   key: string;
   menu: MenuAction;
+  /** Merged onto `menu.byControl` when resolving defaults. */
+  byControl?: MenuByControl;
 };
 
 /** Shared default menus (`getData` / `setData`) for list, identify, and tables. */

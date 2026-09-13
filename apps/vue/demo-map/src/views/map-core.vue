@@ -16,6 +16,7 @@
     <GeoLocateControl position="top-right" />
     <MouseCoordinatesControl />
     <MapContextMenuControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
@@ -38,6 +39,7 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 </script>
 <style>
 * {

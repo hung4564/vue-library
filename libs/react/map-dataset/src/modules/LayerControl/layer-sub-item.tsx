@@ -1,15 +1,14 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
+import { getResolvedMenus } from '@hungpvq/map-dataset/menu';
+import { RegistryItem } from '@hungpvq/react-map-core';
 
-import { mdiDotsVertical } from '@mdi/js';
-import Icon from '@mdi/react';
 import { useMemo } from 'react';
-import { useMenuConditionContext } from '../../extra/menu/condition-context';
-import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
-
-const ICON_SIZE = '14px';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 
 export function LayerSubItem({
   item,
@@ -17,49 +16,33 @@ export function LayerSubItem({
   readonly,
   disabledMove,
   disabledCreateGroup,
-  onAction,
-  onContextMenu,
+  getGroups,
+  menuContext,
 }: {
   item: IListViewUI;
   mapId: string;
   readonly?: boolean;
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
-  onAction?: (payload: {
-    event: React.MouseEvent;
-    action: MenuAction<IListViewUI>;
-    item: IListViewUI;
-  }) => void;
-  onContextMenu?: (payload: {
-    event: React.MouseEvent;
-    actions: MenuAction<IListViewUI>[];
-    item: IListViewUI;
-  }) => void;
+  getGroups?: () => ListViewGroupOption[];
+  menuContext?: MenuContextSource;
 }) {
-  const injectedMenuContext = useMenuConditionContext();
-  const conditionCtx = createMenuConditionContext(item, {
-    mapId,
-    context: [
-      {
-        readonly,
-        disabledMove,
-        disabledCreateGroup,
-      },
-      injectedMenuContext,
-    ],
-  });
   const menus = useMemo(
     () => getResolvedMenus(item, 'layer') as MenuAction<IListViewUI>[],
     [item],
   );
-  const extraMenus = menus
-    .filter((x) => !x.location || x.location === 'extra')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const contentMenus = menus
-    .filter((x) => x.location === 'menu')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const rowMenuContexts = useMemo(
+    () =>
+      [
+        {
+          readonly,
+          disabledMove,
+          disabledCreateGroup,
+        },
+        menuContext,
+      ] as MenuContextSource[],
+    [readonly, disabledMove, disabledCreateGroup, menuContext],
+  );
 
   return (
     <div className="layer-sub-item-container">
@@ -78,29 +61,14 @@ export function LayerSubItem({
           <span>{item.getName()}</span>
         </span>
         <div className="layer-sub-item__title-action">
-          {extraMenus.map((menu, i) => (
-            <DatasetMenuButton
-              key={i}
-              menu={menu}
-              item={item}
-              mapId={mapId}
-              disabled={isMenuItemDisabled(menu, conditionCtx)}
-              onAction={onAction}
-            />
-          ))}
-          {contentMenus.length > 0 && (
-            <MapControlButton
-              variant="plain"
-              size="small"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                onContextMenu?.({ event, actions: contentMenus, item });
-              }}
-            >
-              <Icon path={mdiDotsVertical} size={ICON_SIZE} />
-            </MapControlButton>
-          )}
+          <DatasetMenus
+            menus={menus}
+            data={item}
+            mapId={mapId}
+            locations={['extra', 'menu']}
+            getGroups={getGroups}
+            menuContext={rowMenuContexts}
+          />
         </div>
       </div>
     </div>

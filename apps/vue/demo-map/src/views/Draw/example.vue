@@ -12,6 +12,7 @@ import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const MAP_ID = 'demo';
 const RESULT_SOURCE = 'demo-draw-result';
@@ -124,6 +125,7 @@ function onMapLoaded(map: MapSimple) {
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />
     <BaseMapControl position="bottom-left" />
+    <DemoHelpPanel />
   </Map>
 </template>
 

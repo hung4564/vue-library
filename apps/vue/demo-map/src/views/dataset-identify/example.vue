@@ -13,6 +13,7 @@ import {
 import { ref } from 'vue';
 import { loadIdentifyDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 loggerFactory.enable('map:identify');
 const mapId = ref(getUUIDv4());
@@ -34,6 +35,7 @@ function onMapLoaded(map: MapSimple) {
     <LayerHighlight />
     <IdentifyShowFirstControl />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

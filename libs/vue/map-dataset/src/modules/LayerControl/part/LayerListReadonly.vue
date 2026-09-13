@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { LAYER_CONTROL_LOCALE, convertListToTree, listListViewGroups, TreeItem } from '@hungpvq/map-dataset';
-import { handleMenuAction } from '@hungpvq/map-dataset/menu';
-import { ContextMenu } from '@hungpvq/vue-draggable';
-import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import {
-  getCurrentInstance,
-  nextTick,
-  onMounted,
-  ref,
-  shallowReactive,
-} from 'vue';
+  LAYER_CONTROL_LOCALE,
+  convertListToTree,
+  listListViewGroups,
+  TreeItem,
+} from '@hungpvq/map-dataset';
+import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
+import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
+import { getCurrentInstance, nextTick, onMounted, ref } from 'vue';
 import { useMapDataset } from '../../../store';
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import RecursiveList from '../../List/RecursiveList.vue';
-import LayerContextMenuList from './item/layer-context-menu-list.vue';
 import LayerItem from './item/layer-item.vue';
 
 const props = withDefaults(
@@ -34,6 +30,7 @@ const props = withDefaults(
 );
 provideMenuConditionContext(() => ({
   readonly: true,
+  control: MENU_CONTROL_ID.layerControl,
 }));
 const { mapId } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
@@ -63,56 +60,8 @@ function getViewFromStore() {
       (a, b) => b.index - a.index,
     ) || [];
 }
-const contextMenuRef = ref<
-  | {
-      open(_event: MouseEvent, _item: IListViewUI): void;
-      close(): void;
-    }
-  | undefined
->();
-const menu_context = shallowReactive<{
-  items: MenuAction<IListViewUI>[];
-  view: IListViewUI | undefined;
-}>({
-  items: [],
-  view: undefined,
-});
-function handleContextClick({
-  event,
-  item,
-  actions,
-}: {
-  event: MouseEvent;
-  item: IListViewUI;
-  actions: MenuAction<IListViewUI>[];
-}) {
-  menu_context.items = actions ? [...actions] : [];
-  menu_context.view = item;
-  if (contextMenuRef.value) contextMenuRef.value.open(event, item);
-}
 function getMenuGroups() {
   return listListViewGroups(views.value);
-}
-function closeContextMenu() {
-  menu_context.items = [];
-  menu_context.view = undefined;
-  if (contextMenuRef.value) contextMenuRef.value.close();
-}
-function onLayerAction({
-  event,
-  action,
-  item,
-}: {
-  event: MouseEvent;
-  action: MenuAction<IListViewUI>;
-  item: IListViewUI;
-}) {
-  handleMenuAction(action, {
-    event,
-    layer: item,
-    mapId: mapId.value,
-    value: item,
-  });
 }
 </script>
 <template lang="">
@@ -133,9 +82,8 @@ function onLayerAction({
               :componentKey="item.config?.componentKey"
               :defaultComponent="LayerItem"
               :item="item"
-              @click:content-menu="handleContextClick"
-              @click:action="onLayerAction"
               :mapId="mapId"
+              :getGroups="getMenuGroups"
               readonly
             >
             </RegistryItem>
@@ -143,24 +91,5 @@ function onLayerAction({
         </RecursiveList>
       </div>
     </div>
-    <ContextMenu ref="contextMenuRef">
-      <LayerContextMenuList
-        :items="menu_context.items"
-        :view="menu_context.view"
-        :mapId="mapId"
-        :getGroups="getMenuGroups"
-        @close="closeContextMenu"
-        @select="
-          if (menu_context.view) {
-            onLayerAction({
-              action: $event.action,
-              item: menu_context.view,
-              event: $event.event,
-            });
-          }
-          closeContextMenu();
-        "
-      />
-    </ContextMenu>
   </div>
 </template>

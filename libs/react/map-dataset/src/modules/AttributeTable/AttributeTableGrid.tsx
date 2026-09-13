@@ -5,10 +5,11 @@ import {
   type AttributeTableGridProps,
   type AttributeTableRow,
 } from '@hungpvq/map-dataset/attribute-table';
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/react-map-core';
 import type { ComponentType, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 
 function isColumnSortable(
   sortEnabled: boolean | undefined,
@@ -389,22 +390,13 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
                       className="attribute-table__actions"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {props.itemMenus.map((menu, index) => (
-                        <DatasetMenuButton
-                          key={menu.id || String(index)}
-                          menu={menu}
-                          item={props.itemMenuHost}
-                          mapId={props.mapId ?? ''}
-                          disabled={props.isMenuDisabled(menu)}
-                          onClick={(event) =>
-                            props.onRowMenuAction(
-                              row,
-                              menu,
-                              event.nativeEvent,
-                            )
-                          }
-                        />
-                      ))}
+                      <DatasetMenus
+                        menus={props.itemMenus}
+                        data={props.itemMenuHost}
+                        mapId={props.mapId}
+                        value={convertFeatureToItem(row.feature)}
+                        locations={['extra', 'menu']}
+                      />
                     </td>
                   ) : null}
                 </tr>

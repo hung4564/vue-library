@@ -9,8 +9,9 @@ import {
   type AttributeTableGridProps,
   type AttributeTableRow,
 } from '@hungpvq/map-dataset/attribute-table';
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/vue-map-core';
-import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import {
   nextTick,
   onBeforeUnmount,
@@ -390,14 +391,12 @@ const colSpan = computed(
               class="attribute-table__actions"
               @click.stop
             >
-              <DatasetMenuButton
-                v-for="(menu, index) in props.itemMenus"
-                :key="menu.id || index"
-                :item="menu"
+              <DatasetMenus
+                :menus="props.itemMenus"
                 :data="props.itemMenuHost"
                 :mapId="props.mapId"
-                :disabled="props.isMenuDisabled(menu)"
-                @click="props.onRowMenuAction(row, menu, $event)"
+                :value="convertFeatureToItem(row.feature)"
+                :locations="['extra', 'menu']"
               />
             </td>
           </tr>

@@ -19,6 +19,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function ToolbarPage() {
   return (
@@ -41,6 +42,7 @@ export function ToolbarPage() {
         <LegendControl position="top-left" controlLayout="toolbar" controlOrder={5} />
         <PrintControl position="top-left" controlLayout="toolbar" />
         <PrintAdvancedControl position="top-left" controlLayout="toolbar" />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

@@ -207,3 +207,5 @@ export const GEO_EXPORT_DEMO_DATASET_FACTORIES: Array<() => IDataset> = [
   createGeoExportCustomApiDataset,
   createGeoExportAtScopesDataset,
 ];
+
+export { GEO_EXPORT_DEMO_HELP_SECTIONS } from './help';

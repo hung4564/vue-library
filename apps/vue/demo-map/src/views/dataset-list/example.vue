@@ -13,6 +13,7 @@ import { reactive, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 import { loadListDemoDatasets } from '../../data/loaders';
 import SampleCustomMenu from './sample-custom-menu.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
 loggerFactory.enable('menu');
@@ -56,6 +57,7 @@ function onMapLoaded(map: MapSimple) {
     </LayerControl>
     <LayerHighlight />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

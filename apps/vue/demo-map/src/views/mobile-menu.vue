@@ -29,6 +29,7 @@
       <HomeControl />
       <MouseCoordinatesControl />
       <BaseMapControl position="bottom-left" />
+      <DemoHelpPanel />
     </Map>
   </div>
 </template>
@@ -51,6 +52,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 
 const modes: ButtonInMobile[] = ['button', 'toolbar', 'menu'];
 const buttonInMobile = ref<ButtonInMobile>('menu');

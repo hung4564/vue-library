@@ -25,6 +25,7 @@ import { loadAllMapDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 /** Alias of full dataset demo — same as home but reachable via /map-dataset */
 export function MapDatasetPage() {
@@ -58,6 +59,7 @@ export function MapDatasetPage() {
         <EventManagementControl position="top-left" />
         <LayerHighlight enableClick />
         <ComponentManagementControl />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

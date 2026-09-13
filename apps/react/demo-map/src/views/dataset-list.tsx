@@ -16,6 +16,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { loadListDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import {
   SampleCustomMenu,
   SAMPLE_LAYER_MENU_KEY,
@@ -78,6 +79,7 @@ export function DatasetListPage() {
         />
         <LayerHighlight />
         <ComponentManagementControl />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

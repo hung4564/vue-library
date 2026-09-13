@@ -18,6 +18,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function MapCorePage() {
   return (
@@ -39,6 +40,7 @@ export function MapCorePage() {
         <GeoLocateControl position="top-right" />
         <MouseCoordinatesControl />
         <MapContextMenuControl />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

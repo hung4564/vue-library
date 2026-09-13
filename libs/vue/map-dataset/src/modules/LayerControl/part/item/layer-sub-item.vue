@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div class="layer-sub-item-container">
     <div class="layer-sub-item__info">
       <div v-if="isHasIcon" class="layer-sub-item__icon">
@@ -15,47 +15,31 @@
       </span>
       <div class="layer-sub-item__title-action">
         <slot name="pre-btn" />
-        <template v-for="(menu, i) in extra_menus" :key="i">
-          <DatasetMenuButton
-            :item="menu"
-            :data="item"
-            :mapId="mapId"
-            :disabled="isMenuItemDisabled(menu, conditionCtx)"
-            @click="onLayerAction($event, menu)"
-          />
-        </template>
-        <MapControlButton
-          v-if="content_menus.length > 0"
-          variant="plain"
-          size="small"
-          @click.prevent.stop="handleContextClick"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.menu" />
-        </MapControlButton>
+        <DatasetMenus
+          :menus="button_menus"
+          :data="item"
+          :mapId="mapId"
+          :locations="['extra', 'menu']"
+          :getGroups="getGroups"
+          :menuContext="rowMenuContexts"
+        />
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { MenuAction, MenuContextSource } from '@hungpvq/map-dataset/menu';
-import {
-  createMenuConditionContext,
-  getResolvedMenus,
-  isMenuItemDisabled,
-  isMenuItemHidden,
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuContextSource,
 } from '@hungpvq/map-dataset/menu';
-import { MapControlButton, RegistryItem } from '@hungpvq/vue-map-core';
+import { getResolvedMenus } from '@hungpvq/map-dataset/menu';
+import { RegistryItem } from '@hungpvq/vue-map-core';
 
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiDotsVertical } from '@mdi/js';
 import { computed } from 'vue';
-import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
-import DatasetMenuButton from '../../../../extra/menu/dataset-menu-button.vue';
+import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
 
-const path = {
-  menu: mdiDotsVertical,
-};
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
@@ -63,51 +47,21 @@ const props = defineProps<{
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
   menuContext?: MenuContextSource;
+  getGroups?: () => ListViewGroupOption[];
 }>();
 const isHasIcon = computed(() => props.item && props.item.icon);
-const emit = defineEmits(['click:action', 'click:content-menu']);
-const injectedMenuContext = useMenuConditionSource();
-const conditionCtx = computed(() =>
-  createMenuConditionContext(props.item, {
-    mapId: props.mapId,
-    context: [
-      {
-        readonly: props.readonly,
-        disabledMove: props.disabledMove,
-        disabledCreateGroup: props.disabledCreateGroup,
-      },
-      injectedMenuContext,
-      props.menuContext,
-    ],
-  }),
-);
-const button_menus = computed<MenuAction<any>[]>(() => {
+const rowMenuContexts = computed(() => [
+  {
+    readonly: props.readonly,
+    disabledMove: props.disabledMove,
+    disabledCreateGroup: props.disabledCreateGroup,
+  },
+  props.menuContext,
+]);
+const button_menus = computed<MenuAction[]>(() => {
   if (!props.item) {
     return [];
   }
   return getResolvedMenus(props.item, 'layer');
 });
-const extra_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => !x.location || x.location === 'extra')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const content_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location === 'menu')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
-  if (isMenuItemDisabled(action, conditionCtx.value)) return;
-  emit('click:action', { event, action, item: props.item });
-}
-function handleContextClick(event: MouseEvent) {
-  emit('click:content-menu', {
-    event,
-    actions: content_menus.value,
-    item: props.item,
-  });
-}
 </script>

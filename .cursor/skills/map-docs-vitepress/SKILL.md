@@ -36,6 +36,7 @@ Prefer editing package-local markdown that the sites consume:
 
 - Hub: `libs/draggable/core/docs/index.md`
 - Stable API: `libs/draggable/core/docs/stable-api.md` (named barrels; experimental table; enforce via `public-api.spec.ts`)
+- Header slots: `libs/draggable/core/docs/header-slots.md` (`pre-title` / `title` / `after-title` / `extra-btn`)
 - Accessibility: `libs/draggable/core/docs/a11y.md`
 - Context menu (experimental): `libs/draggable/core/docs/context-menu.md`
 - SemVer checklist: `libs/draggable/README.md`

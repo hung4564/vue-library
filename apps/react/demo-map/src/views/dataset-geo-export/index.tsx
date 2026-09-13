@@ -18,6 +18,7 @@ import { MapPageShell } from '../../components/MapPageShell';
 import { loadGeoExportDemoDatasets } from '../../data/loaders';
 import { useDatasetRegistry } from '../../hooks/useDatasetRegistry';
 import { AsideControl } from '../../layout/AsideControl';
+import { DemoHelpPanel } from '../../components/DemoHelpPanel';
 
 /** Passed as dataset `formComponent` (like AT cellComponent). */
 function DemoExportForm(props: ExportGeoFormProps) {
@@ -120,6 +121,7 @@ export function DatasetGeoExportPage() {
         />
         <LayerHighlight />
         <ComponentManagementControl />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

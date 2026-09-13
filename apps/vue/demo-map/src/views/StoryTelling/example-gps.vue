@@ -24,6 +24,7 @@ import { ref } from 'vue';
 import { createZoomAction } from './helper-action';
 import { withMapReady } from './helper-global';
 import { Chapter, useMapStorytelling } from './useStorytelling';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapRef = ref();
 const mapId = ref('');
@@ -239,6 +240,7 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
         </div>
       </MapCard>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

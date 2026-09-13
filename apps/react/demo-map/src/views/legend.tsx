@@ -17,6 +17,7 @@ import { useCallback, useState, type ReactNode } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './legend.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function LegendPage() {
   const { getLayerLegendNode } = useLayerLegend();
@@ -102,6 +103,7 @@ export function LegendPage() {
         <HomeControl />
         <MouseCoordinatesControl />
         <BaseMapControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
       <div className="legend-control">
         {legends.map((node, index) => (

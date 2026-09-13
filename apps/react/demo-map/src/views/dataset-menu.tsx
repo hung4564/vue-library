@@ -1,13 +1,12 @@
+import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
-import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
-import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
   BaseMapControl,
   Map,
-  UniversalRegistry,
   ThemeControl,
+  UniversalRegistry,
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import {
@@ -16,11 +15,13 @@ import {
   LayerControl,
   LayerHighlight,
 } from '@hungpvq/react-map-dataset';
+import { getUUIDv4 } from '@hungpvq/shared';
 import { useMemo } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadMenuDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { SampleLayerToggleShow } from './sample-layer-toggle-show';
 import { SampleToggleShowButton } from './sample-toggle-show-button';
 
@@ -68,6 +69,7 @@ export function DatasetMenuPage() {
         <ThemeControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

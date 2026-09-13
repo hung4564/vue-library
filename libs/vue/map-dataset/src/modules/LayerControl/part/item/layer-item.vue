@@ -25,15 +25,15 @@
       <div class="v-spacer"></div>
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
-        <template v-for="(menu, i) in extra_menus" :key="i">
-          <DatasetMenuButton
-            :item="menu"
-            :data="item"
-            :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-            :mapId="mapId"
-            @click="onLayerAction($event, menu)"
-          />
-        </template>
+        <DatasetMenus
+          :menus="button_menus"
+          :data="item"
+          :mapId="mapId"
+          :locations="['extra', 'menu']"
+          :disabled="loading"
+          :getGroups="getGroups"
+          :menuContext="rowMenuContexts"
+        />
         <MapControlButton
           v-if="!item.config.disabled_delete && !props.readonly"
           :disabled="loading"
@@ -44,25 +44,16 @@
           <SvgIcon size="14" type="mdi" :path="path.delete" />
         </MapControlButton>
         <slot name="extra-btn" :loading="loading" />
-        <MapControlButton
-          v-if="content_menus.length > 0"
-          variant="plain"
-          size="small"
-          :disabled="loading"
-          @click.prevent.stop="handleContextClick"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.menu" />
-        </MapControlButton>
         <template v-if="!showBottom">
-          <template v-for="(menu, i) in extra_bottoms" :key="i">
-            <DatasetMenuButton
-              :item="menu"
-              :data="item"
-              :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-              :mapId="mapId"
-              @click="onLayerAction($event, menu)"
-            />
-          </template>
+          <DatasetMenus
+            :menus="button_menus"
+            :data="item"
+            :mapId="mapId"
+            :locations="['bottom']"
+            :disabled="loading"
+            :getGroups="getGroups"
+            :menuContext="rowMenuContexts"
+          />
           <MapControlButton
             @click.stop="onToggleLegend()"
             v-if="isHasLegend"
@@ -79,25 +70,25 @@
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
-      <template v-for="(menu, i) in bottoms" :key="i">
-        <DatasetMenuButton
-          :item="menu"
-          :data="item"
-          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-          :mapId="mapId"
-          @click="onLayerAction($event, menu)"
-        />
-      </template>
+      <DatasetMenus
+        :menus="button_menus"
+        :data="item"
+        :mapId="mapId"
+        :locations="['prebottom']"
+        :disabled="loading"
+        :getGroups="getGroups"
+        :menuContext="rowMenuContexts"
+      />
       <div class="v-spacer"></div>
-      <template v-for="(menu, i) in extra_bottoms" :key="i">
-        <DatasetMenuButton
-          :item="menu"
-          :data="item"
-          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-          :mapId="mapId"
-          @click="onLayerAction($event, menu)"
-        />
-      </template>
+      <DatasetMenus
+        :menus="button_menus"
+        :data="item"
+        :mapId="mapId"
+        :locations="['bottom']"
+        :disabled="loading"
+        :getGroups="getGroups"
+        :menuContext="rowMenuContexts"
+      />
       <MapControlButton
         @click.stop="onToggleChildren()"
         v-if="isHasChildren"
@@ -142,8 +133,7 @@
         :disabledMove="disabledMove"
         :disabledCreateGroup="disabledCreateGroup"
         :menuContext="menuContext"
-        @click:action="emit('click:action', $event)"
-        @click:content-menu="emit('click:content-menu', $event)"
+        :getGroups="getGroups"
       ></LayerSubItem>
     </div>
   </div>
@@ -154,20 +144,23 @@ import {
   findAllComponentsByType,
   splitSearchHighlight,
 } from '@hungpvq/map-dataset';
-import type { MenuAction, MenuContextSource } from '@hungpvq/map-dataset/menu';
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import {
   createMenuConditionContext,
   getResolvedMenus,
-  isMenuItemDisabled,
-  isMenuItemHidden,
+  partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
 
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
+import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
-import DatasetMenuButton from '../../../../extra/menu/dataset-menu-button.vue';
+import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
 import LayerSubItem from './layer-sub-item.vue';
 const props = defineProps<{
   item: IListViewUI;
@@ -177,33 +170,28 @@ const props = defineProps<{
   disabledCreateGroup?: boolean;
   menuContext?: MenuContextSource;
   searchQuery?: string;
+  getGroups?: () => ListViewGroupOption[];
 }>();
-const emit = defineEmits([
-  'click',
-  'click:remove',
-  'click:action',
-  'click:content-menu',
-]);
+const emit = defineEmits(['click', 'click:remove']);
 const path = {
-  menu: mdiDotsVertical,
   delete: mdiDelete,
   legendOpen: mdiMenuLeft,
   legendClose: mdiMenuDown,
 };
 const loading = ref(false);
 const injectedMenuContext = useMenuConditionSource();
+const rowMenuContexts = computed(() => [
+  {
+    readonly: props.readonly,
+    disabledMove: props.disabledMove,
+    disabledCreateGroup: props.disabledCreateGroup,
+  },
+  props.menuContext,
+]);
 const conditionCtx = computed(() =>
   createMenuConditionContext(props.item, {
     mapId: props.mapId,
-    context: [
-      {
-        readonly: props.readonly,
-        disabledMove: props.disabledMove,
-        disabledCreateGroup: props.disabledCreateGroup,
-      },
-      injectedMenuContext,
-      props.menuContext,
-    ],
+    context: [injectedMenuContext, ...rowMenuContexts.value],
   }),
 );
 const onRemove = () => {
@@ -212,53 +200,21 @@ const onRemove = () => {
 const nameParts = computed(() =>
   splitSearchHighlight(props.item.getName?.() ?? '', props.searchQuery ?? ''),
 );
-const button_menus = computed<MenuAction<any>[]>(() => {
+const button_menus = computed<MenuAction[]>(() => {
   if (!props.item) {
     return [];
   }
   return getResolvedMenus(props.item, 'layer');
 });
-const extra_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => !x.location || x.location == 'extra')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const bottoms = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'prebottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const extra_bottoms = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'bottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const content_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'menu')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
+const partitioned = computed(() =>
+  partitionMenuActions(button_menus.value, conditionCtx.value),
+);
 const showBottom = computed(() => {
   return (
     !props.readonly &&
-    (!props.item.config.disabled_opacity || extra_bottoms.value.length > 0)
+    (!props.item.config.disabled_opacity || partitioned.value.bottom.length > 0)
   );
 });
-function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
-  if (isMenuItemDisabled(action, conditionCtx.value)) return;
-  emit('click:action', { event, action, item: props.item });
-}
-function handleContextClick(event: MouseEvent) {
-  emit('click:content-menu', {
-    event,
-    actions: content_menus.value,
-    item: props.item,
-  });
-}
 
 const isHasIcon = computed(() => props.item && props.item.icon);
 const isHasLegend = computed(() => props.item && !!props.item.legend);

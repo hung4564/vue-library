@@ -9,6 +9,7 @@ import {
 import { MapCard } from '@hungpvq/vue-map-core/fields';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
@@ -24,6 +25,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </MapCard>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

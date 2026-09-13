@@ -1,9 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
-import { handleMenuAction } from '@hungpvq/map-dataset/menu';
-import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
@@ -17,8 +14,8 @@ import {
   type DraggableGroupListRef,
 } from './DraggableList/DraggableGroupList';
 import type { GroupTree, LayerListItem } from './DraggableList/utils';
-import { LayerContextMenuList } from './layer-context-menu-list';
 import { LayerItem } from './layer-item';
+import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 const HEADER_ICON = '16px';
 export function LayerList({
   mapId,
@@ -60,11 +57,6 @@ export function LayerList({
   const listDisabledDrag =
     Boolean(disabledDrag) || Boolean(debouncedSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
-  const contextMenuRef = useRef<ContextMenuRef>(null);
-  const [menuContext, setMenuContext] = useState<{
-    items: MenuAction<IListViewUI>[];
-    view?: IListViewUI;
-  }>({ items: [] });
   useEffect(() => {
     setLocaleDefault(LAYER_CONTROL_LOCALE);
   }, [setLocaleDefault]);
@@ -114,52 +106,16 @@ export function LayerList({
   function addNewGroup() {
     groupRef.current?.addNewGroup('');
   }
-  function onLayerAction({
-    event,
-    action,
-    item,
-  }: {
-    event: React.MouseEvent | MouseEvent;
-    action: MenuAction<IListViewUI>;
-    item: IListViewUI;
-  }) {
-    const native =
-      'nativeEvent' in event ? event.nativeEvent : (event as MouseEvent);
-    handleMenuAction(action, {
-      event: native,
-      layer: item,
-      mapId,
-      value: item,
-    });
-  }
-  function handleContextClick({
-    event,
-    item,
-    actions,
-  }: {
-    event: React.MouseEvent;
-    item: IListViewUI;
-    actions: MenuAction<IListViewUI>[];
-  }) {
-    setMenuContext({
-      items: actions ? [...actions] : [],
-      view: item,
-    });
-    contextMenuRef.current?.open(event);
-  }
   function getMenuGroups() {
     const treeGroups = groupRef.current?.getGroups() ?? [];
     return treeGroups.length > 0 ? treeGroups : listListViewGroups(views);
-  }
-  function closeContextMenu() {
-    setMenuContext({ items: [], view: undefined });
-    contextMenuRef.current?.close();
   }
   const isEmpty = views.length === 0;
   const showCreate = Boolean(onCreate) && !disabledCreate && !readonly;
   return (
     <MenuConditionProvider
       value={{
+        control: MENU_CONTROL_ID.layerControl,
         readonly: !!readonly,
         disabledMove: !!disabledMove,
         disabledCreateGroup: !!disabledCreateGroup,
@@ -264,37 +220,17 @@ export function LayerList({
                   disabledMove={disabledMove}
                   disabledCreateGroup={disabledCreateGroup}
                   searchQuery={debouncedSearch}
+                  getGroups={getMenuGroups}
                   onTitleClick={toggleSelect}
                   onRemove={(layer) => {
                     removeComponent(layer);
                     refresh();
                   }}
-                  onAction={onLayerAction}
-                  onContextMenu={handleContextClick}
                 />
               )}
             />
           </div>
         </div>
-        <ContextMenu ref={contextMenuRef}>
-          <LayerContextMenuList
-            items={menuContext.items}
-            view={menuContext.view}
-            mapId={mapId}
-            getGroups={getMenuGroups}
-            onClose={closeContextMenu}
-            onSelect={({ action, event }) => {
-              if (menuContext.view) {
-                onLayerAction({
-                  action,
-                  item: menuContext.view,
-                  event,
-                });
-              }
-              closeContextMenu();
-            }}
-          />
-        </ContextMenu>
       </div>
     </MenuConditionProvider>
   );

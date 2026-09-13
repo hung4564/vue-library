@@ -673,3 +673,5 @@ export const IDENTIFY_DEMO_DATASET_FACTORIES = [
   createIdentifyApiDetailDataset,
   createIdentifyApiMergedDataset,
 ] as const;
+
+export { IDENTIFY_DEMO_HELP_SECTIONS } from './help';

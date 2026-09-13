@@ -4,6 +4,7 @@ import { Map } from '@hungpvq/vue-map-core';
 import { MeasureActionItem, MeasurementControl } from '@hungpvq/vue-map-core';
 import { mdiPlus } from '@mdi/js';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 const actions: MeasureActionItem[] = [
   {
     title: 'add to layer',
@@ -23,6 +24,7 @@ const actions: MeasureActionItem[] = [
     <AsideControl position="top-left" />
     <MeasurementControl position="top-left" :actions="actions" />
     <BaseMapControl position="bottom-left" />
+    <DemoHelpPanel />
   </Map>
 </template>
 

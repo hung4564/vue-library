@@ -15,9 +15,22 @@ import {
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import { LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import {
+  findAllComponentsByType,
+  LAYER_CONTROL_LOCALE,
+  type IDataset,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
-import { type MenuContextSource } from '@hungpvq/map-dataset/menu';
+import {
+  getMenuItemLocation,
+  getResolvedMenus,
+  mergeMenusById,
+  MENU_CONTROL_ID,
+  resolveMenuContextSource,
+  type MenuAction,
+  type MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -41,8 +54,9 @@ import {
   mdiLayers,
   mdiPlus,
 } from '@mdi/js';
-import { onUnmounted, watch } from 'vue';
+import { computed, onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import { useMapDataset } from '../../store';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
@@ -68,7 +82,10 @@ const props = withDefaults(
     disabledMove: false,
   },
 );
-provideMenuConditionContext(() => props.menuContext);
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.layerControl,
+  ...resolveMenuContextSource(props.menuContext),
+}));
 defineSlots<{
   titleList: (props: { mapId: string }) => any;
   endList: (props: { mapId: string }) => any;
@@ -129,7 +146,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 });
 watch(show, () => control.sync());
 
-const { addDataset } = useMapDataset(mapId.value);
+const { addDataset, getDatasets, getDatasetIds } = useMapDataset(mapId.value);
 function onAddGeojsonHere(
   _props: MapMenuItemProps,
   payload: AddGeojsonHerePayload,
@@ -144,6 +161,30 @@ UniversalRegistry.registerMenuHandlerForMap(
 setAddGeojsonHereItems(mapId.value, getDefaultAddGeojsonHereItems());
 onUnmounted(() => {
   clearAddGeojsonHereItems(mapId.value);
+});
+
+const datasetIds = computed(() => getDatasetIds().value);
+
+const titleMenuState = computed(() => {
+  void datasetIds.value;
+  const roots = getDatasets().filter(Boolean) as IDataset[];
+  const lists: MenuAction[][] = [];
+  let firstData: IDataset | undefined = roots[0];
+  for (const root of roots) {
+    const listViews = findAllComponentsByType<IListViewUI>(root, 'list');
+    for (const list of listViews) {
+      if (!firstData) firstData = list;
+      lists.push(
+        getResolvedMenus(list, 'layer').filter(
+          (menu) => getMenuItemLocation(menu) === 'title',
+        ),
+      );
+    }
+  }
+  return {
+    menus: mergeMenusById(lists),
+    data: firstData,
+  };
 });
 </script>
 <template>
@@ -168,6 +209,15 @@ onUnmounted(() => {
           <span class="layer-control__title">
             {{ trans('map.layer-control.title') }}
           </span>
+        </template>
+        <template v-if="titleMenuState.data" #after-title>
+          <DatasetMenus
+            :menus="titleMenuState.menus"
+            :data="titleMenuState.data"
+            :mapId="mapId"
+            :locations="['title']"
+            :menuContext="menuContext"
+          />
         </template>
         <div class="layer-control">
           <LayerList

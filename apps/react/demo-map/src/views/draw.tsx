@@ -12,6 +12,7 @@ import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const MAP_ID = 'react-draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
@@ -127,6 +128,7 @@ export function DrawPage() {
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <DrawControl position="top-right" />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

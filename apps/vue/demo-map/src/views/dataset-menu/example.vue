@@ -20,6 +20,7 @@ import {
 import { ref } from 'vue';
 import { loadMenuDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import SampleLayerToggleShow from './sample-layer-toggle-show.vue';
 import SampleToggleShowButton from './sample-toggle-show-button.vue';
 
@@ -62,6 +63,7 @@ function onMapLoaded(map: MapSimple) {
     <LayerHighlight enableClick />
     <IdentifyControl position="top-right" />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

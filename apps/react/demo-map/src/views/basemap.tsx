@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './basemap.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function BasemapPage() {
   const [mapId, setMapId] = useState('');
@@ -26,6 +27,7 @@ export function BasemapPage() {
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <BaseMapTagControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
       {mapId ? (
         <div className="base-map-card-demo">

@@ -10,7 +10,14 @@ import { findFirstLeafByType } from '../model/visitors';
 
 function menuActionFromEntry(entry: DatasetMenuEntry): MenuAction {
   const id = entry.menu.id ?? entry.key;
-  return id ? { ...entry.menu, id } : { ...entry.menu };
+  const base = id ? { ...entry.menu, id } : { ...entry.menu };
+  if (!entry.byControl) return base;
+  const existing =
+    'byControl' in base && base.byControl ? base.byControl : undefined;
+  return {
+    ...base,
+    byControl: { ...existing, ...entry.byControl },
+  };
 }
 
 function getLocalMenus(dataset: IDataset | undefined): MenuAction[] {

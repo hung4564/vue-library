@@ -1,5 +1,5 @@
 import type { Feature } from 'geojson';
-import type { IDataset, MenuAction, MenuActionLocation } from '../interfaces';
+import type { IDataset, MenuAction, MenuActionLocation, MenuByControl } from '../interfaces';
 
 import type {
   MenuCondition,
@@ -95,6 +95,10 @@ export function createMenuBuilder<T = IDataset>() {
         },
         setDisabled(disabled: MenuCondition<T>) {
           state.disabled = disabled;
+          return this;
+        },
+        setByControl(byControl: MenuByControl) {
+          state.byControl = byControl;
           return this;
         },
         setAdditional(additional: Partial<any>) {

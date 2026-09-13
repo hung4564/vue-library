@@ -34,6 +34,7 @@ import {
   createMenuClickHighlightBuilder,
 } from './builder';
 import { resolveMenuCondition } from './condition';
+import { MENU_CONTROL_ID } from './placement';
 
 export const LIST_VIEW_MENU_ID = {
   /** LayerControl list row (`for: 'layer'`) */
@@ -151,6 +152,9 @@ export function createMenuItemToBoundActionForList(props?: {
     .item()
     .setId(LIST_VIEW_MENU_ID.layer.fillBound)
     .setLocation('extra')
+    .setByControl({
+      [MENU_CONTROL_ID.layerDetail]: { location: 'title' },
+    })
     .setName(props?.name ?? 'Fill bound')
     .setIcon(mdiCrosshairsGps)
     .setClick(({ layer, mapId }) => {
@@ -173,7 +177,10 @@ export function createMenuItemToBoundActionForItem() {
   return createMenuBuilder() // = kiểu layer, bạn thay đúng type nếu có
     .item()
     .setId(LIST_VIEW_MENU_ID.item.flyTo)
-    .setLocation('menu')
+    .setLocation('extra')
+    .setByControl({
+      [MENU_CONTROL_ID.layerDetail]: { location: 'title' },
+    })
     .setName('Fly to')
     .setIcon(mdiCrosshairsGps)
     .setClick(
@@ -224,6 +231,9 @@ export function createMenuItemShowDetailForItem(fields: FieldFeaturesDef) {
     .setName('Detail')
     .setId(LIST_VIEW_MENU_ID.item.showDetail)
     .setIcon(mdiInformation)
+    .setByControl({
+      [MENU_CONTROL_ID.layerDetail]: { hidden: true },
+    })
     .setClick((props) => {
       return createMenuClickBuilder()
         .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ value }) => ({
@@ -263,6 +273,9 @@ export function createMenuItemShowDetailInfoSource(
     .setId(LIST_VIEW_MENU_ID.layer.info)
     .setName('Info')
     .setIcon(mdiInformation)
+    .setByControl({
+      [MENU_CONTROL_ID.layerDetail]: { hidden: true },
+    })
     .setClick(
       createMenuClickBuilder()
         .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ layer }) => {

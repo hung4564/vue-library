@@ -269,3 +269,5 @@ export const IDENTIFY_PRESENT_DEMO_DATASET_FACTORIES = [
   createIdentifyPresentTableOnlyDataset,
   createIdentifyPresentNeitherDataset,
 ] as const;
+
+export { IDENTIFY_PRESENT_DEMO_HELP_SECTIONS } from './help';

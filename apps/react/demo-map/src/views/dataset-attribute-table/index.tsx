@@ -44,6 +44,7 @@ import { SampleAttributeTableHeader } from './sample-attribute-table-header';
 import { SampleAttributeTablePager } from './sample-attribute-table-pager';
 import { SampleAttributeTableToolbar } from './sample-attribute-table-toolbar';
 import { SampleAttributeTableView } from './sample-attribute-table-view';
+import { DemoHelpPanel } from '../../components/DemoHelpPanel';
 
 type LayerKey = 'http' | 'httpCustom' | 'localGeojson' | 'localList' | 'memory';
 type OverrideKey = 'default' | 'toolbar' | 'grid' | 'pager' | 'all' | 'view';
@@ -450,6 +451,7 @@ export function DatasetAttributeTablePage() {
             gap: 6px;
           }
         `}</style>
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

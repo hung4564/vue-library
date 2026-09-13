@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
-import { handleMenuAction } from '@hungpvq/map-dataset/menu';
-import { ContextMenu } from '@hungpvq/vue-draggable';
+import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiClose,
   mdiDelete,
-  mdiDotsVertical,
   mdiGroup,
   mdiLayers,
   mdiPlus,
@@ -21,7 +18,6 @@ import {
   onMounted,
   onUnmounted,
   ref,
-  shallowReactive,
   VNode,
   watch,
 } from 'vue';
@@ -30,7 +26,6 @@ import { provideMenuConditionContext } from '../../../extra/menu/condition-conte
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
-import LayerContextMenuList from './item/layer-context-menu-list.vue';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -59,6 +54,7 @@ provideMenuConditionContext(() => ({
   readonly: false,
   disabledMove: props.disabledMove,
   disabledCreateGroup: props.disabledCreateGroup,
+  control: MENU_CONTROL_ID.layerControl,
 }));
 defineSlots<{
   title(): VNode[];
@@ -70,7 +66,6 @@ defineSlots<{
 }>();
 const path = {
   icon: mdiLayers,
-  menu: mdiDotsVertical,
   group: { create: mdiGroup },
   deleteAll: mdiDelete,
   layer: { create: mdiPlus },
@@ -184,57 +179,9 @@ function onRemoveAllLayer() {
   });
   updateList();
 }
-const contextMenuRef = ref<
-  | {
-      open(_event: MouseEvent, _item: IListViewUI): void;
-      close(): void;
-    }
-  | undefined
->();
-const menu_context = shallowReactive<{
-  items: MenuAction<IListViewUI>[];
-  view: IListViewUI | undefined;
-}>({
-  items: [],
-  view: undefined,
-});
-function handleContextClick({
-  event,
-  item,
-  actions,
-}: {
-  event: MouseEvent;
-  item: IListViewUI;
-  actions: MenuAction<IListViewUI>[];
-}) {
-  menu_context.items = actions ? [...actions] : [];
-  menu_context.view = item;
-  if (contextMenuRef.value) contextMenuRef.value.open(event, item);
-}
 function getMenuGroups() {
   const treeGroups = groupRef.value?.getGroups?.() ?? [];
   return treeGroups.length > 0 ? treeGroups : listListViewGroups(views.value);
-}
-function closeContextMenu() {
-  menu_context.items = [];
-  menu_context.view = undefined;
-  if (contextMenuRef.value) contextMenuRef.value.close();
-}
-function onLayerAction({
-  event,
-  action,
-  item,
-}: {
-  event: MouseEvent;
-  action: MenuAction<IListViewUI>;
-  item: IListViewUI;
-}) {
-  handleMenuAction(action, {
-    event,
-    layer: item,
-    mapId: mapId.value,
-    value: item,
-  });
 }
 </script>
 <template>
@@ -319,37 +266,17 @@ function onLayerAction({
               :searchQuery="debouncedSearch"
               @click="toggleSelect(item)"
               @click:remove="onRemoveLayer"
-              @click:content-menu="handleContextClick"
-              @click:action="onLayerAction"
               :map-id="mapId"
               :readonly="false"
               :disabledMove="disabledMove"
               :disabledCreateGroup="disabledCreateGroup"
+              :getGroups="getMenuGroups"
             >
             </RegistryItem>
           </slot>
         </template>
       </DraggableGroupList>
     </div>
-    <ContextMenu ref="contextMenuRef">
-      <LayerContextMenuList
-        :items="menu_context.items"
-        :view="menu_context.view"
-        :mapId="mapId"
-        :getGroups="getMenuGroups"
-        @close="closeContextMenu"
-        @select="
-          if (menu_context.view) {
-            onLayerAction({
-              action: $event.action,
-              item: menu_context.view,
-              event: $event.event,
-            });
-          }
-          closeContextMenu();
-        "
-      />
-    </ContextMenu>
   </div>
 </template>
 

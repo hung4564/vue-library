@@ -15,6 +15,7 @@ export {
   DatasetControl,
   DatasetDetail,
   DatasetMenuButton,
+  DatasetMenus,
   ExportGeo,
   ExportGeoForm,
   ExportGeoFormatMenu,

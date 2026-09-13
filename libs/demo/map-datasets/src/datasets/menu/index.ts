@@ -2,7 +2,7 @@ import { getChartRandomColor } from '@hungpvq/map-core';
 import { createDatasetPartBoundComponent, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
-import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
+import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, MENU_CONTROL_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   mdiAppleKeyboardCommand,
@@ -10,6 +10,7 @@ import {
   mdiMarker,
   mdiPen,
   mdiRegisteredTrademark,
+  mdiStar,
   mdiUpdate,
 } from '@mdi/js';
 import {
@@ -240,6 +241,139 @@ export function createSharedDatasetMenuDataset() {
     new LayerSimpleMapboxBuild()
       .setStyleType('area')
       .setColor(list.color)
+      .setFilter(['==', '$type', 'Polygon'])
+      .build(),
+  ]);
+  const layerPoint = createMultiMapboxLayerComponent('layer point', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('point')
+      .setColor(list.color)
+      .setFilter(['==', '$type', 'Point'])
+      .build(),
+  ]);
+  const highlight = createDatasetPartHighlightComponent();
+  const identify = createDatasetPartIdentifyComponentBuilder(name)
+    .configFieldId('id')
+    .configFieldName('name')
+    .preferResultControl()
+    .build();
+  groupLayer.add(layerArea);
+  groupLayer.add(layerPoint);
+  groupLayer.add(highlight);
+  groupLayer.add(list);
+  dataset.add(source);
+  dataset.add(bound);
+  dataset.add(menus);
+  dataset.add(groupLayer);
+  dataset.add(identify);
+  return dataset;
+}
+
+/**
+ * Demo `byControl`: Fill bound / Fly to → `title` on LayerDetail; Detail / Info / custom
+ * "List only" hidden there; custom Favorite stays `extra` on list / identify, `title` on detail.
+ * Try: Identify → ⋮ Detail (or Info on layer) → check header after-title actions.
+ */
+export function createByControlPlacementDataset() {
+  const name = 'byControl · LayerDetail title';
+  const dataset = createRootDataset(name);
+  const features = [
+    demoPolygon(
+      [
+        [
+          [105.7, 20.9],
+          [105.7, 20.96],
+          [105.78, 20.96],
+          [105.78, 20.9],
+          [105.7, 20.9],
+        ],
+      ],
+      { id: 'byctl-area-1', name: 'byControl area', kind: 'area' },
+    ),
+    demoPoint([105.74, 20.93], {
+      id: 'byctl-point-1',
+      name: 'byControl point',
+      kind: 'point',
+    }),
+  ];
+  const bbox: [number, number, number, number] = [
+    105.7, 20.9, 105.78, 20.96,
+  ];
+  const source = createDatasetPartGeojsonSourceComponent('source', {
+    type: 'FeatureCollection',
+    features,
+  });
+  const bound = createDatasetPartBoundComponent(name, bbox);
+
+  const favorite = createMenuBuilder()
+    .item()
+    .setId('demo-bycontrol-favorite')
+    .setLocation('extra')
+    .setName('Favorite')
+    .setIcon(mdiStar)
+    .setByControl({
+      [MENU_CONTROL_ID.layerDetail]: { location: 'title' },
+    })
+    .setClick(({ layer, value }) => {
+      console.info('[byControl demo] Favorite', {
+        layer: layer?.getName?.(),
+        value,
+      });
+    })
+    .build();
+
+  const listOnly = createMenuBuilder()
+    .item()
+    .setId('demo-bycontrol-list-only')
+    .setLocation('menu')
+    .setName('List only')
+    .setIcon(mdiPen)
+    .setClick(() => {
+      console.info('[byControl demo] List only (should not show on LayerDetail)');
+    })
+    .build();
+
+  const menus = createDatasetPartMenuComponentBuilder(name)
+    .addLayerMenu(createMenuItemToggleShow(), LIST_VIEW_MENU_ID.layer.toggleShow)
+    .addLayerMenu(createMenuItemShowDetailInfoSource(), LIST_VIEW_MENU_ID.layer.info)
+    .addLayerMenu(
+      createMenuItemToBoundActionForList(),
+      LIST_VIEW_MENU_ID.layer.fillBound,
+    )
+    .addLayerMenu(favorite, 'demo-bycontrol-favorite')
+    .addItemMenu(
+      createMenuItemShowDetailForItem([
+        { text: 'Id', value: 'id' },
+        { text: 'Name', value: 'name' },
+        { text: 'Kind', value: 'kind' },
+      ]),
+      LIST_VIEW_MENU_ID.item.showDetail,
+    )
+    .addItemMenu(
+      createMenuItemToBoundActionForItem(),
+      LIST_VIEW_MENU_ID.item.flyTo,
+    )
+    .addMenu({
+      for: 'item',
+      key: 'demo-bycontrol-list-only',
+      menu: listOnly,
+      byControl: {
+        [MENU_CONTROL_ID.layerDetail]: { hidden: true },
+      },
+    })
+    .build();
+
+  const groupLayer = createGroupDataset(name);
+  const list = createDatasetPartListViewUiComponentBuilder(name)
+    .setColor('#e76f51')
+    .configDisabledDelete()
+    .addMenus([createMenuItemIdentifyForList()])
+    .build();
+  const layerArea = createMultiMapboxLayerComponent('layer area', [
+    new LayerSimpleMapboxBuild()
+      .setStyleType('area')
+      .setColor(list.color)
+      .setOpacity(0.55)
       .setFilter(['==', '$type', 'Polygon'])
       .build(),
   ]);
@@ -526,6 +660,7 @@ export function createCustomToggleButtonDataset() {
 }
 
 export const MENU_DEMO_DATASET_FACTORIES = [
+  createByControlPlacementDataset,
   createDefaultMenuSupportDataset,
   createCustomToggleButtonDataset,
   createDynamicBoundMenuDataset,
@@ -535,3 +670,6 @@ export const MENU_DEMO_DATASET_FACTORIES = [
   createCustomMultiSupportDataset,
   createCustomChainSupportDataset,
 ] as const;
+
+export { MENU_DEMO_HELP_SECTIONS } from './help';
+export type { DemoHelpSection } from './help';

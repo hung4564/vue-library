@@ -17,6 +17,7 @@ import {
 import { defineComponent, h, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 import { loadGeoExportDemoDatasets } from '../../data/loaders';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 
@@ -76,6 +77,7 @@ function onMapLoaded(map: MapSimple) {
     </LayerControl>
     <LayerHighlight />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

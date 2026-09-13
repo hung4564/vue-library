@@ -13,6 +13,7 @@ import {
   terminateSampleWorker,
 } from '../workers/sample-worker.client';
 import './worker-sample.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function WorkerSamplePage() {
   const [from, setFrom] = useState(1);
@@ -48,6 +49,7 @@ export function WorkerSamplePage() {
         <BaseMapControl position="bottom-left" />
         <ZoomControl />
         <HomeControl />
+        <DemoHelpPanel />
       </Map>
 
       <div className="sample-worker-panel">

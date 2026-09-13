@@ -16,6 +16,7 @@ import { useCallback, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './story-telling.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const CHAPTERS = [
   { id: '1', title: 'Zoom to Hanoi', duration: 3000 },
@@ -94,6 +95,7 @@ export function StoryTellingPage() {
         <MouseCoordinatesControl />
         <SettingControl />
         <BaseMapControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
       <div className="story-panel">
         <h3>Story telling (React demo)</h3>

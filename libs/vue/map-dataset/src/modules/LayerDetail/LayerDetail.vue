@@ -10,15 +10,10 @@ import {
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
-  createMenuConditionContext,
   getItemMenuHost,
   getResolvedMenus,
-  handleMenuAction,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-  LIST_VIEW_MENU_ID,
+  MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
@@ -28,7 +23,8 @@ import {
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
 import { computed, ref } from 'vue';
-import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import { useMapDatasetHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 
@@ -53,25 +49,22 @@ setLocaleDefault(LAYER_DETAIL_LOCALE);
 
 const show = ref(true);
 
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.layerDetail,
+}));
+
 const itemMenuHost = computed(() =>
   props.view ? getItemMenuHost(props.view) : undefined,
 );
 
-const itemMenuConditionCtx = computed(() =>
-  createMenuConditionContext(itemMenuHost.value ?? props.view, {
-    mapId: mapId.value,
-  }),
+const layerTitleMenus = computed(() =>
+  props.view ? getResolvedMenus(props.view, 'layer') : [],
 );
 
-/** Same item menus as Identify / Attribute Table, minus show-detail (this popup). */
 const itemMenus = computed(() => {
   if (!props.view) return [];
-  const ctx = itemMenuConditionCtx.value;
   return getResolvedMenus(props.view, 'item').filter(
-    (menu) =>
-      menu.type !== 'divider' &&
-      !('id' in menu && menu.id === LIST_VIEW_MENU_ID.item.showDetail) &&
-      !isMenuItemHidden(menu, ctx),
+    (menu) => menu.type !== 'divider',
   );
 });
 
@@ -83,16 +76,6 @@ function handleClose() {
 function onUpdateShow(val: boolean) {
   show.value = val;
   if (!val) handleClose();
-}
-
-function onMenuAction(menu: MenuAction, event: MouseEvent) {
-  if (isMenuItemDisabled(menu, itemMenuConditionCtx.value)) return;
-  handleMenuAction(menu, {
-    event,
-    layer: itemMenuHost.value ?? props.view!,
-    mapId: mapId.value,
-    value: props.item,
-  });
 }
 
 const { panelBind } = useRegisterMapControl(mapId, {
@@ -132,15 +115,20 @@ const { panelBind } = useRegisterMapControl(mapId, {
         <template #title>
           {{ trans('map.layer-control.info.title') }}
         </template>
-        <template v-if="itemMenus.length" #extra-btn>
-          <DatasetMenuButton
-            v-for="(menu, index) in itemMenus"
-            :key="menu.id || index"
-            :item="menu"
+        <template v-if="view" #after-title>
+          <DatasetMenus
+            :menus="layerTitleMenus"
+            :data="view"
+            :mapId="mapId"
+            :locations="['title']"
+          />
+          <DatasetMenus
+            v-if="itemMenuHost || view"
+            :menus="itemMenus"
             :data="itemMenuHost || view"
             :mapId="mapId"
-            :disabled="isMenuItemDisabled(menu, itemMenuConditionCtx)"
-            @click.stop="onMenuAction(menu, $event)"
+            :value="item"
+            :locations="['title', 'extra', 'menu']"
           />
         </template>
         <div class="table-show-info">

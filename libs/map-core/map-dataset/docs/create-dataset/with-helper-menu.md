@@ -1,13 +1,73 @@
 # Menus
 
-List UI and identify nodes expose actions in four places. Build items with `createMenuBuilder()`. Click handlers receive `{ layer, mapId, value, event, meta, context }` — not `(layer, mapId)`.
+List UI and identify nodes expose actions in five places. Build items with `createMenuBuilder()`. Click handlers receive `{ layer, mapId, value, event, meta, context }` — not `(layer, mapId)`.
 
 | `location` | Where it renders |
 | --- | --- |
 | `extra` | Icon buttons on the layer title row |
+| `title` | Draggable panel header **`after-title` / `afterTitle`** slot (immediately after the title text — **not** `extra-btn`). See [`header-slots.md`](../../../../draggable/core/docs/header-slots.md) |
 | `prebottom` | Left of the bottom row (opacity lives here by default) |
 | `bottom` | Right of the bottom row |
-| `menu` | Context menu (⋮) |
+| `menu` | Context menu (⋮) on the same row |
+
+UI adapters render these via **`DatasetMenus`** (`@hungpvq/vue-map-dataset` / `@hungpvq/react-map-dataset`): pass `menus`, `data`, optional `value` / `mapId`, and `locations` (e.g. `['extra','menu']` for a row, `['title']` for panel chrome). The component partitions with `partitionMenuActions` and runs `handleMenuAction` on click.
+
+### Per-control placement (`byControl`)
+
+Hosts inject `context.control` (`MENU_CONTROL_ID.layerControl` | `layerDetail` | `identify` | `attributeTable`). Define once, override per host. Full tree example (menu part + list + identify): see [`with-helper-data.md` — Menu / byControl](./with-helper-data.md#example-bycontrol-layerdetail-vs-list--identify).
+
+```ts
+import {
+  MENU_CONTROL_ID,
+  createMenuBuilder,
+  createDatasetPartMenuComponentBuilder,
+  createMenuItemToBoundActionForItem,
+  createMenuItemShowDetailForItem,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
+import { mdiCrosshairsGps } from '@mdi/js';
+
+// 1) On the menu (preferred for custom items)
+const flyTo = createMenuBuilder()
+  .item()
+  .setId('fly-to')
+  .setLocation('extra') // LayerControl / Identify / AttributeTable
+  .setByControl({
+    [MENU_CONTROL_ID.layerDetail]: { location: 'title' }, // after-title on detail popup
+  })
+  .setName('Fly to')
+  .setIcon(mdiCrosshairsGps)
+  .setClick(/* ... */)
+  .build();
+
+const showDetail = createMenuBuilder()
+  .item()
+  .setId('show-detail')
+  .setLocation('menu')
+  .setByControl({
+    [MENU_CONTROL_ID.layerDetail]: { hidden: true }, // already on the detail panel
+  })
+  .setName('Detail')
+  .setClick(/* ... */)
+  .build();
+
+// 2) On the menu-part entry (merged onto menu.byControl)
+createDatasetPartMenuComponentBuilder('defaults')
+  .addItemMenu(createMenuItemToBoundActionForItem(), LIST_VIEW_MENU_ID.item.flyTo)
+  .addItemMenu(
+    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
+    LIST_VIEW_MENU_ID.item.showDetail,
+  )
+  .addMenu({
+    for: 'item',
+    key: 'fly-to-custom',
+    menu: flyTo,
+    byControl: { [MENU_CONTROL_ID.layerDetail]: { location: 'title' } },
+  })
+  .build();
+```
+
+Built-ins: Fly to / Fill bound default `extra` (title on LayerDetail); Detail / Info hidden on LayerDetail.
 
 Shared defaults (all lists, identify, attribute table) live on a [`menu` dataset part](./with-helper-data.md#menu-createdatasetpartmenucomponent) in the same tree (`findFirstLeafByType`). List rows merge `for: 'layer'`; identify and the table merge `for: 'item'`.
 
@@ -223,7 +283,7 @@ const divider = createMenuBuilder().divider().setLocation('menu').build();
 | `setId` | `(id: string)` | Needed for `updateMenu` / `removeMenu` |
 | `setName` | `(name: string)` | Label |
 | `setIcon` | `(mdiPath: string)` | Icon |
-| `setLocation` | `'extra' \| 'bottom' \| 'prebottom' \| 'menu'` | Placement |
+| `setLocation` | `'extra' \| 'title' \| 'bottom' \| 'prebottom' \| 'menu'` | Placement (`title` → panel header after-title) |
 | `setClick` | `fn \| string \| createMenuClickBuilder()` | Action |
 | `setHidden` | `boolean \| (ctx) => boolean` | Skip render when true |
 | `setDisabled` | `boolean \| (ctx) => boolean` | Visible, not clickable |
@@ -418,7 +478,7 @@ function onMapLoaded(map: MapSimple) {
 
 Register in `onMapLoaded` so map-scoped entries survive remount — see [UniversalRegistry components](/map/core/registry-components).
 
-Demo: Vue / React `#/dataset-menu`.
+Demo: Vue / React `#/dataset-menu` — collapsible **Demo guide** (lists each layer). Layer **byControl · LayerDetail title**: Fill bound / ★ Favorite → header on Detail; Detail / List only hidden there.
 
 ---
 
@@ -538,7 +598,7 @@ Per-layer Identify toggle (same click mode as [`IdentifyControl`](../module/Iden
 | **Needs** | `IdentifyControl` mounted; nearest sibling `type === 'identify'` |
 | **Auto** | `createGeoJsonDataset` (extra form) |
 
-**Options:** `location?: MenuActionLocation` (`'extra' \| 'menu' \| 'bottom' \| 'prebottom'`), `name`, `icon`, `hidden`, `disabled`, `order`.
+**Options:** `location?: MenuActionLocation` (`'extra' \| 'title' \| 'menu' \| 'bottom' \| 'prebottom'`), `name`, `icon`, `hidden`, `disabled`, `order`.
 
 **Hidden** when `isIdentifyForListMenuHidden(ctx)` (no identify sibling, missing `mapId`, or `IdentifyControl` not registered on that map). Extra `options.hidden` is composed after that check.
 
@@ -564,7 +624,7 @@ Identify / feature row action: fly to the feature geometry and highlight it.
 | | |
 | --- | --- |
 | **Signature** | `() => MenuAction` |
-| **Location** | `menu` |
+| **Location** | `menu` (default — shows under row ⋮ via `DatasetMenus`) |
 | **Id** | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`) |
 | **Default name** | `Fly to` |
 | **Click** | `fitBounds` on `value.geometry` + `highlight` (`key: 'identify'`) |
@@ -583,13 +643,13 @@ Identify / feature row: open detail panel and highlight the feature.
 | | |
 | --- | --- |
 | **Signature** | `(fields: FieldFeaturesDef) => MenuAction` |
-| **Location** | `menu` |
+| **Location** | `menu` (default — shows under row ⋮ via `DatasetMenus`) |
 | **Id** | `LIST_VIEW_MENU_ID.item.showDetail` (`show-detail`) |
 | **Default name** | `Detail` |
 | **Click** | `addComponent` → `layer-detail` + `highlight` (`key: 'detail'`) |
 | **Needs** | `ComponentManagementControl`; `fields` define labels/keys for `value` |
 
-The Layer Detail popup renders the same item menus as Identify / Attribute Table in its header, but **omits** `show-detail` (the popup itself).
+The Layer Detail popup renders layer `location: 'title'` menus then the same item menus as Identify / Attribute Table in `#after-title` / `afterTitle`, but **omits** `show-detail` (the popup itself).
 
 ```ts
 identify.addMenus([

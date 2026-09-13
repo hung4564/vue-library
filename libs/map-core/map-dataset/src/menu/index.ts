@@ -64,7 +64,23 @@ export {
   listViewIdentifyMenuId,
 } from './items';
 export type { IdentifyForListMenuOptions, ListViewGroupOption } from './items';
-export { getMenuItemLocation, resolveMenuItemLocation } from './location';
+export {
+  getMenuItemLocation,
+  mergeMenusById,
+  partitionMenuActions,
+  resolveMenuItemLocation,
+} from './location';
+export type { PartitionedMenuActions } from './location';
+export {
+  MENU_CONTROL_ID,
+  applyMenuControlPlacement,
+  getEffectiveMenuItemLocation,
+} from './placement';
+export type {
+  MenuByControl,
+  MenuControlId,
+  MenuControlPlacement,
+} from './placement';
 export type {
   WithLayerItemActionType,
   WithLayerItemMenuComponentType,

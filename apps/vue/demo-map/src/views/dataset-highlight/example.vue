@@ -11,6 +11,7 @@ import {
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 import { loadHighlightDemoDatasets } from '../../data/loaders';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 loggerFactory.enable('map:highlight');
 const mapId = ref(getUUIDv4());
@@ -31,6 +32,7 @@ function onMapLoaded(map: MapSimple) {
     <LayerHighlight enableClick enableHover />
     <ComponentManagementControl />
     <ZoomControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

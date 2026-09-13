@@ -6,18 +6,48 @@ export default {
 
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
+import {
+  findSiblingOrNearestLeaf,
+  isListView,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { createMenuConditionContext, getResolvedMenus, handleMenuAction, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, type IdentifyResultGrouped, type IdentifyResultLayerItem, type IdentifyResultUpdatePayload } from '@hungpvq/map-dataset/identify';
+import {
+  createMenuConditionContext,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
+import {
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_CONTROL_LOCALE,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyResultGrouped,
+  type IdentifyResultLayerItem,
+  type IdentifyResultUpdatePayload,
+} from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { defaultMapProps, MapControlButton, ModuleContainer, UniversalRegistry, useCoordinate, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  MapControlButton,
+  ModuleContainer,
+  UniversalRegistry,
+  useCoordinate,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
 import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, reactive, ref } from 'vue';
-import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
+import { useMapDataset } from '../../store';
 
 const path = {
   boxSelect: mdiSelect,
@@ -28,9 +58,14 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.identify,
+}));
+
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 const { format: formatCoordinate } = useCoordinate(mapId.value);
+const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 
 const show = ref(false);
@@ -63,6 +98,22 @@ const currentPoint = computed(() => {
 });
 const hasSelectedPoint = computed(
   () => origin.latitude !== 0 || origin.longitude !== 0,
+);
+
+const titleLayer = computed(() => {
+  void getDatasetIds().value;
+  if (selectedLayerId.value === IDENTIFY_ALL_LAYERS_VALUE) return undefined;
+  const identifies =
+    getAllComponentsByType<IIdentifyView>('identify') || [];
+  const identify = identifies.find((view) => view.id === selectedLayerId.value);
+  if (!identify) return undefined;
+  return (
+    findSiblingOrNearestLeaf<IListViewUI>(identify, isListView) ?? identify
+  );
+});
+
+const titleMenus = computed(() =>
+  titleLayer.value ? getResolvedMenus(titleLayer.value, 'layer') : [],
 );
 
 function setShow(value: boolean) {
@@ -207,13 +258,22 @@ function onResultKeydown(event: KeyboardEvent) {
         @close="onClose"
         :title="trans('map.identify.title')"
       >
+        <template v-if="titleLayer" #after-title>
+          <DatasetMenus
+            :menus="titleMenus"
+            :data="titleLayer"
+            :mapId="mapId"
+            :locations="['title']"
+          />
+        </template>
         <template #extra-btn>
           <MapControlButton
             @click.stop="onUseMapClick"
             :active="isEventClickActive"
             :disabled="isEventClickActive"
             :title="trans('map.identify.map_click')"
-            variant="plain">
+            variant="plain"
+          >
             <SvgIcon size="16" type="mdi" :path="path.mapClick" />
           </MapControlButton>
           <MapControlButton
@@ -221,7 +281,8 @@ function onResultKeydown(event: KeyboardEvent) {
             :active="isEventClickBox"
             :disabled="isEventClickBox"
             :title="trans('map.identify.box_select')"
-            variant="plain">
+            variant="plain"
+          >
             <SvgIcon size="16" type="mdi" :path="path.boxSelect" />
           </MapControlButton>
         </template>
@@ -260,7 +321,10 @@ function onResultKeydown(event: KeyboardEvent) {
               aria-live="polite"
             >
               <div class="identify-control-state__content">
-                <div class="identify-control-state__loading" aria-hidden="true"></div>
+                <div
+                  class="identify-control-state__loading"
+                  aria-hidden="true"
+                ></div>
                 <span>{{ trans('map.identify.loading') }}</span>
               </div>
             </div>
@@ -320,17 +384,13 @@ function onResultKeydown(event: KeyboardEvent) {
                         class="identify-control-child-item__action"
                         @click.stop
                       >
-                        <template
-                          v-for="(menu, i) in getItemMenus(child.identify)"
-                          :key="i"
-                        >
-                          <DatasetMenuButton
-                            :item="menu"
-                            :data="child.identify"
-                            :mapId="mapId"
-                            @click="onMenuAction(child, menu, $event)"
-                          />
-                        </template>
+                        <DatasetMenus
+                          :menus="getItemMenus(child.identify)"
+                          :data="child.identify"
+                          :mapId="mapId"
+                          :value="child.data"
+                          :locations="['extra', 'menu']"
+                        />
                       </div>
                     </div>
                   </div>

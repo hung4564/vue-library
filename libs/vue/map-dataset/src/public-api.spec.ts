@@ -24,6 +24,7 @@ export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'installMapApp',
   'DatasetDetail',
   'DatasetMenuButton',
+  'DatasetMenus',
   'ExportGeo',
   'ExportGeoForm',
   'ExportGeoFormatMenu',

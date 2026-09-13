@@ -18,6 +18,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { loadDataManagementDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 type PagerState = {
   label: string;
@@ -192,6 +193,7 @@ export function DatasetDataManagementPage() {
             word-break: break-word;
           }
         `}</style>
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

@@ -1,8 +1,27 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import {
+  findSiblingOrNearestLeaf,
+  isListView,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { createMenuConditionContext, getResolvedMenus, handleMenuAction, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
-import { IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, type IdentifyResultGrouped, type IdentifyResultLayerItem, type IdentifyResultUpdatePayload } from '@hungpvq/map-dataset/identify';
+import {
+  createMenuConditionContext,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
+import {
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_CONTROL_LOCALE,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyResultGrouped,
+  type IdentifyResultLayerItem,
+  type IdentifyResultUpdatePayload,
+} from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -13,13 +32,15 @@ import {
   useLang,
   useMap,
   useRegisterMapControl,
-  useShow
+  useShow,
 } from '@hungpvq/react-map-core';
 import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { useMapDataset } from '../../store';
 
 const ICON_SIZE = 16 / 24;
 function runIdentifyAction(mapId: string, type: string, event?: unknown) {
@@ -34,6 +55,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
   });
   const { trans, setLocaleDefault } = useLang(mapId);
   const { format: formatCoordinate } = useCoordinate(mapId);
+  const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const [show, toggleShow] = useShow(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -123,6 +145,22 @@ export function IdentifyResultControl(props: WithMapPropType) {
 
   const hasSelectedPoint = origin.latitude !== 0 || origin.longitude !== 0;
 
+  const titleLayer = useMemo(() => {
+    void datasetVersion;
+    if (selectedLayerId === IDENTIFY_ALL_LAYERS_VALUE) return undefined;
+    const identifies = getAllComponentsByType<IIdentifyView>('identify') || [];
+    const identify = identifies.find((view) => view.id === selectedLayerId);
+    if (!identify) return undefined;
+    return (
+      findSiblingOrNearestLeaf<IListViewUI>(identify, isListView) ?? identify
+    );
+  }, [selectedLayerId, datasetVersion, getAllComponentsByType]);
+
+  const titleMenus = useMemo(
+    () => (titleLayer ? getResolvedMenus(titleLayer, 'layer') : []),
+    [titleLayer],
+  );
+
   function onClose() {
     toggleShow(false);
     runIdentifyAction(mapId, IDENTIFY_CONTROL.actionClose);
@@ -135,7 +173,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
       identify: IIdentifyView;
     },
     menu: MenuAction,
-    event?: React.MouseEvent | KeyboardEvent,
+    event?: React.MouseEvent | React.KeyboardEvent,
   ) {
     const nativeEvent =
       event && 'nativeEvent' in event ? event.nativeEvent : event;
@@ -177,6 +215,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
   }
 
   return (
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.identify }}>
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) =>
@@ -191,9 +230,20 @@ export function IdentifyResultControl(props: WithMapPropType) {
             title={trans('map.identify.title')}
             width={400}
             height={300}
+            afterTitle={
+              titleLayer ? (
+                <DatasetMenus
+                  menus={titleMenus}
+                  data={titleLayer}
+                  mapId={mapId}
+                  locations={['title']}
+                />
+              ) : undefined
+            }
             extraBtn={
               <>
-                <MapControlButton variant="plain"
+                <MapControlButton
+                  variant="plain"
                   active={isEventClickActive}
                   disabled={isEventClickActive}
                   title={trans('map.identify.map_click')}
@@ -207,7 +257,8 @@ export function IdentifyResultControl(props: WithMapPropType) {
                 >
                   <Icon path={mdiCursorPointer} size={ICON_SIZE} />
                 </MapControlButton>
-                <MapControlButton variant="plain"
+                <MapControlButton
+                  variant="plain"
                   active={isEventClickBox}
                   disabled={isEventClickBox}
                   title={trans('map.identify.box_select')}
@@ -265,9 +316,16 @@ export function IdentifyResultControl(props: WithMapPropType) {
                 onKeyDown={onResultKeydown}
               >
                 {loading ? (
-                  <div className="identify-control-state" role="status" aria-live="polite">
+                  <div
+                    className="identify-control-state"
+                    role="status"
+                    aria-live="polite"
+                  >
                     <div className="identify-control-state__content">
-                      <div className="identify-control-state__loading" aria-hidden="true" />
+                      <div
+                        className="identify-control-state__loading"
+                        aria-hidden="true"
+                      />
                       <span>{trans('map.identify.loading')}</span>
                     </div>
                   </div>
@@ -329,19 +387,13 @@ export function IdentifyResultControl(props: WithMapPropType) {
                                   className="identify-control-child-item__action"
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  {getItemMenus(child.identify).map(
-                                    (menu, i) => (
-                                      <DatasetMenuButton
-                                        key={i}
-                                        menu={menu}
-                                        item={child.identify}
-                                        mapId={mapId}
-                                        onClick={(event) =>
-                                          onMenuAction(child, menu, event)
-                                        }
-                                      />
-                                    ),
-                                  )}
+                                  <DatasetMenus
+                                    menus={getItemMenus(child.identify)}
+                                    data={child.identify}
+                                    mapId={mapId}
+                                    value={child.data}
+                                    locations={['extra', 'menu']}
+                                  />
                                 </div>
                               </div>
                             );
@@ -357,5 +409,6 @@ export function IdentifyResultControl(props: WithMapPropType) {
         ) : null
       }
     />
+    </MenuConditionProvider>
   );
 }

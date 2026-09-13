@@ -6,3 +6,4 @@ export {
   useMenuConditionSource,
 } from './menu/condition-context';
 export { default as DatasetMenuButton } from './menu/dataset-menu-button.vue';
+export { default as DatasetMenus } from './menu/dataset-menus.vue';

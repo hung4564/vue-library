@@ -14,6 +14,7 @@ import { useCallback, useRef, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './story-telling.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const GPS_TRACK = [
   { lng: 105.84146352698633, lat: 21.017689539749725, timestamp: 0 },
@@ -169,6 +170,7 @@ export function StoryTellingGpsPage() {
         <HomeControl />
         <MouseCoordinatesControl />
         <BaseMapControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
       <div className="story-panel">
         <h3>Story telling GPS</h3>

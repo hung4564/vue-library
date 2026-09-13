@@ -603,6 +603,8 @@ export const HIGHLIGHT_DEMO_DATASET_FACTORIES = [
   createFeatureStateHighlightWithGroup,
 ] as const;
 
+export { HIGHLIGHT_DEMO_HELP_SECTIONS } from './help';
+
 const HIGHLIGHT_VIEW_SOURCE: Array<{
   listName: string;
   title: string;

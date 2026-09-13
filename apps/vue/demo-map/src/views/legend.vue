@@ -15,6 +15,7 @@
         :key="index"
       />
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
@@ -33,6 +34,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { shallowRef } from 'vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);
 function onMapLoaded(map: MapSimple) {

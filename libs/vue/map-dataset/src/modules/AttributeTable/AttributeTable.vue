@@ -30,6 +30,7 @@ import {
   handleMenuAction,
   isMenuItemDisabled,
   isMenuItemHidden,
+  MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import {
   clearGeoExportActiveSource,
@@ -50,10 +51,15 @@ import {
 } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import { useMapDatasetHighlight } from '../../store';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.attributeTable,
+}));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const { setFeatureHighlight, getHighlightSource } = useMapDatasetHighlight(
   mapId.value,
@@ -240,6 +246,9 @@ const itemMenus = computed(() => {
     (menu) => menu.type !== 'divider' && !isMenuItemHidden(menu, ctx),
   );
 });
+const layerTitleMenus = computed(() =>
+  getResolvedMenus(props.layer, 'layer'),
+);
 const itemMenuConditionCtx = computed(() =>
   createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
 );
@@ -353,6 +362,14 @@ onUnmounted(() => {
         :title="title"
       >
         <template #title>{{ title }}</template>
+        <template #after-title>
+          <DatasetMenus
+            :menus="layerTitleMenus"
+            :data="layer"
+            :mapId="mapId"
+            :locations="['title']"
+          />
+        </template>
         <RegistryItem
           :componentKey="ATTRIBUTE_TABLE_COMPONENT_KEY.view"
           :defaultComponent="AttributeTableView"

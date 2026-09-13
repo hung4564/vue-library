@@ -32,6 +32,7 @@ import {
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function RegistryControlPage() {
   useDatasetRegistry();
@@ -74,6 +75,7 @@ export function RegistryControlPage() {
         <LayerHighlight />
 
         <RegistryControl position="top-right" show />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

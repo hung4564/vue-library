@@ -72,6 +72,7 @@ App/demos that mirror library UI should follow the same rule when building map c
 - Vue: SFC under `modules/`, Composition API hooks
 - React: TSX under matching module folders; hooks like `useMap`, `useMapInstance`, `useRegisterMapControl`
 - Shared styles: package `style.css` entries and documented CSS variables — change carefully
+- Dataset menu UI parity: **`DatasetMenus`** (+ `DatasetMenuButton`) in both adapters; same props (`menus`, `locations`, `data`, `value?`, `mapId`)
 
 ## React Vite demos
 

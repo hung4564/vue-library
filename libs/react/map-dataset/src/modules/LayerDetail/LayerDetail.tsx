@@ -3,15 +3,10 @@ import {
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
-  createMenuConditionContext,
   getItemMenuHost,
   getResolvedMenus,
-  handleMenuAction,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-  LIST_VIEW_MENU_ID,
+  MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
@@ -26,7 +21,8 @@ import { InputTextarea } from '@hungpvq/react-map-core/fields';
 import { mdiContentCopy } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, type ReactNode } from 'react';
-import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDatasetHighlight } from '../../store';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
@@ -127,41 +123,22 @@ export function LayerDetail({
     [view],
   );
 
-  const itemMenuConditionCtx = useMemo(
-    () =>
-      createMenuConditionContext(itemMenuHost ?? view, {
-        mapId,
-      }),
-    [itemMenuHost, view, mapId],
+  const layerTitleMenus = useMemo(
+    () => (view ? getResolvedMenus(view, 'layer') : []),
+    [view],
   );
 
-  /** Same item menus as Identify / Attribute Table, minus show-detail (this popup). */
   const itemMenus = useMemo(() => {
     if (!view) return [];
     return getResolvedMenus(view, 'item').filter(
-      (menu) =>
-        menu.type !== 'divider' &&
-        !('id' in menu && menu.id === LIST_VIEW_MENU_ID.item.showDetail) &&
-        !isMenuItemHidden(menu, itemMenuConditionCtx),
+      (menu) => menu.type !== 'divider',
     );
-  }, [view, itemMenuConditionCtx]);
+  }, [view]);
 
   function handleClose() {
     setFeatureHighlight(undefined, 'detail');
     toggleShow(false);
     onClose?.();
-  }
-
-  function onMenuAction(menu: MenuAction, event: React.MouseEvent) {
-    if (isMenuItemDisabled(menu, itemMenuConditionCtx)) return;
-    const host = itemMenuHost ?? view;
-    if (!host) return;
-    handleMenuAction(menu, {
-      event: event.nativeEvent,
-      layer: host,
-      mapId,
-      value: item,
-    });
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -176,7 +153,10 @@ export function LayerDetail({
     actions: [{ type: 'mapLayerDetail', run: () => toggleShow() }],
   });
 
+  const host = itemMenuHost ?? view;
+
   return (
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.layerDetail }}>
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
@@ -191,22 +171,24 @@ export function LayerDetail({
           {...panelBind}
           {...popupProps}
           title={trans('map.layer-control.info.title')}
-          extraBtn={
-            itemMenus.length ? (
+          afterTitle={
+            view ? (
               <>
-                {itemMenus.map((menu, index) => (
-                  <DatasetMenuButton
-                    key={menu.id || String(index)}
-                    menu={menu}
-                    item={itemMenuHost ?? view}
+                <DatasetMenus
+                  menus={layerTitleMenus}
+                  data={view}
+                  mapId={mapId}
+                  locations={['title']}
+                />
+                {host ? (
+                  <DatasetMenus
+                    menus={itemMenus}
+                    data={host}
                     mapId={mapId}
-                    disabled={isMenuItemDisabled(menu, itemMenuConditionCtx)}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onMenuAction(menu, event);
-                    }}
+                    value={item}
+                    locations={['title', 'extra', 'menu']}
                   />
-                ))}
+                ) : null}
               </>
             ) : undefined
           }
@@ -232,5 +214,6 @@ export function LayerDetail({
         </DraggableItemPopup>
       )}
     />
+    </MenuConditionProvider>
   );
 }

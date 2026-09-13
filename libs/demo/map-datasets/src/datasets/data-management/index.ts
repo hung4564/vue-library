@@ -569,3 +569,5 @@ export const DATA_MANAGEMENT_DEMO_DATASET_FACTORIES = [
   createDataManagementHttpCustomFormatDataset,
   createDataManagementMemoryStoreDataset,
 ] as const;
+
+export { DATA_MANAGEMENT_DEMO_HELP_SECTIONS } from './help';

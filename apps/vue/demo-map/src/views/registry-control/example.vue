@@ -37,6 +37,7 @@
       <LayerHighlight />
 
       <RegistryControl position="top-right" show />
+      <DemoHelpPanel />
     </Map>
 </template>
 
@@ -76,6 +77,7 @@ import {
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 </script>

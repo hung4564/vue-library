@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const MODES: ButtonInMobile[] = ['button', 'toolbar', 'menu'];
 
@@ -88,6 +89,7 @@ export function MobileMenuPage() {
             <HomeControl />
             <MouseCoordinatesControl />
             <BaseMapControl position="bottom-left" />
+            <DemoHelpPanel />
           </Map>
         </div>
       </div>

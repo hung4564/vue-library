@@ -21,6 +21,7 @@
     />
     <PrintControl position="top-left" control-layout="toolbar" />
     <PrintAdvancedControl position="top-left" control-layout="toolbar" />
+    <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
@@ -43,6 +44,7 @@ import { LegendControl } from '@hungpvq/vue-map-core';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 </script>
 <style>
 * {

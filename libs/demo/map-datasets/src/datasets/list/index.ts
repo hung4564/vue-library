@@ -433,3 +433,5 @@ export const LIST_DEMO_DATASET_FACTORIES = [
   createListWithSublistDataset,
   createListWithSublistMenuDataset,
 ] as const;
+
+export { LIST_DEMO_HELP_SECTIONS } from './help';

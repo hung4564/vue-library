@@ -1,14 +1,22 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { createMenuConditionContext, getResolvedMenus, isMenuItemDisabled, isMenuItemHidden } from '@hungpvq/map-dataset/menu';
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
+import {
+  createMenuConditionContext,
+  getResolvedMenus,
+  partitionMenuActions,
+} from '@hungpvq/map-dataset/menu';
 import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
 import { MapControlButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
 
-import { mdiDelete, mdiDotsVertical, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
+import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMenuConditionContext } from '../../extra/menu/condition-context';
-import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { LayerSubItem } from './layer-sub-item';
 
 const ICON_SIZE = '14px';
@@ -20,9 +28,9 @@ export function LayerItem({
   disabledMove,
   disabledCreateGroup,
   searchQuery,
+  getGroups,
+  menuContext,
   onRemove,
-  onAction,
-  onContextMenu,
   onTitleClick,
 }: {
   item: IListViewUI;
@@ -31,17 +39,9 @@ export function LayerItem({
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
   searchQuery?: string;
+  getGroups?: () => ListViewGroupOption[];
+  menuContext?: MenuContextSource;
   onRemove?: (item: IListViewUI) => void;
-  onAction?: (payload: {
-    event: React.MouseEvent;
-    action: MenuAction<IListViewUI>;
-    item: IListViewUI;
-  }) => void;
-  onContextMenu?: (payload: {
-    event: React.MouseEvent;
-    actions: MenuAction<IListViewUI>[];
-    item: IListViewUI;
-  }) => void;
   onTitleClick?: () => void;
 }) {
   const [legendShow, toggleLegend] = useShow(item.config?.init_show_legend ?? false);
@@ -59,40 +59,34 @@ export function LayerItem({
   }, [item, item.id]);
 
   const injectedMenuContext = useMenuConditionContext();
+  const rowMenuContexts = useMemo(
+    () =>
+      [
+        {
+          readonly,
+          disabledMove,
+          disabledCreateGroup,
+        },
+        menuContext,
+      ] as MenuContextSource[],
+    [readonly, disabledMove, disabledCreateGroup, menuContext],
+  );
   const conditionCtx = createMenuConditionContext(item, {
     mapId,
-    context: [
-      {
-        readonly,
-        disabledMove,
-        disabledCreateGroup,
-      },
-      injectedMenuContext,
-    ],
+    context: [injectedMenuContext, ...rowMenuContexts],
   });
 
   const menus = useMemo(
     () => getResolvedMenus(item, 'layer') as MenuAction<IListViewUI>[],
     [item],
   );
-  const extraMenus = menus
-    .filter((x) => !x.location || x.location === 'extra')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const preBottomMenus = menus
-    .filter((x) => x.location === 'prebottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const bottomMenus = menus
-    .filter((x) => x.location === 'bottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-  const contentMenus = menus
-    .filter((x) => x.location === 'menu')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const partitioned = useMemo(
+    () => partitionMenuActions(menus, conditionCtx),
+    [menus, conditionCtx],
+  );
   const showBottom =
-    !readonly && (!item.config?.disabled_opacity || bottomMenus.length > 0);
+    !readonly &&
+    (!item.config?.disabled_opacity || partitioned.bottom.length > 0);
   const nameParts = useMemo(
     () => splitSearchHighlight(item.getName?.() ?? '', searchQuery ?? ''),
     [item, searchQuery],
@@ -128,16 +122,14 @@ export function LayerItem({
         </span>
         <div className="v-spacer" />
         <div className="layer-item__title-action">
-          {extraMenus.map((menu, i) => (
-            <DatasetMenuButton
-              key={i}
-              menu={menu}
-              item={item}
-              mapId={mapId}
-              disabled={isMenuItemDisabled(menu, conditionCtx)}
-              onAction={onAction}
-            />
-          ))}
+          <DatasetMenus
+            menus={menus}
+            data={item}
+            mapId={mapId}
+            locations={['extra', 'menu']}
+            getGroups={getGroups}
+            menuContext={rowMenuContexts}
+          />
           {!readonly && !item.config?.disabled_delete && (
             <MapControlButton
               variant="plain"
@@ -147,31 +139,16 @@ export function LayerItem({
               <Icon path={mdiDelete} size={ICON_SIZE} />
             </MapControlButton>
           )}
-          {contentMenus.length > 0 && (
-            <MapControlButton
-              variant="plain"
-              size="small"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                onContextMenu?.({ event, actions: contentMenus, item });
-              }}
-            >
-              <Icon path={mdiDotsVertical} size={ICON_SIZE} />
-            </MapControlButton>
-          )}
           {!showBottom && (
             <>
-              {bottomMenus.map((menu, i) => (
-                <DatasetMenuButton
-                  key={i}
-                  menu={menu}
-                  item={item}
-                  mapId={mapId}
-                  disabled={isMenuItemDisabled(menu, conditionCtx)}
-                  onAction={onAction}
-                />
-              ))}
+              <DatasetMenus
+                menus={menus}
+                data={item}
+                mapId={mapId}
+                locations={['bottom']}
+                getGroups={getGroups}
+                menuContext={rowMenuContexts}
+              />
               {item.legend && (
                 <MapControlButton
                   variant="plain"
@@ -190,27 +167,23 @@ export function LayerItem({
       </div>
       {showBottom && (
         <div className="layer-item__action">
-          {preBottomMenus.map((menu, i) => (
-            <DatasetMenuButton
-              key={i}
-              menu={menu}
-              item={item}
-              mapId={mapId}
-              disabled={isMenuItemDisabled(menu, conditionCtx)}
-              onAction={onAction}
-            />
-          ))}
+          <DatasetMenus
+            menus={menus}
+            data={item}
+            mapId={mapId}
+            locations={['prebottom']}
+            getGroups={getGroups}
+            menuContext={rowMenuContexts}
+          />
           <div className="v-spacer" />
-          {bottomMenus.map((menu, i) => (
-            <DatasetMenuButton
-              key={i}
-              menu={menu}
-              item={item}
-              mapId={mapId}
-              disabled={isMenuItemDisabled(menu, conditionCtx)}
-              onAction={onAction}
-            />
-          ))}
+          <DatasetMenus
+            menus={menus}
+            data={item}
+            mapId={mapId}
+            locations={['bottom']}
+            getGroups={getGroups}
+            menuContext={rowMenuContexts}
+          />
           {children.length > 0 && (
             <MapControlButton
               variant="plain"
@@ -257,8 +230,8 @@ export function LayerItem({
               readonly={readonly}
               disabledMove={disabledMove}
               disabledCreateGroup={disabledCreateGroup}
-              onAction={onAction}
-              onContextMenu={onContextMenu}
+              getGroups={getGroups}
+              menuContext={menuContext}
             />
           ))}
         </div>

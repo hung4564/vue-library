@@ -17,6 +17,7 @@ import {
 import { reactive, ref } from 'vue';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 
@@ -111,6 +112,7 @@ async function next(state: PagerState) {
         </div>
       </section>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

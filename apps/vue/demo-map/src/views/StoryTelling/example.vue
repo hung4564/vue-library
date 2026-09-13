@@ -28,6 +28,7 @@ import {
   createZoomAction,
 } from './helper-action';
 import { useMapStorytelling } from './useStorytelling';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 const mapRef = ref();
 const mapId = ref('');
 function onMapLoaded(_map: MapSimple) {
@@ -156,6 +157,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
         </div>
       </MapCard>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

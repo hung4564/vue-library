@@ -24,6 +24,7 @@ import {
   handleMenuAction,
   isMenuItemDisabled,
   isMenuItemHidden,
+  MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import {
   clearGeoExportActiveSource,
@@ -46,6 +47,8 @@ import {
 } from '@hungpvq/react-map-core';
 import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDatasetHighlight } from '../../store';
 import { AttributeTableView } from './AttributeTableView';
 
@@ -287,6 +290,7 @@ export function AttributeTable(props: AttributeTableProps) {
             menu.type !== 'divider' &&
             !isMenuItemHidden(menu, itemMenuConditionCtx),
         );
+  const layerTitleMenus = getResolvedMenus(props.layer, 'layer');
 
   if (!controller) return null;
 
@@ -344,6 +348,9 @@ export function AttributeTable(props: AttributeTableProps) {
   };
 
   return (
+    <MenuConditionProvider
+      value={{ control: MENU_CONTROL_ID.attributeTable }}
+    >
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
@@ -357,6 +364,14 @@ export function AttributeTable(props: AttributeTableProps) {
             toggleShow(v);
             if (!v) clearHighlight();
           }}
+          afterTitle={
+            <DatasetMenus
+              menus={layerTitleMenus}
+              data={props.layer}
+              mapId={mapId}
+              locations={['title']}
+            />
+          }
           {...bind}
           {...panelBind}
         >
@@ -369,5 +384,6 @@ export function AttributeTable(props: AttributeTableProps) {
         </DraggableItemPopup>
       )}
     />
+    </MenuConditionProvider>
   );
 }

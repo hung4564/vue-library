@@ -6,6 +6,7 @@
       <BaseMapControl position="bottom-left" />
       <ZoomControl />
       <HomeControl />
+      <DemoHelpPanel />
     </Map>
 
     <div class="sample-worker-panel">
@@ -43,6 +44,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { onBeforeUnmount, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import {
   runSampleSumRange,
   terminateSampleWorker,

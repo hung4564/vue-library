@@ -44,6 +44,7 @@ import SampleAttributeTableToolbar from './sample-attribute-table-toolbar.vue';
 import SampleAttributeTableView from './sample-attribute-table-view.vue';
 import SampleAttributeTableCell from './sample-attribute-table-cell.vue';
 import SampleAttributeTableHeader from './sample-attribute-table-header.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const SampleCell = markRaw(SampleAttributeTableCell);
 const SampleHeader = markRaw(SampleAttributeTableHeader);
@@ -377,6 +378,7 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
         </div>
       </section>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

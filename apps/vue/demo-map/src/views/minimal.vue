@@ -3,6 +3,7 @@
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <LayerControl position="top-left" show />
+    <DemoHelpPanel />
   </Map>
 </template>
 
@@ -16,6 +17,7 @@ import {
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
