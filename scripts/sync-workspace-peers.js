@@ -1,8 +1,10 @@
 /**
  * After a fixed-group version bump, rewrite workspace consumers' dep ranges
- * to match the new line (Nx does not update peerDependencies across groups).
+ * to match the new line (Nx does not update peerDependencies).
  *
- * Range style matches nx.json versionPrefix "^" → ^MAJOR.0.0 (accept MAJOR.x.x)
+ * Range: ^MAJOR.MINOR.0 (e.g. 1.2.0 → ^1.2.0).
+ * Rejects older minors that lack APIs the adapters already import.
+ * Aligns with nx.json versionPrefix "^" (Nx writes ^<newVersion> for deps).
  *
  * Usage:
  *   node scripts/sync-workspace-peers.js draggable
@@ -62,11 +64,11 @@ const cfg = GROUPS[group];
 const { version } = JSON.parse(
   fs.readFileSync(path.join(root, cfg.leadPkg), 'utf8'),
 );
-const [major] = version.split('.');
-if (major == null) {
+const [major, minor] = version.split('.');
+if (major == null || minor == null) {
   throw new Error(`Unexpected version in ${cfg.leadPkg}: ${version}`);
 }
-const range = `^${major}.0.0`;
+const range = `^${major}.${minor}.0`;
 const names = new Set(cfg.packages);
 
 function walkPackageJson(dir, out = []) {

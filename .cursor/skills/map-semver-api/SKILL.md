@@ -62,8 +62,8 @@ Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORT
 
 - Alias: `export { Old as New }`, mark `Old` `@deprecated` for ≥1 minor, remove in a later **major**
 - Prefer adding over renaming protocol strings
-- Bumping `@hungpvq/map-core` **minor/major** usually requires same-release bump of adapters + dataset + draw (`~1.0.1` peers allow patch-only drift). Do not publish a breaking/minor core alone.
-- Prefer in-family peers `~1.0.1` (not long-lived exact `1.0.1`).
+- Bumping `@hungpvq/map-core` **minor/major** usually requires same-release bump of adapters + dataset + draw (fixed map group + `^` peers). Do not publish a breaking/minor core alone.
+- Prefer in-family peers `^MAJOR.MINOR.0` (e.g. `^1.0.0`), not exact pins or `>=0.0.1`.
 
 ## Map chrome: `buttonInMobile`
 

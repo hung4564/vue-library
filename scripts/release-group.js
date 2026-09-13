@@ -11,7 +11,7 @@
  *
  * Flow:
  *   1) nx release version  (no git yet)
- *   2) sync-workspace-peers (consumers → ^MAJOR.0.0 / 1.x.x)
+ *   2) sync-workspace-peers (consumers → ^MAJOR.MINOR.0)
  *   3) docs sync (draggable) + site build/push
  *   4) nx release changelog + git commit/tag/push via Nx
  *   5) optional local publish (else CI on tag push)
@@ -174,7 +174,7 @@ if (opts.dryRun) {
 const version = readVersion(cfg.leadPkg);
 const expectedTag = `${opts.group}@${version}`;
 
-// 2) Sync consumers' peer/deps to ~MAJOR.MINOR.0 (cross-group; Nx skips peers)
+// 2) Sync consumers' peer/deps to ^MAJOR.MINOR.0 (Nx skips peerDependencies)
 runNode(path.join(__dirname, 'sync-workspace-peers.js'), [opts.group]);
 
 // 3) Docs sync (draggable markers)

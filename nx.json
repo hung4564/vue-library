@@ -98,7 +98,7 @@
     "version": {
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true,
-      "updateDependents": "never",
+      "updateDependents": "auto",
       "versionPrefix": "^",
       "manifestRootsToUpdate": ["{projectRoot}"],
       "git": {
@@ -214,7 +214,7 @@
         "projectsRelationship": "independent",
         "releaseTagPattern": "{projectName}@{version}",
         "version": {
-          "updateDependents": "never",
+          "updateDependents": "auto",
           "versionPrefix": "^"
         },
         "changelog": {
