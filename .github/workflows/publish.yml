@@ -106,10 +106,26 @@ jobs:
           TAG: ${{ steps.meta.outputs.tag }}
           GROUP: ${{ steps.meta.outputs.group }}
 
+      - name: Check npm publish token
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "::error::Missing secret NPM_ACCESS_TOKEN."
+            echo "Create an npm Automation token (or Granular Access Token with Read+Write for @hungpvq/*),"
+            echo "then add it as repo secret NPM_ACCESS_TOKEN."
+            echo "Token user must be maintainer/owner of the @hungpvq packages on npmjs.com."
+            exit 1
+          fi
+          echo "NPM_ACCESS_TOKEN is set (${#NODE_AUTH_TOKEN} chars)."
+
       - name: Publish packages (${{ steps.meta.outputs.group }})
         run: npx nx release publish --group=${{ steps.meta.outputs.group }} --yes
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          # Provenance needs a token that can publish + id-token: write (already set).
+          # If publish still fails with 403, regenerate token type/scope on npm — not git push.
           NPM_CONFIG_PROVENANCE: true
           NX_SKIP_NX_CACHE: true

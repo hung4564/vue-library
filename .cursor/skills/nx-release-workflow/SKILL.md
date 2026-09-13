@@ -61,7 +61,9 @@ npm run draggable:release:local
 
 After release, GitHub Actions Publish matches tags `draggable@*` / `map@*` (same as `nx.json` `releaseTagPattern`) and runs `nx release publish --group=…`.
 
-`nx release changelog` also writes each package `CHANGELOG.md` and creates/updates a **GitHub Release** (`createRelease: "github"`). Needs `GH_TOKEN` / `GITHUB_TOKEN` (or `gh auth login`) and git push enabled.
+**npm auth (CI):** repo secret `NPM_ACCESS_TOKEN` must be an npm **Automation** (or granular) token whose account can publish `@hungpvq/*`. `403` / “no permission” on publish is almost always this secret or org access — not git push. Provenance needs `permissions.id-token: write` (already in `publish.yml`).
+
+`nx release changelog` also writes each package `CHANGELOG.md` and creates/updates a **GitHub Release** (`createRelease: "github"`). Needs `GH_TOKEN` / `GITHUB_TOKEN` (or `gh auth login`) and git push enabled when releasing locally.
 
 **Bootstrap:** with conventional commits, Nx resolves the current version from git tags. If `package.json` is ahead of the latest `draggable@*` / `map@*` tag, create a one-time align tag (e.g. `git tag draggable@1.1.0`) before releasing.
 
