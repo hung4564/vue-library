@@ -16,8 +16,37 @@ export type DragStoreNotify = (path?: string | string[]) => void;
 /** Framework may wrap the object (e.g. Vue `reactive`); return type is intentionally loose. */
 export type DragStoreMakeReactive = <T extends object>(value: T) => T | object;
 
-let notify: DragStoreNotify = () => undefined;
-let makeReactive: DragStoreMakeReactive = (value) => value;
+type DragStoreRuntimeConfig = {
+  notify: DragStoreNotify;
+  makeReactive: DragStoreMakeReactive;
+};
+
+const DRAG_STORE_CONFIG_KEY = '__hungpvq_drag_store_config__';
+
+/**
+ * Keep runtime config on `globalThis` so Vite optimizeDeps / duplicate
+ * `@hungpvq/draggable` module instances still share one configureDragStore.
+ */
+function getDragStoreConfig(): DragStoreRuntimeConfig {
+  const g = globalThis as typeof globalThis & {
+    [DRAG_STORE_CONFIG_KEY]?: DragStoreRuntimeConfig;
+  };
+  if (!g[DRAG_STORE_CONFIG_KEY]) {
+    g[DRAG_STORE_CONFIG_KEY] = {
+      notify: () => undefined,
+      makeReactive: (value) => value,
+    };
+  }
+  return g[DRAG_STORE_CONFIG_KEY]!;
+}
+
+function notify(path?: string | string[]) {
+  getDragStoreConfig().notify(path);
+}
+
+function makeReactive<T extends object>(value: T): T | object {
+  return getDragStoreConfig().makeReactive(value);
+}
 
 /**
  * Configure framework-specific store behavior before first use.
@@ -28,8 +57,9 @@ export function configureDragStore(options: {
   notify?: DragStoreNotify;
   makeReactive?: DragStoreMakeReactive;
 }) {
-  if (options.notify) notify = options.notify;
-  if (options.makeReactive) makeReactive = options.makeReactive;
+  const cfg = getDragStoreConfig();
+  if (options.notify) cfg.notify = options.notify;
+  if (options.makeReactive) cfg.makeReactive = options.makeReactive;
 }
 
 export const useDragStore = defineStore('drag:core', () => {

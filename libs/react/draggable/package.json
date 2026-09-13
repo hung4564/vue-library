@@ -17,6 +17,8 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "sideEffects": [
+    "./index.js",
+    "./index.cjs",
     "**/*.css",
     "**/*.scss"
   ],
@@ -32,8 +34,8 @@
   },
   "peerDependencies": {
     "@hungpvq/draggable": "^1.0.0",
-    "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/shared-store": ">=0.0.1",
+    "@hungpvq/shared": "^0.3.0",
+    "@hungpvq/shared-store": "^0.2.0",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.2.0",
     "lodash": "^4.17.21",

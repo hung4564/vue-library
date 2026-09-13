@@ -31,6 +31,6 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/shared-store": ">=0.0.1"
+    "@hungpvq/shared-store": "^0.2.0"
   }
 }
