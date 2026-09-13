@@ -8,6 +8,7 @@ export interface BottomModuleProps {
   containerId: string;
   itemId: string;
   title?: ReactNode;
+  afterTitle?: ReactNode;
   children?: ReactNode;
 }
 
@@ -15,12 +16,17 @@ export function BottomModule({
   containerId,
   itemId,
   title,
+  afterTitle,
   children,
 }: BottomModuleProps) {
   useContainerReactive(containerId);
   const { getShow } = useBottomContainer(containerId);
   const { getItemAction } = useDragContainer(containerId);
   const titleTo = useMemo(() => `bottom-title-${containerId}`, [containerId]);
+  const afterTitleTo = useMemo(
+    () => `bottom-after-title-${containerId}`,
+    [containerId],
+  );
   const contentTo = useMemo(
     () => `bottom-content-${containerId}`,
     [containerId],
@@ -34,6 +40,7 @@ export function BottomModule({
 
   const [portalTargets, setPortalTargets] = useState<{
     title?: HTMLElement;
+    afterTitle?: HTMLElement;
     content?: HTMLElement;
   }>({});
 
@@ -45,9 +52,12 @@ export function BottomModule({
 
     const resolveTargets = () => {
       const nextTitle = document.getElementById(titleTo) ?? undefined;
+      const nextAfterTitle =
+        document.getElementById(afterTitleTo) ?? undefined;
       const nextContent = document.getElementById(contentTo) ?? undefined;
       setPortalTargets({
         title: nextTitle,
+        afterTitle: nextAfterTitle,
         content: nextContent,
       });
       return !!(nextTitle && nextContent);
@@ -55,7 +65,6 @@ export function BottomModule({
 
     if (resolveTargets()) return;
 
-    // Shell may appear after this commit on first open — observe until hosts exist.
     const observer = new MutationObserver(() => {
       if (resolveTargets()) observer.disconnect();
     });
@@ -67,7 +76,7 @@ export function BottomModule({
       cancelAnimationFrame(frameId);
       observer.disconnect();
     };
-  }, [isCurrentShow, titleTo, contentTo, shellCardKey]);
+  }, [isCurrentShow, titleTo, afterTitleTo, contentTo, shellCardKey]);
 
   if (!isCurrentShow) return null;
 
@@ -76,6 +85,9 @@ export function BottomModule({
       {title &&
         portalTargets.title &&
         createPortal(title, portalTargets.title)}
+      {afterTitle &&
+        portalTargets.afterTitle &&
+        createPortal(afterTitle, portalTargets.afterTitle)}
       {children &&
         portalTargets.content &&
         createPortal(children, portalTargets.content)}

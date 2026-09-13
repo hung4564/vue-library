@@ -343,6 +343,9 @@ function init() {
                     </slot>
                   </span>
                 </template>
+                <template #after-title>
+                  <slot name="after-title"></slot>
+                </template>
                 <template #pre-title>
                   <div v-if="draggable" class="draggable-popup-drag-container">
                     <DragIcon :size="16" />

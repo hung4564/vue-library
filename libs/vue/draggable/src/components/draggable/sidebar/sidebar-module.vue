@@ -3,6 +3,9 @@
     <Teleport v-if="hasSlotTitle && titleEl" :to="titleEl" defer>
       <slot name="title" />
     </Teleport>
+    <Teleport v-if="hasSlotAfterTitle && afterTitleEl" :to="afterTitleEl" defer>
+      <slot name="after-title" />
+    </Teleport>
     <Teleport v-if="contentEl" :to="contentEl" defer>
       <slot />
     </Teleport>
@@ -40,10 +43,14 @@ const cards = useDragComponent();
 const titleTo = computed(
   () => `#sidebar-title-${c_containerId.value}-${props.location}`,
 );
+const afterTitleTo = computed(
+  () => `#sidebar-after-title-${c_containerId.value}-${props.location}`,
+);
 const contentTo = computed(
   () => `#sidebar-content-${c_containerId.value}-${props.location}`,
 );
 const hasSlotTitle = computed(() => !!slots['title']);
+const hasSlotAfterTitle = computed(() => !!slots['after-title']);
 const isCurrentShow = computed(() => {
   return (
     !!props.containerId &&
@@ -56,23 +63,28 @@ const isCurrentShow = computed(() => {
 /** Prevent Teleport from patching after targets are torn down (HMR / parent cleanup). */
 const alive = ref(true);
 const titleEl = ref<Element | null>(null);
+const afterTitleEl = ref<Element | null>(null);
 const contentEl = ref<Element | null>(null);
 
 function resolveTargets() {
   if (!alive.value || !isCurrentShow.value) {
     titleEl.value = null;
+    afterTitleEl.value = null;
     contentEl.value = null;
     return;
   }
   const nextTitle = document.querySelector(titleTo.value);
+  const nextAfterTitle = document.querySelector(afterTitleTo.value);
   const nextContent = document.querySelector(contentTo.value);
   titleEl.value = nextTitle?.isConnected ? nextTitle : null;
+  afterTitleEl.value = nextAfterTitle?.isConnected ? nextAfterTitle : null;
   contentEl.value = nextContent?.isConnected ? nextContent : null;
 }
 
 async function remountTargets() {
   // Detach Teleport first so Vue does not patch against removed DOM nodes.
   titleEl.value = null;
+  afterTitleEl.value = null;
   contentEl.value = null;
   await nextTick();
   resolveTargets();
@@ -81,7 +93,7 @@ async function remountTargets() {
 onMounted(() => {
   nextTick(resolveTargets);
 });
-watch([titleTo, contentTo, isCurrentShow], () => {
+watch([titleTo, afterTitleTo, contentTo, isCurrentShow], () => {
   nextTick(resolveTargets);
 });
 watch(
@@ -93,6 +105,7 @@ watch(
 onBeforeUnmount(() => {
   alive.value = false;
   titleEl.value = null;
+  afterTitleEl.value = null;
   contentEl.value = null;
 });
 </script>

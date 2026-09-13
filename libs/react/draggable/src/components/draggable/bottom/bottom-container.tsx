@@ -109,6 +109,7 @@ export function BottomContainer() {
   }, [visible, menuOpen, containerId]);
 
   const titleTo = `bottom-title-${containerId}`;
+  const afterTitleTo = `bottom-after-title-${containerId}`;
   const contentTo = `bottom-content-${containerId}`;
   const shellStyle = useMemo(
     () => ({
@@ -135,6 +136,7 @@ export function BottomContainer() {
           <div className="draggable-bottom">
             <Header
               title={<span id={titleTo} />}
+              afterTitle={<span id={afterTitleTo} />}
               extraBtn={
                 <>
                   {showSwitcher && (

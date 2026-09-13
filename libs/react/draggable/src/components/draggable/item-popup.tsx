@@ -81,6 +81,7 @@ export interface DraggableItemPopupProps {
   }) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableItemPopup({
@@ -111,6 +112,7 @@ export function DraggableItemPopup({
   onBoundsChange,
   children,
   extraBtn,
+  afterTitle,
 }: DraggableItemPopupProps) {
   const containerId = useContainerId(propContainerId);
   const { show, setShow, open, close } = useShow(
@@ -450,6 +452,7 @@ export function DraggableItemPopup({
           {!disabledHeader && (
             <Header
               title={<span id={titleId}>{title}</span>}
+              afterTitle={afterTitle}
               preTitle={
                 <div className="draggable-popup-drag-container">
                   <DragIcon size={'16px'} />

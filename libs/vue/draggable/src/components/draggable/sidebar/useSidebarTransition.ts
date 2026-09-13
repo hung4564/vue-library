@@ -11,8 +11,11 @@ export function useSidebarTransition(
   const titleTo = computed(
     () => `sidebar-title-${containerId.value}-${props.location}`,
   );
+  const afterTitleTo = computed(
+    () => `sidebar-after-title-${containerId.value}-${props.location}`,
+  );
   const contentTo = computed(
     () => `sidebar-content-${containerId.value}-${props.location}`,
   );
-  return { isVertical, titleTo, contentTo };
+  return { isVertical, titleTo, afterTitleTo, contentTo };
 }

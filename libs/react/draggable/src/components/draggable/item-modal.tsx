@@ -81,6 +81,7 @@ export interface DraggableModalProps {
   }) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableModal({
@@ -112,6 +113,7 @@ export function DraggableModal({
   onBoundsChange,
   children,
   extraBtn,
+  afterTitle,
 }: DraggableModalProps) {
   const containerId = useContainerId(propContainerId);
   const { show, setShow, open, close } = useShow(
@@ -430,6 +432,7 @@ export function DraggableModal({
             {!disabledHeader && (
               <Header
                 title={<span id={titleId}>{title}</span>}
+                afterTitle={afterTitle}
                 preTitle={
                   draggable ? (
                     <div className="draggable-popup-drag-container">

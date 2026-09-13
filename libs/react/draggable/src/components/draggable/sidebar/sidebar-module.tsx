@@ -8,6 +8,7 @@ export interface SidebarModuleProps {
   itemId: string;
   location: LocationSideBar;
   title?: ReactNode;
+  afterTitle?: ReactNode;
   children?: ReactNode;
 }
 
@@ -16,12 +17,17 @@ export function SidebarModule({
   itemId,
   location,
   title,
+  afterTitle,
   children,
 }: SidebarModuleProps) {
   useContainerReactive(containerId);
   const { getShowForLocation } = useSideBarContainer(containerId);
   const titleTo = useMemo(
     () => `sidebar-title-${containerId}-${location}`,
+    [containerId, location],
+  );
+  const afterTitleTo = useMemo(
+    () => `sidebar-after-title-${containerId}-${location}`,
     [containerId, location],
   );
   const contentTo = useMemo(
@@ -39,6 +45,7 @@ export function SidebarModule({
 
   const [portalTargets, setPortalTargets] = useState<{
     title?: HTMLElement;
+    afterTitle?: HTMLElement;
     content?: HTMLElement;
   }>({});
 
@@ -51,6 +58,7 @@ export function SidebarModule({
     const resolveTargets = () => {
       setPortalTargets({
         title: document.getElementById(titleTo) ?? undefined,
+        afterTitle: document.getElementById(afterTitleTo) ?? undefined,
         content: document.getElementById(contentTo) ?? undefined,
       });
     };
@@ -64,7 +72,7 @@ export function SidebarModule({
       const frameId = requestAnimationFrame(resolveTargets);
       return () => cancelAnimationFrame(frameId);
     }
-  }, [isCurrentShow, titleTo, contentTo]);
+  }, [isCurrentShow, titleTo, afterTitleTo, contentTo]);
 
   if (!isCurrentShow) return null;
 
@@ -73,6 +81,9 @@ export function SidebarModule({
       {title &&
         portalTargets.title &&
         createPortal(title, portalTargets.title)}
+      {afterTitle &&
+        portalTargets.afterTitle &&
+        createPortal(afterTitle, portalTargets.afterTitle)}
       {children &&
         portalTargets.content &&
         createPortal(children, portalTargets.content)}

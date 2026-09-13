@@ -11,7 +11,12 @@ export default {
     <div class="draggable-header__content">
       <slot name="pre-title"> </slot>
       <div class="draggable-header__title">
-        <slot name="title"> </slot>
+        <div class="draggable-header__title-text">
+          <slot name="title"> </slot>
+        </div>
+        <div class="draggable-header__after-title">
+          <slot name="after-title"> </slot>
+        </div>
       </div>
       <div class="map-spacer"></div>
       <slot name="extra-btn"></slot>

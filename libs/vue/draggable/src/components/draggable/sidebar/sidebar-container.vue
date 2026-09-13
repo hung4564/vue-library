@@ -74,6 +74,7 @@ const {
   toggleExpand: onToggleExpand,
   isVertical,
   titleTo,
+  afterTitleTo,
   contentTo,
 } = useSidebarBehavior(props, containerId);
 const { componentCard, componentCardHeader } = useComponent({
@@ -179,9 +180,10 @@ function selectSideBar(nextId: string) {
         <div class="draggable-sidebar">
           <component :is="componentCardHeader">
             <template #title>
-              <div name="title">
-                <span :id="titleTo"> </span>
-              </div>
+              <span :id="titleTo"> </span>
+            </template>
+            <template #after-title>
+              <span :id="afterTitleTo"> </span>
             </template>
             <template #extra-btn>
               <slot name="extra-btn"></slot>

@@ -57,6 +57,9 @@ useInitAction(containerId.value, itemId.value, {
         {{ title }}
       </slot>
     </template>
+    <template #after-title>
+      <slot name="after-title"></slot>
+    </template>
     <slot></slot>
   </BottomModule>
 </template>

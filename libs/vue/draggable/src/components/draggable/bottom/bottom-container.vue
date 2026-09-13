@@ -75,6 +75,9 @@ const { componentCard, componentCardHeader } = useComponent({
 });
 
 const titleTo = computed(() => `bottom-title-${containerId.value}`);
+const afterTitleTo = computed(
+  () => `bottom-after-title-${containerId.value}`,
+);
 const contentTo = computed(() => `bottom-content-${containerId.value}`);
 
 const c_getShow = computed(() => getShow());
@@ -166,6 +169,9 @@ const shellStyle = computed(() => ({
         <component :is="componentCardHeader">
           <template #title>
             <span :id="titleTo"></span>
+          </template>
+          <template #after-title>
+            <span :id="afterTitleTo"></span>
           </template>
           <template #extra-btn>
             <drag-button

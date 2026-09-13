@@ -114,13 +114,28 @@
 }
 
 .draggable-header__title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
   font-size: var(--draggable-font-size-2xl, var(--map-font-size-2xl, 20px));
   font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
   line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
   font-family: inherit;
+}
+
+.draggable-header__title-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.draggable-header__after-title {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
 }
 
 /* ===== DragCard ===== */

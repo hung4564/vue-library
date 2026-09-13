@@ -37,11 +37,13 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the sidebar.             |
-| `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the sidebar.                          |
+| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
 
 ## Usage
 

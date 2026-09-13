@@ -11,7 +11,7 @@ export function useSidebarBehavior(
 ) {
   const { show } = useShow(props, null);
   const { expand, toggle } = useExpand(props, null, true);
-  const { isVertical, titleTo, contentTo } = useSidebarTransition(
+  const { isVertical, titleTo, afterTitleTo, contentTo } = useSidebarTransition(
     props,
     containerId,
   );
@@ -22,6 +22,7 @@ export function useSidebarBehavior(
     toggleExpand: toggle,
     isVertical,
     titleTo,
+    afterTitleTo,
     contentTo,
   };
 }

@@ -34,10 +34,13 @@ React: use `onUpdateShow` / `onClose`.
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the bottom panel.        |
-| `title`     | Custom content for the header area. |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the bottom panel.                     |
+| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
 
 ## Store
 

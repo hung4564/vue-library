@@ -47,11 +47,15 @@ A11y: root uses `role="dialog"`, `aria-modal`, Esc closes, focus moves into the 
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the modal.               |
-| `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the modal.                            |
+| `pre-title`     | `preTitle`   | Before the title group.                          |
+| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 
 ## Usage
 

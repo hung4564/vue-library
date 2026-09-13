@@ -45,6 +45,7 @@ export interface DraggableItemFloatProps {
   onUpdateExpand?: (value: boolean) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableItemFloat({
@@ -72,6 +73,7 @@ export function DraggableItemFloat({
   onUpdateExpand,
   children,
   extraBtn,
+  afterTitle,
 }: DraggableItemFloatProps) {
   const containerId = useContainerId(propContainerId);
   const { show, setShow, open, close } = useShow(
@@ -194,6 +196,7 @@ export function DraggableItemFloat({
           {!disabledHeader && headerLocation === 'top' && (
             <Header
               title={<span id={titleId}>{title}</span>}
+              afterTitle={afterTitle}
               extraBtn={
                 <>
                   {extraBtn}
@@ -243,6 +246,7 @@ export function DraggableItemFloat({
           {!disabledHeader && headerLocation === 'bottom' && (
             <Header
               title={<span id={titleId}>{title}</span>}
+              afterTitle={afterTitle}
               extraBtn={
                 <>
                   {extraBtn}

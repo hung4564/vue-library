@@ -336,6 +336,9 @@ const resizeHandleClass = computed(() => {
                   </slot>
                 </span>
               </template>
+              <template #after-title>
+                <slot name="after-title"></slot>
+              </template>
               <template #extra-btn>
                 <slot name="extra-btn"></slot>
                 <drag-button

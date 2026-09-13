@@ -50,6 +50,7 @@ export interface DraggableDrawerProps {
   onResize?: (value: number) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableDrawer({
@@ -73,6 +74,7 @@ export function DraggableDrawer({
   onResize,
   children,
   extraBtn,
+  afterTitle,
 }: DraggableDrawerProps) {
   const containerId = useContainerId(propContainerId);
   useContainerReactive(containerId);
@@ -389,6 +391,7 @@ export function DraggableDrawer({
               {!disabledHeader && (
                 <Header
                   title={<span id={titleId}>{title}</span>}
+                  afterTitle={afterTitle}
                   extraBtn={
                     <>
                       {extraBtn}

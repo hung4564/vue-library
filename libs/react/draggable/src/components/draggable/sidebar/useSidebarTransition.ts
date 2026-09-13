@@ -13,9 +13,13 @@ export function useSidebarTransition(
     () => `sidebar-title-${containerId}-${props.location}`,
     [containerId, props.location],
   );
+  const afterTitleTo = useMemo(
+    () => `sidebar-after-title-${containerId}-${props.location}`,
+    [containerId, props.location],
+  );
   const contentTo = useMemo(
     () => `sidebar-content-${containerId}-${props.location}`,
     [containerId, props.location],
   );
-  return { isVertical, titleTo, contentTo };
+  return { isVertical, titleTo, afterTitleTo, contentTo };
 }

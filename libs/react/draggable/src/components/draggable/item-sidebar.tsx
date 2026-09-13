@@ -14,10 +14,15 @@ import { SidebarModule } from './sidebar/sidebar-module';
 export interface DraggableItemSideBarProps {
   id?: string;
   show?: boolean;
-  /** Plain title used in sidebar switch menu */
+  /** Plain title used in sidebar switch menu and default header text */
   title?: string;
-  /** Custom title node portaled into sidebar header (matches Vue #title slot) */
+  /**
+   * Custom title node portaled into sidebar header (matches Vue #title slot).
+   * @deprecated Prefer composing custom title via `title` string + future patterns; still supported this minor.
+   */
   titleNode?: ReactNode;
+  /** Immediately to the right of title (header slot contract). */
+  afterTitle?: ReactNode;
   containerId?: string;
   componentCard?: ShareCardComponent;
   componentCardHeader?: ShareHeaderComponent;
@@ -35,6 +40,7 @@ export function DraggableItemSideBar({
   show: propShow,
   title = '',
   titleNode,
+  afterTitle,
   containerId: propContainerId,
   right = false,
   location: propLocation,
@@ -74,6 +80,7 @@ export function DraggableItemSideBar({
       location={location}
       itemId={itemId}
       title={titleNode ?? title}
+      afterTitle={afterTitle}
     >
       {children}
     </SidebarModule>

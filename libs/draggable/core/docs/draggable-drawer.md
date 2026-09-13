@@ -45,6 +45,17 @@ Only one drawer is visible per edge. If several drawers share the same `location
 
 React: use `onUpdateSize` / `onUpdateShow` / `onClose` instead of Vue `update:*` / `close` events.
 
+## Slots
+
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the drawer.                           |
+| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
+
 ## Usage
 
 ### Vue

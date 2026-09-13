@@ -58,6 +58,7 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
     toggleExpand: onToggleExpand,
     isVertical,
     titleTo,
+    afterTitleTo,
     contentTo,
   } = useSidebarBehavior({ location }, containerId);
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
@@ -180,6 +181,11 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
               <Header
                 title={
                   <div id={titleTo}>{/* Title will be portaled here */}</div>
+                }
+                afterTitle={
+                  <div id={afterTitleTo}>
+                    {/* After-title will be portaled here */}
+                  </div>
                 }
                 extraBtn={
                   <>

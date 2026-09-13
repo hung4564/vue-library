@@ -3,6 +3,9 @@
     <Teleport v-if="hasSlotTitle && titleEl" :to="titleEl" defer>
       <slot name="title" />
     </Teleport>
+    <Teleport v-if="hasSlotAfterTitle && afterTitleEl" :to="afterTitleEl" defer>
+      <slot name="after-title" />
+    </Teleport>
     <Teleport v-if="contentEl" :to="contentEl" defer>
       <slot />
     </Teleport>
@@ -37,8 +40,12 @@ const { getShow } = useBottomContainer(c_containerId.value);
 const cards = useDragComponent();
 const { getItemAction } = useDragContainer(c_containerId.value);
 const titleTo = computed(() => `#bottom-title-${c_containerId.value}`);
+const afterTitleTo = computed(
+  () => `#bottom-after-title-${c_containerId.value}`,
+);
 const contentTo = computed(() => `#bottom-content-${c_containerId.value}`);
 const hasSlotTitle = computed(() => !!slots['title']);
+const hasSlotAfterTitle = computed(() => !!slots['after-title']);
 const isCurrentShow = computed(() => {
   return (
     !!props.containerId && !!props.itemId && props.itemId === getShow()
@@ -53,18 +60,22 @@ const activeShellCards = computed(() => {
 
 const alive = ref(true);
 const titleEl = ref<Element | null>(null);
+const afterTitleEl = ref<Element | null>(null);
 const contentEl = ref<Element | null>(null);
 let targetObserver: MutationObserver | undefined;
 
 function resolveTargets() {
   if (!alive.value || !isCurrentShow.value) {
     titleEl.value = null;
+    afterTitleEl.value = null;
     contentEl.value = null;
     return false;
   }
   const nextTitle = document.querySelector(titleTo.value);
+  const nextAfterTitle = document.querySelector(afterTitleTo.value);
   const nextContent = document.querySelector(contentTo.value);
   titleEl.value = nextTitle?.isConnected ? nextTitle : null;
+  afterTitleEl.value = nextAfterTitle?.isConnected ? nextAfterTitle : null;
   contentEl.value = nextContent?.isConnected ? nextContent : null;
   return !!(titleEl.value && contentEl.value);
 }
@@ -78,7 +89,6 @@ function ensureTargets() {
   stopObservingTargets();
   if (resolveTargets()) return;
   if (!alive.value || !isCurrentShow.value) return;
-  // Shell may mount one tick later on first show — observe until hosts appear.
   targetObserver = new MutationObserver(() => {
     if (resolveTargets()) stopObservingTargets();
   });
@@ -87,6 +97,7 @@ function ensureTargets() {
 
 async function remountTargets() {
   titleEl.value = null;
+  afterTitleEl.value = null;
   contentEl.value = null;
   await nextTick();
   ensureTargets();
@@ -95,7 +106,7 @@ async function remountTargets() {
 onMounted(() => {
   nextTick(ensureTargets);
 });
-watch([titleTo, contentTo, isCurrentShow], () => {
+watch([titleTo, afterTitleTo, contentTo, isCurrentShow], () => {
   nextTick(ensureTargets);
 });
 watch(
@@ -112,6 +123,7 @@ onBeforeUnmount(() => {
   alive.value = false;
   stopObservingTargets();
   titleEl.value = null;
+  afterTitleEl.value = null;
   contentEl.value = null;
 });
 </script>

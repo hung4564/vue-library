@@ -4,7 +4,7 @@ Allowlist of symbols and protocols we treat as **Stable** for SemVer on **`<!-- 
 
 Root barrels use **explicit named exports** (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package. Symbols listed under **Experimental** may change in a **minor**.
 
-Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md) · [Testing](./testing.md)
+Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [Header slots](./header-slots.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md) · [Testing](./testing.md)
 
 ## Architecture
 
@@ -93,9 +93,24 @@ Still exported from the **root** barrel for 1.x compatibility; treat as unstable
 
 Undocumented CSS class names / layout tokens not listed above remain experimental.
 
+## Header slots (Stable contract)
+
+Documented header slot / prop names are Stable (rename = **major**). Full layout and Vue ↔ React mapping: [header-slots.md](./header-slots.md).
+
+```
+[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]
+```
+
+| Vue | React | Notes |
+| --- | --- | --- |
+| `pre-title` | `preTitle` | Before title group |
+| `title` | `title` | Text or node; React `titleNode` deprecated → use `title` |
+| `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
+| `extra-btn` | `extraBtn` | Trailing actions after spacer |
+
 ## Internal chrome (not public)
 
-Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`. These are **not** root exports and must not be confused with `@hungpvq/vue-map-core` / `react-map-core` `MapControlButton` (or Experimental `MapButton` on `./fields`). Override sidebar toggle via the documented `componentSidebarToggle` prop / store card APIs only.
+Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`. These are **not** root exports and must not be confused with `@hungpvq/vue-map-core` / `react-map-core` `MapControlButton` (or Experimental `MapButton` on `./fields`). Override sidebar toggle via the documented `componentSidebarToggle` prop / store card APIs only. The **slot names** forwarded through those shells (above) remain Stable even though `DragHeader` itself is internal.
 
 ## Enforcing the allowlist
 

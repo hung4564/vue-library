@@ -193,6 +193,7 @@ Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fas
 ## Stable API & SemVer
 
 - [Stable API allowlist](./stable-api.md) (named exports + `public-api.spec.ts` lock; layout persist cookbook)
+- [Header slots](./header-slots.md) (`pre-title` / `title` / `after-title` / `extra-btn`; `location: 'title'` → after-title)
 - [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
 - [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
 - [Testing](./testing.md) (`draggable:test`, public-api locks)

@@ -27,6 +27,7 @@ export interface DraggableItemBottomProps {
   onUpdateExpand?: (value: boolean) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableItemBottom({
@@ -39,6 +40,7 @@ export function DraggableItemBottom({
   onUpdateShow,
   onClose,
   children,
+  afterTitle,
 }: DraggableItemBottomProps) {
   const containerId = useContainerId(propContainerId);
   const { show, setShow, open, close } = useShow(
@@ -70,6 +72,7 @@ export function DraggableItemBottom({
       containerId={containerId}
       itemId={itemId}
       title={title || undefined}
+      afterTitle={afterTitle}
     >
       {children}
     </BottomModule>
