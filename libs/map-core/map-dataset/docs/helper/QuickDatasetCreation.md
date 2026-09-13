@@ -33,8 +33,10 @@ const raster = createRasterUrlDataset({
 | `type` | `'point' \| 'line' \| 'area' \| 'symbol'` | yes | Layer style |
 | `color` | color | no | List swatch + paint (random if omitted) |
 | `opacity` | `number` | no | Fill / line / circle opacity |
+| `export` | `boolean` | no | Add list ⋮ Export (default `true`) |
+| `attributeTable` | `boolean` | no | Add list ⋮ Attribute table (default `true`) |
 
-Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus, plus a per-layer **Identify** extra toggle (scoped IdentifyControl). Mount `IdentifyControl` + `ComponentManagementControl` to use identify.
+Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus, a per-layer **Identify** extra toggle (scoped IdentifyControl), plus list ⋮ **Export** and **Attribute table** unless you pass `export: false` / `attributeTable: false`. Mount `IdentifyControl` + `ComponentManagementControl` to use identify / those dialogs.
 
 To change the fit target later without rebuilding the menu:
 

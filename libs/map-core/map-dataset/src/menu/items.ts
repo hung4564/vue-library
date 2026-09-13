@@ -24,6 +24,7 @@ import type {
 import { convertItemToFeature, resolveDatasetBbox } from '../utils';
 import { getDatasetDetailInfo } from '../extra/detail';
 import type { FieldFeaturesDef } from '../extra/field';
+import { GEO_EXPORT_COMPONENT_KEY } from '../geo-export/options';
 import { isIdentifyForListMenuHidden } from '../identify';
 import {
   createMenuBuilder,
@@ -66,7 +67,10 @@ export const LIST_VIEW_MENU_ID = {
 
 export const LIST_VIEW_MENU_COMPONENT_KEY = {
   addToGroup: 'layer-action-add-to-group',
-  exportGeo: 'layer-action-export-geo',
+  /** Alias of {@link GEO_EXPORT_COMPONENT_KEY.root} (SoT in geo-export). */
+  exportGeo: GEO_EXPORT_COMPONENT_KEY.root,
+  /** Alias of {@link GEO_EXPORT_COMPONENT_KEY.formatMenu}. */
+  exportGeoMenu: GEO_EXPORT_COMPONENT_KEY.formatMenu,
   identify: 'layer-action-identify',
   toggleShow: 'layer-action-toggle-show',
   toggleShowButton: 'layer-action-toggle-show-button',

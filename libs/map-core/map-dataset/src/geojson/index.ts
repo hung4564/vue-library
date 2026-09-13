@@ -27,6 +27,7 @@ export {
   loadGeojsonFileAsync,
   loadGeojsonTextAsync,
   parseGeojsonTextAsync,
+  reprojectGeojsonAsync,
   reprojectGeojsonToWgs84Async,
   terminateGeojsonWorker,
 } from './geojson-worker.client';

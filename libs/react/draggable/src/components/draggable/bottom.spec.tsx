@@ -10,9 +10,20 @@ import {
 import { BottomContainer } from './bottom/bottom-container';
 import { DraggableItemBottom } from './item-bottom';
 
+const storeSubscribers = new Set<() => void>();
+
 vi.mock('@hungpvq/shared-store/react', () => ({
-  useStoreSubscribe: vi.fn(),
+  useStoreSubscribe: (_path: unknown, cb: () => void) => {
+    storeSubscribers.add(cb);
+    return () => {
+      storeSubscribers.delete(cb);
+    };
+  },
 }));
+
+function flushStoreSubscribers() {
+  storeSubscribers.forEach((cb) => cb());
+}
 
 beforeAll(() => {
   class ResizeObserverStub {
@@ -45,6 +56,7 @@ const CID = 'bottom-react';
 
 afterEach(() => {
   cleanup();
+  storeSubscribers.clear();
   const store = getDragStore();
   for (const id of Object.keys(store.container)) {
     delete store.container[id];
@@ -93,6 +105,7 @@ describe('BottomContainer portal hosts', () => {
     await waitFor(() => {
       expect(getDragStore().container[CID].bottom.show).toBe('bot-portal');
     });
+    act(() => flushStoreSubscribers());
     await waitFor(() => {
       expect(
         document.getElementById(`bottom-title-${CID}`)?.textContent,
@@ -135,6 +148,9 @@ describe('BottomContainer portal hosts', () => {
 
     await waitFor(() => {
       expect(getDragStore().container[CID].bottom.show).toBe('bot-a');
+    });
+    act(() => flushStoreSubscribers());
+    await waitFor(() => {
       expect(
         document.getElementById(`bottom-content-${CID}`)?.textContent,
       ).toContain('A body');
@@ -142,6 +158,7 @@ describe('BottomContainer portal hosts', () => {
 
     act(() => {
       useBottomItem(CID).registerBottomShow('bot-b', true);
+      flushStoreSubscribers();
     });
 
     await waitFor(() => {
@@ -149,6 +166,54 @@ describe('BottomContainer portal hosts', () => {
       expect(
         document.getElementById(`bottom-content-${CID}`)?.textContent,
       ).toContain('B body');
+    });
+    unmount();
+  });
+
+  it('applies local componentCard on the shared bottom shell', async () => {
+    getDragContainer(CID).initContainer();
+    getDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    function LocalCard({ children }: { children?: React.ReactNode }) {
+      return (
+        <div className="local-bottom-card" data-testid="local-bottom-card">
+          {children}
+        </div>
+      );
+    }
+    const { unmount } = render(
+      <ContainerProvider containerId={CID}>
+        <BottomContainer />
+        <DraggableItemBottom
+          id="bot-local"
+          show
+          title="Local"
+          containerId={CID}
+          componentCard={LocalCard}
+        >
+          <p>Local body</p>
+        </DraggableItemBottom>
+      </ContainerProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getDragStore().container[CID].bottom.show).toBe('bot-local');
+      expect(
+        getDragStore().container[CID].actions['bot-local']?.componentCard,
+      ).toBe(LocalCard);
+    });
+    act(() => flushStoreSubscribers());
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-testid="local-bottom-card"]'),
+      ).toBeTruthy();
+      expect(
+        getDragStore().container[CID].actions['bot-local']?.componentCard,
+      ).toBe(LocalCard);
     });
     unmount();
   });

@@ -86,6 +86,11 @@
             </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/dataset-geo-export"
+              >Dataset - Geo export
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/draw">Draw </RouterLink>
           </v-list-item>
         </v-list>

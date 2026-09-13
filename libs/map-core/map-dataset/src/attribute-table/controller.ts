@@ -1,8 +1,5 @@
 import type { IDataset } from '../interfaces';
-import type { GeoExportFormat } from '../geo-export/types';
 import {
-  attributeTableRowsToFeatureCollection,
-  exportAttributeTableRows,
   resolveAttributeTableSelectedRowIds,
   type AttributeTableColumn,
   type AttributeTableColumnsOption,
@@ -18,14 +15,6 @@ import {
   createAttributeTableStoreFromDataset,
   type AttributeTableStore,
 } from './store';
-import {
-  isAttributeTableExportMenuMode,
-  resolveAttributeTableExportActions,
-  type AttributeTableExportContext,
-  type AttributeTableExportOptions,
-  type AttributeTableResolvedExportAction,
-} from './export-options';
-import { resolveAttributeTableExportOption } from './dataset-part';
 
 export type AttributeTableControllerReason =
   | 'initial'
@@ -34,8 +23,7 @@ export type AttributeTableControllerReason =
   | 'page-size'
   | 'search'
   | 'sort'
-  | 'selection'
-  | 'export';
+  | 'selection';
 
 export type AttributeTableControllerEvent = {
   type: 'change';
@@ -47,8 +35,6 @@ export type AttributeTableControllerState = {
   pageSize: number;
   total: number;
   loading: boolean;
-  /** True while an export action / handler is in flight. */
-  exporting: boolean;
   columns: AttributeTableColumn[];
   rows: AttributeTableRow[];
   search: string;
@@ -77,21 +63,8 @@ export type AttributeTableController = {
   toggleSelectAll(visibleRows: AttributeTableRow[]): Promise<void>;
   clearSelection(): void;
   resolveFeaturesForSelection(ids?: string[]): Promise<AttributeTableRow[]>;
-  /** True when Export opens a submenu (not a single `onExport` handler). */
-  isExportMenuMode(): boolean;
-  /** Items for the default Export submenu. */
-  getExportActions(): AttributeTableResolvedExportAction[];
-  /** True when there is data and at least one export path. */
-  canExport(): boolean;
-  /**
-   * Run export.
-   * - Menu mode: pass action `id` (e.g. `format:geojson` or custom action id)
-   * - Single-handler mode (`onExport`): call with no id (optional event)
-   */
-  export(
-    actionId?: string,
-    options?: { filename?: string; event?: MouseEvent },
-  ): Promise<void>;
+  /** All rows matching current search/sort (pageSize `all`). */
+  resolveFilteredFeatures(): Promise<AttributeTableRow[]>;
   dispose(): void;
 };
 
@@ -100,8 +73,6 @@ export type CreateAttributeTableControllerOptions = {
   pageSize?: number;
   rowFilter?: AttributeTableRowFilter;
   store?: AttributeTableStore;
-  /** Customize Export button: formats submenu, custom actions, or one handler. */
-  export?: AttributeTableExportOptions;
   /**
    * When false, `toggleSort` is a no-op (from shell `ui.sort`).
    * Default true.
@@ -112,6 +83,7 @@ export type CreateAttributeTableControllerOptions = {
 /**
  * Framework-agnostic Attribute Table controller.
  * Page browse and selection resolve both go through `store.list` with an explicit `intent`.
+ * Layer export lives on `@hungpvq/map-dataset/geo-export` (list ⋮ Export), not here.
  */
 export function createAttributeTableController(
   layer: IDataset,
@@ -121,11 +93,6 @@ export function createAttributeTableController(
   const store =
     options.store ??
     createAttributeTableStoreFromDataset(layer, { columns: options.columns });
-  /** Part `export` wins over menu/shell when set. */
-  const exportOptions = resolveAttributeTableExportOption(
-    layer,
-    options.export,
-  );
   const tableSortable = options.sortable !== false;
 
   const state: AttributeTableControllerState = {
@@ -136,7 +103,6 @@ export function createAttributeTableController(
         : ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE,
     total: 0,
     loading: false,
-    exporting: false,
     columns: [],
     rows: [],
     search: '',
@@ -274,7 +240,6 @@ export function createAttributeTableController(
     const missing = target.filter((id) => !have.has(id));
 
     if (!missing.length) {
-      // Preserve call-order of ids where possible
       const byId = new Map(fromPage.map((row) => [row.id, row]));
       return target
         .map((id) => byId.get(id))
@@ -290,7 +255,6 @@ export function createAttributeTableController(
     for (const row of fromPage) byId.set(row.id, row);
     for (const row of result.rows) byId.set(row.id, row);
 
-    // Also match resolved aliases from resolveAttributeTableSelectedRowIds
     const resolvedMissing = resolveAttributeTableSelectedRowIds(
       missing,
       result.rows,
@@ -308,9 +272,19 @@ export function createAttributeTableController(
       .filter((row): row is AttributeTableRow => !!row);
   }
 
+  async function resolveFilteredFeatures(): Promise<AttributeTableRow[]> {
+    const result = await store.list({
+      intent: 'page',
+      page: 1,
+      pageSize: 'all',
+      search: state.search,
+      sort: state.sortStates,
+    });
+    return result.rows;
+  }
+
   async function selectIds(ids: string[]) {
     const next = resolveAttributeTableSelectedRowIds(ids, state.rows);
-    // If ids did not match current page, keep raw ids and try select-list resolve
     const finalIds =
       next.length > 0 || ids.length === 0
         ? next
@@ -350,101 +324,6 @@ export function createAttributeTableController(
     notify('selection');
   }
 
-  function isExportMenuMode() {
-    return isAttributeTableExportMenuMode(exportOptions);
-  }
-
-  function getExportActions(): AttributeTableResolvedExportAction[] {
-    return resolveAttributeTableExportActions(exportOptions);
-  }
-
-  function canExport() {
-    if (state.exporting) return false;
-    if (exportOptions?.onExport) {
-      return state.selectedIds.length > 0 || state.total > 0;
-    }
-    if (!getExportActions().length) return false;
-    return state.selectedIds.length > 0 || state.total > 0;
-  }
-
-  async function buildExportContext(
-    filename: string,
-    event?: MouseEvent,
-  ): Promise<AttributeTableExportContext> {
-    const ids = state.selectedIds.slice();
-    const resolveRows = async () => {
-      if (ids.length) return resolveFeaturesForSelection(ids);
-      const page = await store.list({
-        intent: 'page',
-        page: 1,
-        pageSize: 'all',
-        search: state.search,
-        sort: state.sortStates,
-      });
-      return page.rows;
-    };
-    return {
-      layer,
-      ids,
-      search: state.search,
-      sort: state.sortStates.slice(),
-      filename,
-      event,
-      resolveRows,
-      async downloadLocal(format, rows) {
-        const list = rows ?? (await resolveRows());
-        await exportAttributeTableRows(list, format, filename);
-      },
-      rowsToFeatureCollection: attributeTableRowsToFeatureCollection,
-    };
-  }
-
-  async function exportAction(
-    actionId?: string,
-    runOptions: { filename?: string; event?: MouseEvent } = {},
-  ): Promise<void> {
-    if (disposed || state.exporting) return;
-    if (!(state.selectedIds.length > 0 || state.total > 0)) return;
-
-    const filename =
-      runOptions.filename ?? `${layer.getName?.() || 'layer'}-table`;
-
-    state.exporting = true;
-    notify('export');
-    try {
-      const ctx = await buildExportContext(filename, runOptions.event);
-
-      if (exportOptions?.onExport) {
-        await exportOptions.onExport(ctx);
-        return;
-      }
-
-      const actions = exportOptions?.actions ?? [];
-      const resolved = getExportActions();
-      const targetId =
-        actionId ?? (resolved.length === 1 ? resolved[0]?.id : undefined);
-      if (!targetId) return;
-
-      const custom = actions.find((a) => a.id === targetId);
-      if (custom?.run) {
-        await custom.run(ctx);
-        return;
-      }
-
-      const format: GeoExportFormat | undefined =
-        custom?.format ??
-        resolved.find((a) => a.id === targetId)?.format ??
-        (targetId.startsWith('format:')
-          ? (targetId.slice('format:'.length) as GeoExportFormat)
-          : undefined);
-      if (!format) return;
-      await ctx.downloadLocal(format);
-    } finally {
-      state.exporting = false;
-      if (!disposed) notify('export');
-    }
-  }
-
   return {
     getState: () => ({
       ...state,
@@ -475,10 +354,7 @@ export function createAttributeTableController(
     toggleSelectAll,
     clearSelection,
     resolveFeaturesForSelection,
-    isExportMenuMode,
-    getExportActions,
-    canExport,
-    export: exportAction,
+    resolveFilteredFeatures,
     dispose() {
       disposed = true;
       if (searchTimer) clearTimeout(searchTimer);

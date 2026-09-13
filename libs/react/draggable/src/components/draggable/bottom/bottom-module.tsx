@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
+import { useDragContainer } from '../../../store';
 import { useContainerReactive } from '../../../store/useStoreReactive';
 
 export interface BottomModuleProps {
@@ -18,14 +19,18 @@ export function BottomModule({
 }: BottomModuleProps) {
   useContainerReactive(containerId);
   const { getShow } = useBottomContainer(containerId);
+  const { getItemAction } = useDragContainer(containerId);
   const titleTo = useMemo(() => `bottom-title-${containerId}`, [containerId]);
   const contentTo = useMemo(
     () => `bottom-content-${containerId}`,
     [containerId],
   );
-  const isCurrentShow = useMemo(() => {
-    return !!(containerId && itemId && itemId === getShow());
-  }, [containerId, itemId, getShow]);
+  const activeId = getShow();
+  const isCurrentShow = !!(containerId && itemId && itemId === activeId);
+  const activeAction = activeId ? getItemAction(activeId) : undefined;
+  const shellCardKey = `${String(activeAction?.componentCard)}:${String(
+    activeAction?.componentCardHeader,
+  )}`;
 
   const [portalTargets, setPortalTargets] = useState<{
     title?: HTMLElement;
@@ -62,7 +67,7 @@ export function BottomModule({
       cancelAnimationFrame(frameId);
       observer.disconnect();
     };
-  }, [isCurrentShow, titleTo, contentTo]);
+  }, [isCurrentShow, titleTo, contentTo, shellCardKey]);
 
   if (!isCurrentShow) return null;
 

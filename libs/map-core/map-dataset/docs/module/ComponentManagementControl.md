@@ -1,6 +1,6 @@
 # Component Management Control
 
-Renders overlay UI that menus open with `addComponent` (style editor, layer detail, dataset detail, attribute table, …). **Required** next to `LayerControl` / `IdentifyControl` / `DatasetControl` if those menus should show dialogs.
+Renders overlay UI that menus open with `addComponent` (style editor, layer detail, dataset detail, attribute table, export, …). **Required** next to `LayerControl` / `IdentifyControl` / `DatasetControl` if those menus should show dialogs.
 
 **Events:** none. Closing a dialog calls the store `removeComponent` internally.
 
@@ -40,4 +40,4 @@ import {
 <ComponentManagementControl />
 ```
 
-Needs `installMapApp` (or `createDatasetRegistryPlugin`) so keys like `style-control`, `layer-detail`, `dataset-detail`, `attribute-table` resolve.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) so keys like `style-control`, `layer-detail`, `dataset-detail`, `attribute-table`, `layer-action-export-geo` resolve.

@@ -16,6 +16,9 @@ export {
   DatasetDetail,
   DatasetMenuButton,
   ExportGeo,
+  ExportGeoForm,
+  ExportGeoFormatMenu,
+  ExportGeoLoading,
   IdentifyControl,
   IdentifyLayerAction,
   IdentifyResultControl,
@@ -49,3 +52,4 @@ export {
   useMenuConditionContext,
   useToggleShowAction,
 } from './internal-barrel';
+export type { ExportGeoFormProps } from './extra/component/export-geo-form';

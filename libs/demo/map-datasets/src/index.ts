@@ -12,3 +12,4 @@ export * from './datasets/identify-present';
 export * from './datasets/highlight';
 export * from './datasets/highlight/helper';
 export * from './datasets/data-management';
+export * from './datasets/geo-export';

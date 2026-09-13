@@ -1,125 +1,162 @@
 import { mdiDownload } from '@mdi/js';
-import { errorHandler, MapError } from '@hungpvq/map-core';
-import type { FeatureCollection } from 'geojson';
 import type {
   IDataset,
-  MenuAction,
   MenuConditionContext,
   MenuItemBottomOrExtra,
 } from '../interfaces';
-import { createMenuBuilder } from '../menu/builder';
 import {
-  LIST_VIEW_MENU_COMPONENT_KEY,
-  LIST_VIEW_MENU_ID,
-} from '../menu/items';
-import { exportDatasetGeo, hasGeojsonExportData } from './dataset';
+  createMenuBuilder,
+  createMenuClickBuilder,
+} from '../menu/builder';
+import { LIST_VIEW_MENU_ID } from '../menu/items';
+import { createGeoExportController } from './controller';
+import { hasGeojsonExportData } from './dataset';
+import { resolveGeoExportOption } from './dataset-part';
 import {
-  GEO_EXPORT_FORMATS,
-  GEO_EXPORT_FORMAT_META,
-  isGeoExportFormat,
-  type GeoExportFormat,
-} from './types';
+  GEO_EXPORT_COMPONENT_KEY,
+  type ExportGeoGetCollection,
+  type GeoExportHandler,
+  type GeoExportOptions,
+  type GeoExportScope,
+} from './options';
+import type { GeoExportFormat } from './types';
 
-export type ExportGeoGetCollection = (
-  layer: IDataset,
-) =>
-  | FeatureCollection
-  | null
-  | undefined
-  | Promise<FeatureCollection | null | undefined>;
+export type ExportGeoMenuOptions = GeoExportOptions &
+  Partial<Omit<MenuItemBottomOrExtra<IDataset>, 'click' | 'location'>>;
 
-export type ExportGeoMenuOptions = {
+/** Props for the registry shell mounted via `addComponent`. */
+export type ExportGeoComponentAttrs = {
+  layer: IDataset;
+  mapId?: string;
   formats?: GeoExportFormat[];
   filename?: string | ((layer: IDataset) => string);
   getCollection?: ExportGeoGetCollection;
-  id?: string;
-  name?: string;
-  icon?: string;
-  order?: number;
-  class?: string;
-  hidden?: MenuItemBottomOrExtra<IDataset>['hidden'];
-  disabled?: MenuItemBottomOrExtra<IDataset>['disabled'];
+  sourceCrs?: string | null;
+  targetCrs?: string | null;
+  scopes?: GeoExportScope[];
+  defaultScope?: GeoExportScope;
+  /**
+   * Export runner (same as {@link GeoExportOptions.onExport}).
+   * Named `exportHandler` (not `onExport`) so Vue `$attrs` does not treat it
+   * as a fallthrough `export` event listener.
+   */
+  exportHandler?: GeoExportHandler;
+  /**
+   * Local form override: Registry key (`string`) or Vue/React component.
+   * Same idea as Attribute Table `cellComponent`.
+   */
+  formComponent?: unknown;
+  /** Local loading override: Registry key (`string`) or Vue/React component. */
+  loadingComponent?: unknown;
 };
 
-export function createExportGeoSubmenu(
-  options: Pick<
-    ExportGeoMenuOptions,
-    'formats' | 'filename' | 'getCollection'
-  > = {},
-): MenuAction[] {
-  const formats = options.formats?.length
-    ? options.formats
-    : [...GEO_EXPORT_FORMATS];
-  return formats.filter(isGeoExportFormat).map((format) =>
-    createMenuBuilder()
-      .item()
-      .setLocation('menu')
-      .setId(`${LIST_VIEW_MENU_ID.layer.exportGeo}:${format}`)
-      .setName(GEO_EXPORT_FORMAT_META[format].name)
-      .setIcon(mdiDownload)
-      .setClick(async ({ layer }) => {
-        const filename =
-          typeof options.filename === 'function'
-            ? options.filename(layer)
-            : options.filename;
-        try {
-          if (options.getCollection) {
-            const collection = await options.getCollection(layer);
-            if (!collection) return;
-            await exportDatasetGeo(layer, format, { filename, collection });
-            return;
-          }
-          await exportDatasetGeo(layer, format, { filename });
-        } catch (error) {
-          errorHandler.handle(
-            new MapError('Geo export failed', 'DATASET_EXPORT_ERROR', {
-              recoverable: true,
-              cause: error,
-              context: { format, layerId: layer.id },
-            }),
-          );
-        }
-      })
-      .build(),
-  );
-}
-
+/**
+ * Layer menu Export.
+ * - `uiMode: 'modal'` (default) → opens ExportGeo shell via `addComponent`
+ * - `uiMode: 'menu'` → format submenu (`componentMenuKey`)
+ * - `uiMode: 'click'` → one row; runs `formats[0]` (or `geojson`) immediately
+ *
+ * Pass `uiMode` on the **menu item** (`createMenuItemExportGeo({ uiMode })`).
+ * Dataset-part options merge at click / render (part wins).
+ */
 export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
-  const { formats, filename, getCollection, ...rest } = menu;
-  return createMenuBuilder()
+  const {
+    formats,
+    filename,
+    getCollection,
+    sourceCrs,
+    targetCrs,
+    scopes,
+    defaultScope,
+    onExport,
+    formComponent,
+    loadingComponent,
+    uiMode = 'modal',
+    ...rest
+  } = menu;
+
+  const optionOverride: GeoExportOptions = {
+    formats,
+    filename,
+    getCollection,
+    sourceCrs,
+    targetCrs,
+    scopes,
+    defaultScope,
+    onExport,
+    formComponent,
+    loadingComponent,
+    uiMode,
+  };
+
+  const builder = createMenuBuilder()
     .item()
     .setLocation('menu')
     .setId(LIST_VIEW_MENU_ID.layer.exportGeo)
     .setName('Export')
     .setIcon(mdiDownload)
-    .setComponentMenuKey(LIST_VIEW_MENU_COMPONENT_KEY.exportGeo)
-    .setHidden((ctx) => isExportGeoMenuHidden(ctx))
+    .setHidden((ctx) => isExportGeoMenuHidden(ctx));
+
+  if (uiMode === 'menu') {
+    return builder
+      .setComponentMenuKey(GEO_EXPORT_COMPONENT_KEY.formatMenu)
+      .setAdditional({
+        order: 23,
+        ...rest,
+        ...optionOverride,
+      })
+      .build();
+  }
+
+  if (uiMode === 'click') {
+    return builder
+      .setClick(async ({ layer, mapId }) => {
+        const resolved = resolveGeoExportOption(layer, optionOverride);
+        const ctrl = createGeoExportController(layer, {
+          ...resolved,
+          mapId,
+        });
+        try {
+          const format = ctrl.getFormats()[0] ?? 'geojson';
+          await ctrl.run({ format, mapId });
+        } finally {
+          ctrl.dispose();
+        }
+      })
+      .setAdditional({
+        order: 23,
+        ...rest,
+      })
+      .build();
+  }
+
+  return builder
+    .setClick(
+      createMenuClickBuilder()
+        .addTupleDynamic(
+          LIST_VIEW_MENU_ID.addComponent,
+          ({ layer, mapId }) => {
+            const resolved = resolveGeoExportOption(layer, optionOverride);
+            const ctrl = createGeoExportController(layer, {
+              ...resolved,
+              mapId,
+            });
+            return {
+              value: ctrl.createExportGeoAddComponent(mapId),
+            };
+          },
+        )
+        .build(),
+    )
     .setAdditional({
       order: 23,
-      formats,
-      filename,
-      getCollection,
       ...rest,
     })
     .build();
 }
 
-export function getExportGeoMenuOptions(
-  menu: MenuAction,
-): Pick<ExportGeoMenuOptions, 'formats' | 'filename' | 'getCollection'> {
-  const extra = menu as MenuAction & ExportGeoMenuOptions;
-  return {
-    formats: extra['formats'],
-    filename: extra['filename'],
-    getCollection: extra['getCollection'],
-  };
-}
-
 export function isExportGeoMenuHidden(ctx: MenuConditionContext): boolean {
   const extra = (ctx.context ?? {}) as { disabledExport?: boolean };
-  const config = (
-    ctx.layer as { config?: { disabled_export?: boolean } }
-  )?.config;
-  if (extra.disabledExport || config?.disabled_export) return true;
+  if (extra.disabledExport) return true;
   return !hasGeojsonExportData(ctx.layer);
 }

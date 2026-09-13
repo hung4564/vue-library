@@ -14,6 +14,8 @@ import {
   type GeojsonStyleMode,
 } from './geojson-parse';
 import type { FieldFeaturesDef } from '../extra/field';
+import { createMenuItemAttributeTable } from '../attribute-table';
+import { createMenuItemExportGeo } from '../geo-export';
 import {
   createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
@@ -51,6 +53,10 @@ export type GeojsonDatasetOption = {
    * The layer-item slider stays at 1 and multiplies this value when dragged.
    */
   opacity?: number;
+  /** Add list ⋮ Export. Default `true`. */
+  export?: boolean;
+  /** Add list ⋮ Attribute table. Default `true`. */
+  attributeTable?: boolean;
 };
 
 function buildSingleStyleLayer(
@@ -108,6 +114,12 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
     createMenuItemToggleShow(),
     createMenuItemIdentifyForList(),
   ];
+  if (data.export !== false) {
+    listMenus.push(createMenuItemExportGeo());
+  }
+  if (data.attributeTable !== false) {
+    listMenus.push(createMenuItemAttributeTable());
+  }
   if (bbox) {
     dataset.add(createDatasetPartBoundComponent(data.name, bbox));
     listMenus.push(createMenuItemToBoundActionForList());

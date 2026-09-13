@@ -1,3 +1,4 @@
+import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
@@ -5,6 +6,7 @@ import type { App, Plugin } from 'vue';
 import { LayerItemIcon } from '../extra';
 import AddToGroup from '../extra/component/add-to-group.vue';
 import ExportGeo from '../extra/component/export-geo.vue';
+import ExportGeoFormatMenu from '../extra/component/export-geo-menu.vue';
 import IdentifyLayerAction from '../extra/component/identify.vue';
 import SetOpacity from '../extra/component/set-opacity.vue';
 import ToggleShowButton from '../extra/component/toggle-show-button.vue';
@@ -81,8 +83,12 @@ export function createDatasetRegistryPlugin() {
         AddToGroup,
       );
       UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
+        GEO_EXPORT_COMPONENT_KEY.root,
         ExportGeo,
+      );
+      UniversalRegistry.registerComponent(
+        GEO_EXPORT_COMPONENT_KEY.formatMenu,
+        ExportGeoFormatMenu,
       );
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.identify,

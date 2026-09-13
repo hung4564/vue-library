@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   isCallStackOverflow,
+  reprojectGeojson,
   reprojectGeojsonToWgs84,
   toPlainJson,
 } from './geojson-reproject';
@@ -32,5 +33,15 @@ describe('geojson-reproject', () => {
       expect(out.geometry.coordinates[0]).toBeCloseTo(105);
       expect(out.geometry.coordinates[1]).toBeCloseTo(21);
     }
+  });
+
+  it('reprojectGeojson is a no-op when from === to', () => {
+    const geojson = {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'Point', coordinates: [105, 21] },
+    } as const;
+    const out = reprojectGeojson(geojson as never, '4326', '4326');
+    expect(out).toBe(geojson);
   });
 });

@@ -99,6 +99,7 @@ export {
   mergeFilters,
   readMapViewInfo,
   registerMapAccessor,
+  reprojectGeojson,
   reprojectGeojsonToWgs84,
   resolveControlLayout,
   resolveMapButtonSizeName,

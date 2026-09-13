@@ -7,7 +7,6 @@ import {
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   clearPendingAttributeTableSelectRows,
   createAttributeTableController,
-  resolveAttributeTableExportOption,
   resolveAttributeTableUi,
   resolveAttributeTableUiOption,
   takePendingAttributeTableSelectRows,
@@ -18,7 +17,6 @@ import {
   type AttributeTableViewLabels,
   type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
-import { GEO_EXPORT_FORMAT_META } from '@hungpvq/map-dataset/geo-export';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -28,10 +26,15 @@ import {
   isMenuItemHidden,
 } from '@hungpvq/map-dataset/menu';
 import {
-  ContextMenu,
-  DraggableItemPopup,
-  type ContextMenuRef,
-} from '@hungpvq/react-draggable';
+  clearGeoExportActiveSource,
+  openGeoExportModalFromAttributeTable,
+  resolveAttributeTableGeoExport,
+  runGeoExportClickFromAttributeTable,
+  runGeoExportFormatFromAttributeTable,
+  setGeoExportActiveSource,
+  type GeoExportFormat,
+} from '@hungpvq/map-dataset/geo-export';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
@@ -41,8 +44,6 @@ import {
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
-import { mdiDownload } from '@mdi/js';
-import Icon from '@mdi/react';
 import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDatasetHighlight } from '../../store';
@@ -65,7 +66,6 @@ export function AttributeTable(props: AttributeTableProps) {
   const toggleShowRef = useRef(toggleShow);
   toggleShowRef.current = toggleShow;
   const [tick, setTick] = useState(0);
-  const exportMenuRef = useRef<ContextMenuRef>(null);
 
   const localeReady = useRef(false);
   if (!localeReady.current) {
@@ -116,11 +116,31 @@ export function AttributeTable(props: AttributeTableProps) {
       columns: props.columns,
       store: props.store,
       rowFilter: props.rowFilter,
-      export: resolveAttributeTableExportOption(props.layer, props.export),
       sortable: resolveAttributeTableUi(ui).sort,
     });
     controllerRef.current = next;
     setController(next);
+
+    setGeoExportActiveSource(mapId, {
+      layerId: props.layer.id,
+      getSearch: () => next.getState().search,
+      getSort: () => next.getState().sortStates,
+      getSelectedIds: () => next.getState().selectedIds,
+      resolveSelectedCollection: async (ids) => {
+        const rows = await next.resolveFeaturesForSelection(ids);
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+      resolveFilteredCollection: async () => {
+        const rows = await next.resolveFilteredFeatures();
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+    });
 
     const unsub = next.subscribe(() => {
       setTick((v) => v + 1);
@@ -141,6 +161,7 @@ export function AttributeTable(props: AttributeTableProps) {
 
     return () => {
       unsub();
+      clearGeoExportActiveSource(mapId, props.layer.id);
       next.dispose();
       clearHighlightRef.current();
     };
@@ -149,7 +170,6 @@ export function AttributeTable(props: AttributeTableProps) {
     props.columns,
     props.store,
     props.rowFilter,
-    props.export,
     props.ui,
     mapId,
   ]);
@@ -164,11 +184,6 @@ export function AttributeTable(props: AttributeTableProps) {
     return controller?.getState() ?? null;
   }, [controller, tick]);
 
-  const exportActions = useMemo(() => {
-    void tick;
-    return controller?.getExportActions() ?? [];
-  }, [controller, tick]);
-
   const labels = useMemo(
     (): AttributeTableViewLabels => ({
       search: trans('map.attribute-table.search'),
@@ -176,9 +191,6 @@ export function AttributeTable(props: AttributeTableProps) {
       showAll: trans('map.attribute-table.showAll'),
       showSelected: trans('map.attribute-table.showSelected'),
       clear: trans('map.attribute-table.clear'),
-      export: trans('map.attribute-table.export'),
-      exportSelected: trans('map.attribute-table.export-selected'),
-      exporting: trans('map.attribute-table.exporting'),
       loading: trans('map.attribute-table.loading'),
       empty: trans('map.attribute-table.empty'),
       page: trans('map.attribute-table.page'),
@@ -196,6 +208,7 @@ export function AttributeTable(props: AttributeTableProps) {
       sortedDesc: trans('map.attribute-table.sortedDesc'),
       notSorted: trans('map.attribute-table.notSorted'),
       selectionStatus: trans('map.attribute-table.selectionStatus'),
+      export: trans('map.attribute-table.export'),
     }),
     [trans],
   );
@@ -277,6 +290,10 @@ export function AttributeTable(props: AttributeTableProps) {
 
   if (!controller) return null;
 
+  const geo = resolveAttributeTableGeoExport(props.layer);
+  const menuMode = geo.uiMode === 'menu';
+  const clickMode = geo.uiMode === 'click';
+
   const viewProps: AttributeTableViewProps = {
     mapId,
     layer: props.layer,
@@ -284,14 +301,6 @@ export function AttributeTable(props: AttributeTableProps) {
     pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
     labels,
     ui: resolvedUi,
-    onExportClick: (event) => {
-      if (!controller.canExport() || controller.getState().exporting) return;
-      if (!controller.isExportMenuMode()) {
-        void controller.export(undefined, { event });
-        return;
-      }
-      exportMenuRef.current?.open(event);
-    },
     itemMenus,
     itemMenuHost,
     isMenuDisabled: (menu) => isMenuItemDisabled(menu, itemMenuConditionCtx),
@@ -304,65 +313,60 @@ export function AttributeTable(props: AttributeTableProps) {
         value: convertFeatureToItem(row.feature),
       });
     },
+    onExport: menuMode
+      ? undefined
+      : (event) => {
+          if (clickMode) {
+            void runGeoExportClickFromAttributeTable({
+              layer: props.layer,
+              mapId,
+              event,
+            });
+            return;
+          }
+          openGeoExportModalFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            event,
+          });
+        },
+    exportFormats: menuMode ? geo.formats : undefined,
+    onExportFormat: menuMode
+      ? (format, event) => {
+          void runGeoExportFormatFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            format: format as GeoExportFormat,
+            event,
+          });
+        }
+      : undefined,
   };
-
-  function onExportAction(actionId: string) {
-    void controller?.export(actionId);
-    exportMenuRef.current?.close();
-  }
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
-        <>
-          <DraggableItemPopup
-            show={show}
-            width={760}
-            height={460}
-            title={title}
-            onClose={handleClose}
-            onUpdateShow={(v) => {
-              toggleShow(v);
-              if (!v) clearHighlight();
-            }}
-            {...bind}
-            {...panelBind}
-          >
-            <RegistryItem
-              componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
-              defaultComponent={AttributeTableView}
-              mapId={mapId}
-              {...viewProps}
-            />
-          </DraggableItemPopup>
-          {controller.isExportMenuMode() ? (
-            <ContextMenu ref={exportMenuRef}>
-              <ul className="context-menu layer-context-menu">
-                {exportActions.map((item) => (
-                  <li
-                    key={item.id}
-                    className="layer-context-menu__item"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onExportAction(item.id);
-                    }}
-                  >
-                    <div className="layer-context-menu__item-icon">
-                      <Icon path={item.icon || mdiDownload} size="16px" />
-                    </div>
-                    <span>
-                      {item.label ||
-                        (item.format
-                          ? GEO_EXPORT_FORMAT_META[item.format].name
-                          : item.id)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </ContextMenu>
-          ) : null}
-        </>
+        <DraggableItemPopup
+          show={show}
+          width={760}
+          height={460}
+          title={title}
+          onClose={handleClose}
+          onUpdateShow={(v) => {
+            toggleShow(v);
+            if (!v) clearHighlight();
+          }}
+          {...bind}
+          {...panelBind}
+        >
+          <RegistryItem
+            componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
+            defaultComponent={AttributeTableView}
+            mapId={mapId}
+            {...viewProps}
+          />
+        </DraggableItemPopup>
       )}
     />
   );

@@ -107,6 +107,7 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'REGISTRY_CONTROL_LOCALE',
   'REGISTRY_GLOBAL_STORE_KEY',
   'REGISTRY_NAMESPACES',
+  'reprojectGeojson',
   'reprojectGeojsonToWgs84',
   'resolveControlLayout',
   'resolveMapButtonSizeName',

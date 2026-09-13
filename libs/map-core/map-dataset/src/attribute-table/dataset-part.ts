@@ -2,7 +2,6 @@ import type { IDataset } from '../interfaces';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import { findSiblingOrNearestLeaf } from '../model/visitors';
-import type { AttributeTableExportOptions } from './export-options';
 import type { AttributeTableColumnsOption } from './model';
 import type { AttributeTableUiOptions } from './props';
 
@@ -11,19 +10,16 @@ export type CreateDatasetPartAttributeTableOptions = {
   columns?: AttributeTableColumnsOption;
   /** UI flags (highest precedence over menu / shell). */
   ui?: AttributeTableUiOptions;
-  /** Export UX (highest precedence over menu / shell). */
-  export?: AttributeTableExportOptions;
 };
 
 export type AttributeTablePart = IDataset & {
   type: 'attribute-table';
   getColumns(): AttributeTableColumnsOption | undefined;
   getUi(): AttributeTableUiOptions | undefined;
-  getExport(): AttributeTableExportOptions | undefined;
 };
 
 /**
- * Dataset sibling that configures Attribute Table (`columns`, `ui`, `export`).
+ * Dataset sibling that configures Attribute Table (`columns`, `ui`).
  * Attach next to list / source / data-management:
  *
  * ```ts
@@ -36,8 +32,11 @@ export type AttributeTablePart = IDataset & {
  * ```
  *
  * **Custom `store`:** when the shell / controller injects `store`, dataset-part
- * **columns are not applied** (the store owns its column layout). Part `ui` /
- * `export` still merge via shell / controller resolve helpers.
+ * **columns are not applied** (the store owns its column layout). Part `ui`
+ * still merges via shell / controller resolve helpers.
+ *
+ * Export stays on `@hungpvq/map-dataset/geo-export` (`createDatasetPartGeoExport`
+ * + list ⋮ Export) — not on the attribute-table part.
  */
 export function createDatasetPartAttributeTable(
   name: string,
@@ -46,7 +45,6 @@ export function createDatasetPartAttributeTable(
   const base = createDatasetLeaf(name);
   const columns = options.columns;
   const ui = options.ui;
-  const exportOpts = options.export;
 
   return createNamedComponent('AttributeTablePart', {
     ...base,
@@ -58,9 +56,6 @@ export function createDatasetPartAttributeTable(
     },
     getUi() {
       return ui;
-    },
-    getExport() {
-      return exportOpts;
     },
   }) as AttributeTablePart;
 }
@@ -111,21 +106,6 @@ export function resolveAttributeTableUiOption(
   const part = findAttributeTablePart(layer);
   if (part) {
     const fromPart = part.getUi();
-    if (fromPart != null) return fromPart;
-  }
-  return override;
-}
-
-/**
- * Resolve `export` options. Precedence: menu/shell ← dataset part.
- */
-export function resolveAttributeTableExportOption(
-  layer: IDataset,
-  override?: AttributeTableExportOptions,
-): AttributeTableExportOptions | undefined {
-  const part = findAttributeTablePart(layer);
-  if (part) {
-    const fromPart = part.getExport();
     if (fromPart != null) return fromPart;
   }
   return override;

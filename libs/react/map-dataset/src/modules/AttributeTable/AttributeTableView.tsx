@@ -83,20 +83,16 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     rowFilterLabel: props.labels.rowFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.selectedIds.length === 0,
-    exportLabel: state.exporting
-      ? props.labels.exporting
-      : state.selectedIds.length > 0
-        ? props.labels.exportSelected
-        : props.labels.export,
-    exportDisabled: !props.controller.canExport() || state.exporting,
-    exportLoading: state.exporting,
+    exportLabel: props.labels.export,
+    exportFormats: props.exportFormats,
     ui,
     onQueryChange: (value) => props.controller.setSearch(value),
     onZoomToSelectionChange: (value) =>
       props.controller.setZoomToSelection(value),
     onRowFilterChange: (value) => props.controller.setRowFilter(value),
     onClearSelection: () => props.controller.clearSelection(),
-    onExportClick: props.onExportClick,
+    onExport: props.onExport,
+    onExportFormat: props.onExportFormat,
   };
 
   const pagerProps: AttributeTablePagerProps = {

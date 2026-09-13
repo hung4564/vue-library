@@ -34,6 +34,8 @@ export function DraggableItemBottom({
   show: propShow,
   title = '',
   containerId: propContainerId,
+  componentCard,
+  componentCardHeader,
   onUpdateShow,
   onClose,
   children,
@@ -53,6 +55,8 @@ export function DraggableItemBottom({
     {
       title,
       type: 'item-bottom',
+      componentCard,
+      componentCardHeader,
     },
     stableId,
   );

@@ -213,6 +213,52 @@ describe('Stable item shells register into store', () => {
     shell.remove();
   });
 
+  it('DraggableModal releases inert when unmounted after close() race', async () => {
+    useDragContainer(CID).initContainer();
+    useDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const shell = document.createElement('div');
+    shell.className = 'draggable-root';
+    shell.innerHTML = `
+      <div class="draggable-container" id="center-sib-race"></div>
+      <div class="draggable-modal-layer" id="modal-layer-${CID}"></div>
+    `;
+    document.body.appendChild(shell);
+    const layer = document.getElementById(`modal-layer-${CID}`)!;
+    Object.defineProperty(layer, 'clientWidth', { value: 800 });
+    Object.defineProperty(layer, 'clientHeight', { value: 600 });
+
+    const wrapper = mount(DraggableModal, {
+      props: {
+        show: true,
+        title: 'M',
+        containerId: CID,
+        width: 320,
+        height: 200,
+        id: 'modal-inert-race-vue',
+      },
+      attachTo: document.body,
+      global: {
+        provide: { containerId: ref(CID) },
+        stubs: { Teleport: true },
+      },
+    });
+    await nextTick();
+    const center = document.getElementById('center-sib-race')!;
+    expect(center.hasAttribute('inert')).toBe(true);
+
+    // Simulate ExportGeo: close sets show=false then parent unmounts in the
+    // same tick before the show watcher can release inert.
+    await wrapper.setProps({ show: false });
+    wrapper.unmount();
+    expect(center.hasAttribute('inert')).toBe(false);
+    expect(center.hasAttribute('aria-hidden')).toBe(false);
+    shell.remove();
+  });
+
   it('DraggableItemSideBar → sidebar left', async () => {
     const wrapper = await mountItem(DraggableItemSideBar, { location: 'left' });
     const c = useDragStore().container[CID];

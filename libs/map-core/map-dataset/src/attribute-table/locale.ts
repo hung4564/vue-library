@@ -11,9 +11,6 @@ export const ATTRIBUTE_TABLE_LOCALE = {
       showAll: 'All rows',
       showSelected: 'Selected',
       clear: 'Clear selection',
-      export: 'Export',
-      'export-selected': 'Export selected',
-      exporting: 'Exporting…',
       page: 'Page',
       of: 'of',
       prev: 'Prev',
@@ -27,6 +24,7 @@ export const ATTRIBUTE_TABLE_LOCALE = {
       sortedDesc: 'sorted descending',
       notSorted: 'not sorted',
       selectionStatus: '{selected} of {total} selected',
+      export: 'Export',
     },
   },
 };

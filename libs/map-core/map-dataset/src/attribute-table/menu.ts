@@ -14,14 +14,10 @@ import {
   LIST_VIEW_MENU_COMPONENT_KEY,
   LIST_VIEW_MENU_ID,
 } from '../menu/items';
-import type { AttributeTableExportOptions } from './export-options';
+import { resolveAttributeTableUiOption } from './dataset-part';
 import type { AttributeTableColumnsOption } from './model';
 import type { AttributeTableRowFilter, AttributeTableUiOptions } from './props';
 import type { AttributeTableStore } from './store';
-import {
-  resolveAttributeTableExportOption,
-  resolveAttributeTableUiOption,
-} from './dataset-part';
 
 export type AttributeTableMenuOptions = Partial<
   Omit<MenuItemBottomOrExtra<IDataset>, 'click' | 'location'>
@@ -30,13 +26,12 @@ export type AttributeTableMenuOptions = Partial<
   store?: AttributeTableStore;
   ui?: AttributeTableUiOptions;
   rowFilter?: AttributeTableRowFilter;
-  export?: AttributeTableExportOptions;
 };
 
 export function createMenuItemAttributeTable(
   menu: AttributeTableMenuOptions = {},
 ) {
-  const { columns, store, ui, rowFilter, export: exportOpts, ...rest } = menu;
+  const { columns, store, ui, rowFilter, ...rest } = menu;
   return createMenuBuilder()
     .item()
     .setLocation('menu')
@@ -58,7 +53,6 @@ export function createMenuItemAttributeTable(
                 store,
                 ui: resolveAttributeTableUiOption(layer, ui),
                 rowFilter,
-                export: resolveAttributeTableExportOption(layer, exportOpts),
               })
               .setCheck(
                 `${LIST_VIEW_MENU_COMPONENT_KEY.attributeTable}:${layer.id}`,
@@ -77,11 +71,6 @@ export function createMenuItemAttributeTable(
 
 export function isAttributeTableMenuHidden(ctx: MenuConditionContext): boolean {
   const extra = (ctx.context ?? {}) as { disabledAttributeTable?: boolean };
-  const config = (
-    ctx.layer as { config?: { disabled_attribute_table?: boolean } }
-  )?.config;
-  if (extra.disabledAttributeTable || config?.disabled_attribute_table) {
-    return true;
-  }
+  if (extra.disabledAttributeTable) return true;
   return !hasGeojsonExportData(ctx.layer);
 }

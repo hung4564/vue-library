@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 import { createDatasetRegistryPlugin } from './index';
@@ -17,7 +18,8 @@ const REGISTERED_KEYS = [
   LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
   LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,
   LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
-  LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
+  GEO_EXPORT_COMPONENT_KEY.root,
+  GEO_EXPORT_COMPONENT_KEY.formatMenu,
   LIST_VIEW_MENU_COMPONENT_KEY.identify,
   LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
   LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,

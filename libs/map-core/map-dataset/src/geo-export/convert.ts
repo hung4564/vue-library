@@ -57,20 +57,24 @@ export async function convertFeatureCollectionToFile(
     case 'csv':
       return new Blob([featuresToCsv(data)], { type: meta.mime });
     case 'kml': {
+      const peerHint = 'Install optional peer "tokml" to export KML';
       try {
         // tokml ships without TypeScript types
         // @ts-expect-error -- no bundled types for 'tokml'
         const mod = (await import('tokml')) as { default?: TokmlFn };
         const tokml = mod.default;
         if (typeof tokml !== 'function') {
-          throw new Error('Install optional peer "tokml" to export KML');
+          throw new Error(peerHint);
         }
         return new Blob([tokml(data)], { type: meta.mime });
-      } catch {
-        throw new Error('Install optional peer "tokml" to export KML');
+      } catch (error) {
+        if (error instanceof Error && error.message === peerHint) throw error;
+        throw new Error(peerHint);
       }
     }
     case 'shapefile': {
+      const peerHint =
+        'Install optional peer "@mapbox/shp-write" to export Shapefile';
       try {
         const shpwrite = await import('@mapbox/shp-write');
         const result = await shpwrite.zip(data, {
@@ -89,13 +93,12 @@ export async function convertFeatureCollectionToFile(
       } catch (error) {
         if (
           error instanceof Error &&
-          error.message.startsWith('Could not convert')
+          (error.message.startsWith('Could not convert') ||
+            error.message === peerHint)
         ) {
           throw error;
         }
-        throw new Error(
-          'Install optional peer "@mapbox/shp-write" to export Shapefile',
-        );
+        throw new Error(peerHint);
       }
     }
     default:

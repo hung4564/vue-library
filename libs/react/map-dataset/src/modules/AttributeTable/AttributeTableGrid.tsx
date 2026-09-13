@@ -22,7 +22,7 @@ function resolveSlot(value: unknown) {
   return {
     componentKey: resolved.componentKey,
     defaultComponent: resolved.defaultComponent as
-      | ComponentType<any>
+      | ComponentType<Record<string, unknown>>
       | undefined,
   };
 }

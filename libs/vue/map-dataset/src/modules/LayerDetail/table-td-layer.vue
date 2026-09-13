@@ -21,7 +21,6 @@ import { computed } from 'vue';
 import TableTdCopy from './table-td-copy.vue';
 const props = defineProps({
   item: {},
-  view: {},
   field: {},
   label: {},
 });

@@ -62,6 +62,8 @@ describe('createGeoJsonDataset', () => {
     const menuIds = (list.getMenus?.() ?? []).map((m) => m.id);
     expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.toggleShow);
     expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.identify);
+    expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.exportGeo);
+    expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.attributeTable);
     expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.fillBound);
   });
 
@@ -85,6 +87,22 @@ describe('createGeoJsonDataset', () => {
       bbox: null,
     });
     expect(findAllComponentsByType(dataset, 'bound').length).toBe(0);
+  });
+
+  it('omits Export / Attribute table when disabled via options', () => {
+    const dataset = createGeoJsonDataset({
+      name: 'NoMenus',
+      geojson: pointCollection,
+      type: 'point',
+      export: false,
+      attributeTable: false,
+    });
+    const list = findAllComponentsByType(dataset, 'list')[0] as {
+      getMenus?: () => { id?: string }[];
+    };
+    const menuIds = (list.getMenus?.() ?? []).map((m) => m.id);
+    expect(menuIds).not.toContain(LIST_VIEW_MENU_ID.layer.exportGeo);
+    expect(menuIds).not.toContain(LIST_VIEW_MENU_ID.layer.attributeTable);
   });
 
   it('uses provided bbox without recomputing', () => {

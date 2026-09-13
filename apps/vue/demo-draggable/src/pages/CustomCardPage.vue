@@ -2,6 +2,7 @@
 import {
   DraggableContainer,
   DraggableDrawer,
+  DraggableItemBottom,
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
@@ -106,6 +107,10 @@ onUnmounted(() => {
     >
       <div class="panel">Drawer with global card.</div>
     </DraggableDrawer>
+
+    <DraggableItemBottom show title="Bottom (local)" :componentCard="LocalCard" :componentCardHeader="LocalHeader">
+      <div class="panel">Bottom shell uses local override while this item is active.</div>
+    </DraggableItemBottom>
 
     <DraggableModal
       v-model:show="showModal"

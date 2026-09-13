@@ -1,7 +1,6 @@
 import type { ControlLayout, Position } from '@hungpvq/map-core';
 import type { IDataset, MenuAction } from '../interfaces';
 import type { AttributeTableController } from './controller';
-import type { AttributeTableExportOptions } from './export-options';
 import type {
   AttributeTableColumn,
   AttributeTableColumnsOption,
@@ -26,7 +25,7 @@ export const ATTRIBUTE_TABLE_COMPONENT_KEY = {
    * Register a custom component here to swap in another table library.
    */
   view: 'attribute-table-view',
-  /** Search / zoom / filter / clear / export strip (default view only). */
+  /** Search / zoom / filter / clear strip (default view only). */
   toolbar: 'attribute-table-toolbar',
   /** Page controls (default view only). */
   pager: 'attribute-table-pager',
@@ -50,9 +49,6 @@ export type AttributeTableViewLabels = {
   showAll: string;
   showSelected: string;
   clear: string;
-  export: string;
-  exportSelected: string;
-  exporting: string;
   loading: string;
   empty: string;
   page: string;
@@ -73,12 +69,13 @@ export type AttributeTableViewLabels = {
   notSorted: string;
   /** Template with `{selected}` and `{total}` placeholders. */
   selectionStatus: string;
+  /** Toolbar Export button label. */
+  export: string;
 };
 
 /** Show/hide built-in controls. Component override stays on Registry. */
 export type AttributeTableUiOptions = {
   search?: boolean;
-  export?: boolean;
   zoomToSelection?: boolean;
   clearSelection?: boolean;
   rowFilter?: boolean;
@@ -87,11 +84,15 @@ export type AttributeTableUiOptions = {
   rowMenus?: boolean;
   /** When false, disable sorting for the whole table (default true). */
   sort?: boolean;
+  /**
+   * Toolbar Export button (uses `@hungpvq/map-dataset/geo-export`).
+   * Default true.
+   */
+  export?: boolean;
 };
 
 export const ATTRIBUTE_TABLE_UI_DEFAULTS: Required<AttributeTableUiOptions> = {
   search: true,
-  export: true,
   zoomToSelection: true,
   clearSelection: true,
   rowFilter: true,
@@ -99,6 +100,7 @@ export const ATTRIBUTE_TABLE_UI_DEFAULTS: Required<AttributeTableUiOptions> = {
   checkbox: true,
   rowMenus: true,
   sort: true,
+  export: true,
 };
 
 export function resolveAttributeTableUi(
@@ -118,11 +120,6 @@ export type AttributeTableProps = {
   /** Inject store; default is DM sibling or local GeoJSON. */
   store?: AttributeTableStore;
   ui?: AttributeTableUiOptions;
-  /**
-   * Export UX: local format menu, custom actions, or a single handler
-   * (API / dialog). See {@link AttributeTableExportOptions}.
-   */
-  export?: AttributeTableExportOptions;
   /**
    * Initial row filter when the table opens.
    * `'selected'` shows only selected rows (empty until user selects).
@@ -157,8 +154,6 @@ export type AttributeTableViewProps = {
   labels: AttributeTableViewLabels;
   ui?: AttributeTableUiOptions;
 
-  onExportClick: (event: MouseEvent) => void;
-
   itemMenus: MenuAction[];
   itemMenuHost: IDataset;
   isMenuDisabled: (menu: MenuAction) => boolean;
@@ -167,6 +162,14 @@ export type AttributeTableViewProps = {
     menu: MenuAction,
     event: MouseEvent,
   ) => void;
+  /** Open ExportGeo modal (when geo-export `uiMode` is modal). */
+  onExport?: (event: MouseEvent) => void;
+  /**
+   * Format submenu when geo-export `uiMode` is `menu`.
+   * When set, toolbar shows a format dropdown instead of opening the modal.
+   */
+  exportFormats?: string[];
+  onExportFormat?: (format: string, event: MouseEvent) => void;
 };
 
 export type AttributeTableToolbarProps = {
@@ -182,16 +185,15 @@ export type AttributeTableToolbarProps = {
   rowFilterLabel: string;
   clearLabel: string;
   clearDisabled: boolean;
-  exportLabel: string;
-  exportDisabled: boolean;
-  /** True while an export action / handler is in flight. */
-  exportLoading?: boolean;
+  exportLabel?: string;
+  exportFormats?: string[];
   ui?: AttributeTableUiOptions;
   onQueryChange: (value: string) => void;
   onZoomToSelectionChange: (value: boolean) => void;
   onRowFilterChange: (value: AttributeTableRowFilter) => void;
   onClearSelection: () => void;
-  onExportClick: (event: MouseEvent) => void;
+  onExport?: (event: MouseEvent) => void;
+  onExportFormat?: (format: string, event: MouseEvent) => void;
 };
 
 export type AttributeTablePagerProps = {

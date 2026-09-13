@@ -356,8 +356,8 @@ identify.addMenus([
 | [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `layer` | `extra` (or `menu`) | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling or without IdentifyControl mounted |
 | [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.moveUp` / `.moveDown` | List UI unless `configDisabledMove()` |
 | [`createMenuItemAddToGroup`](#createmenuitemaddtogroup) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.addToGroup` | List UI unless `configDisabledAddToGroup()` |
-| [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.exportGeo` | List UI unless `configDisabledExport()` |
-| [`createMenuItemAttributeTable`](#createmenuitemattributetable) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.attributeTable` | List UI unless `configDisabledAttributeTable()` |
+| [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.exportGeo` | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) |
+| [`createMenuItemAttributeTable`](#createmenuitemattributetable) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.attributeTable` | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) |
 | [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.showDetail` | Identify builders |
 | [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.flyTo` | Identify builders |
 
@@ -589,6 +589,8 @@ Identify / feature row: open detail panel and highlight the feature.
 | **Click** | `addComponent` → `layer-detail` + `highlight` (`key: 'detail'`) |
 | **Needs** | `ComponentManagementControl`; `fields` define labels/keys for `value` |
 
+The Layer Detail popup renders the same item menus as Identify / Attribute Table in its header, but **omits** `show-detail` (the popup itself).
+
 ```ts
 identify.addMenus([
   createMenuItemShowDetailForItem([
@@ -662,7 +664,7 @@ const items = createAddToGroupSubmenu(
 
 ### `createMenuItemExportGeo`
 
-Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Uses a custom submenu component. Full guide: [Export](./export.md).
+Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Opens the `ExportGeo` **DraggableModal** shell via `addComponent` (same pattern as Attribute table). Full guide: [Export](./export.md).
 
 | | |
 | --- | --- |
@@ -670,18 +672,20 @@ Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Uses a custom submenu 
 | **Location** | `menu` |
 | **Id** | `LIST_VIEW_MENU_ID.layer.exportGeo` (`export-geo`) |
 | **Order** | `23` |
-| **Component** | `layer-action-export-geo` |
+| **Needs** | Registry + `ComponentManagementControl`; GeoJSON / data-management data |
+| **Component key** | `GEO_EXPORT_COMPONENT_KEY.root` (`layer-action-export-geo`; alias `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo`) |
 
 **Options**
 
 | Field | Role |
 | --- | --- |
-| `formats` | Subset of `'geojson' \| 'kml' \| 'csv' \| 'shapefile'` |
+| `formats` | Subset of `'geojson' \| 'kml' \| 'csv' \| 'shapefile'` (passed to the shell) |
 | `filename` | `string` or `(layer) => string` |
 | `getCollection` | Custom FeatureCollection (sync/async) |
+| `sourceCrs` / `targetCrs` | EPSG codes for data / initial shell CRS (default `4326`) |
 | `hidden` / `disabled` / `order` / `name` / `icon` | Overlay |
 
-**Hidden when**: `disabledExport`, `.configDisabledExport()`, or the layer has no GeoJSON / data-management export data.
+**Hidden when**: `menuContext.disabledExport`, or the layer has no GeoJSON / data-management export data.
 
 ```ts
 list.addMenu(
@@ -690,7 +694,6 @@ list.addMenu(
     filename: (layer) => layer.getName(),
   }),
 );
-// If you add it yourself, also .configDisabledExport() to avoid a duplicate default item
 ```
 
 ---
@@ -709,7 +712,7 @@ Opens the attribute table dialog. Full guide: [Attribute table](./attribute-tabl
 
 **Options**: same overlays as other items, plus `columns` to limit / rename fields (array of `{ key, label }` / `'__geometry'`, or a `Record<key, label>`).
 
-**Hidden when**: `disabledAttributeTable`, `.configDisabledAttributeTable()`, or no exportable GeoJSON data.
+**Hidden when**: `menuContext.disabledAttributeTable`, or no exportable GeoJSON data.
 
 ```ts
 list.addMenu(

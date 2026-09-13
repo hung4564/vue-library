@@ -34,7 +34,7 @@ const source = createDatasetPartGeojsonSourceComponent(
 
 After add: `source.updateData(map, nextGeoJSON)` to replace features.
 
-List ⋮ **Export** downloads this source as GeoJSON / KML / CSV / Shapefile. **Attribute table** lists feature properties. See [Export](./export.md) and [Attribute table](./attribute-table.md).
+When the list has **Export** / **Attribute table** menus (opt-in via `addMenu`, or from `createGeoJsonDataset`), Export downloads this source as GeoJSON / KML / CSV / Shapefile and Attribute table lists feature properties. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
 ## Raster tiles
 

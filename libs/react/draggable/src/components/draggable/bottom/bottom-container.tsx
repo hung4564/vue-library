@@ -7,7 +7,13 @@ import {
   useState,
 } from 'react';
 import { useContainerId } from '../../../context/ContainerContext';
-import { useComponent, useExpand, useIcon } from '../../../hook';
+import {
+  useComponent,
+  useExpand,
+  useIcon,
+  type ShareCardComponent,
+  type ShareHeaderComponent,
+} from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useBottomItem, useDragContainer } from '../../../store';
 import { useContainerReactive } from '../../../store/useStoreReactive';
@@ -25,8 +31,18 @@ export function BottomContainer() {
   const { getItemAction } = useDragContainer(containerId);
 
   const { expand, toggle: onToggleExpand } = useExpand({}, undefined, false);
+  const activeBottomId = getShow();
+  const activeAction = activeBottomId
+    ? getItemAction(activeBottomId)
+    : undefined;
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
     containerId,
+    componentCard: activeAction?.componentCard as
+      | ShareCardComponent
+      | undefined,
+    componentCardHeader: activeAction?.componentCardHeader as
+      | ShareHeaderComponent
+      | undefined,
   });
   const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
     useIcon();
@@ -35,7 +51,6 @@ export function BottomContainer() {
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const activeBottomId = getShow();
   // Derive visibility in render (not useEffect) so portal hosts exist in the
   // same commit that BottomModule looks them up.
   const visible = !!activeBottomId;

@@ -6,7 +6,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { inject, ref, Ref } from 'vue';
+import { computed, inject, ref, Ref } from 'vue';
 import {
   useInitAction,
   useShow,
@@ -39,6 +39,10 @@ const { itemId } = useInitBottom(
     type: 'item-bottom',
   },
   props.id,
+  computed(() => ({
+    componentCard: props.componentCard,
+    componentCardHeader: props.componentCardHeader,
+  })),
 );
 useInitAction(containerId.value, itemId.value, {
   open,

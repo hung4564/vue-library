@@ -103,6 +103,24 @@ const p_x = ref(0);
 const p_y = ref(0);
 const modalRoot = ref<HTMLDivElement>();
 let previousFocus: HTMLElement | null = null;
+/** True while this instance has incremented the root modal inert refcount. */
+let inertHeld = false;
+
+function releaseModalInert() {
+  if (!inertHeld) return;
+  setModalSiblingsInert(
+    document.getElementById(`modal-layer-${containerId.value}`),
+    false,
+  );
+  inertHeld = false;
+}
+
+function holdModalInert() {
+  const layer = document.getElementById(`modal-layer-${containerId.value}`);
+  if (!layer || inertHeld) return;
+  setModalSiblingsInert(layer, true);
+  inertHeld = true;
+}
 
 function emitBounds() {
   const bounds = {
@@ -190,9 +208,8 @@ watch(
   show,
   async (visible) => {
     init_done.value = false;
-    const layer = document.getElementById(`modal-layer-${containerId.value}`);
-    setModalSiblingsInert(layer, visible);
     if (!visible) {
+      releaseModalInert();
       document.removeEventListener('keydown', onKeydown);
       if (previousFocus && typeof previousFocus.focus === 'function') {
         previousFocus.focus();
@@ -200,6 +217,7 @@ watch(
       previousFocus = null;
       return;
     }
+    holdModalInert();
     previousFocus = document.activeElement as HTMLElement | null;
     await nextTick();
     init();
@@ -213,12 +231,9 @@ watch(
 );
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown);
-  if (show.value) {
-    setModalSiblingsInert(
-      document.getElementById(`modal-layer-${containerId.value}`),
-      false,
-    );
-  }
+  // Always release: parent may unmount after close() sets show=false but
+  // before the show watcher runs, which would leave siblings stuck inert.
+  releaseModalInert();
 });
 watch(
   () => [props.left, props.top, props.width, props.height] as const,

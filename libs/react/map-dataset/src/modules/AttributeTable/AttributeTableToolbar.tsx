@@ -2,13 +2,30 @@ import {
   resolveAttributeTableUi,
   type AttributeTableToolbarProps,
 } from '@hungpvq/map-dataset/attribute-table';
+import {
+  GEO_EXPORT_FORMAT_META,
+  type GeoExportFormat,
+} from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { InputCheckbox, InputSelect, InputText } from '@hungpvq/react-map-core/fields';
-import { mdiChevronDown, mdiDownload } from '@mdi/js';
-import Icon from '@mdi/react';
+import { useState, type MouseEvent } from 'react';
 
 export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
   const ui = resolveAttributeTableUi(props.ui);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const formatItems = (props.exportFormats ?? []).map((fmt) => ({
+    value: fmt,
+    text: GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
+  }));
+
+  function onExportClick(event: MouseEvent) {
+    if (props.exportFormats?.length && props.onExportFormat) {
+      setMenuOpen((open) => !open);
+      return;
+    }
+    props.onExport?.(event.nativeEvent);
+  }
+
   return (
     <div className="attribute-table__toolbar">
       <div className="attribute-table__toolbar-row attribute-table__toolbar-row--primary">
@@ -20,27 +37,35 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
             onChange={props.onQueryChange}
           />
         ) : null}
-        {ui.export ? (
-          <MapControlButton
-            className="attribute-table__export"
-            disabled={props.exportDisabled || props.exportLoading}
-            loading={!!props.exportLoading}
-            variant="outlined"
-            size="medium"
-            onClick={(event) => {
-              event.stopPropagation();
-              if (props.exportLoading) return;
-              props.onExportClick(event.nativeEvent);
-            }}
-          >
-            {!props.exportLoading ? (
-              <Icon path={mdiDownload} size="16px" />
+        {ui.export && (props.onExport || props.onExportFormat) ? (
+          <div className="attribute-table__export">
+            <MapControlButton
+              variant="outlined"
+              size="medium"
+              onClick={onExportClick}
+            >
+              {props.exportLabel || 'Export'}
+            </MapControlButton>
+            {menuOpen && formatItems.length ? (
+              <ul className="attribute-table__export-menu" role="menu">
+                {formatItems.map((item) => (
+                  <li
+                    key={String(item.value)}
+                    role="menuitem"
+                    onClick={(event) => {
+                      setMenuOpen(false);
+                      props.onExportFormat?.(
+                        String(item.value),
+                        event.nativeEvent,
+                      );
+                    }}
+                  >
+                    {item.text}
+                  </li>
+                ))}
+              </ul>
             ) : null}
-            {props.exportLabel}
-            {!props.exportLoading ? (
-              <Icon path={mdiChevronDown} size="16px" />
-            ) : null}
-          </MapControlButton>
+          </div>
         ) : null}
       </div>
       {ui.zoomToSelection || ui.rowFilter || ui.clearSelection ? (

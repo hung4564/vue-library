@@ -121,10 +121,7 @@ function configurePresentMenus(
   options: PresentOptions,
 ): IDataset {
   const list = findFirstLeafByType(dataset, 'list') as
-    | (IDataset &
-        WithMenuHelper & {
-          config?: { disabled_attribute_table?: boolean };
-        })
+    | (IDataset & WithMenuHelper)
     | undefined;
   const identify = findFirstLeafByType(dataset, 'identify') as
     | IIdentifyView
@@ -137,9 +134,6 @@ function configurePresentMenus(
   }
 
   if (!options.attributeTable && list) {
-    if (list.config) {
-      list.config.disabled_attribute_table = true;
-    }
     list.removeMenu(LIST_VIEW_MENU_ID.layer.attributeTable);
   }
 

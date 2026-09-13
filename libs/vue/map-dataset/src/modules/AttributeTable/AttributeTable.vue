@@ -13,7 +13,6 @@ import {
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   clearPendingAttributeTableSelectRows,
   createAttributeTableController,
-  resolveAttributeTableExportOption,
   resolveAttributeTableUi,
   resolveAttributeTableUiOption,
   takePendingAttributeTableSelectRows,
@@ -24,7 +23,6 @@ import {
   type AttributeTableViewLabels,
   type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
-import { GEO_EXPORT_FORMAT_META } from '@hungpvq/map-dataset/geo-export';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -33,7 +31,16 @@ import {
   isMenuItemDisabled,
   isMenuItemHidden,
 } from '@hungpvq/map-dataset/menu';
-import { ContextMenu, DraggableItemPopup } from '@hungpvq/vue-draggable';
+import {
+  clearGeoExportActiveSource,
+  openGeoExportModalFromAttributeTable,
+  resolveAttributeTableGeoExport,
+  runGeoExportClickFromAttributeTable,
+  runGeoExportFormatFromAttributeTable,
+  setGeoExportActiveSource,
+  type GeoExportFormat,
+} from '@hungpvq/map-dataset/geo-export';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
   RegistryItem,
@@ -41,8 +48,6 @@ import {
   useMap,
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiDownload } from '@mdi/js';
 import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { useMapDatasetHighlight } from '../../store';
@@ -67,7 +72,6 @@ function createController() {
     columns: props.columns,
     store: props.store,
     rowFilter: props.rowFilter,
-    export: resolveAttributeTableExportOption(props.layer, props.export),
     sortable: resolveAttributeTableUi(ui).sort,
   });
 }
@@ -87,19 +91,14 @@ function bindController(next: AttributeTableController) {
 
 watch(
   () =>
-    [
-      props.layer,
-      props.columns,
-      props.store,
-      props.rowFilter,
-      props.export,
-      props.ui,
-    ] as const,
+    [props.layer, props.columns, props.store, props.rowFilter, props.ui] as const,
   () => {
     // Re-open when addComponent updates the same `check` while hidden via toggle.
     show.value = true;
+    clearGeoExportActiveSource(mapId.value);
     controller.value.dispose();
     bindController(createController());
+    syncGeoExportBridge();
     void controller.value.load('initial');
   },
 );
@@ -123,9 +122,6 @@ const labels = computed((): AttributeTableViewLabels => ({
   showAll: trans.value('map.attribute-table.showAll'),
   showSelected: trans.value('map.attribute-table.showSelected'),
   clear: trans.value('map.attribute-table.clear'),
-  export: trans.value('map.attribute-table.export'),
-  exportSelected: trans.value('map.attribute-table.export-selected'),
-  exporting: trans.value('map.attribute-table.exporting'),
   loading: trans.value('map.attribute-table.loading'),
   empty: trans.value('map.attribute-table.empty'),
   page: trans.value('map.attribute-table.page'),
@@ -143,16 +139,8 @@ const labels = computed((): AttributeTableViewLabels => ({
   sortedDesc: trans.value('map.attribute-table.sortedDesc'),
   notSorted: trans.value('map.attribute-table.notSorted'),
   selectionStatus: trans.value('map.attribute-table.selectionStatus'),
+  export: trans.value('map.attribute-table.export'),
 }));
-
-const exportActions = computed(() => {
-  tick.value;
-  return controller.value.getExportActions();
-});
-const exportMenuMode = computed(() => {
-  tick.value;
-  return controller.value.isExportMenuMode();
-});
 
 const title = computed(() => {
   const name =
@@ -243,25 +231,6 @@ function applySelection(focus?: AttributeTableRow) {
   });
 }
 
-const exportMenuRef = ref<{
-  open: (event: MouseEvent) => void;
-  close: () => void;
-}>();
-function onExportClick(event: MouseEvent) {
-  if (!controller.value.canExport() || controller.value.getState().exporting) {
-    return;
-  }
-  if (!controller.value.isExportMenuMode()) {
-    void controller.value.export(undefined, { event });
-    return;
-  }
-  exportMenuRef.value?.open(event);
-}
-function onExportAction(actionId: string) {
-  void controller.value.export(actionId);
-  exportMenuRef.value?.close();
-}
-
 const itemMenuHost = computed(() => getItemMenuHost(props.layer));
 const itemMenus = computed(() => {
   if (resolvedUi.value?.rowMenus === false) return [];
@@ -275,30 +244,86 @@ const itemMenuConditionCtx = computed(() =>
   createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
 );
 
-const viewProps = computed((): AttributeTableViewProps => ({
-  mapId: mapId.value,
-  layer: props.layer,
-  controller: controller.value,
-  pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
-  labels: labels.value,
-  ui: resolvedUi.value,
-  onExportClick,
-  itemMenus: itemMenus.value,
-  itemMenuHost: itemMenuHost.value,
-  isMenuDisabled: (menu) =>
-    isMenuItemDisabled(menu, itemMenuConditionCtx.value),
-  onRowMenuAction: (row, menu, event) => {
-    handleMenuAction(menu, {
-      event,
-      layer: itemMenuHost.value,
-      mapId: mapId.value,
-      value: convertFeatureToItem(row.feature),
-    });
-  },
-}));
+const viewProps = computed((): AttributeTableViewProps => {
+  const geo = resolveAttributeTableGeoExport(props.layer);
+  const menuMode = geo.uiMode === 'menu';
+  const clickMode = geo.uiMode === 'click';
+  return {
+    mapId: mapId.value,
+    layer: props.layer,
+    controller: controller.value,
+    pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+    labels: labels.value,
+    ui: resolvedUi.value,
+    itemMenus: itemMenus.value,
+    itemMenuHost: itemMenuHost.value,
+    isMenuDisabled: (menu) =>
+      isMenuItemDisabled(menu, itemMenuConditionCtx.value),
+    onRowMenuAction: (row, menu, event) => {
+      handleMenuAction(menu, {
+        event,
+        layer: itemMenuHost.value,
+        mapId: mapId.value,
+        value: convertFeatureToItem(row.feature),
+      });
+    },
+    onExport: menuMode
+      ? undefined
+      : (event) => {
+          if (clickMode) {
+            void runGeoExportClickFromAttributeTable({
+              layer: props.layer,
+              mapId: mapId.value,
+              event,
+            });
+            return;
+          }
+          openGeoExportModalFromAttributeTable({
+            layer: props.layer,
+            mapId: mapId.value,
+            event,
+          });
+        },
+    exportFormats: menuMode ? geo.formats : undefined,
+    onExportFormat: menuMode
+      ? (format, event) => {
+          void runGeoExportFormatFromAttributeTable({
+            layer: props.layer,
+            mapId: mapId.value,
+            format: format as GeoExportFormat,
+            event,
+          });
+        }
+      : undefined,
+  };
+});
+
+function syncGeoExportBridge() {
+  setGeoExportActiveSource(mapId.value, {
+    layerId: props.layer.id,
+    getSearch: () => controller.value.getState().search,
+    getSort: () => controller.value.getState().sortStates,
+    getSelectedIds: () => controller.value.getState().selectedIds,
+    resolveSelectedCollection: async (ids) => {
+      const rows = await controller.value.resolveFeaturesForSelection(ids);
+      return {
+        type: 'FeatureCollection',
+        features: rows.map((row) => row.feature as Feature),
+      };
+    },
+    resolveFilteredCollection: async () => {
+      const rows = await controller.value.resolveFilteredFeatures();
+      return {
+        type: 'FeatureCollection',
+        features: rows.map((row) => row.feature as Feature),
+      };
+    },
+  });
+}
 
 onMounted(async () => {
   bindController(controller.value);
+  syncGeoExportBridge();
   const queued = takePendingAttributeTableSelectRows(mapId.value);
   if (queued) {
     show.value = true;
@@ -310,6 +335,7 @@ onMounted(async () => {
 });
 onUnmounted(() => {
   unsub?.();
+  clearGeoExportActiveSource(mapId.value, props.layer.id);
   controller.value.dispose();
   clearAttributeTableHighlight();
 });
@@ -334,24 +360,6 @@ onUnmounted(() => {
           v-bind="viewProps"
         />
       </DraggableItemPopup>
-      <ContextMenu v-if="exportMenuMode" ref="exportMenuRef">
-        <ul class="context-menu layer-context-menu">
-          <li
-            v-for="item in exportActions"
-            :key="item.id"
-            class="layer-context-menu__item"
-            @click.stop="onExportAction(item.id)"
-          >
-            <div class="layer-context-menu__item-icon">
-              <SvgIcon :size="16" type="mdi" :path="item.icon || mdiDownload" />
-            </div>
-            <span>{{
-              item.label ||
-              (item.format ? GEO_EXPORT_FORMAT_META[item.format].name : item.id)
-            }}</span>
-          </li>
-        </ul>
-      </ContextMenu>
     </template>
   </ModuleContainer>
 </template>

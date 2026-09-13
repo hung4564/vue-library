@@ -6,14 +6,35 @@ import {
   resolveAttributeTableUi,
   type AttributeTableToolbarProps,
 } from '@hungpvq/map-dataset/attribute-table';
+import { GEO_EXPORT_FORMAT_META, type GeoExportFormat } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { InputCheckbox, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiChevronDown, mdiDownload } from '@mdi/js';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<AttributeTableToolbarProps>();
 const ui = computed(() => resolveAttributeTableUi(props.ui));
+const menuOpen = ref(false);
+
+const formatItems = computed(() =>
+  (props.exportFormats ?? []).map((fmt) => ({
+    value: fmt,
+    text:
+      GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
+  })),
+);
+
+function onExportClick(event: MouseEvent) {
+  if (props.exportFormats?.length && props.onExportFormat) {
+    menuOpen.value = !menuOpen.value;
+    return;
+  }
+  props.onExport?.(event);
+}
+
+function onFormatPick(fmt: string, event: MouseEvent) {
+  menuOpen.value = false;
+  props.onExportFormat?.(fmt, event);
+}
 </script>
 <template>
   <div class="attribute-table__toolbar">
@@ -25,29 +46,32 @@ const ui = computed(() => resolveAttributeTableUi(props.ui));
         :aria-label="props.searchLabel"
         @update:model-value="props.onQueryChange(String($event ?? ''))"
       />
-      <MapControlButton
-        v-if="ui.export"
+      <div
+        v-if="ui.export && (props.onExport || props.onExportFormat)"
         class="attribute-table__export"
-        :disabled="props.exportDisabled || props.exportLoading"
-        :loading="!!props.exportLoading"
-        variant="outlined"
-        size="medium"
-        @click.stop="props.onExportClick($event)"
       >
-        <SvgIcon
-          v-if="!props.exportLoading"
-          :size="16"
-          type="mdi"
-          :path="mdiDownload"
-        />
-        {{ props.exportLabel }}
-        <SvgIcon
-          v-if="!props.exportLoading"
-          :size="16"
-          type="mdi"
-          :path="mdiChevronDown"
-        />
-      </MapControlButton>
+        <MapControlButton
+          variant="outlined"
+          size="medium"
+          @click="onExportClick($event)"
+        >
+          {{ props.exportLabel || 'Export' }}
+        </MapControlButton>
+        <ul
+          v-if="menuOpen && formatItems.length"
+          class="attribute-table__export-menu"
+          role="menu"
+        >
+          <li
+            v-for="item in formatItems"
+            :key="String(item.value)"
+            role="menuitem"
+            @click="onFormatPick(String(item.value), $event)"
+          >
+            {{ item.text }}
+          </li>
+        </ul>
+      </div>
     </div>
     <div
       v-if="ui.zoomToSelection || ui.rowFilter || ui.clearSelection"

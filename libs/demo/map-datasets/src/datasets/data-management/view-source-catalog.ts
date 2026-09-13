@@ -51,6 +51,20 @@ import {
   createIdentifyMenuDataset,
   createSharedDatasetMenuDataset,
 } from '../menu';
+import {
+  createGeoExportAtScopesDataset,
+  createGeoExportClickDataset,
+  createGeoExportCustomApiDataset,
+  createGeoExportLocalModalDataset,
+  createGeoExportMenuFormatsDataset,
+  createGeoExportOverrideUiDataset,
+  GEO_EXPORT_AT_SCOPES_NAME,
+  GEO_EXPORT_CLICK_NAME,
+  GEO_EXPORT_CUSTOM_API_NAME,
+  GEO_EXPORT_LOCAL_MODAL_NAME,
+  GEO_EXPORT_MENU_FORMATS_NAME,
+  GEO_EXPORT_OVERRIDE_UI_NAME,
+} from '../geo-export';
 import { registerFactoryViewSource } from './view-source-registry';
 
 // Side-effect: highlight factories register themselves.
@@ -216,6 +230,40 @@ reg(
   createDatasetMeasure as (...args: any[]) => unknown,
   undefined,
   '// createDatasetMeasure(handler, measurementType) — measurementType is area|distance|line|point',
+);
+
+// —— geo-export ——
+reg(
+  GEO_EXPORT_LOCAL_MODAL_NAME,
+  'Geo export — 1 modal local download',
+  createGeoExportLocalModalDataset,
+);
+reg(
+  GEO_EXPORT_MENU_FORMATS_NAME,
+  'Geo export — 2 format submenu',
+  createGeoExportMenuFormatsDataset,
+);
+reg(
+  GEO_EXPORT_CLICK_NAME,
+  'Geo export — 3 click one-shot',
+  createGeoExportClickDataset,
+);
+reg(
+  GEO_EXPORT_CUSTOM_API_NAME,
+  'Geo export — 4 custom onExport mock API',
+  createGeoExportCustomApiDataset,
+);
+reg(
+  GEO_EXPORT_AT_SCOPES_NAME,
+  'Geo export — 5 Attribute Table scopes',
+  createGeoExportAtScopesDataset,
+);
+reg(
+  GEO_EXPORT_OVERRIDE_UI_NAME,
+  'Geo export — formComponent on dataset part',
+  createGeoExportOverrideUiDataset,
+  undefined,
+  '// Demo page: createGeoExportOverrideUiDataset({ formComponent: DemoExportForm, loadingComponent: DemoExportLoading })',
 );
 
 export {};

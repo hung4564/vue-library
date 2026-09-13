@@ -1,9 +1,11 @@
+import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
 import {
   AddToGroup,
   ExportGeo,
+  ExportGeoFormatMenu,
   IdentifyLayerAction,
   LayerItemIcon,
   SetOpacity,
@@ -82,8 +84,12 @@ export function createDatasetRegistryPlugin() {
         AddToGroup,
       );
       UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.exportGeo,
+        GEO_EXPORT_COMPONENT_KEY.root,
         ExportGeo,
+      );
+      UniversalRegistry.registerComponent(
+        GEO_EXPORT_COMPONENT_KEY.formatMenu,
+        ExportGeoFormatMenu,
       );
       UniversalRegistry.registerComponent(
         LIST_VIEW_MENU_COMPONENT_KEY.identify,

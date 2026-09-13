@@ -9,6 +9,8 @@ export function useInitBottom(
   optionDefault: {
     title?: string;
     type: 'item-bottom';
+    componentCard?: unknown;
+    componentCardHeader?: unknown;
   } = { type: 'item-bottom' },
   stableId?: string,
 ) {
@@ -24,24 +26,34 @@ export function useInitBottom(
   const store = useBottomItem(containerId);
   const storeRef = useRef(store);
   storeRef.current = store;
-  const optionDefaultRef = useRef(optionDefault);
-  optionDefaultRef.current = optionDefault;
   const setShowRef = useRef(setShow);
   setShowRef.current = setShow;
 
   useEffect(() => {
     const currentStore = storeRef.current;
-    const options = optionDefaultRef.current;
     currentStore.registerBottom(itemId);
+    const prev = currentStore.getStoreContainer(containerId).actions[itemId];
     currentStore.registerAction(itemId, {
-      ...options,
+      title: optionDefault.title,
+      type: optionDefault.type,
       setZIndex,
       setShow: (value: boolean) => setShowRef.current(value),
+      open: prev?.open,
+      close: prev?.close,
+      setHighLight: prev?.setHighLight,
+      componentCard: optionDefault.componentCard,
+      componentCardHeader: optionDefault.componentCardHeader,
     });
     return () => {
       currentStore.unRegisterBottom(itemId);
     };
-  }, [itemId]);
+  }, [
+    itemId,
+    containerId,
+    optionDefault.title,
+    optionDefault.componentCard,
+    optionDefault.componentCardHeader,
+  ]);
 
   useEffect(() => {
     if (show) {

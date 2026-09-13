@@ -50,11 +50,29 @@ if (!containerId || !containerId.value) {
 const { getShow, getItems } = useBottomContainer(containerId.value);
 const { show, close } = useShow({}, null);
 const { expand, toggle: onToggleExpand } = useExpand({}, null, false);
-const { componentCard, componentCardHeader } = useComponent({
-  containerId: containerId.value,
-});
 const storeBottom = useBottomItem(containerId.value);
 const { getItemAction } = useDragContainer(containerId.value);
+
+const activeBottomId = computed(() => getShow());
+const activeAction = computed(() => {
+  const id = activeBottomId.value;
+  return id ? getItemAction(id) : undefined;
+});
+const { componentCard, componentCardHeader } = useComponent({
+  containerId: containerId.value,
+  get componentCard() {
+    return activeAction.value?.componentCard as
+      | undefined
+      | string
+      | object;
+  },
+  get componentCardHeader() {
+    return activeAction.value?.componentCardHeader as
+      | undefined
+      | string
+      | object;
+  },
+});
 
 const titleTo = computed(() => `bottom-title-${containerId.value}`);
 const contentTo = computed(() => `bottom-content-${containerId.value}`);
@@ -115,7 +133,6 @@ function closeContextMenu() {
   contextMenuRef.value?.close();
 }
 const allItems = computed(() => getItems());
-const activeBottomId = computed(() => getShow());
 const showSwitcher = computed(() => allItems.value.length > 1);
 function openMenu(e: MouseEvent) {
   contextMenuRef.value?.open(e);

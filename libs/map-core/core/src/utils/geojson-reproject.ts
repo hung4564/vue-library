@@ -553,16 +553,23 @@ function wrapReprojectError(
 
 export type ReprojectProgress = (current: number, total: number) => void;
 
-export function reprojectGeojsonToWgs84(
+/**
+ * Reproject GeoJSON between CRS codes (EPSG). No-op when from === to.
+ * Map data after import is typically EPSG:4326.
+ */
+export function reprojectGeojson(
   geojson: GeoJSON,
   fromCrs: string | null | undefined,
+  toCrs: string | null | undefined,
   onProgress?: ReprojectProgress,
 ): GeoJSON {
-  const epsg = normalizeEpsgCode(fromCrs) ?? '4326';
-  if (epsg === '4326') return geojson;
+  const fromEpsg = normalizeEpsgCode(fromCrs) ?? '4326';
+  const toEpsg = normalizeEpsgCode(toCrs) ?? '4326';
+  if (fromEpsg === toEpsg) return geojson;
 
-  const from = resolveCrsProjection(epsg);
-  const to = WGS84_LONGLAT;
+  const from = resolveCrsProjection(fromEpsg);
+  const to =
+    toEpsg === '4326' ? WGS84_LONGLAT : resolveCrsProjection(toEpsg);
 
   try {
     const clone = toPlainJson(geojson);
@@ -602,7 +609,12 @@ export function reprojectGeojsonToWgs84(
     onProgress?.(1, 1);
     return geometry;
   } catch (error) {
-    const wrapped = wrapReprojectError(error, epsg, from, geojson);
+    const wrapped = wrapReprojectError(error, fromEpsg, from, geojson);
+    wrapped.setContext({
+      ...wrapped.context,
+      toEpsg,
+      fromEpsg,
+    });
     if (typeof window !== 'undefined') {
       try {
         errorHandler.handleOnce(wrapped);
@@ -612,4 +624,12 @@ export function reprojectGeojsonToWgs84(
     }
     throw wrapped;
   }
+}
+
+export function reprojectGeojsonToWgs84(
+  geojson: GeoJSON,
+  fromCrs: string | null | undefined,
+  onProgress?: ReprojectProgress,
+): GeoJSON {
+  return reprojectGeojson(geojson, fromCrs, '4326', onProgress);
 }

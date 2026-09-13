@@ -17,24 +17,12 @@ export {
   createDatasetPartAttributeTable,
   isAttributeTableView,
   resolveAttributeTableColumnsOption,
-  resolveAttributeTableExportOption,
   resolveAttributeTableUiOption,
 } from './dataset-part';
 export type {
   AttributeTablePart,
   CreateDatasetPartAttributeTableOptions,
 } from './dataset-part';
-
-export {
-  isAttributeTableExportMenuMode,
-  resolveAttributeTableExportActions,
-} from './export-options';
-export type {
-  AttributeTableExportAction,
-  AttributeTableExportContext,
-  AttributeTableExportOptions,
-  AttributeTableResolvedExportAction,
-} from './export-options';
 
 export {
   ATTRIBUTE_TABLE_LOCALE,
@@ -50,10 +38,8 @@ export type { AttributeTableMenuOptions } from './menu';
 export {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_GEOMETRY_KEY,
-  attributeTableRowsToFeatureCollection,
   buildAttributeTable,
   clearPendingAttributeTableSelectRows,
-  exportAttributeTableRows,
   filterAttributeTableRows,
   formatAttributeCell,
   getAttributeTableCellRaw,

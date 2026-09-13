@@ -18,6 +18,8 @@ Only **one** bottom is visible at a time (`ContainerStore.bottom.show` is a sing
 | `title`          | Title displayed in the bottom panel header / switch menu. | `string`  | false    | -             |
 | `containerId`    | ID of the parent container (for teleporting). | `string`  | false    | -             |
 | `show`           | Controls whether this bottom is the active sheet. | `boolean` | false    | false         |
+| `componentCard`  | Local card chrome override for the shared bottom shell (wins over global store while this item is active). | component | false | - |
+| `componentCardHeader` | Local header chrome override (same scope as `componentCard`). | component | false | - |
 
 Legacy chrome flags (`disabledExpand`, `disabledHeader`, `disabledClose`, `expand`, …) may still appear on the component API for compatibility; expand/close live on the shared shell.
 

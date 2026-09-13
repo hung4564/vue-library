@@ -55,10 +55,6 @@ const visibleRows = computed(() => {
   const selected = new Set(state.value.selectedIds);
   return rows.filter((row) => selected.has(row.id));
 });
-const exportDisabled = computed(
-  () => !props.controller.canExport() || state.value.exporting,
-);
-const exportLoading = computed(() => state.value.exporting);
 const selectedSet = computed(() => new Set(state.value.selectedIds));
 const allVisibleSelected = computed(
   () =>
@@ -110,20 +106,16 @@ const toolbarProps = computed(
     rowFilterLabel: props.labels.rowFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.value.selectedIds.length === 0,
-    exportLabel: state.value.exporting
-      ? props.labels.exporting
-      : state.value.selectedIds.length > 0
-        ? props.labels.exportSelected
-        : props.labels.export,
-    exportDisabled: exportDisabled.value,
-    exportLoading: exportLoading.value,
+    exportLabel: props.labels.export,
+    exportFormats: props.exportFormats,
     ui: ui.value,
     onQueryChange: (value) => props.controller.setSearch(value),
     onZoomToSelectionChange: (value) =>
       props.controller.setZoomToSelection(value),
     onRowFilterChange: (value) => props.controller.setRowFilter(value),
     onClearSelection: () => props.controller.clearSelection(),
-    onExportClick: props.onExportClick,
+    onExport: props.onExport,
+    onExportFormat: props.onExportFormat,
   }),
 );
 

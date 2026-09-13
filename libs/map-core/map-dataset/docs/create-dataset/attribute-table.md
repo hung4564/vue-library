@@ -2,49 +2,43 @@
 
 Import the full API from `@hungpvq/map-dataset/attribute-table`.
 
-Tabular view of GeoJSON feature properties. The **Attribute table** item is added to the list ⋮ menu when the layer has a GeoJSON source or a data-management sibling. Raster / vector-tile layers hide it.
+Tabular view of GeoJSON feature properties. The **Attribute table** item is **not** auto-added by the list UI builder. Attach it with `list.addMenu(createMenuItemAttributeTable())`, or use [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md). It hides when the layer has no GeoJSON source / data-management sibling.
 
 **Architecture:** Vue/React shells only call `createAttributeTableController`. Data + selection resolve both go through **`AttributeTableStore.list`** with an explicit `intent`:
 
 | Intent | When | Cache hint |
 |--------|------|------------|
 | `'page'` | Browse / page / search / sort | page + search + sort |
-| `'select'` | Highlight / export selection missing on current page | sorted `ids` (separate from page cache) |
+| `'select'` | Highlight selection missing on current page | sorted `ids` (separate from page cache) |
 
 Default store: DM sibling → wrap `part.list`; else local GeoJSON; or inject `store`.
 
 Select rows to highlight. **Zoom to selection** is off by default.
 
-**Export** is configured on the controller / shell via `export` (`AttributeTableExportOptions`), not on the store:
-
-| Config | Behavior |
-|--------|----------|
-| default / omit | Submenu of all local geo formats |
-| `formats: ['geojson','csv']` | Submenu of those formats only (`false` = none) |
-| `actions` + optional `replaceActions` | Custom menu items (API, dialog, …) |
-| `onExport` | One click — no submenu (API download or open your dialog) |
-
-Shell menu comes from `controller.getExportActions()`; single-handler mode uses `controller.isExportMenuMode() === false`.
+**Export** lives in [`@hungpvq/map-dataset/geo-export`](./export.md). The Attribute Table toolbar **Export** button (`ui.export`, default `true`) opens the same controller / `onExport` / scopes. While the table is open, filtered/selected export reuses the AT store via the geo-export active-source bridge.
 
 Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Mount `LayerHighlight` to paint selection.
 
 ## Built-in menu
 
 ```ts
+import { createMenuItemAttributeTable } from '@hungpvq/map-dataset/attribute-table';
+
 createDatasetPartListViewUiComponentBuilder('Cities')
   .setColor('#ff6b6b')
+  .addMenu(createMenuItemAttributeTable())
   .build();
 ```
 
-Turn off: `.configDisabledAttributeTable()`, or `menuContext: { disabledAttributeTable: true }`.
+Hide at render time: `menuContext: { disabledAttributeTable: true }`. With `createGeoJsonDataset`, skip the menu via `attributeTable: false`. Or omit `addMenu` / call `removeMenu(LIST_VIEW_MENU_ID.layer.attributeTable)`.
 
 ## Columns + `ui` + custom store
 
-Column / UI / export defs resolve in this order (later wins):
+Column / UI defs resolve in this order (later wins):
 
 1. **Auto** — property keys from the FeatureCollection (columns only)
-2. **`createMenuItemAttributeTable({ columns, ui, export })`** / shell props
-3. **Dataset part** — `createDatasetPartAttributeTable({ columns, ui, export })` (highest)
+2. **`createMenuItemAttributeTable({ columns, ui })`** / shell props
+3. **Dataset part** — `createDatasetPartAttributeTable({ columns, ui })` (highest)
 
 ```ts
 import {
@@ -61,8 +55,7 @@ dataset.add(
       { key: 'id', label: 'ID', sortable: false },
       '__geometry',
     ],
-    ui: { sort: true, export: true },
-    export: { formats: ['geojson', 'csv'] },
+    ui: { sort: true },
   }),
 );
 
@@ -86,7 +79,6 @@ list.addMenu(
     ],
     ui: {
       search: true,
-      export: true,
       pager: true,
       checkbox: true,
       sort: true, // false → disable all column sorting
@@ -96,7 +88,7 @@ list.addMenu(
 );
 ```
 
-**Custom `store`:** when you inject `store` on the menu / shell / controller, dataset-part **columns are not applied** — the store owns its column layout. Part `ui` / `export` still win over menu/shell via `resolveAttributeTableUiOption` / `resolveAttributeTableExportOption`.
+**Custom `store`:** when you inject `store` on the menu / shell / controller, dataset-part **columns are not applied** — the store owns its column layout. Part `ui` still wins over menu/shell via `resolveAttributeTableUiOption`.
 
 Column options:
 
@@ -147,50 +139,6 @@ const store: AttributeTableStore = {
 **Freshness:** DM-backed stores call `part.list` every time (no row cache). Local stores from an `IDataset` re-read GeoJSON on each non-quiet `controller.load` / `list`. A static `FeatureCollection` seed is cached until `store.invalidate()` (also called by the controller on reload / page-change / initial load).
 
 DM select convention: wrapper maps `ids` → `PageQuery.filter.ids` (LocalStore honors it).
-
-### Export (formats menu, custom actions, or one handler)
-
-```ts
-import { downloadBlob } from '@hungpvq/map-dataset/geo-export';
-import { createAttributeTableController } from '@hungpvq/map-dataset/attribute-table';
-
-// Default: local format submenu
-const local = createAttributeTableController(list);
-
-// Subset of local formats + a custom API item
-const mixed = createAttributeTableController(list, {
-  export: {
-    formats: ['geojson', 'csv'],
-    actions: [
-      {
-        id: 'api-csv',
-        label: 'CSV (API)',
-        async run(ctx) {
-          const res = await fetch(`/api/layers/${list.id}/export`, {
-            method: 'POST',
-            body: JSON.stringify({ ids: ctx.ids, search: ctx.search }),
-          });
-          downloadBlob(await res.blob(), `${ctx.filename}.csv`);
-        },
-      },
-    ],
-  },
-});
-
-// One click → your handler (API or open a dialog)
-const single = createAttributeTableController(list, {
-  export: {
-    async onExport(ctx) {
-      // await api… or openExportDialog(ctx)
-      await ctx.downloadLocal('geojson');
-    },
-  },
-});
-
-await mixed.export('format:csv'); // local
-await mixed.export('api-csv'); // custom action
-await single.export(); // onExport
-```
 
 ## Controller (headless)
 

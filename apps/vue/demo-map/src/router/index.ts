@@ -75,6 +75,10 @@ const router = createRouter({
       component: () => import('../views/dataset-attribute-table/example.vue'),
     },
     {
+      path: '/dataset-geo-export/',
+      component: () => import('../views/dataset-geo-export/example.vue'),
+    },
+    {
       path: '/measurement/',
       component: () => import('../views/Measurement/example.vue'),
     },

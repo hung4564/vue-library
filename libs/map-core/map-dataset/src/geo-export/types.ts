@@ -35,13 +35,6 @@ export const GEO_EXPORT_FORMAT_META: Record<
   },
 };
 
-export function isGeoExportFormat(value: unknown): value is GeoExportFormat {
-  return (
-    typeof value === 'string' &&
-    (GEO_EXPORT_FORMATS as readonly string[]).includes(value)
-  );
-}
-
 export function toFeatureCollection(
   data: unknown,
 ): FeatureCollection | null {

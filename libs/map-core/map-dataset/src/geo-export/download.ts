@@ -7,13 +7,22 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Characters unsafe or awkward in download filenames across OS / browsers. */
+const UNSAFE_FILENAME_CHARS = /[<>:"/\\|?*·]/u;
+
 export function sanitizeExportFilename(name: string): string {
   const trimmed = name.trim() || 'layer';
-  return [...trimmed]
+  const cleaned = [...trimmed]
     .map((ch) => {
       const code = ch.charCodeAt(0);
-      if (code < 32 || '<>:"/\\|?*'.includes(ch)) return '_';
+      if (code < 32 || code === 127 || UNSAFE_FILENAME_CHARS.test(ch)) {
+        return '_';
+      }
       return ch;
     })
-    .join('');
+    .join('')
+    // Collapse runs of underscores from replaced chars
+    .replace(/_+/g, '_')
+    .replace(/^[.\s_]+|[.\s_]+$/g, '');
+  return cleaned || 'layer';
 }

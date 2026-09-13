@@ -31,6 +31,7 @@ const NAV_ITEMS = [
   { to: '/registry-control', label: 'UniversalRegistry - Controls' },
   { to: '/dataset-data-management', label: 'Dataset - Data management' },
   { to: '/dataset-attribute-table', label: 'Dataset - Attribute table' },
+  { to: '/dataset-geo-export', label: 'Dataset - Geo export' },
   { to: '/story-telling', label: 'Story telling' },
   { to: '/story-telling-gps', label: 'Story telling GPS' },
   { to: '/legend', label: 'Legend' },

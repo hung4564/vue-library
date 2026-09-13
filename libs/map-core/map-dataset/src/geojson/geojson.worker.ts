@@ -12,7 +12,7 @@ import type { GeoJSON } from 'geojson';
 // Vite workers cannot resolve workspace package names for most map-core
 // utilities and would leave them external; keep relative imports for those.
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { reprojectGeojsonToWgs84 } from '../../../core/src/utils/geojson-reproject';
+import { reprojectGeojson } from '../../../core/src/utils/geojson-reproject';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import type { GeojsonBbox } from '../../../core/src/utils/fillBound';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -44,7 +44,10 @@ export type GeojsonWorkerRequest =
       id: string;
       type: 'reproject-geojson';
       geojson: GeoJSON;
+      /** Source CRS (EPSG code). */
       crs?: string | null;
+      /** Target CRS (EPSG code). Defaults to 4326. */
+      toCrs?: string | null;
     }
   | {
       id: string;
@@ -151,17 +154,19 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         const collection = asGisFeatureCollection(message.geojson);
         const total = collection?.features.length ?? 1;
         const fromCrs =
-          message.crs || detectGeojsonCrs(message.geojson) || 'unknown';
+          message.crs || detectGeojsonCrs(message.geojson) || '4326';
+        const toCrs = message.toCrs || '4326';
         report(0, total, 'reproject');
         ctx.log(
-          `reproject ${describeGeojson(message.geojson)} from EPSG:${fromCrs} → 4326`,
+          `reproject ${describeGeojson(message.geojson)} from EPSG:${fromCrs} → ${toCrs}`,
         );
-        geojson = reprojectGeojsonToWgs84(
+        geojson = reprojectGeojson(
           message.geojson,
-          message.crs,
+          message.crs ?? fromCrs,
+          toCrs,
           (current, count) => report(current, count, 'reproject'),
         );
-        crs = '4326';
+        crs = toCrs;
         break;
       }
       case 'detect-style-types': {

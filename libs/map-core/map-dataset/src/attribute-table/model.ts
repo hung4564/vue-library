@@ -1,7 +1,5 @@
 import { runMapControlAction } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection } from 'geojson';
-import { exportFeatureCollectionGeo } from '../geo-export/dataset';
-import type { GeoExportFormat } from '../geo-export/types';
 
 export const ATTRIBUTE_TABLE_GEOMETRY_KEY = '__geometry';
 
@@ -296,26 +294,4 @@ export function resolveAttributeTableSelectedRowIds(
       );
     })
     .map((row) => row.id);
-}
-
-export function attributeTableRowsToFeatureCollection(
-  rows: AttributeTableRow[],
-): FeatureCollection {
-  return {
-    type: 'FeatureCollection',
-    features: rows.map((row) => row.feature),
-  };
-}
-
-export async function exportAttributeTableRows(
-  rows: AttributeTableRow[],
-  format: GeoExportFormat = 'geojson',
-  filename = 'attribute-table',
-): Promise<void> {
-  if (rows.length === 0) return;
-  await exportFeatureCollectionGeo(
-    attributeTableRowsToFeatureCollection(rows),
-    format,
-    { filename },
-  );
 }

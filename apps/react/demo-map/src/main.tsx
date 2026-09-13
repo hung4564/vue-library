@@ -14,6 +14,7 @@ import App from './app/app';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
 import { DatasetAttributeTablePage } from './views/dataset-attribute-table';
+import { DatasetGeoExportPage } from './views/dataset-geo-export';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
 import { DatasetHighlightPage } from './views/dataset-highlight';
 import { DatasetIdentifyPage } from './views/dataset-identify';
@@ -71,6 +72,10 @@ root.render(
           <Route
             path="dataset-attribute-table"
             element={<DatasetAttributeTablePage />}
+          />
+          <Route
+            path="dataset-geo-export"
+            element={<DatasetGeoExportPage />}
           />
           <Route path="story-telling" element={<StoryTellingPage />} />
           <Route path="story-telling-gps" element={<StoryTellingGpsPage />} />

@@ -3,6 +3,7 @@ import {
   bboxFromGeojson,
   isCallStackOverflow,
   MapError,
+  reprojectGeojson,
   reprojectGeojsonToWgs84,
   toPlainJson,
   WorkerMonitor,
@@ -192,12 +193,14 @@ export async function parseGeojsonTextAsync(text: string): Promise<GeoJSON | nul
   return (await loadGisTextAsync(text)).geojson;
 }
 
-export async function reprojectGeojsonToWgs84Async(
+export async function reprojectGeojsonAsync(
   geojson: GeoJSON,
-  crs?: string | null,
+  fromCrs?: string | null,
+  toCrs?: string | null,
 ): Promise<GeoJSON> {
-  const epsg = normalizeEpsgCode(crs) ?? '4326';
-  if (epsg === '4326') return geojson;
+  const from = normalizeEpsgCode(fromCrs) ?? '4326';
+  const to = normalizeEpsgCode(toCrs) ?? '4326';
+  if (from === to) return geojson;
 
   return gisWorker.runTask(
     'reproject-geojson',
@@ -208,7 +211,8 @@ export async function reprojectGeojsonToWgs84Async(
           id: taskId,
           type: 'reproject-geojson',
           geojson,
-          crs: epsg,
+          crs: from,
+          toCrs: to,
         });
         return response.geojson ?? geojson;
       },
@@ -216,7 +220,7 @@ export async function reprojectGeojsonToWgs84Async(
     {
       engine: 'main',
       run: async (taskId) =>
-        reprojectGeojsonToWgs84(geojson, epsg, (current, total) => {
+        reprojectGeojson(geojson, from, to, (current, total) => {
           gisWorker.handle.setProgress(taskId, {
             current,
             total,
@@ -225,6 +229,13 @@ export async function reprojectGeojsonToWgs84Async(
         }),
     },
   );
+}
+
+export async function reprojectGeojsonToWgs84Async(
+  geojson: GeoJSON,
+  crs?: string | null,
+): Promise<GeoJSON> {
+  return reprojectGeojsonAsync(geojson, crs, '4326');
 }
 
 /**

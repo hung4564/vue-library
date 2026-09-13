@@ -5,30 +5,30 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { fitBounds } from '@hungpvq/map-core';
 import {
-  convertItemToFeature,
   LAYER_DETAIL_LOCALE,
-  resolveDatasetBbox,
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
-import {
-  createExportGeoSubmenu,
-  createMenuItemExportGeo,
-  getDatasetFeatureCollection,
-  getExportGeoMenuOptions,
-  hasGeojsonExportData,
-} from '@hungpvq/map-dataset/geo-export';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { handleMenuAction } from '@hungpvq/map-dataset/menu';
-import { ContextMenu, DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
-
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCrosshairsGps, mdiDownload } from '@mdi/js';
-import type { Feature, Geometry } from 'geojson';
+import {
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import {
+  ModuleContainer,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
 import { computed, ref } from 'vue';
+import DatasetMenuButton from '../../extra/menu/dataset-menu-button.vue';
 import { useMapDatasetHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 
@@ -46,65 +46,34 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{ close: [] }>();
-const { mapId, callMap } = useMap();
+const { mapId } = useMap();
 const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_DETAIL_LOCALE);
 
 const show = ref(true);
-const exportMenuRef = ref<{
-  open: (event: MouseEvent) => void;
-  close: () => void;
-}>();
 
-function itemAsFeature(
-  item: Record<string, unknown> | undefined,
-): Feature | undefined {
-  if (!item?.geometry || typeof item.geometry !== 'object') return undefined;
-  return convertItemToFeature(
-    item as { id?: string | number; geometry: Geometry },
-  );
-}
+const itemMenuHost = computed(() =>
+  props.view ? getItemMenuHost(props.view) : undefined,
+);
 
-const detailFeature = computed(() => itemAsFeature(props.item));
-
-const canFillBound = computed(() => {
-  if (detailFeature.value) return true;
-  return !!(props.view && resolveDatasetBbox(props.view));
-});
-
-const canExport = computed(() => {
-  if (detailFeature.value) return true;
-  return !!(props.view && hasGeojsonExportData(props.view));
-});
-
-const layerHost = computed<IDataset>(() => {
-  if (props.view) return props.view;
-  return {
-    id: 'layer-detail-export',
-    getName: () => 'feature',
-  } as IDataset;
-});
-
-const exportMenuItem = computed(() =>
-  createMenuItemExportGeo({
-    filename: (layer) => layer.getName?.() || 'feature',
-    getCollection: async () => {
-      if (detailFeature.value) {
-        return {
-          type: 'FeatureCollection',
-          features: [detailFeature.value],
-        };
-      }
-      if (props.view) return getDatasetFeatureCollection(props.view);
-      return null;
-    },
+const itemMenuConditionCtx = computed(() =>
+  createMenuConditionContext(itemMenuHost.value ?? props.view, {
+    mapId: mapId.value,
   }),
 );
 
-const exportChildren = computed(() =>
-  createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem.value)),
-);
+/** Same item menus as Identify / Attribute Table, minus show-detail (this popup). */
+const itemMenus = computed(() => {
+  if (!props.view) return [];
+  const ctx = itemMenuConditionCtx.value;
+  return getResolvedMenus(props.view, 'item').filter(
+    (menu) =>
+      menu.type !== 'divider' &&
+      !('id' in menu && menu.id === LIST_VIEW_MENU_ID.item.showDetail) &&
+      !isMenuItemHidden(menu, ctx),
+  );
+});
 
 function handleClose() {
   setFeatureHighlight(undefined, 'detail');
@@ -116,35 +85,14 @@ function onUpdateShow(val: boolean) {
   if (!val) handleClose();
 }
 
-function onFillBound() {
-  if (!canFillBound.value) return;
-  callMap((map) => {
-    if (detailFeature.value) {
-      fitBounds(map, detailFeature.value);
-      return;
-    }
-    const bbox = props.view ? resolveDatasetBbox(props.view) : undefined;
-    if (!bbox) return;
-    fitBounds(map, [
-      [bbox[0], bbox[1]],
-      [bbox[2], bbox[3]],
-    ]);
-  });
-}
-
-function onExportClick(event: MouseEvent) {
-  if (!canExport.value) return;
-  exportMenuRef.value?.open(event);
-}
-
-function onExportChild(action: MenuAction, event: MouseEvent) {
-  handleMenuAction(action, {
+function onMenuAction(menu: MenuAction, event: MouseEvent) {
+  if (isMenuItemDisabled(menu, itemMenuConditionCtx.value)) return;
+  handleMenuAction(menu, {
     event,
-    layer: layerHost.value,
+    layer: itemMenuHost.value ?? props.view!,
     mapId: mapId.value,
-    value: layerHost.value,
+    value: props.item,
   });
-  exportMenuRef.value?.close();
 }
 
 const { panelBind } = useRegisterMapControl(mapId, {
@@ -184,25 +132,16 @@ const { panelBind } = useRegisterMapControl(mapId, {
         <template #title>
           {{ trans('map.layer-control.info.title') }}
         </template>
-        <template #extra-btn>
-          <MapControlButton
-            v-if="canFillBound"
-            :title="trans('map.layer-control.info.fillBound')"
-            :aria-label="trans('map.layer-control.info.fillBound')"
-            @click.stop="onFillBound"
-            variant="plain"
-          >
-            <SvgIcon :size="16" type="mdi" :path="mdiCrosshairsGps" />
-          </MapControlButton>
-          <MapControlButton
-            v-if="canExport"
-            :title="trans('map.layer-control.info.export')"
-            :aria-label="trans('map.layer-control.info.export')"
-            @click.stop="onExportClick"
-            variant="plain"
-          >
-            <SvgIcon :size="16" type="mdi" :path="mdiDownload" />
-          </MapControlButton>
+        <template v-if="itemMenus.length" #extra-btn>
+          <DatasetMenuButton
+            v-for="(menu, index) in itemMenus"
+            :key="menu.id || index"
+            :item="menu"
+            :data="itemMenuHost || view"
+            :mapId="mapId"
+            :disabled="isMenuItemDisabled(menu, itemMenuConditionCtx)"
+            @click.stop="onMenuAction(menu, $event)"
+          />
         </template>
         <div class="table-show-info">
           <div class="table-content">
@@ -210,32 +149,12 @@ const { panelBind } = useRegisterMapControl(mapId, {
               :field="field"
               :label="field.trans ? trans(field.trans) : field.text"
               :item="item"
-              :view="view"
               v-for="(field, i) in fields"
               :key="i"
             />
           </div>
         </div>
       </DraggableItemPopup>
-      <ContextMenu ref="exportMenuRef">
-        <ul class="context-menu layer-context-menu">
-          <li
-            v-for="(child, index) in exportChildren"
-            :key="child.id || index"
-            class="layer-context-menu__item"
-            @click.stop="onExportChild(child, $event)"
-          >
-            <div class="layer-context-menu__item-icon">
-              <SvgIcon
-                size="16"
-                type="mdi"
-                :path="('icon' in child && child.icon) || mdiDownload"
-              />
-            </div>
-            <span>{{ 'name' in child ? child.name : '' }}</span>
-          </li>
-        </ul>
-      </ContextMenu>
     </template>
   </ModuleContainer>
 </template>

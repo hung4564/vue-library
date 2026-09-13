@@ -5,7 +5,6 @@ import {
   createDatasetPartAttributeTable,
   isAttributeTableView,
   resolveAttributeTableColumnsOption,
-  resolveAttributeTableExportOption,
   resolveAttributeTableUiOption,
 } from './dataset-part';
 
@@ -14,15 +13,13 @@ describe('attribute-table dataset part', () => {
     const part = createDatasetPartAttributeTable('table', {
       columns: ['name'],
       ui: { sort: false },
-      export: { formats: ['geojson'] },
     });
     expect(isAttributeTableView(part)).toBe(true);
     expect(part.getColumns()).toEqual(['name']);
     expect(part.getUi()).toEqual({ sort: false });
-    expect(part.getExport()).toEqual({ formats: ['geojson'] });
   });
 
-  it('resolves columns / ui / export: part > override > default', () => {
+  it('resolves columns / ui: part > override > default', () => {
     const root = createRootDataset('demo');
     const list = createDatasetPartListViewUiComponentBuilder('Cities').build();
     root.add(list);
@@ -34,9 +31,6 @@ describe('attribute-table dataset part', () => {
     expect(
       resolveAttributeTableUiOption(list, { search: false }),
     ).toEqual({ search: false });
-    expect(
-      resolveAttributeTableExportOption(list, { formats: ['csv'] }),
-    ).toEqual({ formats: ['csv'] });
 
     root.add(
       createDatasetPartAttributeTable('table', {
@@ -44,8 +38,7 @@ describe('attribute-table dataset part', () => {
           { key: 'name', label: 'Name (part)' },
           { key: 'id', label: 'ID', sortable: false },
         ],
-        ui: { sort: false, export: true },
-        export: { formats: ['geojson'] },
+        ui: { sort: false },
       }),
     );
 
@@ -57,10 +50,6 @@ describe('attribute-table dataset part', () => {
     ]);
     expect(resolveAttributeTableUiOption(list, { search: false })).toEqual({
       sort: false,
-      export: true,
     });
-    expect(
-      resolveAttributeTableExportOption(list, { formats: ['csv'] }),
-    ).toEqual({ formats: ['geojson'] });
   });
 });

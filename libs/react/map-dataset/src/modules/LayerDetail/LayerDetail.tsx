@@ -1,31 +1,32 @@
-import { fitBounds } from '@hungpvq/map-core';
 import {
-  convertItemToFeature,
   LAYER_DETAIL_LOCALE,
-  resolveDatasetBbox,
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
-import {
-  createExportGeoSubmenu,
-  createMenuItemExportGeo,
-  getDatasetFeatureCollection,
-  getExportGeoMenuOptions,
-  hasGeojsonExportData,
-} from '@hungpvq/map-dataset/geo-export';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { handleMenuAction } from '@hungpvq/map-dataset/menu';
 import {
-  ContextMenu,
-  DraggableItemPopup,
-  type ContextMenuRef,
-} from '@hungpvq/react-draggable';
-import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl, useShow } from '@hungpvq/react-map-core';
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import {
+  MapControlButton,
+  ModuleContainer,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+  useShow,
+} from '@hungpvq/react-map-core';
 import { InputTextarea } from '@hungpvq/react-map-core/fields';
-import { mdiContentCopy, mdiCrosshairsGps, mdiDownload } from '@mdi/js';
+import { mdiContentCopy } from '@mdi/js';
 import Icon from '@mdi/react';
-import type { Feature, Geometry } from 'geojson';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
+import { DatasetMenuButton } from '../../extra/menu/dataset-menu-button';
 import { useMapDatasetHighlight } from '../../store';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
@@ -43,15 +44,6 @@ function copyText(value: unknown) {
   void navigator.clipboard?.writeText(text);
 }
 
-function itemAsFeature(
-  item: Record<string, unknown> | undefined,
-): Feature | undefined {
-  if (!item?.geometry || typeof item.geometry !== 'object') return undefined;
-  return convertItemToFeature(
-    item as { id?: string | number; geometry: Geometry },
-  );
-}
-
 function TableTdCopy({
   value,
   children,
@@ -62,7 +54,11 @@ function TableTdCopy({
   return (
     <div className="layer-detail-row">
       <div className="layer-detail-row__copy">
-        <MapControlButton variant="plain" onClick={() => copyText(value)} aria-label="Copy">
+        <MapControlButton
+          variant="plain"
+          onClick={() => copyText(value)}
+          aria-label="Copy"
+        >
           <Icon path={mdiContentCopy} size={14 / 24} />
         </MapControlButton>
       </div>
@@ -115,56 +111,40 @@ export function LayerDetail({
   popupProps = {},
   onClose,
 }: LayerDetailProps) {
-  const { mapId, moduleContainerProps, callMap } = useMap({
+  const { mapId, moduleContainerProps } = useMap({
     controlId: 'mapLayerDetail',
   });
   const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
-  const exportMenuRef = useRef<ContextMenuRef>(null);
 
   useEffect(() => {
     setLocaleDefault(LAYER_DETAIL_LOCALE);
   }, [setLocaleDefault]);
 
-  const detailFeature = useMemo(() => itemAsFeature(item), [item]);
-  const canFillBound = Boolean(
-    detailFeature || (view && resolveDatasetBbox(view)),
-  );
-  const canExport = Boolean(
-    detailFeature || (view && hasGeojsonExportData(view)),
+  const itemMenuHost = useMemo(
+    () => (view ? getItemMenuHost(view) : undefined),
+    [view],
   );
 
-  const layerHost = useMemo<IDataset>(() => {
-    if (view) return view;
-    return {
-      id: 'layer-detail-export',
-      getName: () => 'feature',
-    } as IDataset;
-  }, [view]);
-
-  const exportMenuItem = useMemo(
+  const itemMenuConditionCtx = useMemo(
     () =>
-      createMenuItemExportGeo({
-        filename: (layer) => layer.getName?.() || 'feature',
-        getCollection: async () => {
-          if (detailFeature) {
-            return {
-              type: 'FeatureCollection',
-              features: [detailFeature],
-            };
-          }
-          if (view) return getDatasetFeatureCollection(view);
-          return null;
-        },
+      createMenuConditionContext(itemMenuHost ?? view, {
+        mapId,
       }),
-    [detailFeature, view],
+    [itemMenuHost, view, mapId],
   );
 
-  const exportChildren = useMemo(
-    () => createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem)),
-    [exportMenuItem],
-  );
+  /** Same item menus as Identify / Attribute Table, minus show-detail (this popup). */
+  const itemMenus = useMemo(() => {
+    if (!view) return [];
+    return getResolvedMenus(view, 'item').filter(
+      (menu) =>
+        menu.type !== 'divider' &&
+        !('id' in menu && menu.id === LIST_VIEW_MENU_ID.item.showDetail) &&
+        !isMenuItemHidden(menu, itemMenuConditionCtx),
+    );
+  }, [view, itemMenuConditionCtx]);
 
   function handleClose() {
     setFeatureHighlight(undefined, 'detail');
@@ -172,35 +152,16 @@ export function LayerDetail({
     onClose?.();
   }
 
-  function onFillBound() {
-    if (!canFillBound) return;
-    callMap((map) => {
-      if (detailFeature) {
-        fitBounds(map, detailFeature);
-        return;
-      }
-      const bbox = view ? resolveDatasetBbox(view) : undefined;
-      if (!bbox) return;
-      fitBounds(map, [
-        [bbox[0], bbox[1]],
-        [bbox[2], bbox[3]],
-      ]);
-    });
-  }
-
-  function onExportClick(event: React.MouseEvent) {
-    if (!canExport) return;
-    exportMenuRef.current?.open(event);
-  }
-
-  function onExportChild(action: MenuAction, event: React.MouseEvent) {
-    handleMenuAction(action, {
+  function onMenuAction(menu: MenuAction, event: React.MouseEvent) {
+    if (isMenuItemDisabled(menu, itemMenuConditionCtx)) return;
+    const host = itemMenuHost ?? view;
+    if (!host) return;
+    handleMenuAction(menu, {
       event: event.nativeEvent,
-      layer: layerHost,
+      layer: host,
       mapId,
-      value: layerHost,
+      value: item,
     });
-    exportMenuRef.current?.close();
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -210,10 +171,7 @@ export function LayerDetail({
     show,
     setShow: (v) => {
       toggleShow(v);
-      if (!v) {
-        setFeatureHighlight(undefined, 'detail');
-        onClose?.();
-      }
+      if (!v) handleClose();
     },
     actions: [{ type: 'mapLayerDetail', run: () => toggleShow() }],
   });
@@ -222,88 +180,56 @@ export function LayerDetail({
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
-        <>
-          <DraggableItemPopup
-            show={show}
-            onClose={handleClose}
-            onUpdateShow={(v) => {
-              if (!v) handleClose();
-            }}
-            width={520}
-            {...bind}
-            {...panelBind}
-            {...popupProps}
-            title={trans('map.layer-control.info.title')}
-            extraBtn={
+        <DraggableItemPopup
+          show={show}
+          onClose={handleClose}
+          onUpdateShow={(v) => {
+            if (!v) handleClose();
+          }}
+          width={520}
+          {...bind}
+          {...panelBind}
+          {...popupProps}
+          title={trans('map.layer-control.info.title')}
+          extraBtn={
+            itemMenus.length ? (
               <>
-                {canFillBound ? (
-                  <MapControlButton
-                    variant="plain"
-                    title={trans('map.layer-control.info.fillBound')}
-                    aria-label={trans('map.layer-control.info.fillBound')}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onFillBound();
+                {itemMenus.map((menu, index) => (
+                  <DatasetMenuButton
+                    key={menu.id || String(index)}
+                    menu={menu}
+                    item={itemMenuHost ?? view}
+                    mapId={mapId}
+                    disabled={isMenuItemDisabled(menu, itemMenuConditionCtx)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onMenuAction(menu, event);
                     }}
-                  >
-                    <Icon path={mdiCrosshairsGps} size={16 / 24} />
-                  </MapControlButton>
-                ) : null}
-                {canExport ? (
-                  <MapControlButton
-                    variant="plain"
-                    title={trans('map.layer-control.info.export')}
-                    aria-label={trans('map.layer-control.info.export')}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onExportClick(e);
-                    }}
-                  >
-                    <Icon path={mdiDownload} size={16 / 24} />
-                  </MapControlButton>
-                ) : null}
-              </>
-            }
-          >
-            <div className="table-show-info">
-              <div className="table-content">
-                {fields.map((field, i) => (
-                  <TableTdLayer
-                    key={i}
-                    field={field}
-                    label={
-                      'trans' in field && field.trans
-                        ? trans(field.trans)
-                        : 'text' in field
-                          ? field.text
-                          : ''
-                    }
-                    item={item}
                   />
                 ))}
-              </div>
-            </div>
-          </DraggableItemPopup>
-          <ContextMenu ref={exportMenuRef}>
-            <ul className="context-menu layer-context-menu">
-              {exportChildren.map((child, index) => (
-                <li
-                  key={child.id || String(index)}
-                  className="layer-context-menu__item"
-                  onClick={(event) => onExportChild(child, event)}
-                >
-                  <div className="layer-context-menu__item-icon">
-                    <Icon
-                      path={('icon' in child && child.icon) || mdiDownload}
-                      size="16px"
-                    />
-                  </div>
-                  <span>{('name' in child && child.name) || ''}</span>
-                </li>
+              </>
+            ) : undefined
+          }
+        >
+          <div className="table-show-info">
+            <div className="table-content">
+              {fields.map((field, i) => (
+                <TableTdLayer
+                  key={i}
+                  field={field}
+                  label={
+                    'trans' in field && field.trans
+                      ? trans(field.trans)
+                      : 'text' in field
+                        ? field.text
+                        : ''
+                  }
+                  item={item}
+                />
               ))}
-            </ul>
-          </ContextMenu>
-        </>
+            </div>
+          </div>
+        </DraggableItemPopup>
       )}
     />
   );

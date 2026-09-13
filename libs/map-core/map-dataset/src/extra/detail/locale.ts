@@ -39,8 +39,6 @@ export const LAYER_DETAIL_LOCALE = {
     'layer-control': {
       info: {
         title: 'Layer info',
-        export: 'Export',
-        fillBound: 'Fit bounds',
       },
       field: LAYER_DETAIL_FIELD_LOCALE,
     },

@@ -17,12 +17,19 @@ import {
   LIST_DEMO_DATASET_FACTORIES,
   loadDemoDatasets,
   MENU_DEMO_DATASET_FACTORIES,
+  GEO_EXPORT_DEMO_DATASET_FACTORIES,
+  createGeoExportOverrideUiDataset,
   type DataManagementPart,
 } from '@hungpvq/demo-map-datasets';
 import type { IDataset } from '@hungpvq/map-dataset';
 import type { MenuItemProps } from '@hungpvq/map-dataset/menu';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
 import { addDatasetToMap } from './dataset-utils';
+
+const logger = loggerFactory
+  .createLogger()
+  .setNamespace('demo:menu-handler', 2);
 
 let menuHandlerRegistered = false;
 
@@ -33,8 +40,8 @@ export function ensureCustomMenuHandler() {
   menuHandlerRegistered = true;
   UniversalRegistry.registerMenuHandler(
     DEMO_CUSTOM_MENU_HANDLER_KEY,
-    (props: MenuItemProps) => {
-      console.info('custom-menu-handle in registry', props);
+    (props) => {
+      logger.info('custom-menu-handle in registry', props as MenuItemProps);
     },
   );
 }
@@ -66,6 +73,16 @@ export async function loadIdentifyPresentDemoDatasets(mapId: string) {
 
 export async function loadHighlightDemoDatasets(mapId: string) {
   await loadDemoDatasets(addForMap(mapId), [...HIGHLIGHT_DEMO_DATASET_FACTORIES]);
+}
+
+export async function loadGeoExportDemoDatasets(
+  mapId: string,
+  overrideUi?: { formComponent?: unknown; loadingComponent?: unknown },
+) {
+  await loadDemoDatasets(addForMap(mapId), [
+    ...GEO_EXPORT_DEMO_DATASET_FACTORIES,
+    () => createGeoExportOverrideUiDataset(overrideUi),
+  ]);
 }
 
 export async function loadAllMapDatasets(mapId: string) {

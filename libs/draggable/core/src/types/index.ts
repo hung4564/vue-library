@@ -59,6 +59,12 @@ export type ContainerStoreOtherAction = {
   setHighLight: (highlight?: boolean) => void;
   open: () => void;
   close: () => void;
+  /**
+   * Per-item shell card override for shared chrome (e.g. BottomContainer).
+   * Framework component refs — typed unknown in core.
+   */
+  componentCard?: unknown;
+  componentCardHeader?: unknown;
 };
 
 export type DraggableItemType =

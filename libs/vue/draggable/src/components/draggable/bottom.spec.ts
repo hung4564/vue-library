@@ -159,4 +159,56 @@ describe('BottomContainer portal hosts', () => {
     ).toContain('B body');
     wrapper.unmount();
   });
+
+  it('applies local componentCard on the shared bottom shell', async () => {
+    useDragContainer(CID).initContainer();
+    useDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const LocalCard = defineComponent({
+      name: 'LocalBottomCard',
+      template:
+        '<div class="local-bottom-card" data-testid="local-bottom-card"><slot /></div>',
+    });
+    const wrapper = mount(
+      defineComponent({
+        components: { BottomContainer, DraggableItemBottom, LocalCard },
+        setup() {
+          return { cid: CID, LocalCard };
+        },
+        template: `
+          <BottomContainer />
+          <DraggableItemBottom
+            id="bot-local"
+            show
+            title="Local"
+            :containerId="cid"
+            :componentCard="LocalCard"
+          >
+            <p>Local body</p>
+          </DraggableItemBottom>
+        `,
+      }),
+      {
+        attachTo: document.body,
+        global: {
+          provide: { containerId: ref(CID) },
+          stubs: { ContextMenu: true },
+        },
+      },
+    );
+    await nextTick();
+    await nextTick();
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(
+      document.querySelector('[data-testid="local-bottom-card"]'),
+    ).toBeTruthy();
+    expect(
+      document.getElementById(`bottom-content-${CID}`)?.textContent,
+    ).toContain('Local body');
+    wrapper.unmount();
+  });
 });

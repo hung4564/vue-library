@@ -74,7 +74,7 @@ export const LAYER_CONTROL_LOCALE = {
       toggle: LAYER_CONTROL_TOGGLE_LOCALE,
       create: LAYER_CONTROL_CREATE_LOCALE,
       field: LAYER_CONTROL_FIELD_LOCALE,
-      info: { title: 'Info', export: 'Export', fillBound: 'Fit bounds' },
+      info: { title: 'Info' },
     },
   },
 };
