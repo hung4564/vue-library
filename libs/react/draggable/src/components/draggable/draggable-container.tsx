@@ -1,5 +1,4 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import debounce from 'lodash/debounce';
 import {
   CSSProperties,
   ReactNode,
@@ -14,6 +13,28 @@ import { useDragContainer, useDragStore } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
 import { SidebarContainer } from './sidebar/sidebar-container';
 import { BottomContainer } from './bottom/bottom-container';
+
+/** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): ((...args: TArgs) => void) & { cancel: () => void } {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const debounced = ((...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  }) as ((...args: TArgs) => void) & { cancel: () => void };
+  debounced.cancel = () => {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+  };
+  return debounced;
+}
 
 type ResultShow = {
   sidebar?: {

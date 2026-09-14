@@ -40,8 +40,6 @@ export default defineConfig(() => ({
         '@hungpvq/shared',
         '@hungpvq/shared-store',
         '@hungpvq/shared-store/react',
-        'lodash',
-        'lodash/debounce',
         '@mdi/js',
         '@mdi/react',
         'react-rnd',

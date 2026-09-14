@@ -1,10 +1,25 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import debounce from 'lodash/debounce';
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue';
 import { useDragContainer, useDragStore } from '../../store';
 import SidebarContainer from './sidebar/sidebar-container.vue';
 import BottomContainer from './bottom/bottom-container.vue';
+
+/** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): (...args: TArgs) => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return (...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  };
+}
+
 type ResultShow = {
   sidebar?: {
     leftCount: number;

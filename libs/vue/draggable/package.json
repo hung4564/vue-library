@@ -37,7 +37,6 @@
     "vue-material-design-icons": "^5.3.0",
     "@hungpvq/draggable": "^1.2.0",
     "@hungpvq/shared": "^0.3.0",
-    "vue-draggable-resizable": "^3.0.0",
-    "lodash": "^4.17.21"
+    "vue-draggable-resizable": "^3.0.0"
   }
 }
