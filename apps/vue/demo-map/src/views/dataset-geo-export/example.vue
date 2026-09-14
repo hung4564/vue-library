@@ -11,8 +11,8 @@ import {
 import {
   ComponentManagementControl,
   ExportGeoForm,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { defineComponent, h, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
@@ -75,7 +75,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mid" />
       </template>
     </LayerControl>
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>

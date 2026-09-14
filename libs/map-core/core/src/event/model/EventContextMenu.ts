@@ -48,5 +48,3 @@ export class EventContextMenu extends Event<'contextmenu', EventClickOption> {
     return this;
   }
 }
-
-export { EventContextMenu as EventRightClick };

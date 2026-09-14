@@ -1,9 +1,9 @@
 import { logHelper } from '@hungpvq/map-core';
 import {
   DrawService,
+  isDraftOption,
   MAP_DRAW_EVENT,
   type IDraftRecord,
-  type MapDrawDraftOption,
   type MapDrawEvent,
   type MapDrawOption,
   type MapDrawStore,
@@ -35,11 +35,8 @@ export function useMapDrawStore(mapId: string) {
 /** Non-hook alias for resolving the store outside React render (e.g. start()). */
 export const getMapDrawStore = useMapDrawStore;
 
-export function isDraftOption(
-  opt?: Partial<MapDrawOption>,
-): opt is MapDrawDraftOption {
-  return !!opt && 'draft' in opt;
-}
+/** Thin Stable re-export — SoT is `@hungpvq/map-draw`. */
+export { isDraftOption };
 
 export function useMapDraw(mapId: string) {
   return {

@@ -337,7 +337,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       </span>
                     </div>
                   </div>
-                ) : !hasSelectedPoint ? (
+                ) : items.length === 0 && !hasSelectedPoint ? (
                   <div className="identify-control-state">
                     <div className="identify-control-state__content">
                       <span>{trans('map.identify.no_selection')}</span>

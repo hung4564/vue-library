@@ -13,7 +13,7 @@ Attach a legend block to a list UI node. Components are registered by `installMa
 | `'linear'` | `{ text: string, items: { color: string, value: string }[] }` |
 
 ```ts
-import { createLegend } from '@hungpvq/vue-map-dataset';
+import { createLegend } from '@hungpvq/map-dataset/menu';
 
 createLegend('color', { text: 'Fill', color: '#4ecdc4' });
 createLegend('text', { text: 'Class', value: 'urban' });
@@ -33,7 +33,7 @@ Returns `{ componentKey: 'legend-color' | 'legend-text' | 'legend-linear', attr:
 Several legends stacked.
 
 ```ts
-import { createMultiLegend } from '@hungpvq/vue-map-dataset';
+import { createMultiLegend } from '@hungpvq/map-dataset/menu';
 import { createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 
 const list = createDatasetPartListViewUiComponentBuilder('Layer')

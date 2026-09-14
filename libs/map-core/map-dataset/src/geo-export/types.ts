@@ -1,4 +1,5 @@
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { asFeatureCollection } from '../utils/feature-collection';
 
 export const GEO_EXPORT_FORMATS = [
   'geojson',
@@ -38,33 +39,7 @@ export const GEO_EXPORT_FORMAT_META: Record<
 export function toFeatureCollection(
   data: unknown,
 ): FeatureCollection | null {
-  if (!data) return null;
-  if (typeof data === 'string') return null;
-  if (typeof data !== 'object') return null;
-  const value = data as { type?: string };
-
-  if (value.type === 'FeatureCollection' && Array.isArray((data as FeatureCollection).features)) {
-    return data as FeatureCollection;
-  }
-  if (value.type === 'Feature' && (data as Feature).geometry) {
-    return { type: 'FeatureCollection', features: [data as Feature] };
-  }
-  if (
-    typeof value.type === 'string' &&
-    'coordinates' in (data as Geometry)
-  ) {
-    return {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: data as Geometry,
-        },
-      ],
-    };
-  }
-  return null;
+  return asFeatureCollection(data);
 }
 
 export function recordsToFeatureCollection(list: unknown[]): FeatureCollection {

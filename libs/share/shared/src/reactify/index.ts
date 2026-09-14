@@ -49,8 +49,6 @@ export function reactify<T extends AnyFn, K extends boolean = true>(
   } as any;
 }
 
-// alias
-export { reactify as createReactiveFn };
 export const stringify = reactify((input: any) =>
   dump(input, {
     skipInvalid: true,

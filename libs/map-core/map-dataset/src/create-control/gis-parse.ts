@@ -6,6 +6,7 @@ import type {
   Position,
 } from 'geojson';
 import { detectGeojsonCrs, isValidGeojson, parseGeojsonText } from '../geojson/geojson-parse';
+import { asFeatureCollection } from '../utils/feature-collection';
 import {
   detectGisFormat,
   fileExtension,
@@ -105,15 +106,7 @@ async function loadTopojsonClient() {
 }
 
 export function asGisFeatureCollection(geojson: GeoJSON | null): FeatureCollection | null {
-  if (!geojson) return null;
-  if (geojson.type === 'FeatureCollection') return geojson;
-  if (geojson.type === 'Feature') {
-    return { type: 'FeatureCollection', features: [geojson] };
-  }
-  return {
-    type: 'FeatureCollection',
-    features: [{ type: 'Feature', geometry: geojson, properties: {} }],
-  };
+  return asFeatureCollection(geojson);
 }
 
 /**

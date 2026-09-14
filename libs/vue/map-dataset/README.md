@@ -66,7 +66,7 @@ function onMapLoaded(map: MapSimple) {
 ## What is included
 
 - `LayerControl` / `LayerInfoControl` — editable or read-only layer list
-- `IdentifyControl` / `IdentifyShowFirstControl` / `LayerHighlight`
+- `IdentifyControl` / `IdentifyShowFirstControl` / `useHighlight` (pointer via app `HighlightPointer` or `bindPointer`)
 - `DatasetControl` / `ComponentManagementControl` (dialogs from menus)
 - **Export** GeoJSON as GeoJSON / KML / CSV / Shapefile
 - **Attribute table** for GeoJSON feature properties

@@ -125,7 +125,7 @@ export type MenuAction<P = unknown, T = IDataset> =
   | MenuItemContentMenu<P, T>
   | MenuItemCustomComponentBottomOrExtra<P, T>;
 
-export type IBaseMapboxSourceView = IDatasetMap &
+export type IMapboxSourceView = IDatasetMap &
   WithDataHelper &
   IDataset & {
     getMapboxSource: () => SourceSpecification & { id?: string };
@@ -134,13 +134,9 @@ export type IBaseMapboxSourceView = IDatasetMap &
     getDataInfo(): unknown;
     getSourceId(): string;
   };
-export type IMapboxSourceView = IBaseMapboxSourceView & {
-  getMapboxSource: () => SourceSpecification & { id?: string };
-  updateData?(map: MapSimple, data: unknown): void;
-  getFieldsInfo(): IFieldInfo[];
-  getDataInfo(): unknown;
-  getSourceId(): string;
-};
+
+/** @deprecated Use {@link IMapboxSourceView} */
+export type IBaseMapboxSourceView = IMapboxSourceView;
 
 export type IMapboxLayerView = IDatasetMap &
   WithToggleShow &
@@ -197,7 +193,7 @@ export type IIdentifyViewWithMerge = IIdentifyViewBase & {
     identifies: IIdentifyView[],
     payload: unknown,
     response: unknown,
-  ): IdentifyResult[];
+  ): IdentifyMultiResult[];
 
   getMergedFeatures(identifies: IIdentifyView[], payload: unknown): unknown;
 };
@@ -206,12 +202,6 @@ export type IdentifyMultiResult = {
   identify: IIdentifyView;
   features: IdentifyFeatureRow[];
 };
-
-/** @deprecated Prefer IdentifyMultiResult — same feature list shape. */
-export type IdentifySingleResult = IdentifyMultiResult;
-
-// Define kiểu trả về cho mỗi kết quả sau khi split
-export type IdentifyResult = IdentifyMultiResult;
 // Union type cho IIdentifyView
 export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 

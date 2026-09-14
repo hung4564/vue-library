@@ -11,9 +11,9 @@ import {
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   IdentifyControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useMemo } from 'react';
@@ -63,7 +63,7 @@ export function DatasetMenuPage() {
           show
           endList={({ mapId: id }) => <BaseMapCard mapId={id} />}
         />
-        <LayerHighlight enableClick />
+        <HighlightPointer enableClick />
         <IdentifyControl position="top-right" />
         <ComponentManagementControl />
         <ThemeControl />

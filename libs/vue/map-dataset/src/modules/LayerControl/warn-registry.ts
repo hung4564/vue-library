@@ -1,20 +1,14 @@
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
+import {
+  resetDatasetRegistryWarnFlag,
+  warnIfDatasetRegistryMissing as warnShared,
+} from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
 
-let warnedMissingDatasetRegistry = false;
-
-/** @internal test helper */
-export function resetDatasetRegistryWarnFlag() {
-  warnedMissingDatasetRegistry = false;
-}
+export { resetDatasetRegistryWarnFlag };
 
 export function warnIfDatasetRegistryMissing() {
-  if (warnedMissingDatasetRegistry) return;
-  if (UniversalRegistry.getComponent(LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton)) {
-    return;
-  }
-  warnedMissingDatasetRegistry = true;
-  console.warn(
-    '[LayerControl] Dataset registry UI is not registered. Call installMapApp(app) once (or createDatasetRegistryPlugin) or layer menus / style / attribute UI will be empty. See @hungpvq/vue-map-dataset docs.',
+  warnShared(
+    (key) => UniversalRegistry.getComponent(key),
+    'vue-map-dataset',
   );
 }

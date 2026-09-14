@@ -10,7 +10,6 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 | [IdentifyShowFirstControl](./IdentifyShowFirstControl.md) | Click → first identify menu | none |
 | [DatasetControl](./DatasetControl.md) | Root dataset list | none |
 | [ComponentManagementControl](./ComponentManagementControl.md) | Dialogs from menus (`addComponent`) | none |
-| [LayerHighlight](./LayerHighlight.md) | Click / hover highlight | none |
 | [CreateControl](./CreateControl.md) | Create-layer dialog | Vue `update:show` / React `onShowChange` |
 
 ## Helpers

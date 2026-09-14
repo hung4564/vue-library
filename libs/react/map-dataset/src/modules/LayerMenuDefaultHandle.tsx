@@ -13,24 +13,24 @@ import {
   notifyMapDatasetStore,
   useMapDataset,
   useMapDatasetComponent,
-  useMapDatasetHighlight,
+  useHighlight,
 } from '../store';
 
 export function LayerMenuDefaultHandle(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, callMap } = useMap(merged);
   const { addComponent } = useMapDatasetComponent(mapId);
-  const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
+  const hl = useHighlight(mapId);
   const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId);
 
   const addComponentRef = useRef(addComponent);
   const callMapRef = useRef(callMap);
-  const setFeatureHighlightRef = useRef(setFeatureHighlight);
+  const hlRef = useRef(hl);
   const getAllComponentsByTypeRef = useRef(getAllComponentsByType);
   const getStoreDatasetRef = useRef(getStoreDataset);
   addComponentRef.current = addComponent;
   callMapRef.current = callMap;
-  setFeatureHighlightRef.current = setFeatureHighlight;
+  hlRef.current = hl;
   getAllComponentsByTypeRef.current = getAllComponentsByType;
   getStoreDatasetRef.current = getStoreDataset;
 
@@ -67,8 +67,12 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
       mapId,
       LIST_VIEW_MENU_ID.highlight,
       ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
-        if (value)
-          setFeatureHighlightRef.current(value.detail, value.key, layer);
+        if (value) {
+          void hlRef.current.show(value.detail, {
+            source: value.key,
+            dataset: layer,
+          });
+        }
       },
     );
     UniversalRegistry.registerMenuHandlerForMap(

@@ -57,7 +57,7 @@ const laptop = breakpoints.between('laptop', 'desktop');
 
 - Tailwind: `breakpointsTailwind`
 - Bootstrap v5: `breakpointsBootstrapV5`
-- Vuetify v2: `breakpointsVuetifyV2` (deprecated: `breakpointsVuetify`)
+- Vuetify v2: `breakpointsVuetifyV2`
 - Vuetify v3: `breakpointsVuetifyV3`
 - Ant Design: `breakpointsAntDesign`
 - Quasar v2: `breakpointsQuasar`

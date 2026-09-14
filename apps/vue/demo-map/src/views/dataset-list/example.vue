@@ -5,8 +5,8 @@ import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map, UniversalRegistry, WorkerControl } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import { reactive, ref } from 'vue';
@@ -55,7 +55,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>

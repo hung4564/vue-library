@@ -1,20 +1,2 @@
-export const DRAW_CONTROL_LOCALE = {
-  map: {
-    'draw-control': {
-      draftList: {
-        title: 'Draft items',
-        field: { id: 'Id', type: 'Type', action: '#' },
-        type: { created: 'Created', updated: 'Updated', deleted: 'Deleted' },
-        action: { fillBound: 'Fill bound', discard: 'Discard' },
-      },
-    },
-  },
-};
-
-export const INSPECT_CONTROL_LOCALE = {
-  map: {
-    'inspect-control': {
-      button: 'Toggle inspect',
-    },
-  },
-};
+/** Thin Stable re-export — SoT is `@hungpvq/map-draw`. */
+export { DRAW_CONTROL_LOCALE, INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';

@@ -7,6 +7,7 @@ export { default as ComponentManagementControl } from './ComponentManagementCont
 export { default as CreateControl } from './CreateControl/CreateControl.vue';
 export { default as DatasetControl } from './DatasetControl/DatasetControl.vue';
 export { default as DatasetDetail } from './DatasetControl/DatasetDetail.vue';
+export { default as HighlightPointer } from './HighlightPointer/HighlightPointer.vue';
 export { default as IdentifyControl } from './IdentifyControl/IdentifyControl.vue';
 export { default as LayerMenuDefaultHandle } from './LayerMenuDefaultHandle.vue';
 export { default as IdentifyResultControl } from './IdentifyControl/IdentifyResultControl.vue';
@@ -14,8 +15,6 @@ export { default as IdentifyShowFirstControl } from './IdentifyControl/IdentifyS
 export { default as LayerControl } from './LayerControl/LayerControl.vue';
 export { default as LayerInfoControl } from './LayerControl/LayerInfoControl.vue';
 export { default as LayerDetail } from './LayerDetail/LayerDetail.vue';
-export { default as LayerHighlight } from './LayerHighlight/LayerHighlight.vue';
-export { createLegend, createMultiLegend } from './Legend';
 export { default as ListGroupItem } from './List/ListGroupItem.vue';
 export { default as ListItem } from './List/ListItem.vue';
 export { default as RecursiveList } from './List/RecursiveList.vue';

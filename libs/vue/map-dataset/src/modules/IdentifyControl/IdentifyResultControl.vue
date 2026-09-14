@@ -337,7 +337,10 @@ function onResultKeydown(event: KeyboardEvent) {
                 <span>{{ errorMessage || trans('map.identify.error') }}</span>
               </div>
             </div>
-            <div v-else-if="!hasSelectedPoint" class="identify-control-state">
+            <div
+              v-else-if="items.length === 0 && !hasSelectedPoint"
+              class="identify-control-state"
+            >
               <div class="identify-control-state__content">
                 <span>{{ trans('map.identify.no_selection') }}</span>
               </div>

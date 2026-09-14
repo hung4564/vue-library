@@ -1,65 +1,48 @@
-import type { IDataset } from '@hungpvq/map-dataset';
-import { ConfigGeojsonHelper, ConfigRasterJsonHelper } from './custom';
+import {
+  LAYER_TYPES,
+  LayerHelper as CoreLayerHelper,
+  type LayerType,
+} from '@hungpvq/map-dataset/create-control';
 
-export const LAYER_TYPES = {
-  vector: 'Vector layer',
-  rasterxyz: 'Raster XYZ layer',
-} as const;
+export { LAYER_TYPES, type LayerType };
 
-export type LayerType = keyof typeof LAYER_TYPES;
-
-type LayerForm = Record<string, unknown> & { name?: string };
-
-/** Erased helper surface — concrete helpers differ by form shape. */
-type ConfigHelperLike = {
-  readonly default_value: Record<string, unknown>;
-  readonly create: (form: LayerForm & { name: string }) => IDataset | Promise<IDataset>;
-  readonly componentKey?: string;
-  validate(form: LayerForm): boolean;
-  validationErrors(form: LayerForm): string[];
+const COMPONENT_KEYS: Record<LayerType, string> = {
+  vector: 'create-geojson',
+  rasterxyz: 'create-raster-json',
 };
 
+/** React UI binder over core create/validate helpers. */
 export class LayerHelper {
-  private helper: ConfigHelperLike;
+  private core: CoreLayerHelper;
+  private type: LayerType;
 
   constructor(type: LayerType) {
-    this.helper = HelperFactory.create(type);
+    this.type = type;
+    this.core = new CoreLayerHelper(type);
   }
 
   setType(type: LayerType) {
-    this.helper = HelperFactory.create(type);
+    this.type = type;
+    this.core.setType(type);
   }
 
   get default_value() {
-    return this.helper.default_value;
+    return this.core.default_value;
   }
 
   get create() {
-    return this.helper.create;
+    return this.core.create;
   }
 
   get componentKey() {
-    return this.helper.componentKey;
+    return COMPONENT_KEYS[this.type];
   }
 
-  validationErrors(form: LayerForm) {
-    return this.helper.validationErrors(form);
+  validationErrors(form: Record<string, unknown> & { name?: string }) {
+    return this.core.validationErrors(form);
   }
 
-  validate(form: LayerForm) {
-    return this.helper.validate(form);
+  validate(form: Record<string, unknown> & { name?: string }) {
+    return this.core.validate(form);
   }
 }
-
-const HelperFactory = {
-  create(type: LayerType): ConfigHelperLike {
-    switch (type) {
-      case 'rasterxyz':
-        return new ConfigRasterJsonHelper() as unknown as ConfigHelperLike;
-      case 'vector':
-        return new ConfigGeojsonHelper() as unknown as ConfigHelperLike;
-      default:
-        throw new Error('not support type: ' + type);
-    }
-  },
-};

@@ -2,6 +2,8 @@
 
 Click or box-select features. Presentation uses menus on the identify dataset node and an internal resolver (detail → attribute table → result panel).
 
+Identify painting uses the highlight controller with `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer highlight can double-fire on the same click — disable `pointer.click` on parts or skip `HighlightPointer` when Identify owns the click.
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->
@@ -55,16 +57,26 @@ import { Map } from '@hungpvq/vue-map-core';
 import {
   IdentifyControl,
   ComponentManagementControl,
-  LayerHighlight,
+  useHighlight,
 } from '@hungpvq/vue-map-dataset';
+import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
+import { onUnmounted } from 'vue';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+
+// Optional: pointer highlight in addition to Identify (watch dual-click).
+const hl = useHighlight(mapId);
+const unbind = hl.bindPointer({ click: true, hover: false });
+onUnmounted(() => {
+  unbind();
+  destroyHighlightController(mapId);
+});
 </script>
 
 <template>
   <Map>
     <IdentifyControl position="top-right" show />
-    <LayerHighlight enable-click />
+    <!-- Or demo shell: <HighlightPointer enable-click /> -->
     <ComponentManagementControl />
   </Map>
 </template>
@@ -79,9 +91,32 @@ Immediate click mode:
 ## React
 
 ```tsx
-<IdentifyControl position="top-right" show />
-<LayerHighlight enableClick />
-<ComponentManagementControl />
+import {
+  IdentifyControl,
+  ComponentManagementControl,
+  useHighlight,
+} from '@hungpvq/react-map-dataset';
+import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
+import { useEffect } from 'react';
+
+function Page({ mapId }: { mapId: string }) {
+  const hl = useHighlight(mapId);
+  useEffect(() => {
+    const unbind = hl.bindPointer({ click: true, hover: false });
+    return () => {
+      unbind();
+      destroyHighlightController(mapId);
+    };
+  }, [hl, mapId]);
+
+  return (
+    <>
+      <IdentifyControl position="top-right" show />
+      {/* Or demo shell: <HighlightPointer enableClick /> */}
+      <ComponentManagementControl />
+    </>
+  );
+}
 ```
 
 Immediate click mode: `<IdentifyControl position="top-right" immediately />`.
@@ -91,3 +126,11 @@ Identify menus are defined on the identify dataset node. See [Identify](../creat
 Right-click **Quick analysis → Identify features** (`MapContextMenuControl`) runs the same query. That menu item is added only when `IdentifyControl` is mounted.
 
 `IdentifyResultControl` is mounted by `IdentifyControl` (no separate install required).
+
+**Highlight ownership (Identify vs pointer):**
+
+- Identify result highlight is painted when menu items use `.setKey('identify')` (e.g. identify-for-list menus). `LayerMenuDefaultHandle` handles `LIST_VIEW_MENU_ID.highlight` and calls `hl.show(…, { source: value.key })`, so identify menus pass `source: 'identify'`.
+- `IdentifyControl` itself does **not** call `show()`. On close it clears identify paint with `hideIfSource('identify')`.
+- `HighlightPointer` / `bindPointer` use sources `pointer` / `hover` and are optional for pointer-picking demos. They are not required for Identify’s own highlight path.
+
+There is no `LayerHighlight` component anymore.

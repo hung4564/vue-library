@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core/legend';
+import {
+  getLegendName,
+  isSupportGenLayerLegend,
+  LEGEND_CONTROL_LOCALE,
+} from '@hungpvq/map-core/legend';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
@@ -14,7 +18,6 @@ import { InputCheckbox } from '../../../../field';
 import { defaultMapProps, useMap } from '../../../../hooks/useMap';
 import { useShow } from '../../../../hooks/useShow';
 import { ModuleContainer } from '../../../../modules';
-import { getLegendName, isSupportGenLayerLegend } from '../../check';
 import { useLayerLegend } from '../../lib/useLayerLegend';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

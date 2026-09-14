@@ -12,7 +12,7 @@ import {
   createRootDataset,
 } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { createMenuItemToggleShow, createMultiLegend } from '@hungpvq/map-dataset/menu';
 import {
   LayerSimpleMapboxBuild,
   LayerStyleType,
@@ -45,12 +45,11 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  createMultiLegend,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
@@ -189,7 +188,7 @@ function createDatasetMeasure(
     <MapContextMenuControl />
     <BaseMapControl position="bottom-left" />
     <IdentifyShowFirstControl />
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>

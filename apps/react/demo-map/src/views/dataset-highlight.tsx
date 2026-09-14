@@ -7,14 +7,18 @@ import {
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadHighlightDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+
+loggerFactory.enable('map:highlight');
+loggerFactory.enable('demo:highlight');
 
 export function DatasetHighlightPage() {
   useDatasetRegistry();
@@ -32,7 +36,7 @@ export function DatasetHighlightPage() {
           show
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <LayerHighlight enableClick enableHover />
+        <HighlightPointer enableClick enableHover />
         <ComponentManagementControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />

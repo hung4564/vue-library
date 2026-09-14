@@ -5,10 +5,10 @@ import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
 import { loadIdentifyDemoDatasets } from '../../data/loaders';
@@ -32,7 +32,7 @@ function onMapLoaded(map: MapSimple) {
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <IdentifyShowFirstControl />
     <ComponentManagementControl />
     <DemoHelpPanel />

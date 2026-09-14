@@ -307,8 +307,3 @@ function dcToSec(val: number): number {
   }
   return (Math.abs(val) - dcToDeg(val) - dcToMin(val) / 60) * 3600;
 }
-
-// Legacy exports for backward compatibility
-export const deg_to_dms = degToDms;
-export const dms_to_des = dmsToDeg;
-export const deg_to_dms_string = degToDmsString;

@@ -43,6 +43,7 @@ export default defineConfig(() => ({
         'geo-export': 'src/geo-export/index.ts',
         'data-management': 'src/data-management/index.ts',
         'attribute-table': 'src/attribute-table/index.ts',
+        highlight: 'src/highlight/index.ts',
       },
       name: '@hungpvq/map-dataset',
       fileName: (format, entryName) => {

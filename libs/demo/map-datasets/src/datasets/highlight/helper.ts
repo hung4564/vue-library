@@ -1,51 +1,47 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import {
-  createDatasetPartCustomAnimateHighlightComponent,
+  createHighlightPart,
   type HighlightFilterCreator,
   type HighlightLayerIds,
-  type IHighlightView,
-} from '@hungpvq/map-dataset';
-import type { LayerSpecification } from 'maplibre-gl';
+  type IHighlightPart,
+} from '@hungpvq/map-dataset/highlight';
 
 export function createDatasetCustomHighlightComponent(
-  data?: Partial<LayerSpecification>,
   options?: {
     filterCreator?: HighlightFilterCreator;
   },
-): IHighlightView {
-  function animateFn({
+): IHighlightPart {
+  function animate({
     layerIds,
     map,
     state,
   }: {
     map: MapSimple;
     layerIds: HighlightLayerIds;
-    state: { color: string; startTime: number };
+    state: Record<string, unknown>;
   }) {
-    const t = (performance.now() - state.startTime) / 1000;
-    const c = state.color;
+    const startTime = Number(state.startTime ?? performance.now());
+    const color = String(state.color ?? '#880808');
+    const t = (performance.now() - startTime) / 1000;
     const radius = 6 + Math.sin(t * 3) * 2;
     const opacity = 0.4 + 0.3 * Math.sin(t * 2);
-    map.setPaintProperty(layerIds.point, 'circle-stroke-color', c);
+    map.setPaintProperty(layerIds.point, 'circle-stroke-color', color);
     map.setPaintProperty(layerIds.point, 'circle-radius', radius);
 
-    map.setPaintProperty(layerIds.line, 'line-color', c);
+    map.setPaintProperty(layerIds.line, 'line-color', color);
     map.setPaintProperty(layerIds.line, 'line-width', radius);
 
-    map.setPaintProperty(layerIds.polygon, 'fill-color', c);
+    map.setPaintProperty(layerIds.polygon, 'fill-color', color);
     map.setPaintProperty(layerIds.polygon, 'fill-opacity', opacity);
   }
 
-  return createDatasetPartCustomAnimateHighlightComponent<{
-    color: string;
-    startTime: number;
-  }>(
-    animateFn,
-    () => ({
+  return createHighlightPart({
+    mode: 'custom',
+    animate,
+    createDefaultState: () => ({
       color: '#880808',
       startTime: performance.now(),
     }),
-    data,
-    options,
-  );
+    filterCreator: options?.filterCreator,
+  });
 }

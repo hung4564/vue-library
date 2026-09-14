@@ -1,68 +1,76 @@
-import type { IDataset } from '@hungpvq/map-dataset';
-import { ConfigNo } from '../config';
-import type { ConfigHelper } from './_default';
-import { ConfigGeojsonHelper, ConfigRasterJsonHelper } from './custom';
+import {
+  LAYER_TYPES,
+  LayerHelper as CoreLayerHelper,
+  type LayerType,
+} from '@hungpvq/map-dataset/create-control';
+import {
+  ConfigNo,
+  ConfigRasterJson,
+  ConfigRasterSettings,
+  GeojsonSettings,
+  GeojsonUpload,
+} from '../config';
 
-export const LAYER_TYPES = {
-  vector: 'Vector layer',
-  rasterxyz: 'Raster XYZ layer',
-} as const;
+export { LAYER_TYPES, type LayerType };
 
-export type LayerType = keyof typeof LAYER_TYPES;
-
+/** Vue UI binder over core create/validate helpers. */
 export class LayerHelper {
-  private helper: ConfigHelper<any>;
+  private core: CoreLayerHelper;
+  private type: LayerType;
 
   constructor(type: LayerType) {
-    this.helper = HelperFactory.create(type);
+    this.type = type;
+    this.core = new CoreLayerHelper(type);
   }
 
-  public setType(type: LayerType) {
-    this.helper = HelperFactory.create(type);
+  setType(type: LayerType) {
+    this.type = type;
+    this.core.setType(type);
   }
 
-  get default_value(): Record<string, unknown> {
-    return this.helper.default_value;
+  get default_value() {
+    return this.core.default_value;
   }
 
-  get create(): (form: any) => IDataset | Promise<IDataset> {
-    return this.helper.create;
+  get create() {
+    return this.core.create;
   }
 
-  get dataSourceComponent(): () => any {
-    return this.helper.dataSourceComponent || (() => ConfigNo);
+  validationErrors(form: Record<string, unknown> & { name?: string }) {
+    return this.core.validationErrors(form);
   }
 
-  get settingsComponent(): () => any {
-    return this.helper.settingsComponent || (() => ConfigNo);
+  validate(form: Record<string, unknown> & { name?: string }) {
+    return this.core.validate(form);
+  }
+
+  get dataSourceComponent(): () => unknown {
+    switch (this.type) {
+      case 'vector':
+        return () => GeojsonUpload;
+      case 'rasterxyz':
+        return () => ConfigRasterJson;
+      default:
+        return () => ConfigNo;
+    }
+  }
+
+  get settingsComponent(): (() => unknown) | undefined {
+    switch (this.type) {
+      case 'vector':
+        return () => GeojsonSettings;
+      case 'rasterxyz':
+        return () => ConfigRasterSettings;
+      default:
+        return undefined;
+    }
   }
 
   get hasLayerSettings(): boolean {
-    return this.helper.hasLayerSettings;
+    return this.settingsComponent !== undefined;
   }
 
-  get component(): () => any {
+  get component(): () => unknown {
     return this.dataSourceComponent;
   }
-
-  validationErrors(form: any): string[] {
-    return this.helper.validationErrors(form);
-  }
-
-  validate(form: any): boolean {
-    return this.helper.validate(form);
-  }
 }
-
-const HelperFactory = {
-  create(type: LayerType): ConfigHelper<any> {
-    switch (type) {
-      case 'rasterxyz':
-        return new ConfigRasterJsonHelper();
-      case 'vector':
-        return new ConfigGeojsonHelper();
-      default:
-        throw new Error('not support type: ' + type);
-    }
-  },
-};

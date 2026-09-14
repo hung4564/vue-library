@@ -1,10 +1,11 @@
-import type { ComponentType } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { defineComponent, h, type PropType } from 'vue';
+import { logger } from '../../logger';
 import LayerLegendLinearGradient from './parts/linear-gradient.vue';
 import LayerLegendSingleColor from './parts/single-color.vue';
 import LayerLegendSingleText from './parts/single-value.vue';
+
 export {
   LayerLegendLinearGradient,
   LayerLegendSingleColor,
@@ -17,62 +18,19 @@ const legendComponentKey = {
   text: LIST_VIEW_MENU_COMPONENT_KEY.legendText,
 } as const;
 
-const componentMap = {
-  linear: LayerLegendLinearGradient,
-  color: LayerLegendSingleColor,
-  text: LayerLegendSingleText,
-} as const;
-type LegendType = keyof typeof componentMap;
-type LegendPropsMap = {
-  linear: {
-    text: string;
-    items: {
-      color: string;
-      value: string;
-    }[];
-  };
-  color: {
-    text: string;
-    color: string;
-  };
-  text: {
-    text: string;
-    value: string;
-  };
-};
-export function createLegend<T extends LegendType>(
-  type: T,
-  value: LegendPropsMap[T],
-): ComponentType {
-  return {
-    componentKey: legendComponentKey[type],
-    attr: {
-      value,
-    },
-  };
-}
+type LegendType = keyof typeof legendComponentKey;
 
-export function createMultiLegend<T extends LegendType[]>(
-  legends: { type: T[number]; value: LegendPropsMap[T[number]] }[],
-): ComponentType {
-  return {
-    componentKey: LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
-    attr: {
-      legends,
-    },
-  };
-}
 export const MultiLegend = defineComponent({
   name: 'MultiLegend',
   props: {
     legends: {
       type: Array as PropType<
-        { type: LegendType; value: LegendPropsMap[LegendType] }[]
+        { type: LegendType; value: Record<string, unknown> }[]
       >,
       default: () => [],
     },
     data: {
-      type: Object as PropType<any>,
+      type: Object as PropType<Record<string, unknown>>,
       default: undefined,
     },
     mapId: String,
@@ -83,7 +41,7 @@ export const MultiLegend = defineComponent({
       props.legends.map((legend) => {
         const Component = getComponent(legendComponentKey[legend.type]);
         if (!Component) {
-          console.warn(
+          logger.warn(
             `Component for legend type "${legend.type}" not found in UniversalRegistry`,
           );
           return null;

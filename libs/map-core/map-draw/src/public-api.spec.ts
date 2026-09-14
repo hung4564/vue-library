@@ -7,6 +7,7 @@ import * as api from './index';
 export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'brightColor',
   'buildInspectQueryBox',
+  'DRAW_CONTROL_LOCALE',
   'DRAW_MODES',
   'DrawError',
   'DrawingType',
@@ -19,7 +20,9 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'getFeatureId',
   'getFirstFeatureByMap',
   'getSourcesFromMap',
+  'INSPECT_CONTROL_LOCALE',
   'InspectController',
+  'isDraftOption',
   'isInspectStyle',
   'MAP_DRAW_EVENT',
   'MapDraw',

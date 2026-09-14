@@ -1,6 +1,7 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { createDatasetPartBoundComponent, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartBoundComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, MENU_CONTROL_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
@@ -251,7 +252,7 @@ export function createSharedDatasetMenuDataset() {
       .setFilter(['==', '$type', 'Point'])
       .build(),
   ]);
-  const highlight = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
   const identify = createDatasetPartIdentifyComponentBuilder(name)
     .configFieldId('id')
     .configFieldName('name')
@@ -384,7 +385,7 @@ export function createByControlPlacementDataset() {
       .setFilter(['==', '$type', 'Point'])
       .build(),
   ]);
-  const highlight = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
   const identify = createDatasetPartIdentifyComponentBuilder(name)
     .configFieldId('id')
     .configFieldName('name')

@@ -17,7 +17,7 @@ Select rows to highlight. **Zoom to selection** is off by default.
 
 **Export** lives in [`@hungpvq/map-dataset/geo-export`](./export.md). The Attribute Table toolbar **Export** button (`ui.export`, default `true`) opens the same controller / `onExport` / scopes. While the table is open, filtered/selected export reuses the AT store via the geo-export active-source bridge.
 
-Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Mount `LayerHighlight` to paint selection.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Row selection paints via the highlight controller (`source: 'attribute-table'`); clear with `hideIfSource('attribute-table')`. Import parts / controller from `@hungpvq/map-dataset/highlight` — no `LayerHighlight` mount.
 
 ## Built-in menu
 

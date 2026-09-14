@@ -78,16 +78,17 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, generic parts, highlight, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types). Experimental: `printTreeFromNode` / `printTreeFromRoot` |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types). Experimental: `printTreeFromNode` / `printTreeFromRoot` |
+| `./highlight` | `createHighlightPart`, `getHighlightController` / `destroyHighlightController` / `bindHighlightPickDatasets`, cascade defaults (`DEFAULT_HIGHLIGHT_*`), query / resolve helpers; types `HighlightPartOptions`, `HighlightController`, `IHighlightPart`, … (paint-layer helpers are package-internal) |
 | `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui`), `createMenuItemAttributeTable`, column/sort helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
 | `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (`data` / merge payload typed as `unknown` — types-only tightening vs former `any`) |
-| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
+| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
-| `./create-control` | `CREATE_CONTROL_*`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
+| `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*` / `GEO_EXPORT_COMPONENT_KEY` (SoT; `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo*` aliases), `createGeoExportController`, `onExport` + `GeoExportContext` (+ `AbortSignal`), `uiMode` modal\|menu\|click, `formComponent` / `loadingComponent`, `resolveGeoExportUiSlot`, `resolveExportCollection`, active-source bridge, `createMenuItemExportGeo`, `createDatasetPartGeoExport`, `openGeoExportModalFromAttributeTable` / `runGeoExportClickFromAttributeTable` / `runGeoExportFormatFromAttributeTable`, `resolveGeoExportCrs`, `downloadBlob` / `sanitizeExportFilename`, `getDatasetFeatureCollection` / `hasGeojsonExportData`, `ExportGeoComponentAttrs` (`exportHandler`) |
 | `./vite` | `mapDatasetGisWorker()` |
 | `./style.css` / `./assets/*` | package CSS and static assets |
@@ -148,9 +149,9 @@ Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHand
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap | `installMapApp`, `createMapAppPlugin` (Vue), `createDatasetRegistryPlugin()` |
-| Hooks | `useMapDataset` |
-| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable` (+ `AttributeTableView` / toolbar / grid / pager), `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
-| Core boundary | Builders/services/types from `@hungpvq/map-dataset` |
+| Hooks | `useMapDataset`, `useHighlight` |
+| UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `HighlightPointer`, `AttributeTable` (+ `AttributeTableView` / toolbar / grid / pager), `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
+| Core boundary | Builders/services/types from `@hungpvq/map-dataset` (including `createLegend` / `createMultiLegend` from `@hungpvq/map-dataset/menu`) |
 
 Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`; React `MenuConditionProvider`. React also has imperative `getMapDatasetStore` / `notifyMapDatasetStore`.
 
@@ -159,9 +160,10 @@ Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`
 | Area | Stable surface |
 |------|----------------|
 | Service | `DrawService` |
-| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption` |
+| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, `isDraftOption` |
 | Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` |
 | Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
+| Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
 
 ## `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`
 
@@ -169,8 +171,8 @@ Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`
 |------|----------------|
 | Shell | `DrawControl`, `InspectControl` (shared `InspectController`), `useMapDraw`, `isDraftOption`, `useConfigDrawControl`, `useMapDrawStore` |
 | Control ids | `mapDrawDraftList`, `mapInspectControl` |
-| Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
-| Core boundary | Protocol from `@hungpvq/map-draw` — adapters do **not** re-export core |
+| Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` (thin re-exports from `@hungpvq/map-draw` for Stable continuity) |
+| Core boundary | Protocol/locales from `@hungpvq/map-draw`; adapters re-export only locked Stable names (`isDraftOption`, locales) |
 
 Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 

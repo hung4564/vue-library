@@ -19,9 +19,14 @@ import {
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref } from 'vue';
 import type { PrintOption } from '@hungpvq/map-core/print';
-import { exportMapbox, exportMapboxWithOptions, PRINT_PAPER_PRESETS } from '@hungpvq/map-core/print';
+import {
+  CrosshairManager,
+  exportMapbox,
+  exportMapboxWithOptions,
+  PRINT_PAPER_PRESETS,
+  PrintableAreaManager,
+} from '@hungpvq/map-core/print';
 import { useMapPrint } from '../store';
-import { CrosshairManager, PrintableAreaManager } from './print';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

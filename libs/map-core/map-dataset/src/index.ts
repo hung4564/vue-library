@@ -1,12 +1,12 @@
 /**
  * Root barrel: explicit named exports (Stable).
  * Domain symbols live on `@hungpvq/map-dataset/<domain>` subpaths (breaking major).
+ * Highlight APIs live on `@hungpvq/map-dataset/highlight` (not re-exported here).
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Aggregation lives in ./internal-barrel (not a public package entry).
  */
 export {
   DATASET_CONTROL_LOCALE,
-  DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY,
   DatasetComposite,
   DatasetError,
   DatasetLeaf,
@@ -24,51 +24,36 @@ export {
   addListViewsToGroup,
   addListViewsToNewGroup,
   applyGlobalLayerVisibility,
-  applyHighlightFeatureState,
   applyListViewMapVisibility,
   applyToAllLeaves,
   canMoveListView,
-  clearHighlightFeatureState,
   convertFeatureToItem,
   convertItemToFeature,
   convertListToTree,
+  convertTreeToList,
+  createDefaultGroup,
+  isGroupNode,
+  mergeEmptyGroups,
   createBase,
   createDataset,
   createDatasetComponent,
   createDatasetLeaf,
   createDatasetPartBoundComponent,
-  createDatasetPartChangeColorHighlightComponent,
-} from './internal-barrel';
-
-export {
-  createDatasetPartCustomAnimateHighlightComponent,
-  createDatasetPartFeatureStateHighlightComponent,
   createDatasetPartGroupSubListViewUiComponent,
   createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartHighlightComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartMapboxLayerComponent,
   createDatasetPartMapboxSourceComponent,
   createDatasetPartMetadataComponent,
-  createDatasetPartShadowHighlightComponent,
   createDatasetPartSubListViewUiComponent,
   createDatasetPartSubListViewUiComponentBuilder,
-  createDefaultHighlightLayerIds,
-  createDefaultHighlightLayers,
-  createFeatureStateHighlightLayers,
   createGroupDataset,
-  createHighlightFilter,
   createMultiMapboxLayerComponent,
   createNamedComponent,
   createRootDataset,
-  createShadowHighlightLayers,
   createWithDataHelper,
   createWithEventHelper,
-  defaultAnimate,
-  ensureHighlightLayers,
-  ensureHighlightSource,
-  featureStatePulseAnimate,
   findAllComponentsByType,
   findAllDatasetsMatching,
   findFirstLeafByType,
@@ -78,9 +63,6 @@ export {
   layerMatchesSearch,
   layerNameMatchesSearch,
   normalizeLayerSearchQuery,
-} from './internal-barrel';
-
-export {
   getDatasetDetailInfo,
   getDatasetSourceKind,
   getListViewGroupInfo,
@@ -101,23 +83,16 @@ export {
   printTreeFromNode,
   printTreeFromRoot,
   resolveDatasetBbox,
-  resolveHighlightFeatureId,
   runAllComponentsWithCheck,
   setListViewIntendedShow,
   setOpacity,
-  setPaintIfLayer,
   sortListViews,
   splitSearchHighlight,
   syncListViewLayerOrder,
-  toExpressionFilter,
   toggleShow,
-} from './internal-barrel';
-
-export {
   traverseTree,
   traverseTreeBFS,
   traverseTreeDFS,
-  useHighlightAnimation,
 } from './internal-barrel';
 
 export {
@@ -136,13 +111,6 @@ export type {
 } from './interfaces';
 export type { IListViewUI } from './model/list';
 export type { FieldFeaturesDef } from './extra/field';
-export type {
-  HighlightFilterCreator,
-  HighlightGeoJson,
-  HighlightHandle,
-  HighlightLayerIds,
-  IHighlightView,
-} from './model/highlight';
 export type { ComponentType } from './types';
 export type {
   DatasetSourceKind,

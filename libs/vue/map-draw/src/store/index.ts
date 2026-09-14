@@ -1,9 +1,9 @@
 import { logHelper } from '@hungpvq/map-core';
 import {
   DrawService,
+  isDraftOption,
   MAP_DRAW_EVENT,
   type IDraftRecord,
-  type MapDrawDraftOption,
   type MapDrawEvent,
   type MapDrawOption,
   type MapDrawStore,
@@ -86,11 +86,9 @@ export function useConfigDrawControl(
   return { setFeature, save, commit, discard, end };
 }
 
-export function isDraftOption(
-  opt?: Partial<MapDrawOption>,
-): opt is MapDrawDraftOption {
-  return !!opt && 'draft' in opt;
-}
+/** Thin Stable re-export — SoT is `@hungpvq/map-draw`. */
+export { isDraftOption };
+
 export const useMapDraw = (mapId: string) => {
   const start = (config: MapDrawOption) => {
     // Resolve by mapId each call — avoid stale store/mitt after map remount.

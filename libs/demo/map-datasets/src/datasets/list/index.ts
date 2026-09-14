@@ -12,7 +12,7 @@ import {
   demoPolygon,
 } from '../../fixtures/geojson';
 import { createRasterSourceConfig } from '../../fixtures/raster';
-import { createMultiLegend } from '../../legend/create-legend';
+import { createMultiLegend } from '@hungpvq/map-dataset/menu';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '../../registry/menu-handlers';
 
 /** List-only: bare row in LayerControl. */

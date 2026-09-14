@@ -8,8 +8,8 @@ import {
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
@@ -75,7 +75,7 @@ export function DatasetListPage() {
           }
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

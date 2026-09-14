@@ -53,7 +53,7 @@ import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapDatasetHighlight } from '../../store';
+import { useHighlight } from '../../store';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
@@ -61,9 +61,7 @@ provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.attributeTable,
 }));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
-const { setFeatureHighlight, getHighlightSource } = useMapDatasetHighlight(
-  mapId.value,
-);
+const hl = useHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
 
@@ -201,9 +199,7 @@ function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
   void controller.value.selectIds(ids);
 }
 function clearAttributeTableHighlight() {
-  if (getHighlightSource()?.value === 'attribute-table') {
-    setFeatureHighlight(undefined, 'attribute-table');
-  }
+  hl.hideIfSource('attribute-table');
 }
 /**
  * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
@@ -226,11 +222,10 @@ function applySelection(focus?: AttributeTableRow) {
     return;
   }
   const current = focus ?? selected[0];
-  setFeatureHighlight(
-    current.feature as Feature,
-    'attribute-table',
-    props.layer,
-  );
+  void hl.show(current.feature as Feature, {
+    source: 'attribute-table',
+    dataset: props.layer,
+  });
   if (!s.zoomToSelection) return;
   callMap((map) => {
     fitBounds(map, current.feature as Feature, { mapId: mapId.value });

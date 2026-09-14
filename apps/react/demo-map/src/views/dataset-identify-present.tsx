@@ -7,9 +7,9 @@ import {
 } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   IdentifyControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadIdentifyPresentDemoDatasets } from '../data/loaders';
@@ -35,7 +35,7 @@ export function DatasetIdentifyPresentPage() {
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
         <IdentifyControl position="top-right" />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />

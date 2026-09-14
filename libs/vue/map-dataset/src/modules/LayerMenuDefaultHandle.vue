@@ -11,7 +11,7 @@ import {
 import {
   useMapDataset,
   useMapDatasetComponent,
-  useMapDatasetHighlight,
+  useHighlight,
 } from '../store';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
+const hl = useHighlight(mapId.value);
 const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId.value);
 
 function refreshList() {
@@ -89,7 +89,12 @@ UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
   LIST_VIEW_MENU_ID.highlight,
   ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
-    if (value) setFeatureHighlight(value.detail, value.key, layer);
+    if (value) {
+      void hl.show(value.detail, {
+        source: value.key,
+        dataset: layer,
+      });
+    }
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(

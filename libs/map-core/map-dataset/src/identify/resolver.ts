@@ -111,7 +111,15 @@ export const identifyResolver = new FallbackResolver<IdentifyContext>([
   },
   {
     always: true,
-    execute: ({ mapId, records }) => {
+    execute: ({ mapId, records, event }) => {
+      const lngLat =
+        event &&
+        typeof event === 'object' &&
+        'lngLat' in event &&
+        event.lngLat &&
+        typeof (event as MapMouseEvent).lngLat?.lng === 'number'
+          ? (event as MapMouseEvent).lngLat
+          : undefined;
       runMapControlAction(
         mapId,
         IDENTIFY_RESULT_CONTROL.id,
@@ -120,11 +128,21 @@ export const identifyResolver = new FallbackResolver<IdentifyContext>([
           // Empty records clear stale items from a previous identify.
           items: groupIdentifyResults(records),
           loading: false,
+          ...(lngLat
+            ? {
+                origin: {
+                  latitude: lngLat.lat,
+                  longitude: lngLat.lng,
+                },
+              }
+            : {}),
         },
       );
     },
   },
   {
+    /** Keep opening the result panel even when exclusive show-detail also ran. */
+    always: true,
     when: ({ total }) => !!total && total > 0,
     execute: ({ mapId }) => {
       runMapControlAction(

@@ -93,7 +93,7 @@ Leaf datasets represent specific functionalities. The main types are:
 - **Source**: Represents a data source (GeoJSON, raster, vector, etc.).
 - **Identify**: Handles feature identification when clicking on the map.
 - **Data Management**: Handles data fetching, detail display, and CRUD operations.
-- **Highlight**: Handles highlighting features on the map when selected.
+- **Highlight**: `createHighlightPart` from `@hungpvq/map-dataset/highlight` — paint via controller / `useHighlight` (see [highlight](./highlight)).
 - **Menu**: Shared default menus (`for: 'layer' | 'item'`) consumed by list, identify, and attribute table.
 
 Each type has its own API and usage. See the corresponding documentation files in this folder for details and advanced usage.

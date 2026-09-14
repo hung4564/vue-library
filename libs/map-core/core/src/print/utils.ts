@@ -88,11 +88,6 @@ export function waitMapIdleAndTiles(
   return new Promise((resolve) => check(resolve, 1));
 }
 
-/** @deprecated Prefer `waitMapIdleAndTiles` (also checks tiles when available). */
-export function waitMapLoadDone(map: MapSimple, max = 100): Promise<boolean> {
-  return waitMapIdleAndTiles(map, max);
-}
-
 function applyCanvasWatermark(
   source: HTMLCanvasElement,
   watermark: string,

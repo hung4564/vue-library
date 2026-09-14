@@ -6,14 +6,39 @@ import type { DemoHelpSection } from '../menu/help';
  */
 export const HIGHLIGHT_DEMO_HELP_SECTIONS: DemoHelpSection[] = [
   {
+    id: 'pointer-both',
+    title: 'Pointer both (default)',
+    body: 'Hover → paint only. Click → paint + MapLibre popup (`presentation.clickAction: \'popup\'`). Try both on the blue layer. Fill bound zooms to the layer.',
+  },
+  {
+    id: 'pointer-hover',
+    title: 'Pointer hover-only',
+    body: '`pointer: { click: false, hover: true }`. Try: hover highlights (teal); click does not pick this layer.',
+  },
+  {
+    id: 'pointer-click',
+    title: 'Pointer click → detail',
+    body: '`pointer: { click: true, hover: false }` + `clickAction: \'detail\'`. Try: click opens LayerDetail (coral); hover does not pick. Layer also has Fill bound.',
+  },
+  {
+    id: 'presentation',
+    title: 'Presentation onShow / onHide',
+    body: '`presentation.onShow` / `onHide` with `popup: { kind: \'none\' }` and `clickAction: \'none\'`. Try: hover / click — check `demo:highlight` logs (no MapLibre popup).',
+  },
+  {
+    id: 'replace-scope-all',
+    title: 'Selection replaceScope all (multiple)',
+    body: '`selection: { policy: \'multiple\', replaceScope: \'all\' }` — a new show clears every highlight source. Try: click several features and compare with other layers that use replaceScope source.',
+  },
+  {
     id: 'feature-state-group',
     title: 'Feature state + filterCreator "group"',
-    body: 'Feature-state highlight grouped by `group` (alpha / beta). Try: click one alpha feature — other alpha features highlight too.',
+    body: 'Pulse highlight grouped by `group` (alpha / beta). Try: click one alpha feature — other alpha features highlight too.',
   },
   {
     id: 'feature-state',
     title: 'Feature state highlight',
-    body: 'Mapbox feature-state based highlight (needs promoteId). Try: hover / click state features.',
+    body: 'Pulse mode on local GeoJSON (`promoteId` on the source). Try: hover / click state features.',
   },
   {
     id: 'category',
@@ -23,7 +48,7 @@ export const HIGHLIGHT_DEMO_HELP_SECTIONS: DemoHelpSection[] = [
   {
     id: 'shadow-code',
     title: 'Shadow + filterCreator "code"',
-    body: 'Shadow style + property filter on `code`. Try: click — glow applies to matching code group.',
+    body: 'Outline style + property filter on `code`. Try: click — glow applies to matching code group.',
   },
   {
     id: 'product-code',
@@ -53,21 +78,21 @@ export const HIGHLIGHT_DEMO_HELP_SECTIONS: DemoHelpSection[] = [
   {
     id: 'custom',
     title: 'Custom animate highlight',
-    body: 'Custom animated highlight component. Try: hover / click to see the custom animation.',
+    body: 'Custom animated highlight (`mode: \'custom\'`). Try: hover / click to see the custom animation.',
   },
   {
     id: 'change-color',
     title: 'Change color highlight',
-    body: 'Highlight by swapping feature color. Try: hover / click and watch fill/stroke color change.',
+    body: 'Highlight by swapping feature color (`mode: \'changeColor\'`). Try: hover / click and watch fill/stroke color change.',
   },
   {
     id: 'shadow',
     title: 'Shadow highlight (static glow)',
-    body: 'Shadow highlight (static glow). Try: hover / click — compare to the blink default.',
+    body: 'Outline / shadow highlight (`mode: \'outline\'`). Try: hover / click — compare to the blink default.',
   },
   {
     id: 'default',
     title: 'Default highlight (blink + id)',
-    body: 'Default highlight driver (blink) keyed by id. Try: hover / click features on this layer.',
+    body: 'Default highlight — click opens a MapLibre popup; hover only paints. Each GeoJSON layer has a Fill bound button.',
   },
 ];

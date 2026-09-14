@@ -107,6 +107,14 @@ export {
 } from './map-context-menu';
 export { createDatasetPartMenuComponent } from './part-menu.model';
 export { createDatasetPartMenuComponentBuilder } from './part-menu.builder';
+export { createLegend, createMultiLegend } from './legend';
+export type { LegendPropsMap, LegendType } from './legend';
+
+/** Adapter LayerControl registry probe (internal helper re-export). */
+export {
+  resetDatasetRegistryWarnFlag,
+  warnIfDatasetRegistryMissing,
+} from '../utils/warn-registry';
 
 export type {
   MenuAction,

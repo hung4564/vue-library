@@ -49,7 +49,7 @@ import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapDatasetHighlight } from '../../store';
+import { useHighlight } from '../../store';
 import { AttributeTableView } from './AttributeTableView';
 
 export function AttributeTable(props: AttributeTableProps) {
@@ -58,12 +58,9 @@ export function AttributeTable(props: AttributeTableProps) {
     ...merged,
     controlId: ATTRIBUTE_TABLE_CONTROL.id,
   });
-  const { setFeatureHighlight, getHighlightSource } =
-    useMapDatasetHighlight(mapId);
-  const setFeatureHighlightRef = useRef(setFeatureHighlight);
-  const getHighlightSourceRef = useRef(getHighlightSource);
-  setFeatureHighlightRef.current = setFeatureHighlight;
-  getHighlightSourceRef.current = getHighlightSource;
+  const hl = useHighlight(mapId);
+  const hlRef = useRef(hl);
+  hlRef.current = hl;
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   const toggleShowRef = useRef(toggleShow);
@@ -77,9 +74,7 @@ export function AttributeTable(props: AttributeTableProps) {
   }
 
   const clearHighlight = useCallback(() => {
-    if (getHighlightSourceRef.current() === 'attribute-table') {
-      setFeatureHighlightRef.current(undefined, 'attribute-table');
-    }
+    hlRef.current.hideIfSource('attribute-table');
   }, []);
   const clearHighlightRef = useRef(clearHighlight);
   clearHighlightRef.current = clearHighlight;
@@ -98,11 +93,10 @@ export function AttributeTable(props: AttributeTableProps) {
         return;
       }
       const current = focus ?? selected[0];
-      setFeatureHighlightRef.current(
-        current.feature as Feature,
-        'attribute-table',
-        props.layer,
-      );
+      void hlRef.current.show(current.feature as Feature, {
+        source: 'attribute-table',
+        dataset: props.layer,
+      });
       if (!s.zoomToSelection) return;
       getMap(mapId, (map) => {
         fitBounds(map, current.feature as Feature);

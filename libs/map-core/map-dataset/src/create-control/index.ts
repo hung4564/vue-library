@@ -12,6 +12,15 @@ export {
 export type { CreateControlDraft } from './draft';
 export { applyCreateControlSample } from './apply-sample';
 export {
+  ConfigGeojsonHelper,
+  ConfigHelper,
+  ConfigRasterJsonHelper,
+  LAYER_TYPES,
+  LayerHelper,
+  createLayerFormHelper,
+} from './form-create';
+export type { LayerFormHelper, LayerType, RasterCreateForm } from './form-create';
+export {
   isCreateControlCrsMismatch,
   normalizeCrsCode,
 } from './crs';

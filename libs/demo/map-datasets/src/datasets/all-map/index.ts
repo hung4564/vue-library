@@ -1,12 +1,13 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { type MeasurementHandleType } from '@hungpvq/map-core/measurement';
-import { createDatasetPartChangeColorHighlightComponent, createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartHighlightComponent, createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
 import { createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild, type LayerStyleType } from '@hungpvq/map-dataset/style';
-import { createLegend, createMultiLegend } from '../../legend/create-legend';
+import { createLegend, createMultiLegend } from '@hungpvq/map-dataset/menu';
 
 export function createGroupListDemoDataset() {
   const dataset = createRootDataset('Group test');
@@ -287,7 +288,7 @@ export function createDatasetPoint() {
       .setColor(list1.color)
       .build(),
   ]);
-  const highlight = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
   groupLayer1.add(layer1);
   groupLayer1.add(highlight);
   groupLayer1.add(list1);
@@ -343,7 +344,7 @@ export function createDatasetGeojsonWithIdentify() {
       .setColor(list.color)
       .build(),
   ]);
-  const highlight = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
   groupLayer.add(layer1);
   groupLayer.add(highlight);
   groupLayer.add(list);
@@ -644,8 +645,8 @@ export function createGroupIdentifyDemoDataset() {
       },
     ],
   });
-  const highlight = createDatasetPartChangeColorHighlightComponent();
-  const highlight2 = createDatasetPartChangeColorHighlightComponent();
+  const highlight = createHighlightPart({ mode: 'changeColor' });
+  const highlight2 = createHighlightPart({ mode: 'changeColor' });
   groupLayer2.add(source2);
   groupLayer2.add(layer2);
   groupLayer2.add(list2);

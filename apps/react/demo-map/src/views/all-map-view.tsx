@@ -26,10 +26,10 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { MapPageShell } from '../components/MapPageShell';
@@ -73,7 +73,7 @@ export function AllMapView() {
         <MapContextMenuControl />
         <BaseMapControl position="bottom-left" />
         <IdentifyShowFirstControl />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
       </Map>

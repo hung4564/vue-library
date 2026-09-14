@@ -8,7 +8,7 @@ export { EVENT_CONTROL_LOCALE } from './locale';
 export { Event } from './model/Event';
 export { EventBboxRanger } from './model/EventBboxSelect';
 export { EventClick, EventMouseMove } from './model/EventClick';
-export { EventContextMenu, EventRightClick } from './model/EventContextMenu';
+export { EventContextMenu } from './model/EventContextMenu';
 export { createDefaultEventStore, MittTypeMapEventEventKey } from './types';
 
 export type { BoxRangerCallback, BoxRangerHandle } from './bbox-selector';

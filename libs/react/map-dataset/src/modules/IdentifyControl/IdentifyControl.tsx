@@ -23,7 +23,7 @@ import { mdiHandPointingUp } from '@mdi/js';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loggerIdentify } from '../../logger';
-import { useMapDataset, useMapDatasetHighlight } from '../../store';
+import { useMapDataset, useHighlight } from '../../store';
 import { IdentifyResultControl } from './IdentifyResultControl';
 
 function updateResultPanel(
@@ -55,7 +55,7 @@ export function IdentifyControl(
     controlId: IDENTIFY_CONTROL.id,
   });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
-  const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
+  const hl = useHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(!!props.show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
@@ -373,7 +373,7 @@ export function IdentifyControl(
     filterIdentifyIdRef.current = undefined;
     clearIdentifyScope(mapId);
     onRemoveIdentify();
-    setFeatureHighlight(undefined, 'identify');
+    hl.hideIfSource('identify');
     setLoading(false);
     loadingRef.current = false;
     const clearedOrigin = { latitude: 0, longitude: 0 };
@@ -388,7 +388,7 @@ export function IdentifyControl(
       selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
       items: [],
     });
-  }, [mapId, onRemoveIdentify, setFeatureHighlight, toggleShow, syncResultPanel]);
+  }, [mapId, onRemoveIdentify, hl, toggleShow, syncResultPanel]);
 
   onMapClickRef.current = (e: MapMouseEvent) => {
     if (isEventClickBoxRef.current) return;

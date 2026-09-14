@@ -23,7 +23,7 @@ import Icon from '@mdi/react';
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapDatasetHighlight } from '../../store';
+import { useHighlight } from '../../store';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
 
@@ -110,7 +110,7 @@ export function LayerDetail({
   const { mapId, moduleContainerProps } = useMap({
     controlId: 'mapLayerDetail',
   });
-  const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
+  const hl = useHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
 
@@ -136,7 +136,7 @@ export function LayerDetail({
   }, [view]);
 
   function handleClose() {
-    setFeatureHighlight(undefined, 'detail');
+    hl.hideIfSource('detail');
     toggleShow(false);
     onClose?.();
   }

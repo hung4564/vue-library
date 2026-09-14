@@ -32,44 +32,48 @@
       "import": "./vite.js"
     },
     "./geojson": {
-      "types": "./geojson.d.ts",
+      "types": "./geojson/index.d.ts",
       "import": "./geojson.js"
     },
     "./raster": {
-      "types": "./raster.d.ts",
+      "types": "./raster/index.d.ts",
       "import": "./raster.js"
     },
     "./vector-tile": {
-      "types": "./vector-tile.d.ts",
+      "types": "./vector-tile/index.d.ts",
       "import": "./vector-tile.js"
     },
     "./identify": {
-      "types": "./identify.d.ts",
+      "types": "./identify/index.d.ts",
       "import": "./identify.js"
     },
     "./menu": {
-      "types": "./menu.d.ts",
+      "types": "./menu/index.d.ts",
       "import": "./menu.js"
     },
     "./style": {
-      "types": "./style.d.ts",
+      "types": "./style/index.d.ts",
       "import": "./style.js"
     },
     "./create-control": {
-      "types": "./create-control.d.ts",
+      "types": "./create-control/index.d.ts",
       "import": "./create-control.js"
     },
     "./geo-export": {
-      "types": "./geo-export.d.ts",
+      "types": "./geo-export/index.d.ts",
       "import": "./geo-export.js"
     },
     "./data-management": {
-      "types": "./data-management.d.ts",
+      "types": "./data-management/index.d.ts",
       "import": "./data-management.js"
     },
     "./attribute-table": {
-      "types": "./attribute-table.d.ts",
+      "types": "./attribute-table/index.d.ts",
       "import": "./attribute-table.js"
+    },
+    "./highlight": {
+      "types": "./highlight/index.d.ts",
+      "import": "./highlight.js"
     },
     "./assets/*": "./assets/*",
     "./style.css": {

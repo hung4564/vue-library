@@ -25,7 +25,7 @@ import {
 import { computed, ref } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapDatasetHighlight } from '../../store';
+import { useHighlight } from '../../store';
 import TableTdLayer from './table-td-layer.vue';
 
 const props = withDefaults(
@@ -43,7 +43,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
+const hl = useHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_DETAIL_LOCALE);
 
@@ -69,7 +69,7 @@ const itemMenus = computed(() => {
 });
 
 function handleClose() {
-  setFeatureHighlight(undefined, 'detail');
+  hl.hideIfSource('detail');
   emit('close');
 }
 

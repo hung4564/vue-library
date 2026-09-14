@@ -35,7 +35,7 @@ import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { loggerIdentify } from '../../logger';
 import { useMapDataset } from '../../store';
-import { useMapDatasetHighlight } from '../../store/highlight';
+import { useHighlight } from '../../store/highlight';
 import IdentifyResultControl from './IdentifyResultControl.vue';
 
 const path = {
@@ -57,7 +57,7 @@ const props = withDefaults(
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
+const hl = useHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 
@@ -396,7 +396,7 @@ function close() {
   filterIdentifyId.value = undefined;
   clearIdentifyScope(mapId.value);
   onRemoveIdentify();
-  setFeatureHighlight(undefined, 'identify');
+  hl.hideIfSource('identify');
   show.value = false;
   loading.value = false;
   origin.latitude = 0;

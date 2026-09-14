@@ -330,13 +330,6 @@
       "order": 5.21
     },
     {
-      "name": "LayerHighlight",
-      "package": "Map - Dataset",
-      "docs": "/map/dataset/module/LayerHighlight",
-      "category": "Component",
-      "order": 5.21
-    },
-    {
       "name": "CreateControl",
       "package": "Map - Dataset",
       "docs": "/map/dataset/module/CreateControl",
@@ -379,6 +372,12 @@
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset/attribute-table",
       "order": 5.43
+    },
+    {
+      "name": "Highlight",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/highlight",
+      "order": 5.435
     },
     {
       "name": "GeoJSON worker",

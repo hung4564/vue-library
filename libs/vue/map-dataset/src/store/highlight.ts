@@ -1,77 +1,18 @@
-import { logHelper } from '@hungpvq/map-core';
-import type { HighlightGeoJson, IDataset } from '@hungpvq/map-dataset';
-import { createMapScopedStore } from '@hungpvq/vue-map-core';
-import type { Ref } from 'vue';
-import { ref } from 'vue';
-import { logger } from '../logger';
+import { DatasetService } from '@hungpvq/map-dataset';
+import {
+  bindHighlightPickDatasets,
+  type HighlightController,
+} from '@hungpvq/map-dataset/highlight';
+import { useMapDatasetStore } from './dataset-api';
 
-export type MapDatasetHighlightStore = {
-  feature: Ref<HighlightGeoJson | undefined>;
-  source: Ref<string | undefined>;
-  dataset?: IDataset;
-};
-
-const KEY = 'highlight' as const;
-
-export const useMapDatasetHighlightStore = (mapId: string) =>
-  createMapScopedStore<MapDatasetHighlightStore>(mapId, KEY as any, () => {
-    logHelper(logger, mapId, 'store').debug('init');
-    return {
-      feature: ref(undefined),
-      source: ref(undefined),
-      dataset: undefined,
-    };
+/**
+ * Map-scoped highlight facade over {@link getHighlightController}.
+ * Syncs pick pool to every dataset part with `type: 'highlight'`.
+ */
+export function useHighlight(mapId: string): HighlightController {
+  return bindHighlightPickDatasets(mapId, () => {
+    const store = useMapDatasetStore(mapId);
+    if (!store) return [];
+    return DatasetService.getAllComponentsByType(store, 'highlight');
   });
-export const useMapDatasetHighlight = (mapId: string) => {
-  const store = useMapDatasetHighlightStore(mapId);
-  function getStore() {
-    return store;
-  }
-  function setFeatureHighlight(
-    feature: HighlightGeoJson | undefined,
-    source: string,
-    dataset?: IDataset,
-  ) {
-    if (!store) return;
-
-    logHelper(logger, mapId, 'highlight').debug('setFeatureHighlight', {
-      store,
-      feature,
-      source,
-      dataset,
-    });
-    // If setting from same source source and feature exists, clear it
-    if (!feature && store.source.value === source && store.feature.value) {
-      store.feature.value = undefined;
-      store.source.value = undefined;
-      store.dataset = undefined;
-      return;
-    }
-    store.dataset = dataset;
-    store.feature.value = feature;
-    store.source.value = source;
-  }
-
-  function getFeatureHighlight() {
-    if (!store) return;
-    return store.feature;
-  }
-
-  function getHighlightSource() {
-    if (!store) return;
-    return store.source;
-  }
-
-  function getDatesetHighlight() {
-    if (!store) return;
-    return store.dataset;
-  }
-
-  return {
-    getStore,
-    setFeatureHighlight,
-    getHighlightSource,
-    getDatesetHighlight,
-    getFeatureHighlight,
-  };
-};
+}

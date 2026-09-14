@@ -24,10 +24,10 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
@@ -72,7 +72,7 @@ export function RegistryControlPage() {
         <BaseMapControl position="bottom-left" />
 
         <IdentifyShowFirstControl />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
 
         <RegistryControl position="top-right" show />
         <DemoHelpPanel />

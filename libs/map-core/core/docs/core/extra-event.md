@@ -27,7 +27,7 @@ import {
 ```
 
 - `EventClick` - Click event handler
-- `EventContextMenu` (alias: `EventRightClick`) - Right-click / `contextmenu` handler. Uses `event_map_type: 'contextmenu'`, so it can run together with `EventClick` (`click`). `ActionControl` (already mounted by `Map`) attaches both.
+- `EventContextMenu` - Right-click / `contextmenu` handler. Uses `event_map_type: 'contextmenu'`, so it can run together with `EventClick` (`click`). `ActionControl` (already mounted by `Map`) attaches both.
 - `EventBboxRanger` (alias: `EventBboxSelect`) - Bounding box selection handler
 - `EventMouseMove` - Mouse move event handler
 

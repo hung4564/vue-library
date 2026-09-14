@@ -44,3 +44,5 @@ export {
   buildInspectQueryBox,
   type InspectControllerOptions,
 } from './inspect/controller';
+export { DRAW_CONTROL_LOCALE, INSPECT_CONTROL_LOCALE } from './locale';
+export { isDraftOption } from './is-draft-option';

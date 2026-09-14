@@ -169,5 +169,9 @@ dataset.add(source);
 dataset.add(list);
 dataset.add(layer);
 dataset.add(identify);
-dataset.add(createDatasetPartHighlightComponent());
+dataset.add(createHighlightPart());
+```
+
+```ts
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 ```

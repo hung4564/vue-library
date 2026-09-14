@@ -5,8 +5,8 @@ import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map, ZoomControl } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
@@ -14,6 +14,7 @@ import { loadHighlightDemoDatasets } from '../../data/loaders';
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 loggerFactory.enable('map:highlight');
+loggerFactory.enable('demo:highlight');
 const mapId = ref(getUUIDv4());
 
 function onMapLoaded(map: MapSimple) {
@@ -29,7 +30,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <LayerHighlight enableClick enableHover />
+    <HighlightPointer enableClick enableHover />
     <ComponentManagementControl />
     <ZoomControl />
     <DemoHelpPanel />

@@ -13,7 +13,6 @@ export {
   exportMapboxWithOptions,
   getMapBoxCanvas,
   waitMapIdleAndTiles,
-  waitMapLoadDone,
 } from './utils';
 export type { ExportMapboxOptions } from './utils';
 

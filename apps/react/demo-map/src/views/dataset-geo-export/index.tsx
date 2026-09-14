@@ -9,9 +9,9 @@ import {
 import {
   ComponentManagementControl,
   ExportGeoForm,
+  HighlightPointer,
   type ExportGeoFormProps,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/react-map-dataset';
 import { useState } from 'react';
 import { MapPageShell } from '../../components/MapPageShell';
@@ -119,7 +119,7 @@ export function DatasetGeoExportPage() {
           }
           endList={({ mapId: mid }) => <BaseMapCard mapId={mid} />}
         />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

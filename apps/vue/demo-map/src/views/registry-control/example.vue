@@ -34,7 +34,7 @@
       <BaseMapControl position="bottom-left" />
 
       <IdentifyShowFirstControl />
-      <LayerHighlight />
+      <HighlightPointer enableClick />
 
       <RegistryControl position="top-right" show />
       <DemoHelpPanel />
@@ -69,10 +69,10 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { ref } from 'vue';

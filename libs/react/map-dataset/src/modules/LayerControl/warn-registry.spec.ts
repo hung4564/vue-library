@@ -11,6 +11,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+function warnCallText(warn: ReturnType<typeof vi.spyOn>) {
+  return warn.mock.calls.map((args) => args.map(String).join(' ')).join('\n');
+}
+
 describe('warnIfDatasetRegistryMissing', () => {
   it('warns once when toggleShowButton is not registered', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
@@ -20,7 +24,7 @@ describe('warnIfDatasetRegistryMissing', () => {
     warnIfDatasetRegistryMissing();
 
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0]?.[0])).toContain('installMapApp');
+    expect(warnCallText(warn)).toContain('installMapApp');
   });
 
   it('does not warn when component is registered', () => {

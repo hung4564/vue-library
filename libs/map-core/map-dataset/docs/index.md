@@ -38,7 +38,7 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 ```
 
-**Import paths (breaking major):** domain APIs live on subpaths — e.g. `createGeoJsonDataset` from `@hungpvq/map-dataset/geojson`, attribute-table from `@hungpvq/map-dataset/attribute-table`, `LIST_VIEW_MENU_*` from `@hungpvq/map-dataset/menu`, `LayerSimpleMapboxBuild` from `@hungpvq/map-dataset/style`. Root keeps `DatasetService`, tree helpers, highlight, and shared `IDataset` types. See [Stable API](/map/core/stable-api).
+**Import paths (breaking major):** domain APIs live on subpaths — e.g. `createGeoJsonDataset` from `@hungpvq/map-dataset/geojson`, highlight from `@hungpvq/map-dataset/highlight`, attribute-table from `@hungpvq/map-dataset/attribute-table`, `LIST_VIEW_MENU_*` from `@hungpvq/map-dataset/menu`, `LayerSimpleMapboxBuild` from `@hungpvq/map-dataset/style`. Root keeps `DatasetService`, tree helpers, and shared `IDataset` types. See [Stable API](/map/core/stable-api).
 
 ```ts
 import '@hungpvq/react-map-core/style.css';
@@ -104,7 +104,7 @@ installMapApp();
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <LayerHighlight enable-click />
+    <HighlightPointer enable-click />
     <ComponentManagementControl />
   </Map>
 </template>
@@ -116,14 +116,15 @@ import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
 import {
   LayerControl,
   IdentifyControl,
-  LayerHighlight,
   ComponentManagementControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder, createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { ref } from 'vue';
+import HighlightPointer from './HighlightPointer.vue'; // app-local shell (bindPointer)
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 
@@ -153,6 +154,7 @@ function onMapLoaded(map: MapSimple) {
   dataset.add(source);
   dataset.add(list);
   dataset.add(layer);
+  dataset.add(createHighlightPart());
   addDataset(dataset);
 }
 </script>
@@ -166,7 +168,6 @@ import { Map, BaseMapCard } from '@hungpvq/react-map-core';
 import {
   LayerControl,
   IdentifyControl,
-  LayerHighlight,
   ComponentManagementControl,
   useMapDataset,
 } from '@hungpvq/react-map-dataset';
@@ -174,6 +175,8 @@ import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
 } from '@hungpvq/map-dataset';
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
+import { HighlightPointer } from './HighlightPointer'; // app-local shell
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 
@@ -184,6 +187,7 @@ function Page() {
     dataset.add(
       createDatasetPartListViewUiComponentBuilder('Layer').build(),
     );
+    dataset.add(createHighlightPart());
     addDataset(dataset);
   }
 
@@ -195,7 +199,7 @@ function Page() {
         endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
       />
       <IdentifyControl position="top-right" />
-      <LayerHighlight enableClick />
+      <HighlightPointer enableClick />
       <ComponentManagementControl />
     </Map>
   );

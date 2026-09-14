@@ -1,174 +1,74 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createDatasetPartHighlightComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 import { createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { IDENTIFY_GROUP, NO_GROUP_IDENTIFY } from '../../fixtures/geojson';
+import { createIdentifyDemoDataset } from './factory';
 
 export function createSimpleIdentifyDataset() {
-  const dataset = createRootDataset('Simple identify');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createIdentifyDemoDataset({
+    name: 'Simple identify',
     features: [
       {
-        type: 'Feature',
-        properties: {
-          id: '1',
-          name: 'feature: Simple identify ',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.88682244523346, 21.184791364696125],
-              [105.88682244523346, 21.116921872038418],
-              [106.05662330762226, 21.116921872038418],
-              [106.05662330762226, 21.184791364696125],
-              [105.88682244523346, 21.184791364696125],
-            ],
-          ],
-          type: 'Polygon',
-        },
+        id: '1',
+        name: 'feature: Simple identify ',
+        bounds: [
+          105.88682244523346, 21.116921872038418, 106.05662330762226,
+          21.184791364696125,
+        ],
       },
     ],
+    listMenus: [createMenuItemToggleShow(), createMenuItemIdentifyForList()],
   });
-  const groupLayer = createGroupDataset('Group layer 1');
-  const list = createDatasetPartListViewUiComponentBuilder('Simple identify')
-    .setColor(getChartRandomColor())
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const highlight = createDatasetPartHighlightComponent();
-  groupLayer.add(layer1);
-  groupLayer.add(highlight);
-  groupLayer.add(list);
-  list.addMenus([createMenuItemToggleShow(), createMenuItemIdentifyForList()]);
-  const identify =
-    createDatasetPartIdentifyComponentBuilder('Simple identify').build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 export function createIdentifyWithMenuDataset() {
-  const dataset = createRootDataset('Identify with menu');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createIdentifyDemoDataset({
+    name: 'Identify with menu',
     features: [
       {
-        type: 'Feature',
-        properties: {
-          id: '1',
-          name: 'feature: Identify with menu',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.33907782961194, 21.179166900967587],
-              [105.33907782961194, 20.896827873223472],
-              [105.75969186796266, 20.896827873223472],
-              [105.75969186796266, 21.179166900967587],
-              [105.33907782961194, 21.179166900967587],
-            ],
-          ],
-          type: 'Polygon',
-        },
+        id: '1',
+        name: 'feature: Identify with menu',
+        bounds: [
+          105.33907782961194, 20.896827873223472, 105.75969186796266,
+          21.179166900967587,
+        ],
       },
     ],
-  });
-  const groupLayer = createGroupDataset('Group layer 1');
-  const list = createDatasetPartListViewUiComponentBuilder('Identify with menu')
-    .setColor(getChartRandomColor())
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const highlight = createDatasetPartHighlightComponent();
-  groupLayer.add(layer1);
-  groupLayer.add(highlight);
-  groupLayer.add(list);
-  list.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-    createMenuItemStyleEdit(),
-  ]);
-  const identify = createDatasetPartIdentifyComponentBuilder(
-    'Identify with menu',
-  )
-    .addMenus([
-      createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem([
-        { text: 'Id', value: 'id' },
-        { text: 'Name', value: 'name' },
+    listMenus: [
+      createMenuItemToggleShow(),
+      createMenuItemShowDetailInfoSource(),
+      createMenuItemStyleEdit(),
+    ],
+    configureIdentify: (b) =>
+      b.addMenus([
+        createMenuItemToBoundActionForItem(),
+        createMenuItemShowDetailForItem([
+          { text: 'Id', value: 'id' },
+          { text: 'Name', value: 'name' },
+        ]),
       ]),
-    ])
-    .build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
+  });
 }
 
 export function createOtherDatasetButSameGroup() {
-  const dataset = createRootDataset('Other Dataset but same group');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createIdentifyDemoDataset({
+    name: 'Other Dataset but same group',
     features: [
       {
-        type: 'Feature',
-        properties: {
-          id: '1',
-          name: 'feature: Other Dataset but same group ',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.44444615897697, 20.899297758842522],
-              [105.44444615897697, 20.67343872335738],
-              [105.78642132314343, 20.67343872335738],
-              [105.78642132314343, 20.899297758842522],
-              [105.44444615897697, 20.899297758842522],
-            ],
-          ],
-          type: 'Polygon',
-        },
+        id: '1',
+        name: 'feature: Other Dataset but same group ',
+        bounds: [
+          105.44444615897697, 20.67343872335738, 105.78642132314343,
+          20.899297758842522,
+        ],
       },
     ],
+    configureIdentify: (b) => b.setGroup(IDENTIFY_GROUP),
   });
-  const groupLayer = createGroupDataset('Group layer 1');
-  const list = createDatasetPartListViewUiComponentBuilder(
-    'Other Dataset but same group',
-  )
-    .setColor(getChartRandomColor())
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const highlight = createDatasetPartHighlightComponent();
-  groupLayer.add(layer1);
-  groupLayer.add(highlight);
-  groupLayer.add(list);
-  list.addMenus([createMenuItemToggleShow()]);
-  const identify = createDatasetPartIdentifyComponentBuilder(
-    'Other Dataset but same group',
-  )
-    .setGroup(IDENTIFY_GROUP)
-    .build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 export function createGroupIdentifyPageDataset() {
@@ -290,8 +190,8 @@ export function createGroupIdentifyPageDataset() {
       },
     ],
   });
-  const highlight = createDatasetPartHighlightComponent();
-  const highlight2 = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
+  const highlight2 = createHighlightPart();
   groupLayer2.add(source2);
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
@@ -393,8 +293,8 @@ export function createNoGroupIdentifyDataset() {
       },
     ],
   });
-  const highlight = createDatasetPartHighlightComponent();
-  const highlight2 = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
+  const highlight2 = createHighlightPart();
   groupLayer2.add(source2);
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
@@ -483,7 +383,7 @@ export function createIdentifyApiDetailDataset() {
       .setColor(list.color)
       .build(),
   ]);
-  const highlight = createDatasetPartHighlightComponent();
+  const highlight = createHighlightPart();
   groupLayer.add(layer);
   groupLayer.add(highlight);
   groupLayer.add(list);
@@ -568,7 +468,7 @@ export function createIdentifyApiMergedDataset() {
   groupLayer1.add(layer1);
   groupLayer1.add(list1);
   groupLayer1.add(identify1);
-  groupLayer1.add(createDatasetPartHighlightComponent());
+  groupLayer1.add(createHighlightPart());
 
   const source2 = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
@@ -622,7 +522,7 @@ export function createIdentifyApiMergedDataset() {
   groupLayer2.add(layer2);
   groupLayer2.add(list2);
   groupLayer2.add(identify2);
-  groupLayer2.add(createDatasetPartHighlightComponent());
+  groupLayer2.add(createHighlightPart());
 
   const originalGetMerged = identify1.getMergedFeatures.bind(identify1);
   const delayedGetMerged: typeof identify1.getMergedFeatures = async (

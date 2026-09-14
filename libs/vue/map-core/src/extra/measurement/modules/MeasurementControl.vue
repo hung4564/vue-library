@@ -80,14 +80,16 @@ import {
 
 import {
   IViewSettingField,
+  MapMarkerView,
+  MapView,
   MeasureArea,
   MeasureAzimuth,
   MeasureDistance,
   MeasurePoint,
+  MeasurementHandle,
 } from '@hungpvq/map-core/measurement';
 import { logger } from '../logger';
 import { MeasureActionItem } from '../types';
-import { MapMarkerView, MapView, MeasurementHandle } from './helper';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 
 import imageArrow from './img/arrow.png';

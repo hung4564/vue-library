@@ -1,5 +1,4 @@
 export * from './dataset.base';
-export * from './highlight';
 export * from './layer';
 export * from './list';
 export * from './part-bound.model';

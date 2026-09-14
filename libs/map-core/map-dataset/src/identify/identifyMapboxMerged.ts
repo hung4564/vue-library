@@ -3,7 +3,7 @@ import type {
   IdentifyFeatureRow,
   IIdentifyViewWithMerge,
   IMapboxLayerView,
-  IdentifyResult,
+  IdentifyMultiResult,
 } from '../interfaces';
 import { runAllComponentsWithCheck } from '../model/visitors';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
@@ -113,11 +113,11 @@ export const splitResponse = (
   identifies: IIdentifyViewWithMerge[],
   payload: unknown,
   response: unknown,
-): IdentifyResult[] => {
+): IdentifyMultiResult[] => {
   void identifies;
   void payload;
   const rows = Array.isArray(response) ? (response as MergedFeatureRow[]) : [];
-  const resultsMap = new Map<string, IdentifyResult>();
+  const resultsMap = new Map<string, IdentifyMultiResult>();
 
   rows.forEach(({ identifyId, identify, feature }) => {
     if (!resultsMap.has(identifyId)) {
