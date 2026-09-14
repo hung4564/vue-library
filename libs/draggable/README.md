@@ -21,12 +21,12 @@ Packages are on **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
 | `@hungpvq/draggable` | `.` + `./style.css` | peer `@hungpvq/shared-store` |
-| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
-| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd` |
+| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.2.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
+| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.2.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd` |
 
 **Monorepo rule:** Nx release group `draggable` uses `projectsRelationship: fixed`. Bumping `@hungpvq/draggable` major/minor requires the same release of Vue + React adapters. Do not publish core alone when peers use a `~` pin.
 
-Map adapters that peer on draggable (e.g. `@hungpvq/vue-map-dataset` → `vue-draggable <!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->`) must stay compatible when you bump this group.
+Map adapters that peer on draggable (e.g. `@hungpvq/vue-map-dataset` → `vue-draggable <!-- docs-ver:draggable.peer -->^1.2.0<!-- /docs-ver:draggable.peer -->`) must stay compatible when you bump this group.
 
 ## 1. Bump decision — quick flowchart
 
@@ -49,7 +49,7 @@ Any checked item must **not** ship in `<!-- docs-ver:draggable.line -->1.x.x<!--
 - [ ] Change `exports` so old import paths fail (`.`, `./style.css`)
 - [ ] Drop dual `import` / `require` while apps still use CJS
 - [ ] Rename npm scope / package name
-- [ ] Raise peer **minimum** outside the old range (e.g. React 18 → 19 required, `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->` → `~2.0.0`)
+- [ ] Raise peer **minimum** outside the old range (e.g. React 18 → 19 required, `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.2.0<!-- /docs-ver:draggable.peer -->` → `~2.0.0`)
 - [ ] Change optional peer → required
 
 ### B. Named exports (TypeScript / ESM)
@@ -163,7 +163,7 @@ Breaking if you:
 1. **Stable API allowlist:** [core/docs/stable-api.md](./core/docs/stable-api.md) — SemVer promises apply here.
 2. **Named root barrels** — packages use explicit exports (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package (`core` / `vue` / `react`).
 3. Mark the rest **experimental** (`experimental.ts` + docs table) — may change in a **minor**. Still re-exported from the root for 1.x compat.
-4. Prefer peer ranges like `^<!-- docs-ver:draggable.exact -->1.2.0<!-- /docs-ver:draggable.exact -->` over long-lived exact pins once release process is stable; adapters currently use `<!-- docs-ver:draggable.peer -->^1.0.0<!-- /docs-ver:draggable.peer -->`.
+4. Prefer peer ranges like `^<!-- docs-ver:draggable.exact -->1.2.1<!-- /docs-ver:draggable.exact -->` over long-lived exact pins once release process is stable; adapters currently use `<!-- docs-ver:draggable.peer -->^1.2.0<!-- /docs-ver:draggable.peer -->`.
 5. **React Vite demos:** exclude workspace `libs/` from `@vitejs/plugin-react` Fast Refresh (`react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })`). Otherwise browser ESM reports missing named exports from path-aliased source. See `apps/react/demo-draggable/vite.config.ts`.
 6. **React store:** do not re-export `useStoreReactive` from `store/index.ts` (circular with `useStoreReactive.ts`).
 7. **Internal chrome** (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public API — do not confuse with map-core `MapControlButton` / Experimental `MapButton`.

@@ -1,3 +1,15 @@
+## 1.2.1 (2026-09-14)
+
+### 🚀 Features
+
+- update TypeScript configuration and add orphan scan scripts ([d7674ea9](https://github.com/hung4564/vue-library/commit/d7674ea9))
+- enhance header slot functionality across draggable components ([86304240](https://github.com/hung4564/vue-library/commit/86304240))
+- add geo export functionality to demo applications ([f160d590](https://github.com/hung4564/vue-library/commit/f160d590))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.2.0 (2026-09-12)
 
 ### 🚀 Features
