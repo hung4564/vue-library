@@ -1,3 +1,13 @@
+## 1.2.2 (2026-09-14)
+
+### 🚀 Features
+
+- add packaging scripts and remove lodash dependency from draggable components ([ce818555](https://github.com/hung4564/vue-library/commit/ce818555))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.2.1 (2026-09-14)
 
 ### 🚀 Features
