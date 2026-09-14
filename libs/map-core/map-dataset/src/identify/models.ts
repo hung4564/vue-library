@@ -51,8 +51,8 @@ export function createDatasetPartIdentifyComponent(
       return 'identify';
     },
     getFeatures(
-      mapId: string,
-      pointOrBox?: PointLike | [PointLike, PointLike],
+      _mapId: string,
+      _pointOrBox?: PointLike | [PointLike, PointLike],
     ): Promise<IdentifyFeatureRow[]> {
       throw new Error('Method getFeatures not implemented.');
     },

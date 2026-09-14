@@ -31,22 +31,22 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
     getAllLayerIds(): string[] {
       throw new Error('Method not implemented.');
     },
-    addToMap(map: MapSimple, beforeId?: string): void {
+    addToMap(_map: MapSimple, _beforeId?: string): void {
       throw new Error('Method not implemented.');
     },
-    removeFromMap(map: MapSimple): void {
+    removeFromMap(_map: MapSimple): void {
       throw new Error('Method not implemented.');
     },
-    moveLayer(map: MapSimple, beforeId: string): void {
+    moveLayer(_map: MapSimple, _beforeId: string): void {
       throw new Error('Method not implemented.');
     },
-    toggleShow(map: MapSimple, show?: boolean): void {
+    toggleShow(_map: MapSimple, _show?: boolean): void {
       throw new Error('Method not implemented.');
     },
-    setOpacity(map: MapSimple, opacity: number): void {
+    setOpacity(_map: MapSimple, _opacity: number): void {
       throw new Error('Method not implemented.');
     },
-    updateValue(map: MapSimple, value: any): void {
+    updateValue(_map: MapSimple, _value: any): void {
       throw new Error('Method not implemented.');
     },
     getComponentUpdate(): ComponentType {

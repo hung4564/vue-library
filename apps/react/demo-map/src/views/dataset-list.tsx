@@ -17,12 +17,10 @@ import { loadListDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import {
-  SampleCustomMenu,
-  SAMPLE_LAYER_MENU_KEY,
-} from './sample-custom-menu';
+import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
+import { SampleCustomMenu } from './sample-custom-menu';
 
-UniversalRegistry.registerComponent(SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
+UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
 
 export function DatasetListPage() {
   useDatasetRegistry();

@@ -15,9 +15,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:show', value: boolean): void;
-  (e: 'fly-to', feature: Feature): void;
-  (e: 'discard-item', item: IDraftRecord): void;
+  'update:show': [value: boolean];
+  'fly-to': [feature: Feature];
+  'discard-item': [item: IDraftRecord];
 }>();
 
 const { trans } = useLang(props.mapId);

@@ -18,7 +18,9 @@ export function createSubscribable<T>() {
   }
   function subscribe(fn: (s: T) => void) {
     subscribers.add(fn);
-    return () => subscribers.delete(fn);
+    return () => {
+      subscribers.delete(fn);
+    };
   }
   return { subscribe, notify };
 }
@@ -137,7 +139,7 @@ export function createToolbarModule(
 function createSingleStrategy(
   options: ToolbarSingleOptions & WithToolbar,
 ): ControlStrategy {
-  const { kind, ...rest } = options;
+  const { kind: _kind, ...rest } = options;
   return {
     ...createToolbarControl(rest),
   };
@@ -146,7 +148,7 @@ function createSingleStrategy(
 function createModuleStrategy(
   options: ToolbarModuleOptions & WithToolbar,
 ): ModuleStrategy {
-  const { kind, ...rest } = options;
+  const { kind: _kind, ...rest } = options;
   return {
     moduleId: options.moduleId,
     ...createToolbarModule(rest),
@@ -210,7 +212,9 @@ export function createDefaultToolbarStore(): MapToolbarStore {
 export function createToolbarStoreApi(store: MapToolbarStore) {
   function subscribe(fn: Listener) {
     store.listeners.add(fn);
-    return () => store.listeners.delete(fn);
+    return () => {
+      store.listeners.delete(fn);
+    };
   }
 
   function notify() {

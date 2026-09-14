@@ -15,7 +15,7 @@ import {
 } from '@mdi/js';
 import { isDraftOption } from '../../../store';
 
-const props = defineProps<{
+defineProps<{
   drawOptions?: MapDrawOption;
   isShow: boolean;
   isDraw: boolean;
@@ -24,14 +24,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'cancel'): void;
-  (e: 'save'): void;
-  (e: 'close'): void;
-  (e: 'start-draw', event: MouseEvent): void;
-  (e: 'select-method', method: 'select' | 'delete'): void;
-  (e: 'commit'): void;
-  (e: 'discard'): void;
-  (e: 'show-list'): void;
+  cancel: [];
+  save: [];
+  close: [];
+  'start-draw': [event: MouseEvent];
+  'select-method': [method: 'select' | 'delete'];
+  commit: [];
+  discard: [];
+  'show-list': [];
 }>();
 
 const path = {

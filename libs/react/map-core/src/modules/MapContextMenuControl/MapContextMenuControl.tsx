@@ -96,7 +96,6 @@ export function MapContextMenuControl(props: MapContextMenuControlProps) {
     merged.exclude,
     merged.zoomDelta,
     mapId,
-    target,
   ]);
 
   const visibleItems = useMemo(() => {

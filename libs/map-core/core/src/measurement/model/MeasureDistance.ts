@@ -41,16 +41,17 @@ export class MeasureDistance extends Measure {
     }
 
     const line = lineString(this.coordinates);
+    const lengthValue = Number(length(line));
     result.features = [line];
-    result.value = length(line);
-    result.format = formatDistanceText(result.value);
+    result.value = lengthValue;
+    result.format = formatDistanceText(lengthValue);
     result.features_label = this.coordinates.map((x, i, array) => {
       return {
         type: 'Feature',
         properties: {
           is_label: true,
           text: formatDistanceText(
-            i < 1 ? 0 : length(lineString(array.slice(0, i + 1))),
+            i < 1 ? 0 : Number(length(lineString(array.slice(0, i + 1)))),
           ),
         },
         geometry: { type: 'Point', coordinates: x },
@@ -59,7 +60,7 @@ export class MeasureDistance extends Measure {
     result.fields = [
       {
         trans: 'map.measurement.setting.distance',
-        value: formatDistanceText(result.value),
+        value: formatDistanceText(lengthValue),
       },
     ];
 

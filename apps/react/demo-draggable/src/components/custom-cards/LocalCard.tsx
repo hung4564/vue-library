@@ -1,6 +1,6 @@
 import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 
-export interface CustomCardProps extends HTMLAttributes<HTMLDivElement> {
+interface CustomCardProps extends HTMLAttributes<HTMLDivElement> {
   height?: string | number;
   width?: string | number;
   highlight?: boolean;

@@ -19,7 +19,7 @@ import {
   toolbarAvailableWidth,
 } from '@hungpvq/map-core/toolbar';
 import { mdiDotsHorizontal } from '@mdi/js';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { MapContext } from '../../../context/MapContext';
@@ -88,16 +88,16 @@ export function ToolbarControl(props: ToolbarControlProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const toolbarStore = useMapToolbarStore(mapId);
 
-  const findMapContainer = () => {
+  const findMapContainer = useCallback(() => {
     const fromRef = rootRef.current?.closest('.map-container');
     if (fromRef instanceof HTMLElement) return fromRef;
     const fromContent = document
       .getElementById(mapId)
       ?.closest('.map-container');
     return fromContent instanceof HTMLElement ? fromContent : null;
-  };
+  }, [mapId]);
 
-  const syncHost = () => {
+  const syncHost = useCallback(() => {
     const el = findMapContainer();
     if (el) {
       setHostHeight(el.clientHeight);
@@ -128,7 +128,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
     }
     setReservedByCorner(nextReserved);
     setMenuUsedByCorner(nextUsed);
-  };
+  }, [findMapContainer, mapId, menuMode]);
 
   useEffect(() => {
     setLocaleDefault(TOOLBAR_CONTROL_LOCALE);
@@ -176,7 +176,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
       window.removeEventListener('resize', syncHost);
       document.removeEventListener('pointerdown', onDoc);
     };
-  }, [menuMode, mapId, buttons.length]);
+  }, [menuMode, mapId, buttons.length, findMapContainer, syncHost]);
 
   const groups = useMemo(() => groupToolbarButtons(buttons), [buttons]);
   const maxVisibleToolbar =

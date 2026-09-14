@@ -33,7 +33,7 @@ export function applyMenuControlPlacement(
   menu: MenuAction,
   ctx?: MenuConditionContext,
 ): MenuAction {
-  const control = ctx?.context?.control;
+  const control = ctx?.context?.['control'];
   if (typeof control !== 'string') return menu;
 
   const byControl = readByControl(menu);

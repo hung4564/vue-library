@@ -75,8 +75,12 @@ export function useClipboard(
   const timeout = useTimeoutFn(() => (copied.value = false), copiedDuring);
 
   function updateText() {
-    if (isClipboardApiSupported.value && isAllowed(permissionRead.value)) {
-      navigator!.clipboard.readText().then((value) => {
+    if (
+      isClipboardApiSupported.value &&
+      isAllowed(permissionRead.value) &&
+      navigator
+    ) {
+      navigator.clipboard.readText().then((value) => {
         text.value = value;
       });
     } else {
@@ -88,8 +92,12 @@ export function useClipboard(
 
   async function copy(value = toValue(source)) {
     if (isSupported.value && value != null) {
-      if (isClipboardApiSupported.value && isAllowed(permissionWrite.value))
-        await navigator!.clipboard.writeText(value);
+      if (
+        isClipboardApiSupported.value &&
+        isAllowed(permissionWrite.value) &&
+        navigator
+      )
+        await navigator.clipboard.writeText(value);
       else legacyCopy(value);
 
       text.value = value;

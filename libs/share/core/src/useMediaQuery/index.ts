@@ -41,11 +41,11 @@ export function useMediaQuery(
   };
 
   const stopWatch = watchEffect(() => {
-    if (!isSupported.value) return;
+    if (!isSupported.value || !window) return;
 
     cleanup();
 
-    mediaQuery = window!.matchMedia(toValue(query));
+    mediaQuery = window.matchMedia(toValue(query));
 
     if ('addEventListener' in mediaQuery)
       mediaQuery.addEventListener('change', handler);

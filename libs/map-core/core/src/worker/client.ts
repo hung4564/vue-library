@@ -24,7 +24,7 @@ type PendingTask<TResponse> = {
 
 export type WorkerMonitorConnectOptions<
   TRequest extends WorkerTaskRequestBase = WorkerTaskRequestBase,
-  TResponse extends WorkerTaskResponseBase = WorkerTaskResponseBase,
+  _TResponse extends WorkerTaskResponseBase = WorkerTaskResponseBase,
 > = WorkerRegisterOptions & {
   id: string;
   createWorker: () => Worker;

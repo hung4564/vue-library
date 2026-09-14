@@ -46,3 +46,5 @@ export function useElementVisibility(
 
   return elementIsVisible;
 }
+
+export * from './directive';

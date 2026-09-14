@@ -111,8 +111,11 @@ export function DrawPage() {
           hit = getFirstFeatureByMap(m, point, [...RESULT_LAYERS]);
         });
         if (!hit) return undefined;
-        const fromStore = collection.features.find((f) => sameFeature(f, hit!));
-        return fromStore ?? hit;
+        const selected = hit;
+        const fromStore = collection.features.find((f) =>
+          sameFeature(f, selected),
+        );
+        return fromStore ?? selected;
       },
       redraw: (mapId) => paintResult(mapId),
       callback(result) {

@@ -5,8 +5,6 @@ import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
 
-export const SAMPLE_LAYER_MENU_KEY = 'sample-layer-menu';
-
 const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
 
 export function SampleCustomMenu({

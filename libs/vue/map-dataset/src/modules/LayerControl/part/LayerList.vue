@@ -57,12 +57,12 @@ provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.layerControl,
 }));
 defineSlots<{
-  title(): VNode[];
-  item(_props: {
+  title: () => VNode[];
+  item: (_props: {
     item: IListViewUI;
     isSelected: boolean;
     toggleSelect: (_item: IListViewUI) => void;
-  }): VNode[];
+  }) => VNode[];
 }>();
 const path = {
   icon: mdiLayers,

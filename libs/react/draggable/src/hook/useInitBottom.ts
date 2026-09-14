@@ -51,6 +51,7 @@ export function useInitBottom(
     itemId,
     containerId,
     optionDefault.title,
+    optionDefault.type,
     optionDefault.componentCard,
     optionDefault.componentCardHeader,
   ]);

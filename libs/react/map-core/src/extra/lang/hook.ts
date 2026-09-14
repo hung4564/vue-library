@@ -28,6 +28,8 @@ export function useLang(mapId: string) {
 
   const trans = useCallback(
     (key: string, params?: MapLangLocale) => {
+      // `tick` intentionally invalidates this callback when locale mitt fires.
+      void tick;
       const storeLang = getMapLang();
       if (storeLang?.translate) {
         return storeLang.translate(key, params);

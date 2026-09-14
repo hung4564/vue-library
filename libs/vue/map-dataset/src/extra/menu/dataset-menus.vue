@@ -157,7 +157,7 @@ const hasAnything = computed(
 const rootClass = computed(() => props.class);
 
 const contextMenuRef = ref<{
-  open: (...args: unknown[]) => void;
+  open: () => void;
   close: () => void;
 } | null>(null);
 

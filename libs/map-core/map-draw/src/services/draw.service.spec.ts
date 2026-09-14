@@ -51,7 +51,7 @@ describe('DrawService', () => {
     feature.properties = {};
     DrawService.setFeature(store, 'added', feature, 'map-1');
     expect(feature.id).toBeTruthy();
-    expect(store.state.featuresAdded[feature.id!]).toBe(true);
+    expect(store.state.featuresAdded[String(feature.id)]).toBe(true);
   });
 
   it('setFeature updated clears prior added flag (select-for-edit)', () => {

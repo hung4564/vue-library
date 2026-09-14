@@ -45,22 +45,23 @@ export class MeasureArea extends Measure {
     }
 
     const geometry = polygon([[...this.coordinates, this.coordinates[0]]]);
+    const areaValue = Number(area(geometry));
     result.features = [geometry];
-    result.value = area(geometry);
-    result.format = formatAreaText(result.value);
+    result.value = areaValue;
+    result.format = formatAreaText(areaValue);
     result.features_label = [
       centroid(geometry, {
         properties: {
           is_label: true,
           is_center: true,
-          text: formatAreaText(result.value),
+          text: formatAreaText(areaValue),
         },
       }),
     ];
     result.fields = [
       {
         trans: 'map.measurement.setting.area',
-        value: formatAreaText(result.value),
+        value: formatAreaText(areaValue),
       },
     ];
 

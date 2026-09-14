@@ -81,7 +81,7 @@ export function LayerItem({
     [item],
   );
   const partitioned = useMemo(
-    () => partitionMenuActions(menus, conditionCtx),
+    () => partitionMenuActions(menus as MenuAction[], conditionCtx),
     [menus, conditionCtx],
   );
   const showBottom =

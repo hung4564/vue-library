@@ -1,4 +1,4 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,

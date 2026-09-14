@@ -81,10 +81,10 @@ export function usePermission(
   };
 
   const query = createSingletonPromise(async () => {
-    if (!isSupported.value) return;
+    if (!isSupported.value || !navigator) return;
     if (!permissionStatus) {
       try {
-        permissionStatus = await navigator!.permissions.query(desc);
+        permissionStatus = await navigator.permissions.query(desc);
         useEventListener(permissionStatus, 'change', onChange);
         onChange();
       } catch {

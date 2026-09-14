@@ -1,5 +1,4 @@
 import {
-  ALL_MAP_DATASET_FACTORIES,
   DATA_MANAGEMENT_DEMO_DATASET_FACTORIES,
   DATA_MANAGEMENT_HTTP_CUSTOM_DATASET_NAME,
   DATA_MANAGEMENT_HTTP_CUSTOM_LIST_NAME,
@@ -33,7 +32,7 @@ const logger = loggerFactory
 
 let menuHandlerRegistered = false;
 
-export function ensureCustomMenuHandler() {
+function ensureCustomMenuHandler() {
   if (menuHandlerRegistered) {
     return;
   }
@@ -95,14 +94,7 @@ export async function loadGeoExportDemoDatasets(
   );
 }
 
-export async function loadAllMapDatasets(mapId: string) {
-  await loadDemoDatasets(
-    (dataset) => addDatasetToMap(mapId, dataset),
-    [...ALL_MAP_DATASET_FACTORIES],
-  );
-}
-
-export type DataManagementDemoLoadResult = {
+type DataManagementDemoLoadResult = {
   loaded: IDataset[];
   standardHttp?: DataManagementPart;
   customHttp?: DataManagementPart;

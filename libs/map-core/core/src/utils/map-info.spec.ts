@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   EMPTY_MAP_VIEW_INFO,
   formatCoordPair,

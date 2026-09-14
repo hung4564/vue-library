@@ -12,10 +12,12 @@ export interface Chapter {
   actions?: Action[];
 }
 
-export type Action =
+type ActionPayload = Record<string, unknown>;
+
+type Action =
   | {
       type: string;
-      payload?: any;
+      payload?: ActionPayload;
       custom?: false;
     }
   | {
@@ -25,12 +27,12 @@ export type Action =
       custom: true;
     };
 
-export type GlobalActionFn = (payload?: any) => {
-  add?: () => any | Promise<any>;
-  remove?: () => any | Promise<any>;
+type GlobalActionFn = (payload?: ActionPayload) => {
+  add?: () => void | Promise<void>;
+  remove?: () => void | Promise<void>;
 };
 
-export interface UseStorytellingOptions {
+interface UseStorytellingOptions {
   chapters: Chapter[];
   globalActions?: Record<string, GlobalActionFn>;
   autoPlay?: boolean;
@@ -40,7 +42,7 @@ export interface UseStorytellingOptions {
   speed?: number;
 }
 
-export function useStorytelling(options: UseStorytellingOptions) {
+function useStorytelling(options: UseStorytellingOptions) {
   const {
     chapters,
     globalActions = {},
@@ -168,13 +170,18 @@ export function useMapStorytelling(
   return useStorytelling({
     ...options,
     globalActions: {
-      highlightElement: ({ selector }) => ({
-        add: () => document.querySelector(selector)?.classList.add('highlight'),
-        remove: () =>
-          document.querySelector(selector)?.classList.remove('highlight'),
-      }),
-      ...createSimpleMapAction(mapId),
-      ...createOrbitGlobalActions(mapId),
+      highlightElement: (payload) => {
+        const selector =
+          typeof payload?.selector === 'string' ? payload.selector : '';
+        return {
+          add: () =>
+            document.querySelector(selector)?.classList.add('highlight'),
+          remove: () =>
+            document.querySelector(selector)?.classList.remove('highlight'),
+        };
+      },
+      ...(createSimpleMapAction(mapId) as Record<string, GlobalActionFn>),
+      ...(createOrbitGlobalActions(mapId) as Record<string, GlobalActionFn>),
       ...options.globalActions,
     },
   });

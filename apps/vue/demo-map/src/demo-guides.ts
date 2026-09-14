@@ -25,7 +25,7 @@ function guide(
 }
 
 /** Per-route Demo guide copy (hash path without trailing slash). */
-export const DEMO_PAGE_GUIDES: Record<string, DemoPageGuide> = {
+const DEMO_PAGE_GUIDES: Record<string, DemoPageGuide> = {
   '/': guide('Kitchen-sink map. Open ☰ AsideControl (top-left) to jump to focused demos.', [
     [
       'explore',

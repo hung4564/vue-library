@@ -1,6 +1,9 @@
 import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset/menu';
 import { IDENTIFY_CONTROL, isListIdentifyActive, subscribeIdentifyScope, toggleListIdentifyScope } from '@hungpvq/map-dataset/identify';
-import { resolveMenuItemLocation } from '@hungpvq/map-dataset/menu';
+import {
+  resolveMenuItemLocation,
+  type MenuAction,
+} from '@hungpvq/map-dataset/menu';
 import { MapControlButton, UniversalRegistry } from '@hungpvq/react-map-core';
 
 import { mdiCursorPointer } from '@mdi/js';
@@ -21,7 +24,7 @@ export function IdentifyLayerAction(props: WithLayerItemMenuComponentType) {
   } = props;
 
   const location = useMemo(
-    () => resolveMenuItemLocation(item, locationProp),
+    () => resolveMenuItemLocation(item as MenuAction, locationProp),
     [item, locationProp],
   );
 

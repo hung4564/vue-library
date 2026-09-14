@@ -107,7 +107,8 @@ describe('ManagementControl', () => {
 
     const hideBtn = wrapper.findAll('button').find((b) => b.attributes('title') === 'Hide');
     expect(hideBtn).toBeTruthy();
-    await hideBtn!.trigger('click');
+    if (!hideBtn) return;
+    await hideBtn.trigger('click');
     await nextTick();
 
     const c = useDragStore().container[CID];

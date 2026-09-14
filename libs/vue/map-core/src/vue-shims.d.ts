@@ -8,6 +8,16 @@ declare module '@jamescoyle/vue-icon' {
   const component: DefineComponent<object, object, unknown>;
   export default component;
 }
+declare module 'vue-draggable-resizable' {
+  import type { DefineComponent } from 'vue';
+  const component: DefineComponent<object, object, unknown>;
+  export default component;
+}
+declare module 'vue-material-design-icons/*' {
+  import type { DefineComponent } from 'vue';
+  const component: DefineComponent<object, object, unknown>;
+  export default component;
+}
 
 interface Document {
   exitFullscreen: any;

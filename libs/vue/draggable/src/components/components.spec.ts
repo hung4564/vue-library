@@ -182,12 +182,13 @@ describe('ContextMenu', () => {
     await nextTick();
     const menu = document.body.querySelector('[role="menu"]') as HTMLElement | null;
     expect(menu).toBeTruthy();
+    if (!menu) return;
     const items = document.body.querySelectorAll('[role="menuitem"]');
     expect(items.length).toBe(2);
     (items[0] as HTMLElement).focus();
     expect(handleMenuKeydown).toBeTypeOf('function');
     handleMenuKeydown(
-      menu!,
+      menu,
       new KeyboardEvent('keydown', {
         key: 'ArrowDown',
         bubbles: true,

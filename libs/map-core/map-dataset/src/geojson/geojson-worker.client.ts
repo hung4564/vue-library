@@ -4,7 +4,6 @@ import {
   isCallStackOverflow,
   MapError,
   reprojectGeojson,
-  reprojectGeojsonToWgs84,
   toPlainJson,
   WorkerMonitor,
   type GeojsonBbox,

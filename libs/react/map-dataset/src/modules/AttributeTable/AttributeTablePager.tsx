@@ -51,7 +51,13 @@ export function AttributeTablePager(props: AttributeTablePagerProps) {
           label={props.rowsPerPageLabel}
           aria-label={props.rowsPerPageLabel}
           onChange={(value) => {
-            props.onPageSizeChange(value);
+            const size =
+              typeof value === 'object' &&
+              value != null &&
+              'value' in value
+                ? (value as { value: string | number }).value
+                : value;
+            props.onPageSizeChange(size as string | number);
           }}
         />
       </div>

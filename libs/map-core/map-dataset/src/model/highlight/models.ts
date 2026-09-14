@@ -1,5 +1,5 @@
 import { type MapSimple } from '@hungpvq/map-core';
-import type { GeoJSONFeature, LayerSpecification } from 'maplibre-gl';
+import type { LayerSpecification } from 'maplibre-gl';
 import { createWithDataHelper } from '../../extra';
 import { createNamedComponent } from '../base';
 import { createDatasetLeaf } from '../dataset.base.function';

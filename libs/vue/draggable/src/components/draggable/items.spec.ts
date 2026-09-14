@@ -180,7 +180,9 @@ describe('Stable item shells register into store', () => {
       <div class="draggable-modal-layer" id="modal-layer-${CID}"></div>
     `;
     document.body.appendChild(shell);
-    const layer = document.getElementById(`modal-layer-${CID}`)!;
+    const layer = document.getElementById(`modal-layer-${CID}`);
+    expect(layer).toBeTruthy();
+    if (!layer) return;
     Object.defineProperty(layer, 'clientWidth', { value: 800 });
     Object.defineProperty(layer, 'clientHeight', { value: 600 });
 
@@ -200,7 +202,9 @@ describe('Stable item shells register into store', () => {
       },
     });
     await nextTick();
-    const center = document.getElementById('center-sib')!;
+    const center = document.getElementById('center-sib');
+    expect(center).toBeTruthy();
+    if (!center) return;
     expect(
       center.hasAttribute('inert') || center.getAttribute('aria-hidden') === 'true',
     ).toBe(true);
@@ -227,7 +231,9 @@ describe('Stable item shells register into store', () => {
       <div class="draggable-modal-layer" id="modal-layer-${CID}"></div>
     `;
     document.body.appendChild(shell);
-    const layer = document.getElementById(`modal-layer-${CID}`)!;
+    const layer = document.getElementById(`modal-layer-${CID}`);
+    expect(layer).toBeTruthy();
+    if (!layer) return;
     Object.defineProperty(layer, 'clientWidth', { value: 800 });
     Object.defineProperty(layer, 'clientHeight', { value: 600 });
 
@@ -247,7 +253,9 @@ describe('Stable item shells register into store', () => {
       },
     });
     await nextTick();
-    const center = document.getElementById('center-sib-race')!;
+    const center = document.getElementById('center-sib-race');
+    expect(center).toBeTruthy();
+    if (!center) return;
     expect(center.hasAttribute('inert')).toBe(true);
 
     // Simulate ExportGeo: close sets show=false then parent unmounts in the

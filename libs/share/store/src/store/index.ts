@@ -68,11 +68,13 @@ export class GlobalStoreService {
   public subscribe(path: string | string[], listener: Listener): () => void {
     const pathKey = toPathKey(path);
 
-    if (!this.listeners.has(pathKey)) {
-      this.listeners.set(pathKey, new Set());
+    let listeners = this.listeners.get(pathKey);
+    if (!listeners) {
+      listeners = new Set();
+      this.listeners.set(pathKey, listeners);
     }
 
-    this.listeners.get(pathKey)!.add(listener);
+    listeners.add(listener);
 
     // Return unsubscribe function
     return () => {

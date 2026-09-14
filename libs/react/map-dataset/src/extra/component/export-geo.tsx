@@ -256,8 +256,8 @@ export function ExportGeo(props: ExportGeoProps) {
             error={error}
             busy={busy}
             loadingComponent={loadingComponent}
-            onFormatChange={(v) => setFormat(v as GeoExportFormat)}
-            onScopeChange={(v) => setScope(v as GeoExportScope)}
+            onFormatChange={(v: string) => setFormat(v as GeoExportFormat)}
+            onScopeChange={(v: string) => setScope(v as GeoExportScope)}
             onFilenameChange={setFilename}
             onTargetChange={setTarget}
             onCancel={handleClose}

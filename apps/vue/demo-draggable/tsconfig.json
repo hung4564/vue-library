@@ -5,7 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
     "jsxImportSource": "vue",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true
   },
   "files": [],

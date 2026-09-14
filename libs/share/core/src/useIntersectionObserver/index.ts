@@ -119,3 +119,5 @@ export function useIntersectionObserver(
     stop,
   };
 }
+
+export * from './directive';

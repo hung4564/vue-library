@@ -10,7 +10,7 @@ import { ref } from 'vue';
 type MenuAction = 'open' | 'rename' | 'share' | 'delete' | 'disabled';
 
 const menuRef = ref<{
-  open: (e: MouseEvent) => void;
+  open: (_e: MouseEvent) => void;
   close: () => void;
 } | null>(null);
 

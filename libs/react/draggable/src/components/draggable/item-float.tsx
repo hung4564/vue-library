@@ -56,7 +56,7 @@ export function DraggableItemFloat({
   containerId: propContainerId,
   componentCard,
   componentCardHeader,
-  disabledExpand,
+  disabledExpand: _disabledExpand,
   disabledHeader,
   disabledClose,
   disabledOrder,

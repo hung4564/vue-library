@@ -55,7 +55,7 @@ export const withShowProps = {
 };
 
 export const withShowEmit = {
-  'update:show': (value: boolean) => Boolean,
+  'update:show': (_value: boolean) => Boolean,
   close: () => Boolean,
 };
 

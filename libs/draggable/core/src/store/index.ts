@@ -31,13 +31,15 @@ function getDragStoreConfig(): DragStoreRuntimeConfig {
   const g = globalThis as typeof globalThis & {
     [DRAG_STORE_CONFIG_KEY]?: DragStoreRuntimeConfig;
   };
-  if (!g[DRAG_STORE_CONFIG_KEY]) {
-    g[DRAG_STORE_CONFIG_KEY] = {
+  let config = g[DRAG_STORE_CONFIG_KEY];
+  if (!config) {
+    config = {
       notify: () => undefined,
       makeReactive: (value) => value,
     };
+    g[DRAG_STORE_CONFIG_KEY] = config;
   }
-  return g[DRAG_STORE_CONFIG_KEY]!;
+  return config;
 }
 
 function notify(path?: string | string[]) {

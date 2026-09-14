@@ -19,27 +19,26 @@ export class DrawService {
       type,
       feature,
     });
-    if (!feature.id) {
-      feature.id = getUUIDv4();
-    }
+    const featureId = feature.id ?? getUUIDv4();
+    feature.id = featureId;
     switch (type) {
       case 'added':
-        store.state.featuresAdded[feature.id!] = true;
-        delete store.state.featuresUpdated[feature.id!];
-        delete store.state.featuresDeleted[feature.id!];
+        store.state.featuresAdded[featureId] = true;
+        delete store.state.featuresUpdated[featureId];
+        delete store.state.featuresDeleted[featureId];
         break;
       case 'updated':
         // Edit flow loads an existing feature via draw.create — prefer update.
-        delete store.state.featuresAdded[feature.id!];
-        store.state.featuresUpdated[feature.id!] = true;
+        delete store.state.featuresAdded[featureId];
+        store.state.featuresUpdated[featureId] = true;
         break;
       case 'deleted':
-        if (store.state.featuresAdded[feature.id!]) {
-          delete store.state.featuresAdded[feature.id!];
+        if (store.state.featuresAdded[featureId]) {
+          delete store.state.featuresAdded[featureId];
           return;
         }
-        delete store.state.featuresUpdated[feature.id!];
-        store.state.featuresDeleted[feature.id!] = feature;
+        delete store.state.featuresUpdated[featureId];
+        store.state.featuresDeleted[featureId] = feature;
         break;
 
       default:
@@ -64,7 +63,8 @@ export class DrawService {
       },
     };
     collection.features.forEach((feature) => {
-      const id_feature = feature.id!;
+      if (feature.id == null) return;
+      const id_feature = feature.id;
       if (drawControlAddedFeatures[id_feature]) {
         result.added[id_feature] = feature;
         if (!feature.properties) {

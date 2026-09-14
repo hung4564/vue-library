@@ -9,6 +9,7 @@ import {
   type StyleSpecification,
 } from 'maplibre-gl';
 import { brightColor } from './colors';
+import { DrawError } from '../errors';
 import {
   getSourcesFromMap,
   isInspectStyle,
@@ -296,7 +297,10 @@ export class InspectController {
   };
 
   private _inspectStyle(): StyleSpecification {
-    const map = this._map!;
+    const map = this._map;
+    if (!map) {
+      throw new DrawError('Inspect map is not available');
+    }
     const coloredLayers = generateColoredLayers(
       this.sources,
       this.options.assignLayerColor,

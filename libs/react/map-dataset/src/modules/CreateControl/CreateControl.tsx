@@ -143,8 +143,8 @@ export function CreateControl(props: CreateControlProps) {
   useEffect(() => {
     saveCreateControlDraft(mapId, {
       type: form.type,
-      name: form.config.name,
-      crs: form.config.crs,
+      name: typeof form.config.name === 'string' ? form.config.name : undefined,
+      crs: typeof form.config.crs === 'string' ? form.config.crs : undefined,
     });
   }, [form.type, form.config.name, form.config.crs, mapId]);
 

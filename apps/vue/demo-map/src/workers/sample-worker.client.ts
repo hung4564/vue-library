@@ -4,7 +4,7 @@ import type {
   SampleWorkerResponse,
 } from './sample.worker';
 
-export const SAMPLE_WORKER_ID = 'sample';
+const SAMPLE_WORKER_ID = 'sample';
 
 const sampleWorker = WorkerMonitor.connect<
   SampleWorkerRequest,

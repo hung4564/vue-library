@@ -33,7 +33,7 @@ const logger = loggerFactory
 
 let menuHandlerRegistered = false;
 
-export function ensureCustomMenuHandler() {
+function ensureCustomMenuHandler() {
   if (menuHandlerRegistered) {
     return;
   }
@@ -89,7 +89,7 @@ export async function loadAllMapDatasets(mapId: string) {
   await loadDemoDatasets(addForMap(mapId), [...ALL_MAP_DATASET_FACTORIES]);
 }
 
-export type DataManagementDemoLoadResult = {
+type DataManagementDemoLoadResult = {
   loaded: IDataset[];
   standardHttp?: DataManagementPart;
   customHttp?: DataManagementPart;

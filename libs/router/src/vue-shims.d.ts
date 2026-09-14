@@ -1,13 +1,5 @@
 declare module '*.vue' {
-  import { defineComponent } from 'vue';
-  const component: ReturnType<typeof defineComponent>;
+  import type { DefineComponent } from 'vue';
+  const component: DefineComponent<object, object, unknown>;
   export default component;
-}
-import 'vue-router';
-
-declare module 'vue-router' {
-  interface RouteMeta {
-    middleware: string[];
-    title: string;
-  }
 }

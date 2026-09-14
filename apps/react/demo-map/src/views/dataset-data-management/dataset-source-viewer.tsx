@@ -8,7 +8,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { useState } from 'react';
 
-export type DatasetSourceViewerProps = {
+type DatasetSourceViewerProps = {
   title?: string;
   listName?: string;
   definition?: string;
