@@ -75,6 +75,9 @@
       "types": "./highlight/index.d.ts",
       "import": "./highlight.js"
     },
+    "./geojson-worker": {
+      "default": "./assets/geojson.worker.js"
+    },
     "./assets/*": "./assets/*",
     "./style.css": {
       "default": "./style.css"

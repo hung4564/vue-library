@@ -67,6 +67,8 @@ Same isolation applies to VitePress routes after `link-docs.js` (`/map/dataset/`
 - Prefer short examples over long tutorials; link demos for full apps.
 - Do not invent API that is not in the package entry.
 - **Never** add markdown/VitePress links between dataset docs and draggable docs (see Doc isolation).
+- Package `./style.css` must be **emitted by the Vite lib build** (CSS-only entry `src/style.ts` → `css` in `vite.config.ts`). Do not rely on monorepo tsconfig paths alone — published tarballs previously omitted `style.css` when nothing imported the CSS graph.
+- Install / getting-started docs for dataset apps must list the **full** CSS set: `map-core` + `map-dataset` + framework `*-map-core` / `*-map-dataset` + `*-draggable` (Vue or React). Do **not** document “core-only instead of framework” as a substitute — each package’s CSS is separate and all are required. Map-core CSS alone does not style LayerControl / identify / create / attribute table / panels.
 
 ## When changing API
 

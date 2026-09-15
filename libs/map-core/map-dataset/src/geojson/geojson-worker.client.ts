@@ -23,6 +23,56 @@ import type {
 
 const GEOJSON_WORKER_ID = 'geojson';
 
+let gisWorkerUrlOverride: string | URL | undefined;
+
+export type ConfigureGisWorkerOptions = {
+  /**
+   * Absolute or base-relative URL to the published worker script
+   * (`@hungpvq/map-dataset/geojson-worker` → `assets/geojson.worker.js`).
+   * Required when the bundler relocates package chunks so
+   * `new URL(..., import.meta.url)` no longer points at the package file
+   * (Webpack copy, CDN, static hosting without Vite).
+   */
+  url: string | URL;
+};
+
+/**
+ * Override the GIS Web Worker script URL. Call once at app startup (before
+ * CreateControl / `loadGis*Async`). Resets any existing worker instance.
+ */
+export function configureGisWorker(options: ConfigureGisWorkerOptions): void {
+  gisWorkerUrlOverride = options.url;
+  terminateGeojsonWorker();
+}
+
+function resolveOverrideGisWorkerUrl(): URL {
+  if (gisWorkerUrlOverride == null) {
+    throw new Error('GIS worker URL override is not configured');
+  }
+  if (gisWorkerUrlOverride instanceof URL) return gisWorkerUrlOverride;
+  const base =
+    typeof document !== 'undefined' && document.baseURI
+      ? document.baseURI
+      : import.meta.url;
+  return new URL(gisWorkerUrlOverride, base);
+}
+
+/**
+ * Resolve the Worker script URL: explicit {@link configureGisWorker} override, else
+ * the published default (`assets/geojson.worker.js` next to this module).
+ *
+ * `@vite-ignore` avoids a second asset graph edge (which would inline raw `.ts` as a
+ * `data:` URL). {@link createWorker} keeps the static `new Worker(new URL('./geojson.worker.ts', …))`
+ * pattern so the lib build still emits the real worker file.
+ */
+export function resolveGisWorkerUrl(): URL {
+  if (gisWorkerUrlOverride != null) return resolveOverrideGisWorkerUrl();
+  return new URL(
+    /* @vite-ignore */ 'assets/geojson.worker.js',
+    import.meta.url,
+  );
+}
+
 const DATA_SIZE_HINT =
   'data may be too large, too deeply nested, or contain circular references. Try a smaller file or data already in EPSG:4326.';
 
@@ -62,10 +112,16 @@ const gisWorker = WorkerMonitor.connect<
 >({
   id: GEOJSON_WORKER_ID,
   name: 'GIS',
-  createWorker: () =>
-    new Worker(new URL('./geojson.worker.ts', import.meta.url), {
+  createWorker: () => {
+    if (gisWorkerUrlOverride != null) {
+      return new Worker(resolveOverrideGisWorkerUrl(), { type: 'module' });
+    }
+    // Static `new Worker(new URL('./geojson.worker.ts', import.meta.url))` is
+    // required so Vite lib-build emits `assets/geojson.worker.js` (not a data: URL).
+    return new Worker(new URL('./geojson.worker.ts', import.meta.url), {
       type: 'module',
-    }),
+    });
+  },
   mapError: errorFromWorkerMessage,
   prepareRequest: (payload) => {
     if (

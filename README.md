@@ -112,8 +112,11 @@ import { Map, BaseMapControl, MeasurementControl, PrintControl } from '@hungpvq/
 import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import type { FeatureCollection } from 'geojson';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 
 const sample: FeatureCollection = {
   type: 'FeatureCollection',

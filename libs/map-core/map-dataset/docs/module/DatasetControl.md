@@ -23,6 +23,11 @@ import {
   DatasetControl,
   ComponentManagementControl,
 } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 </script>
 
 <template>

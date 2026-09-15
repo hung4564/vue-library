@@ -10,9 +10,14 @@ React UI for map datasets. Same core as Vue: [`@hungpvq/map-dataset`](../../map-
 npm install @hungpvq/react-map-dataset @hungpvq/react-map-core @hungpvq/map-dataset @hungpvq/map-core
 ```
 
+Import the **full** style set (shared cores + adapters + draggable — dataset UI is not covered by map-core CSS alone):
+
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
 ```
 
 Bootstrap once (`installMapApp` = theme + dataset registry: legend, opacity, add-to-group, export, attribute table, …):

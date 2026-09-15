@@ -42,7 +42,9 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 ## Treat as public / breaking
 
 - Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root **and** `@hungpvq/map-core/<domain>` barrels are **named exports**, locked by `public-api.spec.ts`)
-- Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./assets/*`, and dataset domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`, `./attribute-table`, `./highlight`)
+- Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./geojson-worker`, `./assets/*`, and dataset domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`, `./attribute-table`, `./highlight`)
+- GIS worker: default relative `import.meta.url`; non-Vite hosts use Stable `configureGisWorker({ url })` + `./geojson-worker` static entry (not `public/` copy plugins).
+- **`exports` `types` must match vite-plugin-dts output:** domain entries → `./<domain>/index.d.ts` (not `./<domain>.d.ts`); `./worker` → `./worker-entry.d.ts`. Wrong paths break consumers under `moduleResolution: bundler` / Node16 (`Could not find a declaration file… types at …/index.d.ts but could not be resolved when respecting package.json exports`). Mirror `map-dataset` (`./geojson/index.d.ts`, …).
 - Control ids (`mapLayerControl`, …), action types, `MapControlHandle` shape
 - `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values** (from `@hungpvq/map-dataset/menu`)
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`

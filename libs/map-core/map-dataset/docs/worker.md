@@ -46,51 +46,72 @@ npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
 
 ## Setup (pick your app type)
 
-### A. App installs the published package (npm) — e.g. `vue-3-test-map`
+### A. App installs the published package (npm)
 
-The published `@hungpvq/map-dataset` builds the worker to:
+Default (Vite with {@link mapDatasetGisWorker}, native ESM, or any host that keeps package files next to each other): relative URL from the package:
+
+```ts
+new Worker(new URL('assets/geojson.worker.js', import.meta.url), { type: 'module' });
+```
 
 ```text
-node_modules/@hungpvq/map-dataset/assets/geojson.worker-<hash>.js
+node_modules/@hungpvq/map-dataset/assets/geojson.worker.js
 ```
 
-and creates it with an **absolute** URL:
+**Vite apps** should add the helper so:
+
+1. The package is **not** prebundled into `.vite/deps` (that breaks `import.meta.url` for the GIS worker)
+2. CJS helpers (`geojson-rbush`, `@hungpvq/shared-log`, …) are prebundled
+3. `maplibre-gl` named imports (`Map`, `Point`, `Popup`, …) work — the published UMD build has no ESM named exports
 
 ```ts
-new Worker(new URL('/assets/geojson.worker-<hash>.js', import.meta.url), {
-  type: 'module',
-});
-```
-
-The browser therefore requests `http://localhost:<port>/assets/geojson.worker-<hash>.js`.  
-That file is **not** copied automatically — do **not** copy it by hand into `public/`. Use the Vite plugin instead.
-
-```ts
-// vite.config.ts
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
 import { mapDatasetGisWorker } from '@hungpvq/map-dataset/vite';
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    // Syncs package assets → public/assets on every Vite start / build
-    mapDatasetGisWorker(),
-  ],
+  plugins: [vue(), mapDatasetGisWorker()],
 });
 ```
 
-After `npm run dev` / `npm run build`, you should see:
+Equivalent manual config (without the maplibre shim — prefer the helper):
 
-```text
-public/assets/geojson.worker-<hash>.js
+```ts
+optimizeDeps: {
+  exclude: ['@hungpvq/map-dataset', '@hungpvq/map-dataset/geojson', '@hungpvq/map-dataset/create-control', 'maplibre-gl'],
+  include: ['geojson-rbush', '@hungpvq/shared-log', '@hungpvq/shared-store', 'maplibre-gl/dist/maplibre-gl.js'],
+  needsInterop: ['maplibre-gl/dist/maplibre-gl.js'],
+}
 ```
 
-Vite serves `public/` at the site root, so `/assets/…` resolves. When you upgrade `@hungpvq/map-dataset`, the plugin replaces the old hashed file — no manual cleanup.
+Stable package entry (for copy / CDN / bundler asset pipelines):
 
-**Without the plugin**, CreateControl falls back to the main thread (or 404s the worker). Copying into `public/assets` by hand works once, then breaks on the next package version when the hash changes.
+```text
+@hungpvq/map-dataset/geojson-worker  →  ./assets/geojson.worker.js
+```
 
-React / Vue UI packages both depend on `@hungpvq/map-dataset` — one plugin on the app Vite config is enough.
+#### Non-Vite / relocated chunks (Webpack, Parcel, static HTML, CDN)
+
+If your bundler moves JS into hashed folders so `import.meta.url` no longer sits beside `assets/`, **set the worker URL explicitly** once at startup:
+
+```ts
+import { configureGisWorker } from '@hungpvq/map-dataset/geojson';
+
+// After copying `node_modules/@hungpvq/map-dataset/assets/geojson.worker.js`
+// to your static output (or serving from a CDN):
+configureGisWorker({ url: '/static/geojson.worker.js' });
+// or: configureGisWorker({ url: new URL('/static/geojson.worker.js', location.origin) });
+```
+
+Webpack example (copy the single file, then configure):
+
+```js
+// copy-webpack-plugin
+{ from: 'node_modules/@hungpvq/map-dataset/assets/geojson.worker.js', to: 'geojson.worker.js' }
+
+// app entry
+configureGisWorker({ url: '/geojson.worker.js' });
+```
+
+`mapDatasetGisWorker()` only sets `optimizeDeps.exclude` (no `public/` copy). Do **not** rely on copying into `public/assets` for the old absolute `/assets/…` scheme.
 
 ### B. App in this Nx monorepo (source / path aliases)
 
@@ -124,7 +145,12 @@ Do **not** use `mapDatasetGisWorker()` here — the monorepo builds the worker f
 
 ### Webpack 5
 
-Webpack 5 supports `new Worker(new URL(..., import.meta.url), { type: 'module' })`. If module workers are disabled, the library falls back to the main thread. For a published npm install, still expose the hashed file at `/assets/geojson.worker-….js` (copy from `node_modules/@hungpvq/map-dataset/assets/` into your static output).
+Webpack 5 can resolve `new URL(..., import.meta.url)` for app source; for **published** `node_modules` packages it often does **not**. Prefer:
+
+1. Copy `@hungpvq/map-dataset/geojson-worker` (single file) into your output, and
+2. Call `configureGisWorker({ url: '…' })` at startup.
+
+If module workers are disabled, the library falls back to the main thread.
 
 ## Call the APIs yourself
 
@@ -184,4 +210,4 @@ Worker source must import map-core utilities **relatively**, not `@hungpvq/map-c
 
 Do **not** enable `worker.plugins` on `@hungpvq/vue-map-dataset`’s Vite config (Vue SFC parse error). Keep `@hungpvq/map-dataset` external there so the wrapper does not rebundle the worker.
 
-The Vite helper for consumer apps is exported as `@hungpvq/map-dataset/vite` (`mapDatasetGisWorker`).
+`@hungpvq/map-dataset/vite` still exports `mapDatasetGisWorker` as a **deprecated no-op** for older configs — safe to delete from app `vite.config`.

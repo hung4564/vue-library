@@ -30,9 +30,16 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        // CSS-only graph so `./style.css` includes dataset styles (not a JS export).
+        css: 'src/style.ts',
+      },
       name: '@hungpvq/react-map-dataset',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {

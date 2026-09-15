@@ -61,6 +61,11 @@ Create / validate / defaults live on core **`LayerHelper`** from `@hungpvq/map-d
 import { ref } from 'vue';
 import { Map } from '@hungpvq/vue-map-core';
 import { CreateControl } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 
 const open = ref(false);
 </script>

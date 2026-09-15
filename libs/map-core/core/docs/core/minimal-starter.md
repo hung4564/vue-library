@@ -8,19 +8,32 @@ Related: [Getting started](../index.md) · [Quick Dataset Creation](/map/dataset
 
 ## Install + CSS + registry
 
-Same as the hub [Getting started](../index.md): install packages, **import package CSS explicitly** (root JS barrels no longer pull styles), then bootstrap once:
+Same as the hub [Getting started](../index.md): install packages, **import package CSS explicitly** (root JS barrels no longer pull styles), then bootstrap once.
+
+Import the **full** CSS set (shared cores + framework adapters + draggable). Root JS barrels do not pull styles — omitting any line leaves chrome / LayerControl / panels unstyled.
+
+**Vue**
 
 ```ts
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
-import '@hungpvq/vue-map-core/style.css'; // or react-map-core / react-map-dataset
+import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 
-// Vue
 import { installMapApp } from '@hungpvq/vue-map-dataset';
 installMapApp(app); // theme + createDatasetRegistryPlugin
+```
 
-// React
+**React**
+
+```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
+
 import { installMapApp } from '@hungpvq/react-map-dataset';
 installMapApp();
 ```

@@ -24,9 +24,15 @@ export default defineConfig(() => ({
     reportCompressedSize: true,
     commonjsOptions: { transformMixedEsModules: true },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        css: 'src/style.ts',
+      },
       name: '@hungpvq/react-map-draw',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {

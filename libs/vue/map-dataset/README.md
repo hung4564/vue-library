@@ -10,9 +10,14 @@ Vue 3 UI for map datasets: layer list, groups, identify, legends, and menus. Log
 npm install @hungpvq/vue-map-dataset @hungpvq/vue-map-core @hungpvq/map-dataset @hungpvq/map-core
 ```
 
+Import the **full** style set (shared cores + adapters + draggable — dataset UI is not covered by map-core CSS alone):
+
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 ```
 
 Bootstrap once at app entry (`installMapApp` = theme + dataset registry):

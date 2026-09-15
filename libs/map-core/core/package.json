@@ -30,52 +30,64 @@
       "default": "./style.css"
     },
     "./worker": {
-      "types": "./worker.d.ts",
-      "import": "./worker.js"
+      "types": "./worker-entry.d.ts",
+      "import": "./worker.js",
+      "require": "./worker.cjs"
     },
     "./basemap": {
-      "types": "./basemap.d.ts",
-      "import": "./basemap.js"
+      "types": "./basemap/index.d.ts",
+      "import": "./basemap.js",
+      "require": "./basemap.cjs"
     },
     "./crs": {
-      "types": "./crs.d.ts",
-      "import": "./crs.js"
+      "types": "./crs/index.d.ts",
+      "import": "./crs.js",
+      "require": "./crs.cjs"
     },
     "./devtools": {
-      "types": "./devtools.d.ts",
-      "import": "./devtools.js"
+      "types": "./devtools/index.d.ts",
+      "import": "./devtools.js",
+      "require": "./devtools.cjs"
     },
     "./event": {
-      "types": "./event.d.ts",
-      "import": "./event.js"
+      "types": "./event/index.d.ts",
+      "import": "./event.js",
+      "require": "./event.cjs"
     },
     "./image": {
-      "types": "./image.d.ts",
-      "import": "./image.js"
+      "types": "./image/index.d.ts",
+      "import": "./image.js",
+      "require": "./image.cjs"
     },
     "./legend": {
-      "types": "./legend.d.ts",
-      "import": "./legend.js"
+      "types": "./legend/index.d.ts",
+      "import": "./legend.js",
+      "require": "./legend.cjs"
     },
     "./measurement": {
-      "types": "./measurement.d.ts",
-      "import": "./measurement.js"
+      "types": "./measurement/index.d.ts",
+      "import": "./measurement.js",
+      "require": "./measurement.cjs"
     },
     "./menu": {
-      "types": "./menu.d.ts",
-      "import": "./menu.js"
+      "types": "./menu/index.d.ts",
+      "import": "./menu.js",
+      "require": "./menu.cjs"
     },
     "./print": {
-      "types": "./print.d.ts",
-      "import": "./print.js"
+      "types": "./print/index.d.ts",
+      "import": "./print.js",
+      "require": "./print.cjs"
     },
     "./theme": {
-      "types": "./theme.d.ts",
-      "import": "./theme.js"
+      "types": "./theme/index.d.ts",
+      "import": "./theme.js",
+      "require": "./theme.cjs"
     },
     "./toolbar": {
-      "types": "./toolbar.d.ts",
-      "import": "./toolbar.js"
+      "types": "./toolbar/index.d.ts",
+      "import": "./toolbar.js",
+      "require": "./toolbar.cjs"
     }
   },
   "dependencies": {

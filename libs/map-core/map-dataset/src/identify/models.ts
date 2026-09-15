@@ -1,5 +1,5 @@
 import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
-import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IdentifyFeatureRow, IdentifyMultiResult, IIdentifyView, IIdentifyViewWithMerge, IMapboxLayerView } from '../interfaces/dataset.parts';
 import { convertFeatureToItem } from '../utils/convert';
@@ -425,9 +425,10 @@ function isObjectWithXY(p: any): p is { x: number; y: number } {
 }
 
 function getXY(point: PointLike): { x: number; y: number } {
-  if (point instanceof Point || isObjectWithXY(point)) {
+  // Duck-type Point / {x,y} — avoid runtime `import { Point } from 'maplibre-gl'`
+  // (published maplibre UMD has no ESM named exports under Vite).
+  if (isObjectWithXY(point)) {
     return { x: point.x, y: point.y };
-  } else {
-    return { x: point[0], y: point[1] };
   }
+  return { x: point[0], y: point[1] };
 }

@@ -61,8 +61,11 @@ import {
 } from '@hungpvq/vue-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { onUnmounted } from 'vue';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 
 // Optional: pointer highlight in addition to Identify (watch dual-click).
 const hl = useMapHighlight(mapId);

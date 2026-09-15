@@ -23,11 +23,14 @@ export {
 export type { GeojsonStyleMode } from './geojson-parse';
 export {
   bboxFromGeojsonAsync,
+  configureGisWorker,
   detectGeojsonStyleTypesAsync,
   loadGeojsonFileAsync,
   loadGeojsonTextAsync,
   parseGeojsonTextAsync,
+  resolveGisWorkerUrl,
   reprojectGeojsonAsync,
   reprojectGeojsonToWgs84Async,
   terminateGeojsonWorker,
 } from './geojson-worker.client';
+export type { ConfigureGisWorkerOptions } from './geojson-worker.client';

@@ -36,28 +36,42 @@ Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)**
 **Vue**
 
 ```bash
-npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/map-core @hungpvq/map-dataset maplibre-gl
+npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/map-core @hungpvq/map-dataset @hungpvq/vue-draggable maplibre-gl
 ```
 
 **React**
 
 ```bash
-npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/map-core @hungpvq/map-dataset maplibre-gl
+npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/map-core @hungpvq/map-dataset @hungpvq/react-draggable maplibre-gl
 ```
 
 Draw / edit is optional — add `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw` + `@hungpvq/map-draw` when you need [Draw](/map/draw/).
 
 ### 2. Import CSS (once)
 
-```ts
-import '@hungpvq/vue-map-core/style.css';
-import '@hungpvq/vue-map-dataset/style.css';
-```
+Root JS barrels do **not** pull CSS. Import the **full** set at the app entry (shared cores + framework adapters + draggable). Missing any line leaves map chrome, dataset UI, or panels unstyled.
+
+**Vue**
 
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
+```
+
+**React**
+
+```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
 ```
+
+Draw apps also need `@hungpvq/vue-map-draw/style.css` or `@hungpvq/react-map-draw/style.css`.
 
 ### 3. Bootstrap once (`installMapApp`)
 
@@ -92,7 +106,7 @@ Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungp
 
 | Symptom | Check |
 |---------|--------|
-| Unstyled / broken layout | Forgot `style.css` import |
+| Unstyled / broken layout | Incomplete CSS imports — need `map-core` + `map-dataset` + framework `*-map-core` / `*-map-dataset` + `*-draggable` `style.css` (see §2) |
 | Empty layer menus, missing style / export / attribute UI | Forgot `installMapApp` (or `createDatasetRegistryPlugin`) |
 | Dialogs / management panels missing | Need `ComponentManagementControl` (or equivalent) on the map |
 | File parse hangs / blocks UI; worker never runs | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker) |

@@ -19,15 +19,9 @@ For **CreateControl** / GIS file import, also install optional format peers:
 npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
 ```
 
-Inline GeoJSON via `createGeoJsonDataset` does **not** need those peers.
-Create-layer / GIS parse runs in a Web Worker. Apps that install this package from npm must sync the worker file into `public/assets` — use the Vite plugin (do not copy by hand):
+- Create-layer / GIS parse runs in a Web Worker shipped as `assets/geojson.worker.js`.
+- **Vite:** add `mapDatasetGisWorker()` (excludes package from `optimizeDeps` so `import.meta.url` stays under `node_modules`).
+- **Native ESM:** zero config if package files stay together.
+- **Webpack / CDN / static:** copy `@hungpvq/map-dataset/geojson-worker` and call `configureGisWorker({ url })` — see [GIS worker](./docs/worker.md).
 
-```ts
-import { mapDatasetGisWorker } from '@hungpvq/map-dataset/vite';
-
-export default defineConfig({
-  plugins: [vue(), mapDatasetGisWorker()],
-});
-```
-
-In this Nx monorepo (source), configure `worker.format` + `nxViteTsPaths` on `worker.plugins` instead — see [GIS worker](./docs/worker.md).
+In this Nx monorepo (source), configure `worker.format` + `nxViteTsPaths` on `worker.plugins` instead.

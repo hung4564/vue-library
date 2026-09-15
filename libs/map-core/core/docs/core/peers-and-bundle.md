@@ -11,7 +11,18 @@ Smallest useful client bundle for **inline GeoJSON / in-memory layers**:
 1. Peers: `maplibre-gl` (+ Vue or React). **Required** for `@hungpvq/map-core`, `@hungpvq/map-dataset`, and the framework adapters — install it in the app; it is not a transitive dependency of `map-dataset`.
 2. Packages: `@hungpvq/map-core` + `@hungpvq/vue-map-core` **or** `@hungpvq/react-map-core`.
 3. Optional dataset list UI: `@hungpvq/map-dataset` + matching adapter + `installMapApp` / `createMapAppPlugin`.
-4. Import CSS once (`*/style.css`). Follow [Minimal starter](./minimal-starter.md).
+4. Import CSS once — the **full** set (shared cores + framework adapters + draggable):
+
+```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
+// React: react-map-core + react-map-dataset + react-draggable
+```
+
+Follow [Minimal starter](./minimal-starter.md).
 
 **Do not install** for lite: `@hungpvq/map-draw`, CreateControl GIS peers (`shpjs`, `papaparse`, togeojson, jszip, topojson-client), or the GIS Vite worker plugin.
 

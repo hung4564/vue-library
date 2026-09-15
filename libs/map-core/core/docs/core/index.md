@@ -33,23 +33,19 @@ npm install @hungpvq/react-map-core
 
 ## Styles
 
-Import CSS once at the app entry:
+Import CSS once at the app entry. For map-core only, import **both** shared core and the framework adapter:
 
 ```ts
+import '@hungpvq/map-core/style.css';
 import '@hungpvq/vue-map-core/style.css';
 ```
 
 ```ts
+import '@hungpvq/map-core/style.css';
 import '@hungpvq/react-map-core/style.css';
 ```
 
-Or import the shared core styles directly:
-
-```ts
-import '@hungpvq/map-core/style.css';
-```
-
-You only need one of the above. Prefer the framework package so it stays aligned with the wrapper you use.
+Dataset apps need the full set (`map-core` + `map-dataset` + framework adapters + `*-draggable`) — see [Getting started](../index.md).
 
 ## 🚀 Usage
 

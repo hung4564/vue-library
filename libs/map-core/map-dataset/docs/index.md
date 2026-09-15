@@ -31,28 +31,29 @@ npm install @hungpvq/react-map-dataset @hungpvq/react-map-core @hungpvq/map-data
 npm install maplibre-gl @mdi/js @mdi/react @hungpvq/react-draggable @hungpvq/shared
 ```
 
-Import styles once at the app root:
+Import styles once at the app root. Use the **full** set — shared cores **and** framework adapters **and** draggable. Omitting any line leaves map chrome, list/menus/tables, or panels unstyled.
 
-```ts
-import '@hungpvq/vue-map-core/style.css';
-import '@hungpvq/vue-map-dataset/style.css';
-```
-
-**Import paths (breaking major):** domain APIs live on subpaths — e.g. `createGeoJsonDataset` from `@hungpvq/map-dataset/geojson`, highlight from `@hungpvq/map-dataset/highlight`, attribute-table from `@hungpvq/map-dataset/attribute-table`, `LIST_VIEW_MENU_*` from `@hungpvq/map-dataset/menu`, `LayerSimpleMapboxBuild` from `@hungpvq/map-dataset/style`. Root keeps `DatasetService`, tree helpers, and shared `IDataset` types. See [Stable API](/map/core/stable-api).
-
-```ts
-import '@hungpvq/react-map-core/style.css';
-import '@hungpvq/react-map-dataset/style.css';
-```
-
-Or import the shared core styles directly:
+**Vue**
 
 ```ts
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-map-core/style.css';
+import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 ```
 
-You only need one set. Prefer the framework packages (`vue-*` / `react-*`) so styles stay aligned with the wrappers you use.
+**React**
+
+```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
+```
+
+**Import paths (breaking major):** domain APIs live on subpaths — e.g. `createGeoJsonDataset` from `@hungpvq/map-dataset/geojson`, highlight from `@hungpvq/map-dataset/highlight`, attribute-table from `@hungpvq/map-dataset/attribute-table`, `LIST_VIEW_MENU_*` from `@hungpvq/map-dataset/menu`, `LayerSimpleMapboxBuild` from `@hungpvq/map-dataset/style`. Root keeps `DatasetService`, tree helpers, and shared `IDataset` types. See [Stable API](/map/core/stable-api).
 
 ## Setup
 
@@ -125,8 +126,11 @@ import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { ref } from 'vue';
 import HighlightPointer from './HighlightPointer.vue'; // app-local shell (bindPointer)
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 
 const mapId = ref(getUUIDv4());
 
@@ -177,8 +181,11 @@ import {
 } from '@hungpvq/map-dataset';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { HighlightPointer } from './HighlightPointer'; // app-local shell
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
 
 function Page() {
   function onMapLoaded(map: MapSimple) {
@@ -208,7 +215,7 @@ function Page() {
 
 Shorthand for a full GeoJSON layer: [`createGeoJsonDataset`](./helper/QuickDatasetCreation.md).
 
-Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Apps on npm need `mapDatasetGisWorker()`; this monorepo needs `worker.format: 'es'` (+ `nxViteTsPaths` on `worker.plugins`). Install optional GIS peers when using CreateControl — see [CreateControl](./module/CreateControl.md).
+Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Vite / native ESM: zero config. Webpack / CDN / static: `configureGisWorker({ url })` + `@hungpvq/map-dataset/geojson-worker`. This monorepo needs `worker.format: 'es'` (+ `nxViteTsPaths` on `worker.plugins`). Install optional GIS peers when using CreateControl — see [CreateControl](./module/CreateControl.md).
 
 ## Domain `src/extra` vs adapter `extra`
 

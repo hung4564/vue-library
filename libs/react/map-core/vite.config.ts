@@ -35,6 +35,8 @@ export default defineConfig(() => ({
       entry: {
         index: 'src/index.ts',
         fields: 'src/fields.ts',
+        // CSS-only graph so `./style.css` includes shared map SCSS (not a JS export).
+        css: 'src/style.ts',
       },
       name: '@hungpvq/react-map-core',
       fileName: (format, entryName) => {

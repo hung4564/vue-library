@@ -135,6 +135,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'geojson': [
   'GEOJSON_STYLE_AUTO',
   'bboxFromGeojsonAsync',
+  'configureGisWorker',
   'createDatasetPartGeojsonSourceComponent',
   'createGeoJsonDataset',
   'createGeojsonHereDataset',
@@ -153,6 +154,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'parseGeojsonTextAsync',
   'reprojectGeojsonAsync',
   'reprojectGeojsonToWgs84Async',
+  'resolveGisWorkerUrl',
   'shouldUseGisWorkerForGeojson',
   'styleTypeToMapboxGeometryType',
   'terminateGeojsonWorker',

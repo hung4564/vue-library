@@ -34,6 +34,8 @@ export default defineConfig(() => ({
       // The remaining entries are the domain subpaths (`@hungpvq/map-core/<name>`).
       entry: {
         index: 'src/index.ts',
+        // CSS-only graph so `./style.css` is emitted (not a package JS export).
+        css: 'src/style.ts',
         worker: 'src/worker-entry.ts',
         basemap: 'src/basemap/index.ts',
         devtools: 'src/devtools/index.ts',
