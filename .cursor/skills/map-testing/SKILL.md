@@ -23,7 +23,9 @@ Prefer fast unit tests for:
 - Theme helpers (`bootstrapMapTheme`, resolve/apply class, storage key)
 - `DatasetService` ordering and tree operations
 - `createGeoJsonDataset` / identify builders / `parseGisText` (fixtures; no WebGL)
-- `createDatasetRegistryPlugin().install()` smoke (Vue + React) — registry keys resolve
+- `createDatasetRegistryPlugin().install()` smoke (Vue + React) — registry keys resolve to functions/objects
+- `registerDatasetRegistryComponents` unit (`menu/registry-plugin.spec.ts`) — slot→key, skip null, pass-through refs
+- Draggable sidebar switcher titles (`sidebar-container.spec`): store `actions[id].title`, portal title, context-menu labels for 2+ sidebars (React+Vue)
 - `DrawService` / `FeatureStore` / history (no WebGL) + draw `public-api.spec.ts`
 - Pure utils (no MapLibre GL canvas) — mock map instances when needed
 

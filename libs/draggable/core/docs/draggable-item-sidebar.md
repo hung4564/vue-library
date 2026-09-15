@@ -8,7 +8,7 @@ category: Component
 
 `DraggableItemSideBar` creates a sidebar panel that can be dragged and expanded/collapsed. It is ideal for navigation menus or tool panels that need to be shown or hidden dynamically and repositioned by the user.
 
-Only one sidebar is visible per edge. If several sidebars share the same `location`, the active panel shows a **menu button** to switch between them.
+Only one sidebar is visible per edge. If several sidebars share the same `location`, the active panel shows a **menu button** to switch between them. Switcher labels come from the **`title` string** stored in the drag store — always pass `title` even when using a custom `#title` / `titleNode` for the header.
 
 ## Props
 
@@ -19,7 +19,8 @@ Only one sidebar is visible per edge. If several sidebars share the same `locati
 | `expand`         | Whether the sidebar is expanded.                    | `boolean`       | false    | false         |
 | `width`          | Width of the sidebar.                               | `number,string` | false    | 'auto'        |
 | `location`       | Sidebar position: 'left', 'right', 'top', 'bottom'. | `string`        | false    | 'left'        |
-| `title`          | Title displayed in the sidebar header.              | `string`        | false    | -             |
+| `title`          | Plain title for switcher store and default header.  | `string`        | false    | -             |
+| `titleNode`      | React only: custom header node (Vue `#title` slot). Falls back to `title`. | `ReactNode` | false | - |
 | `disabledExpand` | Disables the expand/collapse feature.               | `boolean`       | false    | false         |
 | `disabledHeader` | Hides the header section.                           | `boolean`       | false    | false         |
 | `disabledClose`  | Hides the close button.                             | `boolean`       | false    | false         |

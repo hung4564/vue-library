@@ -246,6 +246,7 @@ describe('init hooks', () => {
     const id = api().itemId.value;
     expect(useDragStore().container[CID].sideBar.left.items).toContain(id);
     expect(useDragStore().container[CID].sideBar.left.show).toBe(id);
+    expect(useDragStore().container[CID].actions[id]?.title).toBe('S');
     wrapper.unmount();
     expect(useDragStore().container[CID].sideBar.left.items).not.toContain(id);
   });

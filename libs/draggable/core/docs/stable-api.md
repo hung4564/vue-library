@@ -34,7 +34,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 | HOC | `WithMobileHandle` |
 | Hooks | `useInit*`, `useShow` / `useExpand` / `useHighlight`, `useSideBarContainer`, `useBottomContainer`, `useComponent`, `useContainerSize`, `useContainerOrder`, `useManagement`, `useIcon`, `withShow*` / `withExpand*` / `withShare*` helpers |
 | Store | Re-exports of Stable core store APIs after Vue `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
-| Props / events | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
+| Props / events | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, sidebar `titleNode` (React; Vue `#title` slot), `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
 | Package exports | `.`, `./style.css` |
 
 ## `@hungpvq/react-draggable`
@@ -104,7 +104,8 @@ Documented header slot / prop names are Stable (rename = **major**). Full layout
 | Vue | React | Notes |
 | --- | --- | --- |
 | `pre-title` | `preTitle` | Before title group |
-| `title` | `title` | Text or node (`ReactNode` \| `string`) |
+| `title` (prop) | `title` | Plain string (switcher store + default header on sidebar) |
+| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar`; falls back to `title` |
 | `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
 | `extra-btn` | `extraBtn` | Trailing actions after spacer |
 

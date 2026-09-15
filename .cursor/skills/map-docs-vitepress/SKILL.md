@@ -46,6 +46,18 @@ Prefer editing package-local markdown that the sites consume:
 Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys, a11y helpers).
 When adding a root export: update `public-api.spec.ts` + `stable-api.md` together (map and draggable).
 
+## Doc isolation (hard rule)
+
+**`map-dataset` docs and `draggable` docs must never cross-link.**
+
+| Do | Do not |
+|----|--------|
+| Describe the contract locally (slot names, `title` vs `titleNode`, shell owns Escape/focus) | Link `/map/draggable/*` from `libs/map-core/map-dataset/docs/**` |
+| Name peer packages in install lines (`@hungpvq/vue-draggable`, …) | Link `/map/dataset/*` from `libs/draggable/core/docs/**` |
+| Update both doc trees when a shared behavior changes (agents may edit both) | Relative paths like `../../../../draggable/core/docs/…` or `…/map-dataset/docs/…` |
+
+Same isolation applies to VitePress routes after `link-docs.js` (`/map/dataset/` ↔ `/map/draggable/`). Map-core / map-draw hubs may still link dataset or draw sections within the map site; they must not be used as a bridge to smuggle dataset↔draggable doc links.
+
 ## Writing guidelines
 
 - Document **control ids**, action types, and import paths consumers need.
@@ -54,6 +66,7 @@ When adding a root export: update `public-api.spec.ts` + `stable-api.md` togethe
 - Dual-framework features: mention Vue and React entry points / demos when both exist.
 - Prefer short examples over long tutorials; link demos for full apps.
 - Do not invent API that is not in the package entry.
+- **Never** add markdown/VitePress links between dataset docs and draggable docs (see Doc isolation).
 
 ## When changing API
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
-import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { LayerListItem, LayerListTreeNode } from '@hungpvq/map-dataset';
 import {
   LAYER_CONTROL_LOCALE,
   convertListToTree,
   listListViewGroups,
-  TreeItem,
 } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
@@ -36,7 +35,7 @@ const { mapId } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType } = useMapDataset(mapId.value);
-const views = ref<Array<IListViewUI>>([]);
+const views = ref<Array<LayerListItem>>([]);
 onMounted(() => {
   updateList();
 });
@@ -48,15 +47,15 @@ function updateList() {
 }
 
 const instance = getCurrentInstance();
-const treeLayer = ref<TreeItem[]>([]);
+const treeLayer = ref<LayerListTreeNode[]>([]);
 
 function updateTree() {
-  treeLayer.value = convertListToTree(views.value as any);
+  treeLayer.value = convertListToTree(views.value);
   instance?.proxy?.$forceUpdate();
 }
 function getViewFromStore() {
   views.value =
-    getAllComponentsByType<IListViewUI>('list').sort(
+    getAllComponentsByType<LayerListItem>('list').sort(
       (a, b) => b.index - a.index,
     ) || [];
 }

@@ -11,7 +11,7 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 ```
 
 - **pre-title** — left of the title group (e.g. back / drag handle host).
-- **title** — title text or custom title node.
+- **title** — plain string for switcher/store (`title` prop) and/or custom node (`#title` / `titleNode` on sidebar).
 - **after-title** — immediately to the **right** of the title (same title group), before the spacer.
 - **extra-btn** — trailing actions after the spacer (close / expand / custom buttons).
 
@@ -30,10 +30,11 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 
 ## Rules
 
-1. **`location: 'title'`** (map-dataset menus and similar hosts) maps to the **`after-title` / `afterTitle`** slot — **not** `extra-btn`.
+1. Hosts that place actions “in the title” (e.g. menu `location: 'title'`) must map those into the **`after-title` / `afterTitle`** slot — **not** `extra-btn`.
 2. React sidebar: use **`title`** (string) for the switcher store label; use **`titleNode`** for a custom header node (Vue `#title` slot). Other shells may still pass a display `title` node where noted.
-3. Do not place trailing chrome (close, expand, switcher) in `after-title`; those belong in `extra-btn` / built-in header actions.
-4. Not every shell exposes every slot (e.g. some omit `pre-title`). Names that *are* documented on a component remain Stable for that surface.
+3. When the visible header differs from the switcher label, set both a plain `title` string and a styled `#title` / `titleNode`.
+4. Do not place trailing chrome (close, expand, switcher) in `after-title`; those belong in `extra-btn` / built-in header actions.
+5. Not every shell exposes every slot (e.g. some omit `pre-title`). Names that *are* documented on a component remain Stable for that surface.
 
 ## Component docs
 

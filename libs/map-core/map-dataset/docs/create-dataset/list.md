@@ -60,6 +60,37 @@ List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **
 
 **Export** and **Attribute table** are **not** auto-added by the list builder. Add them yourself, or use [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) which attaches both. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
+## Types for custom list / drag UIs
+
+When building a custom layer list (or mirroring LayerControl drag/group), import types from `@hungpvq/map-dataset`:
+
+```ts
+import type {
+  IListViewUI,
+  LayerListItem,
+  LayerListTreeNode,
+  LayerListGroupTree,
+  ListViewGroupRef,
+} from '@hungpvq/map-dataset';
+import {
+  convertListToTree,
+  convertTreeToList,
+  mergeEmptyGroups,
+  isGroupNode,
+} from '@hungpvq/map-dataset';
+
+const rows: LayerListItem[] = /* … */;
+const tree: LayerListTreeNode[] = convertListToTree(rows);
+```
+
+| Type | Use |
+| --- | --- |
+| `IListViewUI` | Dataset list-part protocol (`group` may be `string \| { id, name, children? }`) |
+| `LayerListItem` | Flat drag-list row: `IListViewUI` ∩ tree `Item` with `group?: ListViewGroupRef` |
+| `LayerListTreeNode` / `LayerListGroupTree` | Tree nodes after `convertListToTree` |
+
+`IListViewUI.group` can be a bare string; `convertListToTree` expects object groups with `.id`. Prefer `setGroup({ id, name })` or normalize before converting.
+
 ## Sub-list and group list
 
 ```ts

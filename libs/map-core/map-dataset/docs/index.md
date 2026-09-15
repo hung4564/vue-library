@@ -219,6 +219,8 @@ Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Apps 
 
 Import builders, identify, menu protocol, create-control GIS APIs from `@hungpvq/map-dataset/...` — never from adapter `extra/` barrels. Do not reintroduce adapter `builder` / `model` / `services` re-exports of domain code.
 
+**Layer list drag types** (`LayerListItem`, `LayerListTreeNode`, `LayerListGroupTree`, `ListViewGroupRef`, `IListViewUI`, `IGroupListViewUI`) are Stable type exports on `@hungpvq/map-dataset` — see [List UI](./create-dataset/list.md) and [LayerControl](./module/LayerControl.md).
+
 ## Next
 
 - [GIS worker](./worker.md) — npm app vs Nx monorepo setup so parse + CRS stay off the main thread

@@ -81,9 +81,9 @@ import {
   createDefaultGroup,
   isGroupNode,
   mergeEmptyGroups,
-  type GroupTree,
-  type Item,
-  type TreeItem,
+  type LayerListGroupTree,
+  type LayerListItem,
+  type LayerListTreeNode,
 } from '@hungpvq/map-dataset';
 import { computed, nextTick, onMounted, ref } from 'vue';
 import draggable from 'vuedraggable';
@@ -102,8 +102,8 @@ const emit = defineEmits([
   'click-drag:done',
   'update:items',
 ]);
-const treeLayer = ref<TreeItem[]>([]);
-const currentSelectLayerObject = ref<Record<string, Item>>({});
+const treeLayer = ref<LayerListTreeNode[]>([]);
+const currentSelectLayerObject = ref<Record<string, LayerListItem>>({});
 const currentSelectId = computed({
   get() {
     return props.selected as string[];
@@ -112,7 +112,7 @@ const currentSelectId = computed({
     emit('update:selected', value);
   },
 });
-const isParent = (item: TreeItem | undefined) =>
+const isParent = (item: LayerListTreeNode | undefined) =>
   !!item && isGroupNode(item);
 
 const checkMove = (evt: any) => {
@@ -137,18 +137,18 @@ const checkMove = (evt: any) => {
   return true;
 };
 onMounted(() => {
-  update(props.items as Item[]);
+  update(props.items as LayerListItem[]);
 });
-function update(items: Item[] = []) {
+function update(items: LayerListItem[] = []) {
   if (items == null || items.length === 0) {
-    items = props.items as Item[];
+    items = props.items as LayerListItem[];
   }
   treeLayer.value = mergeEmptyGroups(
     convertListToTree(items),
     treeLayer.value,
   );
 }
-function toggleSelect(layer: Item) {
+function toggleSelect(layer: LayerListItem) {
   if (props.disabledSelect) return;
   if (currentSelectId.value.includes(layer.id)) {
     currentSelectId.value = currentSelectId.value.filter((x) => x != layer.id);
@@ -163,7 +163,7 @@ function getGroups() {
     .map((node) => ({ id: node.id, name: node.name }));
 }
 function addNewGroup(name: string) {
-  let children: Item[] = [];
+  let children: LayerListItem[] = [];
   if (currentSelectId.value && currentSelectId.value.length > 0) {
     treeLayer.value = treeLayer.value
       .filter((layerGroup) => !currentSelectId.value.includes(layerGroup.id))
@@ -185,13 +185,13 @@ function addNewGroup(name: string) {
   treeLayer.value.unshift(group);
   if (group.children.length > 0) onEnd();
 }
-function unGroup(group: GroupTree, groupIndex: number) {
+function unGroup(group: LayerListGroupTree, groupIndex: number) {
   treeLayer.value.splice(groupIndex, 1);
   if (group.children.length > 0) {
     treeLayer.value.splice(groupIndex, 0, ...group.children);
   }
 }
-function onUpdateGroup(newGroup: GroupTree, groupIndex: number) {
+function onUpdateGroup(newGroup: LayerListGroupTree, groupIndex: number) {
   treeLayer.value[groupIndex] = { ...treeLayer.value[groupIndex], ...newGroup };
 }
 function onEnd() {
@@ -200,7 +200,7 @@ function onEnd() {
     emit('click-drag:done');
   });
 }
-function deleteGroup(group: GroupTree, groupIndex: number) {
+function deleteGroup(group: LayerListGroupTree, groupIndex: number) {
   treeLayer.value.splice(groupIndex, 1);
   emit('click-group:remove', group);
 }

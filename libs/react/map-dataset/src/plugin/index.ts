@@ -16,12 +16,10 @@ import { AttributeTableToolbar } from '../modules/AttributeTable/AttributeTableT
 import { AttributeTableView } from '../modules/AttributeTable/AttributeTableView';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
-import {
-  LayerLegendLinearGradient,
-  LayerLegendSingleColor,
-  LayerLegendSingleText,
-  MultiLegend,
-} from '../modules/Legend';
+import { LayerLegendLinearGradient } from '../modules/Legend/parts/linear-gradient';
+import { LayerLegendSingleColor } from '../modules/Legend/parts/single-color';
+import { LayerLegendSingleText } from '../modules/Legend/parts/single-value';
+import { MultiLegend } from '../modules/Legend/MultiLegend';
 import { StyleControl } from '../modules/StyleControl/StyleControl';
 import { MultiStyle } from '../modules/StyleControl/style/MultiStyle';
 

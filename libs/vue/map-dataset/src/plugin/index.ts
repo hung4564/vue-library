@@ -17,12 +17,10 @@ import AttributeTableToolbar from '../modules/AttributeTable/AttributeTableToolb
 import AttributeTableView from '../modules/AttributeTable/AttributeTableView.vue';
 import DatasetDetail from '../modules/DatasetControl/DatasetDetail.vue';
 import LayerDetail from '../modules/LayerDetail/LayerDetail.vue';
-import {
-  LayerLegendLinearGradient,
-  LayerLegendSingleColor,
-  LayerLegendSingleText,
-  MultiLegend,
-} from '../modules/Legend';
+import LayerLegendLinearGradient from '../modules/Legend/parts/linear-gradient.vue';
+import LayerLegendSingleColor from '../modules/Legend/parts/single-color.vue';
+import LayerLegendSingleText from '../modules/Legend/parts/single-value.vue';
+import { MultiLegend } from '../modules/Legend/MultiLegend';
 import StyleControl from '../modules/StyleControl/style-control.vue';
 import MultiStyle from '../modules/StyleControl/style/multi-style.vue';
 

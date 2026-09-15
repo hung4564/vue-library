@@ -1,12 +1,25 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
-import { CREATE_CONTROL_LOCALE, LAYER_TYPES, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName, type LayerType } from '@hungpvq/map-dataset/create-control';
+import {
+  CREATE_CONTROL_LOCALE,
+  LAYER_TYPES,
+  LayerHelper,
+  loadCreateControlDraft,
+  reportCreateLayerError,
+  saveCreateControlDraft,
+  suggestLayerName,
+  type LayerType,
+} from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
-import { computed, onMounted, ref, watch, type Ref } from 'vue';
+import { computed, onMounted, ref, watch, type Component, type Ref } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
-import { LayerHelper } from './helper';
+import ConfigNo from './config/no-config.vue';
+import ConfigRasterJson from './config/xyz-json.vue';
+import ConfigRasterSettings from './config/xyz-settings.vue';
+import GeojsonSettings from './config/geojson-settings.vue';
+import GeojsonUpload from './config/geojson-upload.vue';
 
 defineOptions({
   name: 'CreateLayerControl',
@@ -62,6 +75,28 @@ const initialState = {
 
 const keyRender = ref(1);
 const helper = new LayerHelper(initialState.type);
+
+function dataSourceComponent(type: LayerType): Component {
+  switch (type) {
+    case 'vector':
+      return GeojsonUpload;
+    case 'rasterxyz':
+      return ConfigRasterJson;
+    default:
+      return ConfigNo;
+  }
+}
+
+function settingsComponent(type: LayerType): Component | undefined {
+  switch (type) {
+    case 'vector':
+      return GeojsonSettings;
+    case 'rasterxyz':
+      return ConfigRasterSettings;
+    default:
+      return undefined;
+  }
+}
 
 const form = ref({
   type: initialState.type,
@@ -223,12 +258,12 @@ onMounted(() => {
             </div>
 
             <component
-              :is="helper.dataSourceComponent()"
+              :is="dataSourceComponent(form.type)"
               v-model="form.config"
               :key="`${keyRender}-data`"
             />
 
-            <template v-if="helper.hasLayerSettings">
+            <template v-if="settingsComponent(form.type)">
               <div class="map-col-12">
                 <div class="create-control-section-label">
                   {{ trans('map.layer-control.create.layer-setting') }}
@@ -236,7 +271,7 @@ onMounted(() => {
               </div>
 
               <component
-                :is="helper.settingsComponent()"
+                :is="settingsComponent(form.type)"
                 v-model="form.config"
                 :key="`${keyRender}-settings`"
               />

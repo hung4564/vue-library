@@ -9,6 +9,7 @@ import type {
   WithToggleShow,
 } from '../../interfaces/dataset.extra';
 import type { ComponentType } from '../../types';
+import type { GroupTree, Item, TreeItem } from '../../utils/tree';
 
 export type IListViewUI = IDataset &
   WithToggleShow &
@@ -47,3 +48,15 @@ export type EventIListViewUI = {
   toggleShow: { show: boolean; dataset: IListViewUI };
   changeOpacity: { opacity: number; dataset: IListViewUI };
 };
+
+/** Normalized flat-list group reference (written by convertTreeToList / order helpers). */
+export type ListViewGroupRef = { id: string; name: string };
+
+/** Flat layer row for layer-control draggable lists. */
+export type LayerListItem = IListViewUI &
+  Item & {
+    group?: ListViewGroupRef;
+  };
+
+export type LayerListGroupTree = GroupTree<LayerListItem>;
+export type LayerListTreeNode = TreeItem<LayerListItem>;

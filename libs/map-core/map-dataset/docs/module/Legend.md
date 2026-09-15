@@ -2,6 +2,8 @@
 
 Attach a legend block to a list UI node. Components are registered by `installMapApp` (or `createDatasetRegistryPlugin`).
 
+Built-in legend UI lives in adapter **leaf** modules (`Legend/parts/*`, `Legend/MultiLegend`) — plugins import those paths directly (no `modules/Legend/index` barrel).
+
 **Events:** none (pure data + UI).
 
 ## `createLegend(type, value)`

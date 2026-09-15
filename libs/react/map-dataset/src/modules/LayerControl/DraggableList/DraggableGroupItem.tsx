@@ -9,7 +9,7 @@ import Icon from '@mdi/react';
 import { useEffect, useRef, useState } from 'react';
 import type Sortable from 'sortablejs';
 import { ListItem } from '../../List/ListItem';
-import type { GroupTree } from './types';
+import type { LayerListGroupTree } from '@hungpvq/map-dataset';
 
 const ICON_SIZE = '14px';
 
@@ -23,7 +23,7 @@ export function DraggableGroupItem({
   onDelete,
   onUngroup,
 }: {
-  layerGroup: GroupTree;
+  layerGroup: LayerListGroupTree;
   readonly?: boolean;
   disabledDrag?: boolean;
   children: React.ReactNode;

@@ -131,6 +131,13 @@ describe('SidebarContainer', () => {
     expect(
       document.getElementById(`sidebar-content-${CID}-left`)?.textContent,
     ).toContain('B body');
+    expect(
+      document.getElementById(`sidebar-title-${CID}-left`)?.textContent,
+    ).toContain('Beta');
+    expect(useDragStore().container[CID].actions['side-a']?.title).toBe(
+      'Alpha',
+    );
+    expect(useDragStore().container[CID].actions['side-b']?.title).toBe('Beta');
     wrapper.unmount();
   });
 });

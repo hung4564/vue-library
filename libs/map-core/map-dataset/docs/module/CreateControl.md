@@ -29,6 +29,16 @@ Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dat
 - If loaded file CRS differs from selected CRS, UI warns that data will be reprojected.
 - Multi-file upload accepts one GIS file, or one shapefile set (`.shp` + sidecars / `.zip`).
 
+## Implementation (adapters)
+
+Create / validate / defaults live on core **`LayerHelper`** from `@hungpvq/map-dataset/create-control`. Vue and React adapters only supply framework form UI (geojson upload, raster URL, settings) as **leaf modules** — there is no adapter `helper/` wrapper or `config/index` barrel.
+
+| | Import |
+| --- | --- |
+| Protocol | `LayerHelper`, `LAYER_TYPES`, parse/upload helpers from `@hungpvq/map-dataset/create-control` |
+| Vue forms | `CreateControl/config/*.vue` leaf SFCs |
+| React forms | `CreateControl/config/CreateConfigForm.tsx` (+ `createControlComponentKey`) |
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

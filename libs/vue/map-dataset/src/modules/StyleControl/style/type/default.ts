@@ -11,7 +11,9 @@ import InputArrayIndex from '../field/InputArrayIndex.vue';
 import InputArrayXY from '../field/InputArrayXY.vue';
 import InputImage from '../field/InputImage.vue';
 import InputMultiple from '../field/InputMultiple.vue';
-import { divColor, textAfter, textFormat } from '../label';
+import divColor from '../label/div-color.vue';
+import textAfter from '../label/text-after.vue';
+import textFormat from '../label/text-format.vue';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = buildConfigTabs({
   'array-index': {

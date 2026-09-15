@@ -2,6 +2,8 @@
 
 Read-only layer list (no create / delete / move). Same list data as `LayerControl`.
 
+Uses `DraggableItemFloat` with locale key **`map.layer-info-control.title`** (Vue `:title` + `#title`, React `title={trans(...)}`). Do not reuse `map.layer-control.title`.
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

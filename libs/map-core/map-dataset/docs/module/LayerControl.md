@@ -19,6 +19,32 @@ Editable layer list: create, group, reorder, delete, run menus.
 
 **Events:** none. Visibility / opacity fire on the list node (`toggleShow`, `changeOpacity`) — see [Events](../create-dataset/with-helper-event.md). Dialogs from ⋮ menus need [`ComponentManagementControl`](./ComponentManagementControl.md). Create-layer uses [`CreateControl`](./CreateControl.md) internally.
 
+### Sidebar header (Vue ↔ React)
+
+`LayerControl` mounts a sidebar panel. Pass a **plain `title` string** for the panel switcher menu; use Vue `#title` / React `titleNode` only for styled header text. Header layout: `[ title | after-title ] …… [ extra-btn ]` — menus with `location: 'title'` render in **`after-title` / `afterTitle`**, not trailing chrome.
+
+| | Vue | React |
+| --- | --- | --- |
+| Store / switcher | `:title="trans('map.layer-control.title')"` | `title={trans('map.layer-control.title')}` |
+| Styled header | `#title` slot | `titleNode={<span className="…">…</span>}` |
+| Menus in header | `#after-title` | `afterTitle` |
+
+Do **not** pass a ReactNode as React `title` — the switcher store coerces non-strings to `''` and blank menu labels appear.
+
+### Layer list types (custom UIs)
+
+Flat rows and drag trees use shared types from `@hungpvq/map-dataset` (not adapter-local aliases):
+
+| Type | Role |
+| --- | --- |
+| `IListViewUI` | List protocol on a dataset part |
+| `LayerListItem` | Flat row for LayerControl drag list (`IListViewUI` + tree `Item`, group narrowed to `{ id, name }`) |
+| `LayerListTreeNode` | `TreeItem<LayerListItem>` |
+| `LayerListGroupTree` | `GroupTree<LayerListItem>` |
+| `ListViewGroupRef` | Normalized `{ id, name }` group on a flat row |
+
+Use `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` with `LayerListItem[]`. See [List UI](../create-dataset/list.md).
+
 When [`MapContextMenuControl`](/map/core/module/MapContextMenuControl) is on the same map, Quick analysis includes **Buffer 500 m here**, **Buffer 1 km here**, and **Buffer 5 km here**. Clicking one adds a GeoJSON circle layer (with a **Fill bound** extra button).
 
 ## Slots / render props

@@ -67,6 +67,21 @@ In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including datas
 
 App/demos that mirror library UI should follow the same rule when building map chrome.
 
+## Draggable header titles
+
+When a map control mounts `DraggableItemSideBar` / popup / float:
+
+- **Sidebar:** always pass plain `title` (string) for the switcher store label. Use Vue `#title` / React `titleNode` only when the visible header differs from that string (styled node, dynamic chrome). Examples: LayerControl, StyleControl.
+- **Popup / float:** `title` is string-only on both adapters; put menus/actions in `after-title` / `afterTitle` (`location: 'title'` maps there). Document the mapping in each package’s own docs — **never** cross-link dataset ↔ draggable docs (`map-docs-vitepress` Doc isolation).
+- **Do not** pass a ReactNode as React sidebar `title` — that blanks the switcher menu (store coerces non-strings to `''`).
+- CreateControl / DatasetControl / WorkerControl with plain text need only `title={trans(...)}` (no `titleNode`).
+
+## Adapter wrappers (avoid)
+
+- **CreateControl SoT:** core `LayerHelper` from `@hungpvq/map-dataset/create-control` + framework leaf config forms. **No** adapter `helper/` thin wrapper; **no** `config/index` barrel — import leaf files.
+- **Legend / style label:** register or import from leaf paths (`./parts/*`, `./MultiLegend`, `./div-color.vue`); avoid `modules/Legend/index.*` re-export hops.
+- Domain protocol stays on `@hungpvq/map-dataset/<domain>`; adapter `extra/` is framework menu-action UI only.
+
 ## Naming / structure cues
 
 - Vue: SFC under `modules/`, Composition API hooks

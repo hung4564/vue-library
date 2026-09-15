@@ -93,11 +93,12 @@ watch(show, () => control.sync());
       <DraggableItemFloat
         v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
+        :title="trans('map.layer-info-control.title')"
         headerLocation="bottom"
       >
         <template #title>
           <span class="layer-control__title">
-            {{ trans('map.layer-control.title') }}
+            {{ trans('map.layer-info-control.title') }}
           </span>
         </template>
         <div class="layer-control">

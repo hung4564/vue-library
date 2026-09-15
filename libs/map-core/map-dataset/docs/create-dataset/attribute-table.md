@@ -188,7 +188,7 @@ Demo `/#/dataset-attribute-table`: registry overrides, `addComponent` (+ columns
 
 ## Accessibility
 
-Panel chrome (dialog role, Escape, focus trap/restore, titled close) is owned by the **draggable** popup shell — see [`libs/draggable/core/docs/a11y.md`](../../../../draggable/core/docs/a11y.md). AttributeTable only owns the **content** contract below.
+Panel chrome (dialog role, Escape, focus trap/restore, titled close) is owned by the **popup shell**. AttributeTable only owns the **content** contract below.
 
 ### Roles and live regions
 

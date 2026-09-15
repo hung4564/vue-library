@@ -5,7 +5,7 @@ List UI and identify nodes expose actions in five places. Build items with `crea
 | `location` | Where it renders |
 | --- | --- |
 | `extra` | Icon buttons on the layer title row |
-| `title` | Draggable panel header **`after-title` / `afterTitle`** slot (immediately after the title text — **not** `extra-btn`). See [`header-slots.md`](../../../../draggable/core/docs/header-slots.md) |
+| `title` | Panel header **`after-title` / `afterTitle`** slot (immediately after the title text — **not** trailing `extra-btn` chrome) |
 | `prebottom` | Left of the bottom row (opacity lives here by default) |
 | `bottom` | Right of the bottom row |
 | `menu` | Context menu (⋮) on the same row |

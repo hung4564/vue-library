@@ -81,7 +81,7 @@ Documented header slot / prop names are **Stable** (rename = **major**). Source 
 | `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
 | `extra-btn` | `extraBtn` | Trailing actions after spacer |
 
-When proposing a header-slot change, remind to update `header-slots.md`, `stable-api.md`, and the affected `draggable-*.md` Slots tables (and map-dataset menu docs if `location: 'title'` is involved).
+When proposing a header-slot change, remind to update `header-slots.md`, `stable-api.md`, and the affected `draggable-*.md` Slots tables (and map-dataset menu docs if `location: 'title'` is involved — **edit both trees, do not cross-link**; see `map-docs-vitepress` Doc isolation). Explicitly list **`titleNode`** when touching `DraggableItemSideBar` props (Stable; rename = **major**).
 
 Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
 

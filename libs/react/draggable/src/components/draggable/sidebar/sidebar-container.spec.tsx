@@ -118,6 +118,97 @@ describe('SidebarContainer', () => {
       expect(
         document.getElementById(`sidebar-content-${CID}-left`)?.textContent,
       ).toContain('B body');
+      expect(
+        document.getElementById(`sidebar-title-${CID}-left`)?.textContent,
+      ).toContain('Beta');
+    });
+    unmount();
+  });
+
+  it('stores sidebar titles for switcher and portal header', async () => {
+    getDragContainer(CID).initContainer();
+    getDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const { unmount } = render(
+      <ContainerProvider containerId={CID}>
+        <SidebarContainer location="left" />
+        <DraggableItemSideBar
+          id="side-a"
+          show
+          title="Alpha"
+          location="left"
+          containerId={CID}
+        >
+          <p>A body</p>
+        </DraggableItemSideBar>
+        <DraggableItemSideBar
+          id="side-b"
+          show={false}
+          title="Beta"
+          location="left"
+          containerId={CID}
+        >
+          <p>B body</p>
+        </DraggableItemSideBar>
+      </ContainerProvider>,
+    );
+
+    await waitFor(() => {
+      const store = getDragStore().container[CID];
+      expect(store.actions['side-a']?.title).toBe('Alpha');
+      expect(store.actions['side-b']?.title).toBe('Beta');
+      expect(store.sideBar.left.items).toEqual(
+        expect.arrayContaining(['side-a', 'side-b']),
+      );
+      expect(
+        document.getElementById(`sidebar-title-${CID}-left`)?.textContent,
+      ).toContain('Alpha');
+    });
+
+    act(() => {
+      useSidebarItem(CID).registerSideBarShow('side-b', true);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.getElementById(`sidebar-title-${CID}-left`)?.textContent,
+      ).toContain('Beta');
+    });
+    unmount();
+  });
+
+  it('registers a single sidebar without a peer for switching', async () => {
+    getDragContainer(CID).initContainer();
+    getDragContainer(CID).setParentProps({
+      width: 800,
+      height: 600,
+      isMobile: false,
+    });
+    const { unmount } = render(
+      <ContainerProvider containerId={CID}>
+        <SidebarContainer location="left" />
+        <DraggableItemSideBar
+          id="side-only"
+          show
+          title="Solo"
+          location="left"
+          containerId={CID}
+        >
+          <p>Only</p>
+        </DraggableItemSideBar>
+      </ContainerProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getDragStore().container[CID].sideBar.left.items).toEqual([
+        'side-only',
+      ]);
+      expect(
+        getDragStore().container[CID].actions['side-only']?.title,
+      ).toBe('Solo');
     });
     unmount();
   });

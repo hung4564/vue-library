@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, IGroupListViewUI, IListViewUI, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
@@ -75,7 +75,7 @@ const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
-const views = ref<Array<IListViewUI>>([]);
+const views = ref<Array<LayerListItem>>([]);
 const layerSearch = ref('');
 const debouncedSearch = ref('');
 let searchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -114,7 +114,7 @@ onUnmounted(() => {
 const groupRef = ref<InstanceType<typeof DraggableGroupList> | undefined>(
   undefined,
 );
-const layers_select = ref<IListViewUI[]>([]);
+const layers_select = ref<LayerListItem[]>([]);
 function updateLayers() {
   callMap((map: MapSimple) => {
     let beforeId: string = '';
@@ -136,16 +136,11 @@ function updateLayers() {
     });
   });
 }
-function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
-  if (
-    !group ||
-    typeof group === 'string' ||
-    !group.children ||
-    group.children.length === 0
-  ) {
+function onRemoveGroupLayer(group: LayerListGroupTree) {
+  if (!group || !group.children || group.children.length === 0) {
     return;
   }
-  group.children.forEach((view: IListViewUI) => {
+  group.children.forEach((view: LayerListItem) => {
     removeComponent(view);
   });
 }
@@ -161,10 +156,10 @@ function updateList() {
   });
 }
 function updateTree() {
-  if (groupRef.value) groupRef.value.update(filteredViews.value as any);
+  if (groupRef.value) groupRef.value.update(filteredViews.value);
 }
 function getViewFromStore() {
-  const viewSource = getAllComponentsByType<IListViewUI>('list');
+  const viewSource = getAllComponentsByType<LayerListItem>('list');
   views.value = viewSource.sort((a, b) => b.index - a.index) || [];
 }
 function addNewGroup() {

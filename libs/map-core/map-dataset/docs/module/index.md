@@ -16,6 +16,7 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 
 - [GIS worker](../worker.md) — Vite / Nx config for parse + CRS off the main thread
 - [Legend](./Legend.md) — `createLegend` / `createMultiLegend`
+- [List UI types](../create-dataset/list.md#types-for-custom-list--drag-uis) — `LayerListItem` / tree helpers for custom LayerControl-like UIs
 - [LayerSimpleMapboxBuild](./LayerSimpleMapboxBuild.md)
 - [useMapDataset](../helper/useMapDataset.md)
 - [Create dataset](../create-dataset/)

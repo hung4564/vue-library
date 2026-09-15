@@ -219,7 +219,14 @@ export type {
   IdentifyMultiResult,
   IIdentifyView,
 } from './interfaces/dataset.parts';
-export type { IListViewUI } from './model/list/types';
+export type {
+  IGroupListViewUI,
+  IListViewUI,
+  LayerListGroupTree,
+  LayerListItem,
+  LayerListTreeNode,
+  ListViewGroupRef,
+} from './model/list/types';
 export type { FieldFeaturesDef } from './extra/field';
 export type { ComponentType } from './types';
 export type { DatasetSourceKind } from './utils/source-kind';

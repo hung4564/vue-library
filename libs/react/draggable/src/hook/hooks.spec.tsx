@@ -188,6 +188,9 @@ describe('useInitSidebar / useInitDrawer / useInitAction', () => {
     expect(useDragStore().container[CID].sideBar.left.show).toBe(
       'stable-react-sidebar',
     );
+    expect(
+      useDragStore().container[CID].actions['stable-react-sidebar']?.title,
+    ).toBe('S');
     unmount();
     expect(useDragStore().container[CID].sideBar.left.items).not.toContain(
       'stable-react-sidebar',

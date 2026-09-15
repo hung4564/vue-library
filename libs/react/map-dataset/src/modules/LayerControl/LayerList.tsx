@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { IListViewUI, LayerListGroupTree, LayerListItem } from '@hungpvq/map-dataset';
 import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
@@ -13,7 +13,6 @@ import {
   DraggableGroupList,
   type DraggableGroupListRef,
 } from './DraggableList/DraggableGroupList';
-import type { GroupTree, LayerListItem } from './DraggableList/types';
 import { LayerItem } from './layer-item';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 const HEADER_ICON = '16px';
@@ -94,7 +93,7 @@ export function LayerList({
     setViews(next);
     updateLayers(next);
   }
-  function onRemoveGroupLayer(group: GroupTree) {
+  function onRemoveGroupLayer(group: LayerListGroupTree) {
     if (!group?.children?.length) return;
     group.children.forEach((view) => removeComponent(view));
   }

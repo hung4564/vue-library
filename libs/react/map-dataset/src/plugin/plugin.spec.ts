@@ -32,7 +32,11 @@ describe('createDatasetRegistryPlugin', () => {
   it('registers dataset UI components on UniversalRegistry', () => {
     createDatasetRegistryPlugin().install();
     for (const key of REGISTERED_KEYS) {
-      expect(UniversalRegistry.getComponent(key), key).toBeTruthy();
+      const comp = UniversalRegistry.getComponent(key);
+      expect(comp, key).toBeTruthy();
+      expect(typeof comp === 'function' || typeof comp === 'object', key).toBe(
+        true,
+      );
     }
   });
 });

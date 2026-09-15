@@ -51,6 +51,10 @@ Registering only during the parent’s first render can disappear after StrictMo
 
 `registerComponent` (global) is not cleared by `removeMap`.
 
+## Dataset plugin helper
+
+Framework plugins call `registerDatasetRegistryComponents` from `@hungpvq/map-dataset/menu` with `UniversalRegistry.registerComponent` and a map of slots (`legendLinear`, `toggleShow`, `attributeTable`, … → `LIST_VIEW_MENU_COMPONENT_KEY`). The helper is generic (`NoInfer`) so heterogeneous Vue/React components type-check against the registry. Prefer `installMapApp` / `createDatasetRegistryPlugin()` over calling it by hand unless you are building a custom subset.
+
 ## Related
 
 - Layer menus / `componentKey`: [Menus](/map/dataset/create-dataset/with-helper-menu)
