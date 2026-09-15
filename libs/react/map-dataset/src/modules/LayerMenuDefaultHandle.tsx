@@ -9,18 +9,16 @@ import {
   useMap,
 } from '@hungpvq/react-map-core';
 import { useLayoutEffect, useRef } from 'react';
-import {
-  notifyMapDatasetStore,
-  useMapDataset,
-  useMapDatasetComponent,
-  useHighlight,
-} from '../store';
+import { useMapDataset } from '../store/dataset-api';
+import { notifyMapDatasetStore } from '../store/dataset-store';
+import { useMapDatasetComponent } from '../store/component';
+import { useMapHighlight } from '../store/highlight';
 
 export function LayerMenuDefaultHandle(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, callMap } = useMap(merged);
   const { addComponent } = useMapDatasetComponent(mapId);
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
   const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId);
 
   const addComponentRef = useRef(addComponent);

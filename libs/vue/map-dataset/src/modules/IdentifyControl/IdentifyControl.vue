@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
   EventBboxRangerHandle,
@@ -15,8 +15,20 @@ import {
   MAP_CONTEXT_MENU_ID,
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
-import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
-import { clearIdentifyScope, handleMultiIdentify, IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, identifyResolver, type IdentifyLayerFilterPayload, type IdentifyResultUpdatePayload, type IdentifyScopeToggleResult } from '@hungpvq/map-dataset/identify';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  buildIdentifyResultPanelBase,
+  clearIdentifyScope,
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_CONTROL_LOCALE,
+  IDENTIFY_RESULT_CONTROL,
+  resolveIdentifyLayerFilterId,
+  runIdentifyMulti,
+  type IdentifyLayerFilterPayload,
+  type IdentifyResultUpdatePayload,
+  type IdentifyScopeToggleResult,
+} from '@hungpvq/map-dataset/identify';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   defaultMapProps,
@@ -33,9 +45,8 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { loggerIdentify } from '../../logger';
-import { useMapDataset } from '../../store';
-import { useHighlight } from '../../store/highlight';
+import { useMapDataset } from '../../store/dataset-api';
+import { useMapHighlight } from '../../store/highlight';
 import IdentifyResultControl from './IdentifyResultControl.vue';
 
 const path = {
@@ -57,7 +68,7 @@ const props = withDefaults(
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
-const hl = useHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 
@@ -75,11 +86,6 @@ function refreshViews() {
 }
 watch(getDatasetIds(), refreshViews, { deep: true, immediate: true });
 
-const cUsedIdentify = computed(() => {
-  const id = filterIdentifyId.value;
-  if (!id) return views.value;
-  return views.value.filter((view) => view.id === id);
-});
 const hasViews = computed(() => views.value.length > 0);
 watch(hasViews, () => {
   control.sync();
@@ -109,27 +115,17 @@ function updateResultPanel(payload: IdentifyResultUpdatePayload) {
   );
 }
 
-function buildLayerItems() {
-  return [
-    {
-      value: IDENTIFY_ALL_LAYERS_VALUE,
-      text: trans.value('map.identify.all_layers'),
-    },
-    ...views.value.map((view) => ({
-      value: view.id,
-      text: view.getName?.() || view.id,
-    })),
-  ];
-}
-
 function syncResultPanel(extra?: IdentifyResultUpdatePayload) {
   updateResultPanel({
-    loading: loading.value,
-    origin: { ...origin },
-    layerItems: buildLayerItems(),
-    selectedLayerId: filterIdentifyId.value ?? IDENTIFY_ALL_LAYERS_VALUE,
-    isEventClickActive: isEventClickActive.value,
-    isEventClickBox: isEventClickBox.value,
+    ...buildIdentifyResultPanelBase({
+      loading: loading.value,
+      origin: { ...origin },
+      views: views.value,
+      allLayersText: trans.value('map.identify.all_layers'),
+      selectedLayerId: filterIdentifyId.value,
+      isEventClickActive: isEventClickActive.value,
+      isEventClickBox: isEventClickBox.value,
+    }),
     ...extra,
   });
 }
@@ -226,10 +222,7 @@ function applyScopedSession(result?: IdentifyScopeToggleResult) {
 }
 
 function onLayerFilterChange(identifyId: string) {
-  const id =
-    !identifyId || identifyId === IDENTIFY_ALL_LAYERS_VALUE
-      ? undefined
-      : identifyId;
+  const id = resolveIdentifyLayerFilterId(identifyId);
   filterIdentifyId.value = id;
   syncResultPanel({
     selectedLayerId: id ?? IDENTIFY_ALL_LAYERS_VALUE,
@@ -259,10 +252,6 @@ function runIdentifyAt(
 
 function onMapClick(e: MapMouseEvent) {
   if (isEventClickBox.value) return;
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onMapClick',
-    { event: e },
-  );
   runIdentifyAt(e.lngLat.lng, e.lngLat.lat, e.point, e);
 }
 
@@ -280,39 +269,11 @@ function onIdentifyHere(menuProps: MapMenuItemProps) {
 
 function onBboxSelect(bbox: Parameters<EventBboxRangerHandle>[0]) {
   if (isEventClickActive.value) return;
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onBboxSelect',
-    bbox,
-  );
   onRemoveBox();
   if (!bbox) return;
   const bounds = new LngLatBounds([bbox[0].x, bbox[0].y, bbox[1].x, bbox[1].y]);
   show.value = true;
   onGetFeatures(bounds);
-}
-
-function onSelectFeatures(
-  event?: MapMouseEvent,
-  features: IdentifyMultiResult[] = [],
-) {
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onSelectFeatures',
-    features,
-  );
-  identifyResolver
-    .execute({
-      records: features,
-      mapId: mapId.value,
-      event,
-      singleLayer: !!filterIdentifyId.value,
-      preferResultControl: !!props.preferResultControl,
-    })
-    .then((res) =>
-      logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-        'onSelectFeaturesResult',
-        res,
-      ),
-    );
 }
 
 async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
@@ -323,7 +284,6 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
     pointOrBox = e as unknown as [PointLike, PointLike];
   }
 
-  const loadStartedAt = performance.now();
   loading.value = true;
   control.sync();
   callMap((map) => {
@@ -331,37 +291,15 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
   });
   // Keep panel spinner in sync if result panel is already open.
   syncResultPanel({ loading: true });
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').info(
-    'loading:start',
-    { pointOrBox },
-  );
-  let featureCount = 0;
-  let hitCount = 0;
   try {
-    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-      'onGetFeatures',
-      { pointOrBox, identifies: cUsedIdentify.value },
-    );
-    const features = await handleMultiIdentify(
-      cUsedIdentify.value,
-      mapId.value,
+    await runIdentifyMulti({
+      identifies: views.value,
+      mapId: mapId.value,
       pointOrBox,
-    );
-    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-      'onGetFeatures',
-      { features },
-    );
-    const nonEmpty = features.filter(
-      (item): item is IdentifyMultiResult =>
-        'features' in item && item.features.length > 0,
-    );
-    hitCount = nonEmpty.length;
-    featureCount = nonEmpty.reduce(
-      (sum, item) => sum + (item.features?.length ?? 0),
-      0,
-    );
-    // Always run resolver so empty clears prior result-panel items.
-    onSelectFeatures('point' in e ? e : undefined, nonEmpty);
+      event: 'point' in e ? e : undefined,
+      filterIdentifyId: filterIdentifyId.value,
+      preferResultControl: !!props.preferResultControl,
+    });
   } finally {
     loading.value = false;
     control.sync();
@@ -369,15 +307,6 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
       map.getCanvas().style.cursor = '';
     });
     syncResultPanel({ loading: false });
-    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').info(
-      'loading:done',
-      {
-        durationMs: Math.round(performance.now() - loadStartedAt),
-        hitCount,
-        featureCount,
-        empty: featureCount === 0,
-      },
-    );
   }
 }
 

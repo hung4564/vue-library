@@ -1,9 +1,10 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
-import type { IDataset, IMapboxLayerView } from '../interfaces';
-import { runAllComponentsWithCheck } from '../model/visitors';
-import { convertFeatureToItem, convertItemToFeature } from '../utils';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IMapboxLayerView } from '../interfaces/dataset.parts';
+import { runAllComponentsWithCheck } from '../model/visitors/helpers';
+import { convertFeatureToItem, convertItemToFeature } from '../utils/convert';
 import { isMapboxLayerView } from '../utils/check';
 import { DEFAULT_HIGHLIGHT_POINTER, findHighlightPart } from './cascade';
 import type { IHighlightPart } from './part';

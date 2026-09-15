@@ -2,12 +2,13 @@ import { getMap } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { Feature } from 'geojson';
 import { Popup, type MapMouseEvent, type PointLike } from 'maplibre-gl';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { loggerHighlight } from '../logger';
 import { handleMenuAction, LIST_VIEW_MENU_ID } from '../menu';
-import { findSiblingOrNearestLeaf } from '../model';
-import { convertFeatureToItem, isListView } from '../utils';
-import type { IListViewUI } from '../model/list';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
+import { convertFeatureToItem } from '../utils/convert';
+import { isListView } from '../utils/check';
+import type { IListViewUI } from '../model/list/types';
 import {
   DEFAULT_HIGHLIGHT_DATA,
   DEFAULT_HIGHLIGHT_PRESENTATION,
@@ -250,6 +251,8 @@ function createController(mapId: string): HighlightController {
       return;
     }
 
+    const source = options?.source;
+
     let geojson: HighlightGeoJson | null = null;
     try {
       geojson = await resolveHighlightData(resolved.data, {
@@ -257,7 +260,7 @@ function createController(mapId: string): HighlightController {
         map,
         dataset: options?.dataset,
         input,
-        source: options?.source,
+        source,
         signal: abort.signal,
       });
     } catch (err) {
@@ -275,7 +278,7 @@ function createController(mapId: string): HighlightController {
       id,
       feature: geojson,
       dataset: options?.dataset,
-      source: options?.source,
+      source,
       style: resolved.style,
       data: resolved.data,
       pointerLngLat: options?.pointerLngLat,
@@ -289,8 +292,8 @@ function createController(mapId: string): HighlightController {
 
     if (policy === 'single') {
       const kept =
-        replaceScope === 'source' && options?.source
-          ? state.entries.filter((e) => e.source !== options.source)
+        replaceScope === 'source' && source
+          ? state.entries.filter((e) => e.source !== source)
           : [];
       for (const prev of state.entries) {
         if (kept.includes(prev)) continue;
@@ -314,7 +317,7 @@ function createController(mapId: string): HighlightController {
     notify(state);
 
     if (
-      (options?.source === 'pointer' || options?.source === 'highlight') &&
+      source === 'pointer' &&
       resolved.presentation.clickAction === 'detail' &&
       entry.feature
     ) {
@@ -387,7 +390,6 @@ function createController(mapId: string): HighlightController {
       if (options?.source === 'hover') hideIfSource('hover');
       else if (options?.source === 'pointer') {
         hideIfSource('pointer');
-        hideIfSource('highlight');
       }
       return false;
     }

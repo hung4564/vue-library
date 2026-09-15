@@ -7,6 +7,7 @@ import * as api from './index';
 export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'brightColor',
   'buildInspectQueryBox',
+  'createDefaultMapDrawStore',
   'DRAW_CONTROL_LOCALE',
   'DRAW_MODES',
   'DrawError',
@@ -28,11 +29,17 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'MapDraw',
   'markInspectStyle',
   'renderPopup',
+  'runDrawCommit',
+  'runDrawDiscard',
+  'runDrawSave',
+  'runDrawSetFeature',
+  'runDrawStart',
   'sameFeature',
   'StaticMode',
 ] as const;
 
-export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
+/** Root logger namespace — may change in a minor. */
+export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = ['logger'] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

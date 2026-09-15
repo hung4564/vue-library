@@ -25,8 +25,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { Feature, FeatureCollection } from 'geojson';
 import { computed, nextTick, ref, watch } from 'vue';
-import { DRAW_CONTROL_LOCALE } from '../../locale';
-import { isDraftOption } from '../../store';
+import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';

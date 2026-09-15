@@ -3,7 +3,7 @@
  */
 
 import type { BaseMapItem } from './types';
-import { BaseMapAdapter } from './adapter';
+import { BaseMapAdapter } from './adapter/BaseMapAdapter';
 import { BasemapError } from './errors';
 import { errorHandler } from '../services/error-handler.service';
 

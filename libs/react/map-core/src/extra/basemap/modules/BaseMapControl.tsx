@@ -9,19 +9,17 @@ import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiLayersOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  MapCard,
-  MapControlButton,
-  MapIcon,
-  MapImage,
-} from '../../../components';
+import { MapCard } from '../../../components/MapCard';
+import { MapControlButton } from '../../../components/MapControlButton';
+import { MapIcon } from '../../../components/MapIcon';
+import { MapImage } from '../../../components/MapImage';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
+import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
-import { useBaseMap } from '../hooks';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 
 const SIZE_BASE_MAP = 70;

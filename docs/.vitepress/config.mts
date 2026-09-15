@@ -1,5 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+// unocss lives in root devDependencies (docs has no package.json; uses workspace node_modules).
 import UnoCSS from 'unocss/vite';
 import { defineConfig, type DefaultTheme, type UserConfig } from 'vitepress';
 

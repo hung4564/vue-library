@@ -1,5 +1,5 @@
-import type { IDataset } from '../interfaces';
-import type { MenuAction } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction } from '../interfaces/dataset.parts';
 import type {
   MenuCondition,
   MenuConditionContext,

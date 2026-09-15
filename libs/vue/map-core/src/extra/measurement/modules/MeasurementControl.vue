@@ -59,13 +59,13 @@ import {
 
 import { MapCommonButton, MapControlGroupButton } from '../../../components';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs';
-import { useEventMap } from '../../event';
-import { useMapImage } from '../../image';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl, type ToolbarButtonConfig } from '../../toolbar';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/hooks/useMapCrsItems';
+import { useEventMap } from '../../event/hook/useEvent';
+import { useMapImage } from '../../image/store';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl, type ToolbarButtonConfig } from '../../toolbar/helper';
 
 import {
   mdiClose,

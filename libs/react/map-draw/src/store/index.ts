@@ -1,8 +1,13 @@
 import { logHelper } from '@hungpvq/map-core';
 import {
-  DrawService,
-  isDraftOption,
+  createDefaultMapDrawStore,
+  logger,
   MAP_DRAW_EVENT,
+  runDrawCommit,
+  runDrawDiscard,
+  runDrawSave,
+  runDrawSetFeature,
+  runDrawStart,
   type IDraftRecord,
   type MapDrawEvent,
   type MapDrawOption,
@@ -11,7 +16,6 @@ import {
 import { createMapScopedStore, getMapMittStore } from '@hungpvq/react-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useEffect, useRef } from 'react';
-import { logger } from '../logger';
 
 const KEY = 'draw' as const;
 
@@ -21,13 +25,7 @@ export function useMapDrawStore(mapId: string) {
     KEY as string & object,
     () => {
       logHelper(logger, mapId, 'store').debug('init');
-      return {
-        state: {
-          featuresAdded: {},
-          featuresDeleted: {},
-          featuresUpdated: {},
-        },
-      };
+      return createDefaultMapDrawStore();
     },
   );
 }
@@ -35,21 +33,10 @@ export function useMapDrawStore(mapId: string) {
 /** Non-hook alias for resolving the store outside React render (e.g. start()). */
 export const getMapDrawStore = useMapDrawStore;
 
-/** Thin Stable re-export — SoT is `@hungpvq/map-draw`. */
-export { isDraftOption };
-
 export function useMapDraw(mapId: string) {
   return {
-    /**
-     * Resolve store/mitt by mapId on each call so React Strict Mode
-     * (removeMap then remount) cannot leave start() pointing at orphaned refs.
-     */
     start(config: MapDrawOption) {
-      const store = getMapDrawStore(mapId);
-      const emit = getMapMittStore<MapDrawEvent>(mapId);
-      store.config = config;
-      logHelper(logger, mapId, 'useMapDraw').debug('start', { config });
-      emit.emit(MAP_DRAW_EVENT.START, config);
+      runDrawStart(getMapDrawStore(mapId), getMapMittStore(mapId), config, mapId);
     },
   };
 }
@@ -81,33 +68,13 @@ export function useConfigDrawControl(mapId: string, config?: ConfigHandlers) {
     };
   }, [mapId, emit, store]);
 
-  function setFeature(type: 'added' | 'updated' | 'deleted', feature: Feature) {
-    DrawService.setFeature(store, type, feature, mapId);
-  }
-
-  function save(collection: FeatureCollection, context?: { mapId: string }) {
-    return DrawService.saveDraw(
-      store,
-      collection,
-      mapId,
-      store.config?.callback,
-      context,
-    );
-  }
-
-  async function commit() {
-    const action = store.config;
-    if (!isDraftOption(action)) return;
-    await action.commit();
-    configRef.current?.onCommit?.();
-  }
-
-  async function discard(item?: IDraftRecord) {
-    const action = store.config;
-    if (!isDraftOption(action)) return;
-    await action.discard(item);
-    configRef.current?.onDiscard?.();
-  }
-
-  return { setFeature, save, commit, discard };
+  return {
+    setFeature: (type: 'added' | 'updated' | 'deleted', feature: Feature) =>
+      runDrawSetFeature(store, type, feature, mapId),
+    save: (collection: FeatureCollection, context?: { mapId: string }) =>
+      runDrawSave(store, collection, mapId, context),
+    commit: () => runDrawCommit(store, configRef.current?.onCommit),
+    discard: (item?: IDraftRecord) =>
+      runDrawDiscard(store, item, configRef.current?.onDiscard),
+  };
 }

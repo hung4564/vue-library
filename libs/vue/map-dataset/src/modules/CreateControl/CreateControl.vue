@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
-import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_LOCALE, LAYER_TYPES, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName, type LayerType } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { computed, onMounted, ref, watch, type Ref } from 'vue';
-import { useMapDataset } from '../../store';
-import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
+import { useMapDataset } from '../../store/dataset-api';
+import { LayerHelper } from './helper';
 
 defineOptions({
   name: 'CreateLayerControl',

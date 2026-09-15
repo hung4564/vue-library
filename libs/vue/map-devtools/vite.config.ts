@@ -37,6 +37,7 @@ export default defineConfig({
       external: [
         'vue',
         '@hungpvq/map-core',
+        '@hungpvq/map-core/devtools',
         '@hungpvq/vue-map-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-store',

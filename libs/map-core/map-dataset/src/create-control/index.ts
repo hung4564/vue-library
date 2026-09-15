@@ -20,10 +20,7 @@ export {
   createLayerFormHelper,
 } from './form-create';
 export type { LayerFormHelper, LayerType, RasterCreateForm } from './form-create';
-export {
-  isCreateControlCrsMismatch,
-  normalizeCrsCode,
-} from './crs';
+export { isCreateControlCrsMismatch } from './crs';
 export { reportCreateLayerError } from './create-error';
 export type { CreateLayerErrorContext } from './create-error';
 export {
@@ -84,3 +81,25 @@ export {
   loadGisTextAsync,
   loadGisUrlAsync,
 } from '../geojson/geojson-worker.client';
+export {
+  buildCreateControlLoadedMetaChips,
+  createControlGeojsonPreviewPatch,
+  createControlLoadedSourceEyebrowKey,
+  findCreateControlSampleById,
+  findCreateControlSampleMatchingUrl,
+  formatCreateControlParseStatus,
+  loadCreateControlVectorFromUrl,
+  looksCompleteGis,
+  parseCreateControlPastedText,
+  parseCreateControlUploadedFiles,
+  resolveCreateControlSampleIdAfterUrlEdit,
+  resolveCreateControlSampleSelection,
+  subscribeCreateControlParseProgress,
+  summarizeCreateControlUploadFiles,
+} from './upload-helpers';
+export type {
+  CreateControlFileParseResult,
+  CreateControlPasteParseResult,
+  CreateControlUploadFileSummary,
+  CreateControlVectorUrlLoadResult,
+} from './upload-helpers';

@@ -1,8 +1,12 @@
 import type {
   RasterSourceSpecification,
 } from 'maplibre-gl';
-import type { IMapboxSourceView } from '../interfaces';
+import type { IMapboxSourceView } from '../interfaces/dataset.parts';
 import { resolveDatasetBbox } from '../utils/bbox';
+import {
+  buildTileSourceDataInfo,
+  getTileSourceFieldsInfo,
+} from '../utils/map-source-info';
 import { createNamedComponent } from '../model/base';
 import { createDatasetPartMapboxSourceComponent } from '../model/source/base';
 
@@ -21,37 +25,19 @@ export function createDatasetPartRasterSourceComponent(
     getMapboxSource: (): RasterSourceSpecification =>
       base.getData() as RasterSourceSpecification,
     getFieldsInfo() {
-      return [
-        { trans: 'map.layer-control.field.name', value: 'name' },
-        { trans: 'map.layer-control.field.type', value: 'type' },
-        { trans: 'map.layer-control.field.source-id', value: 'sourceId' },
-        { trans: 'map.layer-control.field.bound.title', value: 'bbox' },
-        { trans: 'map.layer-control.field.url', value: 'url', inline: true },
-        { trans: 'map.layer-control.field.tiles', value: 'tiles', inline: true },
-        { trans: 'map.layer-control.field.tile-size', value: 'tileSize' },
-        { trans: 'map.layer-control.field.minzoom', value: 'minzoom' },
-        { trans: 'map.layer-control.field.maxzoom', value: 'maxzoom' },
-        { trans: 'map.layer-control.field.scheme', value: 'scheme' },
-        { trans: 'map.layer-control.field.attribution', value: 'attribution' },
-      ];
+      return getTileSourceFieldsInfo({ includeTileSize: true });
     },
     getDataInfo() {
       const raster = this.getMapboxSource() as RasterSourceSpecification & {
         id?: string;
       };
-      return {
-        name: base.getName(),
-        type: raster.type,
-        sourceId: this.getSourceId(),
-        bbox: resolveDatasetBbox(base) || raster.bounds,
-        url: raster.url,
-        tiles: raster.tiles?.join('\n'),
-        tileSize: raster.tileSize,
-        minzoom: raster.minzoom,
-        maxzoom: raster.maxzoom,
-        scheme: raster.scheme,
-        attribution: raster.attribution,
-      };
+      return buildTileSourceDataInfo(
+        base.getName(),
+        this.getSourceId(),
+        resolveDatasetBbox(base) || raster.bounds,
+        raster,
+        { includeTileSize: true },
+      );
     },
   });
 }

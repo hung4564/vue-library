@@ -1,7 +1,8 @@
 import type { IDraftRecord, MapDrawOption } from '@hungpvq/map-draw';
 import { useShow } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
-import { isDraftOption, useConfigDrawControl } from '../../../store';
+import { isDraftOption } from '@hungpvq/map-draw';
+import { useConfigDrawControl } from '../../../store';
 
 function useDrawDrafts(
   mapId: string,

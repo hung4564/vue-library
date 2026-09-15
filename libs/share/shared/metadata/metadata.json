@@ -15,13 +15,6 @@
       "description": "safe `onUnmounted`"
     },
     {
-      "name": "tryOnBeforeUnmount",
-      "package": "Share",
-      "docs": "/shared/tryOnBeforeUnmount/",
-      "category": "Component",
-      "description": "safe `onBeforeUnmount`"
-    },
-    {
       "name": "tryOnScopeDispose",
       "package": "Share",
       "docs": "/shared/tryOnScopeDispose/",

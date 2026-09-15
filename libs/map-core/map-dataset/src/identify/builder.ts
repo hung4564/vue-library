@@ -1,4 +1,4 @@
-import type { IIdentifyView } from '../interfaces';
+import type { IIdentifyView } from '../interfaces/dataset.parts';
 import {
   addFieldBuilder,
   type WithFieldBuilder,

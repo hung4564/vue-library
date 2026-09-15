@@ -1,12 +1,12 @@
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isDatasetSourceMap } from '../utils/check';
 import { createHttpStore } from './http-store';
 import { createLocalStore } from './local-store';
 import { createDataManager } from './manager';
-import { toFeatureCollection } from './normalize';
+import { toFeatureCollection } from '../utils/feature-collection';
 import type {
   CreateDataManagementOptions,
   DataManagementPart,

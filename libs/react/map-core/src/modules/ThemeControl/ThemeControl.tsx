@@ -27,8 +27,10 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
 const MODE_ICONS: Record<MapThemeMode, string> = {
@@ -92,14 +94,8 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
       setPrefersDark(event.matches);
     };
     setPrefersDark(mediaQuery.matches);
-    if ('addEventListener' in mediaQuery) {
-      mediaQuery.addEventListener('change', onChange);
-      return () => mediaQuery.removeEventListener('change', onChange);
-    }
-    // @ts-expect-error deprecated API
-    mediaQuery.addListener(onChange);
-    // @ts-expect-error deprecated API
-    return () => mediaQuery.removeListener(onChange);
+    mediaQuery.addEventListener('change', onChange);
+    return () => mediaQuery.removeEventListener('change', onChange);
   }, []);
 
   function applyMode(next: MapThemeMode) {

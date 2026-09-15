@@ -1,4 +1,4 @@
-import type { MenuAction, MenuActionLocation } from '../interfaces';
+import type { MenuAction, MenuActionLocation } from '../interfaces/dataset.parts';
 import type { IListViewUI } from '../model/list/types';
 import type { ListViewGroupOption } from './items';
 

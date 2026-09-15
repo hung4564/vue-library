@@ -11,6 +11,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   findAllComponentsByType,
   LAYER_CONTROL_LOCALE,
+  warnIfDatasetRegistryMissing,
   type IDataset,
   type IListViewUI,
 } from '@hungpvq/map-dataset';
@@ -43,11 +44,10 @@ import Icon from '@mdi/react';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
 import { LayerList } from './LayerList';
-import { warnIfDatasetRegistryMissing } from './warn-registry';
 
 type LayerControlSlot = ReactNode | ((props: { mapId: string }) => ReactNode);
 
@@ -81,7 +81,10 @@ export function LayerControl(props: LayerControlProps) {
   const [showCreate, toggleShowCreate] = useShow(false);
 
   useEffect(() => {
-    warnIfDatasetRegistryMissing();
+    warnIfDatasetRegistryMissing(
+      (key) => UniversalRegistry.getComponent(key),
+      'react-map-dataset',
+    );
   }, []);
 
   const layerMenuContext = useMemo(

@@ -16,9 +16,13 @@ import { mdiConsole } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { MapControlButton } from '../../components';
-import { useLang, useRegisterMapControl, useToolbarControl, UniversalRegistry } from '../../extra';
+import { useLang } from '../../extra/lang/hook';
+import { UniversalRegistry } from '../../extra/registry/plugin';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
 import { InputSelect } from '../../field';
-import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const CONTROL_ID = 'mapRegistryControl';

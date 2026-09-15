@@ -1,14 +1,13 @@
 import type { FeatureCollection } from 'geojson';
 import type { AttributeTableSortState } from '../attribute-table/sort';
-import { toFeatureCollection } from '../data-management/normalize';
 import type { DataManagementPart } from '../data-management/types';
-import type { IDataset } from '../interfaces';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import type { IDataset } from '../interfaces/dataset.base';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isDataManagementView } from '../utils/check';
+import { recordsToFeatureCollection } from '../utils/feature-collection';
 import { getGeoExportActiveSource } from './active-source';
 import { getDatasetFeatureCollection } from './dataset';
 import type { ExportGeoGetCollection, GeoExportScope } from './options';
-import { recordsToFeatureCollection } from './types';
 
 export type ResolveExportCollectionInput = {
   layer: IDataset;
@@ -37,10 +36,7 @@ async function listFromDataManagement(
       pageSize: 'all',
       filter: { ids: input.ids },
     });
-    return (
-      toFeatureCollection(result.items ?? []) ??
-      recordsToFeatureCollection(result.items ?? [])
-    );
+    return recordsToFeatureCollection(result.items ?? []);
   }
 
   if (input.scope === 'filtered') {
@@ -53,17 +49,11 @@ async function listFromDataManagement(
         ? { field: primary.key, dir: primary.dir }
         : undefined,
     });
-    return (
-      toFeatureCollection(result.items ?? []) ??
-      recordsToFeatureCollection(result.items ?? [])
-    );
+    return recordsToFeatureCollection(result.items ?? []);
   }
 
   const result = await part.list({ pageSize: 'all' });
-  return (
-    toFeatureCollection(result.items ?? []) ??
-    recordsToFeatureCollection(result.items ?? [])
-  );
+  return recordsToFeatureCollection(result.items ?? []);
 }
 
 /**

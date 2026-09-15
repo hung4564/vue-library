@@ -48,8 +48,8 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { DRAW_CONTROL_LOCALE } from '../../locale';
-import { isDraftOption, useConfigDrawControl } from '../../store';
+import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
+import { useConfigDrawControl } from '../../store';
 import '../../style.css';
 
 export interface DrawControlProps extends WithMapPropType {

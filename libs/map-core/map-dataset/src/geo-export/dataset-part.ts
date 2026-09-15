@@ -1,7 +1,7 @@
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import type { GeoExportOptions } from './options';
 
 /** Config stored on a `geo-export` dataset sibling. */

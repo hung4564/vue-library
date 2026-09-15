@@ -1,12 +1,23 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
 import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
-import { logHelper } from '@hungpvq/map-core';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
 import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
-import { clearIdentifyScope, handleMultiIdentify, IDENTIFY_ALL_LAYERS_VALUE, IDENTIFY_CONTROL, IDENTIFY_CONTROL_LOCALE, IDENTIFY_RESULT_CONTROL, identifyResolver, type IdentifyLayerFilterPayload, type IdentifyResultUpdatePayload, type IdentifyScopeToggleResult } from '@hungpvq/map-dataset/identify';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  buildIdentifyResultPanelBase,
+  clearIdentifyScope,
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_CONTROL_LOCALE,
+  IDENTIFY_RESULT_CONTROL,
+  resolveIdentifyLayerFilterId,
+  runIdentifyMulti,
+  type IdentifyLayerFilterPayload,
+  type IdentifyResultUpdatePayload,
+  type IdentifyScopeToggleResult,
+} from '@hungpvq/map-dataset/identify';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -22,8 +33,8 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { loggerIdentify } from '../../logger';
-import { useMapDataset, useHighlight } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
+import { useMapHighlight } from '../../store/highlight';
 import { IdentifyResultControl } from './IdentifyResultControl';
 
 function updateResultPanel(
@@ -55,7 +66,7 @@ export function IdentifyControl(
     controlId: IDENTIFY_CONTROL.id,
   });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(!!props.show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
@@ -138,22 +149,15 @@ export function IdentifyControl(
   const syncResultPanel = useCallback(
     (extra?: IdentifyResultUpdatePayload) => {
       updateResultPanel(mapId, {
-        loading: loadingRef.current,
-        origin: originRef.current,
-        layerItems: [
-          {
-            value: IDENTIFY_ALL_LAYERS_VALUE,
-            text: transRef.current('map.identify.all_layers'),
-          },
-          ...viewsRef.current.map((view) => ({
-            value: view.id,
-            text: view.getName?.() || view.id,
-          })),
-        ],
-        selectedLayerId:
-          filterIdentifyIdRef.current ?? IDENTIFY_ALL_LAYERS_VALUE,
-        isEventClickActive: isEventClickActiveRef.current,
-        isEventClickBox: isEventClickBoxRef.current,
+        ...buildIdentifyResultPanelBase({
+          loading: loadingRef.current,
+          origin: originRef.current,
+          views: viewsRef.current,
+          allLayersText: transRef.current('map.identify.all_layers'),
+          selectedLayerId: filterIdentifyIdRef.current,
+          isEventClickActive: isEventClickActiveRef.current,
+          isEventClickBox: isEventClickBoxRef.current,
+        }),
         ...extra,
       });
     },
@@ -188,36 +192,11 @@ export function IdentifyControl(
     syncResultPanel,
   ]);
 
-  const onSelectFeatures = useCallback(
-    (event?: MapMouseEvent, features: IdentifyMultiResult[] = []) => {
-      logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-        'onSelectFeatures',
-        features,
-      );
-      identifyResolver
-        .execute({
-          records: features,
-          mapId: mapId,
-          event,
-          singleLayer: !!filterIdentifyIdRef.current,
-          preferResultControl: preferResultControlRef.current,
-        })
-        .then((res) =>
-          logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-            'onSelectFeaturesResult',
-            res,
-          ),
-        );
-    },
-    [mapId],
-  );
-
   const onGetFeatures = useCallback(
     async (
       pointOrBox: PointLike | [PointLike, PointLike],
       event?: MapMouseEvent,
     ) => {
-      const loadStartedAt = performance.now();
       setLoading(true);
       loadingRef.current = true;
       // Activate identify session (toolbar) without forcing ResultControl open.
@@ -227,46 +206,20 @@ export function IdentifyControl(
       callMapRef.current((map) => {
         map.getCanvas().style.cursor = 'wait';
       });
-      logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').info(
-        'loading:start',
-        { pointOrBox },
-      );
-      let featureCount = 0;
-      let hitCount = 0;
       try {
         const allIdentifies = (
           getAllComponentsByType<IIdentifyView>('identify') || []
         ).reverse();
         viewsRef.current = allIdentifies;
         setViews(allIdentifies);
-        const filterId = filterIdentifyIdRef.current;
-        const identifies = filterId
-          ? allIdentifies.filter((view) => view.id === filterId)
-          : allIdentifies;
-        logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-          'onGetFeatures',
-          { pointOrBox, identifies, filterId },
-        );
-        const features = await handleMultiIdentify(
-          identifies,
+        await runIdentifyMulti({
+          identifies: allIdentifies,
           mapId,
           pointOrBox,
-        );
-        logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-          'onGetFeatures',
-          { features },
-        );
-        const nonEmpty = features.filter(
-          (item): item is IdentifyMultiResult =>
-            'features' in item && item.features.length > 0,
-        );
-        hitCount = nonEmpty.length;
-        featureCount = nonEmpty.reduce(
-          (sum, item) => sum + (item.features?.length ?? 0),
-          0,
-        );
-        // Always run resolver so empty clears prior result-panel items.
-        onSelectFeatures(event, nonEmpty);
+          event,
+          filterIdentifyId: filterIdentifyIdRef.current,
+          preferResultControl: preferResultControlRef.current,
+        });
       } finally {
         setLoading(false);
         loadingRef.current = false;
@@ -274,24 +227,9 @@ export function IdentifyControl(
           map.getCanvas().style.cursor = '';
         });
         syncResultPanel({ loading: false });
-        logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').info(
-          'loading:done',
-          {
-            durationMs: Math.round(performance.now() - loadStartedAt),
-            hitCount,
-            featureCount,
-            empty: featureCount === 0,
-          },
-        );
       }
     },
-    [
-      mapId,
-      onSelectFeatures,
-      getAllComponentsByType,
-      toggleShow,
-      syncResultPanel,
-    ],
+    [mapId, getAllComponentsByType, toggleShow, syncResultPanel],
   );
 
   const onGetFeaturesRef = useRef(onGetFeatures);
@@ -392,10 +330,6 @@ export function IdentifyControl(
 
   onMapClickRef.current = (e: MapMouseEvent) => {
     if (isEventClickBoxRef.current) return;
-    logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-      'onMapClick',
-      { event: e },
-    );
     const nextOrigin = { latitude: e.lngLat.lat, longitude: e.lngLat.lng };
     setOrigin(nextOrigin);
     originRef.current = nextOrigin;
@@ -406,10 +340,6 @@ export function IdentifyControl(
 
   onBboxSelectRef.current = (bbox) => {
     if (isEventClickActiveRef.current) return;
-    logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-      'onBboxSelect',
-      bbox,
-    );
     onRemoveBox();
     if (!bbox) return;
     toggleShowRef.current(true);
@@ -476,10 +406,7 @@ export function IdentifyControl(
   }
 
   function onLayerFilterChange(identifyId: string) {
-    const id =
-      !identifyId || identifyId === IDENTIFY_ALL_LAYERS_VALUE
-        ? undefined
-        : identifyId;
+    const id = resolveIdentifyLayerFilterId(identifyId);
     setFilterIdentifyId(id);
     filterIdentifyIdRef.current = id;
     syncResultPanel({

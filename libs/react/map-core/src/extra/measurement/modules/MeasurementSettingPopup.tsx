@@ -8,10 +8,10 @@ import {
 import { type IViewSettingField } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
-import { defaultMapProps, useMap } from '../../../hooks';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { FieldGeometry } from './setting/field-geometry';
 import { MeasurementSettingFields } from './setting/fields-show';
 import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';

@@ -19,10 +19,8 @@ export {
   InputTextarea,
 } from './field';
 
-export {
-  MapButton,
-  MapCard,
-  MapErrorToast,
-  MapIcon,
-  MapImage,
-} from './components';
+export { MapButton } from './components/MapButton';
+export { MapCard } from './components/MapCard';
+export { MapErrorToast } from './components/MapErrorToast';
+export { MapIcon } from './components/MapIcon';
+export { MapImage } from './components/MapImage';

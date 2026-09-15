@@ -21,13 +21,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { InputSelect, InputText } from '../../../field';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useMapPrint } from '../store';
-import { MapControlButton } from '../../../components';
+import { MapControlButton } from '../../../components/MapControlButton';
 
 const DEFAULT_SETTING: PrintOption = {
   ratio: 1,

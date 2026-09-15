@@ -17,7 +17,7 @@ import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, watch } from 'vue';
 import ToggleShowButton from '../../../extra/component/toggle-show-button.vue';
-import { useMapDatasetStore } from '../../../store';
+import { useMapDatasetStore } from '../../../store/dataset-api';
 
 defineOptions({ inheritAttrs: false });
 

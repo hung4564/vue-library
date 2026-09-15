@@ -92,12 +92,12 @@ import {
   MapIcon,
   MapImage,
 } from '../../../components';
-import { useLang } from '../../../extra/lang';
-import { useRegisterMapControl } from '../../../extra/registry';
-import { useToolbarControl } from '../../../extra/toolbar';
+import { useLang } from '../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
-import { useBaseMap } from '../hooks';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 const props = withDefaults(
   defineProps<

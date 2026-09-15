@@ -5,8 +5,10 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
   defineProps<

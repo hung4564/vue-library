@@ -1,4 +1,4 @@
-import type { MenuAction, MenuActionLocation } from '../interfaces';
+import type { MenuAction, MenuActionLocation } from '../interfaces/dataset.parts';
 import type { MenuConditionContext } from './types';
 import { isMenuItemHidden } from './condition';
 import { applyMenuControlPlacement } from './placement';

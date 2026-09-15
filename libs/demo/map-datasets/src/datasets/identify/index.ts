@@ -1,12 +1,31 @@
-import { getChartRandomColor } from '@hungpvq/map-core';
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
-import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
-import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
-import { createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
-import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import {
+  createMenuItemIdentifyForList,
+  createMenuItemShowDetailForItem,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemStyleEdit,
+  createMenuItemToBoundActionForItem,
+  createMenuItemToggleShow,
+} from '@hungpvq/map-dataset/menu';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { IDENTIFY_GROUP, NO_GROUP_IDENTIFY } from '../../fixtures/geojson';
-import { createIdentifyDemoDataset } from './factory';
+import {
+  createIdentifyDemoDataset,
+  createIdentifyDemoMultiDataset,
+} from './factory';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:identify', 2);
+
+const DEMO_ID_NAME_FIELDS = [
+  { text: 'Id', value: 'id' },
+  { text: 'Name', value: 'name' },
+];
+
+const DEMO_API_FIELDS = [
+  ...DEMO_ID_NAME_FIELDS,
+  { text: 'Status', value: 'status' },
+  { text: 'Fetched at', value: 'fetchedAt' },
+];
 
 export function createSimpleIdentifyDataset() {
   return createIdentifyDemoDataset({
@@ -46,10 +65,7 @@ export function createIdentifyWithMenuDataset() {
     configureIdentify: (b) =>
       b.addMenus([
         createMenuItemToBoundActionForItem(),
-        createMenuItemShowDetailForItem([
-          { text: 'Id', value: 'id' },
-          { text: 'Name', value: 'name' },
-        ]),
+        createMenuItemShowDetailForItem(DEMO_ID_NAME_FIELDS),
       ]),
   });
 }
@@ -72,238 +88,109 @@ export function createOtherDatasetButSameGroup() {
 }
 
 export function createGroupIdentifyPageDataset() {
-  const dataset = createRootDataset('Group Identify');
-  const source1 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
+  return createIdentifyDemoMultiDataset({
+    rootName: 'Group Identify',
+    layers: [
       {
-        type: 'Feature',
-        properties: {
-          id: 2,
-          name: 'feature 2 Group Identify',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.63135562387322, 20.797054008577902],
-              [105.63135562387322, 20.500520627293113],
-              [106.09655861537681, 20.500520627293113],
-              [106.09655861537681, 20.797054008577902],
-              [105.63135562387322, 20.797054008577902],
+        name: 'Group Identify 1',
+        listColor: '#0000FF',
+        listGroup: IDENTIFY_GROUP,
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 2,
+            name: 'feature 2 Group Identify',
+            bounds: [
+              105.63135562387322, 20.500520627293113, 106.09655861537681,
+              20.797054008577902,
             ],
-          ],
-          type: 'Polygon',
-        },
+          },
+        ],
+        configureIdentify: (b) =>
+          b
+            .isUseMerge()
+            .setGroup(IDENTIFY_GROUP)
+            .setConfigFields(DEMO_ID_NAME_FIELDS),
+      },
+      {
+        name: 'Group Identify 2',
+        listColor: '#ff0000',
+        listGroup: IDENTIFY_GROUP,
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 3,
+            name: 'feature 3 Group Identify',
+            bounds: [
+              105.71455307455238, 20.72566421903626, 106.03406129600307,
+              20.840388211189335,
+            ],
+          },
+          {
+            id: 4,
+            name: 'feature 4 Group Identify',
+            bounds: [
+              105.74696486602863, 20.61085136021447, 105.89977425617587,
+              20.755977636405987,
+            ],
+          },
+        ],
+        configureIdentify: (b) =>
+          b
+            .isUseMerge()
+            .setGroup(IDENTIFY_GROUP)
+            .setConfigFields(DEMO_ID_NAME_FIELDS),
       },
     ],
   });
-
-  const identify1 = createDatasetPartIdentifyComponentBuilder(
-    'Group Identify 1',
-  )
-    .isUseMerge()
-    .setGroup(IDENTIFY_GROUP)
-    .setConfigFields([
-      { text: 'Id', value: 'id' },
-      { text: 'Name', value: 'name' },
-    ])
-    .build();
-  const groupLayer1 = createGroupDataset('Group Identify 1');
-  const list1 = createDatasetPartListViewUiComponentBuilder('Group Identify 1')
-    .setColor('#0000FF')
-    .setGroup(IDENTIFY_GROUP)
-    .build();
-  list1.color = '#0000FF';
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list1.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  groupLayer1.add(source1);
-  groupLayer1.add(layer1);
-  groupLayer1.add(list1);
-  groupLayer1.add(identify1);
-  const groupLayer2 = createGroupDataset('Group Identify 2');
-  const identify2 = createDatasetPartIdentifyComponentBuilder(
-    'Group Identify 2',
-  )
-    .isUseMerge()
-    .setGroup(IDENTIFY_GROUP)
-    .setConfigFields([
-      { text: 'Id', value: 'id' },
-      { text: 'Name', value: 'name' },
-    ])
-    .build();
-  const list2 = createDatasetPartListViewUiComponentBuilder('Group Identify 2')
-    .setColor('#ff0000')
-    .setGroup(IDENTIFY_GROUP)
-    .build();
-  const layer2 = createMultiMapboxLayerComponent('layer point', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list2.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  const source2 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          id: 3,
-          name: 'feature 3 Group Identify',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.71455307455238, 20.840388211189335],
-              [105.71455307455238, 20.72566421903626],
-              [106.03406129600307, 20.72566421903626],
-              [106.03406129600307, 20.840388211189335],
-              [105.71455307455238, 20.840388211189335],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-      {
-        type: 'Feature',
-        properties: {
-          id: 4,
-          name: 'feature 4 Group Identify',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.74696486602863, 20.755977636405987],
-              [105.74696486602863, 20.61085136021447],
-              [105.89977425617587, 20.61085136021447],
-              [105.89977425617587, 20.755977636405987],
-              [105.74696486602863, 20.755977636405987],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-    ],
-  });
-  const highlight = createHighlightPart();
-  const highlight2 = createHighlightPart();
-  groupLayer2.add(source2);
-  groupLayer2.add(layer2);
-  groupLayer2.add(list2);
-  groupLayer2.add(identify2);
-  groupLayer1.add(highlight);
-  groupLayer2.add(highlight2);
-  dataset.add(groupLayer1);
-  dataset.add(groupLayer2);
-  return dataset;
 }
 
 export function createNoGroupIdentifyDataset() {
-  const dataset = createRootDataset('No group identify');
-  const source1 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
+  return createIdentifyDemoMultiDataset({
+    rootName: 'No group identify',
+    layers: [
       {
-        type: 'Feature',
-        properties: {
-          id: 1,
-          name: 'feature 1: identify no group',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.56255318926247, 21.50065365631515],
-              [105.56255318926247, 21.403263985529975],
-              [105.84908819639861, 21.403263985529975],
-              [105.84908819639861, 21.50065365631515],
-              [105.56255318926247, 21.50065365631515],
+        name: 'No Group Identify 1',
+        listName: 'No group identify 1',
+        groupName: 'No group identify 1',
+        listColor: '#0000FF',
+        listGroup: NO_GROUP_IDENTIFY,
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 1,
+            name: 'feature 1: identify no group',
+            bounds: [
+              105.56255318926247, 21.403263985529975, 105.84908819639861,
+              21.50065365631515,
             ],
-          ],
-          type: 'Polygon',
-        },
+          },
+        ],
+      },
+      {
+        name: 'No Group Identify 2',
+        listName: 'No group identify 2',
+        groupName: 'No group identify 2',
+        listColor: '#ff0000',
+        listGroup: NO_GROUP_IDENTIFY,
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 2,
+            name: 'feature 2: identify no group',
+            bounds: [
+              105.80103412547533, 21.446510825568424, 106.16705691566278,
+              21.55472769478591,
+            ],
+          },
+        ],
       },
     ],
   });
-
-  const identify1 = createDatasetPartIdentifyComponentBuilder(
-    'No Group Identify 1',
-  ).build();
-  const groupLayer1 = createGroupDataset('No group identify 1');
-  const list1 = createDatasetPartListViewUiComponentBuilder(
-    'No group identify 1',
-  )
-    .setColor('#0000FF')
-    .setGroup(NO_GROUP_IDENTIFY)
-    .build();
-  list1.color = '#0000FF';
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list1.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  groupLayer1.add(source1);
-  groupLayer1.add(layer1);
-  groupLayer1.add(list1);
-  groupLayer1.add(identify1);
-  const groupLayer2 = createGroupDataset('No group identify 2');
-  const identify2 = createDatasetPartIdentifyComponentBuilder(
-    'No group identify 2',
-  ).build();
-  const list2 = createDatasetPartListViewUiComponentBuilder(
-    'No group identify 2',
-  )
-    .setColor('#ff0000')
-    .setGroup(NO_GROUP_IDENTIFY)
-    .build();
-  const layer2 = createMultiMapboxLayerComponent('layer point', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list2.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  const source2 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          id: 2,
-          name: 'feature 2: identify no group',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [105.80103412547533, 21.55472769478591],
-              [105.80103412547533, 21.446510825568424],
-              [106.16705691566278, 21.446510825568424],
-              [106.16705691566278, 21.55472769478591],
-              [105.80103412547533, 21.55472769478591],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-    ],
-  });
-  const highlight = createHighlightPart();
-  const highlight2 = createHighlightPart();
-  groupLayer2.add(source2);
-  groupLayer2.add(layer2);
-  groupLayer2.add(list2);
-  groupLayer2.add(identify2);
-  groupLayer1.add(highlight);
-  groupLayer2.add(highlight2);
-  dataset.add(groupLayer1);
-  dataset.add(groupLayer2);
-  return dataset;
 }
 
 const IDENTIFY_API_DELAY_MS = 1000;
@@ -321,7 +208,7 @@ async function fakeFetchIdentifyDetail(
   }>,
 ) {
   const startedAt = performance.now();
-  console.info('[identify-demo] getList:start', {
+  logger.info('getList:start', {
     count: features.length,
     delayMs: IDENTIFY_API_DELAY_MS,
   });
@@ -337,208 +224,122 @@ async function fakeFetchIdentifyDetail(
       geometry: feature.geometry,
     };
   });
-  console.info('[identify-demo] getList:done', {
+  logger.info('getList:done', {
     count: rows.length,
     durationMs: Math.round(performance.now() - startedAt),
   });
   return rows;
 }
 
+type IdentifyWithMerge = IIdentifyView & {
+  getMergedFeatures: (
+    identifies: IIdentifyView[],
+    payload: unknown,
+  ) => Promise<unknown> | unknown;
+};
+
+function asMergeIdentify(view: IIdentifyView): IdentifyWithMerge | null {
+  if (
+    'getMergedFeatures' in view &&
+    typeof (view as IdentifyWithMerge).getMergedFeatures === 'function'
+  ) {
+    return view as IdentifyWithMerge;
+  }
+  return null;
+}
+
 /** Single layer: identify detail via async getList (fake API ~1s). */
 export function createIdentifyApiDetailDataset() {
-  const dataset = createRootDataset('Identify API detail');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createIdentifyDemoDataset({
+    name: 'Identify API detail',
+    groupName: 'Group layer API detail',
+    listColor: '#2a9d8f',
     features: [
       {
-        type: 'Feature',
-        properties: {
-          id: 'api-1',
-          name: 'feature: Identify API detail',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [106.2, 21.35],
-              [106.2, 21.28],
-              [106.32, 21.28],
-              [106.32, 21.35],
-              [106.2, 21.35],
-            ],
-          ],
-          type: 'Polygon',
-        },
+        id: 'api-1',
+        name: 'feature: Identify API detail',
+        bounds: [106.2, 21.28, 106.32, 21.35],
       },
     ],
+    listMenus: [createMenuItemToggleShow(), createMenuItemIdentifyForList()],
+    configureIdentify: (b) =>
+      b
+        .preferResultControl()
+        .setConfigFields(DEMO_API_FIELDS)
+        .addMenus([createMenuItemToBoundActionForItem()]),
+    onIdentifyBuilt: (identify) => {
+      identify.getList = async (_mapId, features) =>
+        fakeFetchIdentifyDetail(features) as Promise<never[]>;
+    },
   });
-  const groupLayer = createGroupDataset('Group layer API detail');
-  const list = createDatasetPartListViewUiComponentBuilder(
-    'Identify API detail',
-  )
-    .setColor('#2a9d8f')
-    .build();
-  const layer = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const highlight = createHighlightPart();
-  groupLayer.add(layer);
-  groupLayer.add(highlight);
-  groupLayer.add(list);
-  list.addMenus([createMenuItemToggleShow(), createMenuItemIdentifyForList()]);
-
-  const identify = createDatasetPartIdentifyComponentBuilder(
-    'Identify API detail',
-  )
-    .preferResultControl()
-    .setConfigFields([
-      { text: 'Id', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Status', value: 'status' },
-      { text: 'Fetched at', value: 'fetchedAt' },
-    ])
-    .addMenus([createMenuItemToBoundActionForItem()])
-    .build();
-
-  identify.getList = async (_mapId, features) =>
-    fakeFetchIdentifyDetail(features);
-
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 /** Two layers: one merged identify query via async getMergedFeatures (fake API ~1s). */
 export function createIdentifyApiMergedDataset() {
-  const dataset = createRootDataset('Identify API merge');
   const mergeGroupId = 'identify-api-merge';
+  const identifies: IIdentifyView[] = [];
 
-  const source1 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
+  const dataset = createIdentifyDemoMultiDataset({
+    rootName: 'Identify API merge',
+    layers: [
       {
-        type: 'Feature',
-        properties: {
-          id: 'merge-a',
-          name: 'feature A: Identify API merge',
+        name: 'Identify API merge 1',
+        listColor: '#264653',
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 'merge-a',
+            name: 'feature A: Identify API merge',
+            bounds: [106.35, 20.85, 106.48, 20.95],
+          },
+        ],
+        configureIdentify: (b) =>
+          b.isUseMerge(mergeGroupId).setConfigFields(DEMO_API_FIELDS),
+        onIdentifyBuilt: (identify) => {
+          identifies.push(identify);
         },
-        geometry: {
-          coordinates: [
-            [
-              [106.35, 20.95],
-              [106.35, 20.85],
-              [106.48, 20.85],
-              [106.48, 20.95],
-              [106.35, 20.95],
-            ],
-          ],
-          type: 'Polygon',
+      },
+      {
+        name: 'Identify API merge 2',
+        listColor: '#e76f51',
+        withOutline: true,
+        listMenus: [],
+        features: [
+          {
+            id: 'merge-b',
+            name: 'feature B: Identify API merge',
+            bounds: [106.4, 20.8, 106.55, 20.92],
+          },
+        ],
+        configureIdentify: (b) =>
+          b.isUseMerge(mergeGroupId).setConfigFields(DEMO_API_FIELDS),
+        onIdentifyBuilt: (identify) => {
+          identifies.push(identify);
         },
       },
     ],
   });
-  const identify1 = createDatasetPartIdentifyComponentBuilder(
-    'Identify API merge 1',
-  )
-    .isUseMerge(mergeGroupId)
-    .setConfigFields([
-      { text: 'Id', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Status', value: 'status' },
-      { text: 'Fetched at', value: 'fetchedAt' },
-    ])
-    .build();
-  const groupLayer1 = createGroupDataset('Identify API merge 1');
-  const list1 = createDatasetPartListViewUiComponentBuilder(
-    'Identify API merge 1',
-  )
-    .setColor('#264653')
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list1.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  groupLayer1.add(source1);
-  groupLayer1.add(layer1);
-  groupLayer1.add(list1);
-  groupLayer1.add(identify1);
-  groupLayer1.add(createHighlightPart());
 
-  const source2 = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          id: 'merge-b',
-          name: 'feature B: Identify API merge',
-        },
-        geometry: {
-          coordinates: [
-            [
-              [106.4, 20.92],
-              [106.4, 20.8],
-              [106.55, 20.8],
-              [106.55, 20.92],
-              [106.4, 20.92],
-            ],
-          ],
-          type: 'Polygon',
-        },
-      },
-    ],
-  });
-  const identify2 = createDatasetPartIdentifyComponentBuilder(
-    'Identify API merge 2',
-  )
-    .isUseMerge(mergeGroupId)
-    .setConfigFields([
-      { text: 'Id', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Status', value: 'status' },
-      { text: 'Fetched at', value: 'fetchedAt' },
-    ])
-    .build();
-  const groupLayer2 = createGroupDataset('Identify API merge 2');
-  const list2 = createDatasetPartListViewUiComponentBuilder(
-    'Identify API merge 2',
-  )
-    .setColor('#e76f51')
-    .build();
-  const layer2 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list2.color)
-      .build(),
-    new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
-  ]);
-  groupLayer2.add(source2);
-  groupLayer2.add(layer2);
-  groupLayer2.add(list2);
-  groupLayer2.add(identify2);
-  groupLayer2.add(createHighlightPart());
-
-  const originalGetMerged = identify1.getMergedFeatures.bind(identify1);
-  const delayedGetMerged: typeof identify1.getMergedFeatures = async (
-    identifies,
-    payload,
-  ) => {
-    const startedAt = performance.now();
-    console.info('[identify-demo] getMergedFeatures:start', {
-      identifyCount: identifies.length,
-      delayMs: IDENTIFY_API_DELAY_MS,
-    });
-    await delay(IDENTIFY_API_DELAY_MS);
-    const results = await originalGetMerged(identifies, payload);
-    const fetchedAt = new Date().toISOString();
-    const enriched = results.map(
-      (row: { feature: { data?: Record<string, unknown> } }) => ({
+  const identify1 = asMergeIdentify(identifies[0]);
+  const identify2 = asMergeIdentify(identifies[1]);
+  if (identify1) {
+    const originalGetMerged = identify1.getMergedFeatures.bind(identify1);
+    const delayedGetMerged: IdentifyWithMerge['getMergedFeatures'] = async (
+      idents,
+      payload,
+    ) => {
+      const startedAt = performance.now();
+      logger.info('getMergedFeatures:start', {
+        identifyCount: idents.length,
+        delayMs: IDENTIFY_API_DELAY_MS,
+      });
+      await delay(IDENTIFY_API_DELAY_MS);
+      const results = (await originalGetMerged(idents, payload)) as Array<{
+        feature: { data?: Record<string, unknown> };
+      }>;
+      const fetchedAt = new Date().toISOString();
+      const enriched = results.map((row) => ({
         ...row,
         feature: {
           ...row.feature,
@@ -548,19 +349,17 @@ export function createIdentifyApiMergedDataset() {
             fetchedAt,
           },
         },
-      }),
-    );
-    console.info('[identify-demo] getMergedFeatures:done', {
-      count: enriched.length,
-      durationMs: Math.round(performance.now() - startedAt),
-    });
-    return enriched;
-  };
-  identify1.getMergedFeatures = delayedGetMerged;
-  identify2.getMergedFeatures = delayedGetMerged;
+      }));
+      logger.info('getMergedFeatures:done', {
+        count: enriched.length,
+        durationMs: Math.round(performance.now() - startedAt),
+      });
+      return enriched;
+    };
+    identify1.getMergedFeatures = delayedGetMerged;
+    if (identify2) identify2.getMergedFeatures = delayedGetMerged;
+  }
 
-  dataset.add(groupLayer1);
-  dataset.add(groupLayer2);
   return dataset;
 }
 

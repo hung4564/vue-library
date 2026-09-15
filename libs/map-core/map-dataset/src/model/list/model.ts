@@ -1,4 +1,4 @@
-import type { WithChildren } from '../../interfaces';
+import type { WithChildren } from '../../interfaces/dataset.base';
 import {
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartListViewUiComponentBuilder,

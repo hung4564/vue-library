@@ -33,7 +33,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });

@@ -28,7 +28,7 @@ import {
 } from 'vue';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useDragComponent } from '../../../store';
-import { LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 const slots = useSlots();
 const props = defineProps({

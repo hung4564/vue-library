@@ -3,7 +3,7 @@ import type {
   GeoJSONSource,
   GeoJSONSourceSpecification,
 } from 'maplibre-gl';
-import type { IMapboxSourceView } from '../interfaces';
+import type { IMapboxSourceView } from '../interfaces/dataset.parts';
 import { resolveDatasetBbox } from '../utils/bbox';
 import { createNamedComponent } from '../model/base';
 import { createDatasetPartMapboxSourceComponent } from '../model/source/base';

@@ -13,9 +13,9 @@ import {
 } from '@hungpvq/map-core/event';
 import { onMounted } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useMapMittStore } from '../../mitt';
-import { useEventMapItems } from '../hook';
+import { useEventMapItems } from '../hook/useEventMapItems';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
 const props = withDefaults(defineProps<WithMapPropType>(), {

@@ -26,10 +26,10 @@ import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
 import { onBeforeUnmount } from 'vue';
 import { MapImage } from '../../../components';
-import { useLang } from '../../../extra/lang';
+import { useLang } from '../../../extra/lang/hook';
 import { InputSelect } from '../../../field';
-import { useMap } from '../../../hooks';
-import { useBaseMap } from '../hooks';
+import { useMap } from '../../../hooks/useMap';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 const props = defineProps<{
   mapId: string;

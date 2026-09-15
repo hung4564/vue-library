@@ -2,7 +2,7 @@
 
 Allowlist of symbols and protocols we treat as **Stable** for SemVer on `1.x`.
 
-Root and domain barrels use **explicit named exports** (no public `export *`). Aggregation for implementation lives in `src/internal-barrel.ts` (not a package entry). Runtime surface is locked by `public-api.spec.ts` (root **and** each domain subpath).
+Root and domain barrels use **explicit named exports** (no public `export *`). Root `src/index.ts` imports leaves directly (no `internal-barrel`). Runtime surface is locked by `public-api.spec.ts` (root **and** each domain subpath).
 
 **All current root and subpath runtime exports are Stable or Experimental.** For Vue/React `map-core`, Experimental field/UI helpers live on **`./fields`** (not the root). Other packages may list Experimental symbols in `*_EXPERIMENTAL_RUNTIME_EXPORTS` on a published barrel (may change in a **minor**). Removing an Experimental export from a published barrel is still a **major**.
 
@@ -41,7 +41,8 @@ Related: [SemVer checklist](https://github.com/hung4564/vue-library/blob/main/li
 | `./style.css` | Shared map CSS |
 | `./worker` | CSS/DOM-free worker helpers |
 | `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError` |
-| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE` |
+| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter` |
+| `./devtools` | Devtools store core, `BufferingLogAdapter`, overlay DOM helpers, `installDevtoolsCore` (Experimental) |
 | `./event` | `EventManager`, event models, bbox ranger |
 | `./image` | Map image load/store helpers |
 | `./legend` | `LegendService`, `MapLegend`, paint helpers |
@@ -61,7 +62,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
-| Shared GIS | `fitBounds`, `bboxFromGeojson`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
+| Shared GIS | `fitBounds`, `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
 | Control layout | `resolveControlLayout`, `ResolvedControlLayout` (`standalone` / `toolbar` / `menu`), `ControlLayout` (`standalone` / `toolbar` / `button`), `ButtonInMobile` / `BUTTON_IN_MOBILE_VALUES` (`button` / `toolbar` / `menu`). Map `buttonInMobile` on viewports ≤640px: `button` leaves corner controls unchanged; `toolbar` promotes into one `ToolbarControl` host except `controlLayout="button"`; `menu` fans out by `position` into corner stacks with outside-in overflow; bottom half budgets menu + same-edge `controlLayout="button"` chrome (see [ToolbarControl](./module/ToolbarControl.md)). Mount `ToolbarControl` in the map slot for `toolbar` and `menu`. |
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
 | Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
@@ -78,22 +79,24 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `IDataset` (+ shared protocol types). Experimental: `printTreeFromNode` / `printTreeFromRoot` |
-| `./highlight` | `createHighlightPart`, `getHighlightController` / `destroyHighlightController` / `bindHighlightPickDatasets`, cascade defaults (`DEFAULT_HIGHLIGHT_*`), query / resolve helpers; types `HighlightPartOptions`, `HighlightController`, `IHighlightPart`, … (paint-layer helpers are package-internal) |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `warnIfDatasetRegistryMissing` / `resetDatasetRegistryWarnFlag`, `IDataset` (+ shared protocol types). Experimental: `upsertDatasetComponent` / `removeDatasetComponent`, `logger` / `loggerIdentify` / `loggerHighlight` |
+| `./highlight` | `createHighlightPart`, `getHighlightController` / `destroyHighlightController` / `bindHighlightPickDatasets`, cascade defaults (`DEFAULT_HIGHLIGHT_*`); types `HighlightPartOptions`, `HighlightController`, `IHighlightPart`, … (cascade/query/resolve + paint-layer helpers are package-internal) |
 | `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui`), `createMenuItemAttributeTable`, column/sort helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
 | `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
-| `./menu` | `LIST_VIEW_MENU_*`, `MAP_CONTEXT_MENU_ID`, `createMenu*`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
-| `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `STYLE_CONTROL_LOCALE` |
-| `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*`, `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
+| `./menu` | `LIST_VIEW_MENU_*`, `createMenu*` (list-view / dataset builders), `createMapContextMenuBuilder`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
+| `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `STYLE_CONTROL_LOCALE` |
+| `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*` / `GEO_EXPORT_COMPONENT_KEY` (SoT; `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo*` aliases), `createGeoExportController`, `onExport` + `GeoExportContext` (+ `AbortSignal`), `uiMode` modal\|menu\|click, `formComponent` / `loadingComponent`, `resolveGeoExportUiSlot`, `resolveExportCollection`, active-source bridge, `createMenuItemExportGeo`, `createDatasetPartGeoExport`, `openGeoExportModalFromAttributeTable` / `runGeoExportClickFromAttributeTable` / `runGeoExportFormatFromAttributeTable`, `resolveGeoExportCrs`, `downloadBlob` / `sanitizeExportFilename`, `getDatasetFeatureCollection` / `hasGeojsonExportData`, `ExportGeoComponentAttrs` (`exportHandler`) |
 | `./vite` | `mapDatasetGisWorker()` |
 | `./style.css` / `./assets/*` | package CSS and static assets |
 
 `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values** remain SemVer-stable (import from `@hungpvq/map-dataset/menu`).
+
+Map context menu ids, built-in item builders, and types (`MAP_CONTEXT_MENU_ID`, `createMapMenuBuilder`, `createDefaultMapContextMenuItems`, `MapContextMenuTarget`, …) import from `@hungpvq/map-core/menu` — not re-exported from `@hungpvq/map-dataset/menu`.
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
@@ -140,7 +143,7 @@ Prefer canonical names in new code (`MapControlButton`, `BaseCollapse`, `InputTe
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
-Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**).
+Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (shared devtools control id / panel mode — re-exported by `@hungpvq/*-map-devtools`; may change in a **minor**).
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
@@ -149,7 +152,7 @@ Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHand
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap | `installMapApp`, `createMapAppPlugin` (Vue), `createDatasetRegistryPlugin()` |
-| Hooks | `useMapDataset`, `useHighlight` |
+| Hooks | `useMapDataset`, `useMapHighlight` |
 | UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `HighlightPointer`, `AttributeTable` (+ `AttributeTableView` / toolbar / grid / pager), `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
 | Core boundary | Builders/services/types from `@hungpvq/map-dataset` (including `createLegend` / `createMultiLegend` from `@hungpvq/map-dataset/menu`) |
 
@@ -169,10 +172,9 @@ Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `DrawControl`, `InspectControl` (shared `InspectController`), `useMapDraw`, `isDraftOption`, `useConfigDrawControl`, `useMapDrawStore` |
+| Shell | `DrawControl`, `InspectControl` (shared `InspectController`), `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` |
 | Control ids | `mapDrawDraftList`, `mapInspectControl` |
-| Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` (thin re-exports from `@hungpvq/map-draw` for Stable continuity) |
-| Core boundary | Protocol/locales from `@hungpvq/map-draw`; adapters re-export only locked Stable names (`isDraftOption`, locales) |
+| Core boundary | Protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them |
 
 Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 
@@ -197,11 +199,11 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. `@hungpvq/map-core` Experimental: `GeoLocateSession`. Other map packages keep empty/reserved experimental lists.
+Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. `@hungpvq/map-core` Experimental: `GeoLocateSession`, `DEVTOOLS_CONTROL` (+ type `DevtoolsMode`). Other map packages keep empty/reserved experimental lists.
 ## Enforcing the allowlist
 
-1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './internal-barrel'` (or from a feature module). Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.
-2. Put new implementation symbols in feature modules / `internal-barrel`; only promote to root `index.ts` + allowlist when intentional.
+1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './feature/leaf'`. Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.
+2. Put new implementation symbols in feature modules; only promote to root `index.ts` + allowlist when intentional.
 3. Update the matching `public-api.spec.ts` allowlist arrays (runtime symbols only).
 4. Update this page when changing Stable.
 5. Do not hand-edit package `CHANGELOG.md` unless asked — use release tooling.

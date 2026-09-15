@@ -29,7 +29,7 @@ import {
 } from '../../hook';
 import { useInitDrawer } from '../../hook/useInitDrawer';
 import { useDragLayout, useDrawerItem } from '../../store';
-import { LocationSideBar } from '../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import DragButton from '../parts/DragButton.vue';
 
 const { CloseIcon, SidebarOpenMenu } = useIcon();

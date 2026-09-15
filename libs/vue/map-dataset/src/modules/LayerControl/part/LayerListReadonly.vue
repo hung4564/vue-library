@@ -10,7 +10,7 @@ import {
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { getCurrentInstance, nextTick, onMounted, ref } from 'vue';
-import { useMapDataset } from '../../../store';
+import { useMapDataset } from '../../../store/dataset-api';
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import RecursiveList from '../../List/RecursiveList.vue';
 import LayerItem from './item/layer-item.vue';

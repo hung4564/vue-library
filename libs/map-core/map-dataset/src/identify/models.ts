@@ -1,14 +1,8 @@
 import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import { Point, type MapGeoJSONFeature, type PointLike } from 'maplibre-gl';
-import type {
-  IDataset,
-  IdentifyFeatureRow,
-  IdentifyMultiResult,
-  IIdentifyView,
-  IIdentifyViewWithMerge,
-  IMapboxLayerView,
-} from '../interfaces';
-import { convertFeatureToItem } from '../utils';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IdentifyFeatureRow, IdentifyMultiResult, IIdentifyView, IIdentifyViewWithMerge, IMapboxLayerView } from '../interfaces/dataset.parts';
+import { convertFeatureToItem } from '../utils/convert';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import { createNamedComponent } from '../model/base';
 import { createWithMenuHelper } from '../menu';
@@ -17,7 +11,7 @@ import {
   LIST_VIEW_MENU_ID,
 } from '../menu';
 import { isIdentifyMergeView, isMapboxLayerView } from '../utils/check';
-import { runAllComponentsWithCheck } from '../model/visitors';
+import { runAllComponentsWithCheck } from '../model/visitors/helpers';
 import { loggerIdentify } from '../logger';
 import {
   getMergedFeatures,

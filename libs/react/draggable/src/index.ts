@@ -79,7 +79,7 @@ export {
 export { useContainerReactive, useStoreReactive } from './store/useStoreReactive';
 
 // --- Stable: React context ---
-export { ContainerProvider, useContainerId } from './context';
+export { ContainerProvider, useContainerId } from './context/ContainerContext';
 
 // --- Experimental ---
 export {

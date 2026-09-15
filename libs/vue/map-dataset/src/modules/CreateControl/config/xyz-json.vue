@@ -45,7 +45,18 @@
 <script setup>
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
-import { applyCreateControlSample, applyCreateControlLayerName, CREATE_CONTROL_SAMPLE_NONE, CREATE_CONTROL_DEFAULT_DATA_TAB, getCreateControlDataTabs, getCreateControlSampleUrl, getCreateControlSamples, layerNameFromUrl } from '@hungpvq/map-dataset/create-control';
+import {
+  applyCreateControlSample,
+  applyCreateControlLayerName,
+  CREATE_CONTROL_SAMPLE_NONE,
+  CREATE_CONTROL_DEFAULT_DATA_TAB,
+  findCreateControlSampleMatchingUrl,
+  getCreateControlDataTabs,
+  getCreateControlSamples,
+  layerNameFromUrl,
+  resolveCreateControlSampleIdAfterUrlEdit,
+  resolveCreateControlSampleSelection,
+} from '@hungpvq/map-dataset/create-control';
 import { computed, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
 
@@ -80,24 +91,17 @@ function onSelectSample(id) {
   const nextId = typeof id === 'string' ? id : '';
   sampleId.value = nextId;
   urlError.value = '';
-  if (!nextId) return;
-
-  const sample = getCreateControlSamples('rasterxyz').find(
-    (item) => item.id === nextId,
-  );
-  if (!sample) return;
-  dataUrl.value = getCreateControlSampleUrl(sample);
+  const url = resolveCreateControlSampleSelection('rasterxyz', nextId);
+  if (url != null) dataUrl.value = url;
 }
 
 function onUrlInput() {
   urlError.value = '';
-  const trimmed = dataUrl.value.trim();
-  const sample = getCreateControlSamples('rasterxyz').find(
-    (item) => item.id === sampleId.value,
+  sampleId.value = resolveCreateControlSampleIdAfterUrlEdit(
+    'rasterxyz',
+    sampleId.value,
+    dataUrl.value,
   );
-  if (sample && getCreateControlSampleUrl(sample) !== trimmed) {
-    sampleId.value = '';
-  }
 }
 
 async function onLoadUrl() {
@@ -107,9 +111,10 @@ async function onLoadUrl() {
   loadingUrl.value = true;
   urlError.value = '';
   try {
-    const sample = getCreateControlSamples('rasterxyz').find(
-      (item) =>
-        item.id === sampleId.value && getCreateControlSampleUrl(item) === url,
+    const sample = findCreateControlSampleMatchingUrl(
+      'rasterxyz',
+      sampleId.value,
+      url,
     );
     if (sample) {
       const patch = await applyCreateControlSample(sample);

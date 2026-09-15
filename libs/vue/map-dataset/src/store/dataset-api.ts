@@ -2,7 +2,7 @@ import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-dataset';
 import { DatasetService } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset' as const;

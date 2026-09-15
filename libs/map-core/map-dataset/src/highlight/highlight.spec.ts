@@ -314,7 +314,7 @@ describe('HighlightController selection / hide / pointer fields', () => {
       expect(hl.entries.every((e) => e.source !== 'hover')).toBe(true);
 
       await hl.show(feature('x'), {
-        source: 'menu',
+        source: 'identify',
         selection: { policy: 'single', replaceScope: 'all' },
       });
       expect(hl.entries.map((e) => e.id)).toEqual(['x']);

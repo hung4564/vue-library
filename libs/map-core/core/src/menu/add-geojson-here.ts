@@ -1,7 +1,7 @@
 import { mdiRadiusOutline } from '@mdi/js';
 import { circle } from '@turf/turf';
 import type { Feature, GeoJSON, Polygon } from 'geojson';
-import { UniversalRegistry } from '../registry';
+import { UniversalRegistry } from '../registry/universal-registry';
 import type { Color } from '../types';
 import { formatMapContextCoords } from './actions';
 import { createMapMenuBuilder } from './builder';

@@ -9,9 +9,9 @@ import {
 } from '@hungpvq/map-core/crs';
 import { computed, ref } from 'vue';
 import { InputCrs } from '../../../../field';
-import { useLang } from '../../../../extra/lang';
-import { useMap } from '../../../../hooks';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks';
+import { useLang } from '../../../../extra/lang/hook';
+import { useMap } from '../../../../hooks/useMap';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks/useMapCrsItems';
 import { MapControlButton } from '../../../../components';
 
 const { mapId } = useMap();

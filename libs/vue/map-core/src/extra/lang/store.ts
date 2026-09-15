@@ -1,19 +1,14 @@
 import {
   logHelper,
   MAP_STORE_KEY,
-  deepMergeLocale,
   createDefaultLangStore,
+  createMapLocaleApi,
+  type MapLocateStore,
+  MittTypeMapLang,
 } from '@hungpvq/map-core';
 import { createMapScopedStore } from '../../store/store';
 import { useMapMittStore } from '../mitt';
 import { logger } from './logger';
-import {
-  MapLangLocale,
-  MapTranslateFunction,
-  MittTypeMapLang,
-  MittTypeMapLangEventKey,
-  type MapLocateStore,
-} from '@hungpvq/map-core';
 
 export type MapLangStore = MapLocateStore;
 
@@ -25,36 +20,25 @@ export const useMapLocaleStore = (mapId: string) =>
 
 export const useMapLocale = (mapId: string) => {
   const store = useMapLocaleStore(mapId);
+  const api = createMapLocaleApi({
+    getStore: () => store,
+    getEmitter: () => useMapMittStore<MittTypeMapLang>(mapId),
+  });
 
-  function setMapLang(locale: MapLangLocale) {
-    logHelper(logger, mapId, 'store').debug('setMapLang', locale);
-
-    if (store) {
-      store.locale = deepMergeLocale(store.locale, locale);
-    }
-    const emitter = useMapMittStore<MittTypeMapLang>(mapId);
-    emitter?.emit(MittTypeMapLangEventKey.setLocale, locale);
+  function setMapLang(...args: Parameters<typeof api.setMapLang>) {
+    logHelper(logger, mapId, 'store').debug('setMapLang', args[0]);
+    return api.setMapLang(...args);
   }
 
-  function setMapLocaleDefault(locale: MapLangLocale) {
-    if (store) {
-      store.localeDefault = deepMergeLocale(store.localeDefault, locale);
-    }
+  function setMapTranslate(...args: Parameters<typeof api.setMapTranslate>) {
+    logHelper(logger, mapId, 'store').debug('setMapTranslate', args[0]);
+    return api.setMapTranslate(...args);
   }
 
-  function setMapTranslate(translate: MapTranslateFunction) {
-    logHelper(logger, mapId, 'store').debug('setMapTranslate', translate);
-
-    if (store) {
-      store.translate = translate;
-    }
-    const emitter = useMapMittStore<MittTypeMapLang>(mapId);
-    emitter?.emit(MittTypeMapLangEventKey.setTranslate, translate);
-  }
-
-  function getMapLang() {
-    return store;
-  }
-
-  return { getMapLang, setMapTranslate, setMapLocaleDefault, setMapLang };
+  return {
+    getMapLang: api.getMapLang,
+    setMapLocaleDefault: api.setMapLocaleDefault,
+    setMapLang,
+    setMapTranslate,
+  };
 };

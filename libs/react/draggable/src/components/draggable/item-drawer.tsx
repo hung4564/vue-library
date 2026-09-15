@@ -24,7 +24,7 @@ import {
 import { useContainerSize } from '../../hook/useContainerSize';
 import { useDrawerItem, useDragLayout } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
-import { LocationSideBar } from '../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { ContextMenuItem } from '../ContextMenuItem';
 import { DragButton } from '../parts/DragButton';

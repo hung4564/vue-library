@@ -1,10 +1,12 @@
 import {
+  bindToggleShowAction,
+  getToggleShowTitleKey,
   LAYER_CONTROL_LOCALE,
-  setListViewIntendedShow,
+  performToggleShowAction,
 } from '@hungpvq/map-dataset';
 import { useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
-import { useMapDatasetStore } from '../../store';
+import { useMapDatasetStore } from '../../store/dataset-api';
 import type { WithLayerItemActionType } from './types';
 
 /** Shared toggle-show logic for default and custom menu components. */
@@ -16,36 +18,29 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
   const store = useMapDatasetStore(mapId.value);
 
   const title = computed(() =>
-    trans.value(
-      showValue.value
-        ? 'map.layer-control.toggle.hide'
-        : 'map.layer-control.toggle.show',
-    ),
+    trans.value(getToggleShowTitleKey(!!showValue.value)),
   );
 
   const onToggleShow = () => {
-    if (props.disabled) return;
-    const show = !showValue.value;
-    showValue.value = show;
     callMap((map) => {
-      setListViewIntendedShow(
-        props.data,
+      performToggleShowAction({
+        item: props.data,
         map,
-        show,
-        store.allLayerShow.value,
-      );
+        currentShow: showValue.value,
+        applyToMap: store.allLayerShow.value,
+        disabled: props.disabled,
+        onShowChange: (show) => {
+          showValue.value = show;
+        },
+      });
     });
   };
 
-  function onToggleShowEvent(e: { show: boolean }) {
-    showValue.value = e.show;
-  }
-
   onMounted(() => {
-    props.data.on('toggleShow', onToggleShowEvent);
-  });
-  onUnmounted(() => {
-    props.data.off('toggleShow', onToggleShowEvent);
+    const cleanup = bindToggleShowAction(props.data, (show) => {
+      showValue.value = show;
+    });
+    onUnmounted(cleanup);
   });
 
   return {
@@ -54,4 +49,4 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
     title,
     onToggleShow,
   };
-}
+};

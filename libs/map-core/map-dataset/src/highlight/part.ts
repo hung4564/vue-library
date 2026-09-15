@@ -1,5 +1,4 @@
-import { createWithDataHelper } from '../extra';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import {
@@ -26,8 +25,6 @@ export type IHighlightPart = IDataset & {
   getHighlightPresentation: () => HighlightPresentation;
   getHighlightPointer: () => Required<HighlightPointerPolicy>;
   getFilterCreator?: () => HighlightStyle['filterCreator'];
-  /** @deprecated Prefer getHighlightStyle; kept for paint helpers that read WithDataHelper */
-  getData?: () => unknown;
 };
 
 /**
@@ -52,7 +49,6 @@ export function createHighlightPart(
     ...DEFAULT_HIGHLIGHT_POINTER,
     ...options.pointer,
   };
-  const dataHelper = createWithDataHelper(undefined);
 
   let currentStyle = { ...style };
   let currentData = data;
@@ -62,7 +58,6 @@ export function createHighlightPart(
 
   return createNamedComponent('HighlightPart', {
     ...base,
-    ...dataHelper,
     get type(): 'highlight' {
       return 'highlight';
     },

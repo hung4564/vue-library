@@ -13,6 +13,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import * as basemapApi from './basemap';
+import * as devtoolsApi from './devtools';
 import * as crsApi from './crs';
 import * as eventApi from './event';
 import * as imageApi from './image';
@@ -36,6 +37,11 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'convertGeometry',
   'copyText',
   'createDefaultLangStore',
+  'createMapLocaleApi',
+  'DEFAULT_MAP_BREAKPOINTS',
+  'getLocaleProp',
+  'interpolateLocale',
+  'translateMapLang',
   'createMapMitt',
   'createWorkerMonitorLogMessage',
   'createWorkerMonitorProgressMessage',
@@ -46,6 +52,7 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'downloadDataUrl',
   'EMPTY_MAP_VIEW_INFO',
   'errorHandler',
+  'exitDocumentFullscreen',
   'FallbackResolver',
   'filterMapControls',
   'filterWorkerSnapshots',
@@ -61,6 +68,7 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'formatWorkerLogTime',
   'getChartRandomColor',
   'getMap',
+  'getMapBreakpointThreshold',
   'GLOBE_CONTROL_LOCALE',
   'GOTO_CONTROL_LOCALE',
   'hasMapInstance',
@@ -69,11 +77,13 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'installGlobalErrorCapture',
   'isCallStackOverflow',
   'isCoordinatesNumber',
+  'isDocumentFullscreen',
   'isMapButtonFluidVariant',
   'isMapButtonSize',
   'isMapButtonSizeName',
   'isMapButtonSquareVariant',
   'isMapButtonVariant',
+  'isValidBbox',
   'isWorkerBusy',
   'isWorkerMonitorLogMessage',
   'isWorkerMonitorProgressMessage',
@@ -94,6 +104,8 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapInitializationError',
   'MapInitializer',
   'MapStoreManager',
+  'mapBreakpointGreaterOrEqual',
+  'mapBreakpointSmallerOrEqual',
   'mapButtonSizeClass',
   'mapButtonVariantClass',
   'mergeFilters',
@@ -106,16 +118,22 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'REGISTRY_NAMESPACES',
   'reprojectGeojson',
   'reprojectGeojsonToWgs84',
+  'requestElementFullscreen',
   'resolveControlLayout',
+  'resolveMapBreakpointFlags',
+  'resolveMapBreakpoints',
   'resolveMapButtonSizeName',
   'resolveMapButtonSizePx',
+  'resolveMapFullscreenTarget',
   'resolveSelectedWorkerId',
   'runMapControlAction',
   'runMonitoredTask',
   'runWorkerMonitor',
   'SETTING_CONTROL_LOCALE',
+  'subscribeFullscreenChange',
   'toCoordinatesNumberList',
   'toPlainJson',
+  'toggleElementFullscreen',
   'UniversalRegistry',
   'WORKER_CONTROL_LOCALE',
   'workerLogsForDisplay',
@@ -125,7 +143,33 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 
 /** Experimental root exports (may change in a minor). */
 export const MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'DEVTOOLS_CONTROL',
   'GeoLocateSession',
+] as const;
+
+/** Experimental `@hungpvq/map-core/devtools` runtime exports. */
+export const MAP_CORE_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'BufferingLogAdapter',
+  'clearDevtoolErrors',
+  'clearDevtoolLogs',
+  'createDevtoolLogAdapter',
+  'DEVTOOLS_CONTROL',
+  'DEVTOOLS_MOBILE_BREAKPOINT',
+  'getDevtoolState',
+  'initDevtoolStoreCore',
+  'installDevtoolErrorListener',
+  'installDevtoolsCore',
+  'installDevtoolsErrorsShortcut',
+  'isDevtoolsMobileViewport',
+  'openMapDevtoolsErrors',
+  'OPEN_DEVTOOLS_ERRORS_EVENT',
+  'replaceDevtoolErrors',
+  'replaceDevtoolLogs',
+  'resolveMapDragContainerId',
+  'setDevtoolActiveTab',
+  'setDevtoolOpen',
+  'subscribeDevtoolState',
+  'toggleDevtoolOpen',
 ] as const;
 
 /** Stable runtime exports per domain subpath entry. */
@@ -138,15 +182,20 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
     'BasemapError',
     'BasemapManager',
     'BasemapService',
+    'createDefaultBaseMapAdapter',
+    'createDefaultBaseMapAdapterClass',
     'DefaultBaseMapAdapter',
     'getLowestLayerId',
     'INIT_BASEMAPS',
     'MittTypeBaseMapEventKey',
+    'subscribeBasemapMirror',
   ],
   crs: [
     'buildCrsSearchCatalog',
     'buildMapCrsCatalog',
+    'createCoordinateFormatter',
     'createDefaultCrsStore',
+    'createMapDisplayCoordinateFormatter',
     'CRS_CONTROL_LOCALE',
     'DEFAULT_CRS_ITEMS',
     'formatCrsLabel',
@@ -176,8 +225,11 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
   image: [
     'addImageForMap',
     'createDefaultImageStore',
+    'createMapImageStoreApi',
+    'listMapStyleImages',
     'loadImage',
     'styleImageToDataURL',
+    'subscribeMapStyleImages',
     'toImageDataFromRGBAImage',
   ],
   legend: [
@@ -356,5 +408,11 @@ describe('public API surface', () => {
       for (const name of names) if (rootKeys.has(name)) overlap.push(name);
     }
     expect(overlap).toEqual([]);
+  });
+
+  it('devtools subpath runtime exports match the Experimental allowlist', () => {
+    const keys = Object.keys(devtoolsApi).sort();
+    const expected = [...MAP_CORE_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS].sort();
+    expect(keys).toEqual(expected);
   });
 });

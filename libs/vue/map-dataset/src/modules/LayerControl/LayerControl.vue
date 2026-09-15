@@ -18,6 +18,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   findAllComponentsByType,
   LAYER_CONTROL_LOCALE,
+  warnIfDatasetRegistryMissing,
   type IDataset,
   type IListViewUI,
 } from '@hungpvq/map-dataset';
@@ -57,11 +58,10 @@ import {
 import { computed, onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
-import { warnIfDatasetRegistryMissing } from './warn-registry';
 
 const props = withDefaults(
   defineProps<
@@ -94,7 +94,10 @@ defineSlots<{
 const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_CONTROL_LOCALE);
-warnIfDatasetRegistryMissing();
+warnIfDatasetRegistryMissing(
+  (key) => UniversalRegistry.getComponent(key),
+  'vue-map-dataset',
+);
 
 const path = {
   icon: mdiLayers,

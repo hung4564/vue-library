@@ -33,7 +33,7 @@
 import { computed } from 'vue';
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import { LocationSideBar, SidebarConfig } from '../../types';
+import type { LocationSideBar, SidebarConfig } from '@hungpvq/draggable';
 import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 

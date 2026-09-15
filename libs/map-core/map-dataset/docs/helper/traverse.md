@@ -6,7 +6,7 @@ Import from `@hungpvq/map-dataset` or `@hungpvq/vue-map-dataset`.
 import {
   traverseTree,
   findAllComponentsByType,
-  findFirstLeafByType,
+  findPartByType,
   findRoot,
 } from '@hungpvq/map-dataset';
 
@@ -17,7 +17,7 @@ traverseTree(root, (node, level) => {
 traverseTree(root, visitor, { strategy: 'bfs' });
 
 const lists = findAllComponentsByType(root, 'list');
-const source = findFirstLeafByType(listNode, 'source');
+const source = findPartByType(listNode, 'source');
 const root = findRoot(listNode);
 ```
 

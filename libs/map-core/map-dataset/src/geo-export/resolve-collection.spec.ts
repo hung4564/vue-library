@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { FeatureCollection } from 'geojson';
 import { createDataManagement } from '../data-management';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { createRootDataset } from '../model/dataset.base';
-import { createDatasetPartListViewUiComponent } from '../model/list';
+import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import {
   clearGeoExportActiveSource,
   setGeoExportActiveSource,

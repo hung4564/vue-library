@@ -11,7 +11,7 @@ import {
   pointWkt,
   zoomInMapHere,
 } from './actions';
-import { UniversalRegistry } from '../registry';
+import { UniversalRegistry } from '../registry/universal-registry';
 import { MAP_CONTEXT_MENU_ID } from './types';
 
 describe('map-context-menu actions', () => {

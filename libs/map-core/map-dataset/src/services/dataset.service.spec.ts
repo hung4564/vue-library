@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { MapSimple } from '@hungpvq/map-core';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { DatasetService, type DatasetStoreLike } from './dataset.service';
 
 function createStore(): DatasetStoreLike {

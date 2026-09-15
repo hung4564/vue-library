@@ -6,10 +6,10 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { InputSelect, InputText } from '../../../field';
 import { MapCommonButton, MapControlButton, MapControlGroupButton } from '../../../components';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../../extra/lang';
-import { useRegisterMapControl } from '../../../extra/registry';
-import { useToolbarControl } from '../../../extra/toolbar';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useLang } from '../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
 import {
   mdiClose,
   mdiCogOutline,

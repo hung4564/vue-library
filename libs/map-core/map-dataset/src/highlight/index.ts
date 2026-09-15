@@ -2,8 +2,9 @@
  * Public entry for `@hungpvq/map-dataset/highlight`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  *
- * Paint-layer helpers (`ensureHighlightLayers`, `defaultAnimate`, …) are
- * package-internal; consumers use `createHighlightPart` + controller APIs.
+ * Cascade/query/resolve helpers are package-internal (relative imports / tests).
+ * Paint-layer helpers are also package-internal; consumers use
+ * `createHighlightPart` + controller APIs.
  */
 export type {
   HighlightAnimateFn,
@@ -38,14 +39,6 @@ export {
   DEFAULT_HIGHLIGHT_PRESENTATION,
   DEFAULT_HIGHLIGHT_SELECTION,
   DEFAULT_HIGHLIGHT_STYLE,
-  findHighlightPart,
-  partOptionsToStyle,
-  resolveData,
-  resolvePresentation,
-  resolvePresentationForSource,
-  resolveSelection,
-  resolveShowConfig,
-  resolveStyle,
 } from './cascade';
 
 export { createHighlightPart, type IHighlightPart } from './part';
@@ -55,14 +48,3 @@ export {
   type HighlightController,
 } from './controller';
 export { bindHighlightPickDatasets } from './bind-pick';
-export {
-  datasetsFromHighlightParts,
-  filterDatasetsForPointerEvent,
-  queryHighlightAtPoint,
-  type HighlightHit,
-} from './query';
-export {
-  mergeEntriesToFeatureCollection,
-  normalizeToHighlightGeoJson,
-  resolveHighlightData,
-} from './resolve-data';

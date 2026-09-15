@@ -28,10 +28,10 @@ import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
 import { mdiLayersOutline } from '@mdi/js';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { MapControlGroupButton } from '../../../components';
-import { useToolbarControl } from '../../../extra/toolbar';
-import { defaultMapProps, useMap } from '../../../hooks';
-import { ModuleContainer } from '../../../modules';
-import { useBaseMap } from '../hooks';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 const props = withDefaults(
   defineProps<

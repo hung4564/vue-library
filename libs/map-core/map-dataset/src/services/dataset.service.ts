@@ -1,10 +1,8 @@
 import { errorHandler, type MapSimple } from '@hungpvq/map-core';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import type { IListViewUI } from '../model/list/types';
-import {
-  findAllComponentsByType,
-  traverseTree,
-} from '../model/visitors';
+import { findAllComponentsByType } from '../model/visitors/helpers';
+import { traverseTree } from '../model/visitors/traverse';
 import { DatasetError } from '../errors';
 import {
   isComposite,

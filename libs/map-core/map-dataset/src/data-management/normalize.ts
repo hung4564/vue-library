@@ -120,17 +120,6 @@ export function toFeature(record: DataRecord | undefined | null): Feature | unde
   };
 }
 
-export function toFeatureCollection(
-  records: Array<DataRecord | undefined | null>,
-): FeatureCollection {
-  const features: Feature[] = [];
-  for (const record of records) {
-    const feature = toFeature(record ?? undefined);
-    if (feature && feature.geometry) features.push(feature);
-  }
-  return { type: 'FeatureCollection', features };
-}
-
 export function normalizeInitData(
   initData: unknown,
   options: NormalizeOptions & { format?: 'auto' | 'feature-collection' | 'list' } = {},

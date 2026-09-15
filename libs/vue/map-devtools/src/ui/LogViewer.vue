@@ -90,9 +90,9 @@
 
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';
+import type { BufferingLogEntry as LogEntry } from '@hungpvq/map-core/devtools';
 import type { LogLevel } from '@hungpvq/shared-log';
 import { computed, nextTick, ref, watch } from 'vue';
-import type { LogEntry } from '../log-adapter';
 import { clearDevtoolLogs, devtoolState } from '../store';
 import LogRenderNode, {
   type StructuredGroup,

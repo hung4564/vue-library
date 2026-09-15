@@ -8,12 +8,14 @@ import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { useToolbarControl } from '../../extra/toolbar';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
 import { InputText } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import { MapControlButton } from '../../components';
+import { MapControlButton } from '../../components/MapControlButton';
 
 export interface SettingControlProps extends WithMapPropType {
   show?: boolean;

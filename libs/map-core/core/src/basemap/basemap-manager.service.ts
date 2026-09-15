@@ -5,7 +5,7 @@
 
 import type { BaseMapItem, BaseMapStore, MittTypeBaseMap } from './types';
 import { MittTypeBaseMapEventKey } from './types';
-import { BaseMapAdapter } from './adapter';
+import { BaseMapAdapter } from './adapter/BaseMapAdapter';
 import { BasemapService } from './basemap.service';
 import type { Emitter } from 'mitt';
 import type { LoggerFunction } from '../store/interface';

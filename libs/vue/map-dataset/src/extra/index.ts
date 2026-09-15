@@ -1,9 +1,0 @@
-export * from './component';
-export {
-  MENU_CONDITION_CONTEXT_KEY,
-  provideMenuConditionContext,
-  useMenuConditionContext,
-  useMenuConditionSource,
-} from './menu/condition-context';
-export { default as DatasetMenuButton } from './menu/dataset-menu-button.vue';
-export { default as DatasetMenus } from './menu/dataset-menus.vue';

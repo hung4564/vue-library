@@ -1,3 +1,4 @@
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
 
 /**
@@ -5,6 +6,6 @@ import type { Emitter, EventType } from 'mitt';
  * This file only contains Vue-specific types
  */
 
-export const MITT_KEY = 'mitt';
+export const MITT_KEY = MAP_STORE_KEY.MITT;
 
 export type MittType<T extends Record<EventType, unknown>> = Emitter<T>;

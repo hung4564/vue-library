@@ -8,6 +8,7 @@ import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/ras
 import { createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild, type LayerStyleType } from '@hungpvq/map-dataset/style';
 import { createLegend, createMultiLegend } from '@hungpvq/map-dataset/menu';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 
 export function createGroupListDemoDataset() {
   const dataset = createRootDataset('Group test');
@@ -176,9 +177,6 @@ export function createGroupListDemoDataset() {
   return dataset;
 }
 
-/** @deprecated Use createGroupListDemoDataset */
-export const createGroupList = createGroupListDemoDataset;
-
 export function createRasterDataset() {
   const name = 'World Imagery';
   const bbox: [number, number, number, number] = [104.5, 18.5, 108.0, 22.5];
@@ -211,9 +209,9 @@ export function createRasterDataset() {
 }
 
 export function createDatasetLineString() {
-  const dataset = createRootDataset('Group DatasetLineString');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name: 'Group DatasetLineString',
+    groupName: 'Group layer 1',
     features: [
       {
         type: 'Feature',
@@ -232,39 +230,29 @@ export function createDatasetLineString() {
         },
       },
     ],
+    layers: [{ styleType: 'line', layerId: 'layer area' }],
+    configure: ({ list, dataset }) => {
+      list.addMenus([
+        createMenuItemToggleShow(),
+        createMenuItemShowDetailInfoSource(),
+        createMenuItemStyleEdit(),
+      ]);
+      dataset.add(
+        createDatasetPartIdentifyComponentBuilder('test identify')
+          .addMenus([
+            createMenuItemToBoundActionForItem(),
+            createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
+          ])
+          .build(),
+      );
+    },
   });
-  const groupLayer1 = createGroupDataset('Group layer 1');
-  const list1 = createDatasetPartListViewUiComponent('test line string');
-  list1.color = getChartRandomColor();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('line')
-      .setColor(list1.color)
-      .build(),
-  ]);
-  groupLayer1.add(layer1);
-  groupLayer1.add(list1);
-  list1.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-    createMenuItemStyleEdit(),
-  ]);
-  const identify = createDatasetPartIdentifyComponentBuilder('test identify')
-    .addMenus([
-      createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
-    ])
-    .build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer1);
-  return dataset;
 }
 
 export function createDatasetPoint() {
-  const dataset = createRootDataset('Group test');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name: 'Group test',
+    groupName: 'Group layer 1',
     features: [
       {
         type: 'Feature',
@@ -278,41 +266,30 @@ export function createDatasetPoint() {
         },
       },
     ],
+    layers: [{ styleType: 'point', layerId: 'layer area' }],
+    configure: ({ group, list, dataset }) => {
+      group.add(createHighlightPart());
+      list.addMenus([
+        createMenuItemToggleShow(),
+        createMenuItemShowDetailInfoSource(),
+        createMenuItemStyleEdit(),
+      ]);
+      dataset.add(
+        createDatasetPartIdentifyComponentBuilder('test identify')
+          .addMenus([
+            createMenuItemToBoundActionForItem(),
+            createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
+          ])
+          .build(),
+      );
+    },
   });
-  const groupLayer1 = createGroupDataset('Group layer 1');
-  const list1 = createDatasetPartListViewUiComponent('test point');
-  list1.color = getChartRandomColor();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('point')
-      .setColor(list1.color)
-      .build(),
-  ]);
-  const highlight = createHighlightPart();
-  groupLayer1.add(layer1);
-  groupLayer1.add(highlight);
-  groupLayer1.add(list1);
-  list1.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-    createMenuItemStyleEdit(),
-  ]);
-  const identify = createDatasetPartIdentifyComponentBuilder('test identify')
-    .addMenus([
-      createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
-    ])
-    .build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer1);
-  return dataset;
 }
 
 export function createDatasetGeojsonWithIdentify() {
-  const dataset = createRootDataset('Geojson With Identify');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name: 'Geojson With Identify',
+    groupName: 'Group layer 1',
     features: [
       {
         type: 'Feature',
@@ -334,40 +311,27 @@ export function createDatasetGeojsonWithIdentify() {
         },
       },
     ],
+    layers: [{ styleType: 'area', layerId: 'layer area' }],
+    configure: ({ group, list, dataset }) => {
+      group.add(createHighlightPart());
+      list.addMenus([
+        createMenuItemToggleShow(),
+        createMenuItemShowDetailInfoSource(),
+        createMenuItemStyleEdit(),
+      ]);
+      dataset.add(
+        createDatasetPartIdentifyComponentBuilder('Geojson With Identify')
+          .addMenus([
+            createMenuItemToBoundActionForItem(),
+            createMenuItemShowDetailForItem([
+              { text: 'Id', value: 'id' },
+              { text: 'Name', value: 'name' },
+            ]),
+          ])
+          .build(),
+      );
+    },
   });
-  const groupLayer = createGroupDataset('Group layer 1');
-  const list = createDatasetPartListViewUiComponent('Geojson With Identify');
-  list.color = getChartRandomColor();
-  const layer1 = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const highlight = createHighlightPart();
-  groupLayer.add(layer1);
-  groupLayer.add(highlight);
-  groupLayer.add(list);
-  list.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-    createMenuItemStyleEdit(),
-  ]);
-  const identify = createDatasetPartIdentifyComponentBuilder(
-    'Geojson With Identify',
-  )
-    .addMenus([
-      createMenuItemToBoundActionForItem(),
-      createMenuItemShowDetailForItem([
-        { text: 'Id', value: 'id' },
-        { text: 'Name', value: 'name' },
-      ]),
-    ])
-    .build();
-  dataset.add(identify);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 export function convertMeasureTypeToStyleType(
@@ -498,9 +462,6 @@ export function createGroupSublistDemoDataset() {
   list.add(groupSubLayer2);
   return dataset;
 }
-
-/** @deprecated Use createGroupSublistDemoDataset */
-export const createExampleGroupLayer = createGroupSublistDemoDataset;
 
 export function createGroupIdentifyDemoDataset() {
   const dataset = createRootDataset('Geojson With Group Identify');
@@ -657,9 +618,6 @@ export function createGroupIdentifyDemoDataset() {
   dataset.add(groupLayer2);
   return dataset;
 }
-
-/** @deprecated Use createGroupIdentifyDemoDataset */
-export const createGroupIdentify = createGroupIdentifyDemoDataset;
 
 export const ALL_MAP_DATASET_FACTORIES = [
   createRasterDataset,

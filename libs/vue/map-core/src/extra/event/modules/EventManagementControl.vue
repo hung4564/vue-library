@@ -17,17 +17,13 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
 import MapCommonButton from '../../../components/MapCommonButton.vue';
-import {
-  defaultMapProps,
-  useMap,
-  useShow,
-  WithShowProps,
-} from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useLang } from '../../lang';
+import { useLang } from '../../lang/hook';
 import { useMapMittStore } from '../../mitt';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
 import { MapEventStore } from '../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {

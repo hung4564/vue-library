@@ -1,7 +1,8 @@
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/helpers';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { normalizeInitData, toFeatureCollection, toRecord } from './normalize';
+import { toFeatureCollection } from '../utils/feature-collection';
+import { normalizeInitData, toRecord } from './normalize';
 import type {
   DataFormat,
   DataRecord,

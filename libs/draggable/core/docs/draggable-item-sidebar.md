@@ -39,11 +39,12 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the sidebar.                          |
-| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| Vue             | React           | Description                                      |
+| --------------- | --------------- | ------------------------------------------------ |
+| `default`       | `children`      | Content of the sidebar.                          |
+| `title` (prop)  | `title`         | Plain string for the switcher menu and default header. |
+| `title` (slot)  | `titleNode`     | Custom header title node; falls back to `title`. |
+| `after-title`   | `afterTitle`    | Immediately after title (before spacer).         |
 
 ## Usage
 

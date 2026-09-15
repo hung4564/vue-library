@@ -6,7 +6,7 @@ import { DraggableContainer } from '@hungpvq/react-draggable';
 import { MapOptions } from 'maplibre-gl';
 import { MapErrorToast } from '../components/MapErrorToast';
 import { MapContextProvider } from '../context/MapContext';
-import { ActionControl } from '../extra/event';
+import { ActionControl } from '../extra/event/modules/ActionControl';
 import { useBreakpoints } from '../hooks/useBreakpoints';
 import { useMapInstance } from '../hooks/useMapInstance';
 

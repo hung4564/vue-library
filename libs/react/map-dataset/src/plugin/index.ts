@@ -1,17 +1,14 @@
-import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
+import { registerDatasetRegistryComponents } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
-import {
-  AddToGroup,
-  ExportGeo,
-  ExportGeoFormatMenu,
-  IdentifyLayerAction,
-  LayerItemIcon,
-  SetOpacity,
-  ToggleShow,
-  ToggleShowButton,
-} from '../extra/component';
+import { AddToGroup } from '../extra/component/add-to-group';
+import { ExportGeo } from '../extra/component/export-geo';
+import { ExportGeoFormatMenu } from '../extra/component/export-geo-menu';
+import { IdentifyLayerAction } from '../extra/component/identify';
+import { LayerItemIcon } from '../extra/component/layer-item-icon';
+import { SetOpacity } from '../extra/component/set-opacity';
+import { ToggleShow } from '../extra/component/toggle-show';
+import { ToggleShowButton } from '../extra/component/toggle-show-button';
 import { AttributeTable } from '../modules/AttributeTable/AttributeTable';
 import { AttributeTableGrid } from '../modules/AttributeTable/AttributeTableGrid';
 import { AttributeTablePager } from '../modules/AttributeTable/AttributeTablePager';
@@ -31,89 +28,31 @@ import { MultiStyle } from '../modules/StyleControl/style/MultiStyle';
 export function createDatasetRegistryPlugin() {
   return {
     install() {
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.legendLinear,
-        LayerLegendLinearGradient,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.legendColor,
-        LayerLegendSingleColor,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.legendText,
-        LayerLegendSingleText,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
-        MultiLegend,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.layerIcon,
-        LayerItemIcon,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.layerDetail,
-        LayerDetail,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail,
-        DatasetDetail,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.styleControl,
-        StyleControl,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.styleMultiControl,
-        MultiStyle,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.toggleShow,
-        ToggleShow,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
-        ToggleShowButton,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,
-        SetOpacity,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
-        AddToGroup,
-      );
-      UniversalRegistry.registerComponent(
-        GEO_EXPORT_COMPONENT_KEY.root,
-        ExportGeo,
-      );
-      UniversalRegistry.registerComponent(
-        GEO_EXPORT_COMPONENT_KEY.formatMenu,
-        ExportGeoFormatMenu,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.identify,
-        IdentifyLayerAction,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
-        AttributeTable,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,
-        AttributeTableView,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar,
-        AttributeTableToolbar,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.attributeTablePager,
-        AttributeTablePager,
-      );
-      UniversalRegistry.registerComponent(
-        LIST_VIEW_MENU_COMPONENT_KEY.attributeTableGrid,
-        AttributeTableGrid,
+      registerDatasetRegistryComponents(
+        UniversalRegistry.registerComponent.bind(UniversalRegistry),
+        {
+          legendLinear: LayerLegendLinearGradient,
+          legendColor: LayerLegendSingleColor,
+          legendText: LayerLegendSingleText,
+          legendMulti: MultiLegend,
+          layerIcon: LayerItemIcon,
+          layerDetail: LayerDetail,
+          styleControl: StyleControl,
+          datasetDetail: DatasetDetail,
+          styleMultiControl: MultiStyle,
+          toggleShow: ToggleShow,
+          toggleShowButton: ToggleShowButton,
+          setOpacity: SetOpacity,
+          addToGroup: AddToGroup,
+          exportGeo: ExportGeo,
+          exportGeoMenu: ExportGeoFormatMenu,
+          identify: IdentifyLayerAction,
+          attributeTable: AttributeTable,
+          attributeTableView: AttributeTableView,
+          attributeTableToolbar: AttributeTableToolbar,
+          attributeTablePager: AttributeTablePager,
+          attributeTableGrid: AttributeTableGrid,
+        },
       );
     },
   };

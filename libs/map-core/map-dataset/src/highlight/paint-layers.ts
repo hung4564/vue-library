@@ -11,21 +11,27 @@ import type {
   LayerSpecification,
   LineLayerSpecification,
 } from 'maplibre-gl';
-import type { WithDataHelper } from '../extra';
-import type { IDataset } from '../interfaces';
+import type { WithDataHelper } from '../extra/data';
+import type { IDataset } from '../interfaces/dataset.base';
 import { loggerHighlight } from '../logger';
-import { findFirstLeafByType } from '../model/visitors/helpers';
+import { findPartByType } from '../model/visitors/helpers';
+import { isFeatureCollection } from '../utils/feature-collection';
 import type {
   HighlightFilterCreator,
   HighlightGeoJson,
   HighlightLayerIds,
 } from './types';
 
-function isFeatureCollection(
-  feature: HighlightGeoJson | undefined,
-): feature is FeatureCollection {
-  return !!feature && feature.type === 'FeatureCollection';
-}
+/** Dataset passed into paint helpers — optional getData for layer paint merge. */
+type HighlightPaintDataset = IDataset & Partial<WithDataHelper>;
+
+type HighlightLayerKey =
+  | 'pointHalo'
+  | 'lineHalo'
+  | 'polygonHalo'
+  | 'point'
+  | 'line'
+  | 'polygon';
 
 function scalarProperty(
   feature: GeoJSONFeature | Feature | undefined,
@@ -541,7 +547,7 @@ export function featureStatePulseAnimate(props: {
 }
 
 export function ensureHighlightSource(
-  base: (IDataset & WithDataHelper) | undefined,
+  base: HighlightPaintDataset | undefined,
   map: MapSimple,
   feature?: HighlightGeoJson,
   filterCreator?: HighlightFilterCreator,
@@ -549,7 +555,7 @@ export function ensureHighlightSource(
 ): { sourceId: string; isolated: boolean } {
   const highlightFilter = createHighlightFilter(feature, filterCreator);
   if (base && (highlightFilter || preferDatasetSource)) {
-    const sourceLeaf = findFirstLeafByType(base, 'source');
+    const sourceLeaf = findPartByType(base, 'source');
     if (sourceLeaf) {
       const sourceId = (
         sourceLeaf as unknown as { getSourceId: () => string }
@@ -589,7 +595,7 @@ export function ensureHighlightLayers(
   map: MapSimple,
   layerIds: HighlightLayerIds,
   layersDefault: Record<string, Partial<LayerSpecification>>,
-  dataset: WithDataHelper | undefined,
+  dataset: HighlightPaintDataset | undefined,
   sourceId: string,
   feature?: HighlightGeoJson,
   filterCreator?: HighlightFilterCreator,
@@ -603,7 +609,7 @@ export function ensureHighlightLayers(
   layerEntries(layerIds).forEach(([key, id]) => {
     const baseLayer = layersDefault[key];
     if (!baseLayer) return;
-    const datasetData = dataset?.getData() as
+    const datasetData = dataset?.getData?.() as
       | (Partial<LayerSpecification> & { filter?: FilterSpecification })
       | undefined;
     const mergedFilter = mergeFilters([

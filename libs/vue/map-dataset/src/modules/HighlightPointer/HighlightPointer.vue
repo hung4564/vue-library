@@ -3,7 +3,7 @@ import type { HighlightStyle } from '@hungpvq/map-dataset/highlight';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { useMap } from '@hungpvq/vue-map-core';
 import { onMounted, onUnmounted, watch } from 'vue';
-import { useHighlight } from '../../store/highlight';
+import { useMapHighlight } from '../../store/highlight';
 
 const props = withDefaults(
   defineProps<{
@@ -19,7 +19,7 @@ const props = withDefaults(
 );
 
 const { mapId } = useMap();
-const hl = useHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 let unbind: (() => void) | undefined;
 
 function applyDefaults() {

@@ -1,5 +1,5 @@
 import { isDataManagementView } from '../utils/check';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import {
   buildAttributeTable,
   filterAttributeTableRows,
@@ -12,10 +12,10 @@ import {
   sortAttributeTableRows,
   type AttributeTableSortState,
 } from './sort';
-import { toFeatureCollection } from '../data-management/normalize';
+import { toFeatureCollection } from '../utils/feature-collection';
 import type { DataManagementPart } from '../data-management/types';
 import { getDatasetFeatureCollection } from '../geo-export/dataset';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import type { Feature, FeatureCollection } from 'geojson';
 
 export const ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE = 50;

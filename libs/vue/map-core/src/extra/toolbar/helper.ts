@@ -17,8 +17,6 @@ import type { WithMapPropType } from '@hungpvq/map-core';
 import { useResolvedControlLayout } from '../../hooks/useMap';
 import { useMapToolbarModule } from './store';
 
-export type { ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
-
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(
   control: T,
 ) {

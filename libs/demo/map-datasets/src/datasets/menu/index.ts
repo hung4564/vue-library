@@ -1,5 +1,6 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { createDatasetPartBoundComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
@@ -55,51 +56,31 @@ function createCustomWithTransformMenuItem(
 }
 
 export function createDefaultMenuSupportDataset() {
-  const dataset = createRootDataset('Default menu support');
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name: 'Default menu support',
+    groupName: 'Group layer 1',
     features: [DEMO_POLYGON],
-  });
-  const groupLayer1 = createGroupDataset('Group layer 1');
-  const list1 = createDatasetPartListViewUiComponentBuilder(
-    'Default menu support',
-  )
-    .setColor(getChartRandomColor())
-    .configDisabledDelete()
-    .addMenus([
+    configDisabledDelete: true,
+    layers: [{ styleType: 'area', layerId: 'layer' }],
+    menus: [
       createMenuItemToggleShow(),
       createMenuItemStyleEdit(),
       createMenuItemShowDetailInfoSource(),
       createMenuItemToBoundActionForList({ bbox: DEMO_BBOX }),
-    ])
-    .build();
-  const layer1 = createMultiMapboxLayerComponent('layer', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list1.color)
-      .build(),
-  ]);
-  groupLayer1.add(layer1);
-  groupLayer1.add(list1);
-  dataset.add(source);
-  dataset.add(groupLayer1);
-  return dataset;
+    ],
+  });
 }
 
 /** Separate layer: Fill bound reads bound part; Update bbox toggles getData(). */
 export function createDynamicBoundMenuDataset() {
   const name = 'Dynamic bound (update bbox)';
-  const dataset = createRootDataset(name);
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name,
     features: [DEMO_POLYGON],
-  });
-  const bound = createDatasetPartBoundComponent(name, DEMO_BBOX);
-  const groupLayer = createGroupDataset(name);
-  const list = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor(getChartRandomColor())
-    .configDisabledDelete()
-    .addMenus([
+    bbox: DEMO_BBOX,
+    configDisabledDelete: true,
+    layers: [{ styleType: 'area', layerId: 'layer' }],
+    menus: ({ bound }) => [
       createMenuItemToggleShow(),
       createMenuItemToBoundActionForList(),
       createCustomMenuItem(
@@ -107,61 +88,35 @@ export function createDynamicBoundMenuDataset() {
         'Update bbox',
         createMenuClickBuilder()
           .addCommand(() => {
-            const current = bound.getData();
+            const current = bound!.getData();
             const next =
               current[0] === DEMO_BBOX[0] ? DEMO_LIST_BBOX : DEMO_BBOX;
-            bound.setData(next);
+            bound!.setData(next);
             console.info('bound bbox updated', next);
           })
           .build(),
       ),
-    ])
-    .build();
-  const layer = createMultiMapboxLayerComponent('layer', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  groupLayer.add(layer);
-  groupLayer.add(list);
-  dataset.add(source);
-  dataset.add(bound);
-  dataset.add(groupLayer);
-  return dataset;
+    ],
+  });
 }
 
 /** Layer with identify sibling: Identify icon (extra) + ⋮ row (menu). */
 export function createIdentifyMenuDataset() {
   const name = 'Layer identify menu';
-  const dataset = createRootDataset(name);
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name,
     features: [DEMO_POLYGON],
-  });
-  const groupLayer = createGroupDataset(name);
-  const list = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor(getChartRandomColor())
-    .configDisabledDelete()
-    .addMenus([
+    configDisabledDelete: true,
+    layers: [{ styleType: 'area', layerId: 'layer' }],
+    menus: [
       createMenuItemToggleShow(),
       createMenuItemIdentifyForList(),
       createMenuItemIdentifyForList({ location: 'menu' }),
-    ])
-    .build();
-  const layer = createMultiMapboxLayerComponent('layer', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .build(),
-  ]);
-  const identify = createDatasetPartIdentifyComponentBuilder(name).build();
-  groupLayer.add(layer);
-  groupLayer.add(list);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  dataset.add(identify);
-  return dataset;
+    ],
+    configure: ({ dataset }) => {
+      dataset.add(createDatasetPartIdentifyComponentBuilder(name).build());
+    },
+  });
 }
 
 /** Default menus on a shared `menu` part: list uses `for: 'layer'`, identify/table use `for: 'item'`. */
@@ -596,7 +551,6 @@ export function createCustomChainSupportDataset() {
 /** Layer with a custom ToggleShow component (override menu componentKey). */
 export function createCustomToggleButtonDataset() {
   const name = 'Custom toggle button (per layer)';
-  const dataset = createRootDataset(name);
   const features = [
     demoPolygon(
       [
@@ -615,49 +569,37 @@ export function createCustomToggleButtonDataset() {
       name: 'Custom toggle point',
     }),
   ];
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
-    features,
-  });
   const bbox: [number, number, number, number] = [
     106.15, 20.55, 106.32, 20.68,
   ];
-  const bound = createDatasetPartBoundComponent(name, bbox);
-  const groupLayer = createGroupDataset(name);
-  const list = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor('#2a9d8f')
-    .configDisabledDelete()
-    .addMenus([
+  return createGeoJsonListDataset({
+    name,
+    features,
+    bbox,
+    color: '#2a9d8f',
+    configDisabledDelete: true,
+    layers: [
+      {
+        styleType: 'area',
+        layerId: 'layer area',
+        opacity: 0.55,
+        filter: ['==', '$type', 'Polygon'],
+      },
+      {
+        styleType: 'point',
+        layerId: 'layer point',
+        filter: ['==', '$type', 'Point'],
+      },
+    ],
+    menus: [
       createMenuItemToggleShow({
         componentKey: DEMO_LAYER_TOGGLE_SHOW_KEY,
       }),
       createMenuItemStyleEdit(),
       createMenuItemShowDetailInfoSource(),
       createMenuItemToBoundActionForList({ bbox }),
-    ])
-    .build();
-  const layerArea = createMultiMapboxLayerComponent('layer area', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('area')
-      .setColor(list.color)
-      .setOpacity(0.55)
-      .setFilter(['==', '$type', 'Polygon'])
-      .build(),
-  ]);
-  const layerPoint = createMultiMapboxLayerComponent('layer point', [
-    new LayerSimpleMapboxBuild()
-      .setStyleType('point')
-      .setColor(list.color)
-      .setFilter(['==', '$type', 'Point'])
-      .build(),
-  ]);
-  groupLayer.add(layerArea);
-  groupLayer.add(layerPoint);
-  groupLayer.add(list);
-  dataset.add(source);
-  dataset.add(bound);
-  dataset.add(groupLayer);
-  return dataset;
+    ],
+  });
 }
 
 export const MENU_DEMO_DATASET_FACTORIES = [

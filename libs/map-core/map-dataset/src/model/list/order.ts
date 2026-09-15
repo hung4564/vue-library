@@ -1,7 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { hasMoveLayer } from '../../utils/check';
-import { traverseTree } from '../visitors';
+import { traverseTree } from '../visitors/traverse';
 import type { IGroupListViewUI, IListViewUI } from './types';
 
 type GroupNode = {

@@ -1,6 +1,7 @@
 import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
 import { bbox as turfBbox } from '@turf/turf';
 import { UniversalRegistry } from '../registry/universal-registry';
+import { isValidBbox } from './bbox';
 import type {
   CoordinatesNumber,
   Feature,
@@ -339,13 +340,6 @@ export function fitBounds(
   }
 }
 
-function isValidTurfBbox(box: number[]): box is GeojsonBbox {
-  return (
-    box.length === 4 &&
-    box.every((n) => typeof n === 'number' && Number.isFinite(n))
-  );
-}
-
 /**
  * GeoJSON bbox `[minLng, minLat, maxLng, maxLat]` via Turf, or undefined if empty.
  */
@@ -355,7 +349,7 @@ export function bboxFromGeojson(
   if (!feature) return undefined;
   try {
     const box = turfBbox(feature as never);
-    if (!isValidTurfBbox(box)) return undefined;
+    if (!isValidBbox(box)) return undefined;
     return [box[0], box[1], box[2], box[3]];
   } catch {
     return undefined;

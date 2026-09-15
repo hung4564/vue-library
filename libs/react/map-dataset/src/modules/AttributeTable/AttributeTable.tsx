@@ -49,7 +49,7 @@ import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useHighlight } from '../../store';
+import { useMapHighlight } from '../../store/highlight';
 import { AttributeTableView } from './AttributeTableView';
 
 export function AttributeTable(props: AttributeTableProps) {
@@ -58,7 +58,7 @@ export function AttributeTable(props: AttributeTableProps) {
     ...merged,
     controlId: ATTRIBUTE_TABLE_CONTROL.id,
   });
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
   const hlRef = useRef(hl);
   hlRef.current = hl;
   const { trans, setLocaleDefault } = useLang(mapId);

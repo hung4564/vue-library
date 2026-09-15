@@ -14,7 +14,7 @@ import {
   onUnmounted,
   shallowRef,
 } from 'vue';
-import { getMap } from '../../../store';
+import { getMap } from '../../../store/store';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';

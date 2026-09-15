@@ -1,4 +1,4 @@
-import { createWithDataHelper } from '../extra';
+import { createWithDataHelper } from '../extra/data';
 import type { DatasetMenuEntry, IMenuView } from '../interfaces/dataset.parts';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';

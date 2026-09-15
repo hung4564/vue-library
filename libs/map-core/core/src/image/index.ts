@@ -3,6 +3,12 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
 export { createDefaultImageStore } from './types';
+export { createMapImageStoreApi } from './store-api';
+export type { MapImageGetMapFn } from './store-api';
+export {
+  listMapStyleImages,
+  subscribeMapStyleImages,
+} from './map-images';
 export {
   addImageForMap,
   loadImage,

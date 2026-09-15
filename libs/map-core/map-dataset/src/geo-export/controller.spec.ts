@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { FeatureCollection } from 'geojson';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { setGeoExportActiveSource, clearGeoExportActiveSource } from './active-source';
 import { createGeoExportController } from './controller';
 

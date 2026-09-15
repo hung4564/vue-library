@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { BufferingLogEntry as LogEntry } from '@hungpvq/map-core/devtools';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import type { LogEntry } from '../log-adapter';
 import GroupItem from './GroupItem.vue';
 import TreeItem from './TreeItem.vue';
 

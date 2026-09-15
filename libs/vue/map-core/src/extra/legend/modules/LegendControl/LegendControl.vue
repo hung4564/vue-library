@@ -10,14 +10,14 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 import { MapCommonButton } from '../../../../components';
-import { useEventListener } from '../../../../extra/event';
-import { useLang } from '../../../../extra/lang';
-import { useRegisterMapControl } from '../../../../extra/registry';
-import { useToolbarControl } from '../../../../extra/toolbar';
+import { useEventListener } from '../../../../extra/event/hook/useEvent';
+import { useLang } from '../../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../../extra/toolbar/helper';
 import { InputCheckbox } from '../../../../field';
 import { defaultMapProps, useMap } from '../../../../hooks/useMap';
 import { useShow } from '../../../../hooks/useShow';
-import { ModuleContainer } from '../../../../modules';
+import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLayerLegend } from '../../lib/useLayerLegend';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

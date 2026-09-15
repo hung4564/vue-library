@@ -9,7 +9,7 @@ import Icon from '@mdi/react';
 import { useEffect, useRef, useState } from 'react';
 import type Sortable from 'sortablejs';
 import { ListItem } from '../../List/ListItem';
-import type { GroupTree } from './utils';
+import type { GroupTree } from './types';
 
 const ICON_SIZE = '14px';
 

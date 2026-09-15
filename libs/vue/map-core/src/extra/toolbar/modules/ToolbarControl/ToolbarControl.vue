@@ -31,9 +31,9 @@ import {
 } from 'vue';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../../components/MapControlGroupButton.vue';
-import { defaultMapProps, useMap } from '../../../../hooks';
+import { defaultMapProps, useMap } from '../../../../hooks/useMap';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useLang } from '../../../lang';
+import { useLang } from '../../../lang/hook';
 import { useMapToolbar } from '../../store';
 
 const CORNER_POSITIONS: Position[] = [

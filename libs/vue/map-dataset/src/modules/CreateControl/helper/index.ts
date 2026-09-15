@@ -1,17 +1,12 @@
 import {
-  LAYER_TYPES,
   LayerHelper as CoreLayerHelper,
   type LayerType,
 } from '@hungpvq/map-dataset/create-control';
-import {
-  ConfigNo,
-  ConfigRasterJson,
-  ConfigRasterSettings,
-  GeojsonSettings,
-  GeojsonUpload,
-} from '../config';
-
-export { LAYER_TYPES, type LayerType };
+import ConfigNo from '../config/no-config.vue';
+import ConfigRasterJson from '../config/xyz-json.vue';
+import ConfigRasterSettings from '../config/xyz-settings.vue';
+import GeojsonSettings from '../config/geojson-settings.vue';
+import GeojsonUpload from '../config/geojson-upload.vue';
 
 /** Vue UI binder over core create/validate helpers. */
 export class LayerHelper {

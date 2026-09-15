@@ -1,4 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
+import type { LayerSpecification } from 'maplibre-gl';
+import type { WithDataHelper } from '../extra/data';
+import type { IDataset } from '../interfaces/dataset.base';
 import {
   createDefaultHighlightLayerIds,
   createDefaultHighlightLayers,
@@ -9,23 +12,166 @@ import {
   applyHighlightFeatureState,
   clearHighlightFeatureState,
   DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY,
+  ensureHighlightLayers,
+  ensureHighlightSource,
   featureStatePulseAnimate,
+  type HighlightAnimState,
 } from './paint-layers';
-import { markerCentroidCollection } from './geometry';
+import { markerCentroidCollection } from './popup';
 import type { IHighlightPart } from './part';
-import { createPaintAnimationSession } from './paint-session';
 import { mergeEntriesToFeatureCollection } from './resolve-data';
 import type {
   HighlightAnimateFn,
   HighlightEntry,
+  HighlightFilterCreator,
+  HighlightGeoJson,
   HighlightLayerIds,
   HighlightStyle,
 } from './types';
+
+type HighlightPaintDataset = IDataset & Partial<WithDataHelper>;
 
 type PaintSession = {
   stop: (map: MapSimple) => void;
   clearFeatureState?: (map: MapSimple) => void;
 };
+
+function layerEntries(layerIds: HighlightLayerIds) {
+  return Object.entries(layerIds).filter(
+    (entry): entry is [string, string] => typeof entry[1] === 'string',
+  );
+}
+
+/** Private paint animation session — replaces former public `useHighlightAnimation`. */
+function createPaintAnimationSession() {
+  const animStates: Record<string, HighlightAnimState> = {};
+  const callbacks: Record<
+    string,
+    {
+      onStart?: () => void;
+      onDone?: () => void;
+      onCancel?: () => void;
+    }
+  > = {};
+
+  function removeHighlightLayers(map: MapSimple, layerIds: HighlightLayerIds) {
+    layerEntries(layerIds).forEach(([, layerId]) => {
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+    });
+  }
+
+  function cancelAnimation(map: MapSimple, cancelled = false) {
+    const id = (map as MapSimple).id || 'default';
+    const state = animStates[id];
+    if (!state) return;
+    if (state.frameId) cancelAnimationFrame(state.frameId);
+    if (state.timeoutId) clearTimeout(state.timeoutId);
+    delete animStates[id];
+    if (cancelled) callbacks[id]?.onCancel?.();
+  }
+
+  function stopAnimation(
+    map: MapSimple,
+    layerIds: HighlightLayerIds,
+    cancelled = true,
+  ) {
+    cancelAnimation(map, cancelled);
+    removeHighlightLayers(map, layerIds);
+  }
+
+  function startAnimation(
+    map: MapSimple,
+    layerIds: HighlightLayerIds,
+    durationMs = 5000,
+    animateFn: HighlightAnimateFn | null = defaultAnimate,
+    initialState: Record<string, unknown> = {},
+  ) {
+    cancelAnimation(map, false);
+    layerEntries(layerIds).forEach(([, lid]) => {
+      if (map.getLayer(lid)) {
+        map.moveLayer(lid);
+      }
+    });
+    const id = (map as MapSimple).id || 'default';
+
+    callbacks[id]?.onStart?.();
+
+    animStates[id] = {
+      frameId: null,
+      timeoutId: null,
+      ...initialState,
+    };
+
+    if (animateFn) {
+      const run = animateFn;
+      const loop = () => {
+        const state = animStates[id];
+        if (!state) return;
+        run({ map, layerIds, state });
+        state.frameId = requestAnimationFrame(loop);
+      };
+      loop();
+    }
+
+    if (durationMs > 0) {
+      animStates[id].timeoutId = setTimeout(() => {
+        stopAnimation(map, layerIds, false);
+        callbacks[id]?.onDone?.();
+      }, durationMs);
+    }
+  }
+
+  function initAnimation({
+    layerIds,
+    dataset,
+    map,
+    feature,
+    layers,
+    filterCreator,
+    skipHighlightFilter = false,
+  }: {
+    dataset?: HighlightPaintDataset;
+    map: MapSimple;
+    feature?: HighlightGeoJson;
+    layerIds: HighlightLayerIds;
+    layers: Record<string, Partial<LayerSpecification>>;
+    filterCreator?: HighlightFilterCreator;
+    skipHighlightFilter?: boolean;
+  }) {
+    const { sourceId, isolated } = ensureHighlightSource(
+      dataset,
+      map,
+      feature,
+      filterCreator,
+      skipHighlightFilter,
+    );
+    ensureHighlightLayers(
+      map,
+      layerIds,
+      layers,
+      dataset,
+      sourceId,
+      feature,
+      filterCreator,
+      isolated,
+      skipHighlightFilter,
+    );
+    return { sourceId, isolated };
+  }
+
+  function setOnDone(map: MapSimple, cb: () => void) {
+    const id = (map as MapSimple).id || 'default';
+    callbacks[id] = callbacks[id] || {};
+    callbacks[id].onDone = cb;
+  }
+
+  return {
+    startAnimation,
+    stopAnimation,
+    initAnimation,
+    setOnDone,
+  };
+}
 
 function changeColorAnimate({
   map,

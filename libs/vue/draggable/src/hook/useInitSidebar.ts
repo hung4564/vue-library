@@ -1,7 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useSidebarItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitSidebar(
   containerId: string,

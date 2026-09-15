@@ -1,15 +1,17 @@
 import type { FeatureCollection } from 'geojson';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { findGeojsonSource } from '../geojson/find-source';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isDataManagementView } from '../utils/check';
 import { convertFeatureCollectionToFile } from './convert';
 import { reprojectFeatureCollectionForExport } from './crs';
 import { downloadBlob, sanitizeExportFilename } from './download';
 import {
-  GEO_EXPORT_FORMAT_META,
+  asFeatureCollection,
   recordsToFeatureCollection,
-  toFeatureCollection,
+} from '../utils/feature-collection';
+import {
+  GEO_EXPORT_FORMAT_META,
   type GeoExportFormat,
 } from './types';
 
@@ -28,9 +30,9 @@ async function resolveGeojsonData(
     if (!response.ok) {
       throw new Error(`Failed to fetch GeoJSON: ${response.status}`);
     }
-    return toFeatureCollection(await response.json());
+    return asFeatureCollection(await response.json());
   }
-  return toFeatureCollection(data);
+  return asFeatureCollection(data);
 }
 
 export async function getDatasetFeatureCollection(

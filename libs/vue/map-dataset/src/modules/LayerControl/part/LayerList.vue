@@ -21,7 +21,7 @@ import {
   VNode,
   watch,
 } from 'vue';
-import { useMapDataset } from '../../../store';
+import { useMapDataset } from '../../../store/dataset-api';
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';

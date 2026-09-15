@@ -1,7 +1,7 @@
+import { logger } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { defineComponent, h, type PropType } from 'vue';
-import { logger } from '../../logger';
 import LayerLegendLinearGradient from './parts/linear-gradient.vue';
 import LayerLegendSingleColor from './parts/single-color.vue';
 import LayerLegendSingleText from './parts/single-value.vue';

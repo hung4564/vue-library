@@ -1,129 +1,64 @@
-import { errorHandler } from '@hungpvq/map-core';
-import { DevtoolLogAdapter, LogEntry } from './log-adapter';
+import {
+  clearDevtoolErrors,
+  clearDevtoolLogs,
+  createDevtoolLogAdapter,
+  getDevtoolState,
+  initDevtoolStoreCore,
+  openMapDevtoolsErrors,
+  replaceDevtoolErrors,
+  replaceDevtoolLogs,
+  setDevtoolActiveTab,
+  setDevtoolOpen,
+  subscribeDevtoolState,
+  toggleDevtoolOpen,
+  type DevtoolErrorRecord,
+  type DevtoolLogEntry,
+  type DevtoolTab,
+} from '@hungpvq/map-core/devtools';
 
-export interface ErrorRecord {
-  code: string;
-  message: string;
-  context?: Record<string, unknown>;
-  stack?: string;
-  recoverable: boolean;
-  timestamp: number;
-}
+export type ErrorRecord = DevtoolErrorRecord;
 
-export type DevtoolTab = 'store' | 'logs' | 'errors';
+export type { DevtoolTab };
+export type { DevtoolLogEntry as LogEntry };
 
-type DevtoolState = {
-  isOpen: boolean;
-  activeTab: DevtoolTab;
-  errors: ErrorRecord[];
-  logs: LogEntry[];
+initDevtoolStoreCore();
+
+export {
+  clearDevtoolErrors,
+  clearDevtoolLogs,
+  getDevtoolState,
+  openMapDevtoolsErrors,
+  setDevtoolActiveTab,
+  setDevtoolOpen,
+  subscribeDevtoolState,
+  toggleDevtoolOpen,
 };
-
-let state: DevtoolState = {
-  isOpen: false,
-  activeTab: 'store',
-  errors: [],
-  logs: [],
-};
-
-const listeners = new Set<() => void>();
-
-function notify() {
-  listeners.forEach((listener) => listener());
-}
-
-export function subscribeDevtoolState(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-export function getDevtoolState(): DevtoolState {
-  return state;
-}
-
-export function toggleDevtoolOpen() {
-  state = { ...state, isOpen: !state.isOpen };
-  notify();
-}
-
-export function setDevtoolOpen(open: boolean) {
-  if (state.isOpen === open) return;
-  state = { ...state, isOpen: open };
-  notify();
-}
-
-export function setDevtoolActiveTab(activeTab: DevtoolTab) {
-  state = { ...state, activeTab };
-  notify();
-}
-
-/** Open the Devtools panel on the Errors tab. */
-export function openMapDevtoolsErrors() {
-  state = { ...state, isOpen: true, activeTab: 'errors' };
-  notify();
-}
-
-const OPEN_DEVTOOLS_ERRORS_EVENT = 'hungpvq:map-open-devtools-errors';
-
-if (typeof window !== 'undefined') {
-  window.addEventListener(OPEN_DEVTOOLS_ERRORS_EVENT, () => {
-    openMapDevtoolsErrors();
-  });
-}
-
-export function clearDevtoolLogs() {
-  state = { ...state, logs: [] };
-  notify();
-}
-
-export function clearDevtoolErrors() {
-  state = { ...state, errors: [] };
-  notify();
-}
 
 export const devtoolState = {
   get isOpen() {
-    return state.isOpen;
+    return getDevtoolState().isOpen;
   },
   set isOpen(value: boolean) {
-    state = { ...state, isOpen: value };
-    notify();
+    setDevtoolOpen(value);
   },
   get activeTab() {
-    return state.activeTab;
+    return getDevtoolState().activeTab;
   },
   set activeTab(value: DevtoolTab) {
-    state = { ...state, activeTab: value };
-    notify();
+    setDevtoolActiveTab(value);
   },
   get errors() {
-    return state.errors;
+    return getDevtoolState().errors;
   },
   set errors(value: ErrorRecord[]) {
-    state = { ...state, errors: value };
-    notify();
+    replaceDevtoolErrors(value);
   },
   get logs() {
-    return state.logs;
+    return getDevtoolState().logs;
   },
-  set logs(value: LogEntry[]) {
-    state = { ...state, logs: value };
-    notify();
+  set logs(value: DevtoolLogEntry[]) {
+    replaceDevtoolLogs(value);
   },
 };
 
-export const devtoolLogAdapter = new DevtoolLogAdapter();
-
-errorHandler.onError((error) => {
-  devtoolState.errors = [
-    {
-      code: error.code,
-      message: error.message,
-      context: error.context,
-      stack: error.stack,
-      recoverable: error.recoverable,
-      timestamp: Date.now(),
-    },
-    ...devtoolState.errors,
-  ].slice(0, 50);
-});
+export const devtoolLogAdapter = createDevtoolLogAdapter();

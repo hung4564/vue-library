@@ -1,7 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useRef, useState } from 'react';
 import { useDragItem, useDrawerItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitDrawer(
   containerId: string,

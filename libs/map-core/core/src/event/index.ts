@@ -6,7 +6,7 @@ export { startBoxRangerMap } from './bbox-selector';
 export { EventManager, normalizeEventFrom } from './event-manager.service';
 export { EVENT_CONTROL_LOCALE } from './locale';
 export { Event } from './model/Event';
-export { EventBboxRanger } from './model/EventBboxSelect';
+export { EventBboxRanger } from './model/EventBboxRanger';
 export { EventClick, EventMouseMove } from './model/EventClick';
 export { EventContextMenu } from './model/EventContextMenu';
 export { createDefaultEventStore, MittTypeMapEventEventKey } from './types';

@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Home (All Map)' },
   { to: '/map-core', label: 'Map - Core' },
   { to: '/minimal', label: 'Minimal starter' },
+  { to: '/map-dataset', label: 'Map - Dataset (all)' },
   { to: '/worker-sample', label: 'Worker - Sample' },
   { to: '/toolbar', label: 'Map - Toolbar' },
   { to: '/mobile-menu', label: 'Map - Mobile menu' },

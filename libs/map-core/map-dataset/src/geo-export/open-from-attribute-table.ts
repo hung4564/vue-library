@@ -1,4 +1,4 @@
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { createMenuClickBuilder } from '../menu/builder';
 import { handleMenuActionClick } from '../menu/handle';
 import { LIST_VIEW_MENU_ID } from '../menu/items';

@@ -1,19 +1,11 @@
 import type { Feature, FeatureCollection } from 'geojson';
 import type { FilterSpecification, GeoJSONFeature } from 'maplibre-gl';
 import { loggerHighlight } from '../logger';
-import { asFeatureCollection } from '../utils/feature-collection';
+import {
+  asFeatureCollection,
+  isFeatureCollection,
+} from '../utils/feature-collection';
 import type { HighlightDataContext, HighlightDataSource, HighlightGeoJson } from './types';
-
-function isFeatureCollection(
-  value: unknown,
-): value is FeatureCollection {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    (value as FeatureCollection).type === 'FeatureCollection' &&
-    Array.isArray((value as FeatureCollection).features)
-  );
-}
 
 function isFeature(value: unknown): value is Feature {
   return (
@@ -43,9 +35,7 @@ export function normalizeToHighlightGeoJson(
   return undefined;
 }
 
-export function toFeatureCollection(
-  geojson: HighlightGeoJson,
-): FeatureCollection {
+function featuresToCollection(geojson: HighlightGeoJson): FeatureCollection {
   return (
     asFeatureCollection(geojson) ?? {
       type: 'FeatureCollection',
@@ -59,7 +49,7 @@ export function mergeEntriesToFeatureCollection(
 ): FeatureCollection {
   const out: Feature[] = [];
   for (const item of features) {
-    out.push(...toFeatureCollection(item).features);
+    out.push(...featuresToCollection(item).features);
   }
   return { type: 'FeatureCollection', features: out };
 }

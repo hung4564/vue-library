@@ -9,7 +9,7 @@ import { DevtoolsPanelBody } from './DevtoolsPanelBody';
 import {
   isDevtoolsMobileViewport,
   resolveMapDragContainerId,
-} from './resolve-map-drag-container';
+} from '@hungpvq/map-core/devtools';
 import './devtools.css';
 
 const BOTTOM_ITEM_ID = 'map-devtools-bottom';

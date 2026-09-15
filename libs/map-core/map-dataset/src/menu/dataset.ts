@@ -1,12 +1,6 @@
-import type {
-  DatasetMenuEntry,
-  DatasetMenuFor,
-  IDataset,
-  IMenuView,
-  MenuAction,
-  WithMenuHelper,
-} from '../interfaces';
-import { findFirstLeafByType } from '../model/visitors';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { DatasetMenuEntry, DatasetMenuFor, IMenuView, MenuAction, WithMenuHelper } from '../interfaces/dataset.parts';
+import { findPartByType } from '../model/visitors/helpers';
 
 function menuActionFromEntry(entry: DatasetMenuEntry): MenuAction {
   const id = entry.menu.id ?? entry.key;
@@ -29,12 +23,12 @@ function getLocalMenus(dataset: IDataset | undefined): MenuAction[] {
 
 /** Nearest `menu` part from `dataset` (same tree). */
 function getMenuDataset(dataset: IDataset): IMenuView | undefined {
-  return findFirstLeafByType<IMenuView>(dataset, 'menu');
+  return findPartByType<IMenuView>(dataset, 'menu');
 }
 
 /** Nearest `identify` part from `dataset`, or `dataset` when none exists. */
 export function getItemMenuHost(dataset: IDataset): IDataset {
-  return findFirstLeafByType(dataset, 'identify') ?? dataset;
+  return findPartByType(dataset, 'identify') ?? dataset;
 }
 
 function mergeMenuActions(
@@ -56,7 +50,7 @@ function mergeMenuActions(
   return result;
 }
 
-/** Default menus from the nearest `menu` part (`findFirstLeafByType`). */
+/** Default menus from the nearest `menu` part (`findPartByType`). */
 function resolveDatasetDefaultMenus(
   dataset: IDataset,
   target: DatasetMenuFor,

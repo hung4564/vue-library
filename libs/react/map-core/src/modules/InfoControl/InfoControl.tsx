@@ -18,11 +18,12 @@ import {
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { useToolbarControl } from '../../extra/toolbar';
-import { MapControlButton } from '../../components';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { MapControlButton } from '../../components/MapControlButton';
 
-import { defaultMapProps, useMap } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import {
   ModuleContainer,
   type BindPosition,

@@ -23,9 +23,9 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'r
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { MapContext } from '../../../context/MapContext';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
+import { useLang } from '../../lang/hook';
 import { useMapToolbarStore } from '../store';
 
 const CORNER_POSITIONS: Position[] = [

@@ -2,7 +2,7 @@
 
 Paint selected / identified / pointer-picked features via **`@hungpvq/map-dataset/highlight`**.
 
-Dataset parts hold configuration only. Painting and pointer binding run through **`getHighlightController(mapId)`** (or adapter **`useHighlight(mapId)`**). Demo apps mount a thin **`HighlightPointer`** shell that calls `bindPointer` — there is no `LayerHighlight` control.
+Dataset parts hold configuration only. Painting and pointer binding run through **`getHighlightController(mapId)`** (or adapter **`useMapHighlight(mapId)`**). Demo apps mount a thin **`HighlightPointer`** shell that calls `bindPointer` — there is no `LayerHighlight` control.
 
 **Import:** always from `@hungpvq/map-dataset/highlight` (not the package root).
 
@@ -63,7 +63,7 @@ Shell must enable the matching events:
 <HighlightPointer enableClick enableHover />
 ```
 
-Adapters: `useHighlight(mapId).bindPointer({ click, hover })`. Core: `getHighlightController(mapId).bindPointer(…)`. Destroy with `destroyHighlightController(mapId)` from `@hungpvq/map-dataset/highlight` (do not re-export from Vue/React adapters).
+Adapters: `useMapHighlight(mapId).bindPointer({ click, hover })`. Core: `getHighlightController(mapId).bindPointer(…)`. Destroy with `destroyHighlightController(mapId)` from `@hungpvq/map-dataset/highlight` (do not re-export from Vue/React adapters).
 
 ## Controller
 
@@ -99,11 +99,11 @@ destroyHighlightController(mapId);
 ### Vue / React
 
 ```ts
-import { useHighlight } from '@hungpvq/vue-map-dataset';
-// or: import { useHighlight } from '@hungpvq/react-map-dataset';
+import { useMapHighlight } from '@hungpvq/vue-map-dataset';
+// or: import { useMapHighlight } from '@hungpvq/react-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 
-const hl = useHighlight(mapId);
+const hl = useMapHighlight(mapId);
 ```
 
 ## Vector-tile sample
@@ -158,6 +158,6 @@ Hover never shows a MapLibre popup. Imperative `show(..., { source: 'attribute-t
 
 1. Replace `createDatasetPart*Highlight*` → `createHighlightPart` from `/highlight`.
 2. Remove `IHighlightView` / `HighlightHandle` / `useHighlightAnimation` usage.
-3. Replace `<LayerHighlight …>` with app shell **`HighlightPointer`** (or `useHighlight().bindPointer`).
+3. Replace `<LayerHighlight …>` with app shell **`HighlightPointer`** (or `useMapHighlight().bindPointer`).
 4. Attribute-table / identify / menu call `show` / `hideIfSource` with `source: 'attribute-table' | 'identify' | …` — no mount requirement beyond the controller existing when you call it.
 5. Do not import highlight APIs from `@hungpvq/map-dataset` root.

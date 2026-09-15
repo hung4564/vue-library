@@ -9,7 +9,7 @@ import { useMapDatasetStore } from './dataset-api';
  * Map-scoped highlight facade over {@link getHighlightController}.
  * Syncs pick pool to every dataset part with `type: 'highlight'`.
  */
-export function useHighlight(mapId: string): HighlightController {
+export function useMapHighlight(mapId: string): HighlightController {
   return bindHighlightPickDatasets(mapId, () => {
     const store = useMapDatasetStore(mapId);
     if (!store) return [];

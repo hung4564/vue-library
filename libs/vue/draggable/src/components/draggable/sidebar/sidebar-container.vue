@@ -17,7 +17,7 @@ import {
   Ref,
   watch,
 } from 'vue';
-import { type LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import {
   useComponent,
   useContainerSize,

@@ -203,7 +203,7 @@ Documented `--map-*` tokens and `style.css` entries:
 ## 7. Reducing “everything is breaking”
 
 1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset` (`@hungpvq/map-dataset/geojson`), `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*` (`@hungpvq/map-dataset/menu`), CSS tokens, `MapControlHandle`. Runtime locks: `public-api.spec.ts` in map-core, map-dataset, vue/react map-core, vue/react map-dataset.
-2. **Named root barrels** (like draggable): `src/index.ts` exports only allowlisted symbols; `src/internal-barrel.ts` holds `export *` aggregation and is **not** a package entry. First-party types via explicit `export type { … }` only — do not re-export `geojson` / `maplibre-gl` types from the root.
+2. **Named root barrels** (like draggable): `src/index.ts` exports only allowlisted symbols via direct leaf imports (no `internal-barrel` aggregation). First-party types via explicit `export type { … }` only — do not re-export `geojson` / `maplibre-gl` types from the root.
 3. Mark non-Stable symbols **experimental** in `public-api.spec.ts` — may change in a **minor**; removing them from the root is a **major**.
 4. Feature subpaths (`@hungpvq/map-core/theme`, `./basemap`, …) are **public** entries. Moving symbols off the root onto a subpath without a root re-export is a **major**; adding a new subpath while keeping root is usually a **minor**.
 5. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.

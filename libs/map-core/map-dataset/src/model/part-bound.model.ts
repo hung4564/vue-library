@@ -1,7 +1,7 @@
 import type { BBox } from 'geojson';
-import { createWithDataHelper } from '../extra';
+import { createWithDataHelper } from '../extra/data';
 import type { IBoundView } from '../interfaces/dataset.parts';
-import { isValidBbox } from '../utils/bbox';
+import { isValidBbox } from '@hungpvq/map-core';
 import { createNamedComponent } from './base';
 import { createDatasetLeaf } from './dataset.base.function';
 

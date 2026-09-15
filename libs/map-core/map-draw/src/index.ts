@@ -1,34 +1,93 @@
 /**
  * Root barrel: explicit named exports (Stable).
- * Do not reintroduce `export *`. Aggregation lives in ./internal-barrel.
+ * Do not reintroduce `export *`. Direct leaf imports (no internal-barrel).
  */
 export {
-  DrawError,
-  DrawService,
   DrawingType,
   DrawingTypeName,
-  DRAW_CONTROL_LOCALE,
-  DRAW_MODES,
-  INSPECT_CONTROL_LOCALE,
-  MAP_DRAW_EVENT,
-  MapDraw,
-  StaticMode,
+} from './drawing-type';
+
+export {
+  DrawError,
+} from './errors/index';
+
+export {
   brightColor,
+} from './inspect/colors';
+
+export {
+  InspectController,
+  buildInspectQueryBox,
+} from './inspect/controller';
+
+export {
+  getSourcesFromMap,
+  isInspectStyle,
+  markInspectStyle,
+} from './inspect/inspect';
+
+export {
+  renderPopup,
+} from './inspect/renderPopup';
+
+export {
   generateColoredLayers,
   generateInspectStyle,
+} from './inspect/stylegen';
+
+export {
+  isDraftOption,
+} from './is-draft-option';
+
+export {
+  DRAW_CONTROL_LOCALE,
+  INSPECT_CONTROL_LOCALE,
+} from './locale';
+
+export {
+  DRAW_MODES,
+  MapDraw,
+} from './mapbox-draw';
+
+export {
+  StaticMode,
+} from './modes/static-mode';
+
+export {
+  DrawService,
+} from './services/draw.service';
+
+export {
+  createDefaultMapDrawStore,
+  runDrawCommit,
+  runDrawDiscard,
+  runDrawSave,
+  runDrawSetFeature,
+  runDrawStart,
+} from './store-helpers';
+
+export {
   getDrawStyles,
+} from './theme/index';
+
+export {
+  MAP_DRAW_EVENT,
+} from './types/index';
+
+export {
   getFeatureByMap,
   getFeatureId,
   getFirstFeatureByMap,
-  getSourcesFromMap,
-  InspectController,
-  buildInspectQueryBox,
-  isDraftOption,
-  isInspectStyle,
-  markInspectStyle,
-  renderPopup,
   sameFeature,
-} from './internal-barrel';
+} from './utils/index';
+
+export type {
+  InspectControllerOptions,
+} from './inspect/controller';
+
+export type {
+  InspectStyleSpecification,
+} from './inspect/inspect';
 
 export type {
   ChangeModeOptions,
@@ -37,19 +96,23 @@ export type {
   DrawDeleteEvent,
   DrawModeChangeEvent,
   DrawModeId,
-  DrawSaveFc,
-  DrawSaveFcParams,
   DrawSelectionChangeEvent,
   DrawUpdateEvent,
+  MapDrawOptions,
+} from './mapbox-draw';
+
+export type {
+  DrawSaveFc,
+  DrawSaveFcParams,
   IDraftRecord,
-  InspectControllerOptions,
-  InspectStyleSpecification,
   MapDrawAction,
   MapDrawConfig,
   MapDrawDraftOption,
   MapDrawEvent,
   MapDrawOption,
   MapDrawOptionSimple,
-  MapDrawOptions,
   MapDrawStore,
-} from './internal-barrel';
+} from './types/index';
+
+/** @experimental Root logger namespace — may change in a minor. */
+export { logger } from './logger';

@@ -13,7 +13,7 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
-import { isDraftOption } from '../../../store';
+import { isDraftOption } from '@hungpvq/map-draw';
 
 defineProps<{
   drawOptions?: MapDrawOption;

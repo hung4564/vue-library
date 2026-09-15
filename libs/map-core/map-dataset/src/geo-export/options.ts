@@ -1,5 +1,5 @@
 import type { FeatureCollection } from 'geojson';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import type { AttributeTableSortState } from '../attribute-table/sort';
 import type { GeoExportFormat } from './types';
 

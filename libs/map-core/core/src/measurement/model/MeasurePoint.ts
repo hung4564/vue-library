@@ -10,7 +10,7 @@ import { CrsItem } from '../../crs/types';
 
 import { IViewSetting } from '../types';
 import { lookupProj4CrsItem } from '../../crs/proj4-crs-catalog';
-import { formatCoordinate } from '../../utils';
+import { formatCoordinate } from '../../utils/coordinate';
 import { Measure } from './Measure';
 
 function enrichCrsItem(crs: CrsItem): CrsItem {

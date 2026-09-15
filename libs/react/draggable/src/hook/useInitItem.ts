@@ -3,7 +3,7 @@ import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDragItem, useDragStore } from '../store';
 import { useContainerReactive, useStoreReactive } from '../store/useStoreReactive';
-import { InitOption } from '../types';
+import type { InitOption } from '@hungpvq/draggable';
 
 export function useInitItem(
   containerId: string,

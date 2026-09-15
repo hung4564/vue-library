@@ -3,7 +3,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, markRaw, type Component } from 'vue';
-import { useMap } from '../../../hooks';
+import { useMap } from '../../../hooks/useMap';
 import { useUniversalRegistry } from '../plugin';
 
 const props = defineProps<{

@@ -7,18 +7,20 @@ import {
   useInitSidebar,
   useShow,
 } from '../../hook';
-import { LocationSideBar } from '../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { DragSidebarToggleProps } from '../parts/DragSidebarToggle';
 import { SidebarModule } from './sidebar/sidebar-module';
 
 export interface DraggableItemSideBarProps {
   id?: string;
   show?: boolean;
-  /** Plain title used in sidebar switch menu and default header text */
+  /**
+   * Plain title for the sidebar switcher menu and default header text
+   * (matches Vue `:title`).
+   */
   title?: string;
   /**
-   * Custom title node portaled into sidebar header (matches Vue #title slot).
-   * @deprecated Prefer composing custom title via `title` string + future patterns; still supported this minor.
+   * Custom header title node (matches Vue `#title` slot). Falls back to `title`.
    */
   titleNode?: ReactNode;
   /** Immediately to the right of title (header slot contract). */

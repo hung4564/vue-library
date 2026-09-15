@@ -1,8 +1,8 @@
 import { runWorkerMonitor } from '@hungpvq/map-core/worker';
 import type { LayerStyleType } from '../style/layer-simple-builder';
 import { detectGeojsonCrs, detectGeojsonStyleTypes } from './geojson-parse';
+import { asFeatureCollection } from '../utils/feature-collection';
 import {
-  asGisFeatureCollection,
   parseGisFile,
   parseGisFiles,
   parseGisFromUrl,
@@ -151,7 +151,7 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         break;
       }
       case 'reproject-geojson': {
-        const collection = asGisFeatureCollection(message.geojson);
+        const collection = asFeatureCollection(message.geojson);
         const total = collection?.features.length ?? 1;
         const fromCrs =
           message.crs || detectGeojsonCrs(message.geojson) || '4326';

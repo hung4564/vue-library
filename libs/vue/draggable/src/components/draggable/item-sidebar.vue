@@ -15,7 +15,7 @@ import {
   withShowProps,
 } from '../../hook';
 import { useInitSidebar } from '../../hook/useInitSidebar';
-import { LocationSideBar } from '../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import SidebarModule from './sidebar/sidebar-module.vue';
 const props = defineProps({
   ...withShowProps,

@@ -28,7 +28,7 @@ import {
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useState } from 'react';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 
 const ICON_SIZE = 16 / 24;
 

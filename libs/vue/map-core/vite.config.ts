@@ -43,13 +43,11 @@ export default defineConfig({
       external: [
         'vue',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/map-core',
         'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
-        'lodash',
         'maplibre-gl',
         '@mdi/js',
         'geojson',

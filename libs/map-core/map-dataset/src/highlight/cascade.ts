@@ -1,5 +1,5 @@
-import type { IDataset } from '../interfaces';
-import { findSiblingOrNearestLeaf } from '../model';
+import type { IDataset } from '../interfaces/dataset.base';
+import { findPartByType } from '../model/visitors/helpers';
 import type {
   HighlightClickAction,
   HighlightDataSource,
@@ -39,11 +39,7 @@ export const DEFAULT_HIGHLIGHT_POINTER: Required<HighlightPointerPolicy> = {
 export function findHighlightPart(
   dataset?: IDataset,
 ): IHighlightPart | undefined {
-  if (!dataset) return undefined;
-  return findSiblingOrNearestLeaf(
-    dataset,
-    (node) => node.type === 'highlight',
-  ) as IHighlightPart | undefined;
+  return findPartByType(dataset, 'highlight');
 }
 
 export function partOptionsToStyle(options: HighlightPartOptions): HighlightStyle {
@@ -117,7 +113,8 @@ export function resolvePresentation(args: {
 /**
  * Adjust presentation for pointer source:
  * - hover → paint only (no MapLibre popup)
- * - click (`pointer` / `highlight`) → honor `clickAction` (default popup)
+ * - hover → never open MapLibre popup
+ * - click (`pointer`) → honor `clickAction` (default popup)
  */
 export function resolvePresentationForSource(
   presentation: HighlightPresentation,
@@ -132,7 +129,7 @@ export function resolvePresentationForSource(
     return { ...presentation, clickAction, popup: false };
   }
 
-  if (source === 'pointer' || source === 'highlight') {
+  if (source === 'pointer') {
     if (clickAction === 'popup') {
       const popup =
         presentation.popup === false || presentation.popup == null

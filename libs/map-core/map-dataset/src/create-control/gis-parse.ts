@@ -194,7 +194,7 @@ function mergeGisFeatureCollections(
   let format: GisFormat | undefined;
   for (const part of parts) {
     if (!part.geojson) continue;
-    const fc = asGisFeatureCollection(part.geojson);
+    const fc = asFeatureCollection(part.geojson);
     if (!fc?.features?.length) continue;
     features.push(...fc.features);
     if (!crs && part.crs) crs = part.crs;
@@ -454,7 +454,7 @@ async function xmlToGeojson(
   ]);
   const doc = new DOMParser().parseFromString(text, 'text/xml');
   const converted = kind === 'gpx' ? gpx(doc) : kml(doc);
-  return asGisFeatureCollection(converted as GeoJSON) ?? {
+  return asFeatureCollection(converted as GeoJSON) ?? {
     type: 'FeatureCollection',
     features: [],
   };
@@ -561,7 +561,7 @@ function mergeGisResults(results: GisLoadResult[]): GisLoadResult {
   let crs: string | null = null;
 
   for (const result of results) {
-    const collection = asGisFeatureCollection(result.geojson);
+    const collection = asFeatureCollection(result.geojson);
     if (collection) features.push(...collection.features);
     if (result.format) formats.add(result.format);
     if (!crs && result.crs) crs = result.crs;
@@ -604,7 +604,7 @@ async function parseShapefileParts(
 
 function normalizeShapefile(parsed: GeoJSON | GeoJSON[]): FeatureCollection {
   const collections = (Array.isArray(parsed) ? parsed : [parsed])
-    .map((item) => asGisFeatureCollection(item))
+    .map((item) => asFeatureCollection(item))
     .filter((item): item is FeatureCollection => !!item);
   if (!collections.length) {
     return { type: 'FeatureCollection', features: [] };

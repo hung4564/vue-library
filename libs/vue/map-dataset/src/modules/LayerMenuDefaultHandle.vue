@@ -8,18 +8,16 @@ import {
   UniversalRegistry,
   useMap,
 } from '@hungpvq/vue-map-core';
-import {
-  useMapDataset,
-  useMapDatasetComponent,
-  useHighlight,
-} from '../store';
+import { useMapDataset } from '../store/dataset-api';
+import { useMapDatasetComponent } from '../store/component';
+import { useMapHighlight } from '../store/highlight';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
-const hl = useHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId.value);
 
 function refreshList() {

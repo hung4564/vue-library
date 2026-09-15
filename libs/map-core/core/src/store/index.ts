@@ -1,5 +1,21 @@
 import type { MapFCOnUseMap, MapSimple } from '../types';
 
+export type {
+  EventEmitter,
+  IMapStoreAdapter,
+  LoggerFunction,
+  MapFCOnUseMap,
+} from './interface';
+export { MAP_CORE_EVENT, MapStoreManager } from './store-manager';
+export type {
+  AddStoreOptions,
+  DefaultValue,
+  MapRootStore,
+  MapStore,
+  MapStoreInternal,
+  StoreCleanup,
+} from './types';
+
 export type MapAccessor = (
   mapId: string,
   cb?: MapFCOnUseMap,
@@ -17,7 +33,3 @@ export function getMap(
 ): MapSimple | undefined {
   return registeredMapAccessor?.(mapId, cb);
 }
-
-export * from './interface';
-export * from './store-manager';
-export * from './types';

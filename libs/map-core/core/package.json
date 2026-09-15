@@ -41,6 +41,10 @@
       "types": "./crs.d.ts",
       "import": "./crs.js"
     },
+    "./devtools": {
+      "types": "./devtools.d.ts",
+      "import": "./devtools.js"
+    },
     "./event": {
       "types": "./event.d.ts",
       "import": "./event.js"

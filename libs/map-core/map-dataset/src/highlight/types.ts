@@ -6,7 +6,7 @@ import type {
   MapGeoJSONFeature,
   PointLike,
 } from 'maplibre-gl';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 
 export type HighlightGeoJson = Feature | FeatureCollection | GeoJSONFeature;
 
@@ -35,17 +35,12 @@ export type HighlightMode =
   | 'changeColor'
   | 'custom';
 
-/** Built-in highlight entry sources. Legacy `'highlight'` / `'menu'` kept for migrate-one-minor. */
 export type HighlightSource =
   | 'pointer'
   | 'hover'
   | 'identify'
   | 'attribute-table'
   | 'detail'
-  /** @deprecated Prefer `'pointer'` — former LayerHighlight default source */
-  | 'highlight'
-  /** @deprecated Prefer `'identify'` / `'detail'` — menu handlers set those keys */
-  | 'menu'
   | (string & NonNullable<unknown>);
 
 export type HighlightStyle = {

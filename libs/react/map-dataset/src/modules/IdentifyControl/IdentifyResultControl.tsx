@@ -40,7 +40,7 @@ import Icon from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 
 const ICON_SIZE = 16 / 24;
 function runIdentifyAction(mapId: string, type: string, event?: unknown) {

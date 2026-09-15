@@ -23,7 +23,7 @@ import { mdiMap, mdiMapSearch } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { INSPECT_CONTROL_LOCALE } from '../../locale';
+import { INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';
 
 /** Same icon pair as Vue InspectControl: map when idle, map-search when inspecting. */
 const INSPECT_ICONS = {

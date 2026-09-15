@@ -10,19 +10,11 @@ import {
   mdiInformation,
 } from '@mdi/js';
 import type { BBox, Feature, Geometry } from 'geojson';
-import type {
-  IDataset,
-  MenuAction,
-  MenuActionLocation,
-  MenuCondition,
-  MenuConditionContext,
-  MenuItemBottomOrExtra,
-  MenuItemContentMenu,
-  MenuItemCustomComponentBottomOrExtra,
-  WithMenuHelper,
-} from '../interfaces';
-import { convertItemToFeature, resolveDatasetBbox } from '../utils';
-import { getDatasetDetailInfo } from '../extra/detail';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction, MenuActionLocation, MenuCondition, MenuConditionContext, MenuItemBottomOrExtra, MenuItemContentMenu, MenuItemCustomComponentBottomOrExtra, WithMenuHelper } from '../interfaces/dataset.parts';
+import { convertItemToFeature } from '../utils/convert';
+import { resolveDatasetBbox } from '../utils/bbox';
+import { getDatasetDetailInfo } from '../extra/detail/info';
 import type { FieldFeaturesDef } from '../extra/field';
 import { GEO_EXPORT_COMPONENT_KEY } from '../geo-export/options';
 import { isIdentifyForListMenuHidden } from '../identify';

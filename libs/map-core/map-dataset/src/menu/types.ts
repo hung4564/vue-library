@@ -1,10 +1,6 @@
 import type { MapMouseEvent } from 'maplibre-gl';
-import type {
-  IDataset,
-  MenuAction,
-  MenuCondition,
-  MenuConditionContext,
-} from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction, MenuCondition, MenuConditionContext } from '../interfaces/dataset.parts';
 import type { createMenuClickBuilder } from './builder';
 
 export type MenuContextSource =

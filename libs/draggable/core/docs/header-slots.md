@@ -22,7 +22,8 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 | Vue slot        | React prop / node | Role                                      |
 | --------------- | ----------------- | ----------------------------------------- |
 | `pre-title`     | `preTitle`        | Before the title group                    |
-| `title`         | `title`           | Title text **or** custom title node       |
+| `title` (prop)  | `title`           | Plain string (switcher menu + default header) |
+| `title` (slot)  | `titleNode`       | Custom header title node (sidebar); falls back to `title` |
 | `after-title`   | `afterTitle`      | Immediately after title, before spacer    |
 | `extra-btn`     | `extraBtn`        | Trailing header actions after the spacer  |
 | `default`       | `children`        | Panel body (not part of the header row)   |
@@ -30,7 +31,7 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 ## Rules
 
 1. **`location: 'title'`** (map-dataset menus and similar hosts) maps to the **`after-title` / `afterTitle`** slot — **not** `extra-btn`.
-2. React: prefer a **`title` node** for custom title content. **`titleNode` is deprecated** — use `title` instead.
+2. React sidebar: use **`title`** (string) for the switcher store label; use **`titleNode`** for a custom header node (Vue `#title` slot). Other shells may still pass a display `title` node where noted.
 3. Do not place trailing chrome (close, expand, switcher) in `after-title`; those belong in `extra-btn` / built-in header actions.
 4. Not every shell exposes every slot (e.g. some omit `pre-title`). Names that *are* documented on a component remain Stable for that surface.
 

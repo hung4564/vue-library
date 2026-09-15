@@ -53,7 +53,7 @@ import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useHighlight } from '../../store';
+import { useMapHighlight } from '../../store/highlight';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
@@ -61,7 +61,7 @@ provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.attributeTable,
 }));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
-const hl = useHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
 

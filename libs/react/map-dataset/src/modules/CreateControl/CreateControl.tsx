@@ -1,12 +1,15 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import { CREATE_CONTROL_LOCALE, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_LOCALE, LAYER_TYPES, LayerHelper, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName, type LayerType } from '@hungpvq/map-dataset/create-control';
 import { defaultMapProps, MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/react-map-core';
 import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useMapDataset } from '../../store';
-import { CreateConfigForm, hasCreateConfigSettings } from './config';
-import { LAYER_TYPES, LayerHelper, type LayerType } from './helper';
+import { useMapDataset } from '../../store/dataset-api';
+import {
+  CreateConfigForm,
+  createControlComponentKey,
+  hasCreateConfigSettings,
+} from './config/CreateConfigForm';
 
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;
@@ -148,6 +151,8 @@ export function CreateControl(props: CreateControlProps) {
     });
   }, [form.type, form.config.name, form.config.crs, mapId]);
 
+  const componentKey = createControlComponentKey(form.type);
+
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -191,7 +196,7 @@ export function CreateControl(props: CreateControlProps) {
                 <CreateConfigForm
                   key={`${configKey}-data`}
                   section="data"
-                  componentKey={helper.componentKey}
+                  componentKey={componentKey}
                   config={form.config}
                   trans={trans}
                   onChange={(patch) =>
@@ -199,7 +204,7 @@ export function CreateControl(props: CreateControlProps) {
                   }
                 />
 
-                {hasCreateConfigSettings(helper.componentKey) ? (
+                {hasCreateConfigSettings(componentKey) ? (
                   <>
                     <div className="map-col-12 create-control-section-label">
                       {trans('map.layer-control.create.layer-setting')}
@@ -208,7 +213,7 @@ export function CreateControl(props: CreateControlProps) {
                     <CreateConfigForm
                       key={`${configKey}-settings`}
                       section="settings"
-                      componentKey={helper.componentKey}
+                      componentKey={componentKey}
                       config={form.config}
                       trans={trans}
                       onChange={(patch) =>

@@ -1,167 +1,64 @@
-import { InputCheckbox, InputChoose, InputColorPicker, InputSelect, InputSlider, InputText } from '@hungpvq/react-map-core/fields';
+import {
+  InputCheckbox,
+  InputChoose,
+  InputColorPicker,
+  InputSelect,
+  InputSlider,
+  InputText,
+} from '@hungpvq/react-map-core/fields';
+import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
 import { InputArrayIndex } from '../field/InputArrayIndex';
 import { InputArrayXY } from '../field/InputArrayXY';
 import { InputImage } from '../field/InputImage';
 import { InputMultiple } from '../field/InputMultiple';
 import { DivColor, TextAfter, TextFormat } from '../label';
-import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from '@hungpvq/map-dataset/style';
 
-export const CONFIG_TABS: Record<string, Partial<Tab>> = {
+export const CONFIG_TABS: Record<string, Partial<Tab>> = buildConfigTabs({
   'array-index': {
-    component: {
-      content: () => InputArrayIndex,
-    },
-    props: {
-      content: (tab: ArrayIndexTab) => ({
-        items: tab.data,
-      }),
-    },
+    content: () => InputArrayIndex,
   },
   multiple: {
-    component: {
-      content: () => InputMultiple,
-    },
-    props: {},
+    content: () => InputMultiple,
   },
   select: {
-    component: {
-      content: () => InputSelect,
-    },
-    props: {
-      content: (tab: SelectTab) => ({
-        items: tab.items,
-      }),
-    },
+    content: () => InputSelect,
   },
   image: {
-    component: {
-      content: () => InputImage,
-    },
-    props: {
-      content: {},
-    },
+    content: () => InputImage,
   },
   color: {
-    component: {
-      content: () => InputColorPicker,
-      label: () => DivColor,
-    },
-    props: {
-      content: {
-        disableAlpha: true,
-        class: 'tab-content-no-padding',
-      },
-    },
+    content: () => InputColorPicker,
+    label: () => DivColor,
   },
   boolean: {
-    component: {
-      content: () => InputCheckbox,
-    },
-    props: {
-      content: {},
-    },
+    content: () => InputCheckbox,
   },
   chose: {
-    component: {
-      content: () => InputChoose,
-      label: () => TextFormat,
-    },
-    props: {
-      content: (tab: ChoseTab) => {
-        return { items: tab.menu, class: 'tab-content-padding' };
-      },
-      label: (tab: ChoseTab) => {
-        return {
-          format(value: string) {
-            return tab.menu.find((x) => x.value === value)?.text;
-          },
-        };
-      },
-    },
+    content: () => InputChoose,
+    label: () => TextFormat,
   },
   opacity: {
-    component: {
-      content: () => InputSlider,
-      label: () => TextFormat,
-    },
-    props: {
-      content: {
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-      label: {
-        format: (value: number) => {
-          return `${(+value * 100).toFixed(0)} %`;
-        },
-      },
-    },
-    format: (value: unknown) => +(value as number),
+    content: () => InputSlider,
+    label: () => TextFormat,
   },
   minMax: {
-    component: {
-      content: () => InputSlider,
-      label: () => TextFormat,
-    },
-    props: {
-      content: {
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-      label: {
-        format: (value: number) => {
-          return `${(+value).toFixed(2)}`;
-        },
-      },
-    },
-    format: (value: unknown) => +(value as number),
+    content: () => InputSlider,
+    label: () => TextFormat,
   },
   unit: {
-    component: {
-      content: () => InputText,
-      label: () => TextAfter,
-    },
-    props: {
-      content: {
-        type: 'number',
-        min: 0,
-      },
-    },
-    format: (value: unknown) => +(value as number),
+    content: () => InputText,
+    label: () => TextAfter,
   },
   number: {
-    component: {
-      content: () => InputText,
-    },
-    props: {
-      content: {
-        type: 'number',
-        min: 0,
-      },
-    },
-    format: (value: unknown) => +(value as number),
+    content: () => InputText,
   },
   text: {
-    component: {
-      content: () => InputText,
-    },
-    props: {
-      content: {},
-    },
+    content: () => InputText,
   },
   'array-x-y': {
-    component: {
-      content: () => InputArrayXY,
-    },
-    props: {},
+    content: () => InputArrayXY,
   },
   default: {
-    component: {
-      content: () => InputText,
-    },
-    props: {
-      content: {},
-    },
+    content: () => InputText,
   },
-};
+});

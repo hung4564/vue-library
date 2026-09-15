@@ -82,6 +82,7 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'langStore',
   'useBaseMap',
   'useBaseMapAdapter',
+  'useBreakpoints',
   'useComponentName',
   'useCoordinate',
   'useEventListener',
@@ -102,7 +103,6 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'useMapImage',
   'useMapImages',
   'useMapInstance',
-  'useMapMittStore',
   'useMapPrint',
   'useMapPrintStore',
   'useMapState',
@@ -165,7 +165,7 @@ export const MAP_DATASET_ADAPTER_SHARED_STABLE = [
   'StyleControl',
   'ToggleShow',
   'ToggleShowButton',
-  'useHighlight',
+  'useMapHighlight',
   'useMapDataset',
   'useMapDatasetComponent',
   'useMapDatasetComponentStore',
@@ -175,11 +175,8 @@ export const MAP_DATASET_ADAPTER_SHARED_STABLE = [
 ] as const;
 
 export const MAP_DRAW_ADAPTER_SHARED_STABLE = [
-  'DRAW_CONTROL_LOCALE',
   'DrawControl',
-  'INSPECT_CONTROL_LOCALE',
   'InspectControl',
-  'isDraftOption',
   'useConfigDrawControl',
   'useMapDraw',
   'useMapDrawStore',

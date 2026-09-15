@@ -2,16 +2,16 @@ import { useCallback, useEffect, useRef } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { IEvent, MittTypeMapEvent } from '@hungpvq/map-core/event';
 import { MittTypeMapEventEventKey } from '@hungpvq/map-core/event';
-import { defaultMapProps, useMap } from '../../../hooks';
-import { useMapMittStore } from '../../mitt';
-import { useEventMapItems } from '../hook';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { getMapMittStore } from '../../../store/mitt-store';
+import { useEventMapItems } from '../hook/useEventMapItems';
 import { useMapEventStore } from '../store';
 
 export function ActionControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { callMap, mapId } = useMap(merged);
   const store = useMapEventStore(mapId);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const currentListener = useRef<
     Record<string, Record<string, IEvent | undefined>>
   >({});

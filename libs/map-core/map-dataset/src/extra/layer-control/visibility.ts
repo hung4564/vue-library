@@ -1,7 +1,9 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import type { IDataset, IMapboxLayerView, WithToggleShow } from '../../interfaces';
-import type { IListViewUI } from '../../model/list';
-import { runAllComponentsWithCheck } from '../../model/visitors';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { WithToggleShow } from '../../interfaces/dataset.extra';
+import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
+import type { IListViewUI } from '../../model/list/types';
+import { runAllComponentsWithCheck } from '../../model/visitors/helpers';
 import { isHasToggleShow, isMapboxLayerView } from '../../utils/check';
 
 export function applyListViewMapVisibility(

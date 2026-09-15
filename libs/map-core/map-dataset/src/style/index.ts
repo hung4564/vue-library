@@ -19,6 +19,8 @@ export {
   TABS,
   convertTabWithDefaultConfig,
 } from './type';
+export { CONFIG_TAB_BASE, buildConfigTabs } from './config-tabs';
+export type { StyleTabComponentMap } from './config-tabs';
 export type {
   ArrayIndexTab,
   ChoseTab,

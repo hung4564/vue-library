@@ -46,7 +46,7 @@ export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'StyleControl',
   'ToggleShow',
   'ToggleShowButton',
-  'useHighlight',
+  'useMapHighlight',
   'useMapDataset',
   'useMapDatasetComponent',
   'useMapDatasetComponentStore',

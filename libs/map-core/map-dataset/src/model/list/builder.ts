@@ -1,5 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import { createWithEventHelper } from '../../extra/event';
+import { createWithEventHelper } from '../../extra/event/model';
 import {
   addMenuBuilder,
   createMenuItemAddToGroup,
@@ -10,8 +10,8 @@ import {
   LIST_VIEW_MENU_COMPONENT_KEY,
   type WithMenuBuilder,
 } from '../../menu';
-import type { WithChildren } from '../../interfaces';
-import { setOpacity, toggleShow } from '../../interfaces';
+import type { WithChildren } from '../../interfaces/dataset.base';
+import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
 import {
   addDatasetWithChildren,

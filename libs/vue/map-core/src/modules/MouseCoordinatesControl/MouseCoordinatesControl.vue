@@ -3,10 +3,10 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
 import { nextTick, ref } from 'vue';
-import { defaultMapProps, useMap } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 
 import type { MapSimple } from '@hungpvq/map-core';
-import { useCoordinate } from '../../extra/crs';
+import { useCoordinate } from '../../extra/crs/hooks/useCoordinate';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 /** Local debounce (avoids lodash dependency). */

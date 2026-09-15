@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useSidebarTransition(
   props: { location: LocationSideBar },

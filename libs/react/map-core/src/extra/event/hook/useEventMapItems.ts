@@ -4,7 +4,7 @@ import {
   type MittTypeMapEvent,
   MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
-import { useMapMittStore } from '../../mitt';
+import { getMapMittStore } from '../../../store/mitt-store';
 import { useMapEventStore } from '../store';
 
 export const useEventMapItems = (
@@ -13,7 +13,7 @@ export const useEventMapItems = (
 ) => {
   const store = useMapEventStore(mapId);
   const [items, setItems] = useState(() => [...store.items]);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 

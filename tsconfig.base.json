@@ -16,6 +16,7 @@
     ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "esModuleInterop": true,
     "paths": {
       "@hungpvq/demo-map-datasets": [
         "./libs/demo/map-datasets/src/index.ts"
@@ -34,6 +35,9 @@
       ],
       "@hungpvq/map-core/crs": [
         "./libs/map-core/core/src/crs/index.ts"
+      ],
+      "@hungpvq/map-core/devtools": [
+        "./libs/map-core/core/src/devtools/index.ts"
       ],
       "@hungpvq/map-core/event": [
         "./libs/map-core/core/src/event/index.ts"

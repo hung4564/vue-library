@@ -1,4 +1,5 @@
 import type { LayerSpecification } from 'maplibre-gl';
+import { logger } from '../../logger';
 import { CIRCLE_CONFIG } from './circle';
 import { FILL_CONFIG } from './fill';
 import { LINE_CONFIG } from './line';
@@ -6,7 +7,25 @@ import { RASTER_CONFIG } from './raster';
 import type { LayerTabsConfig, Tab } from './style';
 import { SYMBOL_CONFIG } from './symbol';
 
-export * from './style';
+export type {
+  ArrayIndexTab,
+  ArrayXYTab,
+  ChoseTab,
+  ColorTab,
+  DividersTab,
+  ITab,
+  ITabCommon,
+  LayerTabsConfig,
+  LayerTypeConfig,
+  MultiTabConfig,
+  NumberTab,
+  OpacityTab,
+  SelectTab,
+  SingleTabConfig,
+  Tab,
+  TabConfig,
+  UnitTab,
+} from './style';
 export { CIRCLE_CONFIG } from './circle';
 export { FILL_CONFIG } from './fill';
 export { LINE_CONFIG } from './line';
@@ -63,7 +82,9 @@ export function convertTabWithDefaultConfig(
       x,
     );
     if (!default_config[x.type]) {
-      console.info('type', 'missing', x.type);
+      logger.info('convertTabWithDefaultConfig: missing tab type', {
+        type: x.type,
+      });
     }
     res.props = mergeDeep(
       {},

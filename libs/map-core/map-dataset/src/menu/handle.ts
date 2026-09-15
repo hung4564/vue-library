@@ -1,6 +1,7 @@
-import { UniversalRegistry } from '@hungpvq/map-core';
+import { logHelper, UniversalRegistry } from '@hungpvq/map-core';
 import { loggerFactory } from '@hungpvq/shared-log';
-import type { IDataset, MenuAction, MenuItemCommon } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction, MenuItemCommon } from '../interfaces/dataset.parts';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
 import type {
   CommandHandlerMenu,
@@ -22,15 +23,6 @@ export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
 }
 const MAX_DEPTH = 5;
 const logger = loggerFactory.createLogger().setNamespace('menu');
-function logHelper(
-  logger: ReturnType<typeof loggerFactory.createLogger>,
-  ...namespaces: (string | number)[]
-) {
-  namespaces.forEach((namespace, i) => {
-    logger.setNamespace(namespace + '', 2 + i);
-  });
-  return logger;
-}
 
 export function createCommandHandler(
   canHandle: CommandHandlerMenu['canHandle'],
@@ -46,7 +38,7 @@ export const StringCommandHandler = createCommandHandler(
     const key = click as string;
     const handler = UniversalRegistry.getMenuHandler(key, context.mapId);
     if (!handler) {
-      logHelper(logger, 'handleMenuActionClick').warn(
+      logHelper(logger, context.mapId, 'handleMenuActionClick').warn(
         `No handler found for key: ${key}`,
       );
       return;
@@ -147,7 +139,7 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
 ) {
   if (!action) return;
   if (depth > MAX_DEPTH) {
-    logHelper(logger, 'handleMenuActionClick').warn(
+    logHelper(logger, context.mapId, 'handleMenuActionClick').warn(
       'Max recursion depth reached.',
     );
     return;
@@ -163,7 +155,7 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
     DirectCommandHandler,
   ];
   for (const [index, entry] of actions.entries()) {
-    logHelper(logger, 'handleMenuActionClick', depth).debug(
+    logHelper(logger, context.mapId, 'handleMenuActionClick', String(depth)).debug(
       'Executing function action',
       entry,
     );
@@ -171,32 +163,41 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
 
     for (const handler of commandHandlers) {
       if (handler.canHandle(entry)) {
-        logHelper(logger, 'handleMenuActionClick', depth, index).debug(
-          `Context`,
-          {
-            context,
-            handler,
-          },
-        );
+        logHelper(
+          logger,
+          context.mapId,
+          'handleMenuActionClick',
+          String(depth),
+          String(index),
+        ).debug(`Context`, {
+          context,
+          handler,
+        });
         const result = await handler.execute(entry, context);
-        logHelper(logger, 'handleMenuActionClick', depth, index).debug(
-          `Handler executed`,
-          {
-            handler: handler.constructor.name,
-            entry,
-          },
-        );
+        logHelper(
+          logger,
+          context.mapId,
+          'handleMenuActionClick',
+          String(depth),
+          String(index),
+        ).debug(`Handler executed`, {
+          handler: handler.constructor.name,
+          entry,
+        });
 
         const nextAction = await resolveActionResult(result);
 
         if (nextAction) {
-          logHelper(logger, 'handleMenuActionClick', depth, index).debug(
-            `Recursing with next action`,
-            {
-              nextAction,
-              depth: depth + 1,
-            },
-          );
+          logHelper(
+            logger,
+            context.mapId,
+            'handleMenuActionClick',
+            String(depth),
+            String(index),
+          ).debug(`Recursing with next action`, {
+            nextAction,
+            depth: depth + 1,
+          });
           await handleMenuActionClick(nextAction, context, depth + 1);
         }
 
@@ -206,7 +207,7 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
     }
 
     if (!handled) {
-      logHelper(logger, 'handleMenuActionClick', depth).warn(
+      logHelper(logger, context.mapId, 'handleMenuActionClick', String(depth)).warn(
         'Unknown entry:',
         entry,
       );

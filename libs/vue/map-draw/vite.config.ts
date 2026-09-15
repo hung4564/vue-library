@@ -40,13 +40,11 @@ export default defineConfig({
         '@hungpvq/map-draw',
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         'maplibre-gl',
         '@mdi/js',
-        'lodash',
         'randomcolor',
       ],
       output: {

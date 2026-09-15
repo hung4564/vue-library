@@ -10,7 +10,7 @@ import {
   type MapToolbarStore,
 } from '@hungpvq/map-core/toolbar';
 import { useMemo, useRef } from 'react';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store-utils';
 import { loggerFactory } from '@hungpvq/shared-log';
 
 const logger = loggerFactory.createLogger().setNamespace('map:toolbar', 2);

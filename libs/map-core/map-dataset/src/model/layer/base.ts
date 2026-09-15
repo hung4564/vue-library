@@ -2,9 +2,10 @@ import type { MapSimple } from '@hungpvq/map-core';
 import {
   createWithDataHelper,
   type WithDataHelper,
-} from '../../extra';
+} from '../../extra/data';
 import { createWithMenuHelper } from '../../menu';
-import type { IDataset, IMapboxLayerView } from '../../interfaces';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
 import type { ComponentType } from '../../types';
 import { createDatasetLeaf } from '../dataset.base.function';
 

@@ -4,20 +4,18 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {
-  logHelper,
-  runMapControlAction,
-  WithMapPropType,
-} from '@hungpvq/map-core';
+import { runMapControlAction, WithMapPropType } from '@hungpvq/map-core';
 import { EventClick } from '@hungpvq/map-core/event';
 import type { IDataset } from '@hungpvq/map-dataset';
-import type { IdentifyMultiResult, IIdentifyView } from '@hungpvq/map-dataset/identify';
-import { handleMultiIdentifyGetFirst, IDENTIFY_CONTROL, identifyResolver } from '@hungpvq/map-dataset/identify';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  IDENTIFY_CONTROL,
+  runIdentifyShowFirst,
+} from '@hungpvq/map-dataset/identify';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import { MapMouseEvent } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { loggerIdentify } from '../../logger';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 
 const props = withDefaults(
   defineProps<
@@ -65,83 +63,19 @@ function setLoading(value: boolean) {
 }
 
 function onMapClick(e: MapMouseEvent) {
-  logHelper(
-    loggerIdentify,
-    mapId.value,
-    'FIRST',
-    'IdentifyShowFirstControl',
-  ).debug('onMapClick', { event: e });
   void onGetFeatures(e);
-}
-
-function onSelectFeatures(
-  record: IdentifyMultiResult | undefined,
-  event?: MapMouseEvent,
-) {
-  logHelper(
-    loggerIdentify,
-    mapId.value,
-    'FIRST',
-    'IdentifyShowFirstControl',
-  ).debug('onSelectFeatures', { record });
-  const records =
-    record?.features?.length ? [record] : ([] as IdentifyMultiResult[]);
-  identifyResolver
-    .execute({
-      records,
-      mapId: mapId.value,
-      event,
-      singleLayer: true,
-      preferResultControl: !!props.preferResultControl,
-    })
-    .then((res) =>
-      logHelper(
-        loggerIdentify,
-        mapId.value,
-        'FIRST',
-        'IdentifyShowFirstControl',
-      ).debug('onSelectFeaturesResult', res),
-    );
 }
 
 async function onGetFeatures(e: MapMouseEvent) {
   if (loading.value) return;
-  const loadStartedAt = performance.now();
   setLoading(true);
-  logHelper(
-    loggerIdentify,
-    mapId.value,
-    'FIRST',
-    'IdentifyShowFirstControl',
-  ).info('loading:start', { pointOrBox: e.point });
   try {
-    logHelper(
-      loggerIdentify,
-      mapId.value,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onGetFeatures', { pointOrBox: e.point });
-    const record = await handleMultiIdentifyGetFirst(
-      views.value,
-      mapId.value,
-      e.point,
-    );
-    logHelper(
-      loggerIdentify,
-      mapId.value,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onGetFeatures', { record });
-    onSelectFeatures(record, e);
-    logHelper(
-      loggerIdentify,
-      mapId.value,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).info('loading:done', {
-      durationMs: Math.round(performance.now() - loadStartedAt),
-      featureCount: record?.features?.length ?? 0,
-      empty: !record?.features?.length,
+    await runIdentifyShowFirst({
+      identifies: views.value,
+      mapId: mapId.value,
+      pointOrBox: e.point,
+      event: e,
+      preferResultControl: !!props.preferResultControl,
     });
   } finally {
     setLoading(false);

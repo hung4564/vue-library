@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useContainerReactive } from '../../../store/useStoreReactive';
-import { LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 export interface SidebarModuleProps {
   containerId: string;
   itemId: string;

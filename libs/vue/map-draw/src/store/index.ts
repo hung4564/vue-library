@@ -1,8 +1,13 @@
 import { logHelper } from '@hungpvq/map-core';
 import {
-  DrawService,
-  isDraftOption,
+  createDefaultMapDrawStore,
+  logger,
   MAP_DRAW_EVENT,
+  runDrawCommit,
+  runDrawDiscard,
+  runDrawSave,
+  runDrawSetFeature,
+  runDrawStart,
   type IDraftRecord,
   type MapDrawEvent,
   type MapDrawOption,
@@ -11,20 +16,15 @@ import {
 import { createMapScopedStore, useMapMittStore } from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { onMounted, onUnmounted } from 'vue';
-import { logger } from '../logger';
 
 const KEY = 'draw' as const;
+
 export const useMapDrawStore = (mapId: string) =>
   createMapScopedStore<MapDrawStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store').debug('init');
-    return {
-      state: {
-        featuresAdded: {},
-        featuresDeleted: {},
-        featuresUpdated: {},
-      },
-    };
+    return createDefaultMapDrawStore();
   });
+
 export function useConfigDrawControl(
   mapId: string,
   config?: {
@@ -52,53 +52,25 @@ export function useConfigDrawControl(
     emit.off(MAP_DRAW_EVENT.START, config.onStart);
     emit.off(MAP_DRAW_EVENT.END, config.onEnd);
   });
-  function setFeature(type: 'added' | 'updated' | 'deleted', feature: Feature) {
-    DrawService.setFeature(store, type, feature, mapId);
-  }
-  function save(collection: FeatureCollection, context?: any) {
-    return DrawService.saveDraw(
-      store,
-      collection,
-      mapId,
-      store.config?.callback,
-      context,
-    );
-  }
-  async function commit() {
-    const action = store.config;
-    if (!isDraftOption(action)) {
-      return;
-    }
-    await action.commit();
-    config?.onCommit();
-  }
-  async function discard(item?: IDraftRecord) {
-    const action = store.config;
-    if (!isDraftOption(action)) {
-      return;
-    }
-    await action.discard(item);
-    config?.onDiscard();
-  }
-  function end() {
-    config?.onEnd();
-  }
-  return { setFeature, save, commit, discard, end };
+
+  return {
+    setFeature: (type: 'added' | 'updated' | 'deleted', feature: Feature) =>
+      runDrawSetFeature(store, type, feature, mapId),
+    save: (collection: FeatureCollection, context?: unknown) =>
+      runDrawSave(store, collection, mapId, context),
+    commit: () => runDrawCommit(store, config?.onCommit),
+    discard: (item?: IDraftRecord) => runDrawDiscard(store, item, config?.onDiscard),
+    end: () => config?.onEnd(),
+  };
 }
 
-/** Thin Stable re-export — SoT is `@hungpvq/map-draw`. */
-export { isDraftOption };
-
-export const useMapDraw = (mapId: string) => {
-  const start = (config: MapDrawOption) => {
-    // Resolve by mapId each call — avoid stale store/mitt after map remount.
-    const store = useMapDrawStore(mapId);
-    const emit = useMapMittStore<MapDrawEvent>(mapId);
-    store.config = config;
-    logHelper(logger, mapId, 'useMapDraw').debug('start', { config });
-    emit.emit(MAP_DRAW_EVENT.START, config);
-  };
-  return {
-    start,
-  };
-};
+export const useMapDraw = (mapId: string) => ({
+  start: (config: MapDrawOption) => {
+    runDrawStart(
+      useMapDrawStore(mapId),
+      useMapMittStore<MapDrawEvent>(mapId),
+      config,
+      mapId,
+    );
+  },
+});

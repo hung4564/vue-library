@@ -13,18 +13,14 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed, ref } from 'vue';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
-import { useLang } from '../../../../extra/lang';
+import { useLang } from '../../../../extra/lang/hook';
 import { Collapse, InputSelect, InputText } from '../../../../field';
-import {
-  defaultMapProps,
-  useMap,
-  useShow,
-  WithShowProps,
-} from '../../../../hooks';
+import { defaultMapProps, useMap } from '../../../../hooks/useMap';
+import { useShow, type WithShowProps } from '../../../../hooks/useShow';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useToolbarControl } from '../../../toolbar';
-import { useRegisterMapControl } from '../../../registry';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks';
+import { useToolbarControl } from '../../../toolbar/helper';
+import { useRegisterMapControl } from '../../../registry/useRegisterMapControl';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks/useMapCrsItems';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,

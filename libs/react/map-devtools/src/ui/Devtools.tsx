@@ -1,5 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import type { DevtoolsMode } from '../control';
+import type { DevtoolsMode } from '@hungpvq/map-core';
 import { DevtoolsControl, type DevtoolsControlProps } from './DevtoolsControl';
 import { DevtoolsOverlay } from './DevtoolsOverlay';
 

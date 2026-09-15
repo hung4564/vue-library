@@ -1,11 +1,6 @@
-import type {
-  IDataset,
-  IdentifyFeatureRow,
-  IIdentifyViewWithMerge,
-  IMapboxLayerView,
-  IdentifyMultiResult,
-} from '../interfaces';
-import { runAllComponentsWithCheck } from '../model/visitors';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IdentifyFeatureRow, IIdentifyViewWithMerge, IMapboxLayerView, IdentifyMultiResult } from '../interfaces/dataset.parts';
+import { runAllComponentsWithCheck } from '../model/visitors/helpers';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
 import { isMapboxLayerView } from '../utils/check';
 import { getMap } from '@hungpvq/map-core';

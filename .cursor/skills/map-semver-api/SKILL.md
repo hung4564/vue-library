@@ -53,7 +53,7 @@ Experimental root/subpath exports (listed in each `*_EXPERIMENTAL_RUNTIME_EXPORT
 
 ## Export lock rule
 
-- Root and domain `src/index.ts` / `src/<domain>/index.ts` use **explicit named exports** only (no public `export *`). Implementation aggregation: `src/internal-barrel.ts` (not a package entry). First-party types: explicit `export type { … }` only — do **not** `export type *` or re-export types from third-party JS libraries (`geojson`, `maplibre-gl`, …).
+- Root and domain `src/index.ts` / `src/<domain>/index.ts` use **explicit named exports** only (no public `export *`). Import leaves directly from feature modules (no `internal-barrel`). First-party types: explicit `export type { … }` only — do **not** `export type *` or re-export types from third-party JS libraries (`geojson`, `maplibre-gl`, …).
 - Add/remove a **runtime** export on root **or** a subpath → update that entry’s named list + Stable **or** Experimental allowlist in `public-api.spec.ts` **and** `stable-api.md` when Stable.
 - Moving a symbol from root onto a subpath **without** a root re-export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
 - Experimental may change in a **minor**; removing experimental from a published barrel is a **major**.
@@ -80,7 +80,7 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 ## Draw Stable surface (quick)
 
 - Core: `DrawService`, `DrawingType` / `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, `MapDraw`, `StaticMode`, `getDrawStyles`, `getFeatureId` / `sameFeature`
-- Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` (no core re-exports)
+- Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (do **not** re-export core protocol/locales — consumers import `isDraftOption` / `DRAW_CONTROL_LOCALE` / `INSPECT_CONTROL_LOCALE` from `@hungpvq/map-draw`)
 - Ids: `mapDrawDraftList`, `mapInspectControl`
 - Package CSS entry: `./style.css`
 - Consumer docs: `libs/map-core/map-draw/docs` (Inspect = section in hub, not `InspectControl.md`)

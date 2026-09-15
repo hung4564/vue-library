@@ -36,6 +36,7 @@ export default defineConfig(() => ({
         index: 'src/index.ts',
         worker: 'src/worker-entry.ts',
         basemap: 'src/basemap/index.ts',
+        devtools: 'src/devtools/index.ts',
         crs: 'src/crs/index.ts',
         event: 'src/event/index.ts',
         image: 'src/image/index.ts',

@@ -2,8 +2,10 @@
  * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`.
  */
-export type { LogEntry } from './log-adapter';
-export { DevtoolLogAdapter } from './log-adapter';
+export {
+  BufferingLogAdapter as DevtoolLogAdapter,
+  type BufferingLogEntry as LogEntry,
+} from '@hungpvq/map-core/devtools';
 export { installDevtools, uninstallDevtools } from './install';
 export type { DevtoolTab, ErrorRecord } from './store';
 export {
@@ -19,8 +21,8 @@ export {
   toggleDevtoolOpen,
 } from './store';
 export { useDevtoolState } from './useDevtoolState';
-export { DEVTOOLS_CONTROL } from './control';
-export type { DevtoolsMode } from './control';
+export { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
+export type { DevtoolsMode } from '@hungpvq/map-core';
 export { Devtools } from './ui/Devtools';
 export type { DevtoolsProps } from './ui/Devtools';
 export { DevtoolsControl } from './ui/DevtoolsControl';

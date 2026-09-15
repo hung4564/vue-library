@@ -40,6 +40,9 @@
             <RouterLink to="/mobile-menu">Map - Mobile menu </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/legend">Legend </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/story-telling">Story telling </RouterLink>
           </v-list-item>
           <v-list-item>

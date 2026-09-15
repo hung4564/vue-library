@@ -1,7 +1,7 @@
 import { MapControlButton } from '@hungpvq/react-map-core';
+import type { BufferingLogEntry as LogEntry } from '@hungpvq/map-core/devtools';
 import type { LogLevel } from '@hungpvq/shared-log';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { LogEntry } from '../log-adapter';
 import { clearDevtoolLogs } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 import { GroupItem } from './GroupItem';

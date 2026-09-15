@@ -16,7 +16,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiTools } from '@mdi/js';
 import { watch } from 'vue';
-import { DEVTOOLS_CONTROL } from '../control';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
 import {
   setDevtoolOpen,
   toggleDevtoolOpen,

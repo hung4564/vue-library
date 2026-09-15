@@ -43,7 +43,7 @@ Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup)
 
 - Docs SoT: `libs/map-core/map-draw/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
 - Control ids (must match Vue ↔ React): `mapDrawDraftList`, `mapInspectControl`.
-- Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `isDraftOption`, `DrawingType`, `MAP_DRAW_EVENT`, locales, CSS `./style.css`.
+- Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them).
 - React Inspect uses the same `InspectController` as Vue (style + popup).
 - Demo route: Vue/React `/#/draw` only (no separate inspect demo page).
 - Peers: `@hungpvq/map-draw`, `@mapbox/mapbox-gl-draw`, `maplibre-gl`.

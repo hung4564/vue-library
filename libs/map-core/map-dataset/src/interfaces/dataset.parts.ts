@@ -4,7 +4,8 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { FieldFeaturesDef, WithDataHelper } from '../extra';
+import type { WithDataHelper } from '../extra/data';
+import type { FieldFeaturesDef } from '../extra/field';
 import type { MenuItemClick } from '../menu/types';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 
@@ -134,9 +135,6 @@ export type IMapboxSourceView = IDatasetMap &
     getDataInfo(): unknown;
     getSourceId(): string;
   };
-
-/** @deprecated Use {@link IMapboxSourceView} */
-export type IBaseMapboxSourceView = IMapboxSourceView;
 
 export type IMapboxLayerView = IDatasetMap &
   WithToggleShow &

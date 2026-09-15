@@ -5,11 +5,11 @@ import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { useEffect } from 'react';
 import { ToggleShowButton } from '../../extra/component/toggle-show-button';
+import { useMapDataset } from '../../store/dataset-api';
 import {
   notifyMapDatasetStore,
-  useMapDataset,
   useMapDatasetStore,
-} from '../../store';
+} from '../../store/dataset-store';
 
 export function ButtonToggleShowAll({
   mapId,

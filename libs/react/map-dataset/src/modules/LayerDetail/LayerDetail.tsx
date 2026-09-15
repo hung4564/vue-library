@@ -8,6 +8,7 @@ import {
   getResolvedMenus,
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
+import { copyText } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   MapControlButton,
@@ -23,7 +24,7 @@ import Icon from '@mdi/react';
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useHighlight } from '../../store';
+import { useMapHighlight } from '../../store/highlight';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
 
@@ -35,9 +36,8 @@ type LayerDetailProps = {
   onClose?: () => void;
 };
 
-function copyText(value: unknown) {
-  const text = value == null ? '' : String(value);
-  void navigator.clipboard?.writeText(text);
+function copyValue(value: unknown) {
+  void copyText(value == null ? '' : String(value));
 }
 
 function TableTdCopy({
@@ -52,7 +52,7 @@ function TableTdCopy({
       <div className="layer-detail-row__copy">
         <MapControlButton
           variant="plain"
-          onClick={() => copyText(value)}
+          onClick={() => copyValue(value)}
           aria-label="Copy"
         >
           <Icon path={mdiContentCopy} size={14 / 24} />
@@ -110,7 +110,7 @@ export function LayerDetail({
   const { mapId, moduleContainerProps } = useMap({
     controlId: 'mapLayerDetail',
   });
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
 

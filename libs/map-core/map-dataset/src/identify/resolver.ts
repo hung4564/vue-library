@@ -1,9 +1,9 @@
 import { FallbackResolver, runMapControlAction } from '@hungpvq/map-core';
 import { MapMouseEvent } from 'maplibre-gl';
-import { IdentifyMultiResult } from '../interfaces';
-import type { IListViewUI } from '../model/list';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
-import { isListView } from '../utils';
+import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
+import type { IListViewUI } from '../model/list/types';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
+import { isListView } from '../utils/check';
 import { queueAttributeTableSelectRows } from '../attribute-table';
 import { handleMenuAction, LIST_VIEW_MENU_ID } from '../menu';
 import { groupIdentifyResults, IDENTIFY_RESULT_CONTROL } from './result';

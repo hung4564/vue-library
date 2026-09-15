@@ -8,10 +8,10 @@ import {
 } from '@hungpvq/map-core/crs';
 import { useEffect, useMemo, useState } from 'react';
 import { InputCrs } from '../../field';
-import { useLang } from '../lang';
-import { useMap } from '../../hooks';
+import { useLang } from '../lang/hook';
+import { useMap } from '../../hooks/useMap';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from './useMapCrsItems';
-import { MapControlButton } from '../../components';
+import { MapControlButton } from '../../components/MapControlButton';
 
 export function CrsDisplaySettings() {
   const { mapId } = useMap();

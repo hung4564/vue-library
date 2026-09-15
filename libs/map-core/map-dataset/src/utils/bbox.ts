@@ -1,14 +1,8 @@
 import type { BBox } from 'geojson';
-import type { IBoundView, IDataset, IMetadataView } from '../interfaces';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
-
-export function isValidBbox(bbox: unknown): bbox is BBox {
-  return (
-    Array.isArray(bbox) &&
-    bbox.length >= 4 &&
-    bbox.slice(0, 4).every((n) => typeof n === 'number' && Number.isFinite(n))
-  );
-}
+import { isValidBbox } from '@hungpvq/map-core';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IBoundView, IMetadataView } from '../interfaces/dataset.parts';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 
 /**
  * Resolve a dataset bbox by priority:

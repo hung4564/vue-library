@@ -25,7 +25,7 @@ import {
 import { computed, ref } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useHighlight } from '../../store';
+import { useMapHighlight } from '../../store/highlight';
 import TableTdLayer from './table-td-layer.vue';
 
 const props = withDefaults(
@@ -43,7 +43,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
-const hl = useHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 const { trans, setLocaleDefault } = useLang(mapId.value);
 setLocaleDefault(LAYER_DETAIL_LOCALE);
 

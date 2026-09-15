@@ -12,12 +12,13 @@ import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { useLang } from '../../lang';
+import { useLang } from '../../lang/hook';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
 export interface CrsControlProps extends WithMapPropType {

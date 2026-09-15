@@ -122,5 +122,3 @@ export const getDrawStyles = (
     },
   },
 ];
-
-export default getDrawStyles;

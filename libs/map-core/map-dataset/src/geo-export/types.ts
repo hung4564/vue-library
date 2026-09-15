@@ -1,6 +1,3 @@
-import type { Feature, FeatureCollection, Geometry } from 'geojson';
-import { asFeatureCollection } from '../utils/feature-collection';
-
 export const GEO_EXPORT_FORMATS = [
   'geojson',
   'kml',
@@ -35,45 +32,3 @@ export const GEO_EXPORT_FORMAT_META: Record<
     mime: 'application/zip',
   },
 };
-
-export function toFeatureCollection(
-  data: unknown,
-): FeatureCollection | null {
-  return asFeatureCollection(data);
-}
-
-export function recordsToFeatureCollection(list: unknown[]): FeatureCollection {
-  const features: Feature[] = [];
-  for (const item of list) {
-    const feature = recordToFeature(item);
-    if (feature) features.push(feature);
-  }
-  return { type: 'FeatureCollection', features };
-}
-
-function recordToFeature(item: unknown): Feature | null {
-  if (!item || typeof item !== 'object') return null;
-  const rec = item as Record<string, unknown>;
-  if (rec['type'] === 'Feature' && rec['geometry']) {
-    return rec as unknown as Feature;
-  }
-  if (!rec['geometry']) return null;
-  const geometry = rec['geometry'];
-  const properties = rec['properties'];
-  const id = rec['id'];
-  const rest: Record<string, unknown> = { ...rec };
-  delete rest['geometry'];
-  delete rest['properties'];
-  delete rest['id'];
-  delete rest['type'];
-  const props =
-    properties && typeof properties === 'object' && !Array.isArray(properties)
-      ? (properties as Record<string, unknown>)
-      : rest;
-  return {
-    type: 'Feature',
-    id: id as string | number | undefined,
-    geometry: geometry as Geometry,
-    properties: props,
-  };
-}

@@ -1,4 +1,4 @@
-import type { MenuAction } from '../interfaces';
+import type { MenuAction } from '../interfaces/dataset.parts';
 import { createMenuConditionContext } from './condition';
 import { partitionMenuActions, mergeMenusById } from './location';
 import {

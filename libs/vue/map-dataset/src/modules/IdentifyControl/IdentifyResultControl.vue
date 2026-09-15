@@ -47,7 +47,7 @@ import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, reactive, ref } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 
 const path = {
   boxSelect: mdiSelect,

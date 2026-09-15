@@ -62,8 +62,10 @@ Hide some items, add one with `createMenuBuilder` (or `createMapMenuBuilder` / `
 
 ```ts
 import { createMenuBuilder, createMapContextMenuBuilder } from '@hungpvq/map-dataset/menu';
-import { type MapContextMenuTarget } from '@hungpvq/map-dataset';
-import { createMapMenuBuilder } from '@hungpvq/map-core/menu';
+import {
+  createMapMenuBuilder,
+  type MapContextMenuTarget,
+} from '@hungpvq/map-core/menu';
 
 const extra = createMenuBuilder<MapContextMenuTarget>()
   .item()

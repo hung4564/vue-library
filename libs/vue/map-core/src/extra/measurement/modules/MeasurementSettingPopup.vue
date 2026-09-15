@@ -39,12 +39,12 @@ import { IViewSettingField } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import FieldGeometry from './setting/field-geometry.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
-import { CrsDisplaySettings } from '../../crs';
+import CrsDisplaySettings from '../../crs/modules/CrsDisplaySettings/CrsDisplaySettings.vue';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

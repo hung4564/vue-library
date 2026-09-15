@@ -2,16 +2,16 @@ import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
 import {
   BasemapManager,
-  MittTypeBaseMapEventKey,
+  subscribeBasemapMirror,
 } from '@hungpvq/map-core/basemap';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMapMittStore } from '../../mitt';
+import { getMapMittStore } from '../../../store/mitt-store';
 import { logger } from '../logger';
 import { useMapBaseMapStore } from '../store';
 
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
-  const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
+  const emitter = getMapMittStore<MittTypeBaseMap>(mapId);
 
   const managerRef = useRef<BasemapManager | null>(null);
   if (!managerRef.current) {
@@ -29,6 +29,7 @@ export function useBaseMap(mapId: string) {
     );
   }
   const manager = managerRef.current;
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   const [baseMaps, setBaseMapsState] = useState<BaseMapItem[]>(
     manager.getBaseMaps(),
@@ -37,32 +38,19 @@ export function useBaseMap(mapId: string) {
     BaseMapItem | undefined
   >(manager.getCurrent());
 
-  const updateBaseMapsHandler = useCallback((p_baseMaps: BaseMapItem[]) => {
-    setBaseMapsState(p_baseMaps);
-  }, []);
-
-  const updateCurrentBaseMapHandler = useCallback(
-    (baseMap: BaseMapItem | undefined) => {
-      setCurrentBaseMapState(baseMap);
-    },
-    [],
-  );
-
   useEffect(() => {
-    // Sync from store in case another hook instance already updated it
     setBaseMapsState(manager.getBaseMaps());
     setCurrentBaseMapState(manager.getCurrent());
 
-    emitter.on(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
-    emitter.on(MittTypeBaseMapEventKey.setCurrent, updateCurrentBaseMapHandler);
+    unsubscribeRef.current = subscribeBasemapMirror(emitter, {
+      onBaseMaps: setBaseMapsState,
+      onCurrent: setCurrentBaseMapState,
+    });
     return () => {
-      emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
-      emitter.off(
-        MittTypeBaseMapEventKey.setCurrent,
-        updateCurrentBaseMapHandler,
-      );
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
     };
-  }, [emitter, manager, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
+  }, [emitter, manager]);
 
   const setBaseMaps = useCallback(
     (items: BaseMapItem[]) => manager.setBaseMaps(items),
@@ -82,12 +70,9 @@ export function useBaseMap(mapId: string) {
     [manager],
   );
   const remove = useCallback(() => {
-    emitter.off(MittTypeBaseMapEventKey.set, updateBaseMapsHandler);
-    emitter.off(
-      MittTypeBaseMapEventKey.setCurrent,
-      updateCurrentBaseMapHandler,
-    );
-  }, [emitter, updateBaseMapsHandler, updateCurrentBaseMapHandler]);
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+  }, []);
 
   return {
     baseMaps,

@@ -14,7 +14,7 @@ import {
 } from '@hungpvq/map-core/event';
 import type { MapEventType } from 'maplibre-gl';
 import { getMap } from '../../../store/store';
-import { useMapMittStore } from '../../mitt';
+import { getMapMittStore } from '../../../store/mitt-store';
 import { logger, useMapEventStore } from '../store';
 
 type ReactComponentType = {
@@ -99,7 +99,7 @@ export function useEventMap(
   from?: string,
 ) {
   const store = useMapEventStore(mapId);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const detectedName = useComponentName();
   const componentName = from || detectedName;
   const eventRef = useRef(event);

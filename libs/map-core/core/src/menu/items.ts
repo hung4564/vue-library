@@ -7,7 +7,7 @@ import {
   mdiMagnifyPlusOutline,
   mdiTarget,
 } from '@mdi/js';
-import { UniversalRegistry } from '../registry';
+import { UniversalRegistry } from '../registry/universal-registry';
 import { createMenuItemsAddGeojsonHere } from './add-geojson-here';
 import {
   centerMapHere,

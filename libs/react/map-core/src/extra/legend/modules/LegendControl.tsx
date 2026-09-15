@@ -12,12 +12,13 @@ import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { InputCheckbox } from '../../../field';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useEventListener } from '../../event';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useEventListener } from '../../event/hook/useEvent';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useLayerLegend } from '../lib/useLayerLegend';
 
 export function LegendControl(props: WithMapPropType) {

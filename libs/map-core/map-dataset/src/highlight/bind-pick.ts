@@ -1,11 +1,11 @@
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { loggerHighlight } from '../logger';
 import type { HighlightController } from './controller';
 import { getHighlightController } from './controller';
 
 /**
  * Wire the map highlight controller to pick every dataset part with
- * `type: 'highlight'`. Framework adapters call this from `useHighlight`.
+ * `type: 'highlight'`. Framework adapters call this from `useMapHighlight`.
  */
 export function bindHighlightPickDatasets(
   mapId: string,

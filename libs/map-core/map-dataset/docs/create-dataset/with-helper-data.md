@@ -64,7 +64,7 @@ Stores default menus that list, identify, and the attribute table share. Data is
 - `for: 'item'` — identify result rows and attribute table rows (merged with the identify node's menus)
 - `byControl` (optional) — per-host placement (`location` / `hidden`) keyed by `MENU_CONTROL_ID` (`layer-control`, `layer-detail`, `identify`, `attribute-table`). Hosts inject `context.control`; `partitionMenuActions` / `DatasetMenus` apply overrides at render. Same field can live on the `menu` itself (`setByControl`).
 
-Add the menu part to the same dataset tree. List, identify, and the table find it with `findFirstLeafByType(..., 'menu')`.
+Add the menu part to the same dataset tree. List, identify, and the table find it with `findPartByType(..., 'menu')`.
 
 ```ts
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
@@ -216,5 +216,5 @@ Live demo: `#/dataset-menu` → layer **byControl · LayerDetail title**.
 | `addItemMenu` | `.addItemMenu(menu)` | `for: 'item'` |
 | `addLayerMenus` / `addItemMenus` | `.addLayerMenus([a, b])` | Several menus for that `for` |
 
-`getResolvedMenus(dataset, 'layer' | 'item')` is what the UI calls. It finds the nearest `menu` part with `findFirstLeafByType`, and for `item` finds identify the same way. Placement (`byControl`) is applied later at render inside `partitionMenuActions` / `DatasetMenus`.
+`getResolvedMenus(dataset, 'layer' | 'item')` is what the UI calls. It finds the nearest `menu` part with `findPartByType`, and for `item` finds identify the same way. Placement (`byControl`) is applied later at render inside `partitionMenuActions` / `DatasetMenus`.
 

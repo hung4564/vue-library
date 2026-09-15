@@ -7,13 +7,13 @@ import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 import { ButtonToggleShowAll } from './ButtonToggleShowAll';
 import {
   DraggableGroupList,
   type DraggableGroupListRef,
 } from './DraggableList/DraggableGroupList';
-import type { GroupTree, LayerListItem } from './DraggableList/utils';
+import type { GroupTree, LayerListItem } from './DraggableList/types';
 import { LayerItem } from './layer-item';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 const HEADER_ICON = '16px';

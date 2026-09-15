@@ -27,7 +27,7 @@ import {
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
 import { ref } from 'vue';
-import { INSPECT_CONTROL_LOCALE } from '../../locale';
+import { INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';
 
 /** Local interface so Vue resolve props used in withDefaults / defaultMapProps. */
 interface InspectControlProps extends WithMapPropType {

@@ -1,5 +1,5 @@
 import { useExpand, useShow } from '../../../hook';
-import { type LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { useSidebarTransition } from './useSidebarTransition';
 
 export function useSidebarBehavior(

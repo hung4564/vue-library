@@ -69,7 +69,7 @@ createDatasetPartMenuComponentBuilder('defaults')
 
 Built-ins: Fly to / Fill bound default `extra` (title on LayerDetail); Detail / Info hidden on LayerDetail.
 
-Shared defaults (all lists, identify, attribute table) live on a [`menu` dataset part](./with-helper-data.md#menu-createdatasetpartmenucomponent) in the same tree (`findFirstLeafByType`). List rows merge `for: 'layer'`; identify and the table merge `for: 'item'`.
+Shared defaults (all lists, identify, attribute table) live on a [`menu` dataset part](./with-helper-data.md#menu-createdatasetpartmenucomponent) in the same tree (`findPartByType`). List rows merge `for: 'layer'`; identify and the table merge `for: 'item'`.
 
 ---
 

@@ -4,9 +4,14 @@
  */
 export { BaseMapAdapter } from './adapter/BaseMapAdapter';
 export {
+  createDefaultBaseMapAdapter,
+  createDefaultBaseMapAdapterClass,
   DefaultBaseMapAdapter,
   getLowestLayerId,
 } from './adapter/DefaultBaseMapAdapter';
+export type { DefaultBaseMapAdapterConstructor } from './adapter/DefaultBaseMapAdapter';
+export { subscribeBasemapMirror } from './basemap-mirror';
+export type { BasemapMirrorHandlers } from './basemap-mirror';
 export { BasemapManager } from './basemap-manager.service';
 export { BasemapService } from './basemap.service';
 export { BasemapError } from './errors';

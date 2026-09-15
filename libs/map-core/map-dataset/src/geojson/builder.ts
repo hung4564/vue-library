@@ -23,11 +23,11 @@ import {
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
 } from '../menu/items';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createIdentifyMapboxComponent } from '../identify';
-import { createMultiMapboxLayerComponent } from '../model/layer';
-import { createDatasetPartListViewUiComponent } from '../model/list';
+import { createMultiMapboxLayerComponent } from '../model/layer/model';
+import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import { createDatasetPartBoundComponent } from '../model/part-bound.model';
 import { createDatasetPartGeojsonSourceComponent } from './source';
 import { LayerSimpleMapboxBuild } from '../style/layer-simple-builder';

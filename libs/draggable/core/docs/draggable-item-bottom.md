@@ -39,7 +39,7 @@ Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ ext
 | Vue             | React        | Description                                      |
 | --------------- | ------------ | ------------------------------------------------ |
 | `default`       | `children`   | Content of the bottom panel.                     |
-| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
 | `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
 
 ## Store

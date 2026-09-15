@@ -57,7 +57,7 @@ import { Map } from '@hungpvq/vue-map-core';
 import {
   IdentifyControl,
   ComponentManagementControl,
-  useHighlight,
+  useMapHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { onUnmounted } from 'vue';
@@ -65,7 +65,7 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 
 // Optional: pointer highlight in addition to Identify (watch dual-click).
-const hl = useHighlight(mapId);
+const hl = useMapHighlight(mapId);
 const unbind = hl.bindPointer({ click: true, hover: false });
 onUnmounted(() => {
   unbind();
@@ -94,13 +94,13 @@ Immediate click mode:
 import {
   IdentifyControl,
   ComponentManagementControl,
-  useHighlight,
+  useMapHighlight,
 } from '@hungpvq/react-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { useEffect } from 'react';
 
 function Page({ mapId }: { mapId: string }) {
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
   useEffect(() => {
     const unbind = hl.bindPointer({ click: true, hover: false });
     return () => {

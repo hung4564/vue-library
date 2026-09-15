@@ -1,10 +1,7 @@
 import { mdiTable } from '@mdi/js';
 import { hasGeojsonExportData } from '../geo-export/dataset';
-import type {
-  IDataset,
-  MenuConditionContext,
-  MenuItemBottomOrExtra,
-} from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuConditionContext, MenuItemBottomOrExtra } from '../interfaces/dataset.parts';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,

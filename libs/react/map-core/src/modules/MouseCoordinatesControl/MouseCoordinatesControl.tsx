@@ -3,8 +3,8 @@ import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCoordinate } from '../../extra/crs';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useCoordinate } from '../../extra/crs/useCoordinate';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
 /** Local debounce (avoids lodash dependency). */

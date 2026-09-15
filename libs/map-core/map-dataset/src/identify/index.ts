@@ -37,9 +37,24 @@ export type {
   IdentifyLayerFilterPayload,
   IdentifyScopeToggleResult,
 } from './scope';
+export {
+  IDENTIFY_LOADING_LOG,
+  buildIdentifyLayerItems,
+  buildIdentifyResultPanelBase,
+  filterIdentifiesForControl,
+  filterNonEmptyIdentifyResults,
+  resolveIdentifyLayerFilterId,
+  runIdentifyMulti,
+  runIdentifyShowFirst,
+} from './run-identify';
+export type {
+  RunIdentifyMultiOptions,
+  RunIdentifyResult,
+  RunIdentifyShowFirstOptions,
+} from './run-identify';
 
 export type {
   IIdentifyView,
   IdentifyFeatureRow,
   IdentifyMultiResult,
-} from '../interfaces';
+} from '../interfaces/dataset.parts';

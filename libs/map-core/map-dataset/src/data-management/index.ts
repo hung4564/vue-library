@@ -11,9 +11,9 @@ export {
   pickGeometry,
   resolveRecordId,
   toFeature,
-  toFeatureCollection,
   toRecord,
 } from './normalize';
+export { toFeatureCollection } from '../utils/feature-collection';
 
 export type {
   CreateDataManagementOptions,

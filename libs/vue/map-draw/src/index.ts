@@ -1,12 +1,9 @@
 /**
  * Root barrel: explicit named exports (Stable).
  * Do not reintroduce `export *`.
- * Adapter-only surface — import protocol/types from `@hungpvq/map-draw`.
- * Store/locale first so DrawControl hooks can import them without TDZ cycles.
+ * Adapter-only surface — import protocol/locales from `@hungpvq/map-draw`.
  */
-export { DRAW_CONTROL_LOCALE, INSPECT_CONTROL_LOCALE } from './locale';
 export {
-  isDraftOption,
   useConfigDrawControl,
   useMapDraw,
   useMapDrawStore,

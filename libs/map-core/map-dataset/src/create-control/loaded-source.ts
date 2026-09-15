@@ -1,5 +1,5 @@
 import type { GeoJSON } from 'geojson';
-import { asGisFeatureCollection } from './gis-parse';
+import { asFeatureCollection } from '../utils/feature-collection';
 
 export type CreateControlDataSourceKind = 'paste' | 'file' | 'url';
 
@@ -26,7 +26,7 @@ export function summarizeCreateControlGeojson(
   geojson: GeoJSON | null | undefined,
 ): CreateControlGeoSummary | null {
   if (!geojson) return null;
-  const fc = asGisFeatureCollection(geojson);
+  const fc = asFeatureCollection(geojson);
   if (!fc) {
     return { featureCount: 0, geometryTypes: [], rootType: geojson.type };
   }

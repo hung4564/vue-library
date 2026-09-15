@@ -2,7 +2,7 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDragContainer, useDragItem, useDragStore } from '../store';
-import { InitOption } from '../types';
+import type { InitOption } from '@hungpvq/draggable';
 
 export function useInitItem(
   containerId: string,

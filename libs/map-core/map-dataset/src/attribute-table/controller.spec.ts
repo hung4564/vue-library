@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createAttributeTableController } from './controller';
 import { createLocalAttributeTableStore } from './store';
 import type { AttributeTableStore } from './store';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 
 const point = (id: string, name: string) => ({
   type: 'Feature' as const,

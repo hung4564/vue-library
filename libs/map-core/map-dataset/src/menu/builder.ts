@@ -1,5 +1,6 @@
 import type { Feature } from 'geojson';
-import type { IDataset, MenuAction, MenuActionLocation, MenuByControl } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction, MenuActionLocation, MenuByControl } from '../interfaces/dataset.parts';
 
 import type {
   MenuCondition,

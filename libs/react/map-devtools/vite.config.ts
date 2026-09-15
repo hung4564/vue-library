@@ -37,6 +37,7 @@ export default defineConfig(() => ({
         'react-dom',
         'react/jsx-runtime',
         '@hungpvq/map-core',
+        '@hungpvq/map-core/devtools',
         '@hungpvq/react-map-core',
         '@hungpvq/react-draggable',
         '@hungpvq/shared',

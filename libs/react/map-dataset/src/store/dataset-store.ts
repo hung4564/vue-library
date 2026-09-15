@@ -1,7 +1,7 @@
 import { logHelper } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/react-map-core';
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset' as const;
 

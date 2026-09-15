@@ -1,17 +1,16 @@
 import { logHelper } from '@hungpvq/map-core';
-import type { ComponentType } from '@hungpvq/map-dataset';
+import {
+  removeDatasetComponent,
+  upsertDatasetComponent,
+  type DatasetComponentItem,
+} from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/react-map-core';
 import { useCallback, useEffect, useState } from 'react';
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset-component' as const;
 
-export type ComponentItem = {
-  id: string;
-  check?: string;
-  /** Bumps on every add/upsert so hosts can re-open without remounting. */
-  revision?: number;
-} & ComponentType;
+export type ComponentItem = DatasetComponentItem;
 
 export type MapDatasetComponentStore = {
   components: ComponentItem[];
@@ -19,10 +18,6 @@ export type MapDatasetComponentStore = {
   version: number;
   listeners: Set<() => void>;
 };
-
-function generateId(prefix = 'component'): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-}
 
 function notify(store: MapDatasetComponentStore) {
   store.version += 1;
@@ -60,26 +55,7 @@ export function useMapDatasetComponent(mapId: string) {
   const addComponent = useCallback(
     (component: Omit<ComponentItem, 'id'>) => {
       if (!store) return;
-      if (component.check) {
-        const index = store.components.findIndex(
-          (x: ComponentItem) => x.check === component.check,
-        );
-        if (index >= 0) {
-          const existing = store.components[index];
-          const id = existing.id;
-          Object.assign(existing, component, {
-            id,
-            revision: (existing.revision ?? 0) + 1,
-          });
-          store.componentIds.value.splice(index, 1);
-          store.componentIds.value.push(id);
-          notify(store);
-          return id;
-        }
-      }
-      const id = generateId();
-      store.components.push({ ...component, id, revision: 1 });
-      store.componentIds.value.push(id);
+      const id = upsertDatasetComponent(store, component);
       notify(store);
       return id;
     },
@@ -89,12 +65,7 @@ export function useMapDatasetComponent(mapId: string) {
   const removeComponent = useCallback(
     (id: string) => {
       if (!store) return;
-      store.components = store.components.filter(
-        (x: ComponentItem) => x.id !== id,
-      );
-      store.componentIds.value = store.componentIds.value.filter(
-        (x: string) => x !== id,
-      );
+      removeDatasetComponent(store, id);
       notify(store);
     },
     [store],

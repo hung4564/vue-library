@@ -11,7 +11,7 @@ import {
 import { createStore } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { ComponentType } from 'react';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store-utils';
 
 const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
 const KEY = MAP_STORE_KEY.REGISTRY;

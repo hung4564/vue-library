@@ -1,7 +1,7 @@
-import { logHelper, MapSimple, MAP_STORE_KEY } from '@hungpvq/map-core';
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
-  addImageForMap,
   createDefaultImageStore,
+  createMapImageStoreApi,
   type MapImageStore,
 } from '@hungpvq/map-core/image';
 import { createMapScopedStore, useMapStore } from '../../store/store';
@@ -14,15 +14,18 @@ export const useMapImageStore = (mapId: string) =>
     logHelper(logger, mapId, 'store').debug('init');
     return createDefaultImageStore();
   });
+
 export const useMapImage = (mapId: string) => {
   const store = useMapImageStore(mapId);
   const storeMap = useMapStore(mapId);
+  const api = createMapImageStoreApi(store, (fn) => storeMap.getMap(fn));
+
   return {
     async addImage(
       mapId: string,
       key: string,
       image_url: string,
-      option: any = {},
+      option: Parameters<typeof api.addImage>[3] = {},
     ) {
       logHelper(logger, mapId, 'store').debug(
         'addImage',
@@ -30,17 +33,7 @@ export const useMapImage = (mapId: string) => {
         image_url,
         option,
       );
-      store.images[key] = {
-        path: image_url,
-        id: key,
-        name: key,
-        is_sprite: false,
-        category: 'custom',
-      };
-      const promises = storeMap.getMap(async (map: MapSimple) =>
-        addImageForMap(map, key, image_url, option),
-      );
-      return promises;
+      return api.addImage(mapId, key, image_url, option);
     },
   };
 };

@@ -1,4 +1,4 @@
-import type { IDataset } from '../../interfaces';
+import type { IDataset } from '../../interfaces/dataset.base';
 import { isComposite } from '../../utils/check';
 import { traverseTree } from './traverse';
 
@@ -63,17 +63,22 @@ export function findSiblingOrNearestLeaf<T extends IDataset = IDataset>(
   return undefined;
 }
 
-export function findFirstLeafByType<T extends IDataset = IDataset>(
-  sourceLeaf: IDataset,
+export function findPartByType<T extends IDataset = IDataset>(
+  node: IDataset | undefined,
   targetType: string,
+  guard?: (part: IDataset) => part is T,
 ): T | undefined {
-  return findSiblingOrNearestLeaf<T>(
-    sourceLeaf,
-    (node) => node.type === targetType,
+  if (!node) return undefined;
+  const found = findSiblingOrNearestLeaf(
+    node,
+    (part) => part.type === targetType,
   );
+  if (!found) return undefined;
+  if (guard && !guard(found)) return undefined;
+  return found as T;
 }
 
-export function findAllDatasetsMatching<T extends IDataset = IDataset>(
+function findAllDatasetsMatching<T extends IDataset = IDataset>(
   startNode: IDataset,
   check: (node: IDataset) => boolean,
   excludeNode?: IDataset | null,
@@ -106,21 +111,6 @@ export function findAllComponentsByType<T extends IDataset = IDataset>(
   );
 }
 
-export function applyToAllLeaves<R = unknown>(
-  rootDataset: IDataset,
-  functions: ((dataset: IDataset) => R)[] = [],
-): Map<string, R[]> {
-  const results: Map<string, R[]> = new Map();
-  traverseTree(rootDataset, (node) => {
-    if (isComposite(node)) {
-      return;
-    }
-    const functionResults = functions.map((fn) => fn(node));
-    results.set(node.getName(), functionResults);
-  });
-  return results;
-}
-
 export function runAllComponentsWithCheck<
   T extends IDataset = IDataset,
   R = unknown,
@@ -138,23 +128,4 @@ export function runAllComponentsWithCheck<
     results.set(node.getName(), functionResults);
   });
   return results;
-}
-
-export function printTreeFromRoot(root: IDataset) {
-  traverseTree(root, (node, level, path) => {
-    const indent = '  '.repeat(level);
-    console.info(
-      `${indent}- ${path.join('.')} - ${node.type} - ${node.getName() || 'Unnamed Node'}`,
-    );
-  });
-}
-
-export function printTreeFromNode(leaf: IDataset) {
-  const root = findRoot(leaf);
-  traverseTree(root, (node, level, path) => {
-    const indent = '  '.repeat(level);
-    console.info(
-      `${indent} - ${path.join('.')} ${node.type} - ${node.getName() || 'Unnamed Node'}`,
-    );
-  });
 }

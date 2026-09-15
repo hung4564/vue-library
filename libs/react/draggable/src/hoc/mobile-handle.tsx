@@ -7,7 +7,8 @@ export function WithMobileHandle<P, M>(
   Component: ComponentType<P>,
   ComponentMobile: ComponentType<M>,
 ) {
-  type Props = P & M & { containerId?: string };
+  /** Desktop props win on overlap (e.g. SideBar `title?: ReactNode` vs Bottom `title?: string`). */
+  type Props = Omit<M, keyof P> & P & { containerId?: string };
 
   return function WithMobileHandleComponent(props: Props) {
     const containerId = useContainerId(props.containerId);

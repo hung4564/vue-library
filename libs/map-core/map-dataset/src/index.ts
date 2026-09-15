@@ -3,69 +3,161 @@
  * Domain symbols live on `@hungpvq/map-dataset/<domain>` subpaths (breaking major).
  * Highlight APIs live on `@hungpvq/map-dataset/highlight` (not re-exported here).
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
- * Aggregation lives in ./internal-barrel (not a public package entry).
+ * Direct leaf imports (no internal-barrel).
  */
 export {
-  DATASET_CONTROL_LOCALE,
-  DatasetComposite,
   DatasetError,
-  DatasetLeaf,
-  DatasetService,
+} from './errors/index';
+
+export {
+  createWithDataHelper,
+} from './extra/data/index';
+
+export {
+  DATASET_CONTROL_LOCALE,
+} from './extra/dataset-control/locale';
+
+export {
+  getDatasetDetailInfo,
+} from './extra/detail/info';
+
+export {
+  LAYER_DETAIL_FIELD_LOCALE,
+  LAYER_DETAIL_LOCALE,
+} from './extra/detail/locale';
+
+export {
+  addDatasetWithEvent,
+  createWithEventHelper,
+} from './extra/event/model';
+
+export {
+  addFieldBuilder,
+} from './extra/field/index';
+
+export {
   LAYER_CONTROL_CREATE_LOCALE,
   LAYER_CONTROL_FIELD_LOCALE,
   LAYER_CONTROL_LOCALE,
   LAYER_CONTROL_TOGGLE_LOCALE,
-  LAYER_DETAIL_FIELD_LOCALE,
-  LAYER_DETAIL_LOCALE,
   LAYER_INFO_CONTROL_LOCALE,
-  addDatasetWithChildren,
-  addDatasetWithEvent,
-  addFieldBuilder,
-  addListViewsToGroup,
-  addListViewsToNewGroup,
-  applyGlobalLayerVisibility,
-  applyListViewMapVisibility,
-  applyToAllLeaves,
-  canMoveListView,
-  convertFeatureToItem,
-  convertItemToFeature,
-  convertListToTree,
-  convertTreeToList,
-  createDefaultGroup,
-  isGroupNode,
-  mergeEmptyGroups,
-  createBase,
-  createDataset,
-  createDatasetComponent,
-  createDatasetLeaf,
-  createDatasetPartBoundComponent,
-  createDatasetPartGroupSubListViewUiComponent,
-  createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartListViewUiComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartMapboxLayerComponent,
-  createDatasetPartMapboxSourceComponent,
-  createDatasetPartMetadataComponent,
-  createDatasetPartSubListViewUiComponent,
-  createDatasetPartSubListViewUiComponentBuilder,
-  createGroupDataset,
-  createMultiMapboxLayerComponent,
-  createNamedComponent,
-  createRootDataset,
-  createWithDataHelper,
-  createWithEventHelper,
-  findAllComponentsByType,
-  findAllDatasetsMatching,
-  findFirstLeafByType,
-  findRoot,
-  findSiblingOrNearestLeaf,
+} from './extra/layer-control/locale';
+
+export {
   layerGroupName,
   layerMatchesSearch,
   layerNameMatchesSearch,
   normalizeLayerSearchQuery,
-  getDatasetDetailInfo,
-  getDatasetSourceKind,
+  splitSearchHighlight,
+} from './extra/layer-control/search';
+
+export {
+  applyGlobalLayerVisibility,
+  applyListViewMapVisibility,
+  setListViewIntendedShow,
+} from './extra/layer-control/visibility';
+
+export {
+  TOGGLE_SHOW_LAYER_EVENT,
+  applyToggleShowIntent,
+  bindToggleShowAction,
+  getToggleShowTitleKey,
+  nextToggleShowValue,
+  performToggleShowAction,
+  readToggleShowEvent,
+} from './extra/layer-control/toggle-show-action';
+export type { ToggleShowLayerEvent } from './extra/layer-control/toggle-show-action';
+
+export {
+  setOpacity,
+  toggleShow,
+} from './interfaces/dataset.extra';
+
+export {
+  createBase,
+  createNamedComponent,
+} from './model/base';
+
+export {
+  DatasetComposite,
+  DatasetLeaf,
+  createDataset,
+  createGroupDataset,
+  createRootDataset,
+} from './model/dataset.base';
+
+export {
+  addDatasetWithChildren,
+  createDatasetComponent,
+  createDatasetLeaf,
+} from './model/dataset.base.function';
+
+export {
+  createDatasetPartMapboxLayerComponent,
+} from './model/layer/base';
+
+export {
+  createMultiMapboxLayerComponent,
+} from './model/layer/model';
+
+export {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartSubListViewUiComponentBuilder,
+} from './model/list/builder';
+
+export {
+  createDatasetPartGroupSubListViewUiComponent,
+  createDatasetPartListViewUiComponent,
+  createDatasetPartSubListViewUiComponent,
+} from './model/list/model';
+
+export {
+  addListViewsToGroup,
+  addListViewsToNewGroup,
+  canMoveListView,
   getListViewGroupInfo,
+  listListViewGroups,
+  moveListView,
+  sortListViews,
+  syncListViewLayerOrder,
+} from './model/list/order';
+
+export {
+  createDatasetPartBoundComponent,
+} from './model/part-bound.model';
+
+export {
+  createDatasetPartMetadataComponent,
+} from './model/part-metadata.model';
+
+export {
+  createDatasetPartMapboxSourceComponent,
+} from './model/source/base';
+
+export {
+  findAllComponentsByType,
+  findPartByType,
+  findRoot,
+  findSiblingOrNearestLeaf,
+  runAllComponentsWithCheck,
+} from './model/visitors/helpers';
+
+export {
+  traverseTree,
+  traverseTreeBFS,
+  traverseTreeDFS,
+} from './model/visitors/traverse';
+
+export {
+  DatasetService,
+} from './services/dataset.service';
+
+export {
+  resolveDatasetBbox,
+} from './utils/bbox';
+
+export {
   hasMoveLayer,
   isComposite,
   isDatasetHasMethod,
@@ -77,47 +169,61 @@ export {
   isIdentifyMergeView,
   isListView,
   isMapboxLayerView,
-  isValidBbox,
-  listListViewGroups,
-  moveListView,
-  printTreeFromNode,
-  printTreeFromRoot,
-  resolveDatasetBbox,
-  runAllComponentsWithCheck,
-  setListViewIntendedShow,
-  setOpacity,
-  sortListViews,
-  splitSearchHighlight,
-  syncListViewLayerOrder,
-  toggleShow,
-  traverseTree,
-  traverseTreeBFS,
-  traverseTreeDFS,
-} from './internal-barrel';
+} from './utils/check';
+
+export {
+  convertFeatureToItem,
+  convertItemToFeature,
+} from './utils/convert';
+
+export {
+  getDatasetSourceKind,
+} from './utils/source-kind';
+
+export {
+  convertListToTree,
+  convertTreeToList,
+  createDefaultGroup,
+  isGroupNode,
+  mergeEmptyGroups,
+} from './utils/tree';
 
 export {
   createDataManagement,
   isDataManagementView,
 } from './data-management';
 
-/** First-party types only — import geojson / maplibre types from their packages. */
+export {
+  removeDatasetComponent,
+  upsertDatasetComponent,
+} from './store/component-crud';
 export type {
-  IDataset,
+  DatasetComponentItem,
+  DatasetComponentListState,
+} from './store/component-crud';
+
+export {
+  resetDatasetRegistryWarnFlag,
+  warnIfDatasetRegistryMissing,
+} from './utils/warn-registry';
+
+/** @experimental Root logger namespaces — may change in a minor. */
+export { logger, loggerIdentify, loggerHighlight } from './logger';
+
+/** First-party types only — import geojson / maplibre types from their packages. */
+export type { IDataset } from './interfaces/dataset.base';
+export type { WithSetOpacity } from './interfaces/dataset.extra';
+export type {
   IMapboxLayerView,
   IdentifyFeatureRow,
   IdentifyMultiResult,
   IIdentifyView,
-  WithSetOpacity,
-} from './interfaces';
-export type { IListViewUI } from './model/list';
+} from './interfaces/dataset.parts';
+export type { IListViewUI } from './model/list/types';
 export type { FieldFeaturesDef } from './extra/field';
 export type { ComponentType } from './types';
-export type {
-  DatasetSourceKind,
-  GroupTree,
-  Item,
-  TreeItem,
-} from './utils';
+export type { DatasetSourceKind } from './utils/source-kind';
+export type { GroupTree, Item, TreeItem } from './utils/tree';
 export type { DatasetStoreLike } from './services/dataset.service';
 export type {
   CreateDataManagementOptions,

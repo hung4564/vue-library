@@ -1,5 +1,5 @@
 import { getChartRandomColor, MapError, toPlainJson } from '@hungpvq/map-core';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import {
   createGeoJsonDataset,
   type GeojsonDatasetOption,

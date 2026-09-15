@@ -92,7 +92,7 @@ Map packages lock **runtime** root exports with `public-api.spec.ts` (Stable ∪
 | `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts` |
 | `@hungpvq/react-map-draw` | `libs/react/map-draw/src/public-api.spec.ts` |
 
-When changing `src/index.ts` named exports (or `internal-barrel.ts` aggregation), update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
+When changing `src/index.ts` named exports, update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
 
 ## Draggable public-api lock
 

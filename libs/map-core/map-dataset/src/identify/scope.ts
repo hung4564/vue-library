@@ -1,10 +1,7 @@
 import { UniversalRegistry } from '@hungpvq/map-core';
-import type {
-  IDataset,
-  IIdentifyView,
-  MenuConditionContext,
-} from '../interfaces';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IIdentifyView, MenuConditionContext } from '../interfaces/dataset.parts';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { IDENTIFY_RESULT_CONTROL } from './result';
 
 /** IdentifyControl registry id + actions (must match useRegisterMapControl). */

@@ -9,7 +9,7 @@ import {
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiTools } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DEVTOOLS_CONTROL } from '../control';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
 import { setDevtoolOpen, toggleDevtoolOpen } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 import { DevtoolsPanelBody } from './DevtoolsPanelBody';

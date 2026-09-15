@@ -1,12 +1,13 @@
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
-import type { IDataset, IMapboxLayerView } from '../../interfaces';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
 
 import type { MapSimple } from '@hungpvq/map-core';
 import type { LayerSpecification } from 'maplibre-gl';
-import type { WithDataHelper } from '../../extra';
+import type { WithDataHelper } from '../../extra/data';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '../../menu';
 import { createNamedComponent } from '../base';
-import { findFirstLeafByType } from '../visitors';
+import { findPartByType } from '../visitors/helpers';
 import { createDatasetPartMapboxLayerComponent } from './base';
 type BaseLayerSpec = Partial<Omit<LayerSpecification, 'id'>> & { id?: string };
 export function createMultiMapboxLayerComponent(
@@ -75,7 +76,7 @@ export function createMultiMapboxLayerComponent(
     },
 
     addToMap(map: MapSimple, beforeId?: string): void {
-      const source = findFirstLeafByType(base, 'source');
+      const source = findPartByType(base, 'source');
       base.getData().forEach((layer) => {
         if (!map.getLayer(layer.id!)) {
           if (!(layer as any).source && source) {
@@ -130,7 +131,7 @@ export function createMultiMapboxLayerComponent(
     ) {
       const { type, index } = value;
       let { layer } = value;
-      const source = findFirstLeafByType(base, 'source');
+      const source = findPartByType(base, 'source');
 
       switch (type) {
         case 'update-one-layer': {
@@ -177,7 +178,7 @@ export function createMultiMapboxLayerComponent(
     hightLight(map: MapSimple, geojsonData: GeoJSON.Feature<GeoJSON.Geometry>) {
       const layer = map.getLayer(base.id + '-hightLight');
       if (!layer) {
-        const source = findFirstLeafByType(base, 'source');
+        const source = findPartByType(base, 'source');
         if (source) {
           const source_id = (source as any).getSourceId();
           if (source_id) {

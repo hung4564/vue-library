@@ -1,6 +1,7 @@
 import type { Color } from '@hungpvq/map-core';
-import type { WithEventHelper } from '../../extra';
-import type { IDataset, WithMenuHelper } from '../../interfaces';
+import type { WithEventHelper } from '../../extra/event/types';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { WithMenuHelper } from '../../interfaces/dataset.parts';
 import type {
   WithOpacity,
   WithSetOpacity,

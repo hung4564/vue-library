@@ -1,9 +1,6 @@
 import { mdiDownload } from '@mdi/js';
-import type {
-  IDataset,
-  MenuConditionContext,
-  MenuItemBottomOrExtra,
-} from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuConditionContext, MenuItemBottomOrExtra } from '../interfaces/dataset.parts';
 import {
   createMenuBuilder,
   createMenuClickBuilder,

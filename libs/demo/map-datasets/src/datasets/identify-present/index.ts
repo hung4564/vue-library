@@ -1,9 +1,10 @@
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { createMenuItemIdentifyForList, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
-import { findFirstLeafByType, type IDataset } from '@hungpvq/map-dataset';
+import { findPartByType, type IDataset } from '@hungpvq/map-dataset';
 import type { WithMenuHelper } from '@hungpvq/map-dataset/menu';
 import { type IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { Feature, FeatureCollection, Polygon } from 'geojson';
+import { polygonFromBounds } from '../identify/factory';
 
 type PresentOptions = {
   detail: boolean;
@@ -33,22 +34,7 @@ function squareFeature(
   extra?: Record<string, unknown>,
 ): Feature<Polygon> {
   const h = size / 2;
-  return {
-    type: 'Feature',
-    properties: { id, name, ...extra },
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [lng - h, lat - h],
-          [lng - h, lat + h],
-          [lng + h, lat + h],
-          [lng + h, lat - h],
-          [lng - h, lat - h],
-        ],
-      ],
-    },
-  };
+  return polygonFromBounds(id, name, [lng - h, lat - h, lng + h, lat + h], extra);
 }
 
 function bboxOf(zone: Zone): [number, number, number, number] {
@@ -120,10 +106,10 @@ function configurePresentMenus(
   dataset: IDataset,
   options: PresentOptions,
 ): IDataset {
-  const list = findFirstLeafByType(dataset, 'list') as
+  const list = findPartByType(dataset, 'list') as
     | (IDataset & WithMenuHelper)
     | undefined;
-  const identify = findFirstLeafByType(dataset, 'identify') as
+  const identify = findPartByType(dataset, 'identify') as
     | IIdentifyView
     | undefined;
 

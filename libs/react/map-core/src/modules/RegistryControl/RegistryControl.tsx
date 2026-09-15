@@ -8,16 +8,15 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MapControlButton } from '../../components';
+import { MapControlButton } from '../../components/MapControlButton';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import {
-  UniversalRegistry,
-  useLang,
-  useRegisterMapControl,
-  useToolbarControl,
-} from '../../extra';
+import { useLang } from '../../extra/lang/hook';
+import { UniversalRegistry } from '../../extra/registry/plugin';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
 import { InputSelect } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
 export interface RegistryControlProps extends WithMapPropType {

@@ -5,11 +5,8 @@ import { describe, expect, it } from 'vitest';
 import * as api from './index';
 
 export const VUE_MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
-  'DRAW_CONTROL_LOCALE',
   'DrawControl',
-  'INSPECT_CONTROL_LOCALE',
   'InspectControl',
-  'isDraftOption',
   'useConfigDrawControl',
   'useMapDraw',
   'useMapDrawStore',

@@ -1,12 +1,8 @@
 import type { LayerSpecification, SourceSpecification } from 'maplibre-gl';
-import type {
-  IDataset,
-  IFieldInfo,
-  IMapboxLayerView,
-  IMapboxSourceView,
-} from '../../interfaces';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { IFieldInfo, IMapboxLayerView, IMapboxSourceView } from '../../interfaces/dataset.parts';
 import type { IListViewUI } from '../../model/list/types';
-import { findSiblingOrNearestLeaf } from '../../model/visitors';
+import { findSiblingOrNearestLeaf } from '../../model/visitors/helpers';
 import { getDatasetSourceKind } from '../../utils/source-kind';
 
 export type DatasetDetailInfo = {

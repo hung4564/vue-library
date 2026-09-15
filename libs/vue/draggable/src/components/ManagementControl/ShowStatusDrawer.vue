@@ -44,7 +44,7 @@
 import { computed } from 'vue';
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import { DrawerConfig, LocationSideBar } from '../../types';
+import type { DrawerConfig, LocationSideBar } from '@hungpvq/draggable';
 import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 

@@ -76,7 +76,8 @@ Documented header slot / prop names are **Stable** (rename = **major**). Source 
 | Vue | React | Notes |
 | --- | --- | --- |
 | `pre-title` | `preTitle` | Before title group |
-| `title` | `title` | Text or node; React `titleNode` deprecated → use `title` |
+| `title` (prop) | `title` | Plain string for switcher store + default header |
+| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar` (falls back to `title`) |
 | `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
 | `extra-btn` | `extraBtn` | Trailing actions after spacer |
 

@@ -1,15 +1,15 @@
 import type { BBox } from 'geojson';
 import type { RasterSourceSpecification } from 'maplibre-gl';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import {
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
 } from '../menu/items';
-import { createDatasetPartListViewUiComponent } from '../model/list';
+import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import { createDatasetPartBoundComponent } from '../model/part-bound.model';
 import { createDatasetPartRasterSourceComponent } from './source';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
-import { createMultiMapboxLayerComponent } from '../model/layer';
+import { createMultiMapboxLayerComponent } from '../model/layer/model';
 
 export type RasterUrlDatasetOption = {
   name: string;

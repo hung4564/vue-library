@@ -1,4 +1,4 @@
-import { UniversalRegistry } from '../registry';
+import { UniversalRegistry } from '../registry/universal-registry';
 import { getMap } from '../store';
 import type { MapSimple } from '../types';
 import { copyText } from '../utils/map-info';

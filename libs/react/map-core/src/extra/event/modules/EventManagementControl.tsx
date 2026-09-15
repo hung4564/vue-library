@@ -10,13 +10,14 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useMapMittStore } from '../../mitt';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
-import { useEventMapItems } from '../hook';
+import { useLang } from '../../lang/hook';
+import { getMapMittStore } from '../../../store/mitt-store';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
+import { useEventMapItems } from '../hook/useEventMapItems';
 import type { MapEventStore } from '../store';
 
 export interface EventManagementControlProps extends WithMapPropType {
@@ -50,7 +51,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
     ],
   });
   const [events, setEvents] = useState<IEvent[]>([]);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const { getCurrent } = useEventMapItems(mapId, {
     onChange: (p) => setEvents(p.slice()),
   });

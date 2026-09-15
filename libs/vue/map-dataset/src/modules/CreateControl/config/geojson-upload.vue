@@ -138,25 +138,26 @@
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText, InputTextArea } from '@hungpvq/vue-map-core/fields';
 import { DragDropFile } from '@hungpvq/shared-file';
-import { WorkerMonitor, workerProgressRatio } from '@hungpvq/map-core';
 import {
-  applyCreateControlSample,
   applyCreateControlLayerName,
   assertCreateControlFileSize,
-  buildCreateControlLoadedSource,
+  buildCreateControlLoadedMetaChips,
+  createControlGeojsonPreviewPatch,
+  createControlLoadedSourceEyebrowKey,
   CREATE_CONTROL_SAMPLE_NONE,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
-  formatCreateControlBytes,
+  formatCreateControlParseStatus,
   GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
-  getCreateControlSampleUrl,
   getCreateControlSamples,
-  layerNameFromFileName,
-  layerNameFromUrl,
-  loadGisFileAsync,
-  loadGisTextAsync,
-  loadGisUrlAsync,
-  shortenCreateControlUrl,
+  loadCreateControlVectorFromUrl,
+  looksCompleteGis,
+  parseCreateControlPastedText,
+  parseCreateControlUploadedFiles,
+  resolveCreateControlSampleIdAfterUrlEdit,
+  resolveCreateControlSampleSelection,
+  subscribeCreateControlParseProgress,
+  summarizeCreateControlUploadFiles,
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 import { computed, markRaw, onBeforeUnmount, ref } from 'vue';
@@ -203,53 +204,26 @@ const showFileSummary = computed(
     !replaceFileMode.value,
 );
 
-const loadedSourceEyebrow = computed(() => {
-  const kind = loadedSource.value?.kind;
-  if (kind === 'file') return trans.value('map.layer-control.create.loaded-from-file');
-  if (kind === 'url') return trans.value('map.layer-control.create.loaded-from-url');
-  return trans.value('map.layer-control.create.loaded-from-paste');
-});
+const loadedSourceEyebrow = computed(() =>
+  trans.value(createControlLoadedSourceEyebrowKey(loadedSource.value?.kind)),
+);
 
-const loadedMetaChips = computed(() => {
-  const src = loadedSource.value;
-  if (!src) return [];
-  const chips = [];
-  if (typeof src.featureCount === 'number') {
-    chips.push(
-      `${trans.value('map.layer-control.create.features-count')}: ${src.featureCount}`,
-    );
-  }
-  if (src.geometryTypes?.length) {
-    chips.push(
-      `${trans.value('map.layer-control.create.geometry-types')}: ${src.geometryTypes.join(', ')}`,
-    );
-  }
-  if (typeof src.bytes === 'number') {
-    chips.push(formatCreateControlBytes(src.bytes));
-  }
-  return chips;
-});
-
-function looksCompleteGis(text) {
-  const trimmed = text.trim();
-  if (!trimmed) return false;
-  if (trimmed.startsWith('{') && trimmed.endsWith('}')) return true;
-  if (trimmed.startsWith('[') && trimmed.endsWith(']')) return true;
-  if (trimmed.startsWith('<') && /<\/[a-z]+>\s*$/i.test(trimmed)) return true;
-  return /^(GEOMETRYCOLLECTION|MULTI(POINT|LINESTRING|POLYGON)|POINT|LINESTRING|POLYGON)\s*\([\s\S]*\)$/i.test(
-    trimmed,
-  );
-}
+const loadedMetaChips = computed(() =>
+  buildCreateControlLoadedMetaChips(loadedSource.value, {
+    featuresCount: trans.value('map.layer-control.create.features-count'),
+    geometryTypes: trans.value('map.layer-control.create.geometry-types'),
+  }),
+);
 
 function syncGeojsonPreview(geojson, crs) {
-  form.value.geojson = geojson ? markRaw(geojson) : geojson;
-  if (crs) {
-    form.value.crs = crs;
-    form.value.detectedCrs = crs;
+  const patch = createControlGeojsonPreviewPatch(geojson, crs);
+  if (patch.geojson) {
+    form.value.geojson = markRaw(patch.geojson);
+  } else {
+    form.value.geojson = patch.geojson;
   }
-  if (!geojson) {
-    form.value.detectedCrs = undefined;
-  }
+  if ('crs' in patch) form.value.crs = patch.crs;
+  if ('detectedCrs' in patch) form.value.detectedCrs = patch.detectedCrs;
 }
 
 function clearUrlState() {
@@ -291,38 +265,26 @@ async function onChangeFile(input) {
     loadedSource.value = null;
     return;
   }
-  const totalBytes = files.reduce((sum, file) => sum + (file?.size ?? 0), 0);
-  const label =
-    files.length === 1
-      ? files[0]?.name || 'file'
-      : `${files.length} files`;
+  const { totalBytes } = summarizeCreateControlUploadFiles(files);
+  const parsingLabel = trans.value('map.layer-control.create.parsing');
   parsing.value = true;
-  parseStatusText.value = `${trans.value('map.layer-control.create.parsing')} (${formatCreateControlBytes(totalBytes)})`;
-  const unsubProgress = WorkerMonitor.subscribe(() => {
-    const snap = WorkerMonitor.get('geojson');
-    const task = snap?.pending?.[0];
-    const ratio = workerProgressRatio(task?.progress);
-    if (ratio == null) return;
-    const pct = Math.round(ratio * 100);
-    parseStatusText.value = `${trans.value('map.layer-control.create.parsing')} ${pct}% (${formatCreateControlBytes(totalBytes)})`;
-  });
+  parseStatusText.value = formatCreateControlParseStatus(parsingLabel, totalBytes);
+  const unsubProgress = subscribeCreateControlParseProgress(
+    parsingLabel,
+    totalBytes,
+    (text) => {
+      parseStatusText.value = text;
+    },
+  );
   try {
     pasteText.value = '';
-    const { geojson, crs, format } = await loadGisFileAsync(files);
+    const result = await parseCreateControlUploadedFiles(files);
     if (gen !== parseGeneration) return;
-    syncGeojsonPreview(geojson, crs);
-    loadedSource.value = buildCreateControlLoadedSource({
-      kind: 'file',
-      label,
-      detail: files.length > 1 ? files.map((f) => f.name).filter(Boolean).join(', ') : undefined,
-      bytes: totalBytes,
-      format,
-      geojson,
-    });
-    const fileName = files[0]?.name || label;
+    syncGeojsonPreview(result.geojson, result.crs);
+    loadedSource.value = result.loadedSource;
     form.value.name = applyCreateControlLayerName(
       form.value.name,
-      layerNameFromFileName(fileName),
+      result.suggestedName,
       'vector',
     );
     replaceFileMode.value = false;
@@ -357,16 +319,14 @@ function onPasteGeojson(text) {
   pasteTimer = setTimeout(async () => {
     parsing.value = true;
     try {
-      const { geojson, crs, format } = await loadGisTextAsync(text);
+      const result = await parseCreateControlPastedText(
+        text,
+        trans.value('map.layer-control.create.loaded-from-paste'),
+      );
       parseError.value = '';
-      if (geojson) {
-        syncGeojsonPreview(geojson, crs);
-        loadedSource.value = buildCreateControlLoadedSource({
-          kind: 'paste',
-          label: trans.value('map.layer-control.create.loaded-from-paste'),
-          format,
-          geojson,
-        });
+      if (result) {
+        syncGeojsonPreview(result.geojson, result.crs);
+        loadedSource.value = result.loadedSource;
       }
     } catch (err) {
       const message =
@@ -384,23 +344,17 @@ function onSelectSample(id) {
   const nextId = typeof id === 'string' ? id : '';
   sampleId.value = nextId;
   urlError.value = '';
-  if (!nextId) return;
-  const sample = getCreateControlSamples('vector').find(
-    (item) => item.id === nextId,
-  );
-  if (!sample) return;
-  dataUrl.value = getCreateControlSampleUrl(sample);
+  const url = resolveCreateControlSampleSelection('vector', nextId);
+  if (url != null) dataUrl.value = url;
 }
 
 function onUrlInput() {
   urlError.value = '';
-  const trimmed = dataUrl.value.trim();
-  const sample = getCreateControlSamples('vector').find(
-    (item) => item.id === sampleId.value,
+  sampleId.value = resolveCreateControlSampleIdAfterUrlEdit(
+    'vector',
+    sampleId.value,
+    dataUrl.value,
   );
-  if (sample && getCreateControlSampleUrl(sample) !== trimmed) {
-    sampleId.value = '';
-  }
 }
 
 async function onLoadUrl() {
@@ -410,49 +364,17 @@ async function onLoadUrl() {
   urlError.value = '';
   pasteText.value = '';
   try {
-    const sample = getCreateControlSamples('vector').find(
-      (item) =>
-        item.id === sampleId.value && getCreateControlSampleUrl(item) === url,
-    );
-    let geojson;
-    let crs;
-    let format;
-    if (sample) {
-      const patch = await applyCreateControlSample(sample);
-      Object.assign(form.value, patch);
-      form.value.name = applyCreateControlLayerName(
-        form.value.name,
-        sample.label,
-        'vector',
-      );
-      geojson = patch.geojson ?? null;
-      crs = patch.crs;
-      syncGeojsonPreview(geojson, crs);
-      loadedSource.value = buildCreateControlLoadedSource({
-        kind: 'url',
-        label: sample.label,
-        detail: shortenCreateControlUrl(url),
-        geojson,
-      });
-    } else {
-      const result = await loadGisUrlAsync(url);
-      geojson = result.geojson;
-      crs = result.crs;
-      format = result.format;
-      syncGeojsonPreview(geojson, crs);
-      form.value.name = applyCreateControlLayerName(
-        form.value.name,
-        layerNameFromUrl(url),
-        'vector',
-      );
-      loadedSource.value = buildCreateControlLoadedSource({
-        kind: 'url',
-        label: shortenCreateControlUrl(url),
-        detail: url,
-        format,
-        geojson,
-      });
+    const { patch, loadedSource: nextSource } = await loadCreateControlVectorFromUrl({
+      url,
+      sampleId: sampleId.value,
+      currentName: form.value.name,
+    });
+    const { geojson: nextGeojson, ...rest } = patch;
+    Object.assign(form.value, rest);
+    if ('geojson' in patch) {
+      form.value.geojson = nextGeojson ? markRaw(nextGeojson) : nextGeojson;
     }
+    loadedSource.value = nextSource;
     replaceFileMode.value = false;
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
   } catch (err) {

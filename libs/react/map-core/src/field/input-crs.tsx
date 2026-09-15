@@ -10,7 +10,7 @@ import {
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMapCrsItems } from '../extra/crs/useMapCrsItems';
-import { useMap } from '../hooks';
+import { useMap } from '../hooks/useMap';
 
 export interface InputCrsProps {
   label?: string;

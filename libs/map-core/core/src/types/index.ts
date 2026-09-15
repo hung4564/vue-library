@@ -81,17 +81,20 @@ export type CoordinatesNumber = [number, number];
 /** Draft point in the measurement form; empty rows are `[null, null]`. */
 export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
 
-/**
- * Re-export constants
- */
-export * from './constants';
+export { MAP_STORE_KEY } from './constants';
 
-/**
- * Re-export language types
- */
-export * from './lang';
+export {
+  MittTypeMapLangEventKey,
+  createDefaultLangStore,
+  createMapLocaleApi,
+  deepMergeLocale,
+} from './lang';
+export type {
+  MapLangLocale,
+  MapLocateStore,
+  MapTranslateFunction,
+  MittTypeMapLang,
+} from './lang';
 
-/**
- * Re-export store types
- */
-export * from './store';
+export { MittTypeMapEventKey, hasMapInstance } from './store';
+export type { MittTypeMap } from './store';

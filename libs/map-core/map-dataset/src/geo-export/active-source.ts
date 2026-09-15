@@ -1,6 +1,6 @@
 import type { FeatureCollection } from 'geojson';
 import type { AttributeTableSortState } from '../attribute-table/sort';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 
 /** Snapshot / helpers registered while Attribute Table is open for a map+layer. */
 export type GeoExportActiveSource = {

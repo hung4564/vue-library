@@ -3,6 +3,10 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
 export {
+  createCoordinateFormatter,
+  createMapDisplayCoordinateFormatter,
+} from './coordinate-formatter';
+export {
   buildCrsSearchCatalog,
   buildMapCrsCatalog,
   formatCrsLabel,
@@ -22,4 +26,5 @@ export {
   MittTypeMapCrsEventKey,
 } from './types';
 
+export type { CoordinateFormatter } from './coordinate-formatter';
 export type { CrsItem, MapCrsStore, MittTypeMapCrs } from './types';

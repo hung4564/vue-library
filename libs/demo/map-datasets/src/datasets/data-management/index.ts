@@ -11,7 +11,7 @@ import {
   createDatasetPartListViewUiComponentBuilder,
   createMultiMapboxLayerComponent,
   createRootDataset,
-  findFirstLeafByType,
+  findPartByType,
   type IDataset,
 } from '@hungpvq/map-dataset';
 import { createDatasetPartAttributeTable } from '@hungpvq/map-dataset/attribute-table';
@@ -119,7 +119,7 @@ function assemble(
 export function findDataManagementPart(
   root: IDataset,
 ): DataManagementPart | undefined {
-  return findFirstLeafByType<DataManagementPart>(root, 'data-management');
+  return findPartByType<DataManagementPart>(root, 'data-management');
 }
 
 export function findListViewByName(
@@ -127,7 +127,7 @@ export function findListViewByName(
   listName: string,
 ): IDataset | undefined {
   for (const root of roots) {
-    const list = findFirstLeafByType(root, 'list');
+    const list = findPartByType(root, 'list');
     if (list?.getName?.() === listName) return list;
   }
   return undefined;

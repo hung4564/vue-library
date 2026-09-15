@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { computed } from 'vue';
-import type { DevtoolsMode } from '../control';
+import type { DevtoolsMode } from '@hungpvq/map-core';
 import type { WithShowProps } from '@hungpvq/vue-map-core';
 import DevtoolsControl from './DevtoolsControl.vue';
 import DevtoolsOverlay from './DevtoolsOverlay.vue';

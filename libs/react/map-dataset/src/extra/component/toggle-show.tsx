@@ -1,8 +1,13 @@
-import { LAYER_CONTROL_LOCALE, setListViewIntendedShow } from '@hungpvq/map-dataset';
+import {
+  bindToggleShowAction,
+  getToggleShowTitleKey,
+  LAYER_CONTROL_LOCALE,
+  performToggleShowAction,
+} from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY, type WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { type ReactNode, useEffect, useState } from 'react';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 import {
   ToggleShowButton,
   type ToggleShowButtonProps,
@@ -20,34 +25,31 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
     setLocaleDefault(LAYER_CONTROL_LOCALE);
   }, [setLocaleDefault]);
 
-  useEffect(() => {
-    const onToggle = (e: { show: boolean }) => setShowValue(!!e.show);
-    props.data.on('toggleShow', onToggle);
-    return () => props.data.off('toggleShow', onToggle);
-  }, [props.data]);
+  useEffect(
+    () =>
+      bindToggleShowAction(props.data, (show) => {
+        setShowValue(show);
+      }),
+    [props.data],
+  );
 
   function onToggleShow() {
-    if (props.disabled) return;
-    const show = !showValue;
-    setShowValue(show);
     callMap((map) => {
-      setListViewIntendedShow(
-        props.data,
+      performToggleShowAction({
+        item: props.data,
         map,
-        show,
-        store?.allLayerShow !== false,
-      );
+        currentShow: showValue,
+        applyToMap: store?.allLayerShow !== false,
+        disabled: props.disabled,
+        onShowChange: setShowValue,
+      });
     });
   }
 
   return {
     mapId,
     showValue,
-    title: trans(
-      showValue
-        ? 'map.layer-control.toggle.hide'
-        : 'map.layer-control.toggle.show',
-    ),
+    title: trans(getToggleShowTitleKey(showValue)),
     onToggleShow,
   };
 }

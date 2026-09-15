@@ -85,39 +85,20 @@ export type {
   WithLayerItemActionType,
   WithLayerItemMenuComponentType,
 } from './layer-item';
-export {
-  MAP_CONTEXT_MENU_ID,
-  clearAddGeojsonHereItems,
-  createAddGeojsonHereDef,
-  createBufferHereDef,
-  createDefaultMapContextMenuItems,
-  createMapContextMenuBuilder,
-  createMapMenuBuilder,
-  createMenuItemCenterMapHere,
-  createMenuItemCopyAsGeojson,
-  createMenuItemCopyCoords,
-  createMenuItemCopyWkt,
-  createMenuItemGoogleEarth,
-  createMenuItemGoogleMaps,
-  createMenuItemIdentifyHere,
-  createMenuItemQuickAnalysis,
-  createMenuItemZoomInHere,
-  getDefaultAddGeojsonHereItems,
-  setAddGeojsonHereItems,
-} from './map-context-menu';
+export { createMapContextMenuBuilder } from './map-context-menu';
 export { createDatasetPartMenuComponent } from './part-menu.model';
 export { createDatasetPartMenuComponentBuilder } from './part-menu.builder';
 export { createLegend, createMultiLegend } from './legend';
 export type { LegendPropsMap, LegendType } from './legend';
-
-/** Adapter LayerControl registry probe (internal helper re-export). */
 export {
-  resetDatasetRegistryWarnFlag,
-  warnIfDatasetRegistryMissing,
-} from '../utils/warn-registry';
+  DATASET_REGISTRY_SLOTS,
+  registerDatasetRegistryComponents,
+  resolveDatasetRegistryKey,
+} from './registry-plugin';
+export type { DatasetRegistryComponentKey } from './registry-plugin';
 
 export type {
   MenuAction,
   MenuActionLocation,
   WithMenuHelper,
-} from '../interfaces';
+} from '../interfaces/dataset.parts';

@@ -1,4 +1,5 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
@@ -23,9 +24,6 @@ export function createListOnlyDefaultDataset() {
   dataset.add(list1);
   return dataset;
 }
-
-/** @deprecated Use createListOnlyDefaultDataset */
-export const createDefaultListDataset = createListOnlyDefaultDataset;
 
 export function createCustomColorListDataset() {
   const dataset = createRootDataset('Default custom simple');
@@ -263,30 +261,18 @@ function createVectorListDataset(
   styleType: 'point' | 'line',
   feature: ReturnType<typeof demoPoint> | ReturnType<typeof demoLine>,
 ) {
-  const dataset = createRootDataset(name);
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name,
+    groupName: 'Group layer',
     features: [feature],
+    layers: [{ styleType, layerId: `layer ${styleType}` }],
+    configure: ({ list }) => {
+      list.addMenus([
+        createMenuItemToggleShow(),
+        createMenuItemShowDetailInfoSource(),
+      ]);
+    },
   });
-  const groupLayer = createGroupDataset('Group layer');
-  const list = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor(getChartRandomColor())
-    .build();
-  const layer = createMultiMapboxLayerComponent(`layer ${styleType}`, [
-    new LayerSimpleMapboxBuild()
-      .setStyleType(styleType)
-      .setColor(list.color)
-      .build(),
-  ]);
-  groupLayer.add(layer);
-  groupLayer.add(list);
-  list.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-  ]);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 export function createVectorPointListDataset() {

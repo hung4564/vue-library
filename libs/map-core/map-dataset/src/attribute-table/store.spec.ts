@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createDataManagement } from '../data-management';
 import { createDatasetPartGeojsonSourceComponent } from '../geojson/source';
 import { createRootDataset } from '../model/dataset.base';
-import { createDatasetPartListViewUiComponent } from '../model/list';
+import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import {
   ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE,
   createAttributeTableStoreFromDataset,

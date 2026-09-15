@@ -28,8 +28,10 @@ import {
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const MODE_ICONS: Record<MapThemeMode, string> = {
@@ -142,23 +144,13 @@ onMounted(() => {
   if (typeof window !== 'undefined' && window.matchMedia) {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     prefersDark.value = mediaQuery.matches;
-    if ('addEventListener' in mediaQuery) {
-      mediaQuery.addEventListener('change', onMediaChange);
-    } else {
-      // @ts-expect-error deprecated API
-      mediaQuery.addListener(onMediaChange);
-    }
+    mediaQuery.addEventListener('change', onMediaChange);
   }
 });
 
 onUnmounted(() => {
   if (!mediaQuery) return;
-  if ('removeEventListener' in mediaQuery) {
-    mediaQuery.removeEventListener('change', onMediaChange);
-  } else {
-    // @ts-expect-error deprecated API
-    mediaQuery.removeListener(onMediaChange);
-  }
+  mediaQuery.removeEventListener('change', onMediaChange);
 });
 </script>
 

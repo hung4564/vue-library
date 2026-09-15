@@ -53,7 +53,7 @@ Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ ext
 | --------------- | ------------ | ------------------------------------------------ |
 | `default`       | `children`   | Content of the modal.                            |
 | `pre-title`     | `preTitle`   | Before the title group.                          |
-| `title`         | `title`      | Title text or custom title node (`titleNode` deprecated). |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
 | `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
 | `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 

@@ -3,7 +3,7 @@ import {
   createDefaultEventStore,
   type MapEventStore,
 } from '@hungpvq/map-core/event';
-import { createMapScopedStore } from '../../store';
+import { createMapScopedStore } from '../../store/store-utils';
 import { loggerFactory } from '@hungpvq/shared-log';
 
 export type { MapEventStore };

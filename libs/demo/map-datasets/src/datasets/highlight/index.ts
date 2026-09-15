@@ -1,6 +1,7 @@
-import { getChartRandomColor } from '@hungpvq/map-core';
+import { bboxFromGeojson, getChartRandomColor } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
+  createDatasetPartBoundComponent,
   createDatasetPartListViewUiComponentBuilder,
   createGroupDataset,
   createMultiMapboxLayerComponent,
@@ -41,24 +42,30 @@ function createHighlightDemoDataset(config: {
   promoteId?: string;
 }): IDataset {
   const dataset = createRootDataset(config.name);
+  const geojson = {
+    type: 'FeatureCollection' as const,
+    features: config.features,
+  };
   const source = createDatasetPartGeojsonSourceComponent(
     'source',
-    {
-      type: 'FeatureCollection',
-      features: config.features,
-    },
+    geojson,
     config.promoteId ? { promoteId: config.promoteId } : undefined,
   );
+  const bbox = bboxFromGeojson(geojson);
+  if (bbox) {
+    dataset.add(createDatasetPartBoundComponent(config.name, bbox));
+  }
   const group = createGroupDataset('Group layer 1');
+  const listMenus = [createMenuItemToggleShow()];
+  if (bbox) {
+    listMenus.push(createMenuItemToBoundActionForList());
+  }
+  listMenus.push(createMenuItemShowDetailForItem(DEMO_DETAIL_FIELDS));
   const list = createDatasetPartListViewUiComponentBuilder(config.listName)
     .setColor(config.color || getChartRandomColor())
     .configDisabledOpacity()
     .configInitShowLegend()
-    .addMenus([
-      createMenuItemToggleShow(),
-      createMenuItemToBoundActionForList(),
-      createMenuItemShowDetailForItem(DEMO_DETAIL_FIELDS),
-    ])
+    .addMenus(listMenus)
     .build();
   const layer = createMultiMapboxLayerComponent('layer', [
     new LayerSimpleMapboxBuild()
@@ -84,29 +91,6 @@ function createHighlightDemoDataset(config: {
   dataset.add(source);
   dataset.add(group);
   return dataset;
-}
-
-export function createAllHighlightDemoDatasets(): IDataset[] {
-  return [
-    createDefaultHighlight(),
-    createShadowHighlight(),
-    createChangeColorHighlight(),
-    createCustomHighlight(),
-    createHighlightWithPropertyName(),
-    createHighlightWithExplicitIdField(),
-    createCustomAnimateWithFilterFunction(),
-    createDefaultHighlightWithFilterFunction(),
-    createCustomAnimateWithFieldName(),
-    createShadowWithPropertyFilter(),
-    createHighlightByClickedCategory(),
-    createFeatureStateHighlight(),
-    createFeatureStateHighlightWithGroup(),
-    createReplaceScopeAllHighlight(),
-    createPresentationLifecycleHighlight(),
-    createPointerClickOnlyHighlight(),
-    createPointerHoverOnlyHighlight(),
-    createPointerBothHighlight(),
-  ];
 }
 
 function createDefaultHighlight() {
@@ -813,34 +797,7 @@ function createPointerBothHighlight() {
   });
 }
 
-export const HIGHLIGHT_DEMO_DATASET_FACTORIES = [
-  createDefaultHighlight,
-  createShadowHighlight,
-  createChangeColorHighlight,
-  createCustomHighlight,
-  createHighlightWithPropertyName,
-  createHighlightWithExplicitIdField,
-  createCustomAnimateWithFilterFunction,
-  createDefaultHighlightWithFilterFunction,
-  createCustomAnimateWithFieldName,
-  createShadowWithPropertyFilter,
-  createHighlightByClickedCategory,
-  createFeatureStateHighlight,
-  createFeatureStateHighlightWithGroup,
-  createReplaceScopeAllHighlight,
-  createPresentationLifecycleHighlight,
-  createPointerClickOnlyHighlight,
-  createPointerHoverOnlyHighlight,
-  createPointerBothHighlight,
-] as const;
-
-export { HIGHLIGHT_DEMO_HELP_SECTIONS } from './help';
-
-const HIGHLIGHT_VIEW_SOURCE: Array<{
-  listName: string;
-  title: string;
-  factory: () => IDataset;
-}> = [
+const HIGHLIGHT_DEMO_ENTRIES = [
   {
     listName: 'Default highlight (blink + id)',
     title: 'Highlight demo — default blink',
@@ -931,8 +888,14 @@ const HIGHLIGHT_VIEW_SOURCE: Array<{
     title: 'Highlight demo — pointer both',
     factory: createPointerBothHighlight,
   },
-];
+] as const;
 
-for (const entry of HIGHLIGHT_VIEW_SOURCE) {
+export const HIGHLIGHT_DEMO_DATASET_FACTORIES = HIGHLIGHT_DEMO_ENTRIES.map(
+  (entry) => entry.factory,
+);
+
+export { HIGHLIGHT_DEMO_HELP_SECTIONS } from './help';
+
+for (const entry of HIGHLIGHT_DEMO_ENTRIES) {
   registerFactoryViewSource(entry);
 }

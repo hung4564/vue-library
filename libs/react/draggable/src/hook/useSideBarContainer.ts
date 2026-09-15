@@ -1,5 +1,5 @@
 import { useDragItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export const useSideBarContainer = (containerId: string) => {
   const store = useDragItem(containerId);

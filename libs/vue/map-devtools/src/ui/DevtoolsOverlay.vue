@@ -52,7 +52,7 @@ import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
 import {
   isDevtoolsMobileViewport,
   resolveMapDragContainerId,
-} from './resolve-map-drag-container';
+} from '@hungpvq/map-core/devtools';
 
 const props = defineProps<{
   containerId?: string;

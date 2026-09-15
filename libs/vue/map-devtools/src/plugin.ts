@@ -1,5 +1,4 @@
-import { errorHandler, installGlobalErrorCapture } from '@hungpvq/map-core';
-import { ConsoleAdapter, LoggerFactory } from '@hungpvq/shared-log';
+import { installDevtoolsCore } from '@hungpvq/map-core/devtools';
 import { devtoolLogAdapter } from './store';
 
 let uninstallGlobalErrors: (() => void) | undefined;
@@ -10,12 +9,8 @@ let uninstallGlobalErrors: (() => void) | undefined;
  * Mount `<Devtools />` explicitly (import from this package).
  */
 export function installDevtools() {
-  const logger = LoggerFactory.getInstance();
-  logger.clearAdapters();
-  logger.addAdapter(new ConsoleAdapter());
-  logger.addAdapter(devtoolLogAdapter);
   uninstallGlobalErrors?.();
-  uninstallGlobalErrors = installGlobalErrorCapture(errorHandler);
+  uninstallGlobalErrors = installDevtoolsCore(devtoolLogAdapter);
 }
 
 export function uninstallDevtools() {

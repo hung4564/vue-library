@@ -17,10 +17,12 @@ import {
   createDefaultGroup,
   isGroupNode,
   mergeEmptyGroups,
+} from '@hungpvq/map-dataset';
+import {
   type GroupTree,
   type LayerListItem,
   type TreeNode,
-} from './utils';
+} from './types';
 
 export interface DraggableGroupListRef {
   update: (items?: LayerListItem[]) => void;

@@ -2,7 +2,7 @@ import type { HighlightStyle } from '@hungpvq/map-dataset/highlight';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { useMap } from '@hungpvq/react-map-core';
 import { useEffect } from 'react';
-import { useHighlight } from '../../store/highlight';
+import { useMapHighlight } from '../../store/highlight';
 
 export type HighlightPointerProps = {
   enableClick?: boolean;
@@ -19,7 +19,7 @@ export function HighlightPointer({
   durationMs,
 }: HighlightPointerProps) {
   const { mapId } = useMap();
-  const hl = useHighlight(mapId);
+  const hl = useMapHighlight(mapId);
 
   useEffect(() => {
     const style: HighlightStyle = {};
