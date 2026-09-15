@@ -10,7 +10,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { useLang } from '../../lang/hook';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
@@ -80,12 +80,19 @@ export function CrsControl(props: CrsControlProps) {
     getState() {
       return mdiButtonState(mdiInboxOutline, {
         visible: true,
+        active: show,
         title: trans('map.crs-control.title'),
         order,
       });
     },
     onClick: handleToggle,
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   const updateCrsItem = useCallback(
     (index: number, patch: Partial<CrsItem>) => {

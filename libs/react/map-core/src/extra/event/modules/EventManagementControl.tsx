@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   EVENT_CONTROL_LOCALE,
@@ -85,10 +85,17 @@ export function EventManagementControl(props: EventManagementControlProps) {
     id: 'mapEventManagementControl',
     getState: () =>
       mdiButtonState(mdiCalendarSearch, {
+        active: show,
         title: trans('map.event-control.title'),
       }),
     onClick: () => toggleShow(),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer

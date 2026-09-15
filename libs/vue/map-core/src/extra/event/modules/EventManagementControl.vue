@@ -15,7 +15,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
+import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue';
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
@@ -92,6 +92,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapEventManagementControl',
   getState() {
     return mdiButtonState(path.icon, {
+      active: show.value,
       title: trans.value('map.event-control.title'),
     });
   },
@@ -99,6 +100,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     toggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

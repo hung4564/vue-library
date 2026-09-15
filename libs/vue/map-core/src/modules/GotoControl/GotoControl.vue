@@ -3,7 +3,7 @@ import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
@@ -66,6 +66,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   getState() {
     return mdiButtonState(mdiMapMarkerOutline, {
       visible: true,
+      active: show.value,
       title: trans.value('map.goto-control.title'),
       order: order.value,
     });
@@ -74,6 +75,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

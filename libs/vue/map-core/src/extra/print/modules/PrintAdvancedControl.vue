@@ -17,7 +17,7 @@ import {
   mdiPrinterEye,
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 import type { PrintOption } from '@hungpvq/map-core/print';
 import {
   CrosshairManager,
@@ -252,6 +252,10 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     },
   ],
 });
+watch(
+  () => print.value.setting_show,
+  () => control.sync(),
+);
 
 useRegisterMapControl(mapId, {
   id: 'mapPrintAdvancedControl',

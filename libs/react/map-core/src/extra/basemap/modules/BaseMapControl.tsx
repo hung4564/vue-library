@@ -8,7 +8,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiLayersOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCard } from '../../../components/MapCard';
 import { MapControlButton } from '../../../components/MapControlButton';
 import { MapIcon } from '../../../components/MapIcon';
@@ -109,17 +109,24 @@ export function BaseMapControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
   }, [mapInstance]);
 
-  useToolbarControl(mapId, props, {
+  const { control } = useToolbarControl(mapId, props, {
     kind: 'single',
     id: 'mapBaseMapControl',
     getState: () =>
       mdiButtonState(mdiLayersOutline, {
         visible: true,
+        active: show,
         order,
         title: title || trans('map.basemap.title'),
       }),
     onClick: onToggleList,
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   const draggableContent = useCallback(
     (bindDrag: BindPosition) => (
@@ -178,9 +185,12 @@ export function BaseMapControl({
   const btnContent = (
     <MapControlButton
       tooltip={title}
+      active={show}
       contentButton={
         <MapCard
-          className="clickable base-map-button__container"
+          className={`clickable base-map-button__container${
+            show ? ' base-map-button__container--active' : ''
+          }`}
           height="70px"
           width="70px"
           onClick={onToggleList}

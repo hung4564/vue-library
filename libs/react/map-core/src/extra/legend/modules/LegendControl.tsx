@@ -111,11 +111,18 @@ export function LegendControl(props: WithMapPropType) {
     getState: () =>
       mdiButtonState(mdiMapLegend, {
         visible: true,
+        active: show,
         title: trans('map.legend-control.title'),
         order,
       }),
     onClick: () => setShow(!show),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer

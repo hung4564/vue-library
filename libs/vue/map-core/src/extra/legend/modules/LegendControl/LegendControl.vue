@@ -98,6 +98,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   getState() {
     return mdiButtonState(mdiMapLegend, {
       visible: true,
+      active: show.value,
       title: trans.value('map.legend-control.title'),
       order: order.value,
     });
@@ -106,6 +107,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

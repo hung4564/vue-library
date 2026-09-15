@@ -1,10 +1,15 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps" :btnWidth="70">
     <template #btn>
-      <MapControlButton v-if="current_baseMaps" :tooltip="title">
+      <MapControlButton
+        v-if="current_baseMaps"
+        :tooltip="title"
+        :active="show"
+      >
         <template #content>
           <map-card
             class="clickable base-map-button__container"
+            :class="{ 'base-map-button__container--active': show }"
             height="70px"
             width="70px"
             @click.stop="onToggleList"
@@ -187,11 +192,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   remove();
 });
-useToolbarControl(mapId.value, props, {
+const { control } = useToolbarControl(mapId.value, props, {
   id: 'mapBaseMapControl',
   getState() {
     return mdiButtonState(path.layer, {
       visible: true,
+      active: show.value,
       order: order.value,
       title: props.title || trans.value('map.basemap.title'),
     });
@@ -200,4 +206,5 @@ useToolbarControl(mapId.value, props, {
     onToggleList();
   },
 });
+watch(show, () => control.sync());
 </script>

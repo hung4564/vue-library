@@ -11,7 +11,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import { useLang } from '../../../../extra/lang/hook';
 import { Collapse, InputSelect, InputText } from '../../../../field';
@@ -104,6 +104,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   getState() {
     return mdiButtonState(mdiInboxOutline, {
       visible: true,
+      active: show.value,
       title: trans.value('map.crs-control.title'),
     });
   },
@@ -111,6 +112,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

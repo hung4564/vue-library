@@ -6,7 +6,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
 import type { SpriteSpecification } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
@@ -121,11 +121,18 @@ export function SettingControl(props: SettingControlProps) {
     getState: () =>
       mdiButtonState(mdiCog, {
         visible: true,
+        active: show,
         title: trans('map.setting-control.title'),
         order,
       }),
     onClick: () => handleToggle(),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer
