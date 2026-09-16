@@ -16,14 +16,14 @@ import {
 /** Shared toggle-show logic for default and custom menu components. */
 export function useToggleShowAction(props: WithLayerItemActionType) {
   const { callMap, mapId } = useMap(props);
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { getStoreDataset } = useMapDataset(mapId);
   const store = getStoreDataset();
   const [showValue, setShowValue] = useState(!!props.data.show);
 
   useEffect(() => {
-    setLocaleDefault(LAYER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(
     () =>

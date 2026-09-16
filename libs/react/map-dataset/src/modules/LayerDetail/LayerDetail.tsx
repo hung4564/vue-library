@@ -98,12 +98,12 @@ export function LayerDetail({
     controlId: 'mapLayerDetail',
   });
   const hl = useMapHighlight(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
 
   useEffect(() => {
-    setLocaleDefault(LAYER_DETAIL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_DETAIL_LOCALE);
+  }, [registerLocale]);
 
   const itemMenuHost = useMemo(
     () => (view ? getItemMenuHost(view) : undefined),

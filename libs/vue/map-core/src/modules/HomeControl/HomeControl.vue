@@ -28,8 +28,8 @@ const i_center = ref({
 const i_zoom = ref(props.zoom || 0);
 
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(HOME_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', HOME_CONTROL_LOCALE);
 function onGoHome() {
   callMap((map) => {
     map.setZoom(i_zoom.value);

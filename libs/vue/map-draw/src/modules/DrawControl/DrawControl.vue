@@ -70,8 +70,8 @@ const control = new MapDraw({
   },
 });
 const { mapId, moduleContainerProps, callMap, order } = useMap(props);
-const { setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(DRAW_CONTROL_LOCALE);
+const { registerLocale } = useLang(mapId.value);
+registerLocale('en', DRAW_CONTROL_LOCALE);
 const isShow = ref(false);
 function onStart(config: MapDrawOption) {
   isShow.value = true;

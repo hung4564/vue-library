@@ -22,6 +22,8 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'getFirstFeatureByMap',
   'getSourcesFromMap',
   'INSPECT_CONTROL_LOCALE',
+  'MAP_DRAW_LOCALE_EN',
+  'MAP_DRAW_LOCALE_VI',
   'InspectController',
   'isDraftOption',
   'isInspectStyle',

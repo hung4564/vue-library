@@ -28,6 +28,9 @@
             <RouterLink to="/map-core">Map - Core </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/language">Language </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/minimal">Minimal starter </RouterLink>
           </v-list-item>
           <v-list-item>
@@ -140,9 +143,9 @@ export default {
       ...props,
       controlId: 'asideControl',
     });
-    const { trans, setLocale } = useLang(mapId.value);
+    const { trans, registerLocale } = useLang(mapId.value);
 
-    setLocale({
+    registerLocale('en', {
       map: {
         'aside-control': {
           title: 'Aside Control',

@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import type { DemoHelpSection } from '@hungpvq/demo-map-datasets';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import {
+  getDemoHelpChrome,
+  type DemoPageGuide,
+} from '@hungpvq/demo-map-datasets';
+import { getStoredMapLanguage } from '@hungpvq/map-core';
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { getDemoPageGuide, type DemoPageGuide } from '../demo-guides';
+import { useLang } from '@hungpvq/vue-map-core';
+import { getDemoPageGuide } from '../demo-guides';
 
 const props = defineProps<{
   /** Override auto route lookup. */
@@ -15,12 +21,18 @@ const MOBILE_MQ = '(max-width: 640px)';
 const DRAG_THRESHOLD_PX = 4;
 const route = useRoute();
 
+const injectedMapId = inject<string>('$map.id', '');
+const { language } = useLang(injectedMapId || 'demo-help');
+
+const guideLang = computed(() => language.value || getStoredMapLanguage('vi'));
+const chrome = computed(() => getDemoHelpChrome(guideLang.value));
+
 const resolved = computed<DemoPageGuide | undefined>(() => {
   if (props.guide) return props.guide;
   if (props.sections?.length) {
     return { intro: props.intro, sections: props.sections };
   }
-  return getDemoPageGuide(route.path);
+  return getDemoPageGuide(route.path, guideLang.value);
 });
 
 const open = ref(true);
@@ -170,12 +182,12 @@ const panelStyle = computed(() => {
       class="demo-help__toggle"
       :aria-expanded="open"
       aria-controls="demo-page-help"
-      title="Drag to move · click to show/hide"
+      :title="chrome.dragHint"
       @pointerdown="onHeaderPointerDown"
       @click="onHeaderClick"
     >
       <span class="demo-help__toggle-label">
-        {{ open ? 'Hide guide' : 'Demo guide' }}
+        {{ open ? chrome.hide : chrome.show }}
       </span>
       <span class="demo-help__toggle-icon" aria-hidden="true">
         {{ open ? '▾' : '▸' }}
@@ -187,7 +199,7 @@ const panelStyle = computed(() => {
       id="demo-page-help"
       class="demo-help__body"
       role="region"
-      aria-label="Demo guide"
+      :aria-label="chrome.title"
     >
       <p v-if="resolved.intro" class="demo-help__intro">
         {{ resolved.intro }}

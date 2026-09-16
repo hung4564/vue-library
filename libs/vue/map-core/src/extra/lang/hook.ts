@@ -1,34 +1,38 @@
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
-import { translateMapLang } from '@hungpvq/map-core';
-import { useMapMittStore } from '../mitt';
-import { useMapLocale } from './store';
+import { computed, onMounted, onUnmounted, shallowRef, triggerRef } from 'vue';
 import {
-  MapLangLocale,
-  MapTranslateFunction,
+  translateMapLang,
+  type MapLangLocale,
+  type MapTranslateFunction,
+  type MapLanguageCode,
+  type MapLocaleLoader,
+  type MapLoadLocaleOptions,
+  type MapLanguageRegisterOptions,
+  type MapLangFlatMessages,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
 } from '@hungpvq/map-core';
+import { useMapMittStore } from '../mitt';
+import { useMapLocale } from './store';
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
-  const { getMapLang, setMapLang, setMapLocaleDefault, setMapTranslate } =
-    useMapLocale(mapId);
-  const storeLang = shallowRef(getMapLang());
+  const api = useMapLocale(mapId);
+  const storeLang = shallowRef(api.getMapLang());
   const emitter = useMapMittStore<MittTypeMapLang>(mapId);
 
   onMounted(() => {
-    emitter.on(MittTypeMapLangEventKey.setLocale, update);
-    emitter.on(MittTypeMapLangEventKey.setTranslate, update);
+    emitter.on(MittTypeMapLangEventKey.changed, update);
     update();
   });
 
   onUnmounted(() => {
-    emitter.off(MittTypeMapLangEventKey.setLocale, update);
-    emitter.off(MittTypeMapLangEventKey.setTranslate, update);
+    emitter.off(MittTypeMapLangEventKey.changed, update);
   });
 
   function update() {
-    storeLang.value = getMapLang();
+    // Store is mutated in place — force shallowRef subscribers to re-run.
+    storeLang.value = api.getMapLang();
+    triggerRef(storeLang);
   }
 
   const trans = computed(() => {
@@ -37,17 +41,67 @@ export function useLang(mapId: string) {
       translateMapLang(storeLang.value, key, params);
   });
 
-  function setLocale(locale: MapLangLocale) {
-    setMapLang(locale);
+  const language = computed(
+    () => storeLang.value?.language ?? api.getLanguage(),
+  );
+  const fallbackLanguage = computed(
+    () => storeLang.value?.fallbackLanguage ?? api.getFallbackLanguage(),
+  );
+  const languages = computed(() => api.getLanguages());
+  const loadingLanguages = computed(
+    () => storeLang.value?.loadingLanguages ?? {},
+  );
+
+  function registerLocale(lang: MapLanguageCode, tree: MapLangLocale) {
+    api.registerLocale(lang, tree);
   }
 
-  function setLocaleDefault(locale: MapLangLocale) {
-    setMapLocaleDefault(locale);
+  function registerLocaleFlat(
+    lang: MapLanguageCode,
+    flat: MapLangFlatMessages,
+  ) {
+    api.registerLocaleFlat(lang, flat);
   }
 
-  function setTranslate(translate: MapTranslateFunction) {
-    setMapTranslate(translate);
+  function registerLanguage(
+    lang: MapLanguageCode,
+    options?: MapLanguageRegisterOptions,
+  ) {
+    api.registerLanguage(lang, options);
   }
 
-  return { trans, setLocale, setLocaleDefault, setTranslate };
+  function setLanguage(lang: MapLanguageCode, persist = true) {
+    api.setLanguage(lang, persist);
+  }
+
+  function setFallbackLanguage(lang: MapLanguageCode) {
+    api.setFallbackLanguage(lang);
+  }
+
+  function setTranslate(translate?: MapTranslateFunction | null) {
+    api.setMapTranslate(translate);
+  }
+
+  function loadLocale(
+    lang: MapLanguageCode,
+    loader: MapLocaleLoader,
+    options?: MapLoadLocaleOptions,
+  ) {
+    return api.loadLocale(lang, loader, options);
+  }
+
+  return {
+    trans,
+    language,
+    fallbackLanguage,
+    languages,
+    loadingLanguages,
+    registerLocale,
+    registerLocaleFlat,
+    registerLanguage,
+    setLanguage,
+    setFallbackLanguage,
+    setTranslate,
+    loadLocale,
+  };
 }

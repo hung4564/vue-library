@@ -7,6 +7,8 @@ import {
   Map,
   WorkerControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   IdentifyControl,
@@ -103,6 +105,7 @@ export function DatasetDataManagementPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl
           position="bottom-left"

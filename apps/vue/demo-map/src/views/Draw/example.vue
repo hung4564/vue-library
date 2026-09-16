@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import {
@@ -122,6 +123,7 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map map-id="demo" @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />
     <BaseMapControl position="bottom-left" />

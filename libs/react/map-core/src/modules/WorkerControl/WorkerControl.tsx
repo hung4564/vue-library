@@ -110,15 +110,15 @@ export function WorkerControl(props: WorkerControlProps) {
     ...merged,
     controlId: 'mapWorkerControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { workers, now, busy, clearHistory } = useWorkerMonitor();
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(WORKER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', WORKER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const filtered = useMemo(
     () => filterWorkerSnapshots(workers, query),

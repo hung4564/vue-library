@@ -44,7 +44,7 @@ export function InfoControl(props: InfoControlProps) {
     ...mergedProps,
     controlId: 'mapInfoControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_MAP_VIEW_INFO);
   const [centerDms, setCenterDms] = useState('');
@@ -52,8 +52,8 @@ export function InfoControl(props: InfoControlProps) {
   const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
-    setLocaleDefault(INFO_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', INFO_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const syncInfo = useCallback(() => {
     callMap((map) => {

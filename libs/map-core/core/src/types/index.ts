@@ -88,10 +88,19 @@ export {
   createDefaultLangStore,
   createMapLocaleApi,
   deepMergeLocale,
+  diffLocaleKeys,
+  flattenLocaleMessages,
+  unflattenLocaleMessages,
 } from './lang';
 export type {
+  MapLangFlatMessages,
   MapLangLocale,
+  MapLanguageCode,
+  MapLanguageRegisterOptions,
+  MapLoadLocaleOptions,
+  MapLocaleLoader,
   MapLocateStore,
+  MapTranslateFallback,
   MapTranslateFunction,
   MittTypeMapLang,
 } from './lang';

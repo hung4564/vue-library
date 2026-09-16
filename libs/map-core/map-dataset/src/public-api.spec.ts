@@ -27,6 +27,8 @@ import * as vectorTileApi from './vector-tile';
 /** Stable root runtime exports (SemVer contract). */
 export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'DATASET_CONTROL_LOCALE',
+  'MAP_DATASET_LOCALE_EN',
+  'MAP_DATASET_LOCALE_VI',
   'DatasetComposite',
   'DatasetError',
   'DatasetLeaf',

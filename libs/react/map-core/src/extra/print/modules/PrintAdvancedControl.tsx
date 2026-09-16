@@ -66,7 +66,7 @@ export function PrintAdvancedControl({
     { ...merged, controlId: 'mapPrintAdvancedControl' },
     onInit,
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { initPrint } = useMapPrint(mapId);
 
   const [print, setPrint] = useState({
@@ -99,8 +99,8 @@ export function PrintAdvancedControl({
   disabledPrintableAreaRef.current = disabledPrintableArea;
 
   useEffect(() => {
-    setLocaleDefault(PRINT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', PRINT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     return () => {

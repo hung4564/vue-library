@@ -21,14 +21,14 @@ export function PrintControl({
 }: PrintControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapPrintControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
   const controlRef = useRef<{ sync: () => void } | null>(null);
 
   useEffect(() => {
-    setLocaleDefault(PRINT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', PRINT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const onPrint = useMemo(
     () => () => {

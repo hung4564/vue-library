@@ -35,8 +35,8 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_INFO_CONTROL_LOCALE);
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,

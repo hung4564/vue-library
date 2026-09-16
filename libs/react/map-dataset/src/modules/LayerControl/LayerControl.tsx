@@ -76,7 +76,7 @@ export function LayerControl(props: LayerControlProps) {
     ...merged,
     controlId: 'mapLayerControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
 
@@ -115,8 +115,8 @@ export function LayerControl(props: LayerControlProps) {
   });
 
   useEffect(() => {
-    setLocaleDefault(LAYER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',

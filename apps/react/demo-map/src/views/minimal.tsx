@@ -1,5 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   LayerControl,
   useMapDataset,
@@ -46,6 +48,7 @@ export function MinimalPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <LayerControl position="top-left" show />

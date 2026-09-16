@@ -238,6 +238,10 @@ export {
 } from './modules/ThemeControl/ThemeControl';
 
 export {
+  LanguageControl,
+} from './modules/LanguageControl/LanguageControl';
+
+export {
   WorkerControl,
 } from './modules/WorkerControl/WorkerControl';
 

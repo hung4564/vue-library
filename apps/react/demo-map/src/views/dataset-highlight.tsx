@@ -5,6 +5,8 @@ import {
   Map,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   HighlightPointer,
@@ -30,6 +32,7 @@ export function DatasetHighlightPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <LayerControl
           position="top-left"

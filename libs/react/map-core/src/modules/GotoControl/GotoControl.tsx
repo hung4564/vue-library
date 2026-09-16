@@ -20,7 +20,7 @@ export interface GotoControlProps extends WithMapPropType {
 export function GotoControl(props: GotoControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<{
     zoom?: number;
@@ -28,8 +28,8 @@ export function GotoControl(props: GotoControlProps) {
   }>({ center: [0, 0] });
 
   useEffect(() => {
-    setLocaleDefault(GOTO_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', GOTO_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   function loadCurrentView() {
     callMap((map) => {

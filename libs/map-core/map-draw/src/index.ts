@@ -44,6 +44,9 @@ export {
   INSPECT_CONTROL_LOCALE,
 } from './locale';
 
+export { MAP_DRAW_LOCALE_EN } from './locale/locale.en';
+export { MAP_DRAW_LOCALE_VI } from './locale/locale.vi';
+
 export {
   DRAW_MODES,
   MapDraw,

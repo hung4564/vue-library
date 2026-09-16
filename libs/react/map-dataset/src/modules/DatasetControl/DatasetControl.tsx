@@ -38,7 +38,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     ...merged,
     controlId: 'mapDatasetControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapDatasetControl',
@@ -58,8 +58,8 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const [views, setViews] = useState<IDataset[]>([]);
 
   useEffect(() => {
-    setLocaleDefault(DATASET_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', DATASET_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     const next = getDatasets();

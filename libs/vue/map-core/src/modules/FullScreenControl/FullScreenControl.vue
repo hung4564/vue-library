@@ -27,8 +27,8 @@ const props = withDefaults(defineProps<WithMapPropType & { type?: string }>(), {
   type: 'body',
 });
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(MAP_ACTION_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', MAP_ACTION_LOCALE);
 
 const isFullscreen = ref(false);
 let stopFullscreen: (() => void) | undefined;

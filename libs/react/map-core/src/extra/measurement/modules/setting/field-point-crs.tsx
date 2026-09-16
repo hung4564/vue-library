@@ -27,13 +27,13 @@ export function FieldPointCrs({
   onChange,
 }: FieldPointCrsProps) {
   const { mapId } = useMap();
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { items: crsItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
 
   useEffect(() => {
-    setLocaleDefault(CRS_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', CRS_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const catalog = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
   const displayItems = useMemo(

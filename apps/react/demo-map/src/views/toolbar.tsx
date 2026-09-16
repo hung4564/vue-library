@@ -17,6 +17,8 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
@@ -25,6 +27,7 @@ export function ToolbarPage() {
   return (
     <MapPageShell>
       <Map>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <ToolbarControl position="top-right" />
         <GotoControl position="top-right" controlLayout="toolbar" />

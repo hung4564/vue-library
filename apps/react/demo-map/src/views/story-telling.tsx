@@ -12,6 +12,8 @@ import {
   SettingControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { useCallback, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
@@ -84,6 +86,7 @@ export function StoryTellingPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
         <CrsControl />
@@ -99,7 +102,7 @@ export function StoryTellingPage() {
       </Map>
       <div className="story-panel">
         <h3>Story telling (React demo)</h3>
-        <p>Simplified chapter playback — full action engine is in Vue demo.</p>
+        <p>Simplified chapter playback â€” full action engine is in Vue demo.</p>
         <ul>
           {CHAPTERS.map((ch, idx) => (
             <li key={ch.id} className={idx === current ? 'active' : ''}>

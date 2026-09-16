@@ -129,7 +129,7 @@ export function InspectControl(props: InspectControlProps) {
     onInit,
     onDestroy,
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
 
   const { add: addEventClick, remove: removeEventClick } = useEventMap(
     mapId,
@@ -163,8 +163,8 @@ export function InspectControl(props: InspectControlProps) {
   }, [removeEventClick, removeEventMouseMove]);
 
   useEffect(() => {
-    setLocaleDefault(INSPECT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', INSPECT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const toggle = useCallback(() => {
     controller.toggle();

@@ -22,9 +22,9 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(SETTING_CONTROL_LOCALE);
+registerLocale('en', SETTING_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {

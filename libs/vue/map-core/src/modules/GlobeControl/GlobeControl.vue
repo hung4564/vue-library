@@ -20,8 +20,8 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(GLOBE_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', GLOBE_CONTROL_LOCALE);
 function toggle() {
   callMap((map) => {
     if (currentProjection.value === 'mercator' || !currentProjection.value) {

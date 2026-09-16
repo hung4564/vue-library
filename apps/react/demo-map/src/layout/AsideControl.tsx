@@ -17,6 +17,7 @@ import './demo-nav.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Home (All Map)' },
   { to: '/map-core', label: 'Map - Core' },
+  { to: '/language', label: 'Language' },
   { to: '/minimal', label: 'Minimal starter' },
   { to: '/map-dataset', label: 'Map - Dataset (all)' },
   { to: '/worker-sample', label: 'Worker - Sample' },
@@ -42,12 +43,12 @@ const NAV_ITEMS = [
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'asideControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
 
   useEffect(() => {
-    setLocaleDefault({ map: { 'aside-control': { title: 'Aside Control' } } });
-  }, [setLocaleDefault]);
+    registerLocale('en', { map: { 'aside-control': { title: 'Aside Control' } } });
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',

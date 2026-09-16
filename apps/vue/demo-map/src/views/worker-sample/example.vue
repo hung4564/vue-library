@@ -1,6 +1,7 @@
 <template>
   <div class="map-page worker-sample-page">
     <Map>
+    <DemoLanguageControl />
       <AsideControl position="top-left" />
       <WorkerControl position="top-left" />
       <BaseMapControl position="bottom-left" />
@@ -24,7 +25,7 @@
         <input v-model.number="to" type="number" />
       </label>
       <button type="button" :disabled="running" @click="onRun">
-        {{ running ? 'Running…' : 'Run sum-range' }}
+        {{ running ? 'Runningâ€¦' : 'Run sum-range' }}
       </button>
       <p v-if="result != null" class="sample-worker-panel__result">
         Result: {{ result }}
@@ -35,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
   BaseMapControl,
   HomeControl,

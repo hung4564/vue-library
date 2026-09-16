@@ -22,7 +22,7 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
     ...merged,
     controlId: 'mapLayerInfoControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLayerInfoControl',
@@ -39,8 +39,8 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   });
 
   useEffect(() => {
-    setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_INFO_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',

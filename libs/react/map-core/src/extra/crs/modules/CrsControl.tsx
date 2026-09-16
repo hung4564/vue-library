@@ -33,7 +33,7 @@ const UNIT_ITEMS = [
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapCrsControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCrsControl',
@@ -53,8 +53,8 @@ export function CrsControl(props: CrsControlProps) {
   const [filterQuery, setFilterQuery] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(CRS_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', CRS_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const catalogItems = useMemo(
     () => buildMapCrsCatalog(crsItems),

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
@@ -52,6 +53,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <ThemeControl />

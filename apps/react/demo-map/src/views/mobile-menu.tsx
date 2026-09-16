@@ -13,6 +13,8 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
@@ -72,11 +74,12 @@ export function MobileMenuPage() {
           <span
             style={{ fontSize: 12, color: '#666', marginLeft: 'auto' }}
           >
-            Resize ≤640px (or DevTools mobile) to see promotion / corner menu
+            Resize â‰¤640px (or DevTools mobile) to see promotion / corner menu
           </span>
         </div>
         <div style={{ flex: 1, minHeight: 0 }}>
           <Map buttonInMobile={buttonInMobile}>
+        <DemoLanguageControl />
             <AsideControl position="top-left" />
             <ToolbarControl />
             <MeasurementControl position="top-right" />

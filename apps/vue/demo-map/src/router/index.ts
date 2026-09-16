@@ -14,6 +14,10 @@ const router = createRouter({
       component: () => import('../views/map-core.vue'),
     },
     {
+      path: '/language/',
+      component: () => import('../views/language.vue'),
+    },
+    {
       path: '/minimal/',
       component: () => import('../views/minimal.vue'),
     },

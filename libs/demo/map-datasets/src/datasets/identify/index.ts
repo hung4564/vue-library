@@ -373,4 +373,4 @@ export const IDENTIFY_DEMO_DATASET_FACTORIES = [
   createIdentifyApiMergedDataset,
 ] as const;
 
-export { IDENTIFY_DEMO_HELP_SECTIONS } from './help';
+export { IDENTIFY_DEMO_HELP, IDENTIFY_DEMO_HELP_SECTIONS } from './help';

@@ -5,6 +5,8 @@ import {
   BaseMapTagControl,
   Map
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   MapCard
 } from '@hungpvq/react-map-core/fields';
@@ -24,6 +26,7 @@ export function BasemapPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <BaseMapTagControl position="bottom-left" />

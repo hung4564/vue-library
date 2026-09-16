@@ -1,0 +1,68 @@
+export const MEASUREMENT_CONTROL_LOCALE_VI = {
+  map: {
+    measurement: {
+      action: {
+        clear: 'Xóa',
+        close: 'Đóng',
+        setting: 'Cài đặt',
+        download: 'Tải xuống',
+        'add-point': 'Thêm điểm',
+        'fly-to': 'Vừa khung',
+        add: 'Thêm',
+        copy: 'Sao chép',
+        copied: 'Đã sao chép',
+      },
+      title: 'Đo đạc',
+      result: 'Kết quả đo',
+      field: {
+        'unit-distance': 'Đơn vị khoảng cách',
+        'unit-area': 'Đơn vị diện tích',
+        'label-vertex': 'Nhãn đỉnh',
+        'label-edge': 'Nhãn cạnh',
+        'label-result': 'Nhãn kết quả',
+      },
+      section: {
+        settings: 'Cài đặt',
+        result: 'Kết quả',
+        geometry: 'Tọa độ',
+      },
+      tools: {
+        point: 'Đo điểm',
+        distance: 'Đo khoảng cách',
+        area: 'Đo diện tích',
+        azimuth: 'Đo phương vị',
+        angle: 'Đo góc',
+        radius: 'Đo bán kính',
+      },
+      unit: {
+        meter: 'Mét',
+        kilometer: 'Kilômét',
+        foot: 'Foot',
+        mile: 'Dặm',
+        'square-meter': 'Mét vuông',
+        hecta: 'Hecta',
+        'square-kilometer': 'Kilômét vuông',
+        acre: 'Acre',
+        auto: 'Tự động',
+      },
+      setting: {
+        title: 'Cài đặt',
+        field: {
+          data: 'Dữ liệu',
+        },
+        point: 'Điểm',
+        distance: 'Khoảng cách',
+        area: 'Diện tích',
+        azimuth: 'Phương vị',
+        angle: 'Góc',
+        'angle-reflex': 'Góc phản xạ',
+        radius: 'Bán kính',
+        circumference: 'Chu vi',
+      },
+      'no-data': {
+        text: 'Trạng thái',
+        value: 'Đang chờ…',
+      },
+    },
+  },
+};

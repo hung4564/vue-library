@@ -59,8 +59,8 @@ const props = withDefaults(
 );
 
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(THEME_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', THEME_CONTROL_LOCALE);
 
 const mode = ref<MapThemeMode>(getStoredMapThemeMode('auto'));
 const prefersDark = ref(getPrefersDark());

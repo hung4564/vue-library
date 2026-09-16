@@ -174,6 +174,8 @@ export { default as SettingControl } from './modules/SettingControl/SettingContr
 
 export { default as ThemeControl } from './modules/ThemeControl/ThemeControl.vue';
 
+export { default as LanguageControl } from './modules/LanguageControl/LanguageControl.vue';
+
 export { default as WorkerControl } from './modules/WorkerControl/WorkerControl.vue';
 
 export { default as ZoomControl } from './modules/ZoomControl/ZoomControl.vue';

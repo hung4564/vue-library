@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
   getMap,
   type MapSimple } from '@hungpvq/map-core';
@@ -146,7 +147,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 
           if (isSameCoord(startCoord, endCoord)) {
             console.warn('Skipping segment: start and end are identical');
-            onFinish?.(); // Gọi kết thúc luôn để tiếp tục chapter tiếp theo
+            onFinish?.(); // Call finish so the next chapter can continue
             return;
           }
           if (!isValidCoordinate(startCoord) || !isValidCoordinate(endCoord)) {
@@ -217,6 +218,7 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
 
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <MeasurementControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -235,7 +237,7 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
         <button @click="next">Next</button>
         <div style="padding: 8px">
           <div>Current: {{ currentIndex }}</div>
-          <div v-if="isPlaying">⏯ Playing</div>
+          <div v-if="isPlaying">Playing</div>
           <div id="btn-highlight"></div>
         </div>
       </MapCard>

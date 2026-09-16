@@ -44,8 +44,8 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
 const hl = useMapHighlight(mapId.value);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_DETAIL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_DETAIL_LOCALE);
 
 const show = ref(true);
 

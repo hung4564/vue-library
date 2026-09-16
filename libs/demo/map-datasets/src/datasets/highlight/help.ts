@@ -1,10 +1,6 @@
-import type { DemoHelpSection } from '../menu/help';
+import { helpI18n, type DemoHelpSection } from '../menu/help';
 
-/**
- * Titles match LayerControl list names.
- * Order = LayerControl top→bottom (last loaded first).
- */
-export const HIGHLIGHT_DEMO_HELP_SECTIONS: DemoHelpSection[] = [
+const EN: DemoHelpSection[] = [
   {
     id: 'pointer-both',
     title: 'Pointer both (default)',
@@ -96,3 +92,100 @@ export const HIGHLIGHT_DEMO_HELP_SECTIONS: DemoHelpSection[] = [
     body: 'Default highlight — click opens a MapLibre popup; hover only paints. Each GeoJSON layer has a Fill bound button.',
   },
 ];
+
+const VI: DemoHelpSection[] = [
+  {
+    id: 'pointer-both',
+    title: 'Pointer cả hai (mặc định)',
+    body: 'Hover → chỉ tô. Click → tô + popup MapLibre (`presentation.clickAction: \'popup\'`). Thử trên lớp xanh. Fill bound zoom lớp.',
+  },
+  {
+    id: 'pointer-hover',
+    title: 'Pointer chỉ hover',
+    body: '`pointer: { click: false, hover: true }`. Thử: hover highlight (teal); click không chọn lớp này.',
+  },
+  {
+    id: 'pointer-click',
+    title: 'Pointer click → detail',
+    body: '`pointer: { click: true, hover: false }` + `clickAction: \'detail\'`. Thử: click mở LayerDetail; hover không chọn. Có Fill bound.',
+  },
+  {
+    id: 'presentation',
+    title: 'Presentation onShow / onHide',
+    body: '`presentation.onShow` / `onHide` với popup none. Thử: hover / click — xem log `demo:highlight` (không popup MapLibre).',
+  },
+  {
+    id: 'replace-scope-all',
+    title: 'Selection replaceScope all (multiple)',
+    body: '`selection: { policy: \'multiple\', replaceScope: \'all\' }` — show mới xóa mọi nguồn highlight. Thử: click nhiều đối tượng và so với lớp replaceScope source.',
+  },
+  {
+    id: 'feature-state-group',
+    title: 'Feature state + filterCreator "group"',
+    body: 'Pulse theo `group` (alpha / beta). Thử: click một alpha — các alpha khác cũng highlight.',
+  },
+  {
+    id: 'feature-state',
+    title: 'Highlight feature state',
+    body: 'Chế độ pulse trên GeoJSON local (`promoteId`). Thử: hover / click.',
+  },
+  {
+    id: 'category',
+    title: 'Default + filterCreator(feature)',
+    body: 'filterCreator(feature) nhóm theo category. Thử: click category A vs B — cả nhóm sáng.',
+  },
+  {
+    id: 'shadow-code',
+    title: 'Shadow + filterCreator "code"',
+    body: 'Outline + lọc thuộc tính `code`. Thử: click — glow theo nhóm code.',
+  },
+  {
+    id: 'product-code',
+    title: 'Custom + filterCreator "productCode"',
+    body: 'Nhóm theo `productCode`. Thử: click Product A/B/C để thấy anh em cùng mã.',
+  },
+  {
+    id: 'default-fn',
+    title: 'Default + filterCreator function',
+    body: 'Highlight mặc định + filterCreator hàm. Thử: click — đối tượng liên quan theo hàm.',
+  },
+  {
+    id: 'custom-fn',
+    title: 'Custom + filterCreator function',
+    body: 'Animate tùy chỉnh + filterCreator hàm. Thử: click và so tập highlight.',
+  },
+  {
+    id: 'filter-id',
+    title: 'Default + filterCreator "id"',
+    body: 'filterCreator field `id`. Thử: click — chỉ id khớp highlight.',
+  },
+  {
+    id: 'filter-code',
+    title: 'Default + filterCreator "code"',
+    body: 'Highlight mọi đối tượng cùng `code`. Thử: click một — anh em cùng code sáng theo.',
+  },
+  {
+    id: 'custom',
+    title: 'Highlight animate tùy chỉnh',
+    body: '`mode: \'custom\'`. Thử: hover / click xem animation.',
+  },
+  {
+    id: 'change-color',
+    title: 'Highlight đổi màu',
+    body: '`mode: \'changeColor\'`. Thử: hover / click — fill/stroke đổi màu.',
+  },
+  {
+    id: 'shadow',
+    title: 'Highlight shadow (glow tĩnh)',
+    body: '`mode: \'outline\'`. Thử: hover / click — so với blink mặc định.',
+  },
+  {
+    id: 'default',
+    title: 'Highlight mặc định (blink + id)',
+    body: 'Mặc định — click mở popup MapLibre; hover chỉ tô. Mỗi lớp GeoJSON có Fill bound.',
+  },
+];
+
+export const HIGHLIGHT_DEMO_HELP = helpI18n(EN, VI);
+/** @deprecated Prefer HIGHLIGHT_DEMO_HELP[lang] */
+export const HIGHLIGHT_DEMO_HELP_SECTIONS = HIGHLIGHT_DEMO_HELP.en;

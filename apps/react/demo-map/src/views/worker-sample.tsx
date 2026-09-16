@@ -5,6 +5,8 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { useEffect, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
@@ -44,6 +46,7 @@ export function WorkerSamplePage() {
   return (
     <MapPageShell>
       <Map>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <WorkerControl position="top-left" />
         <BaseMapControl position="bottom-left" />
@@ -75,7 +78,7 @@ export function WorkerSamplePage() {
           />
         </label>
         <button type="button" disabled={running} onClick={() => void onRun()}>
-          {running ? 'Running…' : 'Run sum-range'}
+          {running ? 'Runningâ€¦' : 'Run sum-range'}
         </button>
         {result != null ? (
           <p className="sample-worker-panel__result">Result: {result}</p>

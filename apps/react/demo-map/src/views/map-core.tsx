@@ -16,6 +16,8 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
@@ -24,6 +26,7 @@ export function MapCorePage() {
   return (
     <MapPageShell>
       <Map>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
         <InfoControl position="top-right" />

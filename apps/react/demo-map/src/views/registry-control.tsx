@@ -21,6 +21,8 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   DatasetControl,
@@ -40,6 +42,7 @@ export function RegistryControlPage() {
   return (
     <MapPageShell>
       <Map>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <MeasurementControl position="top-right" />
         <ComponentManagementControl />

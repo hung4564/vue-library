@@ -67,7 +67,7 @@ export function IdentifyControl(
   });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const hl = useMapHighlight(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(!!props.show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
   /** Local layer filter for IdentifyControl only (not synced with layer-item). */
@@ -101,8 +101,8 @@ export function IdentifyControl(
   transRef.current = trans;
 
   useEffect(() => {
-    setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', IDENTIFY_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const onMapClickRef = useRef<(e: MapMouseEvent) => void>(() => undefined);
   const onBboxSelectRef = useRef<EventBboxRangerHandle>(() => undefined);

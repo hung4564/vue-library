@@ -19,9 +19,9 @@ import { copyByJson } from '@hungpvq/shared';
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();
 const { mapId, callMap } = useMap();
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(STYLE_CONTROL_LOCALE);
+registerLocale('en', STYLE_CONTROL_LOCALE);
 
 const [show, toggleShow] = useShow(false);
 const { panelPosition } = useRegisterMapControl(mapId, {

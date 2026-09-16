@@ -21,13 +21,15 @@ import {
   PrintControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { loadAllMapDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
-/** Alias of full dataset demo — same as home but reachable via /map-dataset */
+/** Alias of full dataset demo â€” same as home but reachable via /map-dataset */
 export function MapDatasetPage() {
   useDatasetRegistry();
 
@@ -38,6 +40,7 @@ export function MapDatasetPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GlobeControl />
         <CrsControl />

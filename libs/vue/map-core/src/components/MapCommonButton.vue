@@ -22,6 +22,11 @@
       </svg>
     </template>
 
+    <span
+      v-else-if="option.text"
+      class="map-common-button__text"
+    >{{ option.text }}</span>
+
     <SvgIcon
       v-else-if="option.icon?.type === 'mdi'"
       :size="18"
@@ -40,3 +45,17 @@ defineOptions({
   name: 'map-common-button',
 });
 </script>
+
+<style scoped>
+.map-common-button__text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+</style>

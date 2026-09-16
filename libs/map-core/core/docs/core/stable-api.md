@@ -68,7 +68,8 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Control layout | `resolveControlLayout`, `ResolvedControlLayout` (`standalone` / `toolbar` / `menu`), `ControlLayout` (`standalone` / `toolbar` / `button`), `ButtonInMobile` / `BUTTON_IN_MOBILE_VALUES` (`button` / `toolbar` / `menu`). Map `buttonInMobile` on viewports ≤640px: `button` leaves corner controls unchanged; `toolbar` promotes into one `ToolbarControl` host except `controlLayout="button"`; `menu` fans out by `position` into corner stacks with outside-in overflow; bottom half budgets menu + same-edge `controlLayout="button"` chrome (see [ToolbarControl](./module/ToolbarControl.md)). Mount `ToolbarControl` in the map slot for `toolbar` and `menu`. |
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
 | Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, … (in-worker: `./worker`) |
-| Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
+| Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*`, `LANGUAGE_*`, `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI` |
+| Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports) |
 | Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.

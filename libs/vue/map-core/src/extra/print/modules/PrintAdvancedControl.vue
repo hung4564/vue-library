@@ -49,8 +49,8 @@ const path = {
   setting: mdiCogOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(PRINT_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', PRINT_CONTROL_LOCALE);
 const print = ref({
   show: false,
   loading: false,

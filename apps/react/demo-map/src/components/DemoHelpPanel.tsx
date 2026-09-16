@@ -1,4 +1,7 @@
 import type { DemoHelpSection } from '@hungpvq/demo-map-datasets';
+import { getDemoHelpChrome, type DemoPageGuide } from '@hungpvq/demo-map-datasets';
+import { getStoredMapLanguage } from '@hungpvq/map-core';
+import { useLang, useMapContext } from '@hungpvq/react-map-core';
 import {
   useCallback,
   useEffect,
@@ -9,10 +12,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { useLocation } from 'react-router';
-import {
-  getDemoPageGuide,
-  type DemoPageGuide,
-} from '../demo-guides';
+import { getDemoPageGuide } from '../demo-guides';
 import './DemoHelpPanel.css';
 
 const MOBILE_MQ = '(max-width: 640px)';
@@ -52,13 +52,18 @@ export function DemoHelpPanel(props?: {
   sections?: DemoHelpSection[];
 }) {
   const location = useLocation();
+  const { mapId } = useMapContext();
+  const { language } = useLang(mapId);
+  const guideLang = language || getStoredMapLanguage('vi');
+  const chrome = useMemo(() => getDemoHelpChrome(guideLang), [guideLang]);
+
   const resolved = useMemo<DemoPageGuide | undefined>(() => {
     if (props?.guide) return props.guide;
     if (props?.sections?.length) {
       return { intro: props.intro, sections: props.sections };
     }
-    return getDemoPageGuide(location.pathname);
-  }, [props?.guide, props?.intro, props?.sections, location.pathname]);
+    return getDemoPageGuide(location.pathname, guideLang);
+  }, [props?.guide, props?.intro, props?.sections, location.pathname, guideLang]);
 
   const [isMobile, setIsMobile] = useState(
     () =>
@@ -80,16 +85,51 @@ export function DemoHelpPanel(props?: {
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MQ);
     const onChange = () => {
-      const mobile = mq.matches;
-      setIsMobile(mobile);
-      setOpen(!mobile);
+      const next = mq.matches;
+      setIsMobile((was) => {
+        if (!was && next) setOpen(false);
+        if (was && !next) setOpen(true);
+        return next;
+      });
     };
-    onChange();
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const onHeaderPointerDown = useCallback((e: ReactPointerEvent) => {
+  const detachDragListeners = useCallback(() => {
+    window.removeEventListener('pointermove', onPointerMoveRef.current);
+    window.removeEventListener('pointerup', onPointerUpRef.current);
+    window.removeEventListener('pointercancel', onPointerUpRef.current);
+  }, []);
+
+  const onPointerMove = useCallback((e: PointerEvent) => {
+    const d = dragRef.current;
+    if (e.pointerId !== d.pointerId || !panelRef.current) return;
+    const dx = e.clientX - d.originX;
+    const dy = e.clientY - d.originY;
+    if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+    d.moved = true;
+    setDragging(true);
+    e.preventDefault();
+    setPos(clampPos(d.startLeft + dx, d.startTop + dy, panelRef.current));
+  }, []);
+
+  const onPointerUp = useCallback(
+    (e: PointerEvent) => {
+      if (e.pointerId !== dragRef.current.pointerId) return;
+      detachDragListeners();
+      dragRef.current.pointerId = null;
+      setDragging(false);
+    },
+    [detachDragListeners],
+  );
+
+  const onPointerMoveRef = useRef(onPointerMove);
+  const onPointerUpRef = useRef(onPointerUp);
+  onPointerMoveRef.current = onPointerMove;
+  onPointerUpRef.current = onPointerUp;
+
+  const onHeaderPointerDown = (e: ReactPointerEvent) => {
     if (e.button !== 0 || !panelRef.current) return;
     const el = panelRef.current;
     const parent = offsetParentRect(el);
@@ -102,40 +142,22 @@ export function DemoHelpPanel(props?: {
       startLeft: rect.left - parent.left,
       startTop: rect.top - parent.top,
     };
+    window.addEventListener('pointermove', onPointerMoveRef.current);
+    window.addEventListener('pointerup', onPointerUpRef.current);
+    window.addEventListener('pointercancel', onPointerUpRef.current);
+  };
 
-    const onMove = (ev: PointerEvent) => {
-      const d = dragRef.current;
-      if (ev.pointerId !== d.pointerId || !panelRef.current) return;
-      const dx = ev.clientX - d.originX;
-      const dy = ev.clientY - d.originY;
-      if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
-      d.moved = true;
-      setDragging(true);
-      ev.preventDefault();
-      setPos(clampPos(d.startLeft + dx, d.startTop + dy, panelRef.current));
-    };
-
-    const onUp = (ev: PointerEvent) => {
-      if (ev.pointerId !== dragRef.current.pointerId) return;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
-      dragRef.current.pointerId = null;
-      setDragging(false);
-    };
-
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
-  }, []);
-
-  const onHeaderClick = useCallback(() => {
+  const onHeaderClick = (e: React.MouseEvent) => {
     if (dragRef.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
       dragRef.current.moved = false;
       return;
     }
     setOpen((v) => !v);
-  }, []);
+  };
+
+  useEffect(() => () => detachDragListeners(), [detachDragListeners]);
 
   if (!resolved?.sections?.length) return null;
 
@@ -162,12 +184,12 @@ export function DemoHelpPanel(props?: {
         className="demo-help__toggle"
         aria-expanded={open}
         aria-controls="demo-page-help"
-        title="Drag to move · click to show/hide"
+        title={chrome.dragHint}
         onPointerDown={onHeaderPointerDown}
         onClick={onHeaderClick}
       >
         <span className="demo-help__toggle-label">
-          {open ? 'Hide guide' : 'Demo guide'}
+          {open ? chrome.hide : chrome.show}
         </span>
         <span className="demo-help__toggle-icon" aria-hidden="true">
           {open ? '▾' : '▸'}
@@ -179,7 +201,7 @@ export function DemoHelpPanel(props?: {
           id="demo-page-help"
           className="demo-help__body"
           role="region"
-          aria-label="Demo guide"
+          aria-label={chrome.title}
         >
           {resolved.intro ? (
             <p className="demo-help__intro">{resolved.intro}</p>

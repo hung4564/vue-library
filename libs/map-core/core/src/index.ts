@@ -23,11 +23,15 @@ export {
   GOTO_CONTROL_LOCALE,
   HOME_CONTROL_LOCALE,
   INFO_CONTROL_LOCALE,
+  LANGUAGE_CONTROL_LOCALE,
   MAP_ACTION_LOCALE,
   REGISTRY_CONTROL_LOCALE,
   SETTING_CONTROL_LOCALE,
   WORKER_CONTROL_LOCALE,
 } from './locale/index';
+
+export { MAP_CORE_LOCALE_EN } from './locale/locale.en';
+export { MAP_CORE_LOCALE_VI } from './locale/locale.vi';
 
 export {
   Base,
@@ -63,10 +67,6 @@ export {
 export {
   MAP_STORE_KEY,
 } from './types/constants';
-
-export {
-  MittTypeMapLangEventKey,
-} from './types/lang';
 
 export {
   MittTypeMapEventKey,
@@ -107,12 +107,23 @@ export {
 } from './services/error-handler.service';
 
 export {
+  MAP_BUILTIN_LANGUAGES,
+  MAP_LANGUAGE_STORAGE_KEY,
+  MittTypeMapLangEventKey,
+  bootstrapMapLanguage,
   createDefaultLangStore,
   createMapLocaleApi,
   deepMergeLocale,
+  diffLocaleKeys,
+  flattenLocaleMessages,
   getLocaleProp,
+  getStoredMapLanguage,
   interpolateLocale,
+  isMapLangFlatMessages,
+  setStoredMapLanguage,
   translateMapLang,
+  translateMapLangFromCatalog,
+  unflattenLocaleMessages,
 } from './types/lang';
 
 export {
@@ -303,9 +314,15 @@ export type {
   CoordinatesNumber,
   DraftCoordinatesNumber,
   MapFCOnUseMap,
+  MapLangFlatMessages,
   MapLangLocale,
+  MapLanguageCode,
+  MapLanguageRegisterOptions,
+  MapLoadLocaleOptions,
+  MapLocaleLoader,
   MapLocateStore,
   MapSimple,
+  MapTranslateFallback,
   MapTranslateFunction,
   MittTypeMap,
   MittTypeMapLang,

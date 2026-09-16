@@ -5,6 +5,9 @@ import {
 
 export type { DemoPageGuide };
 
-export function getDemoPageGuide(pathname: string): DemoPageGuide | undefined {
-  return getSharedDemoPageGuide(pathname, { framework: 'react' });
+export function getDemoPageGuide(
+  pathname: string,
+  lang?: string,
+): DemoPageGuide | undefined {
+  return getSharedDemoPageGuide(pathname, { framework: 'react', lang });
 }

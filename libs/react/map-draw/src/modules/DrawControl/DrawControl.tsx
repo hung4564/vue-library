@@ -67,11 +67,11 @@ function ensureFeatureId(feature: Feature): Feature {
 export function DrawControl(props: DrawControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, callMap, order } = useMap(merged);
-  const { setLocaleDefault } = useLang(mapId);
+  const { registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(DRAW_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', DRAW_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const [isShow, setIsShow] = useState(false);
   const [isDraw, setIsDraw] = useState(false);

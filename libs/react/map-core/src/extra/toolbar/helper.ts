@@ -16,6 +16,7 @@ import {
 } from '@hungpvq/map-core/toolbar';
 
 import { useResolvedControlLayout } from '../../hooks/useMap';
+import { useLang } from '../lang/hook';
 import { useMapToolbarModule } from './store';
 
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(
@@ -152,6 +153,11 @@ export function useToolbarControl(
   );
 
   const { state } = useInitToolbarControl(control, controlLayout);
+
+  const { language } = useLang(mapId);
+  useEffect(() => {
+    control.sync();
+  }, [language, control]);
 
   return { state, control };
 }

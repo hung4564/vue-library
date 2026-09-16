@@ -38,7 +38,7 @@ Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
 | `EVENT` | `event` | Map event management |
 | `IMAGE` | `image` | Map images |
 | `TOOLBAR` | `toolbar` | Toolbar modules |
-| `LANG` | `lang` | Locale |
+| `LANG` | `lang` | Locale catalogs + active language (`registerLocale` / `setLanguage`) |
 | `CRS` | `crs` | CRS store |
 | `PRINT` | `print` | Print options |
 | `REGISTRY` | `registry` | Control registry scope |

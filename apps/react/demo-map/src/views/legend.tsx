@@ -12,6 +12,8 @@ import {
   useLayerLegend,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useCallback, useState, type ReactNode } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
@@ -94,6 +96,7 @@ export function LegendPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
         <GlobeControl />

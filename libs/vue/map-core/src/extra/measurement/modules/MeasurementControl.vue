@@ -155,9 +155,9 @@ function getMeasurePointCrsItems() {
 }
 const imageHandle = useMapImage(mapId.value);
 
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(MEASUREMENT_CONTROL_LOCALE);
+registerLocale('en', MEASUREMENT_CONTROL_LOCALE);
 
 const button_show: MeasureActionItem[] = [
   {

@@ -40,10 +40,10 @@ export function HomeControl(props: HomeControlProps) {
     { ...mergedProps, controlId: 'mapHomeControl' },
     onInit,
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(HOME_CONTROL_LOCALE);
+    registerLocale('en', HOME_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

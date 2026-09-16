@@ -38,7 +38,7 @@ export function LayerList({
   onCreate?: () => void;
 }) {
   const { callMap } = useMap({ mapId });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { getAllComponentsByType, removeComponent, datasetVersion } =
     useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
@@ -57,8 +57,8 @@ export function LayerList({
     Boolean(disabledDrag) || Boolean(debouncedSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
   useEffect(() => {
-    setLocaleDefault(LAYER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_CONTROL_LOCALE);
+  }, [registerLocale]);
   function refresh() {
     const viewSource = getAllComponentsByType<IListViewUI>('list');
     const next = (viewSource.sort((a, b) => b.index - a.index) ||

@@ -13,10 +13,11 @@
         {{ mode }}
       </button>
       <span class="mobile-menu-demo__hint">
-        Resize ≤640px (or DevTools mobile) to see promotion / corner menu
+        Resize â‰¤640px (or DevTools mobile) to see promotion / corner menu
       </span>
     </div>
     <Map :button-in-mobile="buttonInMobile">
+    <DemoLanguageControl />
       <AsideControl position="top-left" />
       <ToolbarControl />
       <MeasurementControl position="top-right" />
@@ -35,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import type { ButtonInMobile } from '@hungpvq/map-core';
 import {
   BaseMapControl,

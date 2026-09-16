@@ -44,6 +44,8 @@ export type MapControlButtonUIState = {
   visible?: boolean;
   loading?: boolean;
   title?: string;
+  /** Short label shown instead of (or with) icon — e.g. language code `EN`. */
+  text?: string;
   icon?: MapControlIcon;
   active?: boolean;
   disabled?: boolean;
@@ -54,6 +56,17 @@ export type MapControlButtonUIState = {
   /** Cluster direction when rendered in menu/toolbar hosts. Default column. */
   orientation?: 'row' | 'column';
 };
+
+/**
+ * Build button UI state with a text label (no icon).
+ * @example textButtonState('EN', { title: 'English', active: true })
+ */
+export function textButtonState(
+  text: string,
+  state: Omit<MapControlButtonUIState, 'text'> = {},
+): MapControlButtonUIState {
+  return { ...state, text };
+}
 
 /**
  * Full state for map control buttons (includes action handler)

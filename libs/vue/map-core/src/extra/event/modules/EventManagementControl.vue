@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const events = shallowRef<MapEventStore['items']>([]);
 const current = shallowRef<MapEventStore['current']>({});
 const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
@@ -48,7 +48,7 @@ const { getCurrent } = useEventMapItems(mapId.value, {
 function updateCurrent() {
   current.value = getCurrent();
 }
-setLocaleDefault(EVENT_CONTROL_LOCALE);
+registerLocale('en', EVENT_CONTROL_LOCALE);
 const path = {
   icon: mdiCalendarSearch,
 };

@@ -62,8 +62,8 @@ provideMenuConditionContext(() => ({
 }));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const hl = useMapHighlight(mapId.value);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', ATTRIBUTE_TABLE_LOCALE);
 
 const show = ref(true);
 const tick = ref(0);

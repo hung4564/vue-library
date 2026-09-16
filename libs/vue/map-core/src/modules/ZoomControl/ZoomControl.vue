@@ -60,9 +60,9 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(MAP_ACTION_LOCALE);
+registerLocale('en', MAP_ACTION_LOCALE);
 
 let bindSyncRotate: (() => void) | null = null;
 

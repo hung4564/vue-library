@@ -55,7 +55,7 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
     ...mergedProps,
     controlId: 'mapThemeControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [mode, setMode] = useState<MapThemeMode>(() =>
     getStoredMapThemeMode('auto'),
   );
@@ -80,7 +80,7 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
       : mdiWeatherNight;
 
   useEffect(() => {
-    setLocaleDefault(THEME_CONTROL_LOCALE);
+    registerLocale('en', THEME_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

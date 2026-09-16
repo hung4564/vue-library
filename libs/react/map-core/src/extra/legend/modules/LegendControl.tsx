@@ -25,7 +25,7 @@ export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLegendControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLegendControl',
     panelKind: 'popup',
@@ -48,8 +48,8 @@ export function LegendControl(props: WithMapPropType) {
   onlyRenderRef.current = onlyRender;
 
   useEffect(() => {
-    setLocaleDefault(LEGEND_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LEGEND_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const updateLegend = useCallback(
     (map: MapSimple) => {

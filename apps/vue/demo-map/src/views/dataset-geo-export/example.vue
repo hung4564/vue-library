@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { GEO_EXPORT_DEMO_LEGEND } from '@hungpvq/demo-map-datasets';
 import { getUUIDv4 } from '@hungpvq/shared';
@@ -31,7 +32,7 @@ const DemoExportForm = defineComponent({
         h(
           'div',
           { class: 'geo-export-demo-form-override__banner' },
-          'formComponent · Vue component on dataset part',
+          'formComponent Â· Vue component on dataset part',
         ),
         h(ExportGeoForm, attrs),
       ]);
@@ -50,7 +51,7 @@ const DemoExportLoading = defineComponent({
           role: 'status',
           'aria-live': 'polite',
         },
-        'loadingComponent · Vue component on dataset part',
+        'loadingComponent Â· Vue component on dataset part',
       );
   },
 });
@@ -64,6 +65,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />

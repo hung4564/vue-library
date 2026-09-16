@@ -1,5 +1,6 @@
 <template>
   <Map ref="mapRef">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <ToolbarControl position="top-right" />
     <GotoControl position="top-right" control-layout="toolbar" />
@@ -25,6 +26,7 @@
   </Map>
 </template>
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,

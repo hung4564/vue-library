@@ -92,8 +92,8 @@ defineSlots<{
   default(): any;
 }>();
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_CONTROL_LOCALE);
 warnIfDatasetRegistryMissing(
   (key) => UniversalRegistry.getComponent(key),
   'vue-map-dataset',

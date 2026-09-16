@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { runMapControlAction, type MapSimple } from '@hungpvq/map-core';
 import { type IDataset } from '@hungpvq/map-dataset';
 import {
@@ -241,7 +242,7 @@ async function loadPage() {
     page: 1,
     pageSize: 5,
   });
-  lastPageHint.value = `${page.rows.length}/${page.total} · intent:page`;
+  lastPageHint.value = `${page.rows.length}/${page.total} Â· intent:page`;
   attributeTableDemoLogger.info('store.list page', page);
 }
 
@@ -262,6 +263,7 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
 
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl
       position="bottom-left"

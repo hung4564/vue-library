@@ -56,6 +56,8 @@ import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import AsideControl from '../layout/aside-control.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 
 const mapRef = ref();
 const mapId = ref(getUUIDv4());
@@ -180,6 +182,7 @@ function createDatasetMeasure(
     <CrsControl />
     <SettingControl />
     <ThemeControl />
+    <DemoLanguageControl />
     <GeoLocateControl />
     <FullScreenControl />
     <ZoomControl />
@@ -191,6 +194,7 @@ function createDatasetMeasure(
     <HighlightPointer enableClick />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
+    <DemoHelpPanel />
   </Map>
 </template>
 

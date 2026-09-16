@@ -14,6 +14,7 @@ import {
 } from '@hungpvq/map-core/toolbar';
 import { onMounted, onUnmounted, provide, ref, watch } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { useLang } from '../lang/hook';
 import { useResolvedControlLayout } from '../../hooks/useMap';
 import { useMapToolbarModule } from './store';
 
@@ -105,6 +106,11 @@ export function useToolbarControl(
   watch(layout, () => {
     control.unmount();
     control.mount();
+  });
+
+  const { language } = useLang(mapId);
+  watch(language, () => {
+    control.sync();
   });
 
   return { state, control };

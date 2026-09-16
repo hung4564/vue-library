@@ -35,7 +35,7 @@ export function RegistryControl(props: RegistryControlProps) {
     ...merged,
     controlId: CONTROL_ID,
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show ?? false);
   const [controls, setControls] = useState<MapControlHandle[]>([]);
   const [query, setQuery] = useState('');
@@ -43,8 +43,8 @@ export function RegistryControl(props: RegistryControlProps) {
   const [actionType, setActionType] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(REGISTRY_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', REGISTRY_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const refresh = useCallback(() => {
     if (!mapId) return;

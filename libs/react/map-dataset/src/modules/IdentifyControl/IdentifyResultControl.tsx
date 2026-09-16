@@ -53,7 +53,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
     ...merged,
     controlId: IDENTIFY_RESULT_CONTROL.id,
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const formatCoordinate = useMemo(
     () => createMapDisplayCoordinateFormatter(),
     [],
@@ -73,8 +73,8 @@ export function IdentifyResultControl(props: WithMapPropType) {
   const [focusedChildKey, setFocusedChildKey] = useState<string | null>(null);
 
   useEffect(() => {
-    setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', IDENTIFY_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const flatChildren = useMemo(() => {
     const out: Array<{

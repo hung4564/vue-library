@@ -13,8 +13,8 @@ import type { WithLayerItemActionType } from './types';
 export function useToggleShowAction(props: WithLayerItemActionType) {
   const showValue = ref(props.data.show);
   const { callMap, mapId } = useMap(props);
-  const { trans, setLocaleDefault } = useLang(mapId.value);
-  setLocaleDefault(LAYER_CONTROL_LOCALE);
+  const { trans, registerLocale } = useLang(mapId.value);
+  registerLocale('en', LAYER_CONTROL_LOCALE);
   const store = useMapDatasetStore(mapId.value);
 
   const title = computed(() =>

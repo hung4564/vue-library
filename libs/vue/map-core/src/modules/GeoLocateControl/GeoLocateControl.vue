@@ -41,9 +41,9 @@ const { mapId, callMap, moduleContainerProps, order } = useMap(
   undefined,
   onDestroy,
 );
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(MAP_ACTION_LOCALE);
+registerLocale('en', MAP_ACTION_LOCALE);
 
 const ui = ref<GeoLocateUiState>({
   watchState: 'OFF',

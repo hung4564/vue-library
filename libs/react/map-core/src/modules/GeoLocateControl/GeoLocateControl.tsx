@@ -66,10 +66,10 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
       sessionRef.current = undefined;
     },
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(MAP_ACTION_LOCALE);
+    registerLocale('en', MAP_ACTION_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

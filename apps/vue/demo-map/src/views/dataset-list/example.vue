@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
@@ -29,6 +30,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />

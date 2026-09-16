@@ -9,6 +9,8 @@ import {
   SettingControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { Marker } from 'maplibre-gl';
 import { useCallback, useRef, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
@@ -162,6 +164,7 @@ export function StoryTellingGpsPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />
         <SettingControl />

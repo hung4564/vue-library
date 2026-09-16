@@ -106,8 +106,8 @@ const { mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(INSPECT_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', INSPECT_CONTROL_LOCALE);
 
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,

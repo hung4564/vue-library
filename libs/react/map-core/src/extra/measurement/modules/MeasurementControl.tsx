@@ -117,14 +117,14 @@ export function MeasurementControl(props: MeasurementControlProps) {
     );
   }, [crsHandle.items, displayCrsHandle.displayEpsgs]);
   const imageHandle = useMapImage(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const controlRef = useRef<{ sync: () => void } | null>(null);
   const addEventClickRef = useRef<() => void>(() => undefined);
   const removeEventClickRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
-    setLocaleDefault(MEASUREMENT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', MEASUREMENT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const clickEvent = useRef(
     new EventClick().setHandler((event: MapMouseEvent) => {

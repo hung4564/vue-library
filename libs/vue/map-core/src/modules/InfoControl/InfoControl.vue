@@ -52,8 +52,8 @@ const props = withDefaults(
 
 const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(INFO_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', INFO_CONTROL_LOCALE);
 
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapInfoControl',

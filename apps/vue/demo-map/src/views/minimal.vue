@@ -1,5 +1,6 @@
 <template>
   <Map @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <LayerControl position="top-left" show />
@@ -8,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import {

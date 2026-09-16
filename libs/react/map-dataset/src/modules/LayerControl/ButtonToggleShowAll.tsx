@@ -19,14 +19,14 @@ export function ButtonToggleShowAll({
   items: IListViewUI[];
 }) {
   const { callMap } = useMap({ mapId });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   useMapDataset(mapId);
   const store = useMapDatasetStore(mapId);
   const allLayerShow = store.allLayerShow;
 
   useEffect(() => {
-    setLocaleDefault(LAYER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     if (!store.allLayerShow) {

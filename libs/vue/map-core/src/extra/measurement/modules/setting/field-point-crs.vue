@@ -31,11 +31,11 @@ const emit = defineEmits<{
 }>();
 
 const { mapId } = useMap();
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const { items: crsItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 
-setLocaleDefault(CRS_CONTROL_LOCALE);
+registerLocale('en', CRS_CONTROL_LOCALE);
 
 const catalog = computed(() => buildMapCrsCatalog(crsItems.value));
 const displayItems = computed(() =>

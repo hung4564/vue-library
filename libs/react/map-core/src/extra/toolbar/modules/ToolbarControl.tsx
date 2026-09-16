@@ -69,7 +69,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
   const menuMode =
     !!mapContext?.isMobile && mapContext?.buttonInMobile === 'menu';
 
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [buttons, setButtons] = useState<MapControlButtonState[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreOpenCorner, setMoreOpenCorner] = useState<Position | null>(null);
@@ -131,8 +131,8 @@ export function ToolbarControl(props: ToolbarControlProps) {
   }, [findMapContainer, mapId, menuMode]);
 
   useEffect(() => {
-    setLocaleDefault(TOOLBAR_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', TOOLBAR_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     const store = createToolbarStoreApi(toolbarStore);

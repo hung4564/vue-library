@@ -1,23 +1,39 @@
 import type { DemoHelpSection } from './datasets/menu/help';
-import { DATA_MANAGEMENT_DEMO_HELP_SECTIONS } from './datasets/data-management/help';
-import { GEO_EXPORT_DEMO_HELP_SECTIONS } from './datasets/geo-export/help';
-import { HIGHLIGHT_DEMO_HELP_SECTIONS } from './datasets/highlight/help';
-import { IDENTIFY_DEMO_HELP_SECTIONS } from './datasets/identify/help';
-import { IDENTIFY_PRESENT_DEMO_HELP_SECTIONS } from './datasets/identify-present/help';
-import { LIST_DEMO_HELP_SECTIONS } from './datasets/list/help';
-import { MENU_DEMO_HELP_SECTIONS } from './datasets/menu/help';
+import { DATA_MANAGEMENT_DEMO_HELP } from './datasets/data-management/help';
+import { GEO_EXPORT_DEMO_HELP } from './datasets/geo-export/help';
+import { HIGHLIGHT_DEMO_HELP } from './datasets/highlight/help';
+import { IDENTIFY_DEMO_HELP } from './datasets/identify/help';
+import { IDENTIFY_PRESENT_DEMO_HELP } from './datasets/identify-present/help';
+import { LIST_DEMO_HELP } from './datasets/list/help';
+import { MENU_DEMO_HELP } from './datasets/menu/help';
 
 export type DemoFramework = 'vue' | 'react';
+export type DemoGuideLang = 'en' | 'vi';
 
 export type DemoPageGuide = {
   intro?: string;
   sections: DemoHelpSection[];
 };
 
+export type BilingualDemoPageGuide = {
+  en: DemoPageGuide;
+  vi: DemoPageGuide;
+};
+
 export type GetDemoPageGuideOptions = {
   /** When set, routes marked react-only are omitted for vue (and vice versa if added later). */
   framework?: DemoFramework;
+  /** UI language for guide copy. Default `vi`. */
+  lang?: DemoGuideLang | string;
 };
+
+/** Build a bilingual guide. Both `en` and `vi` are required for new demos. */
+export function guideI18n(
+  en: DemoPageGuide,
+  vi: DemoPageGuide,
+): BilingualDemoPageGuide {
+  return { en, vi };
+}
 
 function guide(
   intro: string,
@@ -29,238 +45,262 @@ function guide(
   };
 }
 
+function resolveLang(lang?: string): DemoGuideLang {
+  return lang === 'en' ? 'en' : 'vi';
+}
+
+function pickGuide(
+  entry: BilingualDemoPageGuide,
+  lang?: string,
+): DemoPageGuide {
+  const l = resolveLang(lang);
+  return entry[l] ?? entry.vi ?? entry.en;
+}
+
+function pickSections(
+  bilingual: { en: DemoHelpSection[]; vi: DemoHelpSection[] },
+  lang?: string,
+): DemoHelpSection[] {
+  const l = resolveLang(lang);
+  return bilingual[l] ?? bilingual.vi ?? bilingual.en;
+}
+
 /** Routes available in one framework only (hash path without trailing slash). */
 const REACT_ONLY_ROUTES = new Set(['/map-dataset']);
 
-/** Per-route Demo guide copy (hash path without trailing slash). */
-const DEMO_PAGE_GUIDES: Record<string, DemoPageGuide> = {
-  '/': guide('Kitchen-sink map. Open ☰ AsideControl (top-left) to jump to focused demos.', [
-    [
-      'explore',
-      'Explore',
-      'Toolbar, measurement, draw, identify, layers, registry, workers, print, and more are mounted together.',
-    ],
-    [
-      'aside',
-      'Navigation',
-      'Use AsideControl to open Minimal, Menu, Identify, Draw, etc.',
-    ],
-  ]),
+/** Per-route bilingual guides (hash path without trailing slash). */
+const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
+  '/': guideI18n(
+    guide('Kitchen-sink map. Open ☰ AsideControl (top-left) to jump to focused demos.', [
+      ['explore', 'Explore', 'Toolbar, measurement, draw, identify, layers, registry, workers, print, and more are mounted together.'],
+      ['aside', 'Navigation', 'Use AsideControl to open Minimal, Menu, Identify, Draw, etc.'],
+    ]),
+    guide('Bản đồ tổng hợp. Mở ☰ AsideControl (góc trên-trái) để chuyển tới các demo chuyên sâu.', [
+      ['explore', 'Khám phá', 'Toolbar, đo đạc, vẽ, identify, lớp, registry, worker, in ấn… được gắn cùng lúc.'],
+      ['aside', 'Điều hướng', 'Dùng AsideControl để mở Minimal, Menu, Identify, Draw, v.v.'],
+    ]),
+  ),
 
-  '/map-core': guide('Baseline map with core controls only (no dataset UI).', [
-    [
-      'controls',
-      'Corner controls',
-      'Try goto, info, worker, CRS, globe, settings, zoom, basemap, geolocate, coordinates, context menu.',
-    ],
-    [
-      'workers',
-      'Workers',
-      'Open the Workers control to inspect tasks and logs.',
-    ],
-  ]),
+  '/map-core': guideI18n(
+    guide('Baseline map with core controls only (no dataset UI).', [
+      ['controls', 'Corner controls', 'Try goto, info, worker, CRS, globe, settings, zoom, basemap, geolocate, coordinates, context menu.'],
+      ['workers', 'Workers', 'Open the Workers control to inspect tasks and logs.'],
+    ]),
+    guide('Bản đồ nền chỉ với control cốt lõi (không UI dataset).', [
+      ['controls', 'Control góc', 'Thử goto, info, worker, CRS, globe, settings, zoom, basemap, geolocate, tọa độ, menu chuột phải.'],
+      ['workers', 'Workers', 'Mở Workers để xem task và log.'],
+    ]),
+  ),
 
-  '/minimal': guide('Minimal starter: Map + LayerControl + sample GeoJSON.', [
-    [
-      'layers',
-      'Layers',
-      'Open LayerControl (top-left) to toggle the auto-loaded sample layer.',
-    ],
-    [
-      'basemap',
-      'Basemap',
-      'Switch basemap from the bottom-left control.',
-    ],
-  ]),
+  '/minimal': guideI18n(
+    guide('Minimal starter: Map + LayerControl + sample GeoJSON.', [
+      ['layers', 'Layers', 'Open LayerControl (top-left) to toggle the auto-loaded sample layer.'],
+      ['basemap', 'Basemap', 'Switch basemap from the bottom-left control.'],
+    ]),
+    guide('Starter tối giản: Map + LayerControl + GeoJSON mẫu.', [
+      ['layers', 'Lớp', 'Mở LayerControl (trên-trái) để bật/tắt lớp mẫu đã tải sẵn.'],
+      ['basemap', 'Basemap', 'Đổi nền bản đồ từ control góc dưới-trái.'],
+    ]),
+  ),
 
-  '/worker-sample': guide('Run a sample GIS worker task and watch progress.', [
-    [
-      'run',
-      'Run sum-range',
-      'Set From/To in the side panel, then Run.',
-    ],
-    [
-      'inspect',
-      'Workers control',
-      'Also open Workers on the map to watch progress and shared logs.',
-    ],
-  ]),
+  '/language': guideI18n(
+    guide('LanguageControl: chips EN / VI / FR. FR is a partial custom pack (missing keys fall back to English).', [
+      ['api-reload', 'API + custom lang', 'EN/VI packs + demo-i18n JSON. FR via locales.fr (partial). Use the reload checkbox to force refetch.'],
+    ]),
+    guide('LanguageControl: chip EN / VI / FR. FR là pack tùy chỉnh một phần (thiếu key thì fallback English).', [
+      ['api-reload', 'API + ngôn ngữ tùy chỉnh', 'Pack EN/VI + JSON demo-i18n. FR qua locales.fr (một phần). Dùng checkbox reload để buộc tải lại.'],
+    ]),
+  ),
 
-  '/toolbar': guide('Controls slotted into ToolbarControl.', [
-    [
-      'toolbar',
-      'Toolbar',
-      'Measurement, legend, print, zoom, home, goto live in the toolbar host.',
-    ],
-    [
-      'try',
-      'Try',
-      'Run measurement and print / advanced-print from the toolbar.',
-    ],
-  ]),
+  '/worker-sample': guideI18n(
+    guide('Run a sample GIS worker task and watch progress.', [
+      ['run', 'Run sum-range', 'Set From/To in the side panel, then Run.'],
+      ['inspect', 'Workers control', 'Also open Workers on the map to watch progress and shared logs.'],
+    ]),
+    guide('Chạy task GIS worker mẫu và theo dõi tiến độ.', [
+      ['run', 'Chạy sum-range', 'Nhập From/To ở panel bên, rồi Run.'],
+      ['inspect', 'Workers', 'Mở Workers trên bản đồ để xem tiến độ và log dùng chung.'],
+    ]),
+  ),
 
-  '/mobile-menu': guide('How buttonInMobile changes control layout ≤640px.', [
+  '/toolbar': guideI18n(
+    guide('Controls slotted into ToolbarControl.', [
+      ['toolbar', 'Toolbar', 'Measurement, legend, print, zoom, home, goto live in the toolbar host.'],
+      ['try', 'Try', 'Run measurement and print / advanced-print from the toolbar.'],
+    ]),
+    guide('Các control nằm trong ToolbarControl.', [
+      ['toolbar', 'Toolbar', 'Đo đạc, chú giải, in, zoom, home, goto nằm trong toolbar.'],
+      ['try', 'Thử', 'Chạy đo đạc và in / in nâng cao từ toolbar.'],
+    ]),
+  ),
+
+  '/mobile-menu': guideI18n(
+    guide('How buttonInMobile changes control layout ≤640px.', [
+      ['modes', 'Modes', 'Top bar: switch buttonInMobile between button / toolbar / menu.'],
+      ['resize', 'Resize', 'Use width ≤640px (or DevTools mobile) to see promote / corner menu behavior.'],
+    ]),
+    guide('Cách buttonInMobile đổi layout control khi ≤640px.', [
+      ['modes', 'Chế độ', 'Thanh trên: đổi buttonInMobile giữa button / toolbar / menu.'],
+      ['resize', 'Thu nhỏ', 'Đặt rộng ≤640px (hoặc DevTools mobile) để thấy promote / menu góc.'],
+    ]),
+  ),
+
+  '/legend': guideI18n(
+    guide('Legend swatches for sample line / fill / symbol layers.', [
+      ['inspect', 'Inspect', 'On load, layers and legend entries are built — check patterns, dashes, icons, labels.'],
+    ]),
+    guide('Chú giải mẫu cho lớp line / fill / symbol.', [
+      ['inspect', 'Xem', 'Khi tải, lớp và mục chú giải được tạo — kiểm tra pattern, nét đứt, icon, nhãn.'],
+    ]),
+  ),
+
+  '/draw': guideI18n(
+    guide('DrawControl: create and edit draft features.', [
+      ['draw', 'Draw', 'Open DrawControl (top-right); draw point, line, or polygon.'],
+      ['edit', 'Edit', 'Finished shapes stay on the map; click them to select / edit.'],
+    ]),
+    guide('DrawControl: tạo và sửa đối tượng nháp.', [
+      ['draw', 'Vẽ', 'Mở DrawControl (trên-phải); vẽ điểm, đường hoặc vùng.'],
+      ['edit', 'Sửa', 'Hình đã vẽ giữ trên bản đồ; bấm để chọn / sửa.'],
+    ]),
+  ),
+
+  '/basemap': guideI18n(
+    guide('Basemap switching and preview cards.', [
+      ['switch', 'Switch', 'Use BaseMapControl (bottom-left) and BaseMapTagControl to change basemaps.'],
+      ['card', 'Preview', 'Check BaseMapCard preview after load (top-right / list slot).'],
+    ]),
+    guide('Đổi nền bản đồ và thẻ xem trước.', [
+      ['switch', 'Đổi', 'Dùng BaseMapControl (dưới-trái) và BaseMapTagControl để đổi nền.'],
+      ['card', 'Xem trước', 'Xem BaseMapCard sau khi tải (trên-phải / slot danh sách).'],
+    ]),
+  ),
+
+  '/measurement': guideI18n(
+    guide('Measure distance / area / point on the map.', [
+      ['measure', 'Measure', 'Open MeasurementControl and draw measurements.'],
+      ['vue-add', 'Vue: add to layer', 'Vue demo can push measurement geometry into LayerControl via “add to layer”.'],
+    ]),
+    guide('Đo khoảng cách / diện tích / điểm trên bản đồ.', [
+      ['measure', 'Đo', 'Mở MeasurementControl và vẽ phép đo.'],
+      ['vue-add', 'Vue: thêm lớp', 'Demo Vue có thể đẩy hình đo vào LayerControl qua “add to layer”.'],
+    ]),
+  ),
+
+  '/registry-control': guideI18n(
+    guide('Many controls registered; RegistryControl toggles them.', [
+      ['mount', 'Mounted together', 'Measurement, identify, draw, print, and more are registered at once.'],
+      ['registry', 'RegistryControl', 'Open RegistryControl (top-right) to show / hide registered controls.'],
+    ]),
+    guide('Nhiều control đã đăng ký; RegistryControl bật/tắt chúng.', [
+      ['mount', 'Gắn cùng lúc', 'Đo đạc, identify, vẽ, in… được đăng ký một lần.'],
+      ['registry', 'RegistryControl', 'Mở RegistryControl (trên-phải) để hiện / ẩn control đã đăng ký.'],
+    ]),
+  ),
+
+  '/story-telling': guideI18n(
+    guide('Chapter playback on the map (Vue has the full action engine).', [
+      ['vue', 'Vue', 'Play / Pause / Prev / Next — chapters zoom, pan, rotate, draw route, orbit, highlight DOM.'],
+      ['react', 'React', 'Simplified 3-chapter flyTo (Hanoi → HCMC → reset).'],
+    ]),
+    guide('Phát chương trên bản đồ (Vue có engine action đầy đủ).', [
+      ['vue', 'Vue', 'Play / Pause / Prev / Next — chương zoom, pan, xoay, vẽ tuyến, orbit, highlight DOM.'],
+      ['react', 'React', 'flyTo 3 chương đơn giản (Hà Nội → TP.HCM → reset).'],
+    ]),
+  ),
+
+  '/story-telling-gps': guideI18n(
+    guide('GPS track playback with a moving marker.', [
+      ['vue', 'Vue', 'Play chapter playback — red marker animates along the GPS track with a trail.'],
+      ['react', 'React', 'Use Play trail / Reset in the side panel for marker + line animation.'],
+    ]),
+    guide('Phát quỹ đạo GPS với marker chuyển động.', [
+      ['vue', 'Vue', 'Play chương — marker đỏ chạy theo track GPS kèm đường vệt.'],
+      ['react', 'React', 'Dùng Play trail / Reset ở panel bên cho animation marker + đường.'],
+    ]),
+  ),
+
+  '/map-dataset': guideI18n(
+    guide('React-only: loads all demo datasets on map load.', [
+      ['explore', 'Explore', 'Use LayerControl, DatasetControl, Identify, measurement, and event controls.'],
+    ]),
+    guide('Chỉ React: tải mọi dataset demo khi map load.', [
+      ['explore', 'Khám phá', 'Dùng LayerControl, DatasetControl, Identify, đo đạc và event controls.'],
+    ]),
+  ),
+};
+
+function datasetGuide(
+  introEn: string,
+  introVi: string,
+  help: { en: DemoHelpSection[]; vi: DemoHelpSection[] },
+  extraEn?: DemoHelpSection[],
+  extraVi?: DemoHelpSection[],
+): BilingualDemoPageGuide {
+  return guideI18n(
+    { intro: introEn, sections: [...help.en, ...(extraEn ?? [])] },
+    { intro: introVi, sections: [...help.vi, ...(extraVi ?? [])] },
+  );
+}
+
+const DATASET_GUIDES: Record<string, BilingualDemoPageGuide> = {
+  '/dataset-highlight': datasetGuide(
+    'Each LayerControl row is a different highlight strategy. Hover / click features on that layer to compare.',
+    'Mỗi dòng LayerControl là một chiến lược highlight khác nhau. Hover / click đối tượng trên lớp để so sánh.',
+    HIGHLIGHT_DEMO_HELP,
+  ),
+  '/dataset-identify': datasetGuide(
+    'Open LayerControl and IdentifyControl. Each row below is a layer (or group) on the map — try the steps for that demo.',
+    'Mở LayerControl và IdentifyControl. Mỗi dòng dưới là một lớp (hoặc nhóm) trên bản đồ — làm theo bước của demo đó.',
+    IDENTIFY_DEMO_HELP,
+  ),
+  '/dataset-identify-present': datasetGuide(
+    'Four zones with different present menus after identify. Open Identify, click features in each zone / layer.',
+    'Bốn vùng với menu present khác nhau sau identify. Mở Identify, click đối tượng ở từng vùng / lớp.',
+    IDENTIFY_PRESENT_DEMO_HELP,
+  ),
+  '/dataset-menu': datasetGuide(
+    'Each LayerControl row is one menu pattern. Open the layer, try the menus noted below; use Identify / Detail where called out.',
+    'Mỗi dòng LayerControl là một kiểu menu. Mở lớp, thử menu bên dưới; dùng Identify / Detail khi được nhắc.',
+    MENU_DEMO_HELP,
+  ),
+  '/dataset-list': datasetGuide(
+    'Each LayerControl row demos list UI / menus. Use the header admin / pen checkboxes for the conditions row.',
+    'Mỗi dòng LayerControl demo UI / menu danh sách. Dùng checkbox admin / pen trên header cho dòng điều kiện.',
+    LIST_DEMO_HELP,
+  ),
+  '/dataset-data-management': datasetGuide(
+    'Bottom pagers drive HTTP lists; LayerControl lists the loaded data-management demos.',
+    'Pager dưới cùng điều khiển danh sách HTTP; LayerControl liệt kê các demo data-management đã tải.',
+    DATA_MANAGEMENT_DEMO_HELP,
+  ),
+  '/dataset-attribute-table': datasetGuide(
+    'Same data-management layers as the DM demo. Bottom panel opens AttributeTable with UI / column overrides; use LayerControl to pick a layer first.',
+    'Cùng lớp data-management như demo DM. Panel dưới mở AttributeTable với override UI / cột; chọn lớp bằng LayerControl trước.',
+    DATA_MANAGEMENT_DEMO_HELP,
     [
-      'modes',
-      'Modes',
-      'Top bar: switch buttonInMobile between button / toolbar / menu.',
-    ],
-    [
-      'resize',
-      'Resize',
-      'Use width ≤640px (or DevTools mobile) to see promote / corner menu behavior.',
-    ],
-  ]),
-
-  '/legend': guide('Legend swatches for sample line / fill / symbol layers.', [
-    [
-      'inspect',
-      'Inspect',
-      'On load, layers and legend entries are built — check patterns, dashes, icons, labels.',
-    ],
-  ]),
-
-  '/draw': guide('DrawControl: create and edit draft features.', [
-    [
-      'draw',
-      'Draw',
-      'Open DrawControl (top-right); draw point, line, or polygon.',
-    ],
-    [
-      'edit',
-      'Edit',
-      'Finished shapes stay on the map; click them to select / edit.',
-    ],
-  ]),
-
-  '/basemap': guide('Basemap switching and preview cards.', [
-    [
-      'switch',
-      'Switch',
-      'Use BaseMapControl (bottom-left) and BaseMapTagControl to change basemaps.',
-    ],
-    [
-      'card',
-      'Preview',
-      'Check BaseMapCard preview after load (top-right / list slot).',
-    ],
-  ]),
-
-  '/measurement': guide('Measure distance / area / point on the map.', [
-    [
-      'measure',
-      'Measure',
-      'Open MeasurementControl and draw measurements.',
-    ],
-    [
-      'vue-add',
-      'Vue: add to layer',
-      'Vue demo can push measurement geometry into LayerControl via “add to layer”.',
-    ],
-  ]),
-
-  '/dataset-highlight': {
-    intro:
-      'Each LayerControl row is a different highlight strategy. Hover / click features on that layer to compare.',
-    sections: HIGHLIGHT_DEMO_HELP_SECTIONS,
-  },
-
-  '/dataset-identify': {
-    intro:
-      'Open LayerControl and IdentifyControl. Each row below is a layer (or group) on the map — try the steps for that demo.',
-    sections: IDENTIFY_DEMO_HELP_SECTIONS,
-  },
-
-  '/dataset-identify-present': {
-    intro:
-      'Four zones with different present menus after identify. Open Identify, click features in each zone / layer.',
-    sections: IDENTIFY_PRESENT_DEMO_HELP_SECTIONS,
-  },
-
-  '/dataset-menu': {
-    intro:
-      'Each LayerControl row is one menu pattern. Open the layer, try the menus noted below; use Identify / Detail where called out.',
-    sections: MENU_DEMO_HELP_SECTIONS,
-  },
-
-  '/dataset-list': {
-    intro:
-      'Each LayerControl row demos list UI / menus. Use the header admin / pen checkboxes for the conditions row.',
-    sections: LIST_DEMO_HELP_SECTIONS,
-  },
-
-  '/registry-control': guide('Many controls registered; RegistryControl toggles them.', [
-    [
-      'mount',
-      'Mounted together',
-      'Measurement, identify, draw, print, and more are registered at once.',
-    ],
-    [
-      'registry',
-      'RegistryControl',
-      'Open RegistryControl (top-right) to show / hide registered controls.',
-    ],
-  ]),
-
-  '/dataset-data-management': {
-    intro:
-      'Bottom pagers drive HTTP lists; LayerControl lists the loaded data-management demos.',
-    sections: DATA_MANAGEMENT_DEMO_HELP_SECTIONS,
-  },
-
-  '/dataset-attribute-table': {
-    intro:
-      'Same data-management layers as the DM demo. Bottom panel opens AttributeTable with UI / column overrides; use LayerControl to pick a layer first.',
-    sections: [
-      ...DATA_MANAGEMENT_DEMO_HELP_SECTIONS,
       {
         id: 'open-table',
         title: 'Open table (bottom panel)',
         body: 'Pick layer + override, then Open / Open+columns / Open+ui / Open+cell-header. Try queueSelectRows, actionSelectRows, and toggleShow.',
       },
     ],
-  },
-
-  '/dataset-geo-export': {
-    intro:
-      'Each LayerControl row is an export pattern (see also the header legend). All rows include Attribute table in ⋮.',
-    sections: GEO_EXPORT_DEMO_HELP_SECTIONS,
-  },
-
-  '/story-telling': guide('Chapter playback on the map (Vue has the full action engine).', [
     [
-      'vue',
-      'Vue',
-      'Play / Pause / Prev / Next — chapters zoom, pan, rotate, draw route, orbit, highlight DOM.',
+      {
+        id: 'open-table',
+        title: 'Mở bảng (panel dưới)',
+        body: 'Chọn lớp + override, rồi Open / Open+columns / Open+ui / Open+cell-header. Thử queueSelectRows, actionSelectRows và toggleShow.',
+      },
     ],
-    [
-      'react',
-      'React',
-      'Simplified 3-chapter flyTo (Hanoi → HCMC → reset).',
-    ],
-  ]),
-
-  '/story-telling-gps': guide('GPS track playback with a moving marker.', [
-    [
-      'vue',
-      'Vue',
-      'Play chapter playback — red marker animates along the GPS track with a trail.',
-    ],
-    [
-      'react',
-      'React',
-      'Use Play trail / Reset in the side panel for marker + line animation.',
-    ],
-  ]),
-
-  '/map-dataset': guide('React-only: loads all demo datasets on map load.', [
-    [
-      'explore',
-      'Explore',
-      'Use LayerControl, DatasetControl, Identify, measurement, and event controls.',
-    ],
-  ]),
+  ),
+  '/dataset-geo-export': datasetGuide(
+    'Each LayerControl row is an export pattern (see also the header legend). All rows include Attribute table in ⋮.',
+    'Mỗi dòng LayerControl là một kiểu export (xem thêm chú giải header). Mọi dòng có Attribute table trong ⋮.',
+    GEO_EXPORT_DEMO_HELP,
+  ),
 };
+
+Object.assign(DEMO_PAGE_GUIDES, DATASET_GUIDES);
 
 export function getDemoPageGuide(
   pathname: string,
@@ -270,5 +310,34 @@ export function getDemoPageGuide(
   if (options?.framework === 'vue' && REACT_ONLY_ROUTES.has(key)) {
     return undefined;
   }
-  return DEMO_PAGE_GUIDES[key] ?? DEMO_PAGE_GUIDES[`/${key.replace(/^\//, '')}`];
+  const entry =
+    DEMO_PAGE_GUIDES[key] ??
+    DEMO_PAGE_GUIDES[`/${key.replace(/^\//, '')}`];
+  if (!entry) return undefined;
+  return pickGuide(entry, options?.lang);
 }
+
+/** Chrome strings for DemoHelpPanel. */
+export const DEMO_HELP_CHROME: Record<
+  DemoGuideLang,
+  { title: string; hide: string; show: string; dragHint: string }
+> = {
+  en: {
+    title: 'Demo guide',
+    hide: 'Hide guide',
+    show: 'Demo guide',
+    dragHint: 'Drag to move · click to show/hide',
+  },
+  vi: {
+    title: 'Hướng dẫn',
+    hide: 'Ẩn hướng dẫn',
+    show: 'Hướng dẫn',
+    dragHint: 'Kéo để di chuyển · bấm để hiện/ẩn',
+  },
+};
+
+export function getDemoHelpChrome(lang?: string) {
+  return DEMO_HELP_CHROME[resolveLang(lang)];
+}
+
+export { pickSections, resolveLang };

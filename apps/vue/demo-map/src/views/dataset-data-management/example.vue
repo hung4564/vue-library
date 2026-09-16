@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
@@ -80,6 +81,7 @@ async function next(state: PagerState) {
 
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl
       position="bottom-left"

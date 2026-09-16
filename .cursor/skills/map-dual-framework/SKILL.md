@@ -89,6 +89,7 @@ When a map control mounts `DraggableItemSideBar` / popup / float:
 - React: TSX under matching module folders; hooks like `useMap`, `useMapInstance`, `useRegisterMapControl`
 - Shared styles: package `style.css` entries and documented CSS variables — change carefully
 - Dataset menu UI parity: **`DatasetMenus`** (+ `DatasetMenuButton`) in both adapters; same props (`menus`, `locations`, `data`, `value?`, `mapId`)
+- **Locales:** fixed languages in `locale/locale.<lang>.ts` (+ `<domain>/locale/locale.<lang>.ts`) — see `map-locale` skill
 
 ## React Vite demos
 

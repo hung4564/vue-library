@@ -37,8 +37,8 @@ const { mapId, moduleContainerProps, order } = useMap({
   ...props,
   controlId: CONTROL_ID,
 });
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(REGISTRY_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', REGISTRY_CONTROL_LOCALE);
 
 const controls = ref<MapControlHandle[]>([]);
 const query = ref('');

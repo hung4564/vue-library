@@ -47,7 +47,7 @@ export function BaseMapControl({
     controlIcon,
   };
   const { mapId, moduleContainerProps, order, mapInstance } = useMap({ ...props, controlId: 'mapBaseMapControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const {
     setBaseMaps,
     baseMaps: c_baseMaps,
@@ -67,8 +67,8 @@ export function BaseMapControl({
   }, [props.defaultBaseMap, setDefaultBaseMap]);
 
   useEffect(() => {
-    setLocaleDefault(BASEMAP_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', BASEMAP_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const [show, setShow] = useState(false);
   const { panelBind } = useRegisterMapControl(mapId, {

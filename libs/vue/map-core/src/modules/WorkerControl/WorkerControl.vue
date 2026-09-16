@@ -40,8 +40,8 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(WORKER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', WORKER_CONTROL_LOCALE);
 
 const { workers, now, busy, clearHistory } = useWorkerMonitor();
 const [show, toggleShow] = useShow(props.show);

@@ -26,7 +26,7 @@ Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Rele
 
 ## Where to change code
 
-1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic).
+1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic). Fixed UI languages: always under a `locale/` folder as `locale/locale.<en|vi|…>.ts` (see `map-locale` skill). Demo apps default to **VI** and bilingual guides.
 2. **Map shell, controls, hooks (Vue)** → `libs/vue/map-*`.
 3. **Same for React** → `libs/react/map-*` (keep parity with Vue when the feature is dual).
 4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (shared InspectController). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.

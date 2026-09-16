@@ -256,4 +256,7 @@ export const IDENTIFY_PRESENT_DEMO_DATASET_FACTORIES = [
   createIdentifyPresentNeitherDataset,
 ] as const;
 
-export { IDENTIFY_PRESENT_DEMO_HELP_SECTIONS } from './help';
+export {
+  IDENTIFY_PRESENT_DEMO_HELP,
+  IDENTIFY_PRESENT_DEMO_HELP_SECTIONS,
+} from './help';

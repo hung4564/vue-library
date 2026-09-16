@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/vue-map-core';
 import { MeasureActionItem, MeasurementControl } from '@hungpvq/vue-map-core';
@@ -21,6 +22,7 @@ const actions: MeasureActionItem[] = [
 </script>
 <template>
   <Map>
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-left" :actions="actions" />
     <BaseMapControl position="bottom-left" />

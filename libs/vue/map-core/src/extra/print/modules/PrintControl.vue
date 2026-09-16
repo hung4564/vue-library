@@ -28,8 +28,8 @@ const path = {
   save: mdiContentSaveOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(PRINT_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', PRINT_CONTROL_LOCALE);
 const print = ref({ show: false, loading: false });
 function onSaveAll(cb?: (image: string) => Promise<void>) {
   callMap(async (map) => {

@@ -1,4 +1,4 @@
-import { LAYER_DETAIL_FIELD_LOCALE } from '../detail/locale';
+import { LAYER_DETAIL_FIELD_LOCALE } from '../../detail/locale';
 
 export const CREATE_CONTROL_SAMPLE_NONE = '— Select sample —';
 

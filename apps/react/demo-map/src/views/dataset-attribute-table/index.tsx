@@ -23,6 +23,8 @@ import {
   UniversalRegistry,
   WorkerControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   AttributeTableGrid,
   AttributeTablePager,
@@ -246,7 +248,7 @@ function AttributeTablePlayground({
       page: 1,
       pageSize: 5,
     });
-    setLastPageHint(`${page.rows.length}/${page.total} · intent:page`);
+    setLastPageHint(`${page.rows.length}/${page.total} Â· intent:page`);
     attributeTableDemoLogger.info('store.list page', page);
   }
 
@@ -380,6 +382,7 @@ export function DatasetAttributeTablePage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl
           position="bottom-left"

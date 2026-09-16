@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
@@ -134,6 +135,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 </script>
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <MeasurementControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -152,7 +154,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
         <button @click="next">Next</button>
         <div style="padding: 8px">
           <div>Current: {{ currentIndex }}</div>
-          <div v-if="isPlaying">⏯ Playing</div>
+          <div v-if="isPlaying">Playing</div>
           <div id="btn-highlight"></div>
         </div>
       </MapCard>

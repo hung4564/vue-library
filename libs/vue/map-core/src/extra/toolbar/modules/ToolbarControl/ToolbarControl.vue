@@ -56,8 +56,8 @@ const { moduleContainerProps, mapId } = useMap({
   ...props,
   controlLayout: 'button',
 });
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(TOOLBAR_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', TOOLBAR_CONTROL_LOCALE);
 
 const isMobile = inject<ComputedRef<boolean> | boolean | undefined>(
   '$map.isMobile',

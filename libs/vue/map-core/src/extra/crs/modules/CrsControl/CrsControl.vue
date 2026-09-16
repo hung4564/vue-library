@@ -26,9 +26,9 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(CRS_CONTROL_LOCALE);
+registerLocale('en', CRS_CONTROL_LOCALE);
 const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {

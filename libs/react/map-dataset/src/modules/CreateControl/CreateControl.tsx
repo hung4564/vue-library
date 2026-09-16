@@ -19,7 +19,7 @@ export interface CreateControlProps extends WithMapPropType {
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapCreateControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCreateControl',
     panelKind: 'popup',
@@ -40,7 +40,7 @@ export function CreateControl(props: CreateControlProps) {
   });
   const localeInitialized = useRef(false);
   if (!localeInitialized.current) {
-    setLocaleDefault(CREATE_CONTROL_LOCALE);
+    registerLocale('en', CREATE_CONTROL_LOCALE);
     localeInitialized.current = true;
   }
 

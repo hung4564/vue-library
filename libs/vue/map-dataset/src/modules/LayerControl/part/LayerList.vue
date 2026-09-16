@@ -71,8 +71,8 @@ const path = {
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
 const views = ref<Array<LayerListItem>>([]);

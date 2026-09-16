@@ -570,4 +570,7 @@ export const DATA_MANAGEMENT_DEMO_DATASET_FACTORIES = [
   createDataManagementMemoryStoreDataset,
 ] as const;
 
-export { DATA_MANAGEMENT_DEMO_HELP_SECTIONS } from './help';
+export {
+  DATA_MANAGEMENT_DEMO_HELP,
+  DATA_MANAGEMENT_DEMO_HELP_SECTIONS,
+} from './help';

@@ -1,5 +1,6 @@
 <template>
     <Map :mapId="mapId">
+    <DemoLanguageControl />
       <AsideControl position="top-left" />
       <MeasurementControl position="top-right" />
       <ComponentManagementControl />
@@ -42,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,

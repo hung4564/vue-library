@@ -38,8 +38,8 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(DATASET_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', DATASET_CONTROL_LOCALE);
 const path = {
   icon: mdiDatabaseOutline,
   detail: mdiInformation,

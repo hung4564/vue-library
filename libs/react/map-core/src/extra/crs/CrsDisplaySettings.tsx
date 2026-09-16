@@ -29,7 +29,7 @@ export function CrsDisplaySettings({
   onChange,
 }: CrsDisplaySettingsProps) {
   const { mapId } = useMap();
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { items: crsItems, setItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [draftEpsg, setDraftEpsg] = useState('');
@@ -46,8 +46,8 @@ export function CrsDisplaySettings({
   );
 
   useEffect(() => {
-    setLocaleDefault(CRS_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', CRS_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   function tryAdd(raw: string) {
     const epsg = normalizeEpsgCode(raw);

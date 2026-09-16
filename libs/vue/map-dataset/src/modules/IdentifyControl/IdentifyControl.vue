@@ -69,8 +69,8 @@ const props = withDefaults(
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const hl = useMapHighlight(mapId.value);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', IDENTIFY_CONTROL_LOCALE);
 
 const views = ref<Array<IIdentifyView>>([]);
 /** Local layer filter for IdentifyControl only (not synced with layer-item). */

@@ -6,6 +6,8 @@ import {
   Map,
   WorkerControl,
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   ExportGeoForm,
@@ -25,7 +27,7 @@ function DemoExportForm(props: ExportGeoFormProps) {
   return (
     <div className="geo-export-demo-form-override">
       <div className="geo-export-demo-form-override__banner">
-        formComponent · React component on dataset part
+        formComponent Â· React component on dataset part
       </div>
       <ExportGeoForm {...props} />
       <style>{`
@@ -64,7 +66,7 @@ function DemoExportLoading() {
       role="status"
       aria-live="polite"
     >
-      loadingComponent · React component on dataset part
+      loadingComponent Â· React component on dataset part
       <style>{`
         .geo-export-demo-loading-override {
           margin: 0;
@@ -95,6 +97,7 @@ export function DatasetGeoExportPage() {
   return (
     <MapPageShell>
       <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <WorkerControl position="top-left" />

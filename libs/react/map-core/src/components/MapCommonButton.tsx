@@ -38,6 +38,22 @@ export function MapCommonButton({
             <path d="M12 21l-4-8h8z" fill="#9E9E9E"></path>
           </g>
         </svg>
+      ) : option.text ? (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '1.25rem',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            lineHeight: 1,
+            textTransform: 'uppercase',
+          }}
+        >
+          {option.text}
+        </span>
       ) : option.icon?.type === 'mdi' && option.icon.path ? (
         <Icon path={option.icon.path} size="18px" />
       ) : null}

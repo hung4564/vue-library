@@ -25,20 +25,26 @@ export const useMapLocale = (mapId: string) => {
     getEmitter: () => useMapMittStore<MittTypeMapLang>(mapId),
   });
 
-  function setMapLang(...args: Parameters<typeof api.setMapLang>) {
-    logHelper(logger, mapId, 'store').debug('setMapLang', args[0]);
-    return api.setMapLang(...args);
-  }
-
-  function setMapTranslate(...args: Parameters<typeof api.setMapTranslate>) {
-    logHelper(logger, mapId, 'store').debug('setMapTranslate', args[0]);
-    return api.setMapTranslate(...args);
-  }
-
   return {
     getMapLang: api.getMapLang,
-    setMapLocaleDefault: api.setMapLocaleDefault,
-    setMapLang,
-    setMapTranslate,
+    getLanguage: api.getLanguage,
+    getFallbackLanguage: api.getFallbackLanguage,
+    getLanguages: api.getLanguages,
+    registerLocale: (...args: Parameters<typeof api.registerLocale>) => {
+      logHelper(logger, mapId, 'store').debug('registerLocale', args[0]);
+      return api.registerLocale(...args);
+    },
+    registerLocaleFlat: api.registerLocaleFlat,
+    registerLanguage: api.registerLanguage,
+    setLanguage: (...args: Parameters<typeof api.setLanguage>) => {
+      logHelper(logger, mapId, 'store').debug('setLanguage', args[0]);
+      return api.setLanguage(...args);
+    },
+    setFallbackLanguage: api.setFallbackLanguage,
+    setMapTranslate: (...args: Parameters<typeof api.setMapTranslate>) => {
+      logHelper(logger, mapId, 'store').debug('setMapTranslate', args[0]);
+      return api.setMapTranslate(...args);
+    },
+    loadLocale: api.loadLocale,
   };
 };

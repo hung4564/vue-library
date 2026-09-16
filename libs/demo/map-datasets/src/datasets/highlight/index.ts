@@ -894,7 +894,7 @@ export const HIGHLIGHT_DEMO_DATASET_FACTORIES = HIGHLIGHT_DEMO_ENTRIES.map(
   (entry) => entry.factory,
 );
 
-export { HIGHLIGHT_DEMO_HELP_SECTIONS } from './help';
+export { HIGHLIGHT_DEMO_HELP, HIGHLIGHT_DEMO_HELP_SECTIONS } from './help';
 
 for (const entry of HIGHLIGHT_DEMO_ENTRIES) {
   registerFactoryViewSource(entry);

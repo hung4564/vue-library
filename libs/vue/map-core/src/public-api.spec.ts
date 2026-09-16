@@ -30,6 +30,7 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'GotoControl',
   'HomeControl',
   'InfoControl',
+  'LanguageControl',
   'langStore',
   'LegendControl',
   'makeShowProps',

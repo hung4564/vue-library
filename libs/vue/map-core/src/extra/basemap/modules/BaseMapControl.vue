@@ -122,7 +122,7 @@ const props = withDefaults(
   },
 );
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -144,7 +144,7 @@ watch(
     setDefaultBaseMap(value);
   },
 );
-setLocaleDefault(BASEMAP_CONTROL_LOCALE);
+registerLocale('en', BASEMAP_CONTROL_LOCALE);
 const sizeBaseMap = computed(() => {
   return 70;
 });

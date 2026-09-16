@@ -33,6 +33,8 @@ import {
 } from '@hungpvq/react-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { MapPageShell } from '../components/MapPageShell';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 
@@ -65,6 +67,7 @@ export function AllMapView() {
         <CrsControl />
         <SettingControl />
         <ThemeControl />
+        <DemoLanguageControl />
         <GeoLocateControl />
         <FullScreenControl />
         <ZoomControl />
@@ -76,6 +79,7 @@ export function AllMapView() {
         <HighlightPointer enableClick />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
+        <DemoHelpPanel />
       </Map>
     </MapPageShell>
   );

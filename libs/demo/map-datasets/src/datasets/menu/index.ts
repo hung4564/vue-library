@@ -614,5 +614,9 @@ export const MENU_DEMO_DATASET_FACTORIES = [
   createCustomChainSupportDataset,
 ] as const;
 
-export { MENU_DEMO_HELP_SECTIONS } from './help';
-export type { DemoHelpSection } from './help';
+export {
+  helpI18n,
+  MENU_DEMO_HELP,
+  MENU_DEMO_HELP_SECTIONS,
+} from './help';
+export type { DemoHelpLang, DemoHelpSection } from './help';

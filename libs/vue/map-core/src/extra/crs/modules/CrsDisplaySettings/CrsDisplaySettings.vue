@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>();
 
 const { mapId } = useMap();
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const { items: crsItems, setItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 const draftEpsg = ref('');
@@ -46,7 +46,7 @@ const availableItems = computed(() =>
   catalog.value.filter((item) => !displayEpsgs.value.includes(item.epsg)),
 );
 
-setLocaleDefault(CRS_CONTROL_LOCALE);
+registerLocale('en', CRS_CONTROL_LOCALE);
 
 function tryAdd(raw: string) {
   const epsg = normalizeEpsgCode(raw);

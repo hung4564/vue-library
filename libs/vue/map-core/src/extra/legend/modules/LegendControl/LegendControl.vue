@@ -24,10 +24,10 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const [show, setShow] = useShow(false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
-setLocaleDefault(LEGEND_CONTROL_LOCALE);
+registerLocale('en', LEGEND_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
 }

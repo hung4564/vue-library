@@ -264,9 +264,15 @@
   overflow: visible;
 }
 
-/* Right corners: keep toggle on the outer edge; menu opens inward */
+/* Right corners: keep toggle on the outer edge; menu opens inward.
+   direction:rtl must be on the *clipped* container — not only the sheet —
+   otherwise overflow:hidden still shows the physical left edge (last chip,
+   e.g. FR) while the active face (:first-child) sits clipped on the right. */
 .right-top-container,
 .right-bottom-container {
+  .button-group-hover-expand.button-group-row-container {
+    direction: rtl;
+  }
   .button-group-hover-expand.button-group-row-container .button-group-sheet {
     direction: rtl;
   }

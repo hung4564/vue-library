@@ -63,10 +63,10 @@ provideMenuConditionContext(() => ({
 }));
 
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const formatCoordinate = createMapDisplayCoordinateFormatter();
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
-setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
+registerLocale('en', IDENTIFY_CONTROL_LOCALE);
 
 const show = ref(false);
 const loading = ref(false);

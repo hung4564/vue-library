@@ -1,5 +1,6 @@
 <template lang="">
   <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <GotoControl position="top-right" />
     <GlobeControl />
     <SettingControl />
@@ -19,6 +20,7 @@
   </Map>
 </template>
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
@@ -73,7 +75,7 @@ function onMapLoaded(map: MapSimple) {
       type: 'symbol',
       source: 'points',
       layout: {
-        'icon-image': 'aerialway_11', // Biểu tượng mặc định của Mapbox
+        'icon-image': 'aerialway_11', // Biá»ƒu tÆ°á»£ng máº·c Ä‘á»‹nh cá»§a Mapbox
         'icon-size': 1.5,
         'text-field': ['get', 'title'],
         'text-offset': [0, 1.2],
@@ -88,7 +90,7 @@ function onMapLoaded(map: MapSimple) {
       type: 'symbol',
       source: 'labels',
       layout: {
-        'text-field': ['get', 'name'], // Lấy text từ thuộc tính 'name'
+        'text-field': ['get', 'name'], // Láº¥y text tá»« thuá»™c tÃ­nh 'name'
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
         'text-size': 14,
         'text-offset': [0, 0.5],

@@ -7,6 +7,8 @@ import {
   type MapDrawOption,
 } from '@hungpvq/map-draw';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { DrawControl, useMapDraw } from '@hungpvq/react-map-draw';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
@@ -128,6 +130,7 @@ export function DrawPage() {
   return (
     <MapPageShell>
       <Map mapId={MAP_ID} onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <DrawControl position="top-right" />

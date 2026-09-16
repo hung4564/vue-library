@@ -35,10 +35,10 @@ export function GlobeControl(props: WithMapPropType) {
     { ...mergedProps, controlId: 'mapGlobeControl' },
     onInit,
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(GLOBE_CONTROL_LOCALE);
+    registerLocale('en', GLOBE_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -49,7 +49,7 @@ function inputToSprite(value?: string): SpriteSpecification | undefined {
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
     zoom: undefined,
@@ -59,8 +59,8 @@ export function SettingControl(props: SettingControlProps) {
   });
 
   useEffect(() => {
-    setLocaleDefault(SETTING_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', SETTING_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   function loadCurrentView() {
     callMap((map) => {

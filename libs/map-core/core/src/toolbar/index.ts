@@ -32,7 +32,7 @@ export {
 
 export { TOOLBAR_CONTROL_LOCALE } from './locale';
 
-export { compassIcon, mdiButtonState, mdiIcon } from './types';
+export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
 
 export type { Listener, MapToolbarStore, ToolbarKind } from './toolbar';
 export type { ToolbarButtonGroup, ToolbarOverflowPrefer } from './overflow';

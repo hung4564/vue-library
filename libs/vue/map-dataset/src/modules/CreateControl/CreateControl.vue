@@ -32,8 +32,8 @@ const props = defineProps<
 >();
 
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(CREATE_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', CREATE_CONTROL_LOCALE);
 const { addDataset } = useMapDataset(mapId.value);
 const emit = defineEmits(['update:show']);
 

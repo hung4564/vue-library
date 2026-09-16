@@ -32,7 +32,7 @@ function isActive(current: MapEventStore['current'], event: IEvent) {
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapEventManagementControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapEventManagementControl',
@@ -58,8 +58,8 @@ export function EventManagementControl(props: EventManagementControlProps) {
   const [current, setCurrent] = useState(getCurrent);
 
   useEffect(() => {
-    setLocaleDefault(EVENT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', EVENT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     const update = () => setCurrent(getCurrent());
