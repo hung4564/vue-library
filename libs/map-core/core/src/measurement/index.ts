@@ -24,6 +24,7 @@ export {
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
   getMeasurementLabelPrefs,
+  getMeasurementSettingUiFlags,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
@@ -34,6 +35,7 @@ export type {
   AreaUnit,
   DistanceUnit,
   MeasurementLabelPrefs,
+  MeasurementSettingUiFlags,
 } from './utils';
 export type {
   IView,

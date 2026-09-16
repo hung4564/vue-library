@@ -39,3 +39,4 @@ export type {
   DevtoolTab,
 } from './store-core';
 export type { DevtoolsMode } from './control';
+export { formatDevtoolsLogEntryForCopy } from './format-log-entry';

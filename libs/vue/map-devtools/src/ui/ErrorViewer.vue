@@ -63,6 +63,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyText } from '@hungpvq/map-core';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 import { devtoolState } from '../store';
@@ -113,7 +114,7 @@ function formatTime(timestamp: number): string {
   return new Date(timestamp).toLocaleTimeString();
 }
 
-async function copyStack(error: {
+function copyStack(error: {
   message: string;
   code?: string;
   stack?: string;
@@ -127,11 +128,7 @@ async function copyStack(error: {
   ]
     .filter(Boolean)
     .join('\n\n');
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    // ignore
-  }
+  void copyText(text);
 }
 </script>
 

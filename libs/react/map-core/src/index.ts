@@ -62,10 +62,6 @@ export {
 } from './extra/crs/store';
 
 export {
-  useCoordinate,
-} from './extra/crs/useCoordinate';
-
-export {
   useMapCrsCurrent,
   useMapCrsDisplayEpsgs,
   useMapCrsItems,

@@ -7,6 +7,7 @@ import type { Feature } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 
 import { IViewSetting } from '../types';
+import { getMeasurementLabelPrefs } from '../utils';
 import { Measure } from './Measure';
 
 /**
@@ -62,20 +63,23 @@ export class MeasureAzimuth extends Measure {
     result.features = [line];
     const lineBearing = bearing(start, end);
     result.value = bearingToAzimuth(lineBearing).toFixed(3);
-    result.features_label = [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: end,
+    if (getMeasurementLabelPrefs().showResultLabel) {
+      result.features_label = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: end,
+          },
+          properties: {
+            is_label: true,
+            is_result: true,
+            text: `${result.value} °`,
+            rotation: lineBearing,
+          },
         },
-        properties: {
-          is_label: true,
-          text: `${result.value} °`,
-          rotation: lineBearing,
-        },
-      },
-    ];
+      ];
+    }
     result.fields = [
       {
         trans: 'map.measurement.setting.azimuth',

@@ -1,3 +1,4 @@
+import { copyText } from '@hungpvq/map-core';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { useEffect, useMemo, useState } from 'react';
 import { clearDevtoolErrors } from '../store';
@@ -93,7 +94,7 @@ export function ErrorViewer() {
               <MapControlButton
                 variant="text"
                 size="small"
-                onClick={async () => {
+                onClick={() => {
                   const text = [
                     error.code,
                     error.message,
@@ -102,11 +103,7 @@ export function ErrorViewer() {
                   ]
                     .filter(Boolean)
                     .join('\n\n');
-                  try {
-                    await navigator.clipboard?.writeText(text);
-                  } catch {
-                    // ignore clipboard failure
-                  }
+                  void copyText(text);
                 }}
               >
                 Copy stack

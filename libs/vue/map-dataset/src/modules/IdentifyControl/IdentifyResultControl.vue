@@ -6,6 +6,7 @@ export default {
 
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import {
   findSiblingOrNearestLeaf,
   isListView,
@@ -35,7 +36,6 @@ import {
   MapControlButton,
   ModuleContainer,
   UniversalRegistry,
-  useCoordinate,
   useLang,
   useMap,
   useRegisterMapControl,
@@ -64,7 +64,7 @@ provideMenuConditionContext(() => ({
 
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans, setLocaleDefault } = useLang(mapId.value);
-const { format: formatCoordinate } = useCoordinate(mapId.value);
+const formatCoordinate = createMapDisplayCoordinateFormatter();
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
 

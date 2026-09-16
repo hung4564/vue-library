@@ -9,15 +9,24 @@
  */
 export { BaseCollapse, BaseCollapse as Collapse } from './base-collapse';
 export type { BaseCollapseProps } from './base-collapse';
-export * from './drag-drop-file';
-export * from './input-checkbox';
-export * from './input-crs';
-export * from './input-choose';
-export * from './input-colorPicker';
-export * from './input-file';
-export * from './input-select';
-export * from './input-slider';
-export * from './input-text';
+export { DragDropFile } from './drag-drop-file';
+export type { DragDropFileProps } from './drag-drop-file';
+export { InputCheckbox } from './input-checkbox';
+export type { InputCheckboxProps } from './input-checkbox';
+export { InputChoose } from './input-choose';
+export type { ChooseItem, InputChooseProps } from './input-choose';
+export { InputColorPicker } from './input-colorPicker';
+export type { ColorResult, InputColorPickerProps } from './input-colorPicker';
+export { InputCrs } from './input-crs';
+export type { InputCrsProps } from './input-crs';
+export { InputFile } from './input-file';
+export type { InputFileProps } from './input-file';
+export { InputSelect } from './input-select';
+export type { InputSelectProps, SelectItem } from './input-select';
+export { InputSlider } from './input-slider';
+export type { InputSliderProps } from './input-slider';
+export { InputText } from './input-text';
+export type { InputTextProps } from './input-text';
 export {
   InputTextarea,
   InputTextarea as InputTextArea,

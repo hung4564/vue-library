@@ -9,6 +9,7 @@ export {
 export {
   buildCrsSearchCatalog,
   buildMapCrsCatalog,
+  enrichCrsItemProjection,
   formatCrsLabel,
   getCrsInputSuggestions,
   lookupCrsItem,

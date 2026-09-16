@@ -86,6 +86,26 @@ export function resolveCrsItemForStore(
   };
 }
 
+/**
+ * Ensure a CRS item has a usable proj4 definition for coordinate transforms.
+ */
+export function enrichCrsItemProjection(crs: CrsItem): CrsItem {
+  if (crs.proj4js?.startsWith('+')) return crs;
+  const resolved = lookupProj4CrsItem(crs.epsg);
+  const proj4js =
+    resolved?.proj4js || ensureRegisteredProjection(crs.epsg) || undefined;
+  if (!proj4js && !resolved) return crs;
+  return {
+    ...crs,
+    ...(resolved ?? {}),
+    epsg: crs.epsg,
+    name: crs.name || resolved?.name || `EPSG:${crs.epsg}`,
+    unit: crs.unit || resolved?.unit || 'degree',
+    proj4js,
+    default: crs.default,
+  };
+}
+
 export function normalizeEpsgCode(value: unknown): string | null {
   if (value == null) return null;
   const raw = String(value).trim();

@@ -55,7 +55,6 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'useBaseMapAdapter',
   'useBreakpoints',
   'useComponentName',
-  'useCoordinate',
   'useEventListener',
   'useEventMap',
   'useEventMapItems',

@@ -10,8 +10,8 @@ import {
   parseCoordinateListText,
   parseCoordinateText,
   toCoordinatesNumberList,
-  transformWgs84ToCrs,
 } from './coordinate';
+import { transformWgs84ToCrs } from './coordinate-proj4';
 
 describe('coordinate helpers', () => {
   it('filters complete coordinate pairs', () => {

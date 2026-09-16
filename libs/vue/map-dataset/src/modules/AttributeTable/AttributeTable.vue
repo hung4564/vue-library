@@ -228,7 +228,7 @@ function applySelection(focus?: AttributeTableRow) {
   });
   if (!s.zoomToSelection) return;
   callMap((map) => {
-    fitBounds(map, current.feature as Feature, { mapId: mapId.value });
+    fitBounds(map, current.feature as Feature);
   });
 }
 

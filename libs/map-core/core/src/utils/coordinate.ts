@@ -8,8 +8,6 @@ import { type CoordinatesNumber, type DraftCoordinatesNumber } from '../types';
 import { type CrsItem } from '../crs/types';
 import { transformWgs84ToCrs } from './coordinate-proj4';
 
-export { transformWgs84ToCrs } from './coordinate-proj4';
-
 export function isCoordinatesNumber(
   value: DraftCoordinatesNumber | null | undefined,
 ): value is CoordinatesNumber {
@@ -98,27 +96,23 @@ export function formatCoordinate(
 /**
  * Converts decimal degrees to DMS (Degrees, Minutes, Seconds)
  *
- * @param deg - Decimal degrees
- * @returns DMS object with degrees, minutes, and seconds
+ * @param deg - Decimal degrees (sign ignored for component magnitudes)
+ * @returns DMS object with degrees, minutes, and seconds (non-negative parts)
  */
 export function degToDms(deg: number): DMS {
-  let d = Math.floor(deg);
-  const minFloat = (deg - d) * 60;
-  let m = Math.floor(minFloat);
-  const secFloat = (minFloat - m) * 60;
-  let s = Math.round(secFloat);
-
-  // After rounding, the seconds might become 60
-  if (s == 60) {
-    m++;
-    s = 0;
+  const { deg: d, min: m, sec: s } = decimalToDmsParts(deg);
+  let sec = Math.round(s);
+  let min = m;
+  let degrees = d;
+  if (sec === 60) {
+    min++;
+    sec = 0;
   }
-  if (m == 60) {
-    d++;
-    m = 0;
+  if (min === 60) {
+    degrees++;
+    min = 0;
   }
-
-  return { deg: d, min: m, sec: s };
+  return { deg: degrees, min, sec };
 }
 
 /**
@@ -166,9 +160,8 @@ export function degToDmsString(deg: number): string {
  * @returns DMS string with N/S suffix
  */
 export function latDMS(lat: number): string {
-  return `${dcToDeg(lat)}° ${dcToMin(lat)}' ${parseFloat(
-    dcToSec(lat).toFixed(2),
-  )}" ${lat > 0 ? 'N' : 'S'}`;
+  const { deg, min, sec } = decimalToDmsParts(lat);
+  return `${deg}° ${min}' ${parseFloat(sec.toFixed(2))}" ${lat > 0 ? 'N' : 'S'}`;
 }
 
 /**
@@ -178,39 +171,19 @@ export function latDMS(lat: number): string {
  * @returns DMS string with E/W suffix
  */
 export function lngDMS(lng: number): string {
-  return `${dcToDeg(lng)}° ${dcToMin(lng)}' ${parseFloat(
-    dcToSec(lng).toFixed(2),
-  )}" ${lng > 0 ? 'E' : 'W'}`;
+  const { deg, min, sec } = decimalToDmsParts(lng);
+  return `${deg}° ${min}' ${parseFloat(sec.toFixed(2))}" ${lng > 0 ? 'E' : 'W'}`;
 }
 
-/**
- * Helper: Extract degrees from decimal
- */
-function dcToDeg(val: number): number {
-  if (val === 0) {
-    return 0;
-  }
-  return Math.floor(Math.abs(val));
-}
-
-/**
- * Helper: Extract minutes from decimal
- */
-function dcToMin(val: number): number {
-  if (val === 0) {
-    return 0;
-  }
-  return Math.floor((Math.abs(val) - Math.floor(Math.abs(val))) * 60);
-}
-
-/**
- * Helper: Extract seconds from decimal
- */
-function dcToSec(val: number): number {
-  if (val === 0) {
-    return 0;
-  }
-  return (Math.abs(val) - dcToDeg(val) - dcToMin(val) / 60) * 3600;
+/** Shared absolute DMS breakdown (fractional seconds). */
+function decimalToDmsParts(deg: number): DMS {
+  if (deg === 0) return { deg: 0, min: 0, sec: 0 };
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const minFloat = (abs - d) * 60;
+  const m = Math.floor(minFloat);
+  const s = (minFloat - m) * 60;
+  return { deg: d, min: m, sec: s };
 }
 
 export type ParsedCoordinateText = {

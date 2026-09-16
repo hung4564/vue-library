@@ -3,9 +3,9 @@ import {
   CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
-  lookupCrsItem,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
+  resolveCrsItemForStore,
 } from '@hungpvq/map-core/crs';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 
 const { mapId } = useMap();
 const { trans, setLocaleDefault } = useLang(mapId.value);
-const { items: crsItems } = useMapCrsItems(mapId.value);
+const { items: crsItems, setItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 const draftEpsg = ref('');
 const inputKey = ref(0);
@@ -51,7 +51,14 @@ setLocaleDefault(CRS_CONTROL_LOCALE);
 function tryAdd(raw: string) {
   const epsg = normalizeEpsgCode(raw);
   if (!epsg || displayEpsgs.value.includes(epsg)) return false;
-  if (!lookupCrsItem(epsg, catalog.value)) return false;
+
+  const resolved = resolveCrsItemForStore(epsg, crsItems.value);
+  if (resolved) {
+    setItems([...crsItems.value, resolved]);
+  } else if (!catalog.value.some((item) => item.epsg === epsg)) {
+    return false;
+  }
+
   setDisplayEpsgs([...displayEpsgs.value, epsg]);
   emit('change');
   return true;

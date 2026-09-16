@@ -29,10 +29,6 @@ export {
 } from './extra/basemap/store';
 
 export {
-  useCoordinate,
-} from './extra/crs/hooks/useCoordinate';
-
-export {
   useMapCrsCurrent,
   useMapCrsDisplayEpsgs,
   useMapCrsItems,

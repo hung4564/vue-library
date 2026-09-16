@@ -4,6 +4,7 @@ import { MeasureArea } from './MeasureArea';
 import { MeasureAngle, angleAtVertexDegrees } from './MeasureAngle';
 import { MeasureDistance } from './MeasureDistance';
 import { MeasurePoint } from './MeasurePoint';
+import { MeasureAzimuth } from './MeasureAzimuth';
 import { MeasureRadius } from './MeasureRadius';
 import { setMeasurementLabelPrefs } from '../utils';
 
@@ -146,5 +147,23 @@ describe('MeasurePoint', () => {
     const withoutLabel = m.getResult();
     expect(withoutLabel.features_label).toEqual([]);
     expect(withoutLabel.fields?.length).toBeGreaterThan(0);
+  });
+});
+
+describe('MeasureAzimuth', () => {
+  beforeEach(() => {
+    setMeasurementLabelPrefs({ showResultLabel: true });
+  });
+
+  it('honors showResultLabel for the azimuth text', () => {
+    const m = new MeasureAzimuth();
+    m.init([
+      [0, 0],
+      [1, 0],
+    ]);
+    expect(m.getResult().features_label).toHaveLength(1);
+
+    setMeasurementLabelPrefs({ showResultLabel: false });
+    expect(m.getResult().features_label).toEqual([]);
   });
 });

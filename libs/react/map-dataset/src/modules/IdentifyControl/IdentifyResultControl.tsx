@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import {
   findSiblingOrNearestLeaf,
   isListView,
@@ -28,7 +29,6 @@ import {
   MapControlButton,
   ModuleContainer,
   UniversalRegistry,
-  useCoordinate,
   useLang,
   useMap,
   useRegisterMapControl,
@@ -54,7 +54,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
     controlId: IDENTIFY_RESULT_CONTROL.id,
   });
   const { trans, setLocaleDefault } = useLang(mapId);
-  const { format: formatCoordinate } = useCoordinate(mapId);
+  const formatCoordinate = useMemo(
+    () => createMapDisplayCoordinateFormatter(),
+    [],
+  );
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const [show, toggleShow] = useShow(false);
   const [loading, setLoading] = useState(false);

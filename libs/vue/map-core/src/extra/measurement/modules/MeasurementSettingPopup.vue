@@ -101,6 +101,7 @@ import {
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
   getMeasurementLabelPrefs,
+  getMeasurementSettingUiFlags,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
@@ -174,27 +175,17 @@ watch(
   { flush: 'post' },
 );
 
-const showDistanceUnit = computed(
-  () =>
-    props.measurementType === 'distance' ||
-    props.measurementType === 'radius' ||
-    props.measurementType === 'area',
+const uiFlags = computed(() =>
+  getMeasurementSettingUiFlags(props.measurementType),
 );
-const showAreaUnit = computed(() => props.measurementType === 'area');
+const showDistanceUnit = computed(() => uiFlags.value.showDistanceUnit);
+const showAreaUnit = computed(() => uiFlags.value.showAreaUnit);
 const showVertexLabelToggle = computed(
-  () => props.measurementType === 'distance',
+  () => uiFlags.value.showVertexLabelToggle,
 );
-const showEdgeLabelToggle = computed(
-  () =>
-    props.measurementType === 'distance' ||
-    props.measurementType === 'area' ||
-    props.measurementType === 'radius',
-);
+const showEdgeLabelToggle = computed(() => uiFlags.value.showEdgeLabelToggle);
 const showResultLabelToggle = computed(
-  () =>
-    props.measurementType === 'area' ||
-    props.measurementType === 'angle' ||
-    props.measurementType === 'point',
+  () => uiFlags.value.showResultLabelToggle,
 );
 const showSettingsSection = computed(
   () =>
@@ -202,7 +193,8 @@ const showSettingsSection = computed(
     showAreaUnit.value ||
     showVertexLabelToggle.value ||
     showEdgeLabelToggle.value ||
-    showResultLabelToggle.value,
+    showResultLabelToggle.value ||
+    props.measurementType === 'point',
 );
 
 const distanceUnit = ref<DistanceUnit>(getMeasurementDistanceUnit());

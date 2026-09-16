@@ -5,6 +5,7 @@ import {
   formatDistanceText,
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
+  getMeasurementSettingUiFlags,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
 } from './utils';
@@ -50,5 +51,20 @@ describe('measurement formatters', () => {
     expect(edgeLabelRotation([0, 0], [1, 0])).toBeCloseTo(0, 5);
     // Vertical north edge → text rotated ~±90° to follow the edge
     expect(Math.abs(edgeLabelRotation([0, 0], [0, 1]))).toBeCloseTo(90, 5);
+  });
+
+  it('getMeasurementSettingUiFlags covers point and azimuth result labels', () => {
+    expect(getMeasurementSettingUiFlags('point').showResultLabelToggle).toBe(
+      true,
+    );
+    expect(getMeasurementSettingUiFlags('azimuth').showResultLabelToggle).toBe(
+      true,
+    );
+    expect(getMeasurementSettingUiFlags('distance').showVertexLabelToggle).toBe(
+      true,
+    );
+    expect(getMeasurementSettingUiFlags('radius').showEdgeLabelToggle).toBe(
+      true,
+    );
   });
 });

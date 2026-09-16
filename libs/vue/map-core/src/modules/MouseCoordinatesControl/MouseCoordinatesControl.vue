@@ -6,7 +6,7 @@ import { nextTick, ref } from 'vue';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 
 import type { MapSimple } from '@hungpvq/map-core';
-import { useCoordinate } from '../../extra/crs/hooks/useCoordinate';
+import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 /** Local debounce (avoids lodash dependency). */
@@ -57,7 +57,7 @@ const { callMap, mapId, moduleContainerProps } = useMap(
   onInit,
   onDestroy,
 );
-const { format: formatCoordinate } = useCoordinate(mapId.value);
+const formatCoordinate = createMapDisplayCoordinateFormatter();
 
 function onInit(map: MapSimple) {
   currentZoom.value = +map.getZoom().toFixed(2);

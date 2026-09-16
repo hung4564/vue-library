@@ -85,7 +85,6 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'useBaseMapAdapter',
   'useBreakpoints',
   'useComponentName',
-  'useCoordinate',
   'useEventListener',
   'useEventMap',
   'useEventMapItems',

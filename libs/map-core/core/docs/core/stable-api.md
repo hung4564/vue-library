@@ -59,7 +59,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Area | Stable surface |
 |------|----------------|
 | Map access | `getMap` → `MapSimple \| undefined`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
-| Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
+| Registry | `UniversalRegistry`, `runMapControlAction`, `buildMapControlHandle`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds` (sidebar left/right padding), `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers (`parseCoordinateText`, `latDMS`/`lngDMS`), color/`logHelper`, map-info (`copyImageDataUrl`) |
@@ -148,7 +148,7 @@ Prefer canonical names in new code (`MapControlButton`, `MapCopyButton`, `BaseCo
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
-Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (shared devtools control id / panel mode — re-exported by `@hungpvq/*-map-devtools`; may change in a **minor**).
+Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (shared devtools control id / panel mode — re-exported by `@hungpvq/*-map-devtools`; may change in a **minor**). `@hungpvq/map-core/devtools` also exports Experimental `formatDevtoolsLogEntryForCopy` for LogViewer clipboard formatting.
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 

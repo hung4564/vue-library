@@ -52,6 +52,30 @@ export function setMeasurementLabelPrefs(
   labelPrefs = { ...labelPrefs, ...next };
 }
 
+/** UI flags for measurement Setting popup (shared Vue/React). */
+export type MeasurementSettingUiFlags = {
+  showDistanceUnit: boolean;
+  showAreaUnit: boolean;
+  showVertexLabelToggle: boolean;
+  showEdgeLabelToggle: boolean;
+  showResultLabelToggle: boolean;
+};
+
+export function getMeasurementSettingUiFlags(
+  measurementType: string | undefined | null,
+): MeasurementSettingUiFlags {
+  const t = measurementType ?? '';
+  return {
+    showDistanceUnit: t === 'distance' || t === 'radius' || t === 'area',
+    showAreaUnit: t === 'area',
+    showVertexLabelToggle: t === 'distance',
+    showEdgeLabelToggle:
+      t === 'distance' || t === 'area' || t === 'radius',
+    showResultLabelToggle:
+      t === 'area' || t === 'angle' || t === 'point' || t === 'azimuth',
+  };
+}
+
 /**
  * Readable map text rotation (degrees) so labels follow an edge
  * without upside-down text. Input coords are [lng, lat].

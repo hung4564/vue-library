@@ -6,33 +6,12 @@ import { point } from '@turf/turf';
 import type { Feature } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 
-import { CrsItem } from '../../crs/types';
-
+import { enrichCrsItemProjection } from '../../crs/crs-catalog';
+import type { CrsItem } from '../../crs/types';
 import { IViewSetting } from '../types';
 import { getMeasurementLabelPrefs } from '../utils';
-import {
-  ensureRegisteredProjection,
-  lookupProj4CrsItem,
-} from '../../crs/proj4-crs-catalog';
 import { formatCoordinate } from '../../utils/coordinate';
 import { Measure } from './Measure';
-
-function enrichCrsItem(crs: CrsItem): CrsItem {
-  if (crs.proj4js?.startsWith('+')) return crs;
-  const resolved = lookupProj4CrsItem(crs.epsg);
-  const proj4js =
-    resolved?.proj4js || ensureRegisteredProjection(crs.epsg) || undefined;
-  if (!proj4js && !resolved) return crs;
-  return {
-    ...crs,
-    ...(resolved ?? {}),
-    epsg: crs.epsg,
-    name: crs.name || resolved?.name || `EPSG:${crs.epsg}`,
-    unit: crs.unit || resolved?.unit || 'degree',
-    proj4js,
-    default: crs.default,
-  };
-}
 
 /**
  * Class for measuring a single point with coordinate formatting
@@ -104,9 +83,7 @@ export class MeasurePoint extends Measure {
     const crsDefault = crsItems.find((x) => x.default);
     result.fields = [
       {
-        text: crsDefault
-          ? `EPSG:${crsDefault.epsg}`
-          : 'EPSG:4326',
+        text: crsDefault ? `EPSG:${crsDefault.epsg}` : 'EPSG:4326',
         value: result.value,
       },
     ];
@@ -114,7 +91,7 @@ export class MeasurePoint extends Measure {
     crsItems
       .filter((x) => !x.default)
       .forEach((crs) => {
-        const enriched = enrichCrsItem(crs);
+        const enriched = enrichCrsItemProjection(crs);
         const pointFormatted = formatCoordinate(
           { longitude: lng, latitude: lat },
           enriched,

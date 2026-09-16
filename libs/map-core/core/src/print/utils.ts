@@ -99,7 +99,10 @@ function applyCanvasWatermark(
 export type ExportMapboxOptions = {
   /** Optional corner watermark painted after tiles idle. */
   watermark?: string;
-  /** Pixel density hint for advanced export width/height conversion (default 96). */
+  /**
+   * Print DPI hint. When `pixelRatio` is omitted, converted as `dpi / 96`
+   * (capped the same way as {@link resolveExportPixelRatio}).
+   */
   dpi?: number;
   /**
    * Canvas buffer scale (default `devicePixelRatio`, capped at 3).
@@ -108,13 +111,20 @@ export type ExportMapboxOptions = {
   pixelRatio?: number;
 };
 
-function resolveExportPixelRatio(explicit?: number): number {
+function resolveExportPixelRatio(
+  explicit?: number,
+  dpi?: number,
+): number {
+  const fromDpi =
+    typeof dpi === 'number' && dpi > 0 ? dpi / 96 : undefined;
   const dpr =
     typeof explicit === 'number' && explicit > 0
       ? explicit
-      : typeof devicePixelRatio === 'number' && devicePixelRatio > 0
-        ? devicePixelRatio
-        : 1;
+      : typeof fromDpi === 'number'
+        ? fromDpi
+        : typeof devicePixelRatio === 'number' && devicePixelRatio > 0
+          ? devicePixelRatio
+          : 1;
   return Math.min(3, Math.max(1, dpr));
 }
 
@@ -189,7 +199,7 @@ export async function exportMapboxWithOptions(
   },
 ): Promise<string> {
   await waitMapIdleAndTiles(map);
-  const pixelRatio = resolveExportPixelRatio(options.pixelRatio);
+  const pixelRatio = resolveExportPixelRatio(options.pixelRatio, options.dpi);
   const mapCanvas = map.getCanvas();
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
     container.style.width = mapCanvas.clientWidth + 'px';

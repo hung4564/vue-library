@@ -90,7 +90,11 @@
 
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import type { BufferingLogEntry as LogEntry } from '@hungpvq/map-core/devtools';
+import {
+  formatDevtoolsLogEntryForCopy,
+  type BufferingLogEntry as LogEntry,
+} from '@hungpvq/map-core/devtools';
+import { copyText } from '@hungpvq/map-core';
 import type { LogLevel } from '@hungpvq/shared-log';
 import { computed, nextTick, ref, watch } from 'vue';
 import { clearDevtoolLogs, devtoolState } from '../store';
@@ -168,29 +172,6 @@ function entryText(log: LogEntry) {
   ]
     .join(' ')
     .toLowerCase();
-}
-
-function formatEntryForCopy(log: LogEntry) {
-  const ns = namespaceKey(log);
-  const args = log.args
-    .map((arg) => {
-      if (typeof arg === 'string') return arg;
-      try {
-        return JSON.stringify(arg, null, 2);
-      } catch {
-        return String(arg);
-      }
-    })
-    .join(' ');
-  return `${formatTime(log.timestamp)} [${(log.level || 'unknown').toUpperCase()}]${ns ? ` [${ns}]` : ''} ${args}`.trim();
-}
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    // ignore
-  }
 }
 
 function filterLogs(
@@ -359,7 +340,7 @@ function togglePause() {
 
 function copyVisible() {
   const entries = collectStructuredLogs(structuredLogs.value);
-  void copyText(entries.map(formatEntryForCopy).join('\n'));
+  void copyText(entries.map(formatDevtoolsLogEntryForCopy).join('\n'));
 }
 
 watch(

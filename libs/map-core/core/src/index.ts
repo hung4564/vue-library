@@ -99,6 +99,10 @@ export {
 } from './registry/control';
 
 export {
+  buildMapControlHandle,
+} from './registry/build-map-control-handle';
+
+export {
   errorHandler,
 } from './services/error-handler.service';
 
@@ -321,6 +325,7 @@ export type {
   MapControlPanelKind,
   MapControlPanelPosition,
 } from './registry/control';
+export type { BuildMapControlHandleInput } from './registry/build-map-control-handle';
 export type { RegistryNamespaceKind } from './registry/universal-registry';
 export type {
   AddStoreOptions,

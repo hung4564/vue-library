@@ -33,11 +33,6 @@ export interface FitBoundsOptions {
   padding?: number | PaddingOptions;
   /** When true, skip sidebar padding (flat inset only). */
   ignoreOverlays?: boolean;
-  /**
-   * Optional map id (kept for call-site compatibility; padding is DOM-only).
-   * @deprecated Not used for padding.
-   */
-  mapId?: string;
 }
 
 export type GeojsonBbox = [number, number, number, number];

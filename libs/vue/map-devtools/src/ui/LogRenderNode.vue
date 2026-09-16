@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { BufferingLogEntry as LogEntry } from '@hungpvq/map-core/devtools';
+import { copyText } from '@hungpvq/map-core';
+import {
+  formatDevtoolsLogEntryForCopy,
+  type BufferingLogEntry as LogEntry,
+} from '@hungpvq/map-core/devtools';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import GroupItem from './GroupItem.vue';
 import TreeItem from './TreeItem.vue';
@@ -63,29 +67,6 @@ function namespaceParts(namespaces: string[]) {
   };
 }
 
-function formatEntryForCopy(log: LogEntry) {
-  const ns = log.namespaces.join(':');
-  const args = log.args
-    .map((arg) => {
-      if (typeof arg === 'string') return arg;
-      try {
-        return JSON.stringify(arg, null, 2);
-      } catch {
-        return String(arg);
-      }
-    })
-    .join(' ');
-  return `${formatTime(log.timestamp)} [${(log.level || 'unknown').toUpperCase()}]${ns ? ` [${ns}]` : ''} ${args}`.trim();
-}
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    // ignore
-  }
-}
-
 function levelLetter(level: string) {
   return (level || '?').charAt(0).toUpperCase();
 }
@@ -145,7 +126,7 @@ function objectArgs(log: LogEntry) {
         variant="text"
         size="small"
         class="log-entry__copy"
-        @click="copyText(formatEntryForCopy(item.log))"
+        @click="copyText(formatDevtoolsLogEntryForCopy(item.log))"
       >
         Copy
       </MapControlButton>

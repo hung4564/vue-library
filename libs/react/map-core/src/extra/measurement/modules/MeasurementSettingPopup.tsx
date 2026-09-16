@@ -9,6 +9,7 @@ import {
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
   getMeasurementLabelPrefs,
+  getMeasurementSettingUiFlags,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
@@ -72,26 +73,20 @@ export function MeasurementSettingPopup({
   );
   const [areaUnit, setAreaUnit] = useState<AreaUnit>(getMeasurementAreaUnit());
   const [labelPrefs, setLabelPrefs] = useState(getMeasurementLabelPrefs());
-  const showDistanceUnit =
-    measurementType === 'distance' ||
-    measurementType === 'radius' ||
-    measurementType === 'area';
-  const showAreaUnit = measurementType === 'area';
-  const showVertexLabelToggle = measurementType === 'distance';
-  const showEdgeLabelToggle =
-    measurementType === 'distance' ||
-    measurementType === 'area' ||
-    measurementType === 'radius';
-  const showResultLabelToggle =
-    measurementType === 'area' ||
-    measurementType === 'angle' ||
-    measurementType === 'point';
+  const {
+    showDistanceUnit,
+    showAreaUnit,
+    showVertexLabelToggle,
+    showEdgeLabelToggle,
+    showResultLabelToggle,
+  } = getMeasurementSettingUiFlags(measurementType);
   const showSettingsSection =
     showDistanceUnit ||
     showAreaUnit ||
     showVertexLabelToggle ||
     showEdgeLabelToggle ||
-    showResultLabelToggle;
+    showResultLabelToggle ||
+    measurementType === 'point';
 
   const distanceUnitItems = useMemo(
     () => [
@@ -135,6 +130,7 @@ export function MeasurementSettingPopup({
     getProps: () => ({
       position: merged.position,
       controlLayout: merged.controlLayout,
+      maxLength,
       measurementType,
     }),
     actions: [
