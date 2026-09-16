@@ -9,7 +9,8 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDeleteOutline } from '@mdi/js';
 import { computed } from 'vue';
-import { MapControlButton, MapCopyButton } from '../../../../components';
+import MapControlButton from '../../../../components/MapControlButton.vue';
+import MapCopyButton from '../../../../components/MapCopyButton.vue';
 import { useLang } from '../../../../extra/lang/hook';
 import { useMap } from '../../../../hooks/useMap';
 import {

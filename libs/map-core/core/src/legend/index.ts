@@ -3,6 +3,11 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
 export {
+  buildLayerLegendElements,
+  LAYER_LEGEND_FALLBACK_PATHS,
+} from './buildLayerLegendElements';
+export type { LayerLegendSource } from './buildLayerLegendElements';
+export {
   getLegendName,
   isDisabledLegendLayer,
   isSupportGenLayerLegend,

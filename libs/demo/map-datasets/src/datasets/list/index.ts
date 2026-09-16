@@ -420,4 +420,4 @@ export const LIST_DEMO_DATASET_FACTORIES = [
   createListWithSublistMenuDataset,
 ] as const;
 
-export { LIST_DEMO_HELP, LIST_DEMO_HELP_SECTIONS } from './help';
+export { LIST_DEMO_HELP } from './help';

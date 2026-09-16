@@ -10,7 +10,7 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
-import { MapControlButton } from '../../../../components';
+import MapControlButton from '../../../../components/MapControlButton.vue';
 import { useLang } from '../../../../extra/lang/hook';
 import { InputCrs } from '../../../../field';
 import { useMap } from '../../../../hooks/useMap';

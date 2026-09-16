@@ -68,6 +68,3 @@ export const GEO_EXPORT_DEMO_HELP = helpI18n(
   ],
 );
 
-/** @deprecated prefer GEO_EXPORT_DEMO_HELP[lang] — keep for compat */
-export const GEO_EXPORT_DEMO_HELP_SECTIONS: DemoHelpSection[] =
-  GEO_EXPORT_DEMO_HELP.en;

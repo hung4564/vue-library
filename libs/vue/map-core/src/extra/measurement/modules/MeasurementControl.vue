@@ -58,7 +58,8 @@ import {
   MEASUREMENT_CONTROL_LOCALE,
 } from '@hungpvq/map-core/measurement';
 
-import { MapCommonButton, MapControlGroupButton } from '../../../components';
+import MapCommonButton from '../../../components/MapCommonButton.vue';
+import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/hooks/useMapCrsItems';

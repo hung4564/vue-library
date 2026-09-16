@@ -91,12 +91,10 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import {
-  MapCard,
-  MapControlButton,
-  MapIcon,
-  MapImage,
-} from '../../../components';
+import MapCard from '../../../components/MapCard.vue';
+import MapControlButton from '../../../components/MapControlButton.vue';
+import MapIcon from '../../../components/MapIcon.vue';
+import MapImage from '../../../components/MapImage.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../../extra/toolbar/helper';

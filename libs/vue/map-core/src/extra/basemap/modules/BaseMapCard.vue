@@ -25,7 +25,7 @@
 import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
 import { onBeforeUnmount } from 'vue';
-import { MapImage } from '../../../components';
+import MapImage from '../../../components/MapImage.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { InputSelect } from '../../../field';
 import { useMap } from '../../../hooks/useMap';

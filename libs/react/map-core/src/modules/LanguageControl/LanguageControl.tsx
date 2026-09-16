@@ -2,8 +2,10 @@ import {
   MAP_BUILTIN_LANGUAGES,
   MAP_CORE_LOCALE_EN,
   MAP_CORE_LOCALE_VI,
-  deepMergeLocale,
-  getStoredMapLanguage,
+  mapLanguageCodeLabel,
+  nextMapLanguageInList,
+  registerLanguageControlPacks,
+  resolveInitialMapLanguage,
   type MapLangLocale,
   type MapLanguageCode,
   type MapLocaleLoader,
@@ -31,10 +33,6 @@ export type LanguageControlProps = WithMapPropType & {
   /** Plug in i18next / custom i18n; `null` clears. Catalog is passed as `fallback`. */
   translate?: MapTranslateFunction | null;
 };
-
-function codeLabel(code: MapLanguageCode): string {
-  return String(code).toUpperCase();
-}
 
 export function LanguageControl({
   languages,
@@ -77,27 +75,22 @@ export function LanguageControl({
       const key = `map.language-control.${code}`;
       const translated = trans(key);
       if (translated !== key) return translated;
-      return codeLabel(code);
+      return mapLanguageCodeLabel(code);
     },
     [labels, trans],
   );
 
   useEffect(() => {
-    registerLocale(
-      'en',
-      deepMergeLocale(MAP_CORE_LOCALE_EN, locales?.en ?? {}),
-    );
-    registerLocale(
-      'vi',
-      deepMergeLocale(MAP_CORE_LOCALE_VI, locales?.vi ?? {}),
-    );
-    for (const [code, tree] of Object.entries(locales ?? {})) {
-      if (code === 'en' || code === 'vi') continue;
-      registerLocale(code, tree);
-    }
-    for (const code of languageList) {
-      registerLanguage(code, { label: labels?.[code] ?? titleFor(code) });
-    }
+    registerLanguageControlPacks({
+      registerLocale,
+      registerLanguage,
+      coreLocaleEn: MAP_CORE_LOCALE_EN,
+      coreLocaleVi: MAP_CORE_LOCALE_VI,
+      locales,
+      labels,
+      languages: languageList,
+      resolveLabel: titleFor,
+    });
     if (fallbackLanguage) setFallbackLanguage(fallbackLanguage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -107,9 +100,10 @@ export function LanguageControl({
   }, [setTranslate, translateProp]);
 
   useEffect(() => {
-    const fallback = defaultLanguage ?? 'vi';
-    const stored = getStoredMapLanguage(fallback);
-    const initial = languageList.includes(stored) ? stored : fallback;
+    const initial = resolveInitialMapLanguage(
+      languageList,
+      defaultLanguage ?? 'vi',
+    );
     setLanguage(initial);
     if (localeLoader) {
       void loadLocale(initial, localeLoader).catch(() => {
@@ -137,10 +131,8 @@ export function LanguageControl({
   );
 
   const toggleLanguage = useCallback(() => {
-    if (!languageList.length) return;
-    const idx = languageList.indexOf(language);
-    const next = languageList[(idx + 1) % languageList.length]!;
-    void applyLanguage(next);
+    const next = nextMapLanguageInList(languageList, language);
+    if (next) void applyLanguage(next);
   }, [applyLanguage, language, languageList]);
 
   useRegisterMapControl(mapId, {
@@ -166,7 +158,7 @@ export function LanguageControl({
     kind: 'single',
     id: 'mapLanguageControl',
     getState: () =>
-      textButtonState(codeLabel(language), {
+      textButtonState(mapLanguageCodeLabel(language), {
         visible: true,
         active: true,
         order,
@@ -200,7 +192,7 @@ export function LanguageControl({
           {languageList.map((code) => (
             <MapCommonButton
               key={code}
-              option={textButtonState(codeLabel(code), {
+              option={textButtonState(mapLanguageCodeLabel(code), {
                 visible: true,
                 active: language === code,
                 title: titleFor(code),

@@ -1,12 +1,5 @@
 import type { Plugin } from 'vite';
 
-export type MapDatasetGisWorkerOptions = {
-  /**
-   * @deprecated Ignored. No longer copies files into `public/`.
-   */
-  publicDir?: string;
-};
-
 const EXCLUDE = [
   '@hungpvq/map-dataset',
   '@hungpvq/map-dataset/geojson',
@@ -79,9 +72,7 @@ const MAPLIBRE_NAMED_SHIM = [
  * Monorepo apps that path-alias into `libs/` should use `worker.format: 'es'` +
  * `nxViteTsPaths` on `worker.plugins` instead (see GIS worker docs).
  */
-export function mapDatasetGisWorker(
-  _options: MapDatasetGisWorkerOptions = {},
-): Plugin {
+export function mapDatasetGisWorker(): Plugin {
   return {
     name: 'map-dataset-gis-worker',
     enforce: 'pre',

@@ -1,3 +1,4 @@
+import { getMapUUIDv4 } from '../utils/uuid';
 import type {
   WorkerEngine,
   WorkerHandle,
@@ -77,10 +78,7 @@ function notify() {
 }
 
 function createTaskId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `worker-task-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return getMapUUIDv4();
 }
 
 function findPending(entry: WorkerEntry, taskId: string) {

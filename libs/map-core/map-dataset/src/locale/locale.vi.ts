@@ -1,143 +1,28 @@
-/** Vietnamese catalog for map-dataset UI strings. */
-export const MAP_DATASET_LOCALE_VI: Record<string, unknown> = {
-  map: {
-    'dataset-control': { title: 'Điều khiển tập dữ liệu' },
-    'layer-control': {
-      title: 'Lớp dữ liệu',
-      search: 'Tìm lớp',
-      'search-empty': 'Không có lớp khớp',
-      empty: 'Chưa có lớp',
-      'empty-hint': 'Tạo lớp để bắt đầu',
-      'create-btn': 'Tạo lớp',
-      toggle: {
-        hide: 'Ẩn lớp',
-        show: 'Hiện lớp',
-        'hide-all': 'Ẩn tất cả lớp',
-        'show-all': 'Hiện tất cả lớp',
-      },
-      create: {
-        title: 'Lớp mới',
-        sample: 'Mẫu',
-        'url-error': 'Không tải được từ URL',
-        'loading-url': 'Đang tải…',
-        load: 'Tải',
-        cancel: 'Hủy',
-        'layer-setting': 'Cài đặt lớp',
-        'data-source': 'Nguồn dữ liệu',
-        'tab-file': 'Tệp',
-        'tab-raw': 'Thô',
-        'tab-url': 'URL',
-        'paste-geojson': 'Dán dữ liệu GIS',
-        'paste-geojson-hint': 'GeoJSON, TopoJSON, KML, GPX, CSV hoặc WKT',
-        'file-hint':
-          'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile hoặc .zip',
-        'file-drop': 'Thả tệp vào đây hoặc bấm để chọn',
-        parsing: 'Đang đọc tệp…',
-        'parse-error': 'Không đọc được tệp này',
-        'crs-mismatch':
-          'CRS tệp khác CRS đã chọn; dữ liệu sẽ được chuyển hệ.',
-        'multi-file-error':
-          'Thả một tệp GIS, bộ shapefile, hoặc nhiều GeoJSON/KML/GPX.',
-        creating: 'Đang tạo lớp…',
-        'create-error': 'Không tạo được lớp',
-        'create-error-data-too-large':
-          'Dữ liệu có thể quá lớn hoặc lồng quá sâu. Thử tệp nhỏ hơn hoặc EPSG:4326.',
-        'loaded-title': 'Dữ liệu đã tải',
-        'loaded-from-file': 'Từ tệp',
-        'loaded-from-url': 'Từ URL',
-        'loaded-from-paste': 'Từ dán',
-        'clear-data': 'Xóa',
-        'replace-file': 'Đổi tệp',
-        'features-count': 'Đối tượng',
-        'geometry-types': 'Hình học',
-        'validation-name': 'Nhập tên lớp.',
-        'validation-data': 'Hãy tải hoặc dán dữ liệu GIS trước.',
-        'validation-type': 'Chọn kiểu style.',
-        'validation-url': 'Nhập URL tile.',
-      },
-      field: {
-        name: 'Tên',
-        id: 'Id',
-        kind: 'Loại',
-        color: 'Màu',
-        opacity: 'Độ trong suốt',
-        visible: 'Hiển thị',
-        type: 'Kiểu',
-        url: 'Url',
-        tiles: 'Tiles',
-        minzoom: 'Zoom tối thiểu',
-        maxzoom: 'Zoom tối đa',
-        geojson: 'GeoJSON',
-        features: 'Đối tượng',
-        geometry: 'Hình học',
-        file: 'Tệp',
-        'layer-type': 'Kiểu lớp',
-        'layer-name': 'Tên lớp',
-        'style-type': 'Kiểu style',
-        'style-type-auto': 'Tự động (theo dữ liệu)',
-        crs: 'Hệ tọa độ',
-        'crs-placeholder': 'Tìm hoặc nhập mã EPSG',
-        'crs-hint': 'EPSG:4326 — WGS 84',
-      },
-      info: { title: 'Thông tin lớp' },
-    },
-    'layer-info-control': { title: 'Thông tin lớp' },
-    identify: {
-      title: 'Nhận dạng',
-      point: 'Điểm',
-      layer: 'Lớp',
-      all_layers: 'Tất cả lớp',
-      no_selection: 'Chọn một điểm trên bản đồ',
-      no_data: 'Không có đối tượng tại vị trí này',
-      no_data_filtered: 'Không có đối tượng trong lớp đã chọn',
-      loading: 'Đang tải...',
-      error: 'Nhận dạng thất bại',
-      map_click: 'Nhận dạng bằng click',
-      box_select: 'Nhận dạng bằng khung chọn',
-    },
-    'attribute-table': {
-      title: 'Bảng thuộc tính',
-      table: 'Bảng thuộc tính',
-      gridRegion: 'Các hàng bảng',
-      search: 'Tìm kiếm',
-      empty: 'Không có đối tượng',
-      loading: 'Đang tải…',
-      zoomToSelection: 'Zoom tới vùng chọn',
-      showAll: 'Tất cả hàng',
-      showSelected: 'Đã chọn',
-      clear: 'Bỏ chọn',
-      page: 'Trang',
-      of: 'của',
-      prev: 'Trước',
-      next: 'Sau',
-      rowsPerPage: 'Hàng',
-      selectAll: 'Chọn tất cả hàng',
-      selectRow: 'Chọn hàng',
-      actionsColumn: 'Thao tác hàng',
-      rowFilter: 'Lọc hàng',
-      sortedAsc: 'sắp xếp tăng',
-      sortedDesc: 'sắp xếp giảm',
-      notSorted: 'chưa sắp xếp',
-      selectionStatus: '{selected} / {total} đã chọn',
-      export: 'Xuất',
-    },
-    'style-control': {
-      title: 'Điều khiển style',
-      add: {
-        area: 'Vùng',
-        line: 'Đường',
-        point: 'Điểm',
-        symbol: 'Ký hiệu',
-      },
-      'back-to-default': 'Về giá trị mặc định',
-      layer: {
-        title: 'Lớp',
-        id: 'Id',
-        type: 'Kiểu',
-        'min-zoom': 'Zoom tối thiểu',
-        'max-zoom': 'Zoom tối đa',
-      },
-      style: { title: 'Style' },
-    },
-  },
-};
+import { deepMergeLocale } from '@hungpvq/map-core';
+import { ATTRIBUTE_TABLE_LOCALE_VI } from '../attribute-table/locale/locale.vi';
+import { DATASET_CONTROL_LOCALE_VI } from '../extra/dataset-control/locale/locale.vi';
+import { LAYER_DETAIL_LOCALE_VI } from '../extra/detail/locale/locale.vi';
+import {
+  LAYER_CONTROL_LOCALE_VI,
+  LAYER_INFO_CONTROL_LOCALE_VI,
+} from '../extra/layer-control/locale/locale.vi';
+import { IDENTIFY_CONTROL_LOCALE_VI } from '../identify/locale/locale.vi';
+import { STYLE_CONTROL_LOCALE_VI } from '../style/locale/locale.vi';
+
+/** Same slice order as {@link MAP_DATASET_LOCALE_EN}. */
+const DATASET_VI_SLICES: Record<string, unknown>[] = [
+  DATASET_CONTROL_LOCALE_VI,
+  LAYER_CONTROL_LOCALE_VI,
+  LAYER_INFO_CONTROL_LOCALE_VI,
+  LAYER_DETAIL_LOCALE_VI,
+  IDENTIFY_CONTROL_LOCALE_VI,
+  ATTRIBUTE_TABLE_LOCALE_VI,
+  STYLE_CONTROL_LOCALE_VI,
+];
+
+/** Vietnamese catalog for map-dataset UI (mirrors {@link MAP_DATASET_LOCALE_EN}). */
+export const MAP_DATASET_LOCALE_VI: Record<string, unknown> =
+  DATASET_VI_SLICES.reduce(
+    (acc, slice) => deepMergeLocale(acc, slice),
+    {} as Record<string, unknown>,
+  );

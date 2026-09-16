@@ -5,7 +5,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
-import { MapCommonButton } from '../../../components';
+import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../../extra/toolbar/helper';

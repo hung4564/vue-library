@@ -27,7 +27,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
 import { mdiLayersOutline } from '@mdi/js';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
-import { MapControlGroupButton } from '../../../components';
+import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { useToolbarControl } from '../../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';

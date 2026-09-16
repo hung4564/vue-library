@@ -98,9 +98,7 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 ] as const;
 
 /** Reserved — root Experimental allowlist is empty; field UI is on `./fields`. */
-export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'logger',
-] as const;
+export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 /** Runtime exports of `@hungpvq/react-map-core/fields` (Experimental; may change in a minor). */
 export const REACT_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [

@@ -131,5 +131,3 @@ export const LIST_DEMO_HELP = helpI18n(
   ],
 );
 
-/** @deprecated prefer LIST_DEMO_HELP[lang] — keep for compat */
-export const LIST_DEMO_HELP_SECTIONS: DemoHelpSection[] = LIST_DEMO_HELP.en;

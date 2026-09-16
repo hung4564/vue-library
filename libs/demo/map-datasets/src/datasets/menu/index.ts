@@ -617,6 +617,5 @@ export const MENU_DEMO_DATASET_FACTORIES = [
 export {
   helpI18n,
   MENU_DEMO_HELP,
-  MENU_DEMO_HELP_SECTIONS,
 } from './help';
 export type { DemoHelpLang, DemoHelpSection } from './help';

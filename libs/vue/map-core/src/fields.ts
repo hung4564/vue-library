@@ -19,13 +19,9 @@ export {
   InputTextarea,
 } from './field';
 
-export {
-  MapButton,
-  MapCard,
-  MapErrorToast,
-  MapIcon,
-  MapImage,
-} from './components';
+export { default as MapButton } from './components/MapButton.vue';
+export { default as MapCard } from './components/MapCard.vue';
+export { default as MapErrorToast } from './components/MapErrorToast.vue';
+export { default as MapIcon } from './components/MapIcon.vue';
+export { default as MapImage } from './components/MapImage.vue';
 
-export { KEY } from './extra/print/store';
-export { MITT_KEY } from './types';

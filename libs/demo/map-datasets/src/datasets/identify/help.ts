@@ -88,6 +88,3 @@ export const IDENTIFY_DEMO_HELP = helpI18n(
   ],
 );
 
-/** @deprecated prefer IDENTIFY_DEMO_HELP[lang] — keep for compat */
-export const IDENTIFY_DEMO_HELP_SECTIONS: DemoHelpSection[] =
-  IDENTIFY_DEMO_HELP.en;

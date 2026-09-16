@@ -15,7 +15,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { MapControlButton } from '../../components';
+import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { UniversalRegistry } from '../../extra/registry/plugin';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

@@ -110,13 +110,11 @@ export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'InputText',
   'InputTextArea',
   'InputTextarea',
-  'KEY',
   'MapButton',
   'MapCard',
   'MapErrorToast',
   'MapIcon',
   'MapImage',
-  'MITT_KEY',
 ] as const;
 
 describe('public API surface', () => {

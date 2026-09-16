@@ -31,7 +31,8 @@ import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
-import { MapControlButton, MapCopyButton } from '../../components';
+import MapControlButton from '../../components/MapControlButton.vue';
+import MapCopyButton from '../../components/MapCopyButton.vue';
 
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';

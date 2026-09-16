@@ -9,6 +9,10 @@ import {
   getStoredMapLanguage,
   setStoredMapLanguage,
   isMapLangFlatMessages,
+  mapLanguageCodeLabel,
+  nextMapLanguageInList,
+  registerLanguageControlPacks,
+  resolveInitialMapLanguage,
 } from './lang';
 
 describe('locale flat helpers', () => {
@@ -193,5 +197,59 @@ describe('map language storage', () => {
       configurable: true,
       value: original,
     });
+  });
+});
+
+describe('LanguageControl bootstrap helpers', () => {
+  it('labels codes uppercase and cycles languages', () => {
+    expect(mapLanguageCodeLabel('vi')).toBe('VI');
+    expect(nextMapLanguageInList(['en', 'vi', 'fr'], 'vi')).toBe('fr');
+    expect(nextMapLanguageInList(['en', 'vi'], 'vi')).toBe('en');
+  });
+
+  it('resolves initial language from storage when allowed', () => {
+    const original = globalThis.localStorage;
+    const mem = new Map<string, string>([['hungpvq.map-language', 'fr']]);
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (k: string) => mem.get(k) ?? null,
+        setItem: (k: string, v: string) => {
+          mem.set(k, v);
+        },
+      },
+    });
+    expect(resolveInitialMapLanguage(['en', 'vi'], 'vi')).toBe('vi');
+    expect(resolveInitialMapLanguage(['en', 'vi', 'fr'], 'vi')).toBe('fr');
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: original,
+    });
+  });
+
+  it('registers EN/VI packs and extra locales', () => {
+    const registered: Record<string, unknown> = {};
+    const labels: Record<string, string> = {};
+    registerLanguageControlPacks({
+      registerLocale: (code, tree) => {
+        registered[code] = tree;
+      },
+      registerLanguage: (code, opts) => {
+        labels[code] = opts?.label ?? code;
+      },
+      coreLocaleEn: { map: { home: { title: 'Home' } } },
+      coreLocaleVi: { map: { home: { title: 'Nhà' } } },
+      locales: {
+        en: { map: { basemap: { title: 'Basemap' } } },
+        fr: { map: { home: { title: 'Accueil' } } },
+      },
+      labels: { fr: 'Français' },
+      languages: ['en', 'vi', 'fr'],
+    });
+    expect(registered.en).toBeTruthy();
+    expect(registered.vi).toBeTruthy();
+    expect(registered.fr).toEqual({ map: { home: { title: 'Accueil' } } });
+    expect(labels.fr).toBe('Français');
+    expect(labels.en).toBe('EN');
   });
 });

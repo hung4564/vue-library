@@ -187,5 +187,3 @@ const VI: DemoHelpSection[] = [
 ];
 
 export const HIGHLIGHT_DEMO_HELP = helpI18n(EN, VI);
-/** @deprecated Prefer HIGHLIGHT_DEMO_HELP[lang] */
-export const HIGHLIGHT_DEMO_HELP_SECTIONS = HIGHLIGHT_DEMO_HELP.en;

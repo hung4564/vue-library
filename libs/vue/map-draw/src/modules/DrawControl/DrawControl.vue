@@ -7,6 +7,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
+  getDrawModeSelectEffects,
   getDrawStyles,
   MapDraw,
   StaticMode,
@@ -130,15 +131,11 @@ const {
 function onSelectMethod(value: 'select' | 'delete') {
   removeEventClick();
   method.value = value;
-  switch (value) {
-    case 'select':
-    case 'delete':
-      addEventClick();
-      control.changeMode('static');
-      break;
-    default:
-      break;
+  const effects = getDrawModeSelectEffects(value);
+  if (effects.attachMapClick) {
+    addEventClick();
   }
+  control.changeMode(effects.drawMode);
 }
 function onDraw(type: string) {
   current_feature.value = undefined;

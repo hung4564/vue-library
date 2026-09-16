@@ -4,7 +4,13 @@ import {
   DrawingTypeName,
   MapDraw,
   StaticMode,
+  classifyDrawCreateFeature,
+  emptyDraftListSnapshot,
+  ensureFeatureId,
+  getDraftListSnapshot,
+  getDrawModeSelectEffects,
   getDrawStyles,
+  getFeatureEditMode,
   type DrawCreateEvent,
   type DrawDeleteEvent,
   type DrawUpdateEvent,
@@ -55,13 +61,6 @@ import '../../style.css';
 export interface DrawControlProps extends WithMapPropType {
   drawOptions?: MapDrawOption;
   drawControlOptions?: MapDrawOptions;
-}
-
-function ensureFeatureId(feature: Feature): Feature {
-  if (feature.id == null && feature.properties?.['id'] != null) {
-    feature.id = feature.properties['id'] as string | number;
-  }
-  return feature;
 }
 
 export function DrawControl(props: DrawControlProps) {
@@ -144,15 +143,11 @@ export function DrawControl(props: DrawControlProps) {
         if (ids.length) {
           setIsDraw(true);
           removeEventClickRef.current();
-          // mapbox-gl-draw: direct_select does not support Point
-          if (feature.geometry?.type === 'Point') {
-            controlRef.current.changeMode('simple_select', {
-              featureIds: ids,
-            });
+          const edit = getFeatureEditMode(feature, ids);
+          if (edit.mode === 'simple_select') {
+            controlRef.current.changeMode('simple_select', edit.options);
           } else {
-            controlRef.current.changeMode('direct_select', {
-              featureId: ids[0],
-            });
+            controlRef.current.changeMode('direct_select', edit.options);
           }
         }
       } else if (m === 'delete') {
@@ -178,10 +173,10 @@ export function DrawControl(props: DrawControlProps) {
   removeEventClickRef.current = removeEventClick;
 
   const refreshDrafts = useCallback(() => {
-    if (!isDraftOption(drawOptions)) return;
-    const items = drawOptions.getDraftItems();
-    setDraftItems(items.map((i) => ({ id: i.id, status: i.status })));
-    setDraftCounts(items.length);
+    const snap = getDraftListSnapshot(drawOptions);
+    if (!snap) return;
+    setDraftItems(snap.items.map((i) => ({ id: i.id, status: i.status })));
+    setDraftCounts(snap.count);
   }, [drawOptions]);
 
   const close = useCallback(() => {
@@ -202,8 +197,11 @@ export function DrawControl(props: DrawControlProps) {
     (value: 'select' | 'delete') => {
       removeEventClick();
       setMethod(value);
-      addEventClick();
-      controlRef.current.changeMode('static');
+      const effects = getDrawModeSelectEffects(value);
+      if (effects.attachMapClick) {
+        addEventClick();
+      }
+      controlRef.current.changeMode(effects.drawMode);
     },
     [addEventClick, removeEventClick],
   );
@@ -233,8 +231,9 @@ export function DrawControl(props: DrawControlProps) {
     onEnd: close,
     onDiscard: refreshDrafts,
     onCommit: () => {
-      setDraftCounts(0);
-      setDraftItems([]);
+      const empty = emptyDraftListSnapshot();
+      setDraftCounts(empty.count);
+      setDraftItems(empty.items);
     },
   });
   const setFeatureRef = useRef(setFeature);
@@ -243,11 +242,11 @@ export function DrawControl(props: DrawControlProps) {
   handlersRef.current = {
     onDrawCreated(event) {
       for (const feature of event.features) {
-        if (methodRef.current === 'select') {
-          setFeature('updated', ensureFeatureId(feature));
-        } else {
-          setFeature('added', feature);
-        }
+        const kind = classifyDrawCreateFeature(methodRef.current);
+        setFeature(
+          kind,
+          kind === 'updated' ? ensureFeatureId(feature) : feature,
+        );
       }
     },
     onDrawUpdated(event) {

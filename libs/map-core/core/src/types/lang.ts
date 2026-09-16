@@ -49,10 +49,6 @@ export type MapBootstrapLanguageOptions = {
 
 export const MittTypeMapLangEventKey = {
   changed: 'map:lang:changed',
-  /** @deprecated Use {@link MittTypeMapLangEventKey.changed}. */
-  setLocale: 'map:lang:changed',
-  /** @deprecated Use {@link MittTypeMapLangEventKey.changed}. */
-  setTranslate: 'map:lang:changed',
 } as const;
 
 export type MittTypeMapLang = {
@@ -96,6 +92,87 @@ export function getStoredMapLanguage(
     /* ignore */
   }
   return fallback;
+}
+
+/** Uppercase chip label for LanguageControl (EN / VI / FR). */
+export function mapLanguageCodeLabel(code: MapLanguageCode): string {
+  return String(code).toUpperCase();
+}
+
+/**
+ * Resolve LanguageControl initial code: stored preference if in `languages`,
+ * else `defaultLanguage` (default `vi`).
+ */
+export function resolveInitialMapLanguage(
+  languages: MapLanguageCode[],
+  defaultLanguage: MapLanguageCode = 'vi',
+): MapLanguageCode {
+  const fallback = defaultLanguage || 'vi';
+  const list = languages.map(String);
+  const stored = getStoredMapLanguage(fallback);
+  return list.includes(stored) ? stored : fallback;
+}
+
+/** Cycle to the next code in `languages` after `current` (wraps). */
+export function nextMapLanguageInList(
+  languages: MapLanguageCode[],
+  current: MapLanguageCode,
+): MapLanguageCode | undefined {
+  const list = languages.map(String);
+  if (!list.length) return undefined;
+  const idx = list.indexOf(String(current));
+  return list[(idx + 1) % list.length];
+}
+
+export type RegisterLanguageControlPacksOptions = {
+  registerLocale: (code: MapLanguageCode, tree: MapLangLocale) => void;
+  registerLanguage: (
+    code: MapLanguageCode,
+    options?: MapLanguageRegisterOptions,
+  ) => void;
+  /** Built-in EN pack (typically MAP_CORE_LOCALE_EN). */
+  coreLocaleEn: MapLangLocale;
+  /** Built-in VI pack (typically MAP_CORE_LOCALE_VI). */
+  coreLocaleVi: MapLangLocale;
+  locales?: Record<string, MapLangLocale>;
+  labels?: Record<string, string>;
+  languages: MapLanguageCode[];
+  /** Resolve chip/tooltip label when `labels[code]` is absent. */
+  resolveLabel?: (code: MapLanguageCode) => string;
+};
+
+/**
+ * Register EN/VI core packs (deep-merged with `locales`), extra locale trees,
+ * and language metadata for LanguageControl.
+ */
+export function registerLanguageControlPacks(
+  options: RegisterLanguageControlPacksOptions,
+): void {
+  const {
+    registerLocale,
+    registerLanguage,
+    coreLocaleEn,
+    coreLocaleVi,
+    locales,
+    labels,
+    languages,
+    resolveLabel,
+  } = options;
+
+  registerLocale('en', deepMergeLocale(coreLocaleEn, locales?.en ?? {}));
+  registerLocale('vi', deepMergeLocale(coreLocaleVi, locales?.vi ?? {}));
+  for (const [code, tree] of Object.entries(locales ?? {})) {
+    if (code === 'en' || code === 'vi') continue;
+    registerLocale(code, tree);
+  }
+  for (const code of languages.map(String)) {
+    registerLanguage(code, {
+      label:
+        labels?.[code] ??
+        resolveLabel?.(code) ??
+        mapLanguageCodeLabel(code),
+    });
+  }
 }
 
 export function setStoredMapLanguage(lang: MapLanguageCode): void {

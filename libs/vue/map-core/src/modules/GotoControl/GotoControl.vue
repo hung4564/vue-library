@@ -16,7 +16,7 @@ import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import { MapControlButton } from '../../components';
+import MapControlButton from '../../components/MapControlButton.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });

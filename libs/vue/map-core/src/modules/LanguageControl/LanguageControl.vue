@@ -3,8 +3,10 @@ import {
   MAP_BUILTIN_LANGUAGES,
   MAP_CORE_LOCALE_EN,
   MAP_CORE_LOCALE_VI,
-  deepMergeLocale,
-  getStoredMapLanguage,
+  mapLanguageCodeLabel,
+  nextMapLanguageInList,
+  registerLanguageControlPacks,
+  resolveInitialMapLanguage,
   type MapLangLocale,
   type MapLanguageCode,
   type MapLocaleLoader,
@@ -61,11 +63,6 @@ const languageList = computed(() =>
   ),
 );
 
-/** Short chip text on the button (EN / VI / FR). */
-function codeLabel(code: MapLanguageCode): string {
-  return String(code).toUpperCase();
-}
-
 /** Tooltip / a11y title. */
 function titleFor(code: MapLanguageCode): string {
   const fromProp = props.labels?.[code];
@@ -73,33 +70,20 @@ function titleFor(code: MapLanguageCode): string {
   const key = `map.language-control.${code}`;
   const translated = trans.value(key);
   if (translated !== key) return translated;
-  return codeLabel(code);
-}
-
-function resolveInitialLanguage(): MapLanguageCode {
-  const fallback = props.defaultLanguage ?? 'vi';
-  const stored = getStoredMapLanguage(fallback);
-  return languageList.value.includes(stored) ? stored : fallback;
+  return mapLanguageCodeLabel(code);
 }
 
 function registerStaticPacks() {
-  registerLocale(
-    'en',
-    deepMergeLocale(MAP_CORE_LOCALE_EN, props.locales?.en ?? {}),
-  );
-  registerLocale(
-    'vi',
-    deepMergeLocale(MAP_CORE_LOCALE_VI, props.locales?.vi ?? {}),
-  );
-  for (const [code, tree] of Object.entries(props.locales ?? {})) {
-    if (code === 'en' || code === 'vi') continue;
-    registerLocale(code, tree);
-  }
-  for (const code of languageList.value) {
-    registerLanguage(code, {
-      label: props.labels?.[code] ?? titleFor(code),
-    });
-  }
+  registerLanguageControlPacks({
+    registerLocale,
+    registerLanguage,
+    coreLocaleEn: MAP_CORE_LOCALE_EN,
+    coreLocaleVi: MAP_CORE_LOCALE_VI,
+    locales: props.locales,
+    labels: props.labels,
+    languages: languageList.value,
+    resolveLabel: titleFor,
+  });
 }
 
 let applySeq = 0;
@@ -121,11 +105,8 @@ async function applyLanguage(code: MapLanguageCode) {
 }
 
 function toggleLanguage() {
-  const list = languageList.value;
-  if (!list.length) return;
-  const idx = list.indexOf(language.value);
-  const next = list[(idx + 1) % list.length]!;
-  void applyLanguage(next);
+  const next = nextMapLanguageInList(languageList.value, language.value);
+  if (next) void applyLanguage(next);
 }
 
 registerStaticPacks();
@@ -163,7 +144,7 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLanguageControl',
   getState() {
-    return textButtonState(codeLabel(language.value), {
+    return textButtonState(mapLanguageCodeLabel(language.value), {
       visible: true,
       active: true,
       order: order.value,
@@ -178,7 +159,10 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 watch(language, () => control.sync());
 
 onMounted(() => {
-  const initial = resolveInitialLanguage();
+  const initial = resolveInitialMapLanguage(
+    languageList.value,
+    props.defaultLanguage ?? 'vi',
+  );
   setLanguage(initial);
   if (props.localeLoader) {
     void loadLocale(initial, props.localeLoader).catch(() => {
@@ -209,7 +193,7 @@ onMounted(() => {
           v-for="code in languageList"
           :key="code"
           :option="
-            textButtonState(codeLabel(code), {
+            textButtonState(mapLanguageCodeLabel(code), {
               visible: true,
               active: language === code,
               title: titleFor(code),

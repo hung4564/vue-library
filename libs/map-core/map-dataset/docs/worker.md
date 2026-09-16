@@ -212,4 +212,4 @@ Worker source must import map-core utilities **relatively**, not `@hungpvq/map-c
 
 Do **not** enable `worker.plugins` on `@hungpvq/vue-map-dataset`’s Vite config (Vue SFC parse error). Keep `@hungpvq/map-dataset` external there so the wrapper does not rebundle the worker.
 
-`@hungpvq/map-dataset/vite` still exports `mapDatasetGisWorker` as a **deprecated no-op** for older configs — safe to delete from app `vite.config`.
+Published apps that install `@hungpvq/map-dataset` from npm should keep `mapDatasetGisWorker()` in `vite.config` (optimizeDeps + maplibre shim). Monorepo demos that path-alias into `libs/` should use `worker.format: 'es'` + `nxViteTsPaths` instead — see above.

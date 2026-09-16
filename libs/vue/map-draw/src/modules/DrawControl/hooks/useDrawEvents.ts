@@ -1,6 +1,9 @@
 import { EventClick } from '@hungpvq/map-core/event';
 import {
   MapDraw,
+  classifyDrawCreateFeature,
+  ensureFeatureId,
+  getFeatureEditMode,
   type DrawCreateEvent,
   type DrawDeleteEvent,
   type DrawUpdateEvent,
@@ -11,13 +14,6 @@ import type { Feature } from 'geojson';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { nextTick, type Ref, ref } from 'vue';
 import { useConfigDrawControl } from '../../../store';
-
-function ensureFeatureId(feature: Feature): Feature {
-  if (feature.id == null && feature.properties?.['id'] != null) {
-    feature.id = feature.properties['id'] as string | number;
-  }
-  return feature;
-}
 
 function useDrawEvents(
   mapId: string,
@@ -41,13 +37,11 @@ function useDrawEvents(
 
   function onDrawCreated(event: DrawCreateEvent) {
     for (const feature of event.features) {
-      // Selecting an existing feature for edit also fires draw.create —
-      // treat that as update, not a new add.
-      if (method.value === 'select') {
-        setFeature('updated', ensureFeatureId(feature));
-      } else {
-        setFeature('added', feature);
-      }
+      const kind = classifyDrawCreateFeature(method.value);
+      setFeature(
+        kind,
+        kind === 'updated' ? ensureFeatureId(feature) : feature,
+      );
     }
   }
 
@@ -93,15 +87,11 @@ function useDrawEvents(
         if (feature_ids && feature_ids.length > 0) {
           isDraw.value = true;
           removeEventClick();
-          // mapbox-gl-draw: direct_select does not support Point
-          if (feature.geometry?.type === 'Point') {
-            control.changeMode('simple_select', {
-              featureIds: feature_ids,
-            });
+          const edit = getFeatureEditMode(feature, feature_ids);
+          if (edit.mode === 'simple_select') {
+            control.changeMode('simple_select', edit.options);
           } else {
-            control.changeMode('direct_select', {
-              featureId: feature_ids[0],
-            });
+            control.changeMode('direct_select', edit.options);
           }
         }
         break;

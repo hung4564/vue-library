@@ -112,5 +112,3 @@ export const MENU_DEMO_HELP = helpI18n(
   ],
 );
 
-/** @deprecated prefer MENU_DEMO_HELP[lang] — keep for compat */
-export const MENU_DEMO_HELP_SECTIONS = MENU_DEMO_HELP.en;

@@ -117,5 +117,18 @@ export type {
   MapDrawStore,
 } from './types/index';
 
+/**
+ * @experimental DrawControl adapter helpers — may change in a minor.
+ * Prefer importing from `@hungpvq/map-draw` (root only; no subpath yet).
+ */
+export {
+  classifyDrawCreateFeature,
+  emptyDraftListSnapshot,
+  ensureFeatureId,
+  getDraftListSnapshot,
+  getDrawModeSelectEffects,
+  getFeatureEditMode,
+} from './draw-control-helpers';
+
 /** @experimental Root logger namespace — may change in a minor. */
 export { logger } from './logger';

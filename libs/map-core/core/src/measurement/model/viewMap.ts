@@ -1,4 +1,5 @@
 import type { MapSimple } from '../../types';
+import { getMapUUIDv4 } from '../../utils/uuid';
 import type { IViewProps } from '../types';
 import {
   GeoJSONSource,
@@ -6,13 +7,6 @@ import {
   LayerSpecification,
 } from 'maplibre-gl';
 import { View } from './view';
-
-function generateId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-}
 
 export class MapView extends View {
   protected map: MapSimple;
@@ -35,12 +29,12 @@ export class MapView extends View {
     },
   ) {
     if (!source.id) {
-      source.id = `measurment-control-${generateId()}`;
+      source.id = `measurment-control-${getMapUUIDv4()}`;
     }
     this.map.addSource(source.id, source.data);
     layers.forEach((layer) => {
       if (!layer['id']) {
-        layer['id'] = `measurment-control-${generateId()}`;
+        layer['id'] = `measurment-control-${getMapUUIDv4()}`;
       }
       if (!layer['metadata']) {
         layer['metadata'] = {};

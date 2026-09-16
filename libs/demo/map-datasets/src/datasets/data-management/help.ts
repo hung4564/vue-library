@@ -61,6 +61,3 @@ export const DATA_MANAGEMENT_DEMO_HELP = helpI18n(
   ],
 );
 
-/** @deprecated prefer DATA_MANAGEMENT_DEMO_HELP[lang] — keep for compat */
-export const DATA_MANAGEMENT_DEMO_HELP_SECTIONS: DemoHelpSection[] =
-  DATA_MANAGEMENT_DEMO_HELP.en;

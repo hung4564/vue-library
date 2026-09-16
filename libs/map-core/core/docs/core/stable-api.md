@@ -45,7 +45,7 @@ Related: [SemVer checklist](https://github.com/hung4564/vue-library/blob/main/li
 | `./devtools` | Devtools store core, `BufferingLogAdapter`, overlay DOM helpers, `installDevtoolsCore` (Experimental) |
 | `./event` | `EventManager`, event models, bbox ranger |
 | `./image` | Map image load/store helpers |
-| `./legend` | `LegendService`, `MapLegend`, paint helpers |
+| `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
 | `./measurement` | `MeasurementService`, measure modes, format helpers |
 | `./menu` | Map context menu builders / actions |
 | `./print` | `PrintService`, export helpers (`exportMapbox*`, `clipCanvasRegion`, `waitMapIdleAndTiles`) |
@@ -94,7 +94,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, `collectFilesFromDataTransfer`, `readClipboardGisPaste`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*` / `GEO_EXPORT_COMPONENT_KEY` (SoT; `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo*` aliases), `createGeoExportController`, `onExport` + `GeoExportContext` (+ `AbortSignal`), `uiMode` modal\|menu\|click, `formComponent` / `loadingComponent`, `resolveGeoExportUiSlot`, `resolveExportCollection`, active-source bridge, `createMenuItemExportGeo`, `createDatasetPartGeoExport`, `openGeoExportModalFromAttributeTable` / `runGeoExportClickFromAttributeTable` / `runGeoExportFormatFromAttributeTable`, `resolveGeoExportCrs`, `downloadBlob` / `sanitizeExportFilename`, `getDatasetFeatureCollection` / `hasGeojsonExportData`, `ExportGeoComponentAttrs` (`exportHandler`) |
-| `./vite` | Deprecated no-op `mapDatasetGisWorker()` (older configs) |
+| `./vite` | `mapDatasetGisWorker()` — Vite optimizeDeps + maplibre named-export shim for published package consumers |
 | `./geojson-worker` | Static single-file GIS worker (`assets/geojson.worker.js`) for Webpack / CDN / static hosts |
 | `./style.css` / `./assets/*` | package CSS and static assets |
 
@@ -104,7 +104,7 @@ Map context menu ids, built-in item builders, and types (`MAP_CONTEXT_MENU_ID`, 
 
 ## `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
 
-Root barrels are **Stable only** (see each `public-api.spec.ts`). Field / lightweight UI helpers live on **`./fields`** (Experimental; may change in a **minor**). React root also lists Experimental `logger` (Vue has no root `logger` export).
+Root barrels are **Stable only** (see each `public-api.spec.ts`). Field / lightweight UI helpers live on **`./fields`** (Experimental; may change in a **minor**).
 
 **Breaking (major):** importing former Experimental symbols (`Input*`, `MapCard`, `MapErrorToast`, …) from the package root fails — use `@hungpvq/vue-map-core/fields` / `@hungpvq/react-map-core/fields`. Former `BaseButton` is removed — use Stable root `MapControlButton`.
 
@@ -132,7 +132,6 @@ Package entries: `.` + `./style.css` + **`./fields`**.
 | `MapButton` | Map-control chrome (`variant` / `size` same as `MapControlButton`; prefer Stable root `MapControlButton` in apps) |
 | `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
 | `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
-| `KEY`, `MITT_KEY` | Vue-only (on Vue `/fields`) |
 | `DragDropFile` | Vue + React `/fields` (DOM-only drop zone) |
 
 ```ts

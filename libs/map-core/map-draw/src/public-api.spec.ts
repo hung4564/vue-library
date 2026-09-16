@@ -40,8 +40,16 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'StaticMode',
 ] as const;
 
-/** Root logger namespace — may change in a minor. */
-export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = ['logger'] as const;
+/** Adapter helpers + logger — may change in a minor. */
+export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'classifyDrawCreateFeature',
+  'emptyDraftListSnapshot',
+  'ensureFeatureId',
+  'getDraftListSnapshot',
+  'getDrawModeSelectEffects',
+  'getFeatureEditMode',
+  'logger',
+] as const;
 
 describe('public API surface', () => {
   it('root runtime exports match Stable + Experimental allowlists', () => {

@@ -52,7 +52,12 @@ export const VUE_DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
 export const VUE_DRAGGABLE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'ContextMenu',
   'ContextMenuItem',
+  'Item',
+  'ItemList',
   'ManagementControl',
+  'ShowStatusDragItem',
+  'ShowStatusDrawer',
+  'ShowStatusSideBar',
 ] as const;
 
 describe('public API surface', () => {

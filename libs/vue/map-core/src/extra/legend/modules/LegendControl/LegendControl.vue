@@ -9,7 +9,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
-import { MapCommonButton } from '../../../../components';
+import MapCommonButton from '../../../../components/MapCommonButton.vue';
 import { useEventListener } from '../../../../extra/event/hook/useEvent';
 import { useLang } from '../../../../extra/lang/hook';
 import { useRegisterMapControl } from '../../../../extra/registry/useRegisterMapControl';

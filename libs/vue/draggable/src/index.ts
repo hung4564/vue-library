@@ -81,5 +81,10 @@ export {
 export {
   ContextMenu,
   ContextMenuItem,
+  Item,
+  ItemList,
   ManagementControl,
+  ShowStatusDragItem,
+  ShowStatusDrawer,
+  ShowStatusSideBar,
 } from './experimental';

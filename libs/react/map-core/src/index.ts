@@ -255,10 +255,6 @@ export {
   useMapGlobalStore,
 } from './store/global-store';
 
-export {
-  logger,
-} from './store/logger';
-
 export { getMapMittStore } from './store/mitt-store';
 
 export {
