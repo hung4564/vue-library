@@ -1,3 +1,13 @@
+## 1.3.0 (2026-09-16)
+
+### 🚀 Features
+
+- enhance draggable sidebar functionality and documentation ([7440abd4](https://github.com/hung4564/vue-library/commit/7440abd4))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.2.2 (2026-09-14)
 
 ### 🚀 Features

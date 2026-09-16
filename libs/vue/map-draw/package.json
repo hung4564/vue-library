@@ -35,7 +35,7 @@
     "@hungpvq/map-core": "^1.0.0",
     "@hungpvq/map-draw": "^1.0.0",
     "@hungpvq/vue-map-core": "^1.0.0",
-    "@hungpvq/vue-draggable": "^1.2.0",
+    "@hungpvq/vue-draggable": "^1.3.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "maplibre-gl": "^5.4.0"
