@@ -30,6 +30,70 @@
   gap: var(--map-control-panel-gap);
 }
 
+/* Measurement setting: natural-size children; scroll the panel itself */
+.map-measurement-setting {
+  gap: var(--map-space-sm, 8px);
+  min-width: 0;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.map-measurement-setting > .map-measurement-point-crs,
+.map-measurement-setting > .map-measurement-fields,
+.map-measurement-setting > .map-measurement-setting__prefs,
+.map-measurement-setting > .map-measurement-setting__geometry {
+  flex: 0 0 auto;
+  min-height: auto;
+  overflow: visible;
+}
+
+.map-measurement-setting__prefs,
+.map-measurement-setting__geometry {
+  padding-top: var(--map-space-sm, 8px);
+  border-top: 1px solid var(--map-border-color, rgba(0, 0, 0, 0.08));
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-sm, 8px);
+  min-width: 0;
+}
+
+.map-measurement-setting__toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+}
+
+.map-measurement-setting__units {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-sm, 8px);
+}
+
+.map-measurement-setting__unit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+  font-size: var(--map-font-size-sm, 12px);
+}
+
+.map-measurement-setting__unit select {
+  width: 100%;
+}
+
+.map-measurement-setting__labels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+}
+
+.map-measurement-setting__label-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--map-space-sm, 8px);
+  font-size: var(--map-font-size-sm, 12px);
+  cursor: pointer;
+}
+
 /* Event panel inherits card text (sidebar uses --card-color: #fff) */
 .map-event-control {
   padding: var(--map-padding-control);
@@ -451,8 +515,8 @@
 .crs-item__add-btn,
 .crs-item__add .layer-item__button,
 .crs-item__add-picker .layer-item__button,
-.crs-display-settings .map-control-button,
-.crs-display-settings .button-container {
+.crs-display-settings__add-btn.map-control-button,
+.crs-display-settings__add-btn.button-container {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -470,8 +534,8 @@
 .crs-item__add-btn:hover,
 .crs-item__add .layer-item__button:hover,
 .crs-item__add-picker .layer-item__button:hover,
-.crs-display-settings .map-control-button:hover,
-.crs-display-settings .button-container:hover {
+.crs-display-settings__add-btn.map-control-button:hover,
+.crs-display-settings__add-btn.button-container:hover {
   background-color: color-mix(in srgb, currentColor 12%, transparent);
 }
 
@@ -607,12 +671,16 @@
   font-size: var(--map-font-size-sm, 12px);
 }
 
+.crs-display-settings__label {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .crs-display-settings__remove {
-  border: none;
-  background: transparent;
-  color: inherit;
-  font-size: var(--map-font-size-xs, 10px);
-  opacity: 0.8;
+  flex: 0 0 auto;
 }
 
 .crs-display-settings__add {
@@ -625,43 +693,204 @@
   align-self: stretch;
 }
 
+/* Compact: add-input only (selected CRS live in result rows) */
+.crs-display-settings--compact {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.crs-display-settings--compact .crs-display-settings__title {
+  margin-bottom: 4px;
+  font-weight: var(--map-font-weight-medium, 500);
+  opacity: 0.72;
+}
+
+.crs-display-settings--compact .crs-display-settings__add {
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.crs-display-settings--compact .crs-display-settings__add > .form-group,
+.crs-display-settings--compact .crs-display-settings__add > .input-crs {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+}
+
+.crs-display-settings--compact .crs-display-settings__add .input-container {
+  min-width: 0;
+  width: 100%;
+}
+
+.crs-display-settings--compact .crs-display-settings__add input {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Point CRS result rows (EPSG + value + hover actions overlay) */
+.map-measurement-point-crs {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.map-measurement-point-crs__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--map-border-color, rgba(0, 0, 0, 0.06));
+}
+
+.map-measurement-point-crs__row:last-child {
+  border-bottom: none;
+}
+
+.map-measurement-point-crs__epsg {
+  flex: 0 0 auto;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-medium, 500);
+  opacity: 0.68;
+  font-variant-numeric: tabular-nums;
+}
+
+.map-measurement-point-crs__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.map-measurement-point-crs__actions {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--map-radius-sm, 4px);
+  /* Soft veil so icons stay readable over the value */
+  background: color-mix(in srgb, var(--map-surface-color, #fff) 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.map-measurement-point-crs__row:hover .map-measurement-point-crs__actions,
+.map-measurement-point-crs__row:focus-within .map-measurement-point-crs__actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.map-measurement-point-crs__action {
+  flex: 0 0 auto;
+}
+
 /* ---------- Measurement setting fields ---------- */
-.map-measurement-fields__label {
-  font-weight: var(--map-font-weight-normal, 400);
-  letter-spacing: 0.0333333333em;
-  min-width: 150px;
-  flex-grow: 0;
-  line-height: 2rem;
+.map-measurement-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.map-measurement-fields__item {
+  padding: 6px 0;
+  min-width: 0;
+}
+
+.map-measurement-fields__item + .map-measurement-fields__item {
+  border-top: 1px solid var(--map-border-color, rgba(0, 0, 0, 0.06));
 }
 
 .map-measurement-fields__row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--map-space-sm, 8px);
+  min-width: 0;
+  max-width: 100%;
 }
 
-.map-measurement-fields__item {
-  padding: var(--map-padding-section, 12px) var(--map-padding-section, 12px) 0;
+.map-measurement-fields__label {
+  font-weight: var(--map-font-weight-medium, 500);
+  font-size: var(--map-font-size-sm, 12px);
+  letter-spacing: 0.01em;
+  min-width: 0;
+  flex: 0 0 auto;
+  line-height: 1.4;
+  opacity: 0.68;
+  text-transform: none;
 }
 
 .map-measurement-fields__value {
-  font-size: var(--map-font-size-2xl, 20px);
-  font-weight: var(--map-font-weight-medium, 500);
-  letter-spacing: 0.0125em;
-  line-height: 2rem;
-  text-align: center;
-  flex-grow: 1;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  text-align: right;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: inherit;
+}
+
+.map-measurement-fields__item:first-child .map-measurement-fields__value {
+  font-size: var(--map-font-size-md, 14px);
 }
 
 .map-measurement-geometry {
-  padding: var(--map-padding-section, 12px);
+  padding: 0;
 }
 
 .map-measurement-geometry__header {
   display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  margin-bottom: 4px;
+}
+
+.map-measurement-geometry__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
 }
 
 .map-measurement-geometry__title {
   flex-grow: 1;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-medium, 500);
+  opacity: 0.8;
 }
 
 .map-measurement-geometry__item {
@@ -725,6 +954,13 @@
   color: inherit;
   background: transparent;
   gap: var(--map-space-md, 8px);
+}
+
+.map-info-control__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--map-space-sm, 6px);
+  align-items: center;
 }
 
 .map-info-control__rows {

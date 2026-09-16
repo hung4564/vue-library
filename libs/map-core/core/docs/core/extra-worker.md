@@ -2,6 +2,8 @@
 
 `WorkerMonitor` is a framework-agnostic registry in `@hungpvq/map-core`. Any web worker client can **connect**, then report **status**, **progress**, **logs**, and **errors**. `WorkerControl` (Vue / React) lists every registered worker. When several are registered, pick one from the list (search + busy-first) to inspect it.
 
+Cancel a running task with `WorkerMonitor.abortTask(workerId, taskId)` (or `abortWorkerMonitorTask`) — posts an abort envelope; `post(..., { signal })` also aborts when the `AbortSignal` fires. Workers built with `runWorkerMonitor` honor `ctx.throwIfAborted()`.
+
 The GIS parse / CRS worker in `@hungpvq/map-dataset` is already wired (`id: 'geojson'`).
 
 Live demo (sum-range task + `WorkerControl`): Vue `#/worker-sample/`, React `#/worker-sample` — see `apps/vue/demo-map/src/workers/` and `apps/react/demo-map/src/workers/`.

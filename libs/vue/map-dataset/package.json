@@ -36,7 +36,6 @@
     "@mdi/js": "^7.4.47",
     "@hungpvq/vue-draggable": "^1.3.0",
     "@hungpvq/shared": "^0.3.0",
-    "@hungpvq/shared-file": "^0.2.0",
     "@hungpvq/vue-map-core": "^1.0.0",
     "@hungpvq/map-core": "^1.0.0",
     "@hungpvq/map-dataset": "^1.0.0",

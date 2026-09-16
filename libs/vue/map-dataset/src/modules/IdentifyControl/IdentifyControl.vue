@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { bindMapLongPress, getMapPointerProfile, type WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
   EventBboxRangerHandle,
@@ -353,6 +353,7 @@ function onRemoveIdentify() {
 }
 
 const isUseClick = ref(false);
+let unbindLongPress: (() => void) | null = null;
 function onUseMapClick() {
   if (!isUseClick.value) onStartMapClick();
   else onRemoveMapClick();
@@ -361,10 +362,25 @@ function onStartMapClick() {
   isUseClick.value = true;
   addEventClick();
   syncResultPanel({ isEventClickActive: true });
+  unbindLongPress?.();
+  unbindLongPress = null;
+  if (getMapPointerProfile().coarse) {
+    callMap((map) => {
+      unbindLongPress = bindMapLongPress(map, {
+        onLongPress: (point) => {
+          if (isEventClickBox.value) return;
+          const lngLat = map.unproject([point.x, point.y]);
+          runIdentifyAt(lngLat.lng, lngLat.lat, point);
+        },
+      });
+    });
+  }
 }
 function onRemoveMapClick() {
   isUseClick.value = false;
   removeEventClick();
+  unbindLongPress?.();
+  unbindLongPress = null;
   syncResultPanel({ isEventClickActive: false });
 }
 

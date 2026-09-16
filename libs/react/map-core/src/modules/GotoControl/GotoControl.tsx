@@ -1,4 +1,4 @@
-import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { GOTO_CONTROL_LOCALE, parseCoordinateText, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
@@ -70,6 +70,21 @@ export function GotoControl(props: GotoControlProps) {
       if (setting.zoom != null) map.setZoom(setting.zoom);
       if (setting.center) map.setCenter(setting.center);
     });
+  }
+
+  async function onPasteCoordinates() {
+    try {
+      const text = await navigator.clipboard?.readText?.();
+      const parsed = parseCoordinateText(text || '');
+      if (!parsed) return;
+      setSetting((prev) => ({
+        ...prev,
+        center: [parsed.lng, parsed.lat],
+        zoom: parsed.zoom ?? prev.zoom,
+      }));
+    } catch {
+      // Clipboard permission denied — ignore.
+    }
   }
 
   const { state, control } = useToolbarControl(mapId, mergedProps, {
@@ -163,9 +178,14 @@ export function GotoControl(props: GotoControlProps) {
                   />
                 </div>
               </div>
-              <MapControlButton className="map-goto-control__btn" onClick={onSetSetting} variant="filled">
-                {trans('map.goto-control.btn.apply')}
-              </MapControlButton>
+              <div className="map-goto-control__actions">
+                <MapControlButton onClick={() => void onPasteCoordinates()} variant="outlined">
+                  {trans('map.goto-control.btn.paste')}
+                </MapControlButton>
+                <MapControlButton className="map-goto-control__btn" onClick={onSetSetting} variant="filled">
+                  {trans('map.goto-control.btn.apply')}
+                </MapControlButton>
+              </div>
             </div>
           </DraggableItemPopup>
         ) : null

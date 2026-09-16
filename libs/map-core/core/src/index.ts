@@ -120,6 +120,8 @@ export {
   degToDmsString,
   dmsToDeg,
   formatCoordinate,
+  parseCoordinateListText,
+  parseCoordinateText,
 } from './utils/coordinate';
 
 export {
@@ -143,7 +145,9 @@ export {
 
 export {
   exitDocumentFullscreen,
+  getFullscreenElement,
   isDocumentFullscreen,
+  isMapRootFullscreen,
   requestElementFullscreen,
   resolveMapFullscreenTarget,
   subscribeFullscreenChange,
@@ -151,19 +155,34 @@ export {
 } from './utils/fullscreen';
 
 export {
+  getMapPointerProfile,
+} from './utils/pointer-profile';
+export type { MapPointerProfile } from './utils/pointer-profile';
+
+export {
+  bindMapLongPress,
+} from './utils/map-long-press';
+export type { MapLongPressOptions } from './utils/map-long-press';
+
+export {
+  COPY_FEEDBACK_MS,
   copyText,
+  createCopyFeedback,
   downloadDataUrl,
+  copyImageDataUrl,
   formatCoordPair,
   formatDegree,
   formatLngLatBounds,
   formatProjectionName,
 } from './utils/map-info';
+export type { CopyFeedbackController } from './utils/map-info';
 
 export {
   formatNumber,
 } from './utils/number';
 
 export {
+  abortWorkerMonitorTask,
   connectWorkerMonitor,
 } from './worker/client';
 
@@ -178,6 +197,7 @@ export {
 } from './worker/message';
 
 export {
+  createWorkerMonitorAbortMessage,
   createWorkerMonitorLogMessage,
   createWorkerMonitorProgressMessage,
 } from './worker/protocol';
@@ -260,6 +280,7 @@ export {
 } from './worker/in-worker';
 
 export {
+  isWorkerMonitorAbortMessage,
   isWorkerMonitorLogMessage,
   isWorkerMonitorProgressMessage,
 } from './worker/protocol';

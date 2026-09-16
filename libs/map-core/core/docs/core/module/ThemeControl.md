@@ -8,6 +8,8 @@
 
 Theme classes are applied on `document.documentElement` (e.g. `html.map-theme-light`, `html.map-theme-vibrant`) so teleported UI (context menus) inherits tokens too. Preference is stored in `localStorage` under `hungpvq.map-theme-mode`.
 
+When the OS requests **more contrast** (`prefers-contrast: more`), the control / `bootstrapMapTheme` also toggles `html.map-theme-contrast` (stronger borders and focus rings). Live updates use `subscribePrefersContrastMore`.
+
 ## Behavior
 
 ### Click (main button)

@@ -16,11 +16,27 @@ const RECONNECT_MS = 2000;
 
 export type GeoLocateUiState = {
   watchState: GeoLocateWatchState;
+  /** True while actively waiting or locked; also true in BACKGROUND (tracking unlocked). */
   active: boolean;
   locating: boolean;
+  /** Only true for hard permission deny — user can still stop/retry on soft errors. */
   disabled: boolean;
   errorMessage: string | null;
+  errorCode?: number | null;
+  /** Tracking watch is running but camera follow unlocked (user panned). */
+  background: boolean;
 };
+
+export type GeoLocateSessionEventMap = {
+  geolocate: GeolocationPosition;
+  error: { message: string; code?: number };
+  trackuserlocationstart: void;
+  trackuserlocationend: void;
+};
+
+export type GeoLocateSessionEventHandler<
+  K extends keyof GeoLocateSessionEventMap,
+> = (payload: GeoLocateSessionEventMap[K]) => void;
 
 export type GeoLocatePermissionStatus = {
   state: PermissionState;
@@ -49,6 +65,10 @@ export type GeoLocateSessionOptions = GeoLocateControlOptions & {
   mapId?: string;
   permissions?: GeoLocatePermissions;
   onStateChange?: (state: GeoLocateUiState) => void;
+  onGeolocate?: GeoLocateSessionEventHandler<'geolocate'>;
+  onError?: GeoLocateSessionEventHandler<'error'>;
+  onTrackUserLocationStart?: GeoLocateSessionEventHandler<'trackuserlocationstart'>;
+  onTrackUserLocationEnd?: GeoLocateSessionEventHandler<'trackuserlocationend'>;
 };
 
 const DEFAULT_POSITION_OPTIONS: PositionOptions = {
@@ -79,6 +99,7 @@ export class GeoLocateSession {
   private overlay: UserLocationOverlay;
   private lastPosition: GeolocationPosition | undefined;
   private lastErrorMessage: string | null = null;
+  private lastErrorCode: number | null = null;
   private engaged = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | undefined;
   private permissionStatus: GeoLocatePermissionStatus | undefined;
@@ -87,6 +108,10 @@ export class GeoLocateSession {
   private boundOnMoveStart: (event: { originalEvent?: Event }) => void;
   private boundOnPermissionChange: () => void;
   private boundOnDeviceOrientation: (event: DeviceOrientationEvent) => void;
+  private onGeolocate?: GeoLocateSessionEventHandler<'geolocate'>;
+  private onErrorCb?: GeoLocateSessionEventHandler<'error'>;
+  private onTrackStart?: GeoLocateSessionEventHandler<'trackuserlocationstart'>;
+  private onTrackEnd?: GeoLocateSessionEventHandler<'trackuserlocationend'>;
 
   constructor(options: GeoLocateSessionOptions) {
     this.map = options.map;
@@ -109,6 +134,10 @@ export class GeoLocateSession {
       options.permissions ??
       (globalThis.navigator?.permissions as GeoLocatePermissions | undefined);
     this.onStateChange = options.onStateChange;
+    this.onGeolocate = options.onGeolocate;
+    this.onErrorCb = options.onError;
+    this.onTrackStart = options.onTrackUserLocationStart;
+    this.onTrackEnd = options.onTrackUserLocationEnd;
     this.overlay = new UserLocationOverlay(this.map, {
       showUserLocation: this.showUserLocation,
       showAccuracyCircle: this.showAccuracyCircle,
@@ -121,15 +150,23 @@ export class GeoLocateSession {
 
   getUiState(): GeoLocateUiState {
     const errorMessage = this.lastErrorMessage;
+    const errorCode = this.lastErrorCode;
+    const background =
+      this.watchState === 'BACKGROUND' || this.watchState === 'BACKGROUND_ERROR';
+    const tracking =
+      this.watchState === 'ACTIVE_LOCK' ||
+      this.watchState === 'WAITING_ACTIVE' ||
+      this.watchState === 'ACTIVE_ERROR' ||
+      background;
     return {
       watchState: this.watchState,
-      active:
-        !errorMessage &&
-        (this.watchState === 'ACTIVE_LOCK' ||
-          this.watchState === 'WAITING_ACTIVE'),
+      active: tracking && (!errorMessage || background),
       locating: this.watchState === 'WAITING_ACTIVE' && !errorMessage,
-      disabled: !!errorMessage,
+      // Only hard-deny locks the button; soft errors stay clickable to stop/retry.
+      disabled: errorCode === GEO_PERMISSION_DENIED,
       errorMessage,
+      errorCode,
+      background,
     };
   }
 
@@ -180,6 +217,8 @@ export class GeoLocateSession {
       this.fail(new Error('Location not available'));
       return;
     }
+    this.watchState = 'WAITING_ACTIVE';
+    this.emitState();
     this.geolocation.getCurrentPosition(
       (position) => this.onFix(position, { oneShot: true, fromClick: true }),
       (error) => this.fail(error),
@@ -190,6 +229,7 @@ export class GeoLocateSession {
   private startWatch(): void {
     this.watchState = 'WAITING_ACTIVE';
     this.emitState();
+    this.onTrackStart?.(undefined as void);
     this.beginWatch();
     this.startHeading();
   }
@@ -219,7 +259,9 @@ export class GeoLocateSession {
     const recovered = !!this.lastErrorMessage;
     this.lastPosition = position;
     this.lastErrorMessage = null;
+    this.lastErrorCode = null;
     this.updateMarker(position);
+    this.onGeolocate?.(position);
 
     if (options.oneShot) {
       this.engaged = false;
@@ -262,6 +304,8 @@ export class GeoLocateSession {
   }
 
   private stop(options?: { silent?: boolean }): void {
+    const wasTracking =
+      this.watchState !== 'OFF' || this.engaged || this.watchId != null;
     this.engaged = false;
     this.clearReconnectTimer();
     this.unbindPermissionListener();
@@ -271,8 +315,10 @@ export class GeoLocateSession {
     this.overlay.remove();
     this.lastPosition = undefined;
     this.lastErrorMessage = null;
+    this.lastErrorCode = null;
     this.watchState = 'OFF';
     if (!options?.silent) {
+      if (wasTracking) this.onTrackEnd?.(undefined as void);
       this.emitState();
     }
   }
@@ -383,10 +429,17 @@ export class GeoLocateSession {
   private fail(error: { message?: string; code?: number } | Error): void {
     const alreadyError = !!this.lastErrorMessage;
     const code = 'code' in error ? error.code : undefined;
-    const message =
+    const raw =
       (error && 'message' in error && error.message) ||
       'Location not available';
+    const message =
+      code === GEO_PERMISSION_DENIED
+        ? 'Location permission denied'
+        : code === 3
+          ? 'Location request timed out'
+          : raw || 'Location not available';
     this.lastErrorMessage = message;
+    this.lastErrorCode = typeof code === 'number' ? code : null;
     this.lastPosition = undefined;
     this.overlay.remove();
 
@@ -410,6 +463,7 @@ export class GeoLocateSession {
           context: { mapId: this.mapId },
         }),
       );
+      this.onErrorCb?.({ message, code });
     }
     this.emitState();
 

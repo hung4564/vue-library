@@ -3,6 +3,7 @@ import type {
   CoordinatesNumber,
   DraftCoordinatesNumber,
 } from '@hungpvq/map-core';
+import { parseCoordinateListText } from '@hungpvq/map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -86,6 +87,35 @@ const onDeleteItem = (index: number) => {
   submit(model.value);
 };
 
+/** Paste one pair or multi-line CSV into the list (from this row). */
+function onPasteCoordinate(event: ClipboardEvent, index: number) {
+  const text = event.clipboardData?.getData('text') ?? '';
+  const parsed = parseCoordinateListText(text);
+  if (!parsed.length) return;
+  event.preventDefault();
+
+  const max = props.maxLength ?? 0;
+  let points = parsed.map(
+    ([lng, lat]) => [lng, lat] as DraftCoordinatesNumber,
+  );
+  if (max > 0) {
+    const room = Math.max(0, max - index);
+    points = points.slice(0, room);
+  }
+  if (!points.length) return;
+
+  const next = [
+    ...model.value.slice(0, index),
+    ...points,
+    ...model.value.slice(index + points.length),
+  ];
+  if (max > 0 && next.length > max) {
+    submit(next.slice(0, max));
+    return;
+  }
+  submit(next);
+}
+
 const convertGeometry = (coordinates: DraftCoordinatesNumber[]) => {
   const validCoords = coordinates.filter(
     (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
@@ -130,10 +160,10 @@ const isCanAdd = computed(() => {
 <template>
   <div class="map-measurement-geometry">
     <div class="map-measurement-geometry__header">
-      <div class="map-measurement-geometry__title">
+      <div v-if="title" class="map-measurement-geometry__title">
         {{ title }}
       </div>
-      <div>
+      <div class="map-measurement-geometry__actions">
         <button
           type="button"
           @click="onFlyTo"
@@ -185,6 +215,7 @@ const isCanAdd = computed(() => {
             type="number"
             step="any"
             @change="onUpdatePathItem()"
+            @paste="onPasteCoordinate($event, index)"
           />
         </div>
         <div class="">
@@ -194,6 +225,7 @@ const isCanAdd = computed(() => {
             type="number"
             step="any"
             @change="onUpdatePathItem()"
+            @paste="onPasteCoordinate($event, index)"
           />
         </div>
         <div class="">

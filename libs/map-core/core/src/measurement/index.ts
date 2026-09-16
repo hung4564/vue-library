@@ -8,16 +8,33 @@ export { addCursorCrosshair, removeCursorCrosshair } from './model/cursor';
 export { MeasurementHandle } from './model/handle';
 export { Measure } from './model/Measure';
 export { MeasureArea } from './model/MeasureArea';
+export { MeasureAngle } from './model/MeasureAngle';
 export { MeasureAzimuth } from './model/MeasureAzimuth';
 export { MeasureDistance } from './model/MeasureDistance';
 export { MeasurePoint } from './model/MeasurePoint';
+export { MeasureRadius } from './model/MeasureRadius';
 export { View } from './model/view';
 export { FormView } from './model/viewForm';
 export { MapView } from './model/viewMap';
 export { MapMarkerView } from './model/viewMapMarker';
-export { formatAreaText, formatDistanceText } from './utils';
+export {
+  edgeLabelRotation,
+  formatAreaText,
+  formatDistanceText,
+  getMeasurementAreaUnit,
+  getMeasurementDistanceUnit,
+  getMeasurementLabelPrefs,
+  setMeasurementAreaUnit,
+  setMeasurementDistanceUnit,
+  setMeasurementLabelPrefs,
+} from './utils';
 
 export type { MeasurementHandleInstance } from './model/handle';
+export type {
+  AreaUnit,
+  DistanceUnit,
+  MeasurementLabelPrefs,
+} from './utils';
 export type {
   IView,
   IViewProps,

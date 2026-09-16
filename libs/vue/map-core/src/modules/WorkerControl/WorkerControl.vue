@@ -10,6 +10,7 @@ import {
   isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  WorkerMonitor,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -310,6 +311,14 @@ function summaryText() {
                         >{{ engineLabel(task.engine) }} ·
                         {{ elapsed(task) }}</span
                       >
+                    </div>
+                    <div class="map-worker-control__task-actions">
+                      <MapControlButton
+                        variant="outlined"
+                        @click.stop="WorkerMonitor.abortTask(selected.id, task.id)"
+                      >
+                        {{ trans('map.worker-control.action.cancel') }}
+                      </MapControlButton>
                     </div>
                     <div
                       class="map-worker-control__bar"

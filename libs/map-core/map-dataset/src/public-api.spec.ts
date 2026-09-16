@@ -21,7 +21,7 @@ import * as identifyApi from './identify';
 import * as api from './index';
 import * as menuApi from './menu';
 import * as rasterApi from './raster';
-import * as styleApi from './style';
+import * as styleApi from './style/index';
 import * as vectorTileApi from './vector-tile';
 
 /** Stable root runtime exports (SemVer contract). */
@@ -342,6 +342,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'buildCreateControlLoadedMetaChips',
   'buildCreateControlLoadedSource',
   'clearCreateControlDraft',
+  'collectFilesFromDataTransfer',
   'createControlDraftKey',
   'createControlGeojsonPreviewPatch',
   'createControlLoadedSourceEyebrowKey',
@@ -360,6 +361,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'getCreateControlSamples',
   'isBinaryGisFormat',
   'isCreateControlCrsMismatch',
+  'isGisUploadFileName',
   'isIgnoredZipEntry',
   'isShapefileSidecar',
   'isZipMemberFormat',
@@ -381,6 +383,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'parseGisFromUrl',
   'parseGisText',
   'parseGisTextAsync',
+  'readClipboardGisPaste',
   'reportCreateLayerError',
   'resolveCreateControlSampleIdAfterUrlEdit',
   'resolveCreateControlSampleSelection',

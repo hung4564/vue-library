@@ -6,7 +6,7 @@
 export { default as MapCommonButton } from './components/MapCommonButton.vue';
 
 export { default as MapControlButton } from './components/MapControlButton.vue';
-
+export { default as MapCopyButton } from './components/MapCopyButton.vue';
 export { default as MapControlGroupButton } from './components/MapControlGroupButton.vue';
 
 export {

@@ -13,6 +13,7 @@ export const CRS_CONTROL_LOCALE = {
     },
     'crs-display': {
       title: 'Display coordinate systems',
+      'title-short': 'CRS',
       add: 'Add CRS',
       remove: 'Remove',
       show: 'Show in measure',

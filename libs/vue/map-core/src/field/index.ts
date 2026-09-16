@@ -19,3 +19,4 @@ export { default as InputChoose } from './input-choose.vue';
 export { default as InputColorPicker } from './input-colorPicker.vue';
 export { default as InputFile } from './input-file.vue';
 export { default as InputCrs } from './input-crs.vue';
+export { default as DragDropFile } from './drag-drop-file.vue';

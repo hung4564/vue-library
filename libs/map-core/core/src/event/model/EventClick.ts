@@ -28,8 +28,9 @@ export class EventClick extends Event<'click', EventClickOption> {
   }
 
   /**
-   * Add click event listener to map
-   * Also adds touchstart for mobile support
+   * Add click event listener to map.
+   * Uses `click` only — MapLibre synthesizes click from touch; pairing
+   * `touchstart` caused duplicate identify on many devices.
    */
   override addToMap(map: MapSimple): this {
     if (this.options.classPointer) {
@@ -37,7 +38,6 @@ export class EventClick extends Event<'click', EventClickOption> {
     }
     if (this.handler) {
       map.on('click', this.handler);
-      map.on('touchstart', this.handler);
     }
     return this;
   }
@@ -51,7 +51,6 @@ export class EventClick extends Event<'click', EventClickOption> {
     }
     if (this.handler) {
       map.off('click', this.handler);
-      map.off('touchstart', this.handler);
     }
     return this;
   }

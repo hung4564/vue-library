@@ -1,4 +1,4 @@
-import { getMap } from '@hungpvq/map-core';
+import { getMap, getMapPointerProfile } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { Feature } from 'geojson';
 import { Popup, type MapMouseEvent, type PointLike } from 'maplibre-gl';
@@ -429,39 +429,42 @@ function createController(mapId: string): HighlightController {
         cleanups.push(() => map.off('click', handler));
       }
       if (opts.hover) {
-        const handler = (e: MapMouseEvent) => {
-          void (async () => {
-            const partsOrDatasets = filterDatasetsForPointerEvent(
-              state.pickDatasets(),
-              'hover',
-            );
-            const datasets = datasetsFromHighlightParts(partsOrDatasets);
-            const hit = await queryHighlightAtPoint(
-              mapId,
-              datasets.length ? datasets : partsOrDatasets,
-              e.point,
-            );
-            if (!hit) {
-              lastHoverId = undefined;
-              hideIfSource('hover');
-              return;
-            }
-            const id = String(hit.feature.id ?? '');
-            if (id && id === lastHoverId) return;
-            lastHoverId = id;
-            await show(hit.feature, {
-              dataset: hit.dataset,
-              source: 'hover',
-              style: opts.style ?? opts.styleForDataset?.(hit.dataset),
-              selection: { policy: 'single', replaceScope: 'source' },
-              pointerLngLat: [e.lngLat.lng, e.lngLat.lat],
-              pointerPoint: { x: e.point.x, y: e.point.y },
-              pointerEventType: 'mousemove',
-            });
-          })();
-        };
-        map.on('mousemove', handler);
-        cleanups.push(() => map.off('mousemove', handler));
+        const { hoverCapable } = getMapPointerProfile();
+        if (hoverCapable) {
+          const handler = (e: MapMouseEvent) => {
+            void (async () => {
+              const partsOrDatasets = filterDatasetsForPointerEvent(
+                state.pickDatasets(),
+                'hover',
+              );
+              const datasets = datasetsFromHighlightParts(partsOrDatasets);
+              const hit = await queryHighlightAtPoint(
+                mapId,
+                datasets.length ? datasets : partsOrDatasets,
+                e.point,
+              );
+              if (!hit) {
+                lastHoverId = undefined;
+                hideIfSource('hover');
+                return;
+              }
+              const id = String(hit.feature.id ?? '');
+              if (id && id === lastHoverId) return;
+              lastHoverId = id;
+              await show(hit.feature, {
+                dataset: hit.dataset,
+                source: 'hover',
+                style: opts.style ?? opts.styleForDataset?.(hit.dataset),
+                selection: { policy: 'single', replaceScope: 'source' },
+                pointerLngLat: [e.lngLat.lng, e.lngLat.lat],
+                pointerPoint: { x: e.point.x, y: e.point.y },
+                pointerEventType: 'mousemove',
+              });
+            })();
+          };
+          map.on('mousemove', handler);
+          cleanups.push(() => map.off('mousemove', handler));
+        }
       }
     });
 

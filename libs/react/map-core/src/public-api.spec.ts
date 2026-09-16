@@ -41,6 +41,7 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapContextProvider',
   'MapControlButton',
   'MapControlButtonGroupContext',
+  'MapCopyButton',
   'MapControlGroupButton',
   'MapGlobalStoreProvider',
   'MeasurementControl',

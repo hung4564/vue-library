@@ -8,6 +8,8 @@ If the worker cannot start, the same work still runs on the main thread (large f
 
 Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progress, and errors for this worker (`id: geojson`, name **GIS**) and any other worker registered with `WorkerMonitor`. See [Worker monitor](/map/core/extra-worker).
 
+**Cancel:** from WorkerControl (or `WorkerMonitor.abortTask` / `abortWorkerMonitorTask`), the client posts an abort envelope; the GIS worker checks `ctx.throwIfAborted()` between progress steps. Unknown abort messages are ignored by older workers (backward compatible).
+
 ## Formats
 
 | Input | Notes |

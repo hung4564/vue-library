@@ -51,7 +51,6 @@ export default defineConfig({
         '@hungpvq/shared',
         '@hungpvq/vue-draggable',
         'vuedraggable',
-        '@hungpvq/shared-file',
         'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',

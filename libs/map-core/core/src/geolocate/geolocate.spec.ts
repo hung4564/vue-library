@@ -133,7 +133,7 @@ describe('GeoLocateSession', () => {
     session.toggle();
     expect(session.getUiState().watchState).toBe('OFF');
     expect(session.getUiState().errorMessage).toBeTruthy();
-    expect(session.getUiState().disabled).toBe(true);
+    expect(session.getUiState().disabled).toBe(false);
     session.destroy();
   });
 
@@ -171,8 +171,9 @@ describe('GeoLocateSession', () => {
     } as GeolocationPositionError);
 
     expect(session.getUiState().watchState).toBe('ACTIVE_ERROR');
-    expect(session.getUiState().errorMessage).toBe('Timeout');
-    expect(session.getUiState().disabled).toBe(true);
+    expect(session.getUiState().errorMessage).toBe('Location request timed out');
+    expect(session.getUiState().disabled).toBe(false);
+    expect(session.getUiState().errorCode).toBe(3);
     expect(removeSpy).toHaveBeenCalled();
     removeSpy.mockRestore();
     session.destroy();
@@ -231,6 +232,173 @@ describe('GeoLocateSession', () => {
     watchCb?.(fakePosition(106.7, 10.8, 25, 45));
     expect(headingSpy).toHaveBeenCalledWith(45);
     headingSpy.mockRestore();
+    session.destroy();
+  });
+
+  it('one-shots then returns to OFF', () => {
+    const map = createFakeMap();
+    let successCb: ((pos: GeolocationPosition) => void) | undefined;
+    const geolocation = {
+      getCurrentPosition(success: (pos: GeolocationPosition) => void) {
+        successCb = success;
+      },
+      watchPosition: vi.fn(),
+      clearWatch: vi.fn(),
+    };
+    const onGeolocate = vi.fn();
+    const session = new GeoLocateSession({
+      map: map as unknown as MapSimple,
+      geolocation: geolocation as unknown as Geolocation,
+      trackUserLocation: false,
+      onGeolocate,
+    });
+
+    session.toggle();
+    expect(session.getUiState().locating).toBe(true);
+    expect(session.getUiState().watchState).toBe('WAITING_ACTIVE');
+    successCb?.(fakePosition());
+    expect(onGeolocate).toHaveBeenCalled();
+    expect(session.getUiState().watchState).toBe('OFF');
+    expect(session.getUiState().locating).toBe(false);
+    session.destroy();
+  });
+
+  it('keeps the button enabled after soft error so the user can stop', () => {
+    const map = createFakeMap();
+    let errorCb: ((err: GeolocationPositionError) => void) | undefined;
+    const geolocation = {
+      watchPosition(
+        _success: (pos: GeolocationPosition) => void,
+        error: (err: GeolocationPositionError) => void,
+      ) {
+        errorCb = error;
+        return 9;
+      },
+      clearWatch: vi.fn(),
+      getCurrentPosition: vi.fn(),
+    };
+    const onError = vi.fn();
+    const onTrackEnd = vi.fn();
+    const session = new GeoLocateSession({
+      map: map as unknown as MapSimple,
+      geolocation: geolocation as unknown as Geolocation,
+      trackUserLocation: true,
+      onError,
+      onTrackUserLocationEnd: onTrackEnd,
+    });
+
+    session.toggle();
+    errorCb?.({
+      code: 3,
+      message: 'Timeout',
+      PERMISSION_DENIED: 1,
+      POSITION_UNAVAILABLE: 2,
+      TIMEOUT: 3,
+    } as GeolocationPositionError);
+
+    expect(session.getUiState().disabled).toBe(false);
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 3 }),
+    );
+    session.toggle();
+    expect(session.getUiState().watchState).toBe('OFF');
+    expect(onTrackEnd).toHaveBeenCalled();
+    expect(geolocation.clearWatch).toHaveBeenCalledWith(9);
+    session.destroy();
+  });
+
+  it('disables only on permission deny and reconnects when permission is granted', async () => {
+    const map = createFakeMap();
+    let watchSuccess: ((pos: GeolocationPosition) => void) | undefined;
+    let watchError: ((err: GeolocationPositionError) => void) | undefined;
+    let watchCalls = 0;
+    const geolocation = {
+      watchPosition(
+        success: (pos: GeolocationPosition) => void,
+        error: (err: GeolocationPositionError) => void,
+      ) {
+        watchCalls += 1;
+        watchSuccess = success;
+        watchError = error;
+        return watchCalls;
+      },
+      clearWatch: vi.fn(),
+      getCurrentPosition: vi.fn(),
+    };
+
+    let permissionState: PermissionState = 'denied';
+    const listeners = new Set<() => void>();
+    const permissions = {
+      query: async () => ({
+        get state() {
+          return permissionState;
+        },
+        addEventListener: (_type: 'change', listener: () => void) => {
+          listeners.add(listener);
+        },
+        removeEventListener: (_type: 'change', listener: () => void) => {
+          listeners.delete(listener);
+        },
+      }),
+    };
+
+    const onTrackStart = vi.fn();
+    const session = new GeoLocateSession({
+      map: map as unknown as MapSimple,
+      geolocation: geolocation as unknown as Geolocation,
+      permissions: permissions as never,
+      trackUserLocation: true,
+      onTrackUserLocationStart: onTrackStart,
+    });
+
+    session.toggle();
+    expect(onTrackStart).toHaveBeenCalled();
+    watchError?.({
+      code: 1,
+      message: 'denied',
+      PERMISSION_DENIED: 1,
+      POSITION_UNAVAILABLE: 2,
+      TIMEOUT: 3,
+    } as GeolocationPositionError);
+
+    expect(session.getUiState().disabled).toBe(true);
+    expect(session.getUiState().errorCode).toBe(1);
+
+    await Promise.resolve();
+    permissionState = 'granted';
+    listeners.forEach((fn) => fn());
+    expect(watchCalls).toBe(2);
+    watchSuccess?.(fakePosition());
+    expect(session.getUiState().watchState).toBe('ACTIVE_LOCK');
+    expect(session.getUiState().errorMessage).toBeNull();
+    session.destroy();
+  });
+
+  it('exposes BACKGROUND ui flags while tracking unlocked', () => {
+    const map = createFakeMap();
+    let watchCb: ((pos: GeolocationPosition) => void) | undefined;
+    const geolocation = {
+      watchPosition(success: (pos: GeolocationPosition) => void) {
+        watchCb = success;
+        return 2;
+      },
+      clearWatch: vi.fn(),
+      getCurrentPosition: vi.fn(),
+    };
+    const session = new GeoLocateSession({
+      map: map as unknown as MapSimple,
+      geolocation: geolocation as unknown as Geolocation,
+      trackUserLocation: true,
+    });
+
+    session.toggle();
+    watchCb?.(fakePosition());
+    map.emit('movestart', { originalEvent: {} });
+    const ui = session.getUiState();
+    expect(ui.watchState).toBe('BACKGROUND');
+    expect(ui.background).toBe(true);
+    expect(ui.active).toBe(true);
+    expect(ui.locating).toBe(false);
     session.destroy();
   });
 });

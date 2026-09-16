@@ -2,7 +2,12 @@
 import { ref } from 'vue';
 import { useFileDialog } from '../useFileDialog';
 import { useDropZone } from '@hungpvq/shared-core';
-const props = defineProps({ multiple: Boolean, accept: String });
+const props = defineProps({
+  multiple: Boolean,
+  accept: String,
+  /** Optional async resolver (e.g. folder walk + GIS filter). */
+  resolveDropFiles: Function,
+});
 const emits = defineEmits(['change']);
 const { onChange, open } = useFileDialog({
   multiple: props.multiple,
@@ -12,13 +17,24 @@ onChange((files) => {
   if (files) onDrop(Array.from(files));
 });
 function onDrop(files: File[] | null) {
-  if (!files) {
+  if (!files?.length) {
     return;
   }
   emits('change', props.multiple ? files : files[0]);
 }
 const dropZoneRef = ref<HTMLElement>();
-const { isOverDropZone } = useDropZone(dropZoneRef, onDrop);
+const { isOverDropZone } = useDropZone(dropZoneRef, {
+  onDrop: (_files, event) => {
+    void (async () => {
+      if (typeof props.resolveDropFiles === 'function' && event.dataTransfer) {
+        const resolved = await props.resolveDropFiles(event.dataTransfer);
+        onDrop(Array.isArray(resolved) ? resolved : null);
+        return;
+      }
+      onDrop(Array.from(event.dataTransfer?.files ?? []));
+    })();
+  },
+});
 </script>
 <template lang="">
   <div
@@ -101,11 +117,13 @@ const { isOverDropZone } = useDropZone(dropZoneRef, onDrop);
     }
   }
   &__text {
-    cursor: pointer;
+    margin-top: 0.75rem;
+    font-weight: 600;
   }
   &__subtext {
-    padding-top: clamp(0.25rem, calc(0.25rem + 0vw), 0.25rem);
-    font-size: clamp(0.8125rem, calc(0.625rem + 0.390625vw), 0.9375rem);
+    margin-top: 0.25rem;
+    opacity: 0.7;
+    font-size: 0.875rem;
   }
 }
 </style>

@@ -9,15 +9,29 @@ import type { CoordinatesNumber } from '../../types';
 import { CrsItem } from '../../crs/types';
 
 import { IViewSetting } from '../types';
-import { lookupProj4CrsItem } from '../../crs/proj4-crs-catalog';
+import { getMeasurementLabelPrefs } from '../utils';
+import {
+  ensureRegisteredProjection,
+  lookupProj4CrsItem,
+} from '../../crs/proj4-crs-catalog';
 import { formatCoordinate } from '../../utils/coordinate';
 import { Measure } from './Measure';
 
 function enrichCrsItem(crs: CrsItem): CrsItem {
-  if (crs.proj4js) return crs;
+  if (crs.proj4js?.startsWith('+')) return crs;
   const resolved = lookupProj4CrsItem(crs.epsg);
-  if (!resolved?.proj4js) return crs;
-  return { ...crs, proj4js: resolved.proj4js, unit: crs.unit ?? resolved.unit };
+  const proj4js =
+    resolved?.proj4js || ensureRegisteredProjection(crs.epsg) || undefined;
+  if (!proj4js && !resolved) return crs;
+  return {
+    ...crs,
+    ...(resolved ?? {}),
+    epsg: crs.epsg,
+    name: crs.name || resolved?.name || `EPSG:${crs.epsg}`,
+    unit: crs.unit || resolved?.unit || 'degree',
+    proj4js,
+    default: crs.default,
+  };
 }
 
 /**
@@ -79,20 +93,20 @@ export class MeasurePoint extends Measure {
     const lng = this.coordinates[0][0];
     const lat = this.coordinates[0][1];
     const crsItems = this.getCrsItems();
-    const formatOptions = { precision: null as null };
 
     const temp = formatCoordinate(
       { longitude: lng, latitude: lat },
       undefined,
       false,
-      formatOptions.precision,
     );
     if (temp) result.value = `${temp.longitude}, ${temp.latitude}`;
 
     const crsDefault = crsItems.find((x) => x.default);
     result.fields = [
       {
-        trans: crsDefault?.name,
+        text: crsDefault
+          ? `EPSG:${crsDefault.epsg}`
+          : 'EPSG:4326',
         value: result.value,
       },
     ];
@@ -105,29 +119,31 @@ export class MeasurePoint extends Measure {
           { longitude: lng, latitude: lat },
           enriched,
           false,
-          formatOptions.precision,
         );
         if (pointFormatted) {
           result.fields?.push({
-            trans: enriched.name || `EPSG:${enriched.epsg}`,
+            text: `EPSG:${enriched.epsg}`,
             value: `${pointFormatted.longitude}, ${pointFormatted.latitude}`,
           });
         }
       });
 
-    result.features_label = [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: this.coordinates[0],
-        },
-        properties: {
-          is_label: true,
-          text: result.value,
-        },
-      },
-    ];
+    result.features_label = getMeasurementLabelPrefs().showResultLabel
+      ? [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: this.coordinates[0],
+            },
+            properties: {
+              is_label: true,
+              is_result: true,
+              text: result.value,
+            },
+          },
+        ]
+      : [];
 
     return result;
   }

@@ -8,18 +8,80 @@
         :title="trans('map.measurement.setting.title')"
       >
         <div class="map-measurement-setting">
-          <MeasurementSettingFields :fields="fields" />
-          <CrsDisplaySettings v-if="measurementType === 'point'" />
-          <FieldGeometry
-            @update:modelValue="setValue"
-            :modelValue="model"
-            :maxLength="maxLength"
-            @click:fillbound="onFlyTo"
-            :title="trans('map.measurement.setting.field.data')"
-            :titleActionDownload="trans('map.measurement.action.download')"
-            :titleActionFillBound="trans('map.measurement.action.fly-to')"
-            :titleActionAddPoint="trans('map.measurement.action.add-point')"
+          <FieldPointCrs
+            v-if="measurementType === 'point'"
+            :fields="fields"
+            @change="emit('refresh')"
           />
+          <MeasurementSettingFields v-else :fields="fields" />
+
+          <div v-if="showSettingsSection" class="map-measurement-setting__prefs">
+            <InputSelect
+              v-if="showDistanceUnit"
+              :model-value="distanceUnit"
+              :label="trans('map.measurement.field.unit-distance')"
+              :items="distanceUnitItems"
+              @update:model-value="onDistanceUnitChange"
+            />
+            <InputSelect
+              v-if="showAreaUnit"
+              :model-value="areaUnit"
+              :label="trans('map.measurement.field.unit-area')"
+              :items="areaUnitItems"
+              @update:model-value="onAreaUnitChange"
+            />
+            <div
+              v-if="
+                showVertexLabelToggle ||
+                showEdgeLabelToggle ||
+                showResultLabelToggle
+              "
+              class="map-measurement-setting__toggles"
+            >
+              <InputCheckbox
+                v-if="showVertexLabelToggle"
+                :label="trans('map.measurement.field.label-vertex')"
+                :model-value="labelPrefs.showVertexLabels"
+                @update:model-value="
+                  onLabelToggle('showVertexLabels', !!$event)
+                "
+              />
+              <InputCheckbox
+                v-if="showEdgeLabelToggle"
+                :label="trans('map.measurement.field.label-edge')"
+                :model-value="labelPrefs.showEdgeLabels"
+                @update:model-value="
+                  onLabelToggle('showEdgeLabels', !!$event)
+                "
+              />
+              <InputCheckbox
+                v-if="showResultLabelToggle"
+                :label="trans('map.measurement.field.label-result')"
+                :model-value="labelPrefs.showResultLabel"
+                @update:model-value="
+                  onLabelToggle('showResultLabel', !!$event)
+                "
+              />
+            </div>
+            <CrsDisplaySettings
+              v-if="measurementType === 'point'"
+              compact
+              @change="emit('refresh')"
+            />
+          </div>
+
+          <div class="map-measurement-setting__geometry">
+            <FieldGeometry
+              @update:modelValue="setValue"
+              :modelValue="model"
+              :maxLength="maxLength"
+              @click:fillbound="onFlyTo"
+              title=""
+              :titleActionDownload="trans('map.measurement.action.download')"
+              :titleActionFillBound="trans('map.measurement.action.fly-to')"
+              :titleActionAddPoint="trans('map.measurement.action.add-point')"
+            />
+          </div>
         </div>
       </DraggableItemPopup>
     </template>
@@ -35,16 +97,31 @@ import {
   toCoordinatesNumberList,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import { IViewSettingField } from '@hungpvq/map-core/measurement';
+import {
+  getMeasurementAreaUnit,
+  getMeasurementDistanceUnit,
+  getMeasurementLabelPrefs,
+  setMeasurementAreaUnit,
+  setMeasurementDistanceUnit,
+  setMeasurementLabelPrefs,
+  type AreaUnit,
+  type DistanceUnit,
+  type IViewSettingField,
+  type MeasurementLabelPrefs,
+} from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { computed, ref, watch } from 'vue';
+import { InputCheckbox, InputSelect } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import FieldGeometry from './setting/field-geometry.vue';
-import MeasurementSettingFields from './setting/fields-show.vue';
 import CrsDisplaySettings from '../../crs/modules/CrsDisplaySettings/CrsDisplaySettings.vue';
+import FieldGeometry from './setting/field-geometry.vue';
+import FieldPointCrs from './setting/field-point-crs.vue';
+import MeasurementSettingFields from './setting/fields-show.vue';
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -77,6 +154,100 @@ const model = defineModel<CoordinatesNumber[]>({
   default: () => [],
 });
 const c_show = defineModel('show', { default: false });
+const emit = defineEmits<{
+  refresh: [];
+}>();
+
+function clearDocumentSelection() {
+  if (typeof window === 'undefined') return;
+  const selection = window.getSelection?.();
+  selection?.removeAllRanges?.();
+}
+
+watch(
+  c_show,
+  (open) => {
+    if (!open) return;
+    clearDocumentSelection();
+    requestAnimationFrame(clearDocumentSelection);
+  },
+  { flush: 'post' },
+);
+
+const showDistanceUnit = computed(
+  () =>
+    props.measurementType === 'distance' ||
+    props.measurementType === 'radius' ||
+    props.measurementType === 'area',
+);
+const showAreaUnit = computed(() => props.measurementType === 'area');
+const showVertexLabelToggle = computed(
+  () => props.measurementType === 'distance',
+);
+const showEdgeLabelToggle = computed(
+  () =>
+    props.measurementType === 'distance' ||
+    props.measurementType === 'area' ||
+    props.measurementType === 'radius',
+);
+const showResultLabelToggle = computed(
+  () =>
+    props.measurementType === 'area' ||
+    props.measurementType === 'angle' ||
+    props.measurementType === 'point',
+);
+const showSettingsSection = computed(
+  () =>
+    showDistanceUnit.value ||
+    showAreaUnit.value ||
+    showVertexLabelToggle.value ||
+    showEdgeLabelToggle.value ||
+    showResultLabelToggle.value,
+);
+
+const distanceUnit = ref<DistanceUnit>(getMeasurementDistanceUnit());
+const areaUnit = ref<AreaUnit>(getMeasurementAreaUnit());
+const labelPrefs = ref(getMeasurementLabelPrefs());
+
+const distanceUnitItems = computed(() => [
+  { value: 'auto', text: trans.value('map.measurement.unit.auto') },
+  { value: 'm', text: trans.value('map.measurement.unit.meter') },
+  { value: 'km', text: trans.value('map.measurement.unit.kilometer') },
+  { value: 'ft', text: trans.value('map.measurement.unit.foot') },
+  { value: 'mi', text: trans.value('map.measurement.unit.mile') },
+]);
+
+const areaUnitItems = computed(() => [
+  { value: 'auto', text: trans.value('map.measurement.unit.auto') },
+  { value: 'm2', text: trans.value('map.measurement.unit.square-meter') },
+  {
+    value: 'km2',
+    text: trans.value('map.measurement.unit.square-kilometer'),
+  },
+  { value: 'ha', text: trans.value('map.measurement.unit.hecta') },
+  { value: 'acre', text: trans.value('map.measurement.unit.acre') },
+]);
+
+function onDistanceUnitChange(value: string | number) {
+  const unit = String(value) as DistanceUnit;
+  distanceUnit.value = unit;
+  setMeasurementDistanceUnit(unit);
+  emit('refresh');
+}
+
+function onAreaUnitChange(value: string | number) {
+  const unit = String(value) as AreaUnit;
+  areaUnit.value = unit;
+  setMeasurementAreaUnit(unit);
+  emit('refresh');
+}
+
+function onLabelToggle(key: keyof MeasurementLabelPrefs, checked: boolean) {
+  setMeasurementLabelPrefs({ [key]: checked });
+  labelPrefs.value = getMeasurementLabelPrefs();
+  emit('refresh');
+}
+
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapMeasurementSetting',
   panelKind: 'popup',

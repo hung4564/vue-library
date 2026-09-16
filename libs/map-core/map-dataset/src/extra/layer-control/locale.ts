@@ -29,7 +29,7 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'paste-geojson': 'Paste GIS data',
   'paste-geojson-hint': 'GeoJSON, TopoJSON, KML, GPX, CSV, or WKT',
   'file-hint':
-    'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile, or .zip',
+    'GeoJSON, KML, KMZ, GPX, TopoJSON, CSV, WKT, Shapefile, or .zip — drop files/folders, or paste GIS text / files (Ctrl+V)',
   'file-drop': 'Drop files here or click to browse',
   parsing: 'Reading file…',
   'parse-error': 'Could not read this file',

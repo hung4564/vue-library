@@ -279,6 +279,8 @@ export const WorkerMonitor: {
   subscribe(listener: () => void): () => void;
   /** Wired by `./client` when the worker barrel is loaded. */
   connect: ConnectFn;
+  /** Abort a pending task (wired by `./client`). */
+  abortTask: (workerId: string, taskId: string, reason?: string) => boolean;
 } = {
   register(id: string, options: WorkerRegisterOptions = {}): WorkerHandle {
     const existing = workers.get(id);
@@ -353,4 +355,5 @@ export const WorkerMonitor: {
 
   // Assigned in `./client` to avoid a circular import at module init.
   connect: null as unknown as ConnectFn,
+  abortTask: () => false,
 };

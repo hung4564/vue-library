@@ -29,6 +29,13 @@ const props = withDefaults(
   },
 );
 
+const emit = defineEmits<{
+  geolocate: [position: GeolocationPosition];
+  error: [payload: { message: string; code?: number }];
+  trackuserlocationstart: [];
+  trackuserlocationend: [];
+}>();
+
 const { mapId, callMap, moduleContainerProps, order } = useMap(
   { ...props, controlId: 'mapGeoLocateControl' },
   undefined,
@@ -44,6 +51,8 @@ const ui = ref<GeoLocateUiState>({
   locating: false,
   disabled: false,
   errorMessage: null,
+  errorCode: null,
+  background: false,
 });
 
 let session: GeoLocateSession | undefined;
@@ -69,6 +78,8 @@ watch(
       locating: false,
       disabled: false,
       errorMessage: null,
+      errorCode: null,
+      background: false,
     };
   },
 );
@@ -86,6 +97,19 @@ function sessionOptions() {
   };
 }
 
+function errorTitle(state: GeoLocateUiState) {
+  if (state.errorCode === 1) {
+    return trans.value('map.action.geolocate-control-permission-denied');
+  }
+  if (state.errorCode === 3) {
+    return trans.value('map.action.geolocate-control-timeout');
+  }
+  return (
+    state.errorMessage ||
+    trans.value('map.action.geolocate-control-location-not-available')
+  );
+}
+
 function getSession(map: MapSimple) {
   if (!session) {
     session = new GeoLocateSession({
@@ -95,6 +119,10 @@ function getSession(map: MapSimple) {
       onStateChange(next) {
         ui.value = next;
       },
+      onGeolocate: (position) => emit('geolocate', position),
+      onError: (payload) => emit('error', payload),
+      onTrackUserLocationStart: () => emit('trackuserlocationstart'),
+      onTrackUserLocationEnd: () => emit('trackuserlocationend'),
     });
   }
   return session;
@@ -134,14 +162,17 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapGeoLocateControl',
   getState() {
     const error = ui.value.errorMessage;
+    const background = ui.value.background;
     return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
       visible: true,
       active: ui.value.active,
       disabled: ui.value.disabled,
+      loading: ui.value.locating,
       title: error
-        ? error ||
-          trans.value('map.action.geolocate-control-location-not-available')
-        : trans.value('map.action.geolocate-control-find-my-location'),
+        ? errorTitle(ui.value)
+        : background
+          ? trans.value('map.action.geolocate-control-tracking-background')
+          : trans.value('map.action.geolocate-control-find-my-location'),
       order: order.value,
     });
   },

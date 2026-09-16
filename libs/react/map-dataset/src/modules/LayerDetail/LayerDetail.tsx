@@ -8,10 +8,9 @@ import {
   getResolvedMenus,
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
-import { copyText } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
-  MapControlButton,
+  MapCopyButton,
   ModuleContainer,
   useLang,
   useMap,
@@ -19,8 +18,6 @@ import {
   useShow,
 } from '@hungpvq/react-map-core';
 import { InputTextarea } from '@hungpvq/react-map-core/fields';
-import { mdiContentCopy } from '@mdi/js';
-import Icon from '@mdi/react';
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
@@ -36,10 +33,6 @@ type LayerDetailProps = {
   onClose?: () => void;
 };
 
-function copyValue(value: unknown) {
-  void copyText(value == null ? '' : String(value));
-}
-
 function TableTdCopy({
   value,
   children,
@@ -50,13 +43,7 @@ function TableTdCopy({
   return (
     <div className="layer-detail-row">
       <div className="layer-detail-row__copy">
-        <MapControlButton
-          variant="plain"
-          onClick={() => copyValue(value)}
-          aria-label="Copy"
-        >
-          <Icon path={mdiContentCopy} size={14 / 24} />
-        </MapControlButton>
+        <MapCopyButton value={value == null ? '' : String(value)} />
       </div>
       {children}
     </div>

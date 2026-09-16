@@ -2,6 +2,7 @@ import type {
   CoordinatesNumber,
   DraftCoordinatesNumber,
 } from '@hungpvq/map-core';
+import { parseCoordinateListText } from '@hungpvq/map-core';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,
@@ -11,7 +12,7 @@ import {
 import { Icon } from '@mdi/react';
 import type { Feature, FeatureCollection, Geometry, Position } from 'geojson';
 import { saveAs } from 'file-saver';
-import { useMemo } from 'react';
+import { useMemo, type ClipboardEvent } from 'react';
 
 type Coord = DraftCoordinatesNumber;
 
@@ -97,6 +98,31 @@ export function FieldGeometry({
     submit(next);
   }
 
+  /** Paste one pair or multi-line CSV into the list (from this row). */
+  function onPasteCoordinate(
+    event: ClipboardEvent<HTMLInputElement>,
+    index: number,
+  ) {
+    const text = event.clipboardData.getData('text');
+    const parsed = parseCoordinateListText(text);
+    if (!parsed.length) return;
+    event.preventDefault();
+
+    let points = parsed.map(([lng, lat]) => [lng, lat] as Coord);
+    if (maxLength > 0) {
+      const room = Math.max(0, maxLength - index);
+      points = points.slice(0, room);
+    }
+    if (!points.length) return;
+
+    const next = [
+      ...value.slice(0, index),
+      ...points,
+      ...value.slice(index + points.length),
+    ];
+    submit(maxLength > 0 && next.length > maxLength ? next.slice(0, maxLength) : next);
+  }
+
   function onDeleteItem(index: number) {
     const next = value.slice();
     next.splice(index, 1);
@@ -125,7 +151,9 @@ export function FieldGeometry({
   return (
     <div className="map-measurement-geometry">
       <div className="map-measurement-geometry__header">
-        <div className="map-measurement-geometry__title">{title}</div>
+        {title ? (
+          <div className="map-measurement-geometry__title">{title}</div>
+        ) : null}
         <div className="map-measurement-geometry__actions">
           <button
             type="button"
@@ -168,6 +196,7 @@ export function FieldGeometry({
                 step="any"
                 value={item[0] ?? ''}
                 onChange={(e) => onUpdateCoord(index, 0, e.target.value)}
+                onPaste={(e) => onPasteCoordinate(e, index)}
               />
             </div>
             <div>
@@ -177,6 +206,7 @@ export function FieldGeometry({
                 step="any"
                 value={item[1] ?? ''}
                 onChange={(e) => onUpdateCoord(index, 1, e.target.value)}
+                onPaste={(e) => onPasteCoordinate(e, index)}
               />
             </div>
             <div>

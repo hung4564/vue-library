@@ -15,10 +15,12 @@ import {
   FormView,
   MapMarkerView,
   MapView,
+  MeasureAngle,
   MeasureArea,
   MeasureAzimuth,
   MeasureDistance,
   MeasurePoint,
+  MeasureRadius,
   MEASUREMENT_CONTROL_LOCALE,
   MeasurementHandle,
   type IViewSettingField,
@@ -31,11 +33,13 @@ import {
   type ToolbarButtonConfig,
 } from '@hungpvq/map-core/toolbar';
 import {
+  mdiAngleAcute,
   mdiClose,
   mdiCogOutline,
   mdiCrosshairsGps,
   mdiDeleteOutline,
   mdiMapMarkerOutline,
+  mdiRadiusOutline,
   mdiRuler,
   mdiRulerSquareCompass,
   mdiTableHeadersEye,
@@ -63,6 +67,8 @@ const PATH = {
   distance: mdiRuler,
   area: mdiRulerSquareCompass,
   azimuth: mdiTableHeadersEye,
+  angle: mdiAngleAcute,
+  radius: mdiRadiusOutline,
   point: mdiMapMarkerOutline,
   clear: mdiDeleteOutline,
   close: mdiClose,
@@ -165,6 +171,11 @@ export function MeasurementControl(props: MeasurementControlProps) {
     }
     setMeasurementType(type);
     measurementTypeRef.current = type;
+    setSetting((prev) => {
+      const next = { ...prev, show: true };
+      settingRef.current = next;
+      return next;
+    });
     return true;
   }
 
@@ -183,6 +194,18 @@ export function MeasurementControl(props: MeasurementControlProps) {
   function onMeasureAzimuth() {
     if (!checkMeasureRun('azimuth')) return;
     handler.current.setAction(new MeasureAzimuth());
+    handler.current.start();
+  }
+
+  function onMeasureAngle() {
+    if (!checkMeasureRun('angle')) return;
+    handler.current.setAction(new MeasureAngle());
+    handler.current.start();
+  }
+
+  function onMeasureRadius() {
+    if (!checkMeasureRun('radius')) return;
+    handler.current.setAction(new MeasureRadius());
     handler.current.start();
   }
 
@@ -227,6 +250,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
   const onMeasureDistanceRef = useRef(onMeasureDistance);
   const onMeasureAreaRef = useRef(onMeasureArea);
   const onMeasureAzimuthRef = useRef(onMeasureAzimuth);
+  const onMeasureAngleRef = useRef(onMeasureAngle);
+  const onMeasureRadiusRef = useRef(onMeasureRadius);
   const onMeasureMarkerRef = useRef(onMeasureMarker);
   const resetRef = useRef(reset);
   const toggleSettingRef = useRef(toggleSetting);
@@ -235,6 +260,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
   onMeasureDistanceRef.current = onMeasureDistance;
   onMeasureAreaRef.current = onMeasureArea;
   onMeasureAzimuthRef.current = onMeasureAzimuth;
+  onMeasureAngleRef.current = onMeasureAngle;
+  onMeasureRadiusRef.current = onMeasureRadius;
   onMeasureMarkerRef.current = onMeasureMarker;
   resetRef.current = reset;
   toggleSettingRef.current = toggleSetting;
@@ -312,6 +339,22 @@ export function MeasurementControl(props: MeasurementControlProps) {
       },
       {
         index: 4,
+        type: 'angle',
+        title: 'map.measurement.tools.angle',
+        icon: PATH.angle,
+        handle: () => onMeasureAngleRef.current(),
+        isActive: () => measurementTypeRef.current === 'angle',
+      },
+      {
+        index: 5,
+        type: 'radius',
+        title: 'map.measurement.tools.radius',
+        icon: PATH.radius,
+        handle: () => onMeasureRadiusRef.current(),
+        isActive: () => measurementTypeRef.current === 'radius',
+      },
+      {
+        index: 6,
         type: 'point',
         title: 'map.measurement.tools.point',
         icon: PATH.point,
@@ -443,7 +486,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
         },
         {
           type: 'symbol',
-          filter: ['has', 'rotation'],
+          filter: ['all', ['has', 'rotation'], ['!has', 'is_edge']],
           paint: { 'icon-color': DEFAULT_COLOR_HIGHLIGHT },
           layout: {
             'icon-size': 1.2,
@@ -460,7 +503,37 @@ export function MeasurementControl(props: MeasurementControlProps) {
         },
         {
           type: 'symbol',
-          filter: ['all', ['has', 'is_label'], ['==', '$type', 'Point']],
+          filter: [
+            'all',
+            ['has', 'is_label'],
+            ['has', 'is_edge'],
+            ['==', '$type', 'Point'],
+          ],
+          layout: {
+            'text-field': '{text}',
+            'text-size': 12,
+            'text-rotate': ['get', 'text_rotate'],
+            'text-rotation-alignment': 'map',
+            'text-pitch-alignment': 'viewport',
+            'text-offset': [0, 0],
+            'text-anchor': 'center',
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#fff',
+            'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
+            'text-halo-width': 2,
+          },
+        },
+        {
+          type: 'symbol',
+          filter: [
+            'all',
+            ['has', 'is_label'],
+            ['!has', 'is_edge'],
+            ['==', '$type', 'Point'],
+          ],
           layout: {
             'text-field': '{text}',
             'text-offset': [
@@ -471,7 +544,9 @@ export function MeasurementControl(props: MeasurementControlProps) {
             ],
             'text-size': 14,
             'text-allow-overlap': true,
+            'text-ignore-placement': true,
             'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
             'icon-image': 'measurment-round',
             'icon-text-fit': 'both',
           },
@@ -534,7 +609,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
           maxLength: _setting.maxLength || 0,
           fields: (fields ?? []).map((x) => ({
             ...x,
-            text: x.trans ? trans(x.trans) : x.text,
+            text: x.trans ? trans(x.trans, x.params) : x.text,
           })),
         };
         settingRef.current = next;
@@ -598,6 +673,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
           maxLength={setting.maxLength}
           fields={setting.fields}
           measurementType={measurementType}
+          onRefresh={() => handler.current.init(coordinatesRef.current)}
         />
       ) : null}
     </ModuleContainer>

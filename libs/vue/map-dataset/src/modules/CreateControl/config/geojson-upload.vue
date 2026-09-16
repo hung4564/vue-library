@@ -37,10 +37,13 @@
           <div
             v-if="!showFileSummary || replaceFileMode"
             class="create-control-drop"
+            tabindex="0"
+            @paste="onOsClipboardPaste"
           >
             <DragDropFile
               :multiple="true"
               :accept="GIS_FILE_ACCEPT"
+              :resolve-drop-files="collectFilesFromDataTransfer"
               @change="onChangeFile"
             />
             <div v-if="parsing" class="create-control-status--busy">
@@ -136,8 +139,12 @@
 
 <script setup>
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import { InputSelect, InputText, InputTextArea } from '@hungpvq/vue-map-core/fields';
-import { DragDropFile } from '@hungpvq/shared-file';
+import {
+  DragDropFile,
+  InputSelect,
+  InputText,
+  InputTextArea,
+} from '@hungpvq/vue-map-core/fields';
 import {
   applyCreateControlLayerName,
   assertCreateControlFileSize,
@@ -146,6 +153,7 @@ import {
   createControlLoadedSourceEyebrowKey,
   CREATE_CONTROL_SAMPLE_NONE,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
+  collectFilesFromDataTransfer,
   formatCreateControlParseStatus,
   GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
@@ -154,6 +162,7 @@ import {
   looksCompleteGis,
   parseCreateControlPastedText,
   parseCreateControlUploadedFiles,
+  readClipboardGisPaste,
   resolveCreateControlSampleIdAfterUrlEdit,
   resolveCreateControlSampleSelection,
   subscribeCreateControlParseProgress,
@@ -247,6 +256,20 @@ function cancelParsing() {
   terminateGeojsonWorker();
   parsing.value = false;
   parseStatusText.value = '';
+}
+
+function onOsClipboardPaste(event) {
+  const { files, text } = readClipboardGisPaste(event.clipboardData);
+  if (files.length) {
+    event.preventDefault();
+    void onChangeFile(files);
+    return;
+  }
+  const trimmed = text.trim();
+  if (!trimmed) return;
+  event.preventDefault();
+  activeDataTab.value = 'raw';
+  onPasteGeojson(trimmed);
 }
 
 async function onChangeFile(input) {

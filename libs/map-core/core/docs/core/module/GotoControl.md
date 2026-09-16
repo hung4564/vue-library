@@ -4,6 +4,7 @@
 
 - Jump to specific coordinates or saved places via UI.
 - Enable quick navigation between bookmarks in analytic dashboards.
+- **Paste coordinates** (decimal `lng,lat` / `lat,lng`, DMS with N/S/E/W, optional `zoom`) via the paste button (`parseCoordinateText`).
 
 ## Props
 

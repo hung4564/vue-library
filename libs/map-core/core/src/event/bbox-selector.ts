@@ -54,6 +54,8 @@ export function startBoxRangerMap(
     // Add event listeners
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('touchmove', onMouseMove, { passive: false });
+    document.addEventListener('touchend', onMouseUp);
     document.addEventListener('keydown', onKeyDown);
   }
 
@@ -94,6 +96,8 @@ export function startBoxRangerMap(
     // Clean up event listeners
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('touchmove', onMouseMove);
+    document.removeEventListener('touchend', onMouseUp);
     document.removeEventListener('keydown', onKeyDown);
 
     if (box) {
@@ -108,12 +112,14 @@ export function startBoxRangerMap(
 
   function destroy() {
     canvas.removeEventListener('mousedown', mouseDown, true);
+    canvas.removeEventListener('touchstart', mouseDown, true);
     cb_bbox = undefined;
     finish();
   }
 
-  // Add the initial mousedown listener
+  // Add the initial mousedown / touchstart listener
   canvas.addEventListener('mousedown', mouseDown, true);
+  canvas.addEventListener('touchstart', mouseDown, { capture: true, passive: false });
   canvas.style.cursor = 'crosshair';
 
   return {

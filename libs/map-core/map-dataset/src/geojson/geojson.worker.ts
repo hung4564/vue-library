@@ -93,7 +93,10 @@ runWorkerMonitor<GeojsonWorkerRequest>(
     let format: string | undefined;
     let styleTypes: LayerStyleType[] | undefined;
     let bbox: GeojsonBbox | undefined;
-    const report = ctx.report;
+    const report = (current: number, total?: number, message?: string) => {
+      ctx.throwIfAborted();
+      ctx.report(current, total, message);
+    };
 
     switch (message.type) {
       case 'parse-gis': {

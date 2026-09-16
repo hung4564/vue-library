@@ -10,6 +10,7 @@ import {
   normalizeMapThemeModes,
   resolveMapTheme,
   setStoredMapThemeMode,
+  subscribePrefersContrastMore,
   toggleMapThemeLightDark,
   type MapThemeMode,
 } from '@hungpvq/map-core/theme';
@@ -97,6 +98,10 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
     mediaQuery.addEventListener('change', onChange);
     return () => mediaQuery.removeEventListener('change', onChange);
   }, []);
+
+  useEffect(() => subscribePrefersContrastMore(() => {
+    applyMapThemeClass(resolveMapTheme(mode, prefersDark));
+  }), [mode, prefersDark]);
 
   function applyMode(next: MapThemeMode) {
     setMode(next);

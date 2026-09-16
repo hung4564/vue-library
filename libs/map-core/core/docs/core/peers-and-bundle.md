@@ -69,4 +69,4 @@ Declared **peerDependencies** (and workspace `@hungpvq/*` deps) must stay **exte
 
 ## fitBounds overlays
 
-`fitBounds` pads for open sidebars, floats, popups, and bottom sheets so fitted data stays in the visible map area. Pass `mapId` / `controlIds` for registry hints, or `ignoreOverlays: true` for flat padding.
+`fitBounds` pads left/right for open sidebars so fitted data stays in the visible map area. Pass `ignoreOverlays: true` for flat padding only.

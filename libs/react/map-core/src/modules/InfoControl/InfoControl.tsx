@@ -1,7 +1,11 @@
 import {
-  copyText,
+  copyImageDataUrl,
   downloadDataUrl,
+  EMPTY_MAP_VIEW_INFO,
   INFO_CONTROL_LOCALE,
+  latDMS,
+  lngDMS,
+  parseCoordinateText,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
@@ -18,11 +22,11 @@ import {
 import Icon from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapControlButton } from '../../components/MapControlButton';
+import { MapCopyButton } from '../../components/MapCopyButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
-import { MapControlButton } from '../../components/MapControlButton';
-
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import {
   ModuleContainer,
@@ -34,15 +38,6 @@ export interface InfoControlProps extends WithMapPropType {
   fileName?: string;
 }
 
-const EMPTY_INFO: MapViewInfo = {
-  center: '',
-  zoom: '',
-  pitch: '',
-  bearing: '',
-  projection: '',
-  bounds: '',
-};
-
 export function InfoControl(props: InfoControlProps) {
   const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({
@@ -51,7 +46,9 @@ export function InfoControl(props: InfoControlProps) {
   });
   const { trans, setLocaleDefault } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
-  const [info, setInfo] = useState<MapViewInfo>(EMPTY_INFO);
+  const [info, setInfo] = useState<MapViewInfo>(EMPTY_MAP_VIEW_INFO);
+  const [centerDms, setCenterDms] = useState('');
+  const [showDms, setShowDms] = useState(false);
   const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
@@ -61,6 +58,8 @@ export function InfoControl(props: InfoControlProps) {
   const syncInfo = useCallback(() => {
     callMap((map) => {
       setInfo(readMapViewInfo(map));
+      const c = map.getCenter();
+      setCenterDms(`${latDMS(c.lat)}, ${lngDMS(c.lng)}`);
     });
   }, [callMap]);
 
@@ -136,6 +135,32 @@ export function InfoControl(props: InfoControlProps) {
     });
   }, [callMap, mergedProps.fileName]);
 
+  const onCopyImage = useCallback(() => {
+    callMap(async (map) => {
+      setCapturing(true);
+      try {
+        const image = await exportMapbox(map);
+        await copyImageDataUrl(image);
+      } finally {
+        setCapturing(false);
+      }
+    });
+  }, [callMap]);
+
+  const onPasteGoTo = useCallback(async () => {
+    try {
+      const text = await navigator.clipboard?.readText?.();
+      const parsed = parseCoordinateText(text || '');
+      if (!parsed) return;
+      callMap((map) => {
+        map.setCenter([parsed.lng, parsed.lat]);
+        if (parsed.zoom != null) map.setZoom(parsed.zoom);
+      });
+    } catch {
+      // Clipboard permission denied — ignore.
+    }
+  }, [callMap]);
+
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapInfoControl',
@@ -161,7 +186,7 @@ export function InfoControl(props: InfoControlProps) {
         {
           key: 'center',
           label: trans('map.info-control.center'),
-          value: info.center,
+          value: showDms ? centerDms || info.center : info.center,
         },
         {
           key: 'zoom',
@@ -196,38 +221,76 @@ export function InfoControl(props: InfoControlProps) {
           onUpdateShow={setShow}
           title={trans('map.info-control.title')}
           width={360}
-          height={340}
+          height={380}
           extraBtn={
-            <MapControlButton variant="plain"
-              title={trans('map.info-control.screenshot')}
-              disabled={capturing}
-              onClick={(e) => {
-                e.stopPropagation();
-                onScreenshot();
-              }}
-            >
-              <Icon path={mdiCameraOutline} size="16px" />
-            </MapControlButton>
+            <>
+              <MapControlButton
+                variant="plain"
+                title={trans('map.info-control.screenshot')}
+                disabled={capturing}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onScreenshot();
+                }}
+              >
+                <Icon path={mdiCameraOutline} size="16px" />
+              </MapControlButton>
+              <MapControlButton
+                variant="plain"
+                title={trans('map.info-control.copy-image')}
+                disabled={capturing}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopyImage();
+                }}
+              >
+                <Icon path={mdiContentCopy} size="16px" />
+              </MapControlButton>
+            </>
           }
           {...bind}
           {...panelBind}
         >
           <div className="map-info-control">
+            <div className="map-info-control__actions">
+              <MapControlButton
+                variant="outlined"
+                title={
+                  showDms
+                    ? trans('map.info-control.decimal')
+                    : trans('map.info-control.dms')
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDms((v) => !v);
+                }}
+              >
+                {showDms
+                  ? trans('map.info-control.decimal')
+                  : trans('map.info-control.dms')}
+              </MapControlButton>
+              <MapControlButton
+                variant="outlined"
+                title={trans('map.info-control.paste')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void onPasteGoTo();
+                }}
+              >
+                {trans('map.info-control.paste')}
+              </MapControlButton>
+            </div>
             <div className="map-info-control__rows">
               {rows.map((row) => (
                 <div key={row.key} className="map-info-control__row">
                   <div className="map-info-control__label">{row.label}</div>
                   <div className="map-info-control__value">{row.value}</div>
-                  <MapControlButton variant="plain"
+                  <MapCopyButton
                     className="map-info-control__copy"
+                    value={row.value}
                     title={trans('map.info-control.copy')}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void copyText(row.value);
-                    }}
-                  >
-                    <Icon path={mdiContentCopy} size={14 / 24} />
-                  </MapControlButton>
+                    copiedTitle={trans('map.info-control.copied')}
+                  />
                 </div>
               ))}
             </div>
@@ -235,7 +298,18 @@ export function InfoControl(props: InfoControlProps) {
         </DraggableItemPopup>
       );
     },
-    [show, capturing, onScreenshot, info, trans, panelBind],
+    [
+      show,
+      capturing,
+      onScreenshot,
+      onCopyImage,
+      onPasteGoTo,
+      info,
+      centerDms,
+      showDms,
+      trans,
+      panelBind,
+    ],
   );
 
   return (

@@ -4,6 +4,8 @@ Click or box-select features. Presentation uses menus on the identify dataset no
 
 Identify painting uses the highlight controller with `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer highlight can double-fire on the same click — disable `pointer.click` on parts or skip `HighlightPointer` when Identify owns the click.
 
+**Touch / coarse pointer:** hover highlight is skipped when `(hover: hover)` is false; box-select supports touch; on coarse pointers, a **long-press** (~500ms) runs the same identify click path. Map clicks use the `click` event only (no duplicate touchstart identify).
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

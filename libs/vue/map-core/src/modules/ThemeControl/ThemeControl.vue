@@ -11,6 +11,7 @@ import {
   normalizeMapThemeModes,
   resolveMapTheme,
   setStoredMapThemeMode,
+  subscribePrefersContrastMore,
   toggleMapThemeLightDark,
   type MapThemeMode,
 } from '@hungpvq/map-core/theme';
@@ -135,6 +136,7 @@ watch(prefersDark, () => {
 watch(toggleIcon, () => control.sync());
 
 let mediaQuery: MediaQueryList | undefined;
+let unsubContrast: (() => void) | undefined;
 function onMediaChange(event: MediaQueryListEvent) {
   prefersDark.value = event.matches;
 }
@@ -146,11 +148,14 @@ onMounted(() => {
     prefersDark.value = mediaQuery.matches;
     mediaQuery.addEventListener('change', onMediaChange);
   }
+  unsubContrast = subscribePrefersContrastMore(() => {
+    applyCurrentTheme();
+  });
 });
 
 onUnmounted(() => {
-  if (!mediaQuery) return;
-  mediaQuery.removeEventListener('change', onMediaChange);
+  if (mediaQuery) mediaQuery.removeEventListener('change', onMediaChange);
+  unsubContrast?.();
 });
 </script>
 

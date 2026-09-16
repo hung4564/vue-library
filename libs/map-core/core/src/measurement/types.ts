@@ -23,6 +23,8 @@ export type IViewSetting = {
  */
 export type IViewSettingField = {
   trans?: string;
+  /** Optional interpolate params for `trans` (e.g. `{ n: 1 }` for `Edge {n}`). */
+  params?: Record<string, string | number>;
   text?: string;
   value?: number | string | boolean;
 };

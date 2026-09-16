@@ -15,7 +15,13 @@ import { useToolbarControl } from '../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
-export type GeoLocateControlProps = WithMapPropType & GeoLocateControlOptions;
+export type GeoLocateControlProps = WithMapPropType &
+  GeoLocateControlOptions & {
+    onGeolocate?: (position: GeolocationPosition) => void;
+    onError?: (payload: { message: string; code?: number }) => void;
+    onTrackUserLocationStart?: () => void;
+    onTrackUserLocationEnd?: () => void;
+  };
 
 const INITIAL_UI: GeoLocateUiState = {
   watchState: 'OFF',
@@ -23,6 +29,8 @@ const INITIAL_UI: GeoLocateUiState = {
   locating: false,
   disabled: false,
   errorMessage: null,
+  errorCode: null,
+  background: false,
 };
 
 export function GeoLocateControl(props: GeoLocateControlProps) {
@@ -37,6 +45,18 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
   };
   const [ui, setUi] = useState<GeoLocateUiState>(INITIAL_UI);
   const sessionRef = useRef<GeoLocateSession | undefined>(undefined);
+  const callbacksRef = useRef({
+    onGeolocate: props.onGeolocate,
+    onError: props.onError,
+    onTrackUserLocationStart: props.onTrackUserLocationStart,
+    onTrackUserLocationEnd: props.onTrackUserLocationEnd,
+  });
+  callbacksRef.current = {
+    onGeolocate: props.onGeolocate,
+    onError: props.onError,
+    onTrackUserLocationStart: props.onTrackUserLocationStart,
+    onTrackUserLocationEnd: props.onTrackUserLocationEnd,
+  };
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
     { ...mergedProps, controlId: 'mapGeoLocateControl' },
@@ -83,6 +103,19 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
     };
   }
 
+  function errorTitle(state: GeoLocateUiState) {
+    if (state.errorCode === 1) {
+      return trans('map.action.geolocate-control-permission-denied');
+    }
+    if (state.errorCode === 3) {
+      return trans('map.action.geolocate-control-timeout');
+    }
+    return (
+      state.errorMessage ||
+      trans('map.action.geolocate-control-location-not-available')
+    );
+  }
+
   function getSession(map: MapSimple) {
     if (!sessionRef.current) {
       sessionRef.current = new GeoLocateSession({
@@ -90,6 +123,12 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
         mapId,
         ...sessionOptions(),
         onStateChange: setUi,
+        onGeolocate: (position) => callbacksRef.current.onGeolocate?.(position),
+        onError: (payload) => callbacksRef.current.onError?.(payload),
+        onTrackUserLocationStart: () =>
+          callbacksRef.current.onTrackUserLocationStart?.(),
+        onTrackUserLocationEnd: () =>
+          callbacksRef.current.onTrackUserLocationEnd?.(),
       });
     }
     return sessionRef.current;
@@ -130,11 +169,13 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
         visible: true,
         active: ui.active,
         disabled: ui.disabled,
+        loading: ui.locating,
         order,
         title: error
-          ? error ||
-            trans('map.action.geolocate-control-location-not-available')
-          : trans('map.action.geolocate-control-find-my-location'),
+          ? errorTitle(ui)
+          : ui.background
+            ? trans('map.action.geolocate-control-tracking-background')
+            : trans('map.action.geolocate-control-find-my-location'),
         icon: {
           type: 'mdi',
           path: error ? mdiCrosshairsOff : mdiCrosshairsGps,

@@ -37,6 +37,7 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapCommonButton',
   'MapContextMenuControl',
   'MapControlButton',
+  'MapCopyButton',
   'MapControlGroupButton',
   'MeasurementControl',
   'MeasurementSettingPopup',
@@ -98,6 +99,7 @@ export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'BaseCollapse',
   'Collapse',
+  'DragDropFile',
   'InputCheckbox',
   'InputChoose',
   'InputColorPicker',

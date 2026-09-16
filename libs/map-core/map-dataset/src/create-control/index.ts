@@ -103,3 +103,8 @@ export type {
   CreateControlUploadFileSummary,
   CreateControlVectorUrlLoadResult,
 } from './upload-helpers';
+export {
+  collectFilesFromDataTransfer,
+  isGisUploadFileName,
+  readClipboardGisPaste,
+} from './data-transfer';

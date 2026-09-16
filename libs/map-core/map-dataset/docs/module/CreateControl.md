@@ -28,6 +28,8 @@ Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dat
 - The dialog keeps a small draft in `sessionStorage` (type, name, CRS) via `loadCreateControlDraft` / `saveCreateControlDraft`.
 - If loaded file CRS differs from selected CRS, UI warns that data will be reprojected.
 - Multi-file upload accepts one GIS file, or one shapefile set (`.shp` + sidecars / `.zip`).
+- **Folder drop:** dropping a directory walks entries (`collectFilesFromDataTransfer`) and keeps GIS extensions only.
+- **OS paste:** on the File tab, paste clipboard files as upload, or paste text to switch to Raw and parse (`readClipboardGisPaste` / `parseCreateControlPastedText`).
 
 ## Implementation (adapters)
 

@@ -19,6 +19,8 @@ Editable layer list: create, group, reorder, delete, run menus.
 
 **Events:** none. Visibility / opacity fire on the list node (`toggleShow`, `changeOpacity`) — see [Events](../create-dataset/with-helper-event.md). Dialogs from ⋮ menus need [`ComponentManagementControl`](./ComponentManagementControl.md). Create-layer uses [`CreateControl`](./CreateControl.md) internally.
 
+Keyboard: `/` focuses the layer search input (`data-map-layer-search`, with rAF retry until mounted). `Esc` closes the top open control and blurs search only if it was focused.
+
 ### Sidebar header (Vue ↔ React)
 
 `LayerControl` mounts a sidebar panel. Pass a **plain `title` string** for the panel switcher menu; use Vue `#title` / React `titleNode` only for styled header text. Header layout: `[ title | after-title ] …… [ extra-btn ]` — menus with `location: 'title'` render in **`after-title` / `afterTitle`**, not trailing chrome.

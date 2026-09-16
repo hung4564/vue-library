@@ -6,17 +6,6 @@ import type { MapSimple } from '../types';
 import { Map as MaplibreMap } from 'maplibre-gl';
 
 /**
- * Convert length to pixels string
- *
- * @param length - Length value
- * @param conversionFactor - Conversion factor (default: 96 DPI)
- * @returns Pixel string (e.g., "192px")
- */
-function toPixels(length: number, conversionFactor = 96): string {
-  return `${conversionFactor * length}px`;
-}
-
-/**
  * Get a hidden map canvas for rendering/export purposes
  *
  * @param map - The map instance
@@ -112,7 +101,46 @@ export type ExportMapboxOptions = {
   watermark?: string;
   /** Pixel density hint for advanced export width/height conversion (default 96). */
   dpi?: number;
+  /**
+   * Canvas buffer scale (default `devicePixelRatio`, capped at 3).
+   * Applied when reading the map canvas for clip/export.
+   */
+  pixelRatio?: number;
 };
+
+function resolveExportPixelRatio(explicit?: number): number {
+  const dpr =
+    typeof explicit === 'number' && explicit > 0
+      ? explicit
+      : typeof devicePixelRatio === 'number' && devicePixelRatio > 0
+        ? devicePixelRatio
+        : 1;
+  return Math.min(3, Math.max(1, dpr));
+}
+
+/**
+ * Clip a region from a source canvas (CSS px coords → buffer coords).
+ */
+export function clipCanvasRegion(
+  source: HTMLCanvasElement,
+  region: { startX: number; startY: number; width: number; height: number },
+  pixelRatio = 1,
+): HTMLCanvasElement {
+  const scaleX = source.width / Math.max(1, source.clientWidth || source.width);
+  const scaleY =
+    source.height / Math.max(1, source.clientHeight || source.height);
+  const sx = Math.max(0, Math.round(region.startX * scaleX));
+  const sy = Math.max(0, Math.round(region.startY * scaleY));
+  const sw = Math.max(1, Math.round(region.width * scaleX));
+  const sh = Math.max(1, Math.round(region.height * scaleY));
+  const out = document.createElement('canvas');
+  out.width = Math.max(1, Math.round(region.width * pixelRatio));
+  out.height = Math.max(1, Math.round(region.height * pixelRatio));
+  const ctx = out.getContext('2d');
+  if (!ctx) return out;
+  ctx.drawImage(source, sx, sy, sw, sh, 0, 0, out.width, out.height);
+  return out;
+}
 
 /**
  * Export map as image data URL
@@ -145,7 +173,8 @@ export async function exportMapbox(
 }
 
 /**
- * Export map as image data URL with custom dimensions and position
+ * Export map as image data URL with custom cutout (CSS px on the visible canvas).
+ * Honors {@link startX}/{@link startY} crop and optional {@link pixelRatio}.
  */
 export async function exportMapboxWithOptions(
   map: MapSimple,
@@ -156,21 +185,33 @@ export async function exportMapboxWithOptions(
     startY: number;
     watermark?: string;
     dpi?: number;
+    pixelRatio?: number;
   },
 ): Promise<string> {
   await waitMapIdleAndTiles(map);
-  const dpi = options.dpi ?? 96;
+  const pixelRatio = resolveExportPixelRatio(options.pixelRatio);
+  const mapCanvas = map.getCanvas();
   const { renderMap, hidden } = getMapBoxCanvas(map, (container) => {
-    container.style.width = toPixels(+options.width, dpi / 96);
-    container.style.height = toPixels(+options.height, dpi / 96);
+    container.style.width = mapCanvas.clientWidth + 'px';
+    container.style.height = mapCanvas.clientHeight + 'px';
   });
   return new Promise((resolve) => {
     const finish = async () => {
       await waitMapIdleAndTiles(renderMap as unknown as MapSimple);
       const canvas = renderMap.getCanvas();
+      const clipped = clipCanvasRegion(
+        canvas,
+        {
+          startX: options.startX,
+          startY: options.startY,
+          width: options.width,
+          height: options.height,
+        },
+        pixelRatio,
+      );
       const dataUrl = options.watermark
-        ? applyCanvasWatermark(canvas, options.watermark)
-        : canvas.toDataURL();
+        ? applyCanvasWatermark(clipped, options.watermark)
+        : clipped.toDataURL();
       resolve(dataUrl);
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);

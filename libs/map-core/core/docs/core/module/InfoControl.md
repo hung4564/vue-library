@@ -5,7 +5,8 @@ Map view inspector: center, zoom, pitch, bearing, projection, and bounds. Click 
 ## Usecase
 
 - Read the current map camera and copy values for debugging or sharing.
-- Capture a PNG screenshot of the current view (camera icon).
+- Capture a PNG screenshot of the current view (camera icon), or **copy image** to the clipboard.
+- Toggle **DMS** vs decimal for the center row; **Paste go to** accepts the same coordinate text as GotoControl.
 
 ## Props
 

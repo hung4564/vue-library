@@ -4,6 +4,8 @@ Left sidebar inspector for **any** registered web worker: runtime status, task p
 
 With **more than one** worker, the sidebar shows a searchable list (busy first). Select a worker to inspect its tasks, logs, and history. Clear applies to the selected worker; **Clear all** wipes every worker.
 
+Each running task shows a **Cancel** button that calls `WorkerMonitor.abortTask(workerId, taskId)` (posts an abort envelope to the worker; does not terminate the whole Worker unless you call `terminate`).
+
 ## Usecase
 
 - Confirm a task is running off the main thread (status **Busy**, engine **Worker**).

@@ -8,6 +8,7 @@ import {
   createControlLoadedSourceEyebrowKey,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
   CREATE_CONTROL_SAMPLE_NONE,
+  collectFilesFromDataTransfer,
   formatCreateControlParseStatus,
   GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
@@ -18,6 +19,7 @@ import {
   looksCompleteGis,
   parseCreateControlPastedText,
   parseCreateControlUploadedFiles,
+  readClipboardGisPaste,
   resolveCreateControlSampleIdAfterUrlEdit,
   resolveCreateControlSampleSelection,
   findCreateControlSampleMatchingUrl,
@@ -226,6 +228,20 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
     }
   }
 
+  function onOsClipboardPaste(event: React.ClipboardEvent) {
+    const { files, text } = readClipboardGisPaste(event.clipboardData);
+    if (files.length) {
+      event.preventDefault();
+      void onChangeFile(files);
+      return;
+    }
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    event.preventDefault();
+    setActiveDataTab('raw');
+    onPasteGeojson(trimmed);
+  }
+
   function onPasteGeojson(text: string) {
     setPasteText(text);
     clearUrlState();
@@ -349,10 +365,15 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
 
                 {!showFileSummary || replaceFileMode ? (
                   <>
-                    <div className="create-control-drop">
+                    <div
+                      className="create-control-drop"
+                      tabIndex={0}
+                      onPaste={onOsClipboardPaste}
+                    >
                       <DragDropFile
                         multiple
                         accept={GIS_FILE_ACCEPT}
+                        resolveDropFiles={collectFilesFromDataTransfer}
                         onChange={(input) => void onChangeFile(input)}
                       />
                       {parsing ? (

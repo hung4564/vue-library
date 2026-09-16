@@ -9,6 +9,7 @@ export { PrintableAreaManager } from './PrintableAreaManager';
 export { PrintService } from './print.service';
 export { createDefaultPrintStore, createPrintStoreApi, PRINT_PAPER_PRESETS } from './types';
 export {
+  clipCanvasRegion,
   exportMapbox,
   exportMapboxWithOptions,
   getMapBoxCanvas,

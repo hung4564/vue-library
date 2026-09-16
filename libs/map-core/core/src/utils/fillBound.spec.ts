@@ -54,16 +54,6 @@ describe('fillBound', () => {
   it('getMapFitBoundsPadding adds left inset for open left sidebar', () => {
     const shell = document.createElement('div');
     shell.className = 'map-viewer';
-    Object.defineProperty(shell, 'getBoundingClientRect', {
-      value: () => ({
-        left: 0,
-        top: 0,
-        right: 1000,
-        bottom: 800,
-        width: 1000,
-        height: 800,
-      }),
-    });
 
     const mapEl = document.createElement('div');
     mapEl.className = 'map-content';
@@ -101,6 +91,44 @@ describe('fillBound', () => {
     expect(padding.right).toBe(50);
     expect(padding.top).toBe(50);
     expect(padding.bottom).toBe(50);
+  });
+
+  it('getMapFitBoundsPadding adds right inset for open right sidebar', () => {
+    const shell = document.createElement('div');
+    shell.className = 'map-viewer';
+    const mapEl = document.createElement('div');
+    Object.defineProperty(mapEl, 'getBoundingClientRect', {
+      value: () => ({
+        left: 0,
+        top: 0,
+        right: 1000,
+        bottom: 800,
+        width: 1000,
+        height: 800,
+      }),
+    });
+    const sidebar = document.createElement('div');
+    sidebar.className =
+      'sidebar-container show expand right-sidebar-container';
+    Object.defineProperty(sidebar, 'getBoundingClientRect', {
+      value: () => ({
+        left: 700,
+        top: 0,
+        right: 1000,
+        bottom: 800,
+        width: 300,
+        height: 800,
+      }),
+    });
+    shell.append(mapEl, sidebar);
+    document.body.append(shell);
+
+    const padding = getMapFitBoundsPadding(
+      { getContainer: () => mapEl } as never,
+      50,
+    );
+    expect(padding.right).toBe(350);
+    expect(padding.left).toBe(50);
   });
 
   it('fitBounds uses sidebar-aware padding by default', () => {

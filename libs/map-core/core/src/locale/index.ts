@@ -10,6 +10,9 @@ export const MAP_ACTION_LOCALE = {
       'navigation-control-reset-bearing': 'Reset bearing to north',
       'geolocate-control-find-my-location': 'Find my location',
       'geolocate-control-location-not-available': 'Location not available',
+      'geolocate-control-permission-denied': 'Location permission denied',
+      'geolocate-control-timeout': 'Location request timed out',
+      'geolocate-control-tracking-background': 'Location tracking (map unlocked)',
       'fullscreen-control-enter': 'Enter fullscreen',
       'fullscreen-control-exit': 'Exit fullscreen',
     },
@@ -37,6 +40,7 @@ export const INFO_CONTROL_LOCALE = {
     'info-control': {
       title: 'INFO',
       screenshot: 'Screenshot',
+      'copy-image': 'Copy image',
       center: 'Center',
       zoom: 'Zoom',
       pitch: 'Pitch',
@@ -44,6 +48,10 @@ export const INFO_CONTROL_LOCALE = {
       projection: 'Projection',
       bounds: 'Bounds',
       copy: 'Copy',
+      copied: 'Copied',
+      paste: 'Paste go to',
+      dms: 'DMS',
+      decimal: 'Decimal',
     },
   },
 };
@@ -58,6 +66,7 @@ export const GOTO_CONTROL_LOCALE = {
       },
       btn: {
         apply: 'Go to',
+        paste: 'Paste coordinates',
       },
     },
   },
@@ -122,6 +131,7 @@ export const WORKER_CONTROL_LOCALE = {
       action: {
         clear: 'Clear this worker',
         clearAll: 'Clear all workers',
+        cancel: 'Cancel',
       },
     },
   },

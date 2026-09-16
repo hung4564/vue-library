@@ -5,10 +5,13 @@ export default {
 </script>
 <script setup lang="ts">
 import {
-  copyText,
+  copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
   INFO_CONTROL_LOCALE,
+  latDMS,
+  lngDMS,
+  parseCoordinateText,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
@@ -28,7 +31,7 @@ import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
-import { MapControlButton } from '../../components';
+import { MapControlButton, MapCopyButton } from '../../components';
 
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
@@ -74,10 +77,14 @@ const { panelBind } = useRegisterMapControl(mapId, {
 
 const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);
+const showDms = ref(false);
+const centerDms = ref('');
 
 function syncInfo() {
   callMap((map) => {
     info.value = readMapViewInfo(map);
+    const c = map.getCenter();
+    centerDms.value = `${latDMS(c.lat)}, ${lngDMS(c.lng)}`;
   });
 }
 
@@ -96,7 +103,11 @@ function detachListeners(map: MapSimple) {
 }
 
 const rows = computed(() => [
-  { key: 'center', label: trans.value('map.info-control.center'), value: info.value.center },
+  {
+    key: 'center',
+    label: trans.value('map.info-control.center'),
+    value: showDms.value ? centerDms.value || info.value.center : info.value.center,
+  },
   { key: 'zoom', label: trans.value('map.info-control.zoom'), value: info.value.zoom },
   { key: 'pitch', label: trans.value('map.info-control.pitch'), value: info.value.pitch },
   { key: 'bearing', label: trans.value('map.info-control.bearing'), value: info.value.bearing },
@@ -144,10 +155,6 @@ function onToggleShow() {
   setShow(!show.value);
 }
 
-function onCopy(value: string) {
-  void copyText(value);
-}
-
 function onScreenshot() {
   callMap(async (map) => {
     capturing.value = true;
@@ -158,6 +165,36 @@ function onScreenshot() {
       capturing.value = false;
     }
   });
+}
+
+function onCopyImage() {
+  callMap(async (map) => {
+    capturing.value = true;
+    try {
+      const image = await exportMapbox(map);
+      await copyImageDataUrl(image);
+    } finally {
+      capturing.value = false;
+    }
+  });
+}
+
+function toggleDms() {
+  showDms.value = !showDms.value;
+}
+
+async function onPasteGoTo() {
+  try {
+    const text = await navigator.clipboard?.readText?.();
+    const parsed = parseCoordinateText(text || '');
+    if (!parsed) return;
+    callMap((map) => {
+      map.setCenter([parsed.lng, parsed.lat]);
+      if (parsed.zoom != null) map.setZoom(parsed.zoom);
+    });
+  } catch {
+    // Clipboard permission denied — ignore.
+  }
 }
 </script>
 
@@ -178,7 +215,7 @@ function onScreenshot() {
         @update:show="setShow"
         @close="setShow(false)"
         :width="360"
-        :height="340"
+        :height="380"
         :title="trans('map.info-control.title')"
       >
         <template #extra-btn>
@@ -188,8 +225,30 @@ function onScreenshot() {
             @click.stop="onScreenshot" variant="plain">
             <SvgIcon :size="16" type="mdi" :path="mdiCameraOutline" />
           </MapControlButton>
+          <MapControlButton
+            :title="trans('map.info-control.copy-image')"
+            :disabled="capturing"
+            @click.stop="onCopyImage" variant="plain">
+            <SvgIcon :size="16" type="mdi" :path="mdiContentCopy" />
+          </MapControlButton>
         </template>
         <div class="map-info-control">
+          <div class="map-info-control__actions">
+            <MapControlButton
+              variant="outlined"
+              :title="showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms')"
+              @click.stop="toggleDms"
+            >
+              {{ showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms') }}
+            </MapControlButton>
+            <MapControlButton
+              variant="outlined"
+              :title="trans('map.info-control.paste')"
+              @click.stop="onPasteGoTo"
+            >
+              {{ trans('map.info-control.paste') }}
+            </MapControlButton>
+          </div>
           <div class="map-info-control__rows">
             <div
               v-for="row in rows"
@@ -198,12 +257,12 @@ function onScreenshot() {
             >
               <div class="map-info-control__label">{{ row.label }}</div>
               <div class="map-info-control__value">{{ row.value }}</div>
-              <MapControlButton
+              <MapCopyButton
                 class="map-info-control__copy"
+                :value="row.value"
                 :title="trans('map.info-control.copy')"
-                @click.stop="onCopy(row.value)" variant="plain">
-                <SvgIcon :size="14" type="mdi" :path="mdiContentCopy" />
-              </MapControlButton>
+                :copied-title="trans('map.info-control.copied')"
+              />
             </div>
           </div>
         </div>

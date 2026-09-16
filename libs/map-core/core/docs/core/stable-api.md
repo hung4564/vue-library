@@ -48,8 +48,8 @@ Related: [SemVer checklist](https://github.com/hung4564/vue-library/blob/main/li
 | `./legend` | `LegendService`, `MapLegend`, paint helpers |
 | `./measurement` | `MeasurementService`, measure modes, format helpers |
 | `./menu` | Map context menu builders / actions |
-| `./print` | `PrintService`, export helpers (`exportMapbox*`, `waitMapIdleAndTiles`) |
-| `./theme` | Theme bootstrap / resolve / `MAP_THEME_*` |
+| `./print` | `PrintService`, export helpers (`exportMapbox*`, `clipCanvasRegion`, `waitMapIdleAndTiles`) |
+| `./theme` | Theme bootstrap / resolve / `MAP_THEME_*`, `MAP_THEME_CONTRAST_CLASS`, `subscribePrefersContrastMore` |
 | `./toolbar` | Toolbar strategies / store APIs |
 
 ### Root (`.`) highlights
@@ -62,10 +62,12 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Registry | `UniversalRegistry`, `runMapControlAction`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
-| Shared GIS | `fitBounds`, `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers, color/`logHelper`, map-info |
+| Shared GIS | `fitBounds` (sidebar left/right padding), `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers (`parseCoordinateText`, `latDMS`/`lngDMS`), color/`logHelper`, map-info (`copyImageDataUrl`) |
+| Pointer / touch | `getMapPointerProfile`, `bindMapLongPress` |
+| Fullscreen | `requestElementFullscreen`, `exitDocumentFullscreen`, `toggleElementFullscreen`, `subscribeFullscreenChange`, `getFullscreenElement`, `isDocumentFullscreen`, `isMapRootFullscreen`, `resolveMapFullscreenTarget` |
 | Control layout | `resolveControlLayout`, `ResolvedControlLayout` (`standalone` / `toolbar` / `menu`), `ControlLayout` (`standalone` / `toolbar` / `button`), `ButtonInMobile` / `BUTTON_IN_MOBILE_VALUES` (`button` / `toolbar` / `menu`). Map `buttonInMobile` on viewports ≤640px: `button` leaves corner controls unchanged; `toolbar` promotes into one `ToolbarControl` host except `controlLayout="button"`; `menu` fans out by `position` into corner stacks with outside-in overflow; bottom half budgets menu + same-edge `controlLayout="button"` chrome (see [ToolbarControl](./module/ToolbarControl.md)). Mount `ToolbarControl` in the map slot for `toolbar` and `menu`. |
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
-| Worker host | `WorkerMonitor`, `connectWorkerMonitor`, `runMonitoredTask`, … (in-worker: `./worker`) |
+| Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*` |
 | Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
@@ -89,7 +91,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 | `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
 | `./menu` | `LIST_VIEW_MENU_*`, `createMenu*` (list-view / dataset builders), `createMapContextMenuBuilder`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `STYLE_CONTROL_LOCALE` |
-| `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
+| `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, `collectFilesFromDataTransfer`, `readClipboardGisPaste`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*` / `GEO_EXPORT_COMPONENT_KEY` (SoT; `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo*` aliases), `createGeoExportController`, `onExport` + `GeoExportContext` (+ `AbortSignal`), `uiMode` modal\|menu\|click, `formComponent` / `loadingComponent`, `resolveGeoExportUiSlot`, `resolveExportCollection`, active-source bridge, `createMenuItemExportGeo`, `createDatasetPartGeoExport`, `openGeoExportModalFromAttributeTable` / `runGeoExportClickFromAttributeTable` / `runGeoExportFormatFromAttributeTable`, `resolveGeoExportCrs`, `downloadBlob` / `sanitizeExportFilename`, `getDatasetFeatureCollection` / `hasGeojsonExportData`, `ExportGeoComponentAttrs` (`exportHandler`) |
 | `./vite` | Deprecated no-op `mapDatasetGisWorker()` (older configs) |
 | `./geojson-worker` | Static single-file GIS worker (`assets/geojson.worker.js`) for Webpack / CDN / static hosts |
@@ -113,7 +115,7 @@ Shared root highlights:
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
 | Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore` (not `getMap`) — [map-store](./map-store.md) |
 | Registry | Framework `UniversalRegistry`, `RegistryItem` |
-| Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl`; action UI uses `MapControlButton` (`variant`: `icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`; `size`: `small` \| `medium` \| `large` \| number px — see [css-variables](./css-variables.md#core---mapcontrolbutton--mapbutton)) / `MapCommonButton` |
+| Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl`; action UI uses `MapControlButton` (`variant`: `icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`; `size`: `small` \| `medium` \| `large` \| number px — see [css-variables](./css-variables.md#core---mapcontrolbutton--mapbutton)) / `MapCommonButton` / **`MapCopyButton`** (clipboard + icon feedback; see [css-variables](./css-variables.md#core---mapcopybutton)) |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
 Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
@@ -130,17 +132,19 @@ Package entries: `.` + `./style.css` + **`./fields`**.
 | `MapCard`, `MapIcon`, `MapImage` | Lightweight map UI primitives |
 | `MapErrorToast` | Listens to `errorHandler`; “Open errors” dispatches `hungpvq:map-open-devtools-errors` |
 | `KEY`, `MITT_KEY` | Vue-only (on Vue `/fields`) |
-| `DragDropFile` | React-only (on React `/fields`) |
+| `DragDropFile` | Vue + React `/fields` (DOM-only drop zone) |
 
 ```ts
-import { MapControlButton } from '@hungpvq/vue-map-core';
+import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
 // or `@hungpvq/react-map-core` / `.../fields`
 ```
 
 `MapControlButton`: `variant` + `size` (`small` \| `medium` \| `large` \| px). Prefer `size="small"` in dense layer rows; default `medium` matches draggable header chrome (32px).
 
-Prefer canonical names in new code (`MapControlButton`, `BaseCollapse`, `InputTextArea`). Authoritative lock: root Stable + `*_FIELDS_RUNTIME_EXPORTS` in each adapter `public-api.spec.ts`.
+`MapCopyButton`: Stable root copy action — wraps `MapControlButton` + core `createCopyFeedback`. On success, icon `mdiContentCopy` → `mdiCheck` and title → `copiedTitle` for ~1.5s (`COPY_FEEDBACK_MS`). **No toast.** Prefer this for every text-copy chrome button (InfoControl rows, LayerDetail cells, measurement CRS values, …).
+
+Prefer canonical names in new code (`MapControlButton`, `MapCopyButton`, `BaseCollapse`, `InputTextArea`). Authoritative lock: root Stable + `*_FIELDS_RUNTIME_EXPORTS` in each adapter `public-api.spec.ts`.
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 

@@ -43,6 +43,7 @@ export const MAP_THEME_COLOR_SCHEME: Record<MapThemeId, 'light' | 'dark'> = {
 export const MAP_THEME_MODES: MapThemeMode[] = ['auto', ...MAP_THEME_IDS];
 
 const ALL_THEME_CLASSES = Object.values(MAP_THEME_CLASS);
+export const MAP_THEME_CONTRAST_CLASS = 'map-theme-contrast';
 
 export function isMapThemeId(value: unknown): value is MapThemeId {
   return (
@@ -66,6 +67,37 @@ export function resolveMapTheme(
 export function getPrefersDark(): boolean {
   if (typeof window === 'undefined' || !window.matchMedia) return false;
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+export function getPrefersContrastMore(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-contrast: more)').matches;
+}
+
+/** Apply or remove high-contrast chrome class on `document.documentElement`. */
+export function applyMapThemeContrastClass(
+  enabled = getPrefersContrastMore(),
+): void {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  if (enabled) root.classList.add(MAP_THEME_CONTRAST_CLASS);
+  else root.classList.remove(MAP_THEME_CONTRAST_CLASS);
+}
+
+/**
+ * Subscribe to `prefers-contrast: more`. Returns unsubscribe.
+ */
+export function subscribePrefersContrastMore(
+  onChange: (matches: boolean) => void,
+): () => void {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return () => undefined;
+  }
+  const mq = window.matchMedia('(prefers-contrast: more)');
+  const handler = (event: MediaQueryListEvent) => onChange(event.matches);
+  onChange(mq.matches);
+  mq.addEventListener('change', handler);
+  return () => mq.removeEventListener('change', handler);
 }
 
 export function getStoredMapThemeMode(
@@ -125,6 +157,7 @@ export function applyMapThemeClass(resolved: MapThemeResolved): void {
   root.classList.remove(...ALL_THEME_CLASSES);
   root.classList.add(MAP_THEME_CLASS[resolved]);
   root.style.colorScheme = MAP_THEME_COLOR_SCHEME[resolved];
+  applyMapThemeContrastClass();
 }
 
 /** Read stored mode (or fallback), resolve, and apply to html. */

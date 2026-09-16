@@ -264,6 +264,7 @@
     pointer-events: none;
     z-index: 2;
     position: absolute;
+    gap: 10px;
 
     & > * {
       clear: both;
@@ -274,6 +275,11 @@
     & > .btn-module-container {
       pointer-events: all;
     }
+
+    /* Hidden chrome (e.g. MapCommonButton visible=false) must not keep margin/gap. */
+    & > .btn-module-container:not(:has(*)) {
+      display: none;
+    }
   }
 
   .right-bottom-container {
@@ -282,9 +288,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    padding: 0 10px 10px 0;
 
     & > .btn-module-container {
-      margin: 0 10px 10px 0;
+      margin: 0;
       float: right;
       clear: both;
     }
@@ -296,9 +303,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 0 0 10px 10px;
 
     & > .btn-module-container {
-      margin: 0 0 10px 10px;
+      margin: 0;
       float: left;
     }
   }
@@ -309,9 +317,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 10px 0 0 10px;
 
     & > .btn-module-container {
-      margin: 10px 0 0 10px;
+      margin: 0;
       float: left;
     }
   }
@@ -322,9 +331,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    padding: 10px 10px 0 0;
 
     & > .btn-module-container {
-      margin: 10px 10px 0 0;
+      margin: 0;
       float: right;
     }
   }

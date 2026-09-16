@@ -2,7 +2,7 @@ export const PRINT_CONTROL_LOCALE = {
   map: {
     print: {
       title: 'Print',
-      actions: { save: 'save', clear: 'clear', setting: 'Setting' },
+      actions: { save: 'save', clear: 'clear', setting: 'Setting', 'copy-image': 'Copy image' },
       setting: { title: 'Setting' },
       field: {
         ratio: 'Ratio',

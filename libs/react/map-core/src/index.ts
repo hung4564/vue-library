@@ -11,6 +11,8 @@ export {
   MapControlButton,
   MapControlButtonGroupContext,
 } from './components/MapControlButton';
+export { MapCopyButton } from './components/MapCopyButton';
+export type { MapCopyButtonProps } from './components/MapCopyButton';
 
 export {
   MapControlGroupButton,

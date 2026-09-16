@@ -5,6 +5,7 @@ import {
   isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  WorkerMonitor,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -395,6 +396,17 @@ function WorkerCard(props: {
                   <span>
                     {engineLabel(task.engine)} · {elapsed(task)}
                   </span>
+                </div>
+                <div className="map-worker-control__task-actions">
+                  <MapControlButton
+                    variant="outlined"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      WorkerMonitor.abortTask(worker.id, task.id);
+                    }}
+                  >
+                    {trans('map.worker-control.action.cancel')}
+                  </MapControlButton>
                 </div>
                 <div
                   className={`map-worker-control__bar${percent == null ? ' is-indeterminate' : ''}`}

@@ -12,6 +12,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 /**
  * Close the last open panel-like control for a map (popup / sidebar / float).
  * Returns true when a control was closed.
+ * Blurs layer search only when it currently owns focus.
  */
 export function closeTopOpenMapControl(mapId: string): boolean {
   const open = UniversalRegistry.listControls(mapId).filter(
@@ -23,18 +24,20 @@ export function closeTopOpenMapControl(mapId: string): boolean {
   );
   const top = open[open.length - 1];
   if (!top) return false;
+  const active = document.activeElement;
+  const search = document.querySelector<HTMLElement>(MAP_LAYER_SEARCH_SELECTOR);
   top.close();
+  if (
+    search &&
+    active instanceof HTMLElement &&
+    (active === search || search.contains(active))
+  ) {
+    active.blur();
+  }
   return true;
 }
 
-/**
- * Open LayerControl (if registered) and focus its search field.
- */
-export function focusMapLayerSearch(mapId: string): boolean {
-  const layer = UniversalRegistry.getControl('mapLayerControl', mapId);
-  if (layer && !layer.isOpen()) {
-    layer.open();
-  }
+function tryFocusLayerSearch(): boolean {
   const el = document.querySelector<HTMLElement>(MAP_LAYER_SEARCH_SELECTOR);
   if (!el) return false;
   if (typeof el.focus === 'function') {
@@ -43,6 +46,58 @@ export function focusMapLayerSearch(mapId: string): boolean {
   if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
     el.select?.();
   }
+  return document.activeElement === el || el.contains(document.activeElement);
+}
+
+/**
+ * Open LayerControl (if registered) and focus its search field.
+ * Retries across animation frames / a short MutationObserver when the input
+ * is not mounted yet.
+ */
+export function focusMapLayerSearch(mapId: string): boolean {
+  const layer = UniversalRegistry.getControl('mapLayerControl', mapId);
+  if (layer && !layer.isOpen()) {
+    layer.open();
+  }
+  if (tryFocusLayerSearch()) return true;
+
+  if (typeof requestAnimationFrame !== 'function') {
+    return tryFocusLayerSearch();
+  }
+
+  let done = false;
+  let frames = 0;
+  let observer: MutationObserver | null = null;
+  const finish = (ok: boolean) => {
+    if (done) return ok;
+    done = true;
+    observer?.disconnect();
+    return ok;
+  };
+
+  const tick = (): boolean => {
+    if (tryFocusLayerSearch()) return finish(true);
+    frames += 1;
+    if (frames < 8) {
+      requestAnimationFrame(() => {
+        tick();
+      });
+      return false;
+    }
+    return finish(false);
+  };
+
+  if (typeof MutationObserver === 'function' && typeof document !== 'undefined') {
+    observer = new MutationObserver(() => {
+      if (tryFocusLayerSearch()) finish(true);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => finish(false), 500);
+  }
+
+  requestAnimationFrame(() => {
+    tick();
+  });
   return true;
 }
 

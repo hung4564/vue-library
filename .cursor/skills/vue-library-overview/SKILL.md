@@ -37,7 +37,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
 
-**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome.
+**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use Stable `MapCopyButton` (icon feedback, no toast).
 
 ## Logging (`@hungpvq/shared-log`)
 

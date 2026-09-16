@@ -90,6 +90,40 @@ CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|m
 
 Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`). Size/variant helpers: `@hungpvq/map-core` (`resolveMapButtonSizePx`, `MAP_BUTTON_VARIANTS`, …).
 
+### Core - MapCopyButton
+
+Stable root: `MapCopyButton` (Vue/React map-core). Clipboard copy with short icon/title feedback — **no toast**.
+
+Built on `MapControlButton` + `@hungpvq/map-core` `createCopyFeedback` / `COPY_FEEDBACK_MS` (1500ms). Success: `mdiContentCopy` → `mdiCheck`, title → `copiedTitle` (“Copied”), then revert.
+
+| Prop | Default | Notes |
+| --- | --- | --- |
+| `value` | `''` | Text written to clipboard |
+| `title` | `'Copy'` | Idle tooltip / aria-label |
+| `copiedTitle` | `'Copied'` | Feedback tooltip / aria-label |
+| `variant` | `'plain'` | Same as `MapControlButton` |
+| `size` | `'small'` | Same as `MapControlButton` |
+| `iconSize` | `14` | SvgIcon / @mdi/react size (px) |
+| `disabled` | auto when empty/`—` | Or force via prop |
+
+```vue
+<MapCopyButton
+  :value="row.value"
+  :title="trans('map.info-control.copy')"
+  :copied-title="trans('map.info-control.copied')"
+/>
+```
+
+```tsx
+<MapCopyButton
+  value={row.value}
+  title={trans('map.info-control.copy')}
+  copiedTitle={trans('map.info-control.copied')}
+/>
+```
+
+**Rule:** do **not** hand-roll `MapControlButton` + `createCopyFeedback` + `mdiCheck` for text copy in map UI — use `MapCopyButton`. Low-level `copyText` / `createCopyFeedback` remain Stable on `@hungpvq/map-core` for non-button flows (menus, programmatic copy).
+
 ### Core - General (Map/Card)
 
 - `--map-card-bg`: themed translucent overlays (light = near-white; vibrant/ocean/forest/sunset = tinted panels; dark/slate = dark overlays)
@@ -109,6 +143,8 @@ Named classes: `map-theme-light`, `map-theme-dark`, `map-theme-vibrant`, `map-th
 | `slate` | Steel dark + cyan accent |
 
 Draggable overlays alias these as `--card-background-color` / `--card-color`. Apply a theme class on `html` (or use [`ThemeControl`](./module/ThemeControl.md) / `bootstrapMapTheme()`).
+
+When `prefers-contrast: more` is active, `html` also gets `map-theme-contrast` (stronger `--map-border-color` / focus outlines). See [`themes.css`](../../src/style/themes.css).
 
 ### Measurement - MeasurementControl
 

@@ -81,6 +81,14 @@ export function ensureRegisteredProjection(epsg: string): string | undefined {
     return WGS84_LONGLAT;
   }
 
+  // Web Mercator — always return an explicit +proj string (defs.projStr can be missing).
+  if (n === 3857) {
+    const def =
+      '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs';
+    proj4.defs(code, def);
+    return def;
+  }
+
   if (n >= 32601 && n <= 32660) {
     const def = utmProjString(n - 32600, false);
     proj4.defs(code, def);

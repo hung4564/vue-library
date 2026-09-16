@@ -1,4 +1,4 @@
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { bindMapLongPress, getMapPointerProfile, type WithMapPropType } from '@hungpvq/map-core';
 import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
 import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
@@ -145,6 +145,7 @@ export function IdentifyControl(
   isEventClickActiveRef.current = isEventClickActive;
   const isEventClickBoxRef = useRef(isEventClickBox);
   isEventClickBoxRef.current = isEventClickBox;
+  const unbindLongPressRef = useRef<(() => void) | null>(null);
 
   const syncResultPanel = useCallback(
     (extra?: IdentifyResultUpdatePayload) => {
@@ -268,11 +269,32 @@ export function IdentifyControl(
     setIsUseClick(true);
     addEventClickRef.current();
     syncResultPanel({ isEventClickActive: true });
+    unbindLongPressRef.current?.();
+    unbindLongPressRef.current = null;
+    if (getMapPointerProfile().coarse) {
+      callMapRef.current((map) => {
+        unbindLongPressRef.current = bindMapLongPress(map, {
+          onLongPress: (point) => {
+            if (isEventClickBoxRef.current) return;
+            const lngLat = map.unproject([point.x, point.y]);
+            const nextOrigin = {
+              latitude: lngLat.lat,
+              longitude: lngLat.lng,
+            };
+            setOrigin(nextOrigin);
+            originRef.current = nextOrigin;
+            void onGetFeaturesRef.current(point);
+          },
+        });
+      });
+    }
   }, [syncResultPanel]);
 
   const onRemoveMapClick = useCallback(() => {
     setIsUseClick(false);
     removeEventClickRef.current();
+    unbindLongPressRef.current?.();
+    unbindLongPressRef.current = null;
     syncResultPanel({ isEventClickActive: false });
   }, [syncResultPanel]);
 

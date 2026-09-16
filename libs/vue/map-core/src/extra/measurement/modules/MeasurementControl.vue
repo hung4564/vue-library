@@ -24,6 +24,7 @@
       :fields="setting.fields"
       :measurementType="measurement_type"
       @update:modelValue="setValue"
+      @refresh="handler.init(coordinates)"
     />
   </ModuleContainer>
 </template>
@@ -68,11 +69,13 @@ import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl, type ToolbarButtonConfig } from '../../toolbar/helper';
 
 import {
+  mdiAngleAcute,
   mdiClose,
   mdiCogOutline,
   mdiCrosshairsGps,
   mdiDeleteOutline,
   mdiMapMarkerOutline,
+  mdiRadiusOutline,
   mdiRuler,
   mdiRulerSquareCompass,
   mdiTableHeadersEye,
@@ -82,10 +85,12 @@ import {
   IViewSettingField,
   MapMarkerView,
   MapView,
+  MeasureAngle,
   MeasureArea,
   MeasureAzimuth,
   MeasureDistance,
   MeasurePoint,
+  MeasureRadius,
   MeasurementHandle,
 } from '@hungpvq/map-core/measurement';
 import { logger } from '../logger';
@@ -101,6 +106,8 @@ const path = {
   distance: mdiRuler,
   area: mdiRulerSquareCompass,
   azimuth: mdiTableHeadersEye,
+  angle: mdiAngleAcute,
+  radius: mdiRadiusOutline,
   point: mdiMapMarkerOutline,
   clear: mdiDeleteOutline,
   close: mdiClose,
@@ -179,6 +186,22 @@ const button_show: MeasureActionItem[] = [
   },
   {
     index: 4,
+    type: 'angle',
+    title: 'map.measurement.tools.angle',
+    icon: path.angle,
+    handle: () => onMeasureAngle(),
+    isActive: () => measurement_type.value === 'angle',
+  },
+  {
+    index: 5,
+    type: 'radius',
+    title: 'map.measurement.tools.radius',
+    icon: path.radius,
+    handle: () => onMeasureRadius(),
+    isActive: () => measurement_type.value === 'radius',
+  },
+  {
+    index: 6,
     type: 'point',
     title: 'map.measurement.tools.point',
     icon: path.point,
@@ -297,7 +320,9 @@ useRegisterMapControl(mapId, {
     ),
 });
 
-watch([measurement_type, coordinates], () => control.sync(), { deep: true });
+watch([measurement_type, coordinates, () => setting.value.show], () => control.sync(), {
+  deep: true,
+});
 
 function checkMeasureRun(type: string) {
   reset(false);
@@ -307,6 +332,7 @@ function checkMeasureRun(type: string) {
     return false;
   }
   measurement_type.value = type;
+  setting.value.show = true;
   return true;
 }
 
@@ -325,6 +351,18 @@ function onMeasureArea() {
 function onMeasureAzimuth() {
   if (!checkMeasureRun('azimuth')) return;
   handler.setAction(new MeasureAzimuth());
+  handler.start();
+}
+
+function onMeasureAngle() {
+  if (!checkMeasureRun('angle')) return;
+  handler.setAction(new MeasureAngle());
+  handler.start();
+}
+
+function onMeasureRadius() {
+  if (!checkMeasureRun('radius')) return;
+  handler.setAction(new MeasureRadius());
   handler.start();
 }
 
@@ -408,7 +446,7 @@ function onInit(map: MapSimple) {
 
       {
         type: 'symbol',
-        filter: ['has', 'rotation'],
+        filter: ['all', ['has', 'rotation'], ['!has', 'is_edge']],
         paint: { 'icon-color': DEFAULT_COLOR_HIGHLIGHT },
         layout: {
           'icon-size': 1.2,
@@ -436,7 +474,37 @@ function onInit(map: MapSimple) {
       // },
       {
         type: 'symbol',
-        filter: ['all', ['has', 'is_label'], ['==', '$type', 'Point']],
+        filter: [
+          'all',
+          ['has', 'is_label'],
+          ['has', 'is_edge'],
+          ['==', '$type', 'Point'],
+        ],
+        layout: {
+          'text-field': '{text}',
+          'text-size': 12,
+          'text-rotate': ['get', 'text_rotate'],
+          'text-rotation-alignment': 'map',
+          'text-pitch-alignment': 'viewport',
+          'text-offset': [0, 0],
+          'text-anchor': 'center',
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+        },
+        paint: {
+          'text-color': '#fff',
+          'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
+          'text-halo-width': 2,
+        },
+      },
+      {
+        type: 'symbol',
+        filter: [
+          'all',
+          ['has', 'is_label'],
+          ['!has', 'is_edge'],
+          ['==', '$type', 'Point'],
+        ],
         layout: {
           'text-field': '{text}',
           'text-offset': [
@@ -447,7 +515,9 @@ function onInit(map: MapSimple) {
           ],
           'text-size': 14,
           'text-allow-overlap': true,
+          'text-ignore-placement': true,
           'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
           'icon-image': 'measurment-round',
           'icon-text-fit': 'both',
         },
@@ -505,7 +575,7 @@ function onInit(map: MapSimple) {
     }
     setting.value.fields = fields.map((x) => ({
       ...x,
-      text: x.trans ? trans.value(x.trans) : x.text,
+      text: x.trans ? trans.value(x.trans, x.params) : x.text,
     }));
   };
   handler.addView(mapView);

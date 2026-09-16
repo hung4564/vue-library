@@ -330,3 +330,29 @@
   --map-layer-menu-bg: var(--map-card-bg);
   --map-layer-menu-text: var(--map-card-text);
 }
+
+/* High contrast: prefer thicker borders / stronger focus rings */
+html.map-theme-contrast,
+.map-theme-contrast {
+  --map-border-color: #000000;
+  --map-divider-color: #222222;
+  --map-text-secondary: #222222;
+}
+
+html.map-theme-contrast.map-theme-dark,
+html.map-theme-contrast.map-theme-slate,
+.map-theme-contrast.map-theme-dark,
+.map-theme-contrast.map-theme-slate {
+  --map-border-color: #ffffff;
+  --map-divider-color: #e5e5e5;
+  --map-text-secondary: #f0f0f0;
+}
+
+html.map-theme-contrast .maplibregl-ctrl button:focus,
+html.map-theme-contrast .map-control-button:focus,
+html.map-theme-contrast .input-container > input:focus,
+html.map-theme-contrast .input-container > textarea:focus,
+html.map-theme-contrast .input-container > select:focus {
+  outline: 3px solid var(--map-accent-color, #1a73e8);
+  outline-offset: 2px;
+}

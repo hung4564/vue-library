@@ -1,6 +1,9 @@
 import { applyWorkerMonitorMessage } from './message';
 import { WorkerMonitor } from './monitor';
 import {
+  createWorkerMonitorAbortMessage,
+} from './protocol';
+import {
   runMonitoredTask,
   type MonitoredTaskRun,
 } from './run-task';
@@ -20,6 +23,11 @@ export type WorkerTaskResponseBase = {
 type PendingTask<TResponse> = {
   resolve: (value: TResponse) => void;
   reject: (reason?: unknown) => void;
+  abortCleanup?: () => void;
+};
+
+export type WorkerPostOptions = {
+  signal?: AbortSignal;
 };
 
 export type WorkerMonitorConnectOptions<
@@ -43,7 +51,8 @@ export type WorkerMonitorClient<
   readonly id: string;
   readonly handle: WorkerHandle;
   getWorker(): Worker | null;
-  post(payload: TRequest): Promise<TResponse>;
+  post(payload: TRequest, options?: WorkerPostOptions): Promise<TResponse>;
+  abortTask(taskId: string, reason?: string): boolean;
   runTask<T>(
     type: string,
     primary: MonitoredTaskRun<T>,
@@ -52,8 +61,19 @@ export type WorkerMonitorClient<
   terminate(reason?: string): void;
 };
 
+const abortHooks = new Map<string, (taskId: string, reason?: string) => boolean>();
+
 function defaultMapError(raw?: string): Error {
   return new Error(raw?.trim() || 'Worker failed');
+}
+
+function abortError(reason = 'Aborted'): Error {
+  if (typeof DOMException !== 'undefined') {
+    return new DOMException(reason, 'AbortError');
+  }
+  const err = new Error(reason);
+  err.name = 'AbortError';
+  return err;
 }
 
 export function connectWorkerMonitor<
@@ -70,6 +90,7 @@ export function connectWorkerMonitor<
 
   function rejectAll(reason: Error, failFallback = true) {
     for (const [id, task] of pending) {
+      task.abortCleanup?.();
       handle.failTask(id, reason.message, {
         engine: 'worker',
         fallback: failFallback,
@@ -78,6 +99,23 @@ export function connectWorkerMonitor<
     }
     pending.clear();
   }
+
+  function abortTask(taskId: string, reason = 'Aborted'): boolean {
+    const task = pending.get(taskId);
+    if (!task) return false;
+    pending.delete(taskId);
+    task.abortCleanup?.();
+    worker?.postMessage(createWorkerMonitorAbortMessage(taskId));
+    const err = abortError(reason);
+    handle.failTask(taskId, err.message, {
+      engine: 'worker',
+      fallback: false,
+    });
+    task.reject(err);
+    return true;
+  }
+
+  abortHooks.set(options.id, abortTask);
 
   function getWorker(): Worker | null {
     if (workerUnavailable || typeof Worker === 'undefined') {
@@ -96,6 +134,7 @@ export function connectWorkerMonitor<
         const task = pending.get(data.id);
         if (!task) return;
         pending.delete(data.id);
+        task.abortCleanup?.();
         if (data.ok) {
           task.resolve(data);
           return;
@@ -135,7 +174,14 @@ export function connectWorkerMonitor<
     }
   }
 
-  function post(payload: TRequest): Promise<TResponse> {
+  function post(
+    payload: TRequest,
+    postOptions?: WorkerPostOptions,
+  ): Promise<TResponse> {
+    const signal = postOptions?.signal;
+    if (signal?.aborted) {
+      return Promise.reject(abortError());
+    }
     const instance = getWorker();
     if (!instance) {
       return Promise.reject(new Error('Worker unavailable'));
@@ -144,7 +190,19 @@ export function connectWorkerMonitor<
       ? options.prepareRequest(payload)
       : payload;
     return new Promise<TResponse>((resolve, reject) => {
-      pending.set(payload.id, { resolve, reject });
+      const onAbort = () => {
+        abortTask(payload.id);
+      };
+      if (signal) {
+        signal.addEventListener('abort', onAbort, { once: true });
+      }
+      pending.set(payload.id, {
+        resolve,
+        reject,
+        abortCleanup: signal
+          ? () => signal.removeEventListener('abort', onAbort)
+          : undefined,
+      });
       instance.postMessage(message);
     });
   }
@@ -158,6 +216,7 @@ export function connectWorkerMonitor<
   }
 
   function terminate(reason = 'Worker terminated') {
+    abortHooks.delete(options.id);
     worker?.terminate();
     worker = null;
     workerUnavailable = false;
@@ -171,9 +230,30 @@ export function connectWorkerMonitor<
     handle,
     getWorker,
     post,
+    abortTask,
     runTask,
     terminate,
   };
 }
 
+/** Abort a pending worker task from UI / monitor (no-op if unknown). */
+export function abortWorkerMonitorTask(
+  workerId: string,
+  taskId: string,
+  reason?: string,
+): boolean {
+  const hook = abortHooks.get(workerId);
+  if (hook) return hook(taskId, reason);
+  const handle = WorkerMonitor.getHandle(workerId);
+  if (!handle) return false;
+  const pending = handle.snapshot().pending.find((t) => t.id === taskId);
+  if (!pending) return false;
+  handle.failTask(taskId, reason ?? 'Aborted', {
+    engine: pending.engine,
+    fallback: false,
+  });
+  return true;
+}
+
 WorkerMonitor.connect = connectWorkerMonitor;
+WorkerMonitor.abortTask = abortWorkerMonitorTask;
