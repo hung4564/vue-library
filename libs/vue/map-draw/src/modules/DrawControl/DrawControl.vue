@@ -7,6 +7,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
+  getDrawCreateModeEffects,
   getDrawModeSelectEffects,
   getDrawStyles,
   MapDraw,
@@ -25,7 +26,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { Feature, FeatureCollection } from 'geojson';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
@@ -98,6 +99,10 @@ function close() {
   });
 }
 
+onBeforeUnmount(() => {
+  close();
+});
+
 const {
   draftItems,
   draftCounts,
@@ -138,10 +143,14 @@ function onSelectMethod(value: 'select' | 'delete') {
   control.changeMode(effects.drawMode);
 }
 function onDraw(type: string) {
+  const effects = getDrawCreateModeEffects(type);
+  if (effects.detachMapClick) {
+    removeEventClick();
+  }
   current_feature.value = undefined;
-  method.value = 'create';
-  control.changeMode(type);
-  isDraw.value = true;
+  method.value = effects.method;
+  control.changeMode(effects.drawMode);
+  isDraw.value = effects.isDraw;
 }
 const drawSupport = ref<MapDrawConfig['drawSupports']>([]);
 

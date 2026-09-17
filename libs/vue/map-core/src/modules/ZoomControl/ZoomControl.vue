@@ -25,9 +25,13 @@
 
 <script setup lang="ts">
 import {
+  attachRotateListener,
   MAP_ACTION_LOCALE,
   MapSimple,
+  resetBearing,
   type WithMapPropType,
+  zoomIn,
+  zoomOut,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
@@ -64,34 +68,35 @@ const { trans, registerLocale } = useLang(mapId.value);
 
 registerLocale('en', MAP_ACTION_LOCALE);
 
-let bindSyncRotate: (() => void) | null = null;
+let detachRotate: (() => void) | null = null;
 
 function onInit(_map: MapSimple) {
-  bindSyncRotate = syncRotate.bind(null, _map);
-  _map.on('rotate', bindSyncRotate);
+  detachRotate = attachRotateListener(_map, (next) => {
+    transform.value = next;
+    control.sync();
+  });
 }
 
 function onDestroy(_map: MapSimple) {
-  if (bindSyncRotate) {
-    _map.off('rotate', bindSyncRotate);
-  }
+  detachRotate?.();
+  detachRotate = null;
 }
 
 function onZoomIn(e?: MouseEvent) {
   callMap((map) => {
-    map.zoomIn({}, { originalEvent: e });
+    zoomIn(map, e);
   });
 }
 
 function onZoomOut(e?: MouseEvent) {
   callMap((map) => {
-    map.zoomOut({}, { originalEvent: e });
+    zoomOut(map, e);
   });
 }
 
 function onResetBearing() {
   callMap((map) => {
-    map.easeTo({ bearing: 0, pitch: 0 });
+    resetBearing(map);
   });
 }
 useRegisterMapControl(mapId, {
@@ -148,9 +153,4 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     },
   ],
 });
-function syncRotate(_map: MapSimple) {
-  const angle = _map.getBearing() * -1;
-  transform.value = `rotate(${angle}deg)`;
-  control.sync();
-}
 </script>

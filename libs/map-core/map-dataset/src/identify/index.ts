@@ -52,6 +52,19 @@ export type {
   RunIdentifyResult,
   RunIdentifyShowFirstOptions,
 } from './run-identify';
+export {
+  buildIdentifyClosePanelPayload,
+  createIdentifyControlModel,
+  resolveIdentifyScopedSession,
+  resolveIdentifySessionToggle,
+  shouldBindIdentifyLongPress,
+} from './control-model';
+export type {
+  IdentifyControlModel,
+  IdentifyControlModelState,
+  IdentifyScopedSessionResult,
+  IdentifySessionToggleResult,
+} from './control-model';
 
 export type {
   IIdentifyView,

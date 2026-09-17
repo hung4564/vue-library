@@ -1,4 +1,9 @@
-import { getMap, getMapPointerProfile } from '@hungpvq/map-core';
+import {
+  getMap,
+  getMapPointerProfile,
+  registerMapStoreCleanup,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import type { Feature } from 'geojson';
 import { Popup, type MapMouseEvent, type PointLike } from 'maplibre-gl';
@@ -101,6 +106,8 @@ type ControllerState = {
   listeners: Set<() => void>;
   abort?: AbortController;
   presentationCleanups: Map<string | number, () => void>;
+  /** Active bindPointer unbind fns — destroy() must run them all. */
+  pointerUnbinds: Set<() => void>;
   maplibrePopup?: Popup;
 };
 
@@ -203,6 +210,7 @@ function createController(mapId: string): HighlightController {
     pickDatasets: () => [],
     listeners: new Set(),
     presentationCleanups: new Map(),
+    pointerUnbinds: new Set(),
   };
   const painter = createHighlightPainter(mapId);
 
@@ -411,9 +419,11 @@ function createController(mapId: string): HighlightController {
 
   function bindPointer(opts: HighlightBindPointerOptions): () => void {
     const cleanups: Array<() => void> = [];
+    let cancelled = false;
     let lastHoverId: string | undefined;
 
-    getMap(mapId, (map) => {
+    const unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      if (cancelled) return;
       if (opts.click) {
         const handler = (e: MapMouseEvent) => {
           void pickAt(e.point, {
@@ -468,9 +478,15 @@ function createController(mapId: string): HighlightController {
       }
     });
 
-    return () => {
+    const unbind = () => {
+      cancelled = true;
+      unsubscribeReady();
       for (const c of cleanups) c();
+      cleanups.length = 0;
+      state.pointerUnbinds.delete(unbind);
     };
+    state.pointerUnbinds.add(unbind);
+    return unbind;
   }
 
   return {
@@ -519,6 +535,8 @@ function createController(mapId: string): HighlightController {
       };
     },
     destroy() {
+      for (const unbind of [...state.pointerUnbinds]) unbind();
+      state.pointerUnbinds.clear();
       hide();
       state.listeners.clear();
       controllers.delete(mapId);
@@ -531,6 +549,9 @@ export function getHighlightController(mapId: string): HighlightController {
   if (!ctrl) {
     ctrl = createController(mapId);
     controllers.set(mapId, ctrl);
+    registerMapStoreCleanup(mapId, 'highlight', () => {
+      destroyHighlightController(mapId);
+    });
   }
   return ctrl;
 }

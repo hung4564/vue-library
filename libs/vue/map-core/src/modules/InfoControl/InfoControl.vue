@@ -5,6 +5,7 @@ export default {
 </script>
 <script setup lang="ts">
 import {
+  attachMapViewInfoListeners,
   copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
@@ -80,6 +81,7 @@ const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);
 const showDms = ref(false);
 const centerDms = ref('');
+let detachInfo: (() => void) | undefined;
 
 function syncInfo() {
   callMap((map) => {
@@ -90,17 +92,13 @@ function syncInfo() {
 }
 
 function attachListeners(map: MapSimple) {
-  map.on('move', syncInfo);
-  map.on('pitch', syncInfo);
-  map.on('rotate', syncInfo);
-  map.on('styledata', syncInfo);
+  detachInfo?.();
+  detachInfo = attachMapViewInfoListeners(map, syncInfo);
 }
 
-function detachListeners(map: MapSimple) {
-  map.off('move', syncInfo);
-  map.off('pitch', syncInfo);
-  map.off('rotate', syncInfo);
-  map.off('styledata', syncInfo);
+function detachListeners() {
+  detachInfo?.();
+  detachInfo = undefined;
 }
 
 const rows = computed(() => [
@@ -142,14 +140,14 @@ watch(
       syncInfo();
       callMap(attachListeners);
     } else {
-      callMap(detachListeners);
+      detachListeners();
     }
     control.sync();
   },
 );
 
 onUnmounted(() => {
-  callMap(detachListeners);
+  detachListeners();
 });
 
 function onToggleShow() {

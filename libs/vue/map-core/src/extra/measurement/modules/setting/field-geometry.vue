@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type {
-  CoordinatesNumber,
-  DraftCoordinatesNumber,
-} from '@hungpvq/map-core';
+import type { DraftCoordinatesNumber } from '@hungpvq/map-core';
 import { parseCoordinateListText } from '@hungpvq/map-core';
+import {
+  buildMeasurementGeojsonDownload,
+  draftCoordinatesToFeature,
+} from '@hungpvq/map-core/measurement';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -13,7 +14,7 @@ import {
   mdiUploadOutline,
 } from '@mdi/js';
 import FileSaver from 'file-saver';
-import type { Feature, Position } from 'geojson';
+import type { Feature } from 'geojson';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -41,30 +42,6 @@ const emit = defineEmits<{
   (_e: 'click:remove', _index: number): void;
   (_e: 'click:fillbound', _geometry: Feature): void;
 }>();
-
-function toPointFeature(coordinates: Position): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'Point', coordinates },
-  };
-}
-
-function toLineStringFeature(coordinates: Position[]): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'LineString', coordinates },
-  };
-}
-
-function toPolygonFeature(coordinates: Position[][]): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'Polygon', coordinates },
-  };
-}
 
 const submit = (value: DraftCoordinatesNumber[] = []) => {
   model.value = [...value];
@@ -116,38 +93,14 @@ function onPasteCoordinate(event: ClipboardEvent, index: number) {
   submit(next);
 }
 
-const convertGeometry = (coordinates: DraftCoordinatesNumber[]) => {
-  const validCoords = coordinates.filter(
-    (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
-  );
-  if (!validCoords || !validCoords.length) {
-    return;
-  }
-  if (validCoords.length === 1) {
-    return toPointFeature(validCoords[0]);
-  }
-  if (validCoords.length === 2) {
-    return toLineStringFeature(validCoords);
-  }
-  return toPolygonFeature([[...validCoords, validCoords[0]]]);
-};
-
 const onDownload = () => {
-  const geom = convertGeometry(model.value);
-  if (!geom) return;
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [geom],
-  };
-  const blob = new window.Blob([JSON.stringify(geojson)], {
-    type: 'text/plain;charset=utf-8',
-  });
-
-  FileSaver.saveAs(blob, 'geojson.json');
+  const download = buildMeasurementGeojsonDownload(model.value);
+  if (!download) return;
+  FileSaver.saveAs(download.blob, download.fileName);
 };
 
 const onFlyTo = () => {
-  const geom = convertGeometry(model.value);
+  const geom = draftCoordinatesToFeature(model.value);
   if (geom) {
     emit('click:fillbound', geom);
   }

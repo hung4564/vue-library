@@ -1,8 +1,12 @@
 /**
  * Framework-agnostic UniversalRegistry.
- * One store and one resolve path for methods, menu handlers, and control handles.
- * Vue/React subclasses add `registerComponent` / `getComponent`.
+ * Methods, menu handlers, components, and control handles share one resolve path.
+ * Backing bags live in `@hungpvq/shared-store` (globalThis) so duplicate package
+ * copies still share memory — no class-static `new Map` singletons.
+ * Vue/React subclasses only add typed `registerComponent` / `getComponent`
+ * (e.g. Vue `markRaw`); storage is owned here.
  */
+import { getOrCreateStore } from '@hungpvq/shared-store';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { logHelper } from '../utils/log';
 import {
@@ -25,8 +29,19 @@ export const REGISTRY_NAMESPACES = {
   CONTROL: 'control:',
 } as const;
 
-/** Shared key for the framework adapter's global component store. */
+/** Shared key for the global registry bag (methods / menu / components). */
 export const REGISTRY_GLOBAL_STORE_KEY = 'map:registry:global';
+
+/** Per-map namespaced fn/component bags. */
+export const REGISTRY_MAPS_STORE_KEY = 'map:registry:maps';
+
+/** Per-map control handles. */
+export const REGISTRY_CONTROLS_STORE_KEY = 'map:registry:controls';
+
+type RegistryBag = Record<string, unknown>;
+type RegistryMapsBag = Record<string, RegistryBag>;
+type ControlBag = Record<string, MapControlHandle>;
+type ControlsMapsBag = Record<string, ControlBag>;
 
 const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
 
@@ -36,84 +51,112 @@ function warnOverwrite(mapId: string, key: string) {
   );
 }
 
+function globalBag(): RegistryBag {
+  return getOrCreateStore<RegistryBag>(REGISTRY_GLOBAL_STORE_KEY, () => ({}));
+}
+
+function mapsBag(): RegistryMapsBag {
+  return getOrCreateStore<RegistryMapsBag>(REGISTRY_MAPS_STORE_KEY, () => ({}));
+}
+
+function controlsBag(): ControlsMapsBag {
+  return getOrCreateStore<ControlsMapsBag>(
+    REGISTRY_CONTROLS_STORE_KEY,
+    () => ({}),
+  );
+}
+
+function ensureMapBag(mapId: string): RegistryBag {
+  const maps = mapsBag();
+  if (!maps[mapId]) {
+    maps[mapId] = {};
+  }
+  return maps[mapId];
+}
+
+function ensureControlBag(mapId: string): ControlBag {
+  const controls = controlsBag();
+  if (!controls[mapId]) {
+    controls[mapId] = {};
+  }
+  return controls[mapId];
+}
+
 export class UniversalRegistry {
-  private static global = new Map<string, RegistryFn>();
-  private static maps = new Map<string, Map<string, RegistryFn>>();
-  private static controls = new Map<string, Map<string, MapControlHandle>>();
-
-  private static ensureMapStore(mapId: string): Map<string, RegistryFn> {
-    let store = this.maps.get(mapId);
-    if (!store) {
-      store = new Map();
-      this.maps.set(mapId, store);
-    }
-    return store;
-  }
-
-  private static ensureControlStore(
-    mapId: string,
-  ): Map<string, MapControlHandle> {
-    let store = this.controls.get(mapId);
-    if (!store) {
-      store = new Map();
-      this.controls.set(mapId, store);
-    }
-    return store;
-  }
-
-  private static resolveFn<T extends RegistryFn>(
+  private static resolveValue<T>(
     namespacedKey: string,
     mapId?: string,
   ): T | undefined {
     if (mapId) {
-      const mapStore = this.maps.get(mapId);
-      if (mapStore?.has(namespacedKey)) {
-        return mapStore.get(namespacedKey) as T;
+      const mapStore = mapsBag()[mapId];
+      if (mapStore && namespacedKey in mapStore) {
+        return mapStore[namespacedKey] as T;
       }
     }
-    return this.global.get(namespacedKey) as T | undefined;
+    return globalBag()[namespacedKey] as T | undefined;
   }
 
-  private static setMapFn(
+  private static setMapValue(
     mapId: string,
     namespacedKey: string,
-    fn: RegistryFn,
+    value: unknown,
   ) {
-    const store = this.ensureMapStore(mapId);
-    if (store.has(namespacedKey)) {
+    const store = ensureMapBag(mapId);
+    if (namespacedKey in store) {
       warnOverwrite(mapId, namespacedKey);
     }
-    store.set(namespacedKey, fn);
+    store[namespacedKey] = value;
   }
 
   static registerMethod(key: string, fn: RegistryFn) {
-    this.global.set(REGISTRY_NAMESPACES.METHOD + key, fn);
+    globalBag()[REGISTRY_NAMESPACES.METHOD + key] = fn;
   }
 
   static registerMethodForMap(mapId: string, key: string, fn: RegistryFn) {
-    this.setMapFn(mapId, REGISTRY_NAMESPACES.METHOD + key, fn);
+    this.setMapValue(mapId, REGISTRY_NAMESPACES.METHOD + key, fn);
   }
 
   static registerMenuHandler(key: string, fn: RegistryFn) {
-    this.global.set(REGISTRY_NAMESPACES.MENU_HANDLER + key, fn);
+    globalBag()[REGISTRY_NAMESPACES.MENU_HANDLER + key] = fn;
   }
 
   static registerMenuHandlerForMap(mapId: string, key: string, fn: RegistryFn) {
-    this.setMapFn(mapId, REGISTRY_NAMESPACES.MENU_HANDLER + key, fn);
+    this.setMapValue(mapId, REGISTRY_NAMESPACES.MENU_HANDLER + key, fn);
+  }
+
+  /**
+   * Register a UI component (framework-agnostic value).
+   * Adapters typically wrap with typed Component + Vue `markRaw`.
+   */
+  static registerComponent(key: string, component: unknown) {
+    globalBag()[REGISTRY_NAMESPACES.COMPONENT + key] = component;
+  }
+
+  static registerComponentForMap(
+    mapId: string,
+    key: string,
+    component: unknown,
+  ) {
+    this.setMapValue(mapId, REGISTRY_NAMESPACES.COMPONENT + key, component);
+  }
+
+  /** Framework-agnostic component value; adapters narrow the return type. */
+  static getComponent(key: string, mapId?: string): unknown {
+    return this.resolveValue(REGISTRY_NAMESPACES.COMPONENT + key, mapId);
   }
 
   static getMethod<T extends RegistryFn = RegistryFn>(
     key: string,
     mapId?: string,
   ): T | undefined {
-    return this.resolveFn<T>(REGISTRY_NAMESPACES.METHOD + key, mapId);
+    return this.resolveValue<T>(REGISTRY_NAMESPACES.METHOD + key, mapId);
   }
 
   static getMenuHandler<T extends RegistryFn = RegistryFn>(
     key: string,
     mapId?: string,
   ): T | undefined {
-    return this.resolveFn<T>(REGISTRY_NAMESPACES.MENU_HANDLER + key, mapId);
+    return this.resolveValue<T>(REGISTRY_NAMESPACES.MENU_HANDLER + key, mapId);
   }
 
   static hasMenuHandler(key: string, mapId?: string): boolean {
@@ -121,23 +164,27 @@ export class UniversalRegistry {
   }
 
   static registerControl(mapId: string, key: string, handle: MapControlHandle) {
-    const store = this.ensureControlStore(mapId);
-    if (store.has(key)) {
+    const store = ensureControlBag(mapId);
+    if (key in store) {
       warnOverwrite(mapId, REGISTRY_NAMESPACES.CONTROL + key);
     }
-    store.set(key, handle);
+    store[key] = handle;
   }
 
   static unregisterControl(mapId: string, key: string) {
-    this.controls.get(mapId)?.delete(key);
+    const store = controlsBag()[mapId];
+    if (store) {
+      delete store[key];
+    }
   }
 
   static getControl(key: string, mapId: string): MapControlHandle | undefined {
-    return this.controls.get(mapId)?.get(key);
+    return controlsBag()[mapId]?.[key];
   }
 
   static listControls(mapId: string): MapControlHandle[] {
-    return Array.from(this.controls.get(mapId)?.values() ?? []);
+    const store = controlsBag()[mapId];
+    return store ? Object.values(store) : [];
   }
 
   static openControl(mapId: string, key: string) {
@@ -169,24 +216,26 @@ export class UniversalRegistry {
     mapId: string,
     namespace: RegistryNamespaceKind,
   ): string[] {
-    if (namespace === 'component') return [];
     if (namespace === 'control') {
-      return Array.from(this.controls.get(mapId)?.keys() ?? []);
+      const store = controlsBag()[mapId];
+      return store ? Object.keys(store) : [];
     }
     const prefix =
       namespace === 'method'
         ? REGISTRY_NAMESPACES.METHOD
-        : REGISTRY_NAMESPACES.MENU_HANDLER;
-    const store = this.maps.get(mapId);
+        : namespace === 'menu-handler'
+          ? REGISTRY_NAMESPACES.MENU_HANDLER
+          : REGISTRY_NAMESPACES.COMPONENT;
+    const store = mapsBag()[mapId];
     if (!store) return [];
-    return Array.from(store.keys())
+    return Object.keys(store)
       .filter((key) => key.startsWith(prefix))
       .map((key) => key.slice(prefix.length));
   }
 
-  /** Drop per-map methods, menu handlers, and controls (called from removeMap). */
+  /** Drop per-map methods, menu handlers, components, and controls (removeMap). */
   static clearMap(mapId: string) {
-    this.maps.delete(mapId);
-    this.controls.delete(mapId);
+    delete mapsBag()[mapId];
+    delete controlsBag()[mapId];
   }
 }

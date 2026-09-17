@@ -5,12 +5,14 @@ export default {
 </script>
 <script setup lang="ts">
 import {
+  anyWorkerHasHistory,
+  countBusyWorkers,
   filterWorkerSnapshots,
   formatWorkerDuration,
-  isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
   WorkerMonitor,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -74,22 +76,12 @@ const selected = computed(
 const selectedLogs = computed(() =>
   selected.value ? workerLogsForDisplay(selected.value.logs) : [],
 );
-const busyCount = computed(() => workers.value.filter(isWorkerBusy).length);
+const busyCount = computed(() => countBusyWorkers(workers.value));
 const manyWorkers = computed(() => workers.value.length > 1);
-const hasSelectedHistory = computed(() => {
-  const worker = selected.value;
-  if (!worker) return false;
-  if (worker.history.length > 0 || worker.logs.length > 0) return true;
-  return worker.pending.some((task) => (task.logs?.length ?? 0) > 0);
-});
-const hasAnyHistory = computed(() =>
-  workers.value.some(
-    (worker) =>
-      worker.history.length > 0 ||
-      worker.logs.length > 0 ||
-      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
-  ),
+const hasSelectedHistory = computed(() =>
+  selected.value ? workerHasHistory(selected.value) : false,
 );
+const hasAnyHistory = computed(() => anyWorkerHasHistory(workers.value));
 
 const { panelPosition } = useRegisterMapControl(mapId, {
   id: 'mapWorkerControl',

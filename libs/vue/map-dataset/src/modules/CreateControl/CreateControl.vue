@@ -172,7 +172,9 @@ async function onAddLayer() {
   creating.value = true;
   createError.value = '';
   try {
-    addDataset(await handle(form.value.config));
+    addDataset(
+      await handle(form.value.config as Record<string, unknown> & { name: string }),
+    );
     reset();
     cShow.value = false;
   } catch (err) {

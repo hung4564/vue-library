@@ -6,5 +6,6 @@ export { GlobalStoreService } from './store';
 export {
   createStoreRegistryPlugin,
   defineStore,
+  getOrCreateStore,
   useStoreRegistry,
 } from './plugin';

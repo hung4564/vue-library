@@ -6,6 +6,10 @@ export { CrosshairManager } from './CrosshairManager';
 export { exportFile, Format } from './ExportFile';
 export { PRINT_CONTROL_LOCALE } from './locale';
 export { PrintableAreaManager } from './PrintableAreaManager';
+export {
+  createPrintAdvancedSession,
+  DEFAULT_PRINT_ADVANCED_SETTING,
+} from './print-advanced-session';
 export { PrintService } from './print.service';
 export { createDefaultPrintStore, createPrintStoreApi, PRINT_PAPER_PRESETS } from './types';
 export {
@@ -13,9 +17,15 @@ export {
   exportMapbox,
   exportMapboxWithOptions,
   getMapBoxCanvas,
+  printMapToFile,
   waitMapIdleAndTiles,
 } from './utils';
 export type { ExportMapboxOptions } from './utils';
+export type {
+  PrintAdvancedSession,
+  PrintAdvancedSessionOptions,
+  PrintAdvancedUiState,
+} from './print-advanced-session';
 
 export type { FormatType } from './ExportFile';
 export type { MapPrintStore, PrintOption, PrintOptions } from './types';

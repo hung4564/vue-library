@@ -1,5 +1,5 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
-import { exportMapbox, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { printMapToFile, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
@@ -37,8 +37,10 @@ export function PrintControl({
         setLoading(true);
         controlRef.current?.sync();
         try {
-          const image = await exportMapbox(map);
-          saveAs(image, `${fileName}.png`);
+          await printMapToFile(map, {
+            fileName,
+            save: (dataUrl, name) => saveAs(dataUrl, name),
+          });
         } finally {
           loadingRef.current = false;
           setLoading(false);

@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import {
+  logHelper,
+  subscribeMapReady,
+  type MapSimple,
+} from '@hungpvq/map-core';
 import {
   type AnyIEvent,
   EventManager,
@@ -166,9 +170,14 @@ export function useEventListener<K extends KnownMapEvent>(
   const wrappedCb = useRef<
     Record<string, ((ev: MapEventType[K]) => void) | undefined>
   >({});
+  const unsubscribeReadyRef = useRef<(() => void) | undefined>(undefined);
+  const cancelledRef = useRef(false);
 
   const add = useCallback(() => {
-    getMap(mapId, (map) => {
+    cancelledRef.current = false;
+    unsubscribeReadyRef.current?.();
+    unsubscribeReadyRef.current = subscribeMapReady(mapId, (map) => {
+      if (cancelledRef.current) return;
       const eventHandle = (ev: MapEventType[K]) => cbRef.current(map, ev);
       wrappedCb.current[map.id] = eventHandle;
       map.on(event, eventHandle);
@@ -176,10 +185,16 @@ export function useEventListener<K extends KnownMapEvent>(
   }, [mapId, event]);
 
   const remove = useCallback(() => {
-    getMap(mapId, (map) => {
-      const eventHandle = wrappedCb.current[map.id];
-      if (eventHandle) map.off(event, eventHandle);
-    });
+    cancelledRef.current = true;
+    unsubscribeReadyRef.current?.();
+    unsubscribeReadyRef.current = undefined;
+    const map = getMap(mapId);
+    if (!map) return;
+    const eventHandle = wrappedCb.current[map.id];
+    if (eventHandle) {
+      map.off(event, eventHandle);
+      delete wrappedCb.current[map.id];
+    }
   }, [mapId, event]);
 
   useEffect(() => {

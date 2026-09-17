@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Position, type WithMapPropType } from '@hungpvq/map-core';
 import {
@@ -8,11 +8,8 @@ import {
   type MapControlButtonState,
   type MapControlButtonUIState,
   type Toolbar,
-  type ToolbarButtonConfig,
   type ToolbarKind,
-  type ToolbarModuleOptions,
-  type ToolbarSingleOptions,
-  createToolbarStrategy,
+  createLiveToolbarStrategy,
 } from '@hungpvq/map-core/toolbar';
 
 import { useResolvedControlLayout } from '../../hooks/useMap';
@@ -47,59 +44,6 @@ type ToolbarSingleOptionsControl = Pick<
   WithMapPropType,
   'controlLayout' | 'controlOrder' | 'position'
 >;
-
-function createLiveToolbarStrategy(
-  optionsRef: MutableRefObject<AnyToolbarOptions>,
-  toolbar: Toolbar,
-  kind: ToolbarKind,
-): AnyToolbarStrategy {
-  if (kind === 'module') {
-    const initial = optionsRef.current as ToolbarModuleOptions;
-
-    const buttons: ToolbarButtonConfig[] = initial.buttons.map((btn) => ({
-      id: btn.id,
-      get order() {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        return (live ?? btn).order;
-      },
-      getState: () => {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        return (live ?? btn).getState();
-      },
-      onClick: async (e: MouseEvent) => {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        await (live ?? btn).onClick?.(e);
-      },
-    }));
-
-    return createToolbarStrategy({
-      kind: 'module',
-      get moduleId() {
-        return (optionsRef.current as ToolbarModuleOptions).moduleId;
-      },
-      get order() {
-        return (optionsRef.current as ToolbarModuleOptions).order;
-      },
-      get orientation() {
-        return (optionsRef.current as ToolbarModuleOptions).orientation;
-      },
-      toolbar,
-      buttons,
-    });
-  }
-
-  return createToolbarStrategy({
-    kind: 'single',
-    id: (optionsRef.current as ToolbarSingleOptions).id,
-    toolbar,
-    getState: () => (optionsRef.current as ToolbarSingleOptions).getState(),
-    onClick: (e: MouseEvent) =>
-      (optionsRef.current as ToolbarSingleOptions).onClick?.(e),
-  });
-}
 
 export function useToolbarControl(
   mapId: string,
@@ -149,7 +93,7 @@ export function useToolbarControl(
   optionsRef.current = options;
 
   const [control] = useState(() =>
-    createLiveToolbarStrategy(optionsRef, toolbar, kind),
+    createLiveToolbarStrategy(() => optionsRef.current, toolbar, kind),
   );
 
   const { state } = useInitToolbarControl(control, controlLayout);

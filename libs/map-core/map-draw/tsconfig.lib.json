@@ -8,9 +8,16 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "types": ["node", "vite/client"]
+    "types": [
+      "node",
+      "vite/client"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "../../../types/shims/turf-turf.d.ts"
+  ],
   "exclude": [
     "vite.config.ts",
     "src/**/*.test.ts",

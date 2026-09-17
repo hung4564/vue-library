@@ -1,4 +1,5 @@
 import { loggerFactory } from '@hungpvq/shared-log';
+import { getOrCreateStore } from '@hungpvq/shared-store';
 import { MapError } from '../errors';
 import { logHelper } from '../utils/log';
 
@@ -173,6 +174,9 @@ export class MapErrorHandler implements ErrorHandler {
 
 /**
  * Default singleton instance of the error handler.
- * Can be replaced by creating a new instance with custom options.
+ * Backed by shared-store (`globalThis.$_hungpv_store`) so duplicate package copies share one handler.
  */
-export const errorHandler = new MapErrorHandler();
+export const errorHandler = getOrCreateStore(
+  '__hungpvq_map_errorHandler__',
+  () => new MapErrorHandler(),
+);

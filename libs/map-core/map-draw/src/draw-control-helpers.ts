@@ -58,6 +58,24 @@ export function getDrawModeSelectEffects(_value: 'select' | 'delete'): {
 }
 
 /**
+ * Side effects when entering a create draw mode (point/line/…).
+ * Adapters: detach map click → set method create → changeMode(drawMode).
+ */
+export function getDrawCreateModeEffects(drawMode: string): {
+  method: 'create';
+  drawMode: string;
+  isDraw: true;
+  detachMapClick: true;
+} {
+  return {
+    method: 'create',
+    drawMode,
+    isDraw: true,
+    detachMapClick: true,
+  };
+}
+
+/**
  * mapbox-gl-draw: `direct_select` does not support Point geometries.
  */
 export function getFeatureEditMode(

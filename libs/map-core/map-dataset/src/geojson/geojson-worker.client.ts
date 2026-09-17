@@ -9,6 +9,7 @@ import {
   type GeojsonBbox,
 } from '@hungpvq/map-core';
 import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
+import { getOrCreateStore } from '@hungpvq/shared-store';
 import {
   detectGeojsonStyleTypes,
   shouldUseGisWorkerForGeojson,
@@ -23,7 +24,16 @@ import type {
 
 const GEOJSON_WORKER_ID = 'geojson';
 
-let gisWorkerUrlOverride: string | URL | undefined;
+type GisWorkerSlot = {
+  urlOverride: string | URL | undefined;
+};
+
+function gisWorkerSlot(): GisWorkerSlot {
+  return getOrCreateStore('__hungpvq_gis_worker__', () => ({
+    urlOverride: undefined as string | URL | undefined,
+  }));
+}
+
 
 export type ConfigureGisWorkerOptions = {
   /**
@@ -41,11 +51,12 @@ export type ConfigureGisWorkerOptions = {
  * CreateControl / `loadGis*Async`). Resets any existing worker instance.
  */
 export function configureGisWorker(options: ConfigureGisWorkerOptions): void {
-  gisWorkerUrlOverride = options.url;
+  gisWorkerSlot().urlOverride = options.url;
   terminateGeojsonWorker();
 }
 
 function resolveOverrideGisWorkerUrl(): URL {
+  const gisWorkerUrlOverride = gisWorkerSlot().urlOverride;
   if (gisWorkerUrlOverride == null) {
     throw new Error('GIS worker URL override is not configured');
   }
@@ -66,7 +77,7 @@ function resolveOverrideGisWorkerUrl(): URL {
  * pattern so the lib build still emits the real worker file.
  */
 export function resolveGisWorkerUrl(): URL {
-  if (gisWorkerUrlOverride != null) return resolveOverrideGisWorkerUrl();
+  if (gisWorkerSlot().urlOverride != null) return resolveOverrideGisWorkerUrl();
   return new URL(
     /* @vite-ignore */ 'assets/geojson.worker.js',
     import.meta.url,
@@ -113,7 +124,7 @@ const gisWorker = WorkerMonitor.connect<
   id: GEOJSON_WORKER_ID,
   name: 'GIS',
   createWorker: () => {
-    if (gisWorkerUrlOverride != null) {
+    if (gisWorkerSlot().urlOverride != null) {
       return new Worker(resolveOverrideGisWorkerUrl(), { type: 'module' });
     }
     // Static `new Worker(new URL('./geojson.worker.ts', import.meta.url))` is

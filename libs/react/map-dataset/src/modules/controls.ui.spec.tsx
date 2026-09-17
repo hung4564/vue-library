@@ -68,6 +68,25 @@ describe('LayerControl + IdentifyControl UI smoke', () => {
     );
     expect(document.getElementById(`top-left-${MAP_ID}`)).toBeTruthy();
   });
+
+  it('unregisters IdentifyControl on unmount', async () => {
+    const { unmount } = render(
+      <Map mapId={MAP_ID}>
+        <IdentifyControl />
+      </Map>,
+    );
+
+    await waitFor(() =>
+      expect(
+        UniversalRegistry.getControl(IDENTIFY_CONTROL.id, MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    unmount();
+    expect(
+      UniversalRegistry.getControl(IDENTIFY_CONTROL.id, MAP_ID),
+    ).toBeUndefined();
+  });
 });
 
 describe('StyleControl + CreateControl UI smoke', () => {

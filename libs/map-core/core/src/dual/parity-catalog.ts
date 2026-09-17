@@ -1,6 +1,11 @@
 /**
  * Dual Vue ↔ React parity catalog (test / docs source of truth).
  * Not a package public entry — imported by parity specs only.
+ *
+ * Thin-host ownership: for each dual control id, orchestration/pure logic
+ * belongs in `@hungpvq/map-core` (or map-dataset / map-draw). Adapters only
+ * wire hooks + SFC/JSX + ModuleContainer / toolbar / register.
+ * See `.cursor/skills/map-dual-framework/SKILL.md` § Thin-host controls.
  */
 
 /** Control / toolbar ids that must appear in both Vue and React adapter sources. */

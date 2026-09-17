@@ -9,7 +9,8 @@ export type MapPointerProfile = {
  * Snapshot of pointer/hover media queries for map interaction branching.
  */
 export function getMapPointerProfile(
-  matchMediaFn: typeof matchMedia = typeof matchMedia !== 'undefined'
+  matchMediaFn: ((query: string) => MediaQueryList) | undefined = typeof matchMedia !==
+  'undefined'
     ? matchMedia.bind(globalThis)
     : undefined,
 ): MapPointerProfile {

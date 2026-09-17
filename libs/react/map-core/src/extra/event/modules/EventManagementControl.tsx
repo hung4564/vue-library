@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   EVENT_CONTROL_LOCALE,
+  groupEventsByMapType,
+  isEventActive,
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
@@ -22,11 +24,6 @@ import type { MapEventStore } from '../store';
 
 export interface EventManagementControlProps extends WithMapPropType {
   show?: boolean;
-}
-
-function isActive(current: MapEventStore['current'], event: IEvent) {
-  const currentCheck = current[event.event_map_type];
-  return !!(currentCheck && currentCheck.id === event.id);
 }
 
 export function EventManagementControl(props: EventManagementControlProps) {
@@ -70,15 +67,10 @@ export function EventManagementControl(props: EventManagementControlProps) {
     };
   }, [emitter, getCurrent]);
 
-  const groupedViews = useMemo(() => {
-    const groups: Record<string, IEvent[]> = {};
-    for (const view of events) {
-      const type = view.event_map_type;
-      if (!groups[type]) groups[type] = [];
-      groups[type].push(view);
-    }
-    return groups;
-  }, [events]);
+  const groupedViews = useMemo(
+    () => groupEventsByMapType(events),
+    [events],
+  );
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
@@ -125,7 +117,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
                 <h2 className="map-event-control__group-title">{type}</h2>
                 <ul className="map-event-control__list">
                   {group.map((event) => {
-                    const active = isActive(current, event);
+                    const active = isEventActive(current, event);
                     return (
                       <li
                         key={event.id}

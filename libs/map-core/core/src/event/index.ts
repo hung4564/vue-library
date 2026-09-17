@@ -3,6 +3,9 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
 export { startBoxRangerMap } from './bbox-selector';
+export { createEventActionSync } from './event-action-sync';
+export type { EventActionSyncDeps } from './event-action-sync';
+export { groupEventsByMapType, isEventActive } from './event-view';
 export { EventManager, normalizeEventFrom } from './event-manager.service';
 export { EVENT_CONTROL_LOCALE } from './locale';
 export { Event } from './model/Event';

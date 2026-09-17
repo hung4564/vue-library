@@ -1,4 +1,4 @@
-import { logHelper, MapSimple } from '@hungpvq/map-core';
+import { logHelper, MapSimple, subscribeMapReady } from '@hungpvq/map-core';
 import {
   type AnyIEvent,
   EventManager,
@@ -97,9 +97,15 @@ export function useEventListener<K extends KnownMapEvent>(
 ): { add: () => void; remove: () => void } {
   const wrappedCb: Record<string, ((ev: MapEventType[K]) => void) | undefined> =
     {};
+  let unsubscribeReady: (() => void) | undefined;
+  let cancelled = false;
+
   const add = () => {
     logHelper(logger, mapId, 'hook', 'useEventListener').debug('add', event);
-    getMap(mapId, (map) => {
+    cancelled = false;
+    unsubscribeReady?.();
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      if (cancelled) return;
       const eventHandle = (ev: MapEventType[K]) => cb(map, ev);
       wrappedCb[map.id] = eventHandle;
       map.on(event, eventHandle);
@@ -107,10 +113,16 @@ export function useEventListener<K extends KnownMapEvent>(
   };
   const remove = () => {
     logHelper(logger, mapId, 'hook', 'useEventListener').debug('remove', event);
-    getMap(mapId, (map) => {
-      const eventHandle = wrappedCb?.[map.id];
-      if (eventHandle) map.off(event, eventHandle);
-    });
+    cancelled = true;
+    unsubscribeReady?.();
+    unsubscribeReady = undefined;
+    const map = getMap(mapId);
+    if (!map) return;
+    const eventHandle = wrappedCb[map.id];
+    if (eventHandle) {
+      map.off(event, eventHandle);
+      delete wrappedCb[map.id];
+    }
   };
   onMounted(() => {
     if (immediate) {

@@ -89,7 +89,7 @@
         "cwd": "{projectRoot}",
         "commands": ["tsc -p tsconfig.lib.json --noEmit"],
         "forwardAllArgs": false,
-        "description": "Type check with tsc"
+        "description": "Type check with tsc (Vue packages override to vue-tsc)"
       }
     }
   },

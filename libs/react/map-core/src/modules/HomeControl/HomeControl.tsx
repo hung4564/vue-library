@@ -1,6 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  captureHomeView,
+  goHome,
+  HOME_CONTROL_LOCALE,
+  type HomeView,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
@@ -17,21 +23,19 @@ export interface HomeControlProps extends WithMapPropType {
 
 export function HomeControl(props: HomeControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const [center, setCenter] = useState({ lat: 0, lng: 0 });
-  const [zoom, setZoom] = useState(props.zoom || 0);
+  const [homeView, setHomeView] = useState<HomeView>({
+    zoom: props.zoom || 0,
+    center: { lat: 0, lng: 0 },
+  });
 
   const onInit = useCallback(
     (_map: MapSimple) => {
-      if (props.zoom != null) {
-        setZoom(props.zoom);
-      } else {
-        setZoom(_map.getZoom());
-      }
-      if (props.center != null) {
-        setCenter({ lat: props.center[1], lng: props.center[0] });
-      } else {
-        setCenter(_map.getCenter());
-      }
+      setHomeView(
+        captureHomeView(_map, {
+          zoom: props.zoom,
+          center: props.center,
+        }),
+      );
     },
     [props.zoom, props.center],
   );
@@ -49,8 +53,7 @@ export function HomeControl(props: HomeControlProps) {
 
   function onGoHome() {
     callMap((map) => {
-      map.setZoom(zoom);
-      map.setCenter(center);
+      goHome(map, homeView);
     });
   }
 

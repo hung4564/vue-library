@@ -4,6 +4,7 @@
  */
 export {
   createDefaultToolbarStore,
+  createLiveToolbarStrategy,
   createSubscribable,
   createToolbarControl,
   createToolbarModule,
@@ -28,7 +29,10 @@ export {
   splitToolbarOverflowKeepGroups,
   toolbarAvailableWidth,
   toolbarGroupHeightCost,
+  toolbarOverflowPanelClassName,
 } from './overflow';
+
+export { planToolbarLayout } from './plan';
 
 export { TOOLBAR_CONTROL_LOCALE } from './locale';
 
@@ -36,6 +40,11 @@ export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
 
 export type { Listener, MapToolbarStore, ToolbarKind } from './toolbar';
 export type { ToolbarButtonGroup, ToolbarOverflowPrefer } from './overflow';
+export type {
+  PlanToolbarCorner,
+  PlanToolbarLayoutInput,
+  PlanToolbarLayoutResult,
+} from './plan';
 export type {
   AnyToolbarOptions,
   AnyToolbarStrategy,

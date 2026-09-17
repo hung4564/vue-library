@@ -6,7 +6,7 @@ import type {
   Position,
   ResolvedControlLayout,
 } from '@hungpvq/map-core';
-import { resolveControlLayout } from '@hungpvq/map-core';
+import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
 import {
   computed,
   inject,
@@ -74,8 +74,12 @@ export const useMap = (
     }
     return (autoOrder.value ?? 1) * 10;
   });
+  let cancelled = false;
+  let unsubscribeReady: (() => void) | undefined;
   onMounted(() => {
-    getMap(c_mapId.value, async (_map) => {
+    cancelled = false;
+    unsubscribeReady = subscribeMapReady(c_mapId.value, async (_map) => {
+      if (cancelled) return;
       mapInstance.value = _map;
       if (onInit instanceof Function) {
         await onInit(_map);
@@ -83,10 +87,14 @@ export const useMap = (
     });
   });
   onUnmounted(async () => {
+    cancelled = true;
+    unsubscribeReady?.();
+    unsubscribeReady = undefined;
     if (onDestroy instanceof Function) {
-      getMap(c_mapId.value, async (_map) => {
-        await onDestroy(_map);
-      });
+      const map = getMap(c_mapId.value);
+      if (map) {
+        await onDestroy(map);
+      }
     }
   });
   function callMap(cb: MapFCOnUseMap) {

@@ -14,7 +14,6 @@ import { EventClick } from '@hungpvq/map-core/event';
 import {
   FormView,
   MapMarkerView,
-  MapView,
   MeasureAngle,
   MeasureArea,
   MeasureAzimuth,
@@ -22,7 +21,12 @@ import {
   MeasurePoint,
   MeasureRadius,
   MEASUREMENT_CONTROL_LOCALE,
+  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
+  MEASUREMENT_MAP_VIEW_IMAGE,
   MeasurementHandle,
+  createMeasurementMapView,
+  resolveMeasurementModeToggle,
+  resolveMeasurementToolbarStatus,
   type IViewSettingField,
   type MeasureActionItem,
   type MeasurementHandleType,
@@ -60,8 +64,6 @@ import { logger } from '../logger';
 import { MeasurementSettingPopup } from './MeasurementSettingPopup';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
-
-const DEFAULT_COLOR_HIGHLIGHT = '#004E98';
 
 const PATH = {
   distance: mdiRuler,
@@ -164,13 +166,17 @@ export function MeasurementControl(props: MeasurementControlProps) {
 
   function checkMeasureRun(type: string) {
     reset(false);
-    if (measurementTypeRef.current === type) {
+    const toggle = resolveMeasurementModeToggle(
+      measurementTypeRef.current,
+      type,
+    );
+    if (!toggle.start) {
       setMeasurementType(undefined);
       handler.current.setAction(null);
       return false;
     }
-    setMeasurementType(type);
-    measurementTypeRef.current = type;
+    setMeasurementType(toggle.nextType);
+    measurementTypeRef.current = toggle.nextType;
     setSetting((prev) => {
       const next = { ...prev, show: true };
       settingRef.current = next;
@@ -271,9 +277,9 @@ export function MeasurementControl(props: MeasurementControlProps) {
       id: action.type,
       order: action.index,
       getState: () => {
-        const status: 'select' | 'handle' = measurementTypeRef.current
-          ? 'handle'
-          : 'select';
+        const status = resolveMeasurementToolbarStatus(
+          measurementTypeRef.current,
+        );
         const visible = action.show
           ? action.show({
               handler: handler.current as unknown as MeasurementHandleType,
@@ -457,116 +463,24 @@ export function MeasurementControl(props: MeasurementControlProps) {
     const mapIdForInit = map.id;
     if (!mapIdForInit) return;
     handler.current.setMapId(mapIdForInit);
-    imageHandle.addImage(mapIdForInit, 'azimuth-arrow', imageArrow, {
-      sdf: true,
-    });
-    imageHandle.addImage(mapIdForInit, 'measurment-round', imageRounded, {
-      content: [4, 4, 12, 12],
-      stretchX: [[6, 10]],
-      stretchY: [[6, 10]],
-    });
-
-    const mapView = new MapView(map);
-    mapView.init(
-      [
-        {
-          type: 'line',
-          paint: {
-            'line-color': DEFAULT_COLOR_HIGHLIGHT,
-            'line-width': 2,
-          },
-        },
-        {
-          type: 'fill',
-          filter: ['==', '$type', 'Polygon'],
-          paint: {
-            'fill-color': DEFAULT_COLOR_HIGHLIGHT,
-            'fill-opacity': 0.3,
-          },
-        },
-        {
-          type: 'symbol',
-          filter: ['all', ['has', 'rotation'], ['!has', 'is_edge']],
-          paint: { 'icon-color': DEFAULT_COLOR_HIGHLIGHT },
-          layout: {
-            'icon-size': 1.2,
-            'icon-rotate': {
-              type: 'identity',
-              property: 'rotation',
-            },
-            'icon-rotation-alignment': 'map',
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true,
-            'icon-image': 'azimuth-arrow',
-            visibility: 'visible',
-          },
-        },
-        {
-          type: 'symbol',
-          filter: [
-            'all',
-            ['has', 'is_label'],
-            ['has', 'is_edge'],
-            ['==', '$type', 'Point'],
-          ],
-          layout: {
-            'text-field': '{text}',
-            'text-size': 12,
-            'text-rotate': ['get', 'text_rotate'],
-            'text-rotation-alignment': 'map',
-            'text-pitch-alignment': 'viewport',
-            'text-offset': [0, 0],
-            'text-anchor': 'center',
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#fff',
-            'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
-            'text-halo-width': 2,
-          },
-        },
-        {
-          type: 'symbol',
-          filter: [
-            'all',
-            ['has', 'is_label'],
-            ['!has', 'is_edge'],
-            ['==', '$type', 'Point'],
-          ],
-          layout: {
-            'text-field': '{text}',
-            'text-offset': [
-              'case',
-              ['to-boolean', ['get', 'is_center']],
-              ['literal', [0, 0]],
-              ['literal', [0, 2]],
-            ],
-            'text-size': 14,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true,
-            'icon-image': 'measurment-round',
-            'icon-text-fit': 'both',
-          },
-          paint: {
-            'text-color': '#fff',
-            'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
-            'text-halo-width': 2,
-          },
-        },
-      ],
+    imageHandle.addImage(
+      mapIdForInit,
+      MEASUREMENT_MAP_VIEW_IMAGE.azimuthArrow,
+      imageArrow,
+      { sdf: true },
+    );
+    imageHandle.addImage(
+      mapIdForInit,
+      MEASUREMENT_MAP_VIEW_IMAGE.round,
+      imageRounded,
       {
-        data: {
-          type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: [],
-          },
-        },
+        content: [4, 4, 12, 12],
+        stretchX: [[6, 10]],
+        stretchY: [[6, 10]],
       },
     );
+
+    const mapView = createMeasurementMapView(map);
     mapView.onStart = () => {
       addEventClickRef.current();
     };
@@ -575,7 +489,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
     };
 
     const markerView = new MapMarkerView(map);
-    markerView.setColor(DEFAULT_COLOR_HIGHLIGHT);
+    markerView.setColor(MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR);
     markerView.onDragMarker = (p_coordinates) => {
       handler.current.init(p_coordinates);
     };

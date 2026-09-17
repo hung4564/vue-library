@@ -1,6 +1,8 @@
 # UniversalRegistry — map controls
 
-Mounted ModuleContainer controls (popup, sidebar, float, and button-only) register themselves via `UniversalRegistry.registerControl`. The class lives in `@hungpvq/map-core`; Vue / React adapters **extend** it with component registration. Methods, menu handlers, and control handles share **one store and one resolve path** (`runMapControlAction` included).
+Mounted ModuleContainer controls (popup, sidebar, float, and button-only) register themselves via `UniversalRegistry.registerControl`. The class lives in `@hungpvq/map-core` (bags on `@hungpvq/shared-store`); Vue / React adapters **extend** it with typed component registration only. Methods, menu handlers, components, and control handles share **one store and one resolve path** (`runMapControlAction` included).
+
+Reserved global method keys `MAP_PLATFORM_REGISTRY_METHOD.*` (`__platform.getMap`, `__platform.subscribeMapReady`, `__platform.registerStoreCleanup`) wire map accessors — they are **not** app controls and survive `clearMap`.
 
 Menu / UI components (`registerComponent` / `registerComponentForMap`): [UniversalRegistry components](./registry-components.md).
 

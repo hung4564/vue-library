@@ -241,7 +241,7 @@ function onResultKeydown(event: KeyboardEvent) {
     const hit = flatChildren.value.find((x) => x.key === focusedChildKey.value);
     if (!hit) return;
     const menus = getItemMenus(hit.child.identify);
-    if (menus[0]) onMenuAction(hit.child, menus[0], event);
+    if (menus[0]) onMenuAction(hit.child, menus[0]);
   }
 }
 </script>

@@ -1,11 +1,11 @@
 <script lang="ts">
 export default {
-  name: 'InspectControl',
+  name: 'IdentifyControl',
 };
 </script>
 
 <script setup lang="ts">
-import { bindMapLongPress, getMapPointerProfile, type WithMapPropType } from '@hungpvq/map-core';
+import { bindMapLongPress, type WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
   EventBboxRangerHandle,
@@ -19,12 +19,14 @@ import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   buildIdentifyResultPanelBase,
   clearIdentifyScope,
+  createIdentifyControlModel,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   resolveIdentifyLayerFilterId,
   runIdentifyMulti,
+  shouldBindIdentifyLongPress,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
@@ -72,12 +74,29 @@ const hl = useMapHighlight(mapId.value);
 const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', IDENTIFY_CONTROL_LOCALE);
 
+const model = createIdentifyControlModel({ show: !!props.show });
+
 const views = ref<Array<IIdentifyView>>([]);
 /** Local layer filter for IdentifyControl only (not synced with layer-item). */
-const filterIdentifyId = ref<string | undefined>();
-const origin = reactive({ latitude: 0, longitude: 0 });
-const show = ref(!!props.show);
-const loading = ref(false);
+const filterIdentifyId = ref<string | undefined>(
+  model.getState().filterIdentifyId,
+);
+const origin = reactive({ ...model.getState().origin });
+const show = ref(model.getState().show);
+const loading = ref(model.getState().loading);
+const isUseClick = ref(model.getState().isUseClick);
+const isSelectBbox = ref(model.getState().isSelectBbox);
+
+function syncFromModel() {
+  const s = model.getState();
+  show.value = s.show;
+  loading.value = s.loading;
+  filterIdentifyId.value = s.filterIdentifyId;
+  origin.latitude = s.origin.latitude;
+  origin.longitude = s.origin.longitude;
+  isUseClick.value = s.isUseClick;
+  isSelectBbox.value = s.isSelectBbox;
+}
 
 function refreshViews() {
   views.value = (
@@ -101,10 +120,6 @@ const {
   remove: removeEventBbox,
   isActive: isEventClickBox,
 } = useEventMap(mapId.value, new EventBboxRanger().setHandler(onBboxSelect));
-
-function setShow(value: boolean) {
-  show.value = value;
-}
 
 function updateResultPanel(payload: IdentifyResultUpdatePayload) {
   UniversalRegistry.runControlAction(
@@ -137,14 +152,15 @@ useRegisterMapControl(mapId, {
   buttonPosition: () => props.position,
   show,
   setShow: (value) => {
-    setShow(value);
+    model.setShow(value);
+    syncFromModel();
     updateResultPanel({ show: value });
   },
   getProps: () => ({
     position: props.position,
     controlLayout: props.controlLayout,
     immediately: props.immediately,
-        preferResultControl: props.preferResultControl,
+    preferResultControl: props.preferResultControl,
   }),
   actions: [
     {
@@ -189,41 +205,23 @@ useRegisterMapControl(mapId, {
 
 /** One-way from layer-item: start identify + filter; do not open result popup. */
 function applyScopedSession(result?: IdentifyScopeToggleResult) {
-  if (result?.active && result.identifyId) {
-    filterIdentifyId.value = result.identifyId;
-    show.value = true;
-    origin.latitude = 0;
-    origin.longitude = 0;
-    syncResultPanel({
-      selectedLayerId: result.identifyId,
-      items: [],
-      loading: false,
-      origin: { latitude: 0, longitude: 0 },
-    });
-    if (!isUseClick.value) onStartMapClick();
+  const resolved = model.applyScopedSession(result);
+  syncFromModel();
+  if (resolved.kind === 'activate') {
+    syncResultPanel(resolved.panel);
+    if (resolved.startMapClick) onStartMapClick();
     return;
   }
-  if (
-    result?.identifyId &&
-    filterIdentifyId.value &&
-    filterIdentifyId.value === result.identifyId
-  ) {
-    filterIdentifyId.value = undefined;
-    origin.latitude = 0;
-    origin.longitude = 0;
-    syncResultPanel({
-      selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
-      items: [],
-      loading: false,
-      origin: { latitude: 0, longitude: 0 },
-    });
+  if (resolved.kind === 'clear-matching') {
+    syncResultPanel(resolved.panel);
   }
   if (!props.immediately) onRemoveMapClick();
 }
 
 function onLayerFilterChange(identifyId: string) {
   const id = resolveIdentifyLayerFilterId(identifyId);
-  filterIdentifyId.value = id;
+  model.setFilterIdentifyId(id);
+  syncFromModel();
   syncResultPanel({
     selectedLayerId: id ?? IDENTIFY_ALL_LAYERS_VALUE,
   });
@@ -245,8 +243,8 @@ function runIdentifyAt(
   point: PointLike,
   event?: MapMouseEvent,
 ) {
-  origin.latitude = lat;
-  origin.longitude = lng;
+  model.setOrigin(lat, lng);
+  syncFromModel();
   onGetFeatures(event ?? ({ point, lngLat: { lng, lat } } as MapMouseEvent));
 }
 
@@ -259,7 +257,7 @@ function onIdentifyHere(menuProps: MapMenuItemProps) {
   const { lng, lat } = menuProps.layer.lngLat;
   const point = menuProps.layer.point;
   if (point) {
-    runIdentifyAt(lng, lat, point);
+    runIdentifyAt(lng, lat, [point.x, point.y]);
     return;
   }
   callMap((map) => {
@@ -272,7 +270,8 @@ function onBboxSelect(bbox: Parameters<EventBboxRangerHandle>[0]) {
   onRemoveBox();
   if (!bbox) return;
   const bounds = new LngLatBounds([bbox[0].x, bbox[0].y, bbox[1].x, bbox[1].y]);
-  show.value = true;
+  model.setShow(true);
+  syncFromModel();
   onGetFeatures(bounds);
 }
 
@@ -284,7 +283,8 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
     pointOrBox = e as unknown as [PointLike, PointLike];
   }
 
-  loading.value = true;
+  model.setLoading(true);
+  syncFromModel();
   control.sync();
   callMap((map) => {
     map.getCanvas().style.cursor = 'wait';
@@ -301,7 +301,8 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
       preferResultControl: !!props.preferResultControl,
     });
   } finally {
-    loading.value = false;
+    model.setLoading(false);
+    syncFromModel();
     control.sync();
     callMap((map) => {
       map.getCanvas().style.cursor = '';
@@ -311,37 +312,26 @@ async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
 }
 
 function toggleShow() {
-  const next = !show.value;
-  show.value = next;
-  syncResultPanel({ show: next });
-  if (next) {
-    if (!isUseClick.value) onStartMapClick();
-  } else {
-    onRemoveIdentify();
-  }
+  const resolved = model.toggleShow();
+  syncFromModel();
+  syncResultPanel(resolved.panel);
+  if (resolved.startMapClick) onStartMapClick();
+  else if (resolved.removeIdentify) onRemoveIdentify();
 }
 
 function close() {
-  filterIdentifyId.value = undefined;
+  const closed = model.close();
+  syncFromModel();
   clearIdentifyScope(mapId.value);
   onRemoveIdentify();
   hl.hideIfSource('identify');
-  show.value = false;
-  loading.value = false;
-  origin.latitude = 0;
-  origin.longitude = 0;
-  syncResultPanel({
-    show: false,
-    loading: false,
-    origin: { latitude: 0, longitude: 0 },
-    selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
-    items: [],
-  });
+  syncResultPanel(closed.panel);
 }
 
 /** Used by IdentifyShowFirstControl via actionSetLoading. */
 function setIdentifyLoading(value: boolean) {
-  loading.value = value;
+  model.setLoading(value);
+  syncFromModel();
   syncResultPanel({ loading: value });
   control.sync();
 }
@@ -352,50 +342,52 @@ function onRemoveIdentify() {
   onRemoveBox();
 }
 
-const isUseClick = ref(false);
 let unbindLongPress: (() => void) | null = null;
 function onUseMapClick() {
   if (!isUseClick.value) onStartMapClick();
   else onRemoveMapClick();
 }
 function onStartMapClick() {
-  isUseClick.value = true;
+  model.setUseClick(true);
+  syncFromModel();
   addEventClick();
   syncResultPanel({ isEventClickActive: true });
   unbindLongPress?.();
   unbindLongPress = null;
-  if (getMapPointerProfile().coarse) {
+  if (shouldBindIdentifyLongPress()) {
     callMap((map) => {
       unbindLongPress = bindMapLongPress(map, {
         onLongPress: (point) => {
           if (isEventClickBox.value) return;
           const lngLat = map.unproject([point.x, point.y]);
-          runIdentifyAt(lngLat.lng, lngLat.lat, point);
+          runIdentifyAt(lngLat.lng, lngLat.lat, [point.x, point.y]);
         },
       });
     });
   }
 }
 function onRemoveMapClick() {
-  isUseClick.value = false;
+  model.setUseClick(false);
+  syncFromModel();
   removeEventClick();
   unbindLongPress?.();
   unbindLongPress = null;
   syncResultPanel({ isEventClickActive: false });
 }
 
-const isSelectBbox = ref(false);
 function onUseBoxSelect() {
   if (!isSelectBbox.value) onStartBox();
   else onRemoveBox();
 }
 function onStartBox() {
-  isSelectBbox.value = true;
+  model.setSelectBbox(true);
+  syncFromModel();
   addEventBbox();
   syncResultPanel({ isEventClickBox: true });
 }
 function onRemoveBox() {
-  isSelectBbox.value = false;
+  model.setSelectBbox(false);
+  syncFromModel();
   setTimeout(() => {
     removeEventBbox();
     syncResultPanel({ isEventClickBox: false });

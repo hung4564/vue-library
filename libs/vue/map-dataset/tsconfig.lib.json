@@ -1,27 +1,31 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
-    "types": ["vite/client"]
-  },
-  "include": [
-    "src/**/*.js",
-    "src/**/*.jsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
-  ],
-  "exclude": [
-    "src/**/__tests__/*",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.js",
-    "src/**/*.test.js",
-    "src/**/*.spec.jsx",
-    "src/**/*.test.jsx",
-    "src/**/*.spec.vue",
-    "src/**/*.test.vue"
-  ]
+    "extends":  "./tsconfig.json",
+    "compilerOptions":  {
+                            "outDir":  "../../../dist/out-tsc",
+                            "types":  [
+                                          "vite/client"
+                                      ]
+                        },
+    "include":  [
+                    "src/**/*.js",
+                    "src/**/*.jsx",
+                    "src/**/*.ts",
+                    "src/**/*.tsx",
+                    "src/**/*.vue",
+                    "../../../types/shims/turf-turf.d.ts",
+                    "../../../types/shims/vue-deps.d.ts"
+                ],
+    "exclude":  [
+                    "src/**/__tests__/*",
+                    "src/**/*.spec.ts",
+                    "src/**/*.test.ts",
+                    "src/**/*.spec.tsx",
+                    "src/**/*.test.tsx",
+                    "src/**/*.spec.js",
+                    "src/**/*.test.js",
+                    "src/**/*.spec.jsx",
+                    "src/**/*.test.jsx",
+                    "src/**/*.spec.vue",
+                    "src/**/*.test.vue"
+                ]
 }

@@ -7,16 +7,12 @@ import {
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
   TOOLBAR_CONTROL_LOCALE,
-  cornerVerticalMenuBudgetsPx,
-  groupToolbarButtons,
-  maxVisibleButtonsInStackHeight,
-  maxVisibleToolbarButtons,
   mdiButtonState,
   measureCornerMenuUsedPx,
   measureCornerStandaloneReserved,
-  splitToolbarOverflow,
-  splitToolbarOverflowKeepGroups,
+  planToolbarLayout,
   toolbarAvailableWidth,
+  toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
 import { mdiDotsHorizontal } from '@mdi/js';
 import {
@@ -192,61 +188,33 @@ onUnmounted(() => {
   resizeObserver?.disconnect();
 });
 
-const groupedButtons = computed(() => groupToolbarButtons(buttons.value));
-const maxVisibleToolbar = computed(
-  () =>
-    props.maxVisible ??
-    maxVisibleToolbarButtons(availableWidth.value, MAP_BUTTON_SIZE_PX.medium),
-);
-const toolbarSplit = computed(() =>
-  splitToolbarOverflow(groupedButtons.value, maxVisibleToolbar.value),
-);
-
-function splitForCorner(position: Position) {
-  const groups = groupToolbarButtons(
-    buttons.value.filter((b) => (b.position || 'bottom-right') === position),
-  );
-  const side = position.endsWith('left') ? 'left' : 'right';
-  const budgets = cornerVerticalMenuBudgetsPx({
+const layout = computed(() =>
+  planToolbarLayout({
+    buttons: buttons.value,
+    menuMode: menuMode.value,
     hostHeight: hostHeight.value,
-    topReservedPx: reservedByCorner.value[`top-${side}` as Position]?.height ?? 0,
-    bottomReservedPx:
-      reservedByCorner.value[`bottom-${side}` as Position]?.height ?? 0,
-    topMenuUsedPx: menuUsedByCorner.value[`top-${side}` as Position],
-    bottomMenuUsedPx: menuUsedByCorner.value[`bottom-${side}` as Position],
-  });
-  const budgetPx = position.startsWith('top') ? budgets.topPx : budgets.bottomPx;
-  const prefer = position.startsWith('bottom') ? 'end' : 'start';
-  const maxVisible =
-    props.maxVisible ??
-    maxVisibleButtonsInStackHeight(budgetPx, MAP_BUTTON_SIZE_PX.medium);
-  const split = splitToolbarOverflowKeepGroups(groups, maxVisible, prefer);
-  return {
-    position,
-    prefer,
-    maxVisible,
-    split,
-    // Hide corner when budget fits nothing (avoids a spilling lone More).
-    showMore: split.overflow.length > 0 && maxVisible >= 1,
-    hasChrome: groups.length > 0 && (split.visible.length > 0 || maxVisible >= 1),
-  };
-}
-
-const cornerData = computed(() =>
-  CORNER_POSITIONS.map(splitForCorner).filter((c) => c.hasChrome),
+    availableWidth: availableWidth.value,
+    maxVisible: props.maxVisible,
+    buttonSize: MAP_BUTTON_SIZE_PX.medium,
+    reservedByCorner: reservedByCorner.value,
+    menuUsedByCorner: menuUsedByCorner.value,
+    cornerPositions: CORNER_POSITIONS,
+  }),
 );
+
+const groupedButtons = computed(() => layout.value.groups);
+const toolbarSplit = computed(() => layout.value.toolbarSplit);
+const cornerData = computed(() => layout.value.corners);
 
 const overflowOpen = computed(
   () => moreOpen.value && toolbarSplit.value.overflow.length > 0,
 );
 
-const overflowPlacement = computed(() => {
-  const pos = props.position || 'bottom-right';
-  return {
-    vertical: pos.startsWith('top') ? 'top' : 'bottom',
-    horizontal: pos.endsWith('left') ? 'left' : 'right',
-  };
-});
+const overflowPanelClass = computed(() =>
+  toolbarOverflowPanelClassName(
+    (props.position || 'bottom-right') as Position,
+  ),
+);
 
 const moreOption = computed(() =>
   mdiButtonState(mdiDotsHorizontal, {
@@ -312,15 +280,7 @@ function toggleCornerMore(position: Position) {
         </MapControlGroupButton>
         <div
           v-if="overflowOpen"
-          class="map-toolbar-overflow"
-          :class="[
-            overflowPlacement.vertical === 'top'
-              ? 'map-toolbar-overflow-top'
-              : 'map-toolbar-overflow-bottom',
-            overflowPlacement.horizontal === 'left'
-              ? 'map-toolbar-overflow-left'
-              : 'map-toolbar-overflow-right',
-          ]"
+          :class="overflowPanelClass"
           role="menu"
         >
           <MapControlGroupButton

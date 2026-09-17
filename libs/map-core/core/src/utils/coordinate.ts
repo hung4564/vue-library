@@ -202,7 +202,8 @@ function parseDmsToken(token: string): number | null {
   const min = nums[1] != null ? Number(nums[1]) : 0;
   const sec = nums[2] != null ? Number(nums[2]) : 0;
   if ([deg, min, sec].some((n) => Number.isNaN(n))) return null;
-  let value = dmsToDeg({ deg: Math.abs(deg), min, sec });
+  let value = Number(dmsToDeg({ deg: Math.abs(deg), min, sec }));
+  if (Number.isNaN(value)) return null;
   if (deg < 0) value = -value;
   if (hemi && /[SsWw]/.test(hemi)) value = -Math.abs(value);
   if (hemi && /[NnEe]/.test(hemi)) value = Math.abs(value);

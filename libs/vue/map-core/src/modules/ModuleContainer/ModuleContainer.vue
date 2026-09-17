@@ -1,7 +1,7 @@
 <template>
   <div class="module__container">
     <Teleport
-      v-if="controlVisible && hasCornerChrome && isStandaloneButton"
+      v-if="controlVisible && hasCornerChrome && showCornerChrome"
       :to="btnTo"
     >
       <div
@@ -25,7 +25,14 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
+import {
+  MAP_MODULE_CONTROL_ID_KEY,
+  buildModuleBindPosition,
+  isModuleCornerChromeVisible,
+  moduleBtnContainerClassName,
+  moduleCornerHostSelector,
+  moduleDraggableHostSelector,
+} from '@hungpvq/map-core';
 import { computed, inject, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
@@ -64,8 +71,10 @@ const hasSlotBtnOutside = computed(() => !!slots['btnOutside']);
 const hasCornerChrome = computed(
   () => hasSlotBtn.value || hasSlotBtnOutside.value,
 );
-const isStandaloneButton = computed(
-  () => props.controlLayout !== 'toolbar' && props.controlLayout !== 'menu',
+const showCornerChrome = computed(() =>
+  isModuleCornerChromeVisible(
+    props.controlLayout as 'toolbar' | 'standalone' | 'button' | 'menu',
+  ),
 );
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
@@ -77,12 +86,9 @@ const injectedControlId = inject<string | undefined>(
 const resolvedControlId = computed(
   () => props.controlId || injectedControlId || '',
 );
-const btnModuleClass = computed(() => {
-  const id = resolvedControlId.value;
-  return id
-    ? ['btn-module-container', 'map-common-button', `${id}-btn-module-container`]
-    : ['btn-module-container', 'map-common-button'];
-});
+const btnModuleClass = computed(() =>
+  moduleBtnContainerClassName(resolvedControlId.value),
+);
 const c_containerId = computed<string>(() => {
   return props.dragId || i_dragId!;
 });
@@ -90,38 +96,25 @@ const c_mapId = computed<string>(() => {
   return props.mapId || i_map_id!;
 });
 
-const draggableTo = computed(() => {
-  return `#map-draggable-${c_mapId.value}`;
-});
-const btnTo = computed(() => {
-  return `#${props.position}-${c_mapId.value}`;
-});
+const draggableTo = computed(() =>
+  moduleDraggableHostSelector(c_mapId.value),
+);
+const btnTo = computed(() =>
+  moduleCornerHostSelector(
+    props.position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+    c_mapId.value,
+  ),
+);
 
-interface BindPosition {
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-  containerId: string;
-}
-const bindDrag = computed(() => {
-  const result: BindPosition = {
+const bindDrag = computed(() =>
+  buildModuleBindPosition({
+    position: props.position as
+      | 'top-left'
+      | 'top-right'
+      | 'bottom-left'
+      | 'bottom-right',
+    btnWidth: props.btnWidth,
     containerId: c_containerId.value,
-  };
-
-  const configs = [
-    { key: 'left', fallback: 18 + props.btnWidth },
-    { key: 'right', fallback: 18 + props.btnWidth },
-    { key: 'top', fallback: 10 },
-    { key: 'bottom', fallback: 10 },
-  ] as const;
-
-  configs.forEach(({ key, fallback }) => {
-    if (props.position.includes(key)) {
-      result[key] = fallback;
-    }
-  });
-
-  return result;
-});
+  }),
+);
 </script>

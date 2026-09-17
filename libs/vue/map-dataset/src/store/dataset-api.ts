@@ -1,9 +1,13 @@
-import { logHelper, type MapSimple } from '@hungpvq/map-core';
+import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { createMapScopedStore, useMapStore } from '@hungpvq/vue-map-core';
+import { DatasetService } from '@hungpvq/map-dataset';
+import {
+  createMapScopedStore,
+  getStore,
+  useMapStore,
+} from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
 import { logger } from '@hungpvq/map-dataset';
-import { DatasetService } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset' as const;
 
@@ -13,15 +17,49 @@ export type MapLayerStore = {
   allLayerShow: Ref<boolean>;
 };
 
-export const useMapDatasetStore = (mapId: string) =>
-  createMapScopedStore<MapLayerStore>(mapId, KEY as any, () => {
-    logHelper(logger, mapId, 'store').debug('init');
-    return {
-      datasets: {},
-      datasetIds: ref([]),
-      allLayerShow: ref(true),
-    };
+async function clearDatasetsOnRemoveMap(
+  mapId: string,
+  store: MapLayerStore,
+): Promise<void> {
+  const ids = [...store.datasetIds.value];
+  if (!ids.length) return;
+  const map = getMap(mapId);
+  logHelper(logger, mapId, 'store').debug('clear datasets on removeMap', {
+    count: ids.length,
   });
+  for (const id of ids) {
+    const layer = store.datasets[id];
+    if (!layer) continue;
+    if (map) {
+      await DatasetService.removeDataset(store, map, layer);
+    } else {
+      delete store.datasets[id];
+      store.datasetIds.value = store.datasetIds.value.filter((x) => x !== id);
+    }
+  }
+}
+
+export function useMapDatasetStore(mapId: string): MapLayerStore {
+  return createMapScopedStore<MapLayerStore>(
+    mapId,
+    KEY as any,
+    () => {
+      logHelper(logger, mapId, 'store').debug('init');
+      return {
+        datasets: {},
+        datasetIds: ref([]),
+        allLayerShow: ref(true),
+      };
+    },
+    {
+      cleanup: (): void | Promise<void> => {
+        const store = getStore<MapLayerStore>(mapId, KEY);
+        if (!store) return;
+        return clearDatasetsOnRemoveMap(mapId, store);
+      },
+    },
+  );
+}
 
 export const useMapDataset = (initialMapId?: string) => {
   const mapId = ref(initialMapId ?? '');
@@ -38,10 +76,10 @@ export const useMapDataset = (initialMapId?: string) => {
 
   async function addDataset(layer: IDataset) {
     const store = getStore();
-    const getMap = getMapHelper();
-    if (!store || !getMap) return;
+    const getMapFn = getMapHelper();
+    if (!store || !getMapFn) return;
 
-    getMap(async (map: MapSimple) => {
+    getMapFn(async (map: MapSimple) => {
       await DatasetService.addDataset(store, map, layer);
     });
 
@@ -53,10 +91,10 @@ export const useMapDataset = (initialMapId?: string) => {
 
   async function removeDataset(layer: IDataset) {
     const store = getStore();
-    const getMap = getMapHelper();
-    if (!store || !getMap) return;
+    const getMapFn = getMapHelper();
+    if (!store || !getMapFn) return;
 
-    getMap(async (map: MapSimple) => {
+    getMapFn(async (map: MapSimple) => {
       await DatasetService.removeDataset(store, map, layer);
     });
 
@@ -67,11 +105,11 @@ export const useMapDataset = (initialMapId?: string) => {
   }
 
   function removeComponent(component: IDataset) {
-    const getMap = getMapHelper();
-    if (!getMap) return;
+    const getMapFn = getMapHelper();
+    if (!getMapFn) return;
 
     logHelper(logger, mapId.value, 'store').debug('removeComponent', component);
-    getMap(async (map: MapSimple) => {
+    getMapFn(async (map: MapSimple) => {
       DatasetService.removeComponent(map, component);
     });
   }
@@ -106,5 +144,3 @@ export const useMapDataset = (initialMapId?: string) => {
     getAllComponentsByType,
   };
 };
-
-

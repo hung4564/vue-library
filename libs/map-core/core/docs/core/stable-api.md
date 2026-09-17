@@ -27,30 +27,52 @@ Root and domain barrels use **explicit named exports** (no public `export *`). R
 
 Related: [SemVer checklist](https://github.com/hung4564/vue-library/blob/main/libs/map-core/README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Peers and bundle](./peers-and-bundle.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
+## MapLibre-first
+
+`MapSimple` is the Stable MapLibre map type. Platform APIs (`getMap`, `subscribeMapReady`, control helpers) take or return that instance — we do **not** hide MapLibre behind a custom engine facade. Apps may call MapLibre APIs on the instance directly.
+
+## Thin-host controls
+
+Dual Vue/React controls share **pure orchestration** in `@hungpvq/map-core` (root `controls/*` or domain subpaths), `@hungpvq/map-dataset`, or `@hungpvq/map-draw`. Adapters stay thin hosts (`useMap` + register/toolbar + SFC/JSX). Prefer `subscribeMapReady` when waiting for the map with cancel-on-unmount. Do not merge adapter packages or put framework UI into core.
+
+Pure owners to copy (non-exhaustive):
+
+| Area | Core helper |
+|------|-------------|
+| Shell controls | root `controls/*` (`captureHomeView`, `goHome`, navigation / globe / goto / setting / mouse-coordinates / info) |
+| Identify session | `createIdentifyControlModel` (`@hungpvq/map-dataset/identify`) |
+| Measurement MapView | `createMeasurementMapView` / layers + `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` (`./measurement`) |
+| Print advanced | `createPrintAdvancedSession` (`./print`) |
+| Toolbar / CRS | `createLiveToolbarStrategy` (`./toolbar`), `normalizeDisplayEpsgs` (`./crs`) |
+| Draw / inspect | `draw-control-helpers`, `InspectController` (`@hungpvq/map-draw`) |
+| Misc | `GeoLocateSession`, `createCopyFeedback`, theme / fullscreen helpers |
+
+Hosts own UI, registry actions, and framework lifecycle only.
+
 ## Registry architecture
 
-- **Host:** `UniversalRegistry` in `@hungpvq/map-core` — methods, menu handlers, control handles (one resolve path: map-scoped then global).
-- **Adapters:** `@hungpvq/vue-map-core` / `@hungpvq/react-map-core` **extend** that class and only add `registerComponent` / `getComponent`.
+- **Host:** `UniversalRegistry` in `@hungpvq/map-core` — methods, menu handlers, components, control handles (one resolve path: map-scoped then global). Storage: `@hungpvq/shared-store` keys `map:registry:global` / `map:registry:maps` / `map:registry:controls` (no class-static `Map` singletons).
+- **Adapters:** `@hungpvq/vue-map-core` / `@hungpvq/react-map-core` **extend** that class and only add typed `registerComponent` / `getComponent` (Vue also `markRaw`).
 - Prefer `UniversalRegistry` / `runMapControlAction` from `@hungpvq/map-core` in framework-agnostic code (`map-dataset`, context menu).
 
 ## `@hungpvq/map-core` package entries
 
 | Entry | Role |
 |-------|------|
-| `.` | Platform shell: store/`getMap`, registry, errors, mitt, shared GIS utils, shell locales, host `WorkerMonitor` |
+| `.` | Platform shell: store/`getMap`/`subscribeMapReady`, registry, errors, mitt, shared GIS utils, shell locales, host `WorkerMonitor`, thin-host control helpers (`captureHomeView`, `goHome`, navigation/globe/goto/setting/mouse-coordinates/info) |
 | `./style.css` | Shared map CSS |
 | `./worker` | CSS/DOM-free worker helpers |
 | `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError` |
-| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter` |
+| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs` |
 | `./devtools` | Devtools store core, `BufferingLogAdapter`, overlay DOM helpers, `installDevtoolsCore` (Experimental) |
-| `./event` | `EventManager`, event models, bbox ranger |
+| `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive` |
 | `./image` | Map image load/store helpers |
 | `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
-| `./measurement` | `MeasurementService`, measure modes, format helpers |
+| `./measurement` | `MeasurementService`, measure modes, format helpers, `resolveMeasurementModeToggle` / `resolveMeasurementToolbarStatus`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` |
 | `./menu` | Map context menu builders / actions |
-| `./print` | `PrintService`, export helpers (`exportMapbox*`, `clipCanvasRegion`, `waitMapIdleAndTiles`) |
+| `./print` | `PrintService`, export helpers (`exportMapbox*`, `printMapToFile`, `clipCanvasRegion`, `waitMapIdleAndTiles`), `createPrintAdvancedSession` / `DEFAULT_PRINT_ADVANCED_SETTING` |
 | `./theme` | Theme bootstrap / resolve / `MAP_THEME_*`, `MAP_THEME_CONTRAST_CLASS`, `subscribePrefersContrastMore` |
-| `./toolbar` | Toolbar strategies / store APIs |
+| `./toolbar` | Toolbar strategies / store APIs, `createLiveToolbarStrategy` |
 
 ### Root (`.`) highlights
 
@@ -58,8 +80,9 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 
 | Area | Stable surface |
 |------|----------------|
-| Map access | `getMap` → `MapSimple \| undefined`, `registerMapAccessor`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
-| Registry | `UniversalRegistry`, `runMapControlAction`, `buildMapControlHandle`, `MapControlHandle`, `REGISTRY_*`, `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) |
+| Map access | `getMap` → `MapSimple \| undefined`, `subscribeMapReady` → unsubscribe, `registerMapAccessor`, `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_REGISTRY_METHOD` (reserved UniversalRegistry global keys), `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
+| Thin-host control helpers | Home (`captureHomeView` / `goHome`), navigation (`zoomIn` / `zoomOut` / `resetBearing` / `attachRotateListener` / …), globe (`toggleGlobeProjection` / …), goto / setting / mouse-coordinates / info attach helpers |
+| Registry | `UniversalRegistry`, `runMapControlAction`, `buildMapControlHandle`, `MapControlHandle`, `REGISTRY_*` (incl. `REGISTRY_GLOBAL_STORE_KEY` / `REGISTRY_MAPS_STORE_KEY` / `REGISTRY_CONTROLS_STORE_KEY`), `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) — backed by `@hungpvq/shared-store` |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
 | A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
 | Shared GIS | `fitBounds` (sidebar left/right padding), `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers (`parseCoordinateText`, `latDMS`/`lngDMS`), color/`logHelper`, map-info (`copyImageDataUrl`) |
@@ -67,14 +90,15 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Fullscreen | `requestElementFullscreen`, `exitDocumentFullscreen`, `toggleElementFullscreen`, `subscribeFullscreenChange`, `getFullscreenElement`, `isDocumentFullscreen`, `isMapRootFullscreen`, `resolveMapFullscreenTarget` |
 | Control layout | `resolveControlLayout`, `ResolvedControlLayout` (`standalone` / `toolbar` / `menu`), `ControlLayout` (`standalone` / `toolbar` / `button`), `ButtonInMobile` / `BUTTON_IN_MOBILE_VALUES` (`button` / `toolbar` / `menu`). Map `buttonInMobile` on viewports ≤640px: `button` leaves corner controls unchanged; `toolbar` promotes into one `ToolbarControl` host except `controlLayout="button"`; `menu` fans out by `position` into corner stacks with outside-in overflow; bottom half budgets menu + same-edge `controlLayout="button"` chrome (see [ToolbarControl](./module/ToolbarControl.md)). Mount `ToolbarControl` in the map slot for `toolbar` and `menu`. |
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
-| Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, … (in-worker: `./worker`) |
+| ModuleContainer helpers | `moduleCornerHostSelector` / `moduleDraggableHostSelector` (+ id variants), `buildModuleBindPosition`, `moduleBtnContainerClassName`, `isModuleCornerChromeVisible`, `queryModuleHostElement` (Vue/React `ModuleContainer`) |
+| Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, `workerHasHistory` / `anyWorkerHasHistory` / `countBusyWorkers`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*`, `LANGUAGE_*`, `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI` |
 | Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports) |
 | Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.
 
-Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `compassIcon`; overflow helpers `groupToolbarButtons`, `splitToolbarOverflow`, `splitToolbarOverflowKeepGroups` (`prefer` `'start'`|`'end'`, `toolbarGroupHeightCost`), `maxVisibleToolbarButtons`, `maxVisibleButtonsInStackHeight`, `cornerVerticalMenuBudgetsPx`, `measureCornerStandaloneReserved`, `measureCornerMenuUsedPx`, `elementOuterSize`, `toolbarAvailableWidth`, `toolbarGroupHeightCost`, `TOOLBAR_EDGE_INSET_PX`, `TOOLBAR_STACK_GAP_PX`, `BUTTON_GROUP_OVERFLOW_FRACTION`, `TOOLBAR_CONTROL_LOCALE`.
+Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `compassIcon`, `createLiveToolbarStrategy`; overflow helpers `groupToolbarButtons`, `splitToolbarOverflow`, `splitToolbarOverflowKeepGroups` (`prefer` `'start'`|`'end'`, `toolbarGroupHeightCost`), `maxVisibleToolbarButtons`, `maxVisibleButtonsInStackHeight`, `cornerVerticalMenuBudgetsPx`, `measureCornerStandaloneReserved`, `measureCornerMenuUsedPx`, `elementOuterSize`, `toolbarAvailableWidth`, `toolbarGroupHeightCost`, `toolbarOverflowPanelClassName`, `planToolbarLayout`, `TOOLBAR_EDGE_INSET_PX`, `TOOLBAR_STACK_GAP_PX`, `BUTTON_GROUP_OVERFLOW_FRACTION`, `TOOLBAR_CONTROL_LOCALE`.
 
 ## `@hungpvq/map-dataset`
 
@@ -89,7 +113,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), `createIdentifyControlModel` / scoped-session helpers, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
 | `./menu` | `LIST_VIEW_MENU_*`, `createMenu*` (list-view / dataset builders), `createMapContextMenuBuilder`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, `collectFilesFromDataTransfer`, `readClipboardGisPaste`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |

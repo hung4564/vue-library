@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   createDefaultToolbarStore,
+  createLiveToolbarStrategy,
   createSubscribable,
   createToolbarControl,
   createToolbarModule,
@@ -148,6 +149,25 @@ describe('toolbar', () => {
     });
     expect(strategy).toHaveProperty('mount');
     expect(strategy).toHaveProperty('id', 'btn');
+  });
+
+  it('createLiveToolbarStrategy reads latest options', () => {
+    const store = createDefaultToolbarStore();
+    const toolbar = createToolbarStoreApi(store);
+    let title = 'A';
+    const strategy = createLiveToolbarStrategy(
+      () => ({
+        id: 'live',
+        getState: () => ({ title }),
+      }),
+      toolbar,
+      'single',
+    );
+    strategy.mount();
+    expect(store.buttons.get('live')?.title).toBe('A');
+    title = 'B';
+    strategy.sync();
+    expect(store.buttons.get('live')?.title).toBe('B');
   });
 
   it('createToolbarModuleApi registers for toolbar and menu layouts', () => {

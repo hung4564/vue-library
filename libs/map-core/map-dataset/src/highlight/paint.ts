@@ -211,10 +211,18 @@ export function createHighlightPainter(controllerId: string) {
     `hl-ctrl-${controllerId}`,
   );
 
-  function stop(map: MapSimple) {
-    session?.clearFeatureState?.(map);
-    session?.stop(map);
-    anim.stopAnimation(map, layerIds);
+  function stop(map: MapSimple | null | undefined) {
+    if (!map || typeof map.getLayer !== 'function') {
+      session = undefined;
+      return;
+    }
+    try {
+      session?.clearFeatureState?.(map);
+      session?.stop(map);
+      anim.stopAnimation(map, layerIds);
+    } catch {
+      // Map may already be removed during unmount races.
+    }
     session = undefined;
   }
 

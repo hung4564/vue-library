@@ -80,6 +80,33 @@ describe('LayerControl + IdentifyControl UI smoke', () => {
 
     wrapper.unmount();
   });
+
+  it('unregisters IdentifyControl on unmount', async () => {
+    const Host = defineComponent({
+      components: { MapShell, IdentifyControl },
+      setup() {
+        return { mapId: MAP_ID };
+      },
+      template: `
+        <MapShell :map-id="mapId">
+          <IdentifyControl />
+        </MapShell>
+      `,
+    });
+
+    const wrapper = mount(Host, { attachTo: document.body });
+
+    await vi.waitFor(() =>
+      expect(
+        UniversalRegistry.getControl(IDENTIFY_CONTROL.id, MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    wrapper.unmount();
+    expect(
+      UniversalRegistry.getControl(IDENTIFY_CONTROL.id, MAP_ID),
+    ).toBeUndefined();
+  });
 });
 
 describe('StyleControl + CreateControl UI smoke', () => {

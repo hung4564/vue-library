@@ -1,11 +1,5 @@
-### Measurement Control
+# MeasurementControl
 
-#### Props
+Canonical docs: [MeasurementControl](/map/core/measurement/module/MeasurementControl) (hub under `@hungpvq/map-core` measurement).
 
-<!--@include: @libs/map-core/src/modules/ModuleContainer/props.md-->
-
-#### Slots
-
-| Name      | Description |
-| --------- | ----------- |
-| `default` | id:string   |
+Thin host over Stable `createMeasurementMapView` / GeoJSON download helpers. Vue and React share the same control id and core MapView.

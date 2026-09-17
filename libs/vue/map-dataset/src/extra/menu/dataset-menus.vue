@@ -157,7 +157,7 @@ const hasAnything = computed(
 const rootClass = computed(() => props.class);
 
 const contextMenuRef = ref<{
-  open: () => void;
+  open: (event?: MouseEvent) => void;
   close: () => void;
 } | null>(null);
 
@@ -171,7 +171,7 @@ function runAction(menu: MenuAction, event: MouseEvent) {
   handleMenuAction(menu, {
     event,
     layer: props.data,
-    mapId: props.mapId,
+    mapId: props.mapId ?? '',
     value: props.value,
   });
 }

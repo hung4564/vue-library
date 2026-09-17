@@ -5,6 +5,7 @@ import {
   emptyDraftListSnapshot,
   ensureFeatureId,
   getDraftListSnapshot,
+  getDrawCreateModeEffects,
   getDrawModeSelectEffects,
   getFeatureEditMode,
 } from './draw-control-helpers';
@@ -56,6 +57,15 @@ describe('draw-control-helpers', () => {
     expect(getDrawModeSelectEffects('delete')).toEqual({
       attachMapClick: true,
       drawMode: 'static',
+    });
+  });
+
+  it('getDrawCreateModeEffects documents create + detach click', () => {
+    expect(getDrawCreateModeEffects('draw_line_string')).toEqual({
+      method: 'create',
+      drawMode: 'draw_line_string',
+      isDraw: true,
+      detachMapClick: true,
     });
   });
 

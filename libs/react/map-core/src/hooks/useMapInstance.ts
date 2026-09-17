@@ -133,6 +133,8 @@ export function useMapInstance(
       cancelled = true;
       cleanupEvents?.();
       setLoaded(false);
+      // Run store cleanups while the MapLibre instance is still usable.
+      store.removeMap();
       if (mapInstance) {
         const mapSimpleInstance = mapInstance as MapSimple;
         MapInitializer.cleanupMap(mapSimpleInstance, {
@@ -140,7 +142,6 @@ export function useMapInstance(
         });
       }
       setMap(undefined);
-      store.removeMap();
     };
   }, [props.mapId]); // eslint-disable-line react-hooks/exhaustive-deps -- intentional mapId-only mount; remounting on callbacks/options would recreate the map
 

@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, Ref } from 'vue';
+import { computed, inject, ref, toRef, Ref } from 'vue';
 import {
   useInitAction,
   useShow,
@@ -46,7 +46,7 @@ const { location, itemId } = useInitSidebar(
   containerId.value,
   show,
   {
-    title: props.title,
+    title: toRef(props, 'title'),
     type: 'item-sidebar',
     location: c_location,
   },

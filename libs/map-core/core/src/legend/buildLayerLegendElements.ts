@@ -38,20 +38,20 @@ function buildFallbackSymbolContent(): LegendElement {
 function legendItemStyleFromSymbol(
   symbol: LegendElement | null,
 ): Record<string, unknown> {
-  if (
-    symbol?.element !== 'div' ||
-    !symbol.attributes.style ||
-    typeof symbol.attributes.style !== 'object'
-  ) {
+  if (symbol?.element !== 'div') {
     return {};
   }
-  const style = symbol.attributes.style as Record<string, unknown>;
+  const rawStyle = symbol.attributes['style'];
+  if (!rawStyle || typeof rawStyle !== 'object') {
+    return {};
+  }
+  const style = rawStyle as Record<string, unknown>;
   return {
-    backgroundColor: style.backgroundColor,
-    backgroundPosition: style.backgroundPosition,
-    backgroundSize: style.backgroundSize,
-    backgroundRepeat: style.backgroundRepeat,
-    opacity: style.opacity,
+    backgroundColor: style['backgroundColor'],
+    backgroundPosition: style['backgroundPosition'],
+    backgroundSize: style['backgroundSize'],
+    backgroundRepeat: style['backgroundRepeat'],
+    opacity: style['opacity'],
   };
 }
 

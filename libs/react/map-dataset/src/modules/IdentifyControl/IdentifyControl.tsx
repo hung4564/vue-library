@@ -1,4 +1,4 @@
-import { bindMapLongPress, getMapPointerProfile, type WithMapPropType } from '@hungpvq/map-core';
+import { bindMapLongPress, type WithMapPropType } from '@hungpvq/map-core';
 import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
 import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
@@ -8,12 +8,14 @@ import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   buildIdentifyResultPanelBase,
   clearIdentifyScope,
+  createIdentifyControlModel,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   resolveIdentifyLayerFilterId,
   runIdentifyMulti,
+  shouldBindIdentifyLongPress,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
@@ -68,16 +70,22 @@ export function IdentifyControl(
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const hl = useMapHighlight(mapId);
   const { trans, registerLocale } = useLang(mapId);
-  const [show, toggleShow] = useShow(!!props.show);
+  const modelRef = useRef(
+    createIdentifyControlModel({ show: !!props.show }),
+  );
+  const model = modelRef.current;
+  const [show, toggleShow] = useShow(model.getState().show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
   /** Local layer filter for IdentifyControl only (not synced with layer-item). */
   const [filterIdentifyId, setFilterIdentifyId] = useState<
     string | undefined
-  >();
-  const [isUseClick, setIsUseClick] = useState(false);
-  const [isSelectBbox, setIsSelectBbox] = useState(false);
-  const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
-  const [loading, setLoading] = useState(false);
+  >(model.getState().filterIdentifyId);
+  const [isUseClick, setIsUseClick] = useState(model.getState().isUseClick);
+  const [isSelectBbox, setIsSelectBbox] = useState(
+    model.getState().isSelectBbox,
+  );
+  const [origin, setOrigin] = useState(model.getState().origin);
+  const [loading, setLoading] = useState(model.getState().loading);
 
   const viewsRef = useRef(views);
   viewsRef.current = views;
@@ -99,6 +107,22 @@ export function IdentifyControl(
   preferResultControlRef.current = !!props.preferResultControl;
   const transRef = useRef(trans);
   transRef.current = trans;
+
+  const syncFromModel = useCallback(() => {
+    const s = model.getState();
+    toggleShow(s.show);
+    showRef.current = s.show;
+    setLoading(s.loading);
+    loadingRef.current = s.loading;
+    setFilterIdentifyId(s.filterIdentifyId);
+    filterIdentifyIdRef.current = s.filterIdentifyId;
+    setIsUseClick(s.isUseClick);
+    isUseClickRef.current = s.isUseClick;
+    setIsSelectBbox(s.isSelectBbox);
+    isSelectBboxRef.current = s.isSelectBbox;
+    setOrigin(s.origin);
+    originRef.current = s.origin;
+  }, [model, toggleShow]);
 
   useEffect(() => {
     registerLocale('en', IDENTIFY_CONTROL_LOCALE);
@@ -198,11 +222,10 @@ export function IdentifyControl(
       pointOrBox: PointLike | [PointLike, PointLike],
       event?: MapMouseEvent,
     ) => {
-      setLoading(true);
-      loadingRef.current = true;
+      model.setLoading(true);
+      model.setShow(true);
+      syncFromModel();
       // Activate identify session (toolbar) without forcing ResultControl open.
-      toggleShow(true);
-      showRef.current = true;
       syncResultPanel({ loading: true });
       callMapRef.current((map) => {
         map.getCanvas().style.cursor = 'wait';
@@ -222,15 +245,15 @@ export function IdentifyControl(
           preferResultControl: preferResultControlRef.current,
         });
       } finally {
-        setLoading(false);
-        loadingRef.current = false;
+        model.setLoading(false);
+        syncFromModel();
         callMapRef.current((map) => {
           map.getCanvas().style.cursor = '';
         });
         syncResultPanel({ loading: false });
       }
     },
-    [mapId, getAllComponentsByType, toggleShow, syncResultPanel],
+    [mapId, getAllComponentsByType, model, syncFromModel, syncResultPanel],
   );
 
   const onGetFeaturesRef = useRef(onGetFeatures);
@@ -239,6 +262,8 @@ export function IdentifyControl(
   toggleShowRef.current = toggleShow;
   const callMapRef = useRef(callMap);
   callMapRef.current = callMap;
+  const syncFromModelRef = useRef(syncFromModel);
+  syncFromModelRef.current = syncFromModel;
 
   useEffect(() => {
     UniversalRegistry.registerMenuHandlerForMap(
@@ -247,11 +272,9 @@ export function IdentifyControl(
       (menuProps: MapMenuItemProps) => {
         const { lng, lat } = menuProps.layer.lngLat;
         const run = (point: PointLike) => {
-          const nextOrigin = { latitude: lat, longitude: lng };
-          setOrigin(nextOrigin);
-          originRef.current = nextOrigin;
-          toggleShowRef.current(true);
-          showRef.current = true;
+          model.setOrigin(lat, lng);
+          model.setShow(true);
+          syncFromModelRef.current();
           void onGetFeaturesRef.current(point);
         };
         if (menuProps.layer.point) {
@@ -263,54 +286,54 @@ export function IdentifyControl(
         });
       },
     );
-  }, [mapId]);
+  }, [mapId, model]);
 
   const onStartMapClick = useCallback(() => {
-    setIsUseClick(true);
+    model.setUseClick(true);
+    syncFromModel();
     addEventClickRef.current();
     syncResultPanel({ isEventClickActive: true });
     unbindLongPressRef.current?.();
     unbindLongPressRef.current = null;
-    if (getMapPointerProfile().coarse) {
+    if (shouldBindIdentifyLongPress()) {
       callMapRef.current((map) => {
         unbindLongPressRef.current = bindMapLongPress(map, {
           onLongPress: (point) => {
             if (isEventClickBoxRef.current) return;
             const lngLat = map.unproject([point.x, point.y]);
-            const nextOrigin = {
-              latitude: lngLat.lat,
-              longitude: lngLat.lng,
-            };
-            setOrigin(nextOrigin);
-            originRef.current = nextOrigin;
-            void onGetFeaturesRef.current(point);
+            model.setOrigin(lngLat.lat, lngLat.lng);
+            syncFromModelRef.current();
+            void onGetFeaturesRef.current([point.x, point.y]);
           },
         });
       });
     }
-  }, [syncResultPanel]);
+  }, [model, syncFromModel, syncResultPanel]);
 
   const onRemoveMapClick = useCallback(() => {
-    setIsUseClick(false);
+    model.setUseClick(false);
+    syncFromModel();
     removeEventClickRef.current();
     unbindLongPressRef.current?.();
     unbindLongPressRef.current = null;
     syncResultPanel({ isEventClickActive: false });
-  }, [syncResultPanel]);
+  }, [model, syncFromModel, syncResultPanel]);
 
   const onStartBox = useCallback(() => {
-    setIsSelectBbox(true);
+    model.setSelectBbox(true);
+    syncFromModel();
     addEventBboxRef.current();
     syncResultPanel({ isEventClickBox: true });
-  }, [syncResultPanel]);
+  }, [model, syncFromModel, syncResultPanel]);
 
   const onRemoveBox = useCallback(() => {
-    setIsSelectBbox(false);
+    model.setSelectBbox(false);
+    syncFromModel();
     window.setTimeout(() => {
       removeEventBboxRef.current();
       syncResultPanel({ isEventClickBox: false });
     }, 500);
-  }, [syncResultPanel]);
+  }, [model, syncFromModel, syncResultPanel]);
 
   const onUseMapClick = useCallback(() => {
     if (!isUseClickRef.current) onStartMapClick();
@@ -329,34 +352,19 @@ export function IdentifyControl(
   }, [onRemoveMapClick, onRemoveBox]);
 
   const close = useCallback(() => {
-    setFilterIdentifyId(undefined);
-    filterIdentifyIdRef.current = undefined;
+    const closed = model.close();
+    syncFromModel();
     clearIdentifyScope(mapId);
     onRemoveIdentify();
     hl.hideIfSource('identify');
-    setLoading(false);
-    loadingRef.current = false;
-    const clearedOrigin = { latitude: 0, longitude: 0 };
-    setOrigin(clearedOrigin);
-    originRef.current = clearedOrigin;
-    toggleShow(false);
-    showRef.current = false;
-    syncResultPanel({
-      show: false,
-      loading: false,
-      origin: clearedOrigin,
-      selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
-      items: [],
-    });
-  }, [mapId, onRemoveIdentify, hl, toggleShow, syncResultPanel]);
+    syncResultPanel(closed.panel);
+  }, [mapId, model, onRemoveIdentify, hl, syncFromModel, syncResultPanel]);
 
   onMapClickRef.current = (e: MapMouseEvent) => {
     if (isEventClickBoxRef.current) return;
-    const nextOrigin = { latitude: e.lngLat.lat, longitude: e.lngLat.lng };
-    setOrigin(nextOrigin);
-    originRef.current = nextOrigin;
-    toggleShowRef.current(true);
-    showRef.current = true;
+    model.setOrigin(e.lngLat.lat, e.lngLat.lng);
+    model.setShow(true);
+    syncFromModel();
     onGetFeatures(e.point, e);
   };
 
@@ -364,8 +372,8 @@ export function IdentifyControl(
     if (isEventClickActiveRef.current) return;
     onRemoveBox();
     if (!bbox) return;
-    toggleShowRef.current(true);
-    showRef.current = true;
+    model.setShow(true);
+    syncFromModel();
     onGetFeatures([
       [bbox[0].x, bbox[0].y],
       [bbox[1].x, bbox[1].y],
@@ -378,59 +386,32 @@ export function IdentifyControl(
   }, []);
 
   function handleToggle() {
-    const next = !showRef.current;
-    toggleShow();
-    showRef.current = next;
-    syncResultPanel({ show: next });
-    if (next) {
-      if (!isUseClickRef.current) onStartMapClick();
-    } else {
-      onRemoveIdentify();
-    }
+    const resolved = model.toggleShow();
+    syncFromModel();
+    syncResultPanel(resolved.panel);
+    if (resolved.startMapClick) onStartMapClick();
+    else if (resolved.removeIdentify) onRemoveIdentify();
   }
 
   /** One-way from layer-item: start identify + filter; do not open result popup. */
   function applyScopedSession(result?: IdentifyScopeToggleResult) {
-    const clearedOrigin = { latitude: 0, longitude: 0 };
-    if (result?.active && result.identifyId) {
-      setFilterIdentifyId(result.identifyId);
-      filterIdentifyIdRef.current = result.identifyId;
-      setOrigin(clearedOrigin);
-      originRef.current = clearedOrigin;
-      toggleShow(true);
-      showRef.current = true;
-      syncResultPanel({
-        selectedLayerId: result.identifyId,
-        items: [],
-        loading: false,
-        origin: clearedOrigin,
-      });
-      if (!isUseClickRef.current) onStartMapClick();
+    const resolved = model.applyScopedSession(result);
+    syncFromModel();
+    if (resolved.kind === 'activate') {
+      syncResultPanel(resolved.panel);
+      if (resolved.startMapClick) onStartMapClick();
       return;
     }
-    if (
-      result?.identifyId &&
-      filterIdentifyIdRef.current &&
-      filterIdentifyIdRef.current === result.identifyId
-    ) {
-      setFilterIdentifyId(undefined);
-      filterIdentifyIdRef.current = undefined;
-      setOrigin(clearedOrigin);
-      originRef.current = clearedOrigin;
-      syncResultPanel({
-        selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
-        items: [],
-        loading: false,
-        origin: clearedOrigin,
-      });
+    if (resolved.kind === 'clear-matching') {
+      syncResultPanel(resolved.panel);
     }
     if (!immediatelyRef.current) onRemoveMapClick();
   }
 
   function onLayerFilterChange(identifyId: string) {
     const id = resolveIdentifyLayerFilterId(identifyId);
-    setFilterIdentifyId(id);
-    filterIdentifyIdRef.current = id;
+    model.setFilterIdentifyId(id);
+    syncFromModel();
     syncResultPanel({
       selectedLayerId: id ?? IDENTIFY_ALL_LAYERS_VALUE,
     });
@@ -468,8 +449,8 @@ export function IdentifyControl(
   }, [show, loading, views.length, control]);
 
   function setIdentifyLoading(value: boolean) {
-    setLoading(value);
-    loadingRef.current = value;
+    model.setLoading(value);
+    syncFromModel();
     syncResultPanel({ loading: value });
     control.sync();
   }
@@ -481,8 +462,8 @@ export function IdentifyControl(
     buttonPosition: merged.position,
     show,
     setShow: (value) => {
-      toggleShow(value);
-      showRef.current = value;
+      model.setShow(value);
+      syncFromModel();
       syncResultPanel({ show: value });
     },
     getProps: () => ({

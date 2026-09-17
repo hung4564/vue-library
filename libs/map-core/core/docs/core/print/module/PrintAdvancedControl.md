@@ -22,6 +22,10 @@ and
 - Export waits for map loaded + tiles ready (`waitMapIdleAndTiles`) before snapshot.
 - Advanced export supports optional `dpi` and watermark via print utils (`exportMapboxWithOptions`).
 
+## Architecture (thin host)
+
+Overlay / paper / save orchestration lives in Stable **`createPrintAdvancedSession`** (`@hungpvq/map-core/print`). Vue and React `PrintAdvancedControl` are thin hosts: toolbar, registry, settings UI, and `saveAs` only. Call `session.destroy()` on unmount.
+
 ## Slots
 
 | Name      | Description             |

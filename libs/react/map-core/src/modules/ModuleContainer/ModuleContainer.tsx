@@ -1,5 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  buildModuleBindPosition,
+  isModuleCornerChromeVisible,
+  moduleBtnContainerClassName,
+  moduleCornerHostSelector,
+  moduleDraggableHostSelector,
+  queryModuleHostElement,
+  type Position,
+} from '@hungpvq/map-core';
 import { useMapContext } from '../../context/MapContext';
 
 export interface ModuleContainerProps {
@@ -9,7 +18,7 @@ export interface ModuleContainerProps {
   controlOrder?: number;
   /** Control id → class `{controlId}-btn-module-container` */
   controlId?: string;
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  position?: Position;
   controlVisible?: boolean;
   controlLayout?: 'toolbar' | 'standalone' | 'button' | 'menu';
   btn?: React.ReactNode;
@@ -28,6 +37,42 @@ export interface BindPosition {
   left?: number;
   right?: number;
   containerId: string;
+}
+
+function useModuleHostElement(selector: string | null): HTMLElement | null {
+  const [host, setHost] = useState<HTMLElement | null>(() =>
+    selector ? queryModuleHostElement(selector) : null,
+  );
+
+  useLayoutEffect(() => {
+    if (!selector) {
+      setHost(null);
+      return;
+    }
+
+    const found = queryModuleHostElement(selector);
+    if (found) {
+      setHost(found);
+      return;
+    }
+
+    setHost(null);
+    if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const el = queryModuleHostElement(selector);
+      if (el) {
+        setHost(el);
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [selector]);
+
+  return host;
 }
 
 export function ModuleContainer({
@@ -51,113 +96,58 @@ export function ModuleContainer({
   const hasBtn = !!btn;
   const hasBtnOutside = !!btnOutside;
   const hasCornerChrome = hasBtn || hasBtnOutside;
-  const isStandaloneButton =
-    controlLayout !== 'toolbar' && controlLayout !== 'menu';
+  const showCornerChrome = isModuleCornerChromeVisible(controlLayout);
   const hasDraggable = !!draggable;
 
   const containerId = useMemo(() => dragId, [dragId]);
 
-  const draggableTo = useMemo(() => {
-    return `#map-draggable-${mapId}`;
-  }, [mapId]);
-
-  const btnTo = useMemo(() => {
-    return `#${position}-${mapId}`;
-  }, [position, mapId]);
-
-  const bindDrag = useMemo<BindPosition>(() => {
-    const result: BindPosition = {
-      containerId,
-    };
-
-    const configs = [
-      { key: 'left' as const, fallback: 18 + btnWidth },
-      { key: 'right' as const, fallback: 18 + btnWidth },
-      { key: 'top' as const, fallback: 10 },
-      { key: 'bottom' as const, fallback: 10 },
-    ] as const;
-
-    configs.forEach(({ key, fallback }) => {
-      if (position.includes(key)) {
-        result[key] = fallback;
-      }
-    });
-
-    return result;
-  }, [containerId, btnWidth, position]);
-
-  const [btnPortalTarget, setBtnPortalTarget] = useState<HTMLElement | null>(
-    null,
+  const btnSelector = useMemo(
+    () => (mapId ? moduleCornerHostSelector(position, mapId) : null),
+    [position, mapId],
   );
-  const [draggablePortalTarget, setDraggablePortalTarget] =
-    useState<HTMLElement | null>(null);
+  const draggableSelector = useMemo(
+    () => (mapId ? moduleDraggableHostSelector(mapId) : null),
+    [mapId],
+  );
 
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
+  const bindDrag = useMemo<BindPosition>(
+    () =>
+      buildModuleBindPosition({
+        position,
+        btnWidth,
+        containerId,
+      }),
+    [containerId, btnWidth, position],
+  );
 
-    const findTargets = () => {
-      const btnTarget = document.querySelector(btnTo) as HTMLElement;
-      const dragTarget = document.querySelector(draggableTo) as HTMLElement;
+  const needBtnHost =
+    controlVisible && hasCornerChrome && showCornerChrome && !!btnSelector;
+  const needDragHost = !!containerId && hasDraggable && !!draggableSelector;
 
-      if (btnTarget && !btnPortalTarget) {
-        setBtnPortalTarget(btnTarget);
-      }
-      if (dragTarget && !draggablePortalTarget) {
-        setDraggablePortalTarget(dragTarget);
-      }
-    };
+  const btnPortalTarget = useModuleHostElement(needBtnHost ? btnSelector : null);
+  const draggablePortalTarget = useModuleHostElement(
+    needDragHost ? draggableSelector : null,
+  );
 
-    findTargets();
-    const timeout1 = setTimeout(findTargets, 10);
-    const timeout2 = setTimeout(findTargets, 50);
-    const timeout3 = setTimeout(findTargets, 100);
-    const timeout4 = setTimeout(findTargets, 200);
-
-    const mapContainer =
-      document.querySelector(`[data-map-id="${mapId}"]`) || document.body;
-    const observer = new MutationObserver(() => {
-      findTargets();
-    });
-
-    observer.observe(mapContainer, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['id'],
-    });
-
-    return () => {
-      clearTimeout(timeout1);
-      clearTimeout(timeout2);
-      clearTimeout(timeout3);
-      clearTimeout(timeout4);
-      observer.disconnect();
-    };
-  }, [btnTo, draggableTo, mapId, btnPortalTarget, draggablePortalTarget]);
-
-  const btnClassName = controlId
-    ? `btn-module-container map-common-button ${controlId}-btn-module-container`
-    : 'btn-module-container map-common-button';
+  const btnClassName = moduleBtnContainerClassName(controlId);
 
   return (
     <div className="module__container">
-      {controlVisible &&
-        hasCornerChrome &&
-        isStandaloneButton &&
-        btnPortalTarget &&
-        createPortal(
-          <>
-            {hasBtn ? (
-              <div className={btnClassName} style={{ order: controlOrder }}>
-                {btn}
-              </div>
-            ) : null}
-            {btnOutside}
-          </>,
-          btnPortalTarget,
-        )}
+      {needBtnHost && btnPortalTarget
+        ? createPortal(
+            <>
+              {hasBtn ? (
+                <div className={btnClassName} style={{ order: controlOrder }}>
+                  {btn}
+                </div>
+              ) : null}
+              {btnOutside}
+            </>,
+            btnPortalTarget,
+          )
+        : null}
       {children}
-      {containerId && hasDraggable && draggablePortalTarget && draggable
+      {needDragHost && draggablePortalTarget && draggable
         ? createPortal(draggable(bindDrag), draggablePortalTarget)
         : null}
     </div>

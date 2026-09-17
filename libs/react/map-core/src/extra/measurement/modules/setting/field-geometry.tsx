@@ -1,8 +1,9 @@
-import type {
-  CoordinatesNumber,
-  DraftCoordinatesNumber,
-} from '@hungpvq/map-core';
+import type { DraftCoordinatesNumber } from '@hungpvq/map-core';
 import { parseCoordinateListText } from '@hungpvq/map-core';
+import {
+  buildMeasurementGeojsonDownload,
+  draftCoordinatesToFeature,
+} from '@hungpvq/map-core/measurement';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,
@@ -10,7 +11,7 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import type { Feature, FeatureCollection, Geometry, Position } from 'geojson';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { saveAs } from 'file-saver';
 import { useMemo, type ClipboardEvent } from 'react';
 
@@ -28,40 +29,6 @@ export interface FieldGeometryProps {
     geometry: Geometry | Feature | FeatureCollection,
   ) => void;
   onClickRemove?: (index: number) => void;
-}
-
-function toPointFeature(coordinates: Position): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'Point', coordinates },
-  };
-}
-
-function toLineStringFeature(coordinates: Position[]): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'LineString', coordinates },
-  };
-}
-
-function toPolygonFeature(coordinates: Position[][]): Feature {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'Polygon', coordinates },
-  };
-}
-
-function toGeometry(coordinates: Coord[]) {
-  const validCoords = coordinates.filter(
-    (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
-  );
-  if (!validCoords.length) return undefined;
-  if (validCoords.length === 1) return toPointFeature(validCoords[0]);
-  if (validCoords.length === 2) return toLineStringFeature(validCoords);
-  return toPolygonFeature([[...validCoords, validCoords[0]]]);
 }
 
 export function FieldGeometry({
@@ -131,20 +98,13 @@ export function FieldGeometry({
   }
 
   function onDownload() {
-    const geom = toGeometry(value);
-    if (!geom) return;
-    const geojson = {
-      type: 'FeatureCollection',
-      features: [geom],
-    };
-    const blob = new Blob([JSON.stringify(geojson)], {
-      type: 'text/plain;charset=utf-8',
-    });
-    saveAs(blob, 'geojson.json');
+    const download = buildMeasurementGeojsonDownload(value);
+    if (!download) return;
+    saveAs(download.blob, download.fileName);
   }
 
   function onFlyTo() {
-    const geom = toGeometry(value);
+    const geom = draftCoordinatesToFeature(value);
     if (geom) onClickFillBound?.(geom);
   }
 

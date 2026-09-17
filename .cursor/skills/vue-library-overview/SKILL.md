@@ -33,6 +33,8 @@ Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Rele
 5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
 
+**Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`.
+
 Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
@@ -75,6 +77,8 @@ npm run share:build
 npm run docs:dev          # VitePress docs/
 npm run build / lint / ts-check   # run-many --all
 ```
+
+**Typecheck sync (IDE ↔ CLI):** workspace TypeScript is pinned in `.vscode/settings.json` (`typescript.tsdk`). Root `tsconfig.json` is a solution-style references file. Vue packages run `vue-tsc` (not plain `tsc`) for `typecheck`/`ts-check` so CLI matches Volar. Non-Vue packages use `tsc -p tsconfig.lib.json --noEmit`.
 
 Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm run commit` / git-cz when helping authors.
 

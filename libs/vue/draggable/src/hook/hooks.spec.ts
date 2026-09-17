@@ -251,6 +251,30 @@ describe('init hooks', () => {
     expect(useDragStore().container[CID].sideBar.left.items).not.toContain(id);
   });
 
+  it('useInitSidebar syncs title when locale/prop updates', async () => {
+    useDragContainer(CID).initContainer();
+    const show = ref(true);
+    const title = ref('map.layer-control.title');
+    const { wrapper, api } = mountSetup(() =>
+      useInitSidebar(CID, show, {
+        type: 'item-sidebar',
+        location: 'left',
+        title,
+      }),
+    );
+    await nextTick();
+    const id = api().itemId.value;
+    expect(useDragStore().container[CID].actions[id]?.title).toBe(
+      'map.layer-control.title',
+    );
+    title.value = 'Lớp dữ liệu';
+    await nextTick();
+    expect(useDragStore().container[CID].actions[id]?.title).toBe(
+      'Lớp dữ liệu',
+    );
+    wrapper.unmount();
+  });
+
   it('useInitDrawer registers and cleans up', async () => {
     useDragContainer(CID).initContainer();
     const show = ref(false);

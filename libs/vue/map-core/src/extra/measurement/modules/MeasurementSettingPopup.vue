@@ -220,15 +220,27 @@ const areaUnitItems = computed(() => [
   { value: 'acre', text: trans.value('map.measurement.unit.acre') },
 ]);
 
-function onDistanceUnitChange(value: string | number) {
-  const unit = String(value) as DistanceUnit;
+function onDistanceUnitChange(
+  value: string | number | { value: string; text: string } | undefined,
+) {
+  const raw =
+    value && typeof value === 'object' && 'value' in value
+      ? value.value
+      : value;
+  const unit = String(raw ?? '') as DistanceUnit;
   distanceUnit.value = unit;
   setMeasurementDistanceUnit(unit);
   emit('refresh');
 }
 
-function onAreaUnitChange(value: string | number) {
-  const unit = String(value) as AreaUnit;
+function onAreaUnitChange(
+  value: string | number | { value: string; text: string } | undefined,
+) {
+  const raw =
+    value && typeof value === 'object' && 'value' in value
+      ? value.value
+      : value;
+  const unit = String(raw ?? '') as AreaUnit;
   areaUnit.value = unit;
   setMeasurementAreaUnit(unit);
   emit('refresh');

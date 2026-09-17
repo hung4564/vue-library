@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import {
+  applyMapStyleSettings,
+  inputToSprite,
+  readMapStyleSettings,
   SETTING_CONTROL_LOCALE,
+  spriteToInput,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
-import type { SpriteSpecification } from 'maplibre-gl';
 import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
@@ -29,13 +32,13 @@ function onToggleShow() {
   setShow(!show.value);
   if (show.value) {
     callMap((_map) => {
-      setting.value.zoom = _map.getZoom();
-      setting.value.center = [
-        +_map.getCenter().lng.toFixed(6),
-        +_map.getCenter().lat.toFixed(6),
-      ];
-      setting.value.sprite = _map.getStyle().sprite;
-      setting.value.glyphs = _map.getStyle().glyphs;
+      const next = readMapStyleSettings(_map);
+      setting.value = {
+        zoom: next.zoom,
+        center: next.center,
+        sprite: spriteToInput(next.sprite),
+        glyphs: next.glyphs,
+      };
     });
   }
 }
@@ -60,7 +63,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const setting = ref<{
   zoom?: number;
   center: [number, number];
-  sprite?: SpriteSpecification;
+  sprite?: string;
   glyphs?: string;
 }>({
   zoom: undefined,
@@ -70,16 +73,12 @@ const setting = ref<{
 });
 const onSetSetting = () => {
   callMap((map) => {
-    if (setting.value.zoom) map.setZoom(setting.value.zoom);
-    if (setting.value.center) map.setCenter(setting.value.center);
-    const style = map.getStyle();
-    if (setting.value.sprite) {
-      style.sprite = setting.value.sprite;
-    }
-    if (setting.value.glyphs) {
-      style.glyphs = setting.value.glyphs;
-    }
-    map.setStyle(style);
+    applyMapStyleSettings(map, {
+      zoom: setting.value.zoom,
+      center: setting.value.center,
+      sprite: inputToSprite(setting.value.sprite),
+      glyphs: setting.value.glyphs,
+    });
   });
 };
 const { state, control } = useToolbarControl(mapId.value, props, {

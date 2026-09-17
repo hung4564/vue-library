@@ -1,7 +1,7 @@
-import { logHelper } from '@hungpvq/map-core';
+import { getMap, logHelper } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { createMapScopedStore } from '@hungpvq/react-map-core';
-import { logger } from '@hungpvq/map-dataset';
+import { DatasetService, logger } from '@hungpvq/map-dataset';
+import { createMapScopedStore, getStore } from '@hungpvq/react-map-core';
 
 const KEY = 'dataset' as const;
 
@@ -23,20 +23,54 @@ export function notifyMapDatasetStore(store: MapLayerStore) {
   notify(store);
 }
 
-/** Imperative store accessor (safe outside React render). */
-export function getMapDatasetStore(mapId: string) {
-  return createMapScopedStore<MapLayerStore>(mapId, KEY as string & object, () => {
-    logHelper(logger, mapId, 'store').debug('init');
-    return {
-      datasets: {},
-      datasetIds: { value: [] },
-      version: 0,
-      listeners: new Set(),
-      allLayerShow: true,
-    };
+async function clearDatasetsOnRemoveMap(
+  mapId: string,
+  store: MapLayerStore,
+): Promise<void> {
+  const ids = [...store.datasetIds.value];
+  if (!ids.length) return;
+  const map = getMap(mapId);
+  logHelper(logger, mapId, 'store').debug('clear datasets on removeMap', {
+    count: ids.length,
   });
+  for (const id of ids) {
+    const layer = store.datasets[id];
+    if (!layer) continue;
+    if (map) {
+      await DatasetService.removeDataset(store, map, layer);
+    } else {
+      delete store.datasets[id];
+      store.datasetIds.value = store.datasetIds.value.filter((x) => x !== id);
+    }
+  }
+  store.listeners.clear();
 }
 
-export function useMapDatasetStore(mapId: string) {
+/** Imperative store accessor (safe outside React render). */
+export function getMapDatasetStore(mapId: string): MapLayerStore {
+  return createMapScopedStore<MapLayerStore>(
+    mapId,
+    KEY as string & object,
+    () => {
+      logHelper(logger, mapId, 'store').debug('init');
+      return {
+        datasets: {},
+        datasetIds: { value: [] },
+        version: 0,
+        listeners: new Set(),
+        allLayerShow: true,
+      };
+    },
+    {
+      cleanup: (): void | Promise<void> => {
+        const store = getStore<MapLayerStore>(mapId, KEY);
+        if (!store) return;
+        return clearDatasetsOnRemoveMap(mapId, store);
+      },
+    },
+  );
+}
+
+export function useMapDatasetStore(mapId: string): MapLayerStore {
   return getMapDatasetStore(mapId);
 }

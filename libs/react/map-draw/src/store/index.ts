@@ -13,19 +13,40 @@ import {
   type MapDrawOption,
   type MapDrawStore,
 } from '@hungpvq/map-draw';
-import { createMapScopedStore, getMapMittStore } from '@hungpvq/react-map-core';
+import {
+  createMapScopedStore,
+  getMapMittStore,
+  getStore,
+} from '@hungpvq/react-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useEffect, useRef } from 'react';
 
 const KEY = 'draw' as const;
 
-export function useMapDrawStore(mapId: string) {
+function endDrawSession(mapId: string, store: MapDrawStore) {
+  if (!store.config) return;
+  store.config = undefined;
+  store.state.featuresAdded = {};
+  store.state.featuresUpdated = {};
+  store.state.featuresDeleted = {};
+  logHelper(logger, mapId, 'store').debug('end on removeMap');
+  getMapMittStore<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
+}
+
+export function useMapDrawStore(mapId: string): MapDrawStore {
   return createMapScopedStore<MapDrawStore>(
     mapId,
     KEY as string & object,
     () => {
       logHelper(logger, mapId, 'store').debug('init');
       return createDefaultMapDrawStore();
+    },
+    {
+      cleanup: (): void => {
+        const store = getStore<MapDrawStore>(mapId, KEY);
+        if (!store) return;
+        endDrawSession(mapId, store);
+      },
     },
   );
 }

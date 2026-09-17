@@ -56,6 +56,21 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   FormView,
   MEASUREMENT_CONTROL_LOCALE,
+  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
+  MEASUREMENT_MAP_VIEW_IMAGE,
+  MapMarkerView,
+  MeasureAngle,
+  MeasureArea,
+  MeasureAzimuth,
+  MeasureDistance,
+  MeasurePoint,
+  MeasureRadius,
+  MeasurementHandle,
+  createMeasurementMapView,
+  resolveMeasurementModeToggle,
+  resolveMeasurementToolbarStatus,
+  type IViewSettingField,
+  type MeasureActionItem,
 } from '@hungpvq/map-core/measurement';
 
 import MapCommonButton from '../../../components/MapCommonButton.vue';
@@ -67,7 +82,8 @@ import { useEventMap } from '../../event/hook/useEvent';
 import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl, type ToolbarButtonConfig } from '../../toolbar/helper';
+import { type ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
+import { useToolbarControl } from '../../toolbar/helper';
 
 import {
   mdiAngleAcute,
@@ -82,26 +98,11 @@ import {
   mdiTableHeadersEye,
 } from '@mdi/js';
 
-import {
-  IViewSettingField,
-  MapMarkerView,
-  MapView,
-  MeasureAngle,
-  MeasureArea,
-  MeasureAzimuth,
-  MeasureDistance,
-  MeasurePoint,
-  MeasureRadius,
-  MeasurementHandle,
-} from '@hungpvq/map-core/measurement';
 import { logger } from '../logger';
-import { MeasureActionItem } from '../types';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
-
-const DEFAULT_COLOR_HIGHLIGHT = '#004E98';
 
 const path = {
   distance: mdiRuler,
@@ -254,9 +255,7 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
     order: action.index,
 
     getState() {
-      const status: 'select' | 'handle' = measurement_type.value
-        ? 'handle'
-        : 'select';
+      const status = resolveMeasurementToolbarStatus(measurement_type.value);
       const visible = action.show
         ? action.show({
             handler,
@@ -327,12 +326,13 @@ watch([measurement_type, coordinates, () => setting.value.show], () => control.s
 
 function checkMeasureRun(type: string) {
   reset(false);
-  if (measurement_type.value === type) {
+  const toggle = resolveMeasurementModeToggle(measurement_type.value, type);
+  if (!toggle.start) {
     measurement_type.value = undefined;
     handler.setAction(null);
     return false;
   }
-  measurement_type.value = type;
+  measurement_type.value = toggle.nextType;
   setting.value.show = true;
   return true;
 }
@@ -419,126 +419,16 @@ const { add: addEventClick, remove: removeEventClick } = useEventMap(
 
 function onInit(map: MapSimple) {
   handler.setMapId(map.id!);
-  imageHandle.addImage(map.id!, 'azimuth-arrow', imageArrow, { sdf: true });
-  imageHandle.addImage(map.id!, 'measurment-round', imageRounded, {
+  imageHandle.addImage(map.id!, MEASUREMENT_MAP_VIEW_IMAGE.azimuthArrow, imageArrow, {
+    sdf: true,
+  });
+  imageHandle.addImage(map.id!, MEASUREMENT_MAP_VIEW_IMAGE.round, imageRounded, {
     content: [4, 4, 12, 12],
     stretchX: [[6, 10]],
     stretchY: [[6, 10]],
   });
 
-  let mapView = new MapView(map);
-  mapView.init(
-    [
-      {
-        type: 'line', // For outline
-        paint: {
-          'line-color': DEFAULT_COLOR_HIGHLIGHT,
-          'line-width': 2,
-        },
-      },
-      {
-        type: 'fill', // For outline
-        filter: ['==', '$type', 'Polygon'],
-        paint: {
-          'fill-color': DEFAULT_COLOR_HIGHLIGHT,
-          'fill-opacity': 0.3,
-        },
-      },
-
-      {
-        type: 'symbol',
-        filter: ['all', ['has', 'rotation'], ['!has', 'is_edge']],
-        paint: { 'icon-color': DEFAULT_COLOR_HIGHLIGHT },
-        layout: {
-          'icon-size': 1.2,
-          'icon-rotate': {
-            type: 'identity',
-            property: 'rotation',
-          },
-          'icon-rotation-alignment': 'map',
-          'icon-allow-overlap': true,
-          'icon-ignore-placement': true,
-          // 'icon-ignore-placement': true,
-          'icon-image': 'azimuth-arrow',
-          visibility: 'visible',
-        },
-      },
-      // {
-      //   type: 'circle',
-      //   filter: ['==', '$type', 'Point'],
-      //   paint: {
-      //     'circle-radius': 4,
-      //     'circle-color': vm.color,
-      //     'circle-stroke-color': 'black',
-      //     'circle-stroke-width': 0.5,
-      //   },
-      // },
-      {
-        type: 'symbol',
-        filter: [
-          'all',
-          ['has', 'is_label'],
-          ['has', 'is_edge'],
-          ['==', '$type', 'Point'],
-        ],
-        layout: {
-          'text-field': '{text}',
-          'text-size': 12,
-          'text-rotate': ['get', 'text_rotate'],
-          'text-rotation-alignment': 'map',
-          'text-pitch-alignment': 'viewport',
-          'text-offset': [0, 0],
-          'text-anchor': 'center',
-          'text-allow-overlap': true,
-          'text-ignore-placement': true,
-        },
-        paint: {
-          'text-color': '#fff',
-          'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
-          'text-halo-width': 2,
-        },
-      },
-      {
-        type: 'symbol',
-        filter: [
-          'all',
-          ['has', 'is_label'],
-          ['!has', 'is_edge'],
-          ['==', '$type', 'Point'],
-        ],
-        layout: {
-          'text-field': '{text}',
-          'text-offset': [
-            'case',
-            ['to-boolean', ['get', 'is_center']],
-            ['literal', [0, 0]],
-            ['literal', [0, 2]],
-          ],
-          'text-size': 14,
-          'text-allow-overlap': true,
-          'text-ignore-placement': true,
-          'icon-allow-overlap': true,
-          'icon-ignore-placement': true,
-          'icon-image': 'measurment-round',
-          'icon-text-fit': 'both',
-        },
-        paint: {
-          'text-color': '#fff',
-          'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
-          'text-halo-width': 2,
-        },
-      },
-    ],
-    {
-      data: {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      },
-    },
-  );
+  const mapView = createMeasurementMapView(map);
   mapView.onStart = () => {
     if (!map) {
       return;
@@ -548,8 +438,8 @@ function onInit(map: MapSimple) {
   mapView.onReset = () => {
     removeEventClick();
   };
-  let markerView = new MapMarkerView(map);
-  markerView.setColor(DEFAULT_COLOR_HIGHLIGHT);
+  const markerView = new MapMarkerView(map);
+  markerView.setColor(MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR);
   markerView.onDragMarker = (p_coordinates) => {
     handler.init(p_coordinates);
   };
@@ -559,7 +449,7 @@ function onInit(map: MapSimple) {
     handler.init(coordinates.value);
   };
 
-  let formView = new FormView();
+  const formView = new FormView();
   formView.onChangeValue = (value_coordinates) => {
     coordinates.value = (value_coordinates || []).slice();
   };

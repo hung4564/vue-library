@@ -130,6 +130,8 @@ export function useMapInstance(
     cancelled = true;
     cleanupEvents?.();
     loaded.value = false;
+    // Run store cleanups while the MapLibre instance is still usable.
+    store.removeMap();
     if (map.value) {
       const mapInstance = map.value as MapSimple;
       MapInitializer.cleanupMap(mapInstance, {
@@ -137,7 +139,6 @@ export function useMapInstance(
       });
     }
     map.value = undefined;
-    store.removeMap();
   });
 
   return {

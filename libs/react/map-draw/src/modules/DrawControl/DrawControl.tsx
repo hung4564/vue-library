@@ -1,19 +1,11 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { EventClick } from '@hungpvq/map-core/event';
 import {
   DrawingTypeName,
   MapDraw,
   StaticMode,
-  classifyDrawCreateFeature,
-  emptyDraftListSnapshot,
-  ensureFeatureId,
-  getDraftListSnapshot,
-  getDrawModeSelectEffects,
+  getDrawCreateModeEffects,
   getDrawStyles,
-  getFeatureEditMode,
-  type DrawCreateEvent,
-  type DrawDeleteEvent,
-  type DrawUpdateEvent,
+  isDraftOption,
   type MapDrawOption,
   type MapDrawOptions,
 } from '@hungpvq/map-draw';
@@ -22,15 +14,10 @@ import {
   type ContextMenuRef,
 } from '@hungpvq/react-draggable';
 import {
-  MapControlButton,
-  MapControlGroupButton,
   ModuleContainer,
   defaultMapProps,
-  useEventMap,
   useLang,
   useMap,
-  useRegisterMapControl,
-  useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
 import {
@@ -43,9 +30,7 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
-import Icon from '@mdi/react';
-import type { Feature, FeatureCollection } from 'geojson';
-import type { MapMouseEvent } from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
 import {
   useCallback,
   useEffect,
@@ -54,9 +39,12 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
-import { useConfigDrawControl } from '../../store';
+import { DRAW_CONTROL_LOCALE } from '@hungpvq/map-draw';
 import '../../style.css';
+import { DrawDraftList, DrawDraftListPanel } from './components/DrawDraftList';
+import { DrawToolbar } from './components/DrawToolbar';
+import { useDrawDrafts } from './hooks/useDrawDrafts';
+import { useDrawEvents } from './hooks/useDrawEvents';
 
 export interface DrawControlProps extends WithMapPropType {
   drawOptions?: MapDrawOption;
@@ -73,35 +61,12 @@ export function DrawControl(props: DrawControlProps) {
   }, [registerLocale]);
 
   const [isShow, setIsShow] = useState(false);
-  const [isDraw, setIsDraw] = useState(false);
-  const [method, setMethod] = useState('');
   const [drawOptions, setDrawOptions] = useState<MapDrawOption | undefined>(
     props.drawOptions,
   );
   const [drawSupport, setDrawSupport] = useState<string[]>([]);
-  const [draftCounts, setDraftCounts] = useState(0);
-  const [showList, setShowList] = useShow(false);
-  const [draftItems, setDraftItems] = useState<
-    { id: string | number; status: string }[]
-  >([]);
-  const [currentFeature, setCurrentFeature] = useState<Feature | undefined>();
 
   const contextMenuRef = useRef<ContextMenuRef>(null);
-  const handlersRef = useRef<{
-    onDrawCreated: (e: DrawCreateEvent) => void;
-    onDrawUpdated: (e: DrawUpdateEvent) => void;
-    onDrawDeleted: (e: DrawDeleteEvent) => void;
-  }>({
-    onDrawCreated: () => undefined,
-    onDrawUpdated: () => undefined,
-    onDrawDeleted: () => undefined,
-  });
-
-  const methodRef = useRef(method);
-  methodRef.current = method;
-  const drawOptionsRef = useRef(drawOptions);
-  drawOptionsRef.current = drawOptions;
-
   const controlRef = useRef(
     new MapDraw({
       displayControlsDefault: false,
@@ -119,65 +84,41 @@ export function DrawControl(props: DrawControlProps) {
     }),
   );
 
-  const onMapClick = useCallback(
-    async (e: MapMouseEvent) => {
-      const action = drawOptionsRef.current;
-      if (!action?.selectFeature) return;
-      const feature = await action.selectFeature(
-        { point: [e.lngLat.lng, e.lngLat.lat] },
-        { mapId },
-      );
-      if (!feature) {
-        setCurrentFeature(undefined);
-        return;
-      }
-      ensureFeatureId(feature);
-      setCurrentFeature(feature);
-      const m = methodRef.current;
-      if (m === 'select') {
-        setFeatureRef.current('updated', feature);
-        const ids = controlRef.current.add({
-          type: 'FeatureCollection',
-          features: [feature],
-        });
-        if (ids.length) {
-          setIsDraw(true);
-          removeEventClickRef.current();
-          const edit = getFeatureEditMode(feature, ids);
-          if (edit.mode === 'simple_select') {
-            controlRef.current.changeMode('simple_select', edit.options);
-          } else {
-            controlRef.current.changeMode('direct_select', edit.options);
-          }
-        }
-      } else if (m === 'delete') {
-        if (feature.id != null) {
-          controlRef.current.delete(String(feature.id));
-        }
-        await action.deleteFeature?.(feature, { mapId });
-        if (!isDraftOption(action)) await action.redraw?.(mapId);
-      }
-    },
-    [mapId],
-  );
+  const startEndRef = useRef<{
+    onStart: (config: MapDrawOption) => void;
+    onEnd: () => void;
+  }>({
+    onStart: () => undefined,
+    onEnd: () => undefined,
+  });
 
-  const clickEvent = useMemo(
-    () => new EventClick().setHandler(onMapClick),
-    [onMapClick],
-  );
-  const { add: addEventClick, remove: removeEventClick } = useEventMap(
-    mapId,
-    clickEvent,
-  );
-  const removeEventClickRef = useRef(removeEventClick);
-  removeEventClickRef.current = removeEventClick;
+  const {
+    draftItems,
+    draftCounts,
+    showList,
+    setShowList,
+    refreshDrafts,
+    onCommit,
+    onDiscard,
+    onShowListDraftItem,
+    setFeature,
+    save,
+  } = useDrawDrafts(mapId, drawOptions, {
+    onStart: (config) => startEndRef.current.onStart(config),
+    onEnd: () => startEndRef.current.onEnd(),
+  });
 
-  const refreshDrafts = useCallback(() => {
-    const snap = getDraftListSnapshot(drawOptions);
-    if (!snap) return;
-    setDraftItems(snap.items.map((i) => ({ id: i.id, status: i.status })));
-    setDraftCounts(snap.count);
-  }, [drawOptions]);
+  const {
+    isDraw,
+    setIsDraw,
+    method,
+    setMethod,
+    currentFeature,
+    setCurrentFeature,
+    removeEventClick,
+    handlersRef,
+    onSelectMethod,
+  } = useDrawEvents(mapId, controlRef.current, drawOptions, setFeature);
 
   const close = useCallback(() => {
     removeEventClick();
@@ -191,20 +132,13 @@ export function DrawControl(props: DrawControlProps) {
       map.off('draw.delete', h.onDrawDeleted);
       if (map.hasControl(control as never)) map.removeControl(control as never);
     });
-  }, [callMap, removeEventClick]);
+  }, [callMap, handlersRef, removeEventClick, setIsDraw]);
 
-  const onSelectMethod = useCallback(
-    (value: 'select' | 'delete') => {
-      removeEventClick();
-      setMethod(value);
-      const effects = getDrawModeSelectEffects(value);
-      if (effects.attachMapClick) {
-        addEventClick();
-      }
-      controlRef.current.changeMode(effects.drawMode);
-    },
-    [addEventClick, removeEventClick],
-  );
+  useEffect(() => {
+    return () => {
+      close();
+    };
+  }, [close]);
 
   const onStart = useCallback(
     (config: MapDrawOption) => {
@@ -223,47 +157,20 @@ export function DrawControl(props: DrawControlProps) {
       });
       onSelectMethod('select');
     },
-    [callMap, onSelectMethod, props.drawOptions],
+    [callMap, handlersRef, onSelectMethod, props.drawOptions],
   );
 
-  const { setFeature, save, commit, discard } = useConfigDrawControl(mapId, {
-    onStart,
-    onEnd: close,
-    onDiscard: refreshDrafts,
-    onCommit: () => {
-      const empty = emptyDraftListSnapshot();
-      setDraftCounts(empty.count);
-      setDraftItems(empty.items);
-    },
-  });
-  const setFeatureRef = useRef(setFeature);
-  setFeatureRef.current = setFeature;
-
-  handlersRef.current = {
-    onDrawCreated(event) {
-      for (const feature of event.features) {
-        const kind = classifyDrawCreateFeature(methodRef.current);
-        setFeature(
-          kind,
-          kind === 'updated' ? ensureFeatureId(feature) : feature,
-        );
-      }
-    },
-    onDrawUpdated(event) {
-      for (const feature of event.features) setFeature('updated', feature);
-    },
-    onDrawDeleted(event) {
-      for (const feature of event.features) setFeature('deleted', feature);
-      onSelectMethod('select');
-    },
-  };
+  startEndRef.current = { onStart, onEnd: close };
 
   const onDraw = (type: string) => {
-    removeEventClick();
+    const effects = getDrawCreateModeEffects(type);
+    if (effects.detachMapClick) {
+      removeEventClick();
+    }
     setCurrentFeature(undefined);
-    setMethod('create');
-    controlRef.current.changeMode(type);
-    setIsDraw(true);
+    setMethod(effects.method);
+    controlRef.current.changeMode(effects.drawMode);
+    setIsDraw(effects.isDraw);
   };
 
   const supportItems = useMemo(
@@ -304,16 +211,6 @@ export function DrawControl(props: DrawControlProps) {
     onSelectMethod('select');
     setCurrentFeature(undefined);
   };
-
-  useRegisterMapControl(mapId, {
-    id: 'mapDrawDraftList',
-    panelKind: 'popup',
-    title: 'Draft items',
-    show: showList,
-    setShow: (v) => setShowList(v),
-    getProps: () => ({ draftCounts }),
-    actions: [{ type: 'mapDrawDraftList', run: () => setShowList(true) }],
-  });
 
   const { control: toolbarControl } = useToolbarControl(mapId, merged, {
     kind: 'module',
@@ -389,7 +286,7 @@ export function DrawControl(props: DrawControlProps) {
           icon: { type: 'mdi' as const, path: mdiContentSaveCheck },
         }),
         onClick: () => {
-          void commit().then(() => drawOptions?.redraw?.(mapId));
+          void onCommit();
         },
       },
       {
@@ -400,9 +297,7 @@ export function DrawControl(props: DrawControlProps) {
           title: 'Discard drafts',
           icon: { type: 'mdi' as const, path: mdiUndoVariant },
         }),
-        onClick: () => {
-          void discard();
-        },
+        onClick: () => onDiscard(),
       },
       {
         id: 'list',
@@ -412,125 +307,51 @@ export function DrawControl(props: DrawControlProps) {
           title: 'Draft list',
           icon: { type: 'mdi' as const, path: mdiViewListOutline },
         }),
-        onClick: () => setShowList(true),
+        onClick: () => onShowListDraftItem(),
       },
     ],
   });
 
   useEffect(() => {
     toolbarControl.sync();
-  }, [
-    isShow,
-    isDraw,
-    method,
-    draftCounts,
-    drawOptions,
-    toolbarControl,
-  ]);
-
-  const toolbar = drawOptions ? (
-    <div className="d-flex button-custom-container button-draw-container">
-      {isShow ? (
-        isDraw ? (
-          <MapControlGroupButton row>
-            <MapControlButton onClick={onCancel} title="Cancel">
-              <Icon path={mdiClose} size={0.75} />
-            </MapControlButton>
-            <MapControlButton onClick={() => void onSave()} title="Save">
-              <Icon path={mdiContentSave} size={0.75} />
-            </MapControlButton>
-          </MapControlGroupButton>
-        ) : (
-          <MapControlGroupButton row>
-            <MapControlButton onClick={close} title="Close">
-              <Icon path={mdiClose} size={0.75} />
-            </MapControlButton>
-            <MapControlButton
-              active={method === 'create'}
-              title="Draw"
-              onClick={onStartDraw}
-            >
-              <Icon path={mdiPlus} size={0.75} />
-            </MapControlButton>
-            <MapControlButton
-              active={method === 'select'}
-              title="Select"
-              onClick={() => onSelectMethod('select')}
-            >
-              <Icon path={mdiPencil} size={0.75} />
-            </MapControlButton>
-            <MapControlButton
-              active={method === 'delete'}
-              title="Delete"
-              onClick={() => onSelectMethod('delete')}
-            >
-              <Icon path={mdiDeleteOutline} size={0.75} />
-            </MapControlButton>
-          </MapControlGroupButton>
-        )
-      ) : null}
-      {isDraftOption(drawOptions) && drawOptions.draft.show ? (
-        <MapControlGroupButton row>
-          <MapControlButton
-            disabled={isDraw || draftCounts === 0}
-            title="Commit drafts"
-            onClick={() =>
-              void commit().then(() => drawOptions.redraw?.(mapId))
-            }
-          >
-            <Icon path={mdiContentSaveCheck} size={0.75} />
-          </MapControlButton>
-          <MapControlButton
-            disabled={isDraw || draftCounts === 0}
-            title="Discard drafts"
-            onClick={() => void discard()}
-          >
-            <Icon path={mdiUndoVariant} size={0.75} />
-          </MapControlButton>
-          <MapControlButton
-            disabled={draftCounts === 0}
-            title="Draft list"
-            onClick={() => setShowList(true)}
-          >
-            <Icon path={mdiViewListOutline} size={0.75} />
-            {draftCounts > 0 ? (
-              <span className="draft-item-count-badge map-control-badge">
-                {draftCounts}
-              </span>
-            ) : null}
-          </MapControlButton>
-        </MapControlGroupButton>
-      ) : null}
-    </div>
-  ) : null;
+  }, [isShow, isDraw, method, draftCounts, drawOptions, toolbarControl]);
 
   return (
     <>
+      <DrawDraftList
+        show={showList}
+        setShow={setShowList}
+        draftCounts={draftCounts}
+        mapId={mapId}
+      />
       <ModuleContainer
         {...moduleContainerProps}
-        btn={toolbar}
+        btn={
+          <DrawToolbar
+            drawOptions={drawOptions}
+            isShow={isShow}
+            isDraw={isDraw}
+            method={method}
+            draftCounts={draftCounts}
+            onCancel={onCancel}
+            onSave={() => void onSave()}
+            onClose={close}
+            onStartDraw={onStartDraw}
+            onSelectMethod={onSelectMethod}
+            onCommit={() => void onCommit()}
+            onDiscard={() => onDiscard()}
+            onShowList={onShowListDraftItem}
+          />
+        }
         draggable={
           showList
             ? () => (
-                <div className="map-draw-draft-list">
-                  <strong>Draft items ({draftCounts})</strong>
-                  <ul>
-                    {draftItems.map((item) => (
-                      <li key={String(item.id)}>
-                        {String(item.id)} — {item.status}{' '}
-                        <button
-                          type="button"
-                          onClick={() => void discard(item as never)}
-                        >
-                          Discard
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <button type="button" onClick={() => setShowList(false)}>
-                    Close
-                  </button>
-                </div>
+                <DrawDraftListPanel
+                  draftItems={draftItems}
+                  draftCounts={draftCounts}
+                  onDiscardItem={(item) => onDiscard(item)}
+                  onClose={() => setShowList(false)}
+                />
               )
             : undefined
         }

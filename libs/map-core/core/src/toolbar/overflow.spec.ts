@@ -11,6 +11,7 @@ import {
   splitToolbarOverflow,
   splitToolbarOverflowKeepGroups,
   toolbarAvailableWidth,
+  toolbarOverflowPanelClassName,
 } from './overflow';
 import type { MapControlButtonState } from './types';
 
@@ -271,5 +272,14 @@ describe('toolbar overflow', () => {
   it('reserves even edge insets from the map host width', () => {
     expect(toolbarAvailableWidth(0)).toBe(0);
     expect(toolbarAvailableWidth(400)).toBe(400 - TOOLBAR_EDGE_INSET_PX * 2);
+  });
+
+  it('builds overflow panel class names for a corner', () => {
+    expect(toolbarOverflowPanelClassName('top-left')).toBe(
+      'map-toolbar-overflow map-toolbar-overflow-top map-toolbar-overflow-left',
+    );
+    expect(toolbarOverflowPanelClassName('bottom-right')).toBe(
+      'map-toolbar-overflow map-toolbar-overflow-bottom map-toolbar-overflow-right',
+    );
   });
 });

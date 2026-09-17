@@ -9,10 +9,17 @@ import {
   type Toolbar,
   type ToolbarModuleOptions,
   type ToolbarSingleOptions,
-  createToolbarStrategy,
+  createLiveToolbarStrategy,
   type ToolbarKind,
 } from '@hungpvq/map-core/toolbar';
-import { onMounted, onUnmounted, provide, ref, watch } from 'vue';
+import {
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  shallowRef,
+  watch,
+} from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { useLang } from '../lang/hook';
 import { useResolvedControlLayout } from '../../hooks/useMap';
@@ -91,7 +98,20 @@ export function useToolbarControl(
   );
 
   const kind: ToolbarKind = (options.kind ?? 'single') as ToolbarKind;
-  const control = createToolbarStrategy({ ...options, toolbar, kind } as any);
+  const optionsRef = shallowRef(options);
+  watch(
+    () => options,
+    (next) => {
+      optionsRef.value = next;
+    },
+    { deep: true },
+  );
+
+  const control = createLiveToolbarStrategy(
+    () => optionsRef.value,
+    toolbar,
+    kind,
+  );
 
   const controlId =
     kind === 'module'

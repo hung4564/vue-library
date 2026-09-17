@@ -1,6 +1,5 @@
 /**
- * Placeholder for useMapCrsItems and useMapCrsCurrent hooks
- * Full implementation would be in extra/crs (not migrated yet)
+ * CRS store hooks for map CRS items / current / display EPSGs.
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -9,7 +8,7 @@ import { useMapCrsStore } from './store';
 import {
   type CrsItem,
   MittTypeMapCrsEventKey,
-  normalizeEpsgCode,
+  normalizeDisplayEpsgs,
   type MittTypeMapCrs,
 } from '@hungpvq/map-core/crs';
 
@@ -105,16 +104,7 @@ export const useMapCrsDisplayEpsgs = (
   onChangeRef.current = onChange;
 
   function setDisplayEpsgs(epsgs: string[]) {
-    const normalized = Array.from(
-      new Set(
-        epsgs
-          .map((epsg) => normalizeEpsgCode(epsg))
-          .filter((epsg): epsg is string => !!epsg),
-      ),
-    );
-    if (!normalized.includes('4326')) {
-      normalized.unshift('4326');
-    }
+    const normalized = normalizeDisplayEpsgs(epsgs);
     store.displayEpsgs = normalized;
     emitter.emit(MittTypeMapCrsEventKey.setDisplayEpsgs, normalized);
     setDisplayEpsgsState([...normalized]);

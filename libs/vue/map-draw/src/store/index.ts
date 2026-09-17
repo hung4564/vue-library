@@ -13,17 +13,43 @@ import {
   type MapDrawOption,
   type MapDrawStore,
 } from '@hungpvq/map-draw';
-import { createMapScopedStore, useMapMittStore } from '@hungpvq/vue-map-core';
+import {
+  createMapScopedStore,
+  getStore,
+  useMapMittStore,
+} from '@hungpvq/vue-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { onMounted, onUnmounted } from 'vue';
 
 const KEY = 'draw' as const;
 
-export const useMapDrawStore = (mapId: string) =>
-  createMapScopedStore<MapDrawStore>(mapId, KEY as any, () => {
-    logHelper(logger, mapId, 'store').debug('init');
-    return createDefaultMapDrawStore();
-  });
+function endDrawSession(mapId: string, store: MapDrawStore) {
+  if (!store.config) return;
+  store.config = undefined;
+  store.state.featuresAdded = {};
+  store.state.featuresUpdated = {};
+  store.state.featuresDeleted = {};
+  logHelper(logger, mapId, 'store').debug('end on removeMap');
+  useMapMittStore<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
+}
+
+export function useMapDrawStore(mapId: string): MapDrawStore {
+  return createMapScopedStore<MapDrawStore>(
+    mapId,
+    KEY as any,
+    () => {
+      logHelper(logger, mapId, 'store').debug('init');
+      return createDefaultMapDrawStore();
+    },
+    {
+      cleanup: (): void => {
+        const store = getStore<MapDrawStore>(mapId, KEY);
+        if (!store) return;
+        endDrawSession(mapId, store);
+      },
+    },
+  );
+}
 
 export function useConfigDrawControl(
   mapId: string,
@@ -56,10 +82,13 @@ export function useConfigDrawControl(
   return {
     setFeature: (type: 'added' | 'updated' | 'deleted', feature: Feature) =>
       runDrawSetFeature(store, type, feature, mapId),
-    save: (collection: FeatureCollection, context?: unknown) =>
-      runDrawSave(store, collection, mapId, context),
+    save: (
+      collection: FeatureCollection,
+      context?: { mapId: string } & Record<string, unknown>,
+    ) => runDrawSave(store, collection, mapId, context),
     commit: () => runDrawCommit(store, config?.onCommit),
-    discard: (item?: IDraftRecord) => runDrawDiscard(store, item, config?.onDiscard),
+    discard: (item?: IDraftRecord) =>
+      runDrawDiscard(store, item, config?.onDiscard),
     end: () => config?.onEnd(),
   };
 }

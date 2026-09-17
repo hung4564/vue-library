@@ -135,7 +135,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
           <div class="table-content">
             <TableTdLayer
               :field="field"
-              :label="field.trans ? trans(field.trans) : field.text"
+              :label="'trans' in field ? trans(field.trans) : field.text"
               :item="item"
               v-for="(field, i) in fields"
               :key="i"

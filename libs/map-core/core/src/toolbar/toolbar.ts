@@ -4,6 +4,7 @@ import type {
   ControlStrategy,
   MapControlButtonUIState,
   ModuleStrategy,
+  Toolbar,
   ToolbarButtonConfig,
   ToolbarModuleOptions,
   ToolbarSingleOptions,
@@ -174,6 +175,63 @@ export function createToolbarStrategy(
   const kind: ToolbarKind = (options.kind ?? 'single') as ToolbarKind;
   const strategy = TOOLBAR_STRATEGIES[kind];
   return strategy.create(options as any);
+}
+
+/**
+ * Toolbar strategy that always reads the latest options from `getOptions`
+ * (Vue `ref` / React `useRef` wrappers). Avoids stale closures in hosts.
+ */
+export function createLiveToolbarStrategy(
+  getOptions: () => AnyToolbarOptions,
+  toolbar: Toolbar,
+  kind: ToolbarKind,
+): AnyToolbarStrategy {
+  if (kind === 'module') {
+    const initial = getOptions() as ToolbarModuleOptions;
+
+    const buttons: ToolbarButtonConfig[] = initial.buttons.map((btn) => ({
+      id: btn.id,
+      get order() {
+        const current = getOptions() as ToolbarModuleOptions;
+        const live = current.buttons.find((b) => b.id === btn.id);
+        return (live ?? btn).order;
+      },
+      getState: () => {
+        const current = getOptions() as ToolbarModuleOptions;
+        const live = current.buttons.find((b) => b.id === btn.id);
+        return (live ?? btn).getState();
+      },
+      onClick: async (e: MouseEvent) => {
+        const current = getOptions() as ToolbarModuleOptions;
+        const live = current.buttons.find((b) => b.id === btn.id);
+        await (live ?? btn).onClick?.(e);
+      },
+    }));
+
+    return createToolbarStrategy({
+      kind: 'module',
+      get moduleId() {
+        return (getOptions() as ToolbarModuleOptions).moduleId;
+      },
+      get order() {
+        return (getOptions() as ToolbarModuleOptions).order;
+      },
+      get orientation() {
+        return (getOptions() as ToolbarModuleOptions).orientation;
+      },
+      toolbar,
+      buttons,
+    });
+  }
+
+  return createToolbarStrategy({
+    kind: 'single',
+    id: (getOptions() as ToolbarSingleOptions).id,
+    toolbar,
+    getState: () => (getOptions() as ToolbarSingleOptions).getState(),
+    onClick: (e: MouseEvent) =>
+      (getOptions() as ToolbarSingleOptions).onClick?.(e),
+  });
 }
 
 function toolbarClusterKey(btn: { id: string; group?: string }) {

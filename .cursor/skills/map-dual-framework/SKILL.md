@@ -30,14 +30,35 @@ Never reintroduce adapter `builder/` / `model/` / `services/` barrels that only 
 
 When adding a dual feature:
 
-1. Implement protocol / logic in `map-core` or `map-dataset` if framework-agnostic.
-2. Add Vue control/hook/UI under `libs/vue/...`.
+1. Implement protocol / logic in `map-core` or `map-dataset` if framework-agnostic (**pure / controller first** — see Thin-host controls).
+2. Add Vue control/hook/UI under `libs/vue/...` as a **thin host**.
 3. Mirror React under `libs/react/...` with the same control **ids**, action **types**, and public hook names where Stable.
 4. Register via existing patterns (`useRegisterMapControl`, dataset registry plugin).
 5. Update docs for both demos if user-facing.
 6. Check SemVer (`map-semver-api`) — new control id is usually **minor**; rename is **major**.
 
 Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup) or the user scopes to one framework.
+
+## Thin-host controls
+
+New dual control = **pure orchestration in core/domain first**, then thin Vue + React hosts.
+
+```text
+core / map-dataset / map-draw:
+  captureX / applyX / createXModel / createXSession  (framework-agnostic)
+vue / react:
+  XControl  → useMap + useRegisterMapControl + useToolbarControl + template/JSX
+```
+
+Rules:
+
+- Do **not** fold `vue-map-core` ↔ `react-map-core` into one package.
+- Do **not** put SFC/JSX, provide/inject, or React Context into `@hungpvq/map-core`.
+- Prefer `subscribeMapReady(mapId, cb)` over fire-and-forget `getMap(id, cb)` when the host can unmount before READY.
+- Parity lock: `MAP_DUAL_CONTROL_IDS` in `libs/map-core/core/src/dual/parity-catalog.ts` + adapter `vue-react-parity.spec.ts`.
+- MapLibre `MapSimple` stays a public Stable type — do not abstract/hide the engine behind a custom map facade.
+
+Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fullscreen helpers, `createIdentifyControlModel`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `createPrintAdvancedSession`, `createLiveToolbarStrategy`, `normalizeDisplayEpsgs`, `InspectController`, `draw-control-helpers`, root `controls/*` (home, globe, navigation, goto, setting, mouse-coordinates, info).
 
 ## Draw checklist
 
@@ -50,8 +71,11 @@ Skip React only when the area is explicitly Vue-richer (e.g. full Inspect popup)
 
 ## Registry conventions
 
-- **Host:** `UniversalRegistry` in map-core (methods, menu handlers, control handles).
-- **Adapters:** vue/react `map-core` extend the class and add `registerComponent` / `getComponent`.
+- **Host:** `UniversalRegistry` in map-core — methods, menu handlers, **components**, control handles. Bags on `@hungpvq/shared-store` (`map:registry:global` / `maps` / `controls`); never class-static `new Map`.
+- **Platform fn wiring:** `registerMapAccessor` / Ready / Cleanup = UniversalRegistry **global** methods under `MAP_PLATFORM_REGISTRY_METHOD.*` (`__platform.*`). `clearMap` does not remove them.
+- **Process instances:** `errorHandler`, GIS worker URL, React `storeManager` → `getOrCreateStore` on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`). `LoggerFactory` pins on its own `globalThis` key inside `@hungpvq/shared-log`. Never RegistryFn for these. Full key table (registry global, theme storage, `map:core`, `map:core:meta` tombstones): `libs/map-core/core/docs/core/map-store.md` § Process-wide singletons.
+- **App state:** `defineStore` / `getOrCreateStore` / `map:core` / domain scoped stores on `$_hungpv_store` only — do **not** use `@hungpvq/shared` for stores.
+- **Adapters:** vue/react `map-core` extend the class and only add typed `registerComponent` / `getComponent` (Vue: `markRaw`). Do **not** create a parallel store outside shared-store.
 - Dataset UI must keep `createDatasetRegistryPlugin()` (or equivalent) so menus/components resolve.
 - Do not rename documented control ids or menu component keys without a major bump.
 - **Component overrides (dataset UI, attribute-table parts, menu action UI, …):** prefer `UniversalRegistry.registerComponent` / `registerComponentForMap` + stable keys (`ATTRIBUTE_TABLE_COMPONENT_KEY`, `LIST_VIEW_MENU_COMPONENT_KEY`, …) and `RegistryItem`. Props are for data / toggles (`ui`, `columns`, `store`, …). Do **not** add a parallel “pass components via props” API unless the feature has no registry key yet.

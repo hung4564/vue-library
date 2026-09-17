@@ -20,7 +20,10 @@ import type {
   HighlightFilterCreator,
   HighlightGeoJson,
   HighlightLayerIds,
+  HighlightAnimState,
 } from './types';
+
+export type { HighlightAnimState } from './types';
 
 /** Dataset passed into paint helpers — optional getData for layer paint merge. */
 type HighlightPaintDataset = IDataset & Partial<WithDataHelper>;
@@ -666,17 +669,6 @@ export function ensureHighlightLayers(
     }
   });
 }
-
-export type HighlightAnimState = {
-  frameId: number | null;
-  timeoutId: ReturnType<typeof setTimeout> | null;
-  radius?: number;
-  grow?: boolean;
-  dashOffset?: number;
-  blinkAlpha?: number;
-  blinkDir?: number;
-  [key: string]: unknown;
-};
 
 export function setPaintIfLayer(
   map: MapSimple,

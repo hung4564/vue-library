@@ -1,4 +1,5 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import { applyMapScaleLabel, debounce } from '@hungpvq/map-core';
 import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -6,49 +7,6 @@ import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-
-/** Local debounce (avoids lodash dependency). */
-function debounce<TArgs extends unknown[]>(
-  fn: (...args: TArgs) => void,
-  waitMs: number,
-): (...args: TArgs) => void {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  return (...args: TArgs) => {
-    if (timer !== undefined) clearTimeout(timer);
-    timer = setTimeout(() => {
-      timer = undefined;
-      fn(...args);
-    }, waitMs);
-  };
-}
-
-function getDecimalRoundNum(d: number) {
-  const multiplier = Math.pow(10, Math.ceil(-Math.log(d) / Math.LN10));
-  return Math.round(d * multiplier) / multiplier;
-}
-
-function getRoundNum(num: number) {
-  const pow10 = Math.pow(10, `${Math.floor(num)}`.length - 1);
-  let d = num / pow10;
-  d =
-    d >= 10
-      ? 10
-      : d >= 5
-        ? 5
-        : d >= 3
-          ? 3
-          : d >= 2
-            ? 2
-            : d >= 1
-              ? 1
-              : getDecimalRoundNum(d);
-  return pow10 * d;
-}
-
-function setScale(container: HTMLElement, maxDistance: number, unit: string) {
-  const distance = getRoundNum(maxDistance);
-  if (container) container.textContent = `${distance}\u00A0${unit}`;
-}
 
 export interface MouseCoordinatesControlProps extends WithMapPropType {
   hideZoom?: boolean;
@@ -88,16 +46,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
 
   const updateScale = useCallback((map: MapSimple, container: HTMLElement) => {
     if (hideScaleRef.current || !container) return;
-    const maxWidth = 100;
-    const y = map.getContainer().clientHeight / 2;
-    const left = map.unproject([0, y]);
-    const right = map.unproject([maxWidth, y]);
-    const maxMeters = left.distanceTo(right);
-    if (maxMeters >= 1000) {
-      setScale(container, maxMeters / 1000, 'km');
-    } else {
-      setScale(container, maxMeters, 'm');
-    }
+    applyMapScaleLabel(map, container);
   }, []);
 
   const syncScale = useCallback(

@@ -197,6 +197,33 @@ describe('useInitSidebar / useInitDrawer / useInitAction', () => {
     );
   });
 
+  it('useInitSidebar syncs title when locale/prop updates', () => {
+    useDragContainer(CID).initContainer();
+    const { rerender, unmount } = renderHook(
+      ({ title }: { title: string }) => {
+        const showApi = useShow({ show: true });
+        return useInitSidebar(
+          CID,
+          showApi.show,
+          showApi.setShow,
+          { type: 'item-sidebar', location: 'left', title },
+          'stable-react-sidebar-title',
+        );
+      },
+      { initialProps: { title: 'map.layer-control.title' } },
+    );
+    expect(
+      useDragStore().container[CID].actions['stable-react-sidebar-title']
+        ?.title,
+    ).toBe('map.layer-control.title');
+    rerender({ title: 'Layers' });
+    expect(
+      useDragStore().container[CID].actions['stable-react-sidebar-title']
+        ?.title,
+    ).toBe('Layers');
+    unmount();
+  });
+
   it('useInitDrawer registers and cleans up', () => {
     useDragContainer(CID).initContainer();
     const { result, unmount } = renderHook(() => {

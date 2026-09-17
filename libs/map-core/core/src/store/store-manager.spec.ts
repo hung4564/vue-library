@@ -1,5 +1,7 @@
 import mitt from 'mitt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { getOrCreateStore } from '@hungpvq/shared-store';
+import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
 import type { IMapStoreAdapter } from './interface';
 import { MAP_CORE_EVENT, MapStoreManager } from './store-manager';
@@ -17,9 +19,16 @@ function createAdapter(): IMapStoreAdapter & { root: Record<string, any> } {
   };
 }
 
+function clearSharedTombstones() {
+  getOrCreateStore('map:core:meta', () => ({
+    removedMapIds: new Set<string>(),
+  })).removedMapIds.clear();
+}
+
 describe('MapStoreManager', () => {
   afterEach(() => {
     UniversalRegistry.clearMap('m1');
+    clearSharedTombstones();
   });
 
   it('addStore / peekStore / getStore initialize and reuse keys', () => {
@@ -56,6 +65,48 @@ describe('MapStoreManager', () => {
     expect(cb).toHaveBeenCalledWith({ id: 'ready' });
   });
 
+  it('subscribeMapReady sync when live, waits when pending, unsubscribe cancels', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    const map = { id: 'live' } as any;
+
+    const sync = vi.fn();
+    const unsubSync = manager.subscribeMapReady('sync', sync);
+    expect(sync).not.toHaveBeenCalled();
+    unsubSync();
+
+    manager.initMap('sync', map);
+    const after = vi.fn();
+    const unsubAfter = manager.subscribeMapReady('sync', after);
+    expect(after).toHaveBeenCalledWith(map);
+    unsubAfter();
+
+    const pending = vi.fn();
+    const unsubPending = manager.subscribeMapReady('wait', pending);
+    unsubPending();
+    manager.initMap('wait', { id: 'w' } as any);
+    expect(pending).not.toHaveBeenCalled();
+
+    const waitCb = vi.fn();
+    manager.subscribeMapReady('wait2', waitCb);
+    manager.initMap('wait2', { id: 'w2' } as any);
+    expect(waitCb).toHaveBeenCalledWith({ id: 'w2' });
+  });
+
+  it('subscribeMapReady after removeMap does not wait', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    manager.initMap('gone', { id: 'map' } as any);
+    manager.removeMap('gone');
+
+    const getEmitter = vi.spyOn(adapter, 'getEventEmitter');
+    const cb = vi.fn();
+    const unsub = manager.subscribeMapReady('gone', cb);
+    expect(cb).not.toHaveBeenCalled();
+    expect(getEmitter).not.toHaveBeenCalled();
+    unsub();
+  });
+
   it('cleanup runs on removeMap and clears UniversalRegistry map scope', () => {
     const adapter = createAdapter();
     const manager = new MapStoreManager(adapter);
@@ -71,14 +122,18 @@ describe('MapStoreManager', () => {
     expect(UniversalRegistry.getMethod('demo', 'm1')).toBeUndefined();
   });
 
-  it('destroyScopedStore removes key and runs key cleanup', () => {
+  it('destroyScopedStore runs key cleanup before deleting the key', () => {
     const adapter = createAdapter();
     const manager = new MapStoreManager(adapter);
-    const cleanup = vi.fn();
-    manager.addStore('m1', 'tmp', { a: 1 }, { cleanup });
+    const seen: unknown[] = [];
+    manager.addStore('m1', 'tmp', { a: 1 }, {
+      cleanup: () => {
+        seen.push(manager.peekStore('m1', 'tmp'));
+      },
+    });
     manager.destroyScopedStore('m1', 'tmp');
+    expect(seen).toEqual([{ a: 1 }]);
     expect(manager.peekStore('m1', 'tmp')).toBeUndefined();
-    expect(cleanup).toHaveBeenCalled();
   });
 
   it('emits READY on initMap', () => {
@@ -88,5 +143,98 @@ describe('MapStoreManager', () => {
     adapter.getEventEmitter('m1').on(MAP_CORE_EVENT.READY, onReady);
     manager.initMap('m1', {} as any);
     expect(onReady).toHaveBeenCalled();
+  });
+
+  it('getMap(cb) after removeMap does not resurrect the store entry', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    manager.initMap('gone', { id: 'map' } as any);
+    manager.removeMap('gone');
+    expect(adapter.root.gone).toBeUndefined();
+
+    const getEmitter = vi.spyOn(adapter, 'getEventEmitter');
+    const cb = vi.fn();
+    expect(manager.getMap('gone', cb)).toBeUndefined();
+    expect(cb).not.toHaveBeenCalled();
+    expect(adapter.root.gone).toBeUndefined();
+    expect(getEmitter).not.toHaveBeenCalled();
+  });
+
+  it('initMap after removeMap clears the tombstone and allows reuse', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    manager.initMap('reuse', { id: 'a' } as any);
+    manager.removeMap('reuse');
+    const next = { id: 'b' } as any;
+    manager.initMap('reuse', next);
+    expect(manager.getMap('reuse')).toBe(next);
+  });
+
+  it('initMap throws when overwriting a different live map instance', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    const first = { id: 'a' } as any;
+    manager.initMap('dup', first);
+    expect(() => manager.initMap('dup', { id: 'b' } as any)).toThrow(
+      MapInitializationError,
+    );
+    expect(manager.getMap('dup')).toBe(first);
+  });
+
+  it('initMap is idempotent for the same map instance', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    const map = { id: 'same' } as any;
+    manager.initMap('idem', map);
+    manager.initMap('idem', map);
+    expect(manager.getMap('idem')).toBe(map);
+  });
+
+  it('isolates two live mapIds; removeMap(A) does not touch B', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    const mapA = { id: 'a' } as any;
+    const mapB = { id: 'b' } as any;
+    const cleanupA = vi.fn();
+    const cleanupB = vi.fn();
+
+    manager.addStore('mapA', 'scoped', {}, { cleanup: cleanupA });
+    manager.addStore('mapB', 'scoped', {}, { cleanup: cleanupB });
+    manager.initMap('mapA', mapA);
+    manager.initMap('mapB', mapB);
+    UniversalRegistry.registerMethodForMap('mapA', 'demoA', () => 'a');
+    UniversalRegistry.registerMethodForMap('mapB', 'demoB', () => 'b');
+
+    manager.removeMap('mapA');
+
+    expect(cleanupA).toHaveBeenCalled();
+    expect(cleanupB).not.toHaveBeenCalled();
+    expect(adapter.root.mapA).toBeUndefined();
+    expect(manager.getMap('mapB')).toBe(mapB);
+    expect(manager.peekStore('mapB', 'scoped')).toEqual({});
+    expect(UniversalRegistry.getMethod('demoA', 'mapA')).toBeUndefined();
+    expect(UniversalRegistry.getMethod('demoB', 'mapB')).toBeTypeOf('function');
+
+    UniversalRegistry.clearMap('mapB');
+  });
+
+  it('shares removeMap tombstones across MapStoreManager instances', () => {
+    const managerA = new MapStoreManager(createAdapter());
+    const adapterB = createAdapter();
+    const managerB = new MapStoreManager(adapterB);
+
+    managerA.initMap('cross', { id: 'map' } as any);
+    managerA.removeMap('cross');
+
+    const getEmitter = vi.spyOn(adapterB, 'getEventEmitter');
+    const cb = vi.fn();
+    const unsub = managerB.subscribeMapReady('cross', cb);
+    expect(cb).not.toHaveBeenCalled();
+    expect(getEmitter).not.toHaveBeenCalled();
+    unsub();
+
+    expect(managerB.getMap('cross', cb)).toBeUndefined();
+    expect(cb).not.toHaveBeenCalled();
+    expect(getEmitter).not.toHaveBeenCalled();
   });
 });

@@ -23,6 +23,12 @@ Prefer starting a session with `useMapDraw(mapId).start(config)` so CRUD and `dr
 - Import package `style.css`.
 - Draft list registers as control id `mapDrawDraftList` when draft mode is enabled.
 
+## Lifecycle
+
+- On unmount (Vue `onBeforeUnmount` / React effect cleanup), `DrawControl` calls `close()`: removes Mapbox Draw listeners/control and hides the toolbar.
+- Domain store cleanup on `removeMap` ends an open draw session (`config` cleared + `MAP_DRAW_EVENT.END`) via `getStore` — do not call `useMapDrawStore` from inside the cleanup callback (circular inference).
+- Shared draw modes / styles / create-mode effects live in `@hungpvq/map-draw` (`getDrawCreateModeEffects`, `getDrawStyles`, `isDraftOption`). React `DrawControl` splits UI into `DrawToolbar` / draft hooks; both adapters stay thin hosts over those helpers.
+
 ## Vue
 
 ```vue

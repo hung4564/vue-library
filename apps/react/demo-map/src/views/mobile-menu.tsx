@@ -14,17 +14,16 @@ import {
   ZoomControl,
 } from '@hungpvq/react-map-core';
 
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { useState } from 'react';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const MODES: ButtonInMobile[] = ['button', 'toolbar', 'menu'];
 
 export function MobileMenuPage() {
-  const [buttonInMobile, setButtonInMobile] =
-    useState<ButtonInMobile>('menu');
+  const [buttonInMobile, setButtonInMobile] = useState<ButtonInMobile>('menu');
 
   return (
     <MapPageShell>
@@ -71,15 +70,13 @@ export function MobileMenuPage() {
               {mode}
             </button>
           ))}
-          <span
-            style={{ fontSize: 12, color: '#666', marginLeft: 'auto' }}
-          >
-            Resize â‰¤640px (or DevTools mobile) to see promotion / corner menu
+          <span style={{ fontSize: 12, color: '#666', marginLeft: 'auto' }}>
+            Resize ≤640px (or DevTools mobile) to see promotion / corner menu
           </span>
         </div>
         <div style={{ flex: 1, minHeight: 0 }}>
           <Map buttonInMobile={buttonInMobile}>
-        <DemoLanguageControl />
+            <DemoLanguageControl />
             <AsideControl position="top-left" />
             <ToolbarControl />
             <MeasurementControl position="top-right" />

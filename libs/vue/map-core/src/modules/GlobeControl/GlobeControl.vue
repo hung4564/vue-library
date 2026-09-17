@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { GLOBE_CONTROL_LOCALE } from '@hungpvq/map-core';
+import {
+  attachGlobeProjectionListener,
+  GLOBE_CONTROL_LOCALE,
+  isGlobeProjection,
+  toggleGlobeProjection,
+} from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
@@ -24,23 +29,21 @@ const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', GLOBE_CONTROL_LOCALE);
 function toggle() {
   callMap((map) => {
-    if (currentProjection.value === 'mercator' || !currentProjection.value) {
-      map.setProjection({ type: 'globe' });
-    } else {
-      map.setProjection({ type: 'mercator' });
-    }
-    currentProjection.value = map.getProjection()?.type as any;
+    currentProjection.value = toggleGlobeProjection(
+      map,
+      currentProjection.value,
+    );
   });
 }
-let handleMap: any;
+let detachProjection: (() => void) | undefined;
 function onInit(_map: MapSimple) {
-  handleMap = () => {
-    currentProjection.value = _map.getProjection()?.type as any;
-  };
-  _map.on('styledata', handleMap);
+  detachProjection = attachGlobeProjectionListener(_map, (type) => {
+    currentProjection.value = type;
+  });
 }
 function onDestroy(_map: MapSimple) {
-  if (handleMap) _map.off('styledata', handleMap);
+  detachProjection?.();
+  detachProjection = undefined;
 }
 useRegisterMapControl(mapId, {
   id: 'mapGlobeControl',
@@ -64,7 +67,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   getState() {
     return mdiButtonState(mdiWeb, {
       visible: true,
-      active: currentProjection.value === 'globe',
+      active: isGlobeProjection(currentProjection.value),
       title: trans.value('map.global-control.title'),
       order: order.value,
     });

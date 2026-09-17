@@ -1,6 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import { GLOBE_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  attachGlobeProjectionListener,
+  GLOBE_CONTROL_LOCALE,
+  isGlobeProjection,
+  toggleGlobeProjection,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiWeb } from '@mdi/js';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
@@ -10,30 +16,29 @@ import { useToolbarControl } from '../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
-function getProjectionType(map: MapSimple): string | undefined {
-  const type = map.getProjection()?.type;
-  return typeof type === 'string' ? type : undefined;
-}
-
 export function GlobeControl(props: WithMapPropType) {
   const mergedProps = { ...defaultMapProps, ...props };
   const [currentProjection, setCurrentProjection] = useState<
     string | undefined
   >('mercator');
+  const detachProjectionRef = useRef<(() => void) | null>(null);
 
   const onInit = useCallback((_map: MapSimple) => {
-    const handleMap = () => {
-      setCurrentProjection(getProjectionType(_map));
-    };
-    _map.on('styledata', handleMap);
-    return () => {
-      _map.off('styledata', handleMap);
-    };
+    detachProjectionRef.current = attachGlobeProjectionListener(
+      _map,
+      setCurrentProjection,
+    );
+  }, []);
+
+  const onDestroy = useCallback((_map: MapSimple) => {
+    detachProjectionRef.current?.();
+    detachProjectionRef.current = null;
   }, []);
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
     { ...mergedProps, controlId: 'mapGlobeControl' },
     onInit,
+    onDestroy,
   );
   const { trans, registerLocale } = useLang(mapId);
 
@@ -44,12 +49,7 @@ export function GlobeControl(props: WithMapPropType) {
 
   function toggle() {
     callMap((map) => {
-      if (currentProjection === 'mercator' || !currentProjection) {
-        map.setProjection({ type: 'globe' });
-      } else {
-        map.setProjection({ type: 'mercator' });
-      }
-      setCurrentProjection(getProjectionType(map));
+      setCurrentProjection(toggleGlobeProjection(map, currentProjection));
     });
   }
 
@@ -77,7 +77,7 @@ export function GlobeControl(props: WithMapPropType) {
     getState: () =>
       mdiButtonState(mdiWeb, {
         visible: true,
-        active: currentProjection === 'globe',
+        active: isGlobeProjection(currentProjection),
         title: trans('map.global-control.title'),
         order,
       }),

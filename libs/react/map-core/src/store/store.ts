@@ -6,6 +6,8 @@ import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
   MapStoreManager,
   registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanupRegistrar,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
@@ -34,6 +36,10 @@ const storeManager = new MapStoreManager(storeAdapter);
 // Set store manager reference for store-utils
 setStoreManager(storeManager);
 registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
+registerMapReadySubscriber((id, cb) => storeManager.subscribeMapReady(id, cb));
+registerMapStoreCleanupRegistrar((mapId, key, cleanup) =>
+  storeManager.registerCleanup(mapId, key, cleanup),
+);
 
 /**
  * Get map store by ID

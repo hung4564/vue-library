@@ -1,13 +1,28 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import {
+  Ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  ref,
+  unref,
+  watch,
+  type MaybeRef,
+} from 'vue';
 import { useSidebarItem } from '../store';
 import type { LocationSideBar } from '@hungpvq/draggable';
+
+function resolveTitle(
+  title: MaybeRef<string | undefined> | undefined,
+): string | undefined {
+  return unref(title);
+}
 
 export function useInitSidebar(
   containerId: string,
   show: Ref<boolean>,
   optionDefault: {
-    title?: string;
+    title?: MaybeRef<string | undefined>;
     type: 'item-sidebar';
     location: LocationSideBar | Ref<LocationSideBar>;
   },
@@ -30,15 +45,21 @@ export function useInitSidebar(
       : loc) as LocationSideBar;
   });
 
-  onMounted(() => {
-    store.registerSideBar(itemId.value, locationRef.value);
+  const titleRef = computed(() => resolveTitle(optionDefault.title));
+
+  function syncAction(location: LocationSideBar) {
     store.registerAction(itemId.value, {
-      title: optionDefault.title,
+      title: titleRef.value,
       type: optionDefault.type,
-      location: locationRef.value,
+      location,
       setZIndex,
       setShow,
     });
+  }
+
+  onMounted(() => {
+    store.registerSideBar(itemId.value, locationRef.value);
+    syncAction(locationRef.value);
     if (show.value) {
       store.registerSideBarShow(itemId.value, show.value);
     }
@@ -67,14 +88,12 @@ export function useInitSidebar(
     if (!next || next === prev) return;
     const wasOpen = show.value;
     store.moveSideBarLocation(itemId.value, next);
-    store.registerAction(itemId.value, {
-      title: optionDefault.title,
-      type: optionDefault.type,
-      location: next,
-      setZIndex,
-      setShow,
-    });
+    syncAction(next);
     if (wasOpen) store.registerSideBarShow(itemId.value, true);
+  });
+  // Keep switcher menu labels in sync when locale / title prop updates.
+  watch(titleRef, () => {
+    syncAction(locationRef.value);
   });
   const location = computed(() => locationRef.value);
   return { itemId, zIndex, location };

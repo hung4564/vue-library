@@ -105,7 +105,7 @@ describe('UniversalRegistry', () => {
     expect(UniversalRegistry.listControls(mapId)).toEqual([]);
   });
 
-  it('open/close/unregister and getKeysForMap for controls/methods', () => {
+  it('open/close/unregister and getKeysForMap for controls/methods/components', () => {
     const mapId = 'spec-panel-map';
     const open = vi.fn();
     const close = vi.fn();
@@ -115,6 +115,7 @@ describe('UniversalRegistry', () => {
       fakeControl('mapGotoControl', undefined, { open, close }),
     );
     UniversalRegistry.registerMethodForMap(mapId, 'spec-tool', () => 1);
+    UniversalRegistry.registerComponentForMap(mapId, 'spec-comp', { name: 'X' });
 
     expect(UniversalRegistry.getKeysForMap(mapId, 'control')).toEqual([
       'mapGotoControl',
@@ -122,7 +123,12 @@ describe('UniversalRegistry', () => {
     expect(UniversalRegistry.getKeysForMap(mapId, 'method')).toEqual([
       'spec-tool',
     ]);
-    expect(UniversalRegistry.getKeysForMap(mapId, 'component')).toEqual([]);
+    expect(UniversalRegistry.getKeysForMap(mapId, 'component')).toEqual([
+      'spec-comp',
+    ]);
+    expect(UniversalRegistry.getComponent('spec-comp', mapId)).toEqual({
+      name: 'X',
+    });
 
     UniversalRegistry.openControl(mapId, 'mapGotoControl');
     UniversalRegistry.closeControl(mapId, 'mapGotoControl');
@@ -134,6 +140,7 @@ describe('UniversalRegistry', () => {
       UniversalRegistry.getControl('mapGotoControl', mapId),
     ).toBeUndefined();
     UniversalRegistry.clearMap(mapId);
+    expect(UniversalRegistry.getComponent('spec-comp', mapId)).toBeUndefined();
   });
 
   it('setControlPosition forwards to the handle', () => {

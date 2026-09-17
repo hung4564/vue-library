@@ -1,16 +1,28 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import { registerMapAccessor } from '@hungpvq/map-core';
+import {
+  registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanupRegistrar,
+} from '@hungpvq/map-core';
 import { describe, expect, it } from 'vitest';
 import { createRootDataset } from '../model/dataset.base';
 import {
   DEFAULT_HIGHLIGHT_DATA,
+  DEFAULT_HIGHLIGHT_PRESENTATION,
   DEFAULT_HIGHLIGHT_SELECTION,
   DEFAULT_HIGHLIGHT_STYLE,
   findHighlightPart,
+  resolvePresentationForSource,
   resolveShowConfig,
   resolveStyle,
 } from './cascade';
+import {
+  destroyHighlightController,
+  getHighlightController,
+} from './controller';
 import { createHighlightPart } from './part';
+import { resolvePopupLngLat } from './popup';
+import { filterDatasetsForPointerEvent } from './query';
 import { resolveHighlightData } from './resolve-data';
 
 describe('createHighlightPart', () => {
@@ -221,8 +233,7 @@ describe('resolveHighlightData vector-tile', () => {
 });
 
 describe('filterDatasetsForPointerEvent', () => {
-  it('filters by part.pointer click / hover', async () => {
-    const { filterDatasetsForPointerEvent } = await import('./query');
+  it('filters by part.pointer click / hover', () => {
     const clickOnly = createHighlightPart({
       pointer: { click: true, hover: false },
     });
@@ -277,10 +288,6 @@ describe('HighlightController selection / hide / pointer fields', () => {
       return fakeMap;
     });
 
-    const {
-      destroyHighlightController,
-      getHighlightController,
-    } = await import('./controller');
     destroyHighlightController('hl-test');
     const hl = getHighlightController('hl-test');
 
@@ -327,13 +334,139 @@ describe('HighlightController selection / hide / pointer fields', () => {
       else delete (globalThis as { cancelAnimationFrame?: unknown }).cancelAnimationFrame;
     }
   });
+
+  it('bindPointer unbind before READY does not attach map listeners', async () => {
+    const listeners = new Map<string, Set<(...args: unknown[]) => void>>();
+    const fakeMap = {
+      on(type: string, handler: (...args: unknown[]) => void) {
+        if (!listeners.has(type)) listeners.set(type, new Set());
+        listeners.get(type)!.add(handler);
+      },
+      off(type: string, handler: (...args: unknown[]) => void) {
+        listeners.get(type)?.delete(handler);
+      },
+    } as unknown as MapSimple;
+
+    let pending: ((map: MapSimple) => void) | undefined;
+    registerMapAccessor((mapId, cb) => {
+      if (mapId !== 'hl-bind') return undefined;
+      if (typeof cb === 'function') pending = cb;
+      return undefined;
+    });
+    registerMapReadySubscriber((mapId, cb) => {
+      if (mapId !== 'hl-bind') return () => undefined;
+      pending = cb;
+      return () => {
+        pending = undefined;
+      };
+    });
+
+    destroyHighlightController('hl-bind');
+    const hl = getHighlightController('hl-bind');
+    const unbind = hl.bindPointer({ click: true, hover: false });
+    unbind();
+    pending?.(fakeMap);
+
+    expect(listeners.get('click')?.size ?? 0).toBe(0);
+
+    destroyHighlightController('hl-bind');
+    registerMapAccessor(() => undefined);
+    registerMapReadySubscriber(() => () => undefined);
+  });
+
+  it('destroy unbinds active bindPointer click/mousemove listeners', async () => {
+    const listeners = new Map<string, Set<(...args: unknown[]) => void>>();
+    const fakeMap = {
+      on(type: string, handler: (...args: unknown[]) => void) {
+        if (!listeners.has(type)) listeners.set(type, new Set());
+        listeners.get(type)!.add(handler);
+      },
+      off(type: string, handler: (...args: unknown[]) => void) {
+        listeners.get(type)?.delete(handler);
+      },
+      getLayer: () => undefined,
+      getSource: () => undefined,
+      removeLayer: () => undefined,
+    } as unknown as MapSimple;
+
+    registerMapAccessor((mapId, cb) => {
+      if (mapId !== 'hl-destroy-bind') return undefined;
+      if (typeof cb === 'function') cb(fakeMap);
+      return fakeMap;
+    });
+    registerMapReadySubscriber((mapId, cb) => {
+      if (mapId !== 'hl-destroy-bind') return () => undefined;
+      cb(fakeMap);
+      return () => undefined;
+    });
+
+    destroyHighlightController('hl-destroy-bind');
+    const hl = getHighlightController('hl-destroy-bind');
+    hl.bindPointer({ click: true, hover: true });
+
+    expect(listeners.get('click')?.size ?? 0).toBeGreaterThan(0);
+
+    destroyHighlightController('hl-destroy-bind');
+
+    expect(listeners.get('click')?.size ?? 0).toBe(0);
+    expect(listeners.get('mousemove')?.size ?? 0).toBe(0);
+
+    registerMapAccessor(() => undefined);
+    registerMapReadySubscriber(() => () => undefined);
+  });
+
+  it('destroy via registerMapStoreCleanup removes the controller', async () => {
+    const raf = globalThis.requestAnimationFrame;
+    const caf = globalThis.cancelAnimationFrame;
+    globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
+      setTimeout(() => cb(performance.now()), 0) as unknown as number) as typeof requestAnimationFrame;
+    globalThis.cancelAnimationFrame = ((id: number) =>
+      clearTimeout(id)) as typeof cancelAnimationFrame;
+
+    const cleanups = new Map<string, Array<() => void>>();
+    registerMapStoreCleanupRegistrar((mapId, key, cleanup) => {
+      const k = `${mapId}:${key}`;
+      if (!cleanups.has(k)) cleanups.set(k, []);
+      cleanups.get(k)!.push(cleanup);
+    });
+
+    const fakeMap = {
+      getLayer: () => undefined,
+      getSource: () => undefined,
+      addSource: () => undefined,
+      addLayer: () => undefined,
+      removeLayer: () => undefined,
+      moveLayer: () => undefined,
+      setPaintProperty: () => undefined,
+      querySourceFeatures: () => [],
+    } as unknown as MapSimple;
+
+    registerMapAccessor((mapId, cb) => {
+      if (mapId !== 'hl-cleanup') return undefined;
+      if (typeof cb === 'function') cb(fakeMap);
+      return fakeMap;
+    });
+
+    destroyHighlightController('hl-cleanup');
+    const hl = getHighlightController('hl-cleanup');
+    await hl.show(feature('keep'), { source: 'pointer' });
+    expect(hl.entries).toHaveLength(1);
+
+    for (const fn of cleanups.get('hl-cleanup:highlight') ?? []) fn();
+    expect(hl.entries).toHaveLength(0);
+
+    destroyHighlightController('hl-cleanup');
+    registerMapAccessor(() => undefined);
+    registerMapStoreCleanupRegistrar(() => undefined);
+    if (raf) globalThis.requestAnimationFrame = raf;
+    else delete (globalThis as { requestAnimationFrame?: unknown }).requestAnimationFrame;
+    if (caf) globalThis.cancelAnimationFrame = caf;
+    else delete (globalThis as { cancelAnimationFrame?: unknown }).cancelAnimationFrame;
+  });
 });
 
 describe('resolvePresentationForSource', () => {
-  it('hover suppresses popup; click enables popup by default', async () => {
-    const { resolvePresentationForSource, DEFAULT_HIGHLIGHT_PRESENTATION } =
-      await import('./cascade');
-
+  it('hover suppresses popup; click enables popup by default', () => {
     expect(
       resolvePresentationForSource(
         { ...DEFAULT_HIGHLIGHT_PRESENTATION },
@@ -365,7 +498,7 @@ describe('resolvePresentationForSource', () => {
 });
 
 describe('resolvePopupLngLat', () => {
-  const map = {} as import('@hungpvq/map-core').MapSimple;
+  const map = {} as MapSimple;
   const baseEntry = {
     id: 'p1',
     feature: {
@@ -379,9 +512,7 @@ describe('resolvePopupLngLat', () => {
     pointerLngLat: [1, 2] as [number, number],
   };
 
-  it('uses pointer, feature, fixed, and function positions', async () => {
-    const { resolvePopupLngLat } = await import('./popup');
-
+  it('uses pointer, feature, fixed, and function positions', () => {
     expect(
       resolvePopupLngLat(
         baseEntry,

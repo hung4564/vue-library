@@ -159,8 +159,8 @@ export function registerLanguageControlPacks(
     resolveLabel,
   } = options;
 
-  registerLocale('en', deepMergeLocale(coreLocaleEn, locales?.en ?? {}));
-  registerLocale('vi', deepMergeLocale(coreLocaleVi, locales?.vi ?? {}));
+  registerLocale('en', deepMergeLocale(coreLocaleEn, locales?.['en'] ?? {}));
+  registerLocale('vi', deepMergeLocale(coreLocaleVi, locales?.['vi'] ?? {}));
   for (const [code, tree] of Object.entries(locales ?? {})) {
     if (code === 'en' || code === 'vi') continue;
     registerLocale(code, tree);

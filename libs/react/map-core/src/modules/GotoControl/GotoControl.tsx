@@ -1,4 +1,11 @@
-import { GOTO_CONTROL_LOCALE, parseCoordinateText, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  applyGotoSetting,
+  GOTO_CONTROL_LOCALE,
+  gotoSettingFromCoordinateText,
+  readGotoSetting,
+  type GotoSetting,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
@@ -22,10 +29,7 @@ export function GotoControl(props: GotoControlProps) {
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
   const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
-  const [setting, setSetting] = useState<{
-    zoom?: number;
-    center: [number, number];
-  }>({ center: [0, 0] });
+  const [setting, setSetting] = useState<GotoSetting>({ center: [0, 0] });
 
   useEffect(() => {
     registerLocale('en', GOTO_CONTROL_LOCALE);
@@ -33,13 +37,7 @@ export function GotoControl(props: GotoControlProps) {
 
   function loadCurrentView() {
     callMap((map) => {
-      setSetting({
-        zoom: map.getZoom(),
-        center: [
-          +map.getCenter().lng.toFixed(6),
-          +map.getCenter().lat.toFixed(6),
-        ],
-      });
+      setSetting(readGotoSetting(map));
     });
   }
 
@@ -67,21 +65,16 @@ export function GotoControl(props: GotoControlProps) {
 
   function onSetSetting() {
     callMap((map) => {
-      if (setting.zoom != null) map.setZoom(setting.zoom);
-      if (setting.center) map.setCenter(setting.center);
+      applyGotoSetting(map, setting);
     });
   }
 
   async function onPasteCoordinates() {
     try {
       const text = await navigator.clipboard?.readText?.();
-      const parsed = parseCoordinateText(text || '');
-      if (!parsed) return;
-      setSetting((prev) => ({
-        ...prev,
-        center: [parsed.lng, parsed.lat],
-        zoom: parsed.zoom ?? prev.zoom,
-      }));
+      const partial = gotoSettingFromCoordinateText(text || '');
+      if (!partial) return;
+      setSetting((prev) => ({ ...prev, ...partial }));
     } catch {
       // Clipboard permission denied — ignore.
     }

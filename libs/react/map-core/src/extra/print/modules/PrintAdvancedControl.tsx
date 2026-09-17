@@ -1,11 +1,9 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
-  CrosshairManager,
+  createPrintAdvancedSession,
   PRINT_CONTROL_LOCALE,
-  PRINT_PAPER_PRESETS,
-  PrintableAreaManager,
-  exportMapbox,
-  exportMapboxWithOptions,
+  type PrintAdvancedSession,
+  type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
 import { type MapControlButtonUIState, mdiIcon } from '@hungpvq/map-core/toolbar';
@@ -19,6 +17,7 @@ import {
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
+import { MapControlButton } from '../../../components/MapControlButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -27,16 +26,6 @@ import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useMapPrint } from '../store';
-import { MapControlButton } from '../../../components/MapControlButton';
-
-const DEFAULT_SETTING: PrintOption = {
-  ratio: 1,
-  orientation: 'portrait',
-  format: 'png',
-  paper: 'custom',
-  dpi: 96,
-  watermark: '',
-};
 
 const ORIENTATION_ITEMS = [
   { value: 'landscape', text: 'Landscape' },
@@ -69,34 +58,45 @@ export function PrintAdvancedControl({
   const { trans, registerLocale } = useLang(mapId);
   const { initPrint } = useMapPrint(mapId);
 
-  const [print, setPrint] = useState({
+  const [print, setPrint] = useState<PrintAdvancedUiState>({
     show: false,
     loading: false,
     setting_show: false,
-    setting: DEFAULT_SETTING,
+    setting: {
+      ratio: 1,
+      orientation: 'portrait',
+      format: 'png',
+      paper: 'custom',
+      dpi: 96,
+      watermark: '',
+    },
   });
 
-  const crosshair = useRef<CrosshairManager | undefined>();
-  const printableArea = useRef<PrintableAreaManager | undefined>();
   const controlRef = useRef<{ sync: () => void } | null>(null);
-  const printRef = useRef(print);
-
-  function updatePrint(
-    patch: Partial<typeof print> | ((prev: typeof print) => typeof print),
-  ) {
-    const next =
-      typeof patch === 'function'
-        ? patch(printRef.current)
-        : { ...printRef.current, ...patch };
-    printRef.current = next;
-    setPrint(next);
-    controlRef.current?.sync();
-  }
-
+  const sessionRef = useRef<PrintAdvancedSession | null>(null);
+  const callMapRef = useRef(callMap);
+  callMapRef.current = callMap;
   const disabledCrosshairRef = useRef(disabledCrosshair);
   const disabledPrintableAreaRef = useRef(disabledPrintableArea);
+  const fileNameRef = useRef(fileName);
   disabledCrosshairRef.current = disabledCrosshair;
   disabledPrintableAreaRef.current = disabledPrintableArea;
+  fileNameRef.current = fileName;
+
+  if (!sessionRef.current) {
+    sessionRef.current = createPrintAdvancedSession({
+      callMap: (fn) => callMapRef.current(fn),
+      saveFile: (dataUrl, name) => saveAs(dataUrl, name),
+      getDisabledCrosshair: () => disabledCrosshairRef.current,
+      getDisabledPrintableArea: () => disabledPrintableAreaRef.current,
+      getFileName: () => fileNameRef.current,
+      onStateChange: (next) => {
+        setPrint(next);
+        controlRef.current?.sync();
+      },
+    });
+  }
+  const session = sessionRef.current;
 
   useEffect(() => {
     registerLocale('en', PRINT_CONTROL_LOCALE);
@@ -104,138 +104,13 @@ export function PrintAdvancedControl({
 
   useEffect(() => {
     return () => {
-      onClosePrint();
+      session.destroy();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- unmount cleanup only
-  }, []);
-
-  function onMapResize() {
-    printableArea.current?.mapResize();
-    crosshair.current?.mapResize();
-  }
-
-  function toggleCrosshair(show: boolean) {
-    if (disabledCrosshairRef.current) return;
-    callMap((map) => {
-      if (!show) {
-        crosshair.current?.destroy();
-        crosshair.current = undefined;
-        return;
-      }
-      crosshair.current = new CrosshairManager(map.getCanvas());
-      crosshair.current.create();
-    });
-  }
-
-  function togglePrintableArea(show: boolean, options: PrintOption) {
-    if (disabledPrintableAreaRef.current) return;
-    callMap((map) => {
-      if (!show) {
-        map.off('resize', onMapResize);
-        printableArea.current?.destroy();
-        printableArea.current = undefined;
-        return;
-      }
-      map.on('resize', onMapResize);
-      printableArea.current = new PrintableAreaManager(
-        map.getCanvas(),
-        options,
-      );
-      printableArea.current.create();
-    });
-  }
-
-  function onClosePrint() {
-    updatePrint({ loading: false, show: false });
-    toggleCrosshair(false);
-    togglePrintableArea(false, printRef.current.setting);
-  }
-
-  function onShowPrint(options: PrintOption) {
-    const nextSetting = { ...DEFAULT_SETTING, ...options };
-    updatePrint({ show: true, setting: nextSetting });
-    toggleCrosshair(true);
-    togglePrintableArea(true, nextSetting);
-  }
-
-  async function onDownload(data64: string) {
-    saveAs(data64, `${fileName}.png`);
-  }
-
-  async function onSave(cb?: (image: string) => Promise<void>) {
-    callMap(async (map) => {
-      if (!printableArea.current) return;
-      try {
-        updatePrint({ loading: true });
-        const setting = printRef.current.setting;
-        const image = await exportMapboxWithOptions(map, {
-          ...printableArea.current.getCutSize(),
-          watermark: setting.watermark || undefined,
-          dpi: setting.dpi,
-        });
-        if (cb) await cb(image);
-        else await onDownload(image);
-      } finally {
-        updatePrint({ loading: false });
-      }
-    });
-  }
-
-  async function onSaveAll(cb?: (image: string) => Promise<void>) {
-    callMap(async (map) => {
-      updatePrint({ loading: true });
-      try {
-        const setting = printRef.current.setting;
-        const image = await exportMapbox(map, {
-          watermark: setting.watermark || undefined,
-          dpi: setting.dpi,
-        });
-        if (cb) await cb(image);
-        else await onDownload(image);
-      } finally {
-        updatePrint({ loading: false });
-      }
-    });
-  }
-
-  function toggleSetting() {
-    updatePrint((prev) => ({ ...prev, setting_show: !prev.setting_show }));
-  }
-
-  function onChangeSetting(next: PrintOption) {
-    updatePrint({ setting: next });
-    printableArea.current?.setOption(next);
-  }
-
-  const apiRef = useRef({
-    onShowPrint,
-    onClosePrint,
-    onSave,
-    onSaveAll,
-  });
-  apiRef.current = { onShowPrint, onClosePrint, onSave, onSaveAll };
+  }, [session]);
 
   function onInit() {
-    initPrint({
-      show: (options) => apiRef.current.onShowPrint(options),
-      close: () => apiRef.current.onClosePrint(),
-      save: (cb) => apiRef.current.onSave(cb),
-      saveAll: (cb) => apiRef.current.onSaveAll(cb),
-    });
+    initPrint(session.getStoreHandlers());
   }
-
-  const handlersRef = useRef({
-    onShowPrint,
-    onClosePrint,
-    onSave,
-    toggleSetting,
-  });
-  handlersRef.current = {
-    onShowPrint,
-    onClosePrint,
-    onSave,
-    toggleSetting,
-  };
 
   const toolbarConfig = useMemo(
     () => ({
@@ -247,47 +122,46 @@ export function PrintAdvancedControl({
         {
           id: 'mapPrintShow',
           getState: () => ({
-            visible: !printRef.current.show,
+            visible: !session.getState().show,
             title: trans('map.print.title'),
             icon: mdiIcon(mdiPrinterEye),
           }),
-          onClick: () =>
-            handlersRef.current.onShowPrint(printRef.current.setting),
+          onClick: () => session.show(session.getState().setting),
         },
         {
           id: 'mapPrintSave',
           getState: () => ({
-            visible: printRef.current.show,
+            visible: session.getState().show,
             title: trans('map.print.actions.save'),
             icon: mdiIcon(mdiContentSaveOutline),
-            loading: printRef.current.loading,
+            loading: session.getState().loading,
           }),
-          onClick: () => handlersRef.current.onSave(),
+          onClick: () => session.save(),
         },
         {
           id: 'mapPrintClose',
           getState: () => ({
-            visible: printRef.current.show,
+            visible: session.getState().show,
             title: trans('map.print.actions.clear'),
             icon: mdiIcon(mdiClose),
-            loading: printRef.current.loading,
+            loading: session.getState().loading,
           }),
-          onClick: () => handlersRef.current.onClosePrint(),
+          onClick: () => session.close(),
         },
         {
           id: 'mapPrintSetting',
           getState: () => ({
             visible: true,
-            active: printRef.current.setting_show,
+            active: session.getState().setting_show,
             title: trans('map.print.actions.setting'),
             icon: mdiIcon(mdiCogOutline),
-            loading: printRef.current.loading,
+            loading: session.getState().loading,
           }),
-          onClick: () => handlersRef.current.toggleSetting(),
+          onClick: () => session.toggleSetting(),
         },
       ],
     }),
-    [order, trans],
+    [order, trans, session],
   );
 
   const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
@@ -297,23 +171,22 @@ export function PrintAdvancedControl({
     () => [
       {
         type: 'mapPrintShow',
-        run: () =>
-          handlersRef.current.onShowPrint(printRef.current.setting),
+        run: () => session.show(session.getState().setting),
       },
       {
         type: 'mapPrintSave',
-        run: () => handlersRef.current.onSave(),
+        run: () => session.save(),
       },
       {
         type: 'mapPrintClose',
-        run: () => handlersRef.current.onClosePrint(),
+        run: () => session.close(),
       },
       {
         type: 'mapPrintSetting',
-        run: () => handlersRef.current.toggleSetting(),
+        run: () => session.toggleSetting(),
       },
     ],
-    [],
+    [session],
   );
 
   useRegisterMapControl(mapId, {
@@ -385,12 +258,12 @@ export function PrintAdvancedControl({
         print.setting_show ? (
           <DraggableItemPopup
             show={print.setting_show}
-            onUpdateShow={(v) => updatePrint({ setting_show: !!v })}
+            onUpdateShow={(v) => session.setSettingShow(!!v)}
             title={trans('map.print.setting.title')}
             height={340}
             {...bind}
           >
-        <div className="map-print-advanced-setting">
+            <div className="map-print-advanced-setting">
               <div>
                 <InputSelect
                   label={trans('map.print.field.paper')}
@@ -405,15 +278,9 @@ export function PrintAdvancedControl({
                           : trans('map.print.paper.letter'),
                   }))}
                   onChange={(value) => {
-                    const paper = String(value) as PrintOption['paper'];
-                    const next: PrintOption = {
-                      ...print.setting,
-                      paper,
-                    };
-                    if (paper === 'a4' || paper === 'letter') {
-                      next.ratio = PRINT_PAPER_PRESETS[paper].ratio;
-                    }
-                    onChangeSetting(next);
+                    session.applyPaper(
+                      String(value) as NonNullable<PrintOption['paper']>,
+                    );
                   }}
                 />
               </div>
@@ -422,7 +289,7 @@ export function PrintAdvancedControl({
                   label={trans('map.print.field.ratio')}
                   value={String(print.setting.ratio)}
                   onChange={(value) =>
-                    onChangeSetting({
+                    session.updateSetting({
                       ...print.setting,
                       paper: 'custom',
                       ratio: Number(value) || 1,
@@ -436,7 +303,7 @@ export function PrintAdvancedControl({
                   value={print.setting.orientation}
                   items={ORIENTATION_ITEMS}
                   onChange={(value) =>
-                    onChangeSetting({
+                    session.updateSetting({
                       ...print.setting,
                       orientation: value as PrintOption['orientation'],
                     })
@@ -448,7 +315,7 @@ export function PrintAdvancedControl({
                   label={trans('map.print.field.dpi')}
                   value={String(print.setting.dpi ?? 96)}
                   onChange={(value) =>
-                    onChangeSetting({
+                    session.updateSetting({
                       ...print.setting,
                       dpi: Number(value) || 96,
                     })
@@ -460,23 +327,27 @@ export function PrintAdvancedControl({
                   label={trans('map.print.field.watermark')}
                   value={print.setting.watermark || ''}
                   onChange={(value) =>
-                    onChangeSetting({
+                    session.updateSetting({
                       ...print.setting,
                       watermark: value,
                     })
                   }
                 />
                 {print.setting.watermark ? (
-                  <div className="map-print-watermark-preview" aria-hidden="true">
+                  <div
+                    className="map-print-watermark-preview"
+                    aria-hidden="true"
+                  >
                     {print.setting.watermark}
                   </div>
                 ) : null}
               </div>
               <div className="map-print-advanced-setting__grow" />
               {print.show ? (
-                <MapControlButton variant="filled"
+                <MapControlButton
+                  variant="filled"
                   className="map-print-advanced-setting__apply"
-                  onClick={() => void onSave()}
+                  onClick={() => void session.save()}
                 >
                   {trans('map.print.btn.apply')}
                 </MapControlButton>

@@ -1,8 +1,25 @@
 import { MAP_BUTTON_SIZE_PX } from '../ui/map-button';
+import type { Position } from '../types';
 import type { MapControlButtonState } from './types';
 
 /** Minimum side inset for the mobile toolbar row (keep in sync with `_toolbar.scss`). */
 export const TOOLBAR_EDGE_INSET_PX = 10;
+
+/**
+ * CSS classes for the desktop toolbar overflow panel pinned to a map corner.
+ * Keep in sync with `_toolbar.scss` (`.map-toolbar-overflow-*`).
+ */
+export function toolbarOverflowPanelClassName(position: Position): string {
+  return [
+    'map-toolbar-overflow',
+    position.startsWith('top')
+      ? 'map-toolbar-overflow-top'
+      : 'map-toolbar-overflow-bottom',
+    position.endsWith('left')
+      ? 'map-toolbar-overflow-left'
+      : 'map-toolbar-overflow-right',
+  ].join(' ');
+}
 
 /** Width the icon row may use inside a map host (both edges reserved). */
 export function toolbarAvailableWidth(

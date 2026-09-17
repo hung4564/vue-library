@@ -36,7 +36,7 @@ export function runDrawSave(
   store: MapDrawStore,
   collection: FeatureCollection,
   mapId: string,
-  context?: unknown,
+  context?: { mapId: string } & Record<string, unknown>,
 ) {
   return DrawService.saveDraw(
     store,

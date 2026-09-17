@@ -1,11 +1,14 @@
 import {
+  applyMapStyleSettings,
+  inputToSprite,
+  readMapStyleSettings,
   SETTING_CONTROL_LOCALE,
+  spriteToInput,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
-import type { SpriteSpecification } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
@@ -28,24 +31,6 @@ type SettingState = {
   glyphs?: string;
 };
 
-function spriteToInput(sprite?: SpriteSpecification): string {
-  if (sprite == null) return '';
-  return typeof sprite === 'string' ? sprite : JSON.stringify(sprite);
-}
-
-function inputToSprite(value?: string): SpriteSpecification | undefined {
-  if (!value?.trim()) return undefined;
-  try {
-    const parsed = JSON.parse(value);
-    if (typeof parsed === 'object' && parsed !== null) {
-      return parsed as SpriteSpecification;
-    }
-  } catch {
-    // keep as url string
-  }
-  return value;
-}
-
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
@@ -64,15 +49,12 @@ export function SettingControl(props: SettingControlProps) {
 
   function loadCurrentView() {
     callMap((map) => {
-      const style = map.getStyle();
+      const next = readMapStyleSettings(map);
       setSetting({
-        zoom: map.getZoom(),
-        center: [
-          +map.getCenter().lng.toFixed(6),
-          +map.getCenter().lat.toFixed(6),
-        ],
-        sprite: spriteToInput(style.sprite),
-        glyphs: style.glyphs,
+        zoom: next.zoom,
+        center: next.center,
+        sprite: spriteToInput(next.sprite),
+        glyphs: next.glyphs,
       });
     });
   }
@@ -101,17 +83,12 @@ export function SettingControl(props: SettingControlProps) {
 
   function onSetSetting() {
     callMap((map) => {
-      if (setting.zoom) map.setZoom(setting.zoom);
-      if (setting.center) map.setCenter(setting.center);
-      const style = map.getStyle();
-      const sprite = inputToSprite(setting.sprite);
-      if (sprite) {
-        style.sprite = sprite;
-      }
-      if (setting.glyphs) {
-        style.glyphs = setting.glyphs;
-      }
-      map.setStyle(style);
+      applyMapStyleSettings(map, {
+        zoom: setting.zoom,
+        center: setting.center,
+        sprite: inputToSprite(setting.sprite),
+        glyphs: setting.glyphs,
+      });
     });
   }
 

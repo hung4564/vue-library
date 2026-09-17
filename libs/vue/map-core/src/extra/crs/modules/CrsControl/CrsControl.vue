@@ -87,6 +87,18 @@ const patchCustomItem = (item: CrsItem, patch: Partial<CrsItem>) => {
   Object.assign(item, patch);
   setItems([...crs_items.value]);
 };
+const patchCustomUnit = (
+  item: CrsItem,
+  value: string | { text: string; value: string } | undefined,
+) => {
+  const raw =
+    value && typeof value === 'object' && 'value' in value
+      ? value.value
+      : value;
+  if (raw === 'meter' || raw === 'degree') {
+    patchCustomItem(item, { unit: raw });
+  }
+};
 const isDisplayed = (epsg: string) => displayEpsgs.value.includes(epsg);
 const toggleDisplay = (epsg: string, checked: boolean) => {
   if (epsg === '4326') return;
@@ -219,7 +231,7 @@ watch(show, () => control.sync());
                       :model-value="crs_item.unit"
                       :label="trans('map.crs-control.field.unit')"
                       :items="unit_items"
-                      @update:model-value="patchCustomItem(crs_item, { unit: $event })"
+                      @update:model-value="patchCustomUnit(crs_item, $event)"
                     />
                   </div>
                 </div>

@@ -4,6 +4,7 @@
 
 import type { Feature, FeatureCollection } from 'geojson';
 import type { CoordinatesNumber } from '../types';
+import type { Measure } from './model/Measure';
 
 /**
  * View setting for measurement results
@@ -51,8 +52,8 @@ export interface IView {
  */
 export type MeasurementHandleType = {
   readonly type: string | null;
-  readonly action: unknown;
-  setAction: (action: unknown) => void;
+  readonly action: Measure | null;
+  setAction: (action: Measure | null) => void;
   addView: (view: IView) => void;
   start: () => void;
   reset: () => void;

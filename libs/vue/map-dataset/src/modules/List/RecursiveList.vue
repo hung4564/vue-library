@@ -1,7 +1,7 @@
 <template>
   <!-- Group Item -->
   <ListGroupItem
-    :item="item"
+    :item="(item as GroupTree)"
     :disabled-drag="disabledDrag"
     v-if="isGroup(item)"
   >

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   formatCrsLabel,
   lookupCrsItem,
+  normalizeDisplayEpsgs,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
   searchCrsCatalog,
@@ -13,6 +14,17 @@ describe('crs-catalog', () => {
     expect(normalizeEpsgCode('EPSG:4326')).toBe('4326');
     expect(normalizeEpsgCode('4326')).toBe('4326');
     expect(normalizeEpsgCode('')).toBeNull();
+  });
+
+  it('normalizeDisplayEpsgs forces 4326 and dedupes', () => {
+    expect(normalizeDisplayEpsgs(['3857', 'EPSG:3857'])).toEqual([
+      '4326',
+      '3857',
+    ]);
+    expect(normalizeDisplayEpsgs(['4326', 'EPSG:4326', '3857'])).toEqual([
+      '4326',
+      '3857',
+    ]);
   });
 
   it('lookupCrsItem finds WGS84', () => {

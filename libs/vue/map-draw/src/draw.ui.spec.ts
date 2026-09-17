@@ -72,4 +72,44 @@ describe('DrawControl UI smoke', () => {
 
     wrapper.unmount();
   });
+
+  it('removes MapboxDraw control on unmount when still attached', async () => {
+    const removeControl = vi.fn();
+    const hasControl = vi.fn(() => true);
+    vi.spyOn(MapInitializer, 'setupMapEvents').mockImplementation((map, cb) => {
+      Object.assign(map, {
+        getStyle: () => ({ layers: [], sources: {} }),
+        setStyle: () => undefined,
+        hasControl,
+        addControl: vi.fn(),
+        removeControl,
+        on: vi.fn(),
+        off: vi.fn(),
+      });
+      queueMicrotask(() => cb.onLoad?.(map));
+      return () => undefined;
+    });
+
+    const Host = defineComponent({
+      components: { MapShell, DrawControl },
+      setup() {
+        return { mapId: MAP_ID };
+      },
+      template: `
+        <MapShell :map-id="mapId">
+          <DrawControl />
+        </MapShell>
+      `,
+    });
+
+    const wrapper = mount(Host, { attachTo: document.body });
+    await vi.waitFor(() =>
+      expect(
+        UniversalRegistry.getControl('mapDrawDraftList', MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    wrapper.unmount();
+    expect(removeControl).toHaveBeenCalled();
+  });
 });

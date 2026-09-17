@@ -64,7 +64,7 @@ export function buildTileSourceDataInfo(
     attribution: spec.attribution,
   };
   if (options?.includeTileSize) {
-    info.tileSize = spec.tileSize;
+    info['tileSize'] = spec.tileSize;
   }
   return info;
 }

@@ -5,6 +5,7 @@ import {
   formatWorkerLogTime,
   isWorkerBusy,
   resolveSelectedWorkerId,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
 } from './format';
@@ -26,6 +27,30 @@ describe('worker format', () => {
     expect(isWorkerBusy({ status: 'busy', pending: [] } as any)).toBe(true);
     expect(
       isWorkerBusy({ status: 'idle', pending: [{ id: '1' }] } as any),
+    ).toBe(true);
+  });
+
+  it('workerHasHistory detects history / logs / pending logs', () => {
+    expect(
+      workerHasHistory({
+        history: [],
+        logs: [],
+        pending: [],
+      } as any),
+    ).toBe(false);
+    expect(
+      workerHasHistory({
+        history: [{ id: 'h' }],
+        logs: [],
+        pending: [],
+      } as any),
+    ).toBe(true);
+    expect(
+      workerHasHistory({
+        history: [],
+        logs: [],
+        pending: [{ logs: [{ id: 'l' }] }],
+      } as any),
     ).toBe(true);
   });
 

@@ -9,5 +9,8 @@
     "src/**/*.spec.ts",
     "src/**/*.test.ts"
   ],
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "../../../types/shims/turf-turf.d.ts"
+  ]
 }

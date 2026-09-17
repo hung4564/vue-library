@@ -61,4 +61,37 @@ describe('DrawControl UI smoke', () => {
       ).toBeTruthy(),
     );
   });
+
+  it('removes MapboxDraw control on unmount when still attached', async () => {
+    const removeControl = vi.fn();
+    const hasControl = vi.fn(() => true);
+    vi.spyOn(MapInitializer, 'setupMapEvents').mockImplementation((map, cb) => {
+      Object.assign(map, {
+        getStyle: () => ({ layers: [], sources: {} }),
+        setStyle: () => undefined,
+        hasControl,
+        addControl: vi.fn(),
+        removeControl,
+        on: vi.fn(),
+        off: vi.fn(),
+      });
+      queueMicrotask(() => cb.onLoad?.(map));
+      return () => undefined;
+    });
+
+    const { unmount } = render(
+      <Map mapId={MAP_ID}>
+        <DrawControl />
+      </Map>,
+    );
+
+    await waitFor(() =>
+      expect(
+        UniversalRegistry.getControl('mapDrawDraftList', MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    unmount();
+    expect(removeControl).toHaveBeenCalled();
+  });
 });

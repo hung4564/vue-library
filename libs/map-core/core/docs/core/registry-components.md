@@ -2,7 +2,7 @@
 
 Register Vue / React components for layer menus, legends, and other UI resolved by `RegistryItem` / `componentKey`.
 
-Methods, menu handlers, and control handles live on `UniversalRegistry` in `@hungpvq/map-core`. The Vue / React class **extends** that host and only adds component APIs — `getMethod` / `getMenuHandler` / `getControl` are the same resolve path (map-scoped first, then global).
+Methods, menu handlers, components, and control handles live on `UniversalRegistry` in `@hungpvq/map-core`, backed by `@hungpvq/shared-store` (`map:registry:*` keys on `globalThis`). The Vue / React class **extends** that host and only adds typed component APIs (+ Vue `markRaw`) — storage and resolve path are identical.
 
 ```ts
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
@@ -32,7 +32,7 @@ UniversalRegistry.registerComponentForMap(
 
 ## Register after map load
 
-Map-scoped entries live in the map store. When the map unmounts, `removeMap()` clears that store (React StrictMode remounts the map once in development).
+Map-scoped components / methods / controls live in the shared registry maps bag (`map:registry:maps` / `map:registry:controls`). When the map unmounts, `removeMap()` → `UniversalRegistry.clearMap(mapId)` clears that map’s entries (React StrictMode remounts the map once in development).
 
 **Prefer registering in `onMapLoaded` / `@map-loaded`**, so entries are written after each mount:
 

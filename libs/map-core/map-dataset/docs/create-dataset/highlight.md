@@ -65,6 +65,8 @@ Shell must enable the matching events:
 
 Adapters: `useMapHighlight(mapId).bindPointer({ click, hover })`. Core: `getHighlightController(mapId).bindPointer(…)`. Destroy with `destroyHighlightController(mapId)` from `@hungpvq/map-dataset/highlight` (do not re-export from Vue/React adapters).
 
+**Lifecycle:** `getHighlightController` registers `registerMapStoreCleanup(mapId, 'highlight', …)`. On `removeMap`, that cleanup unbinds pointer listeners and destroys the controller — apps should still call `unbind()` / `destroyHighlightController` on component unmount when the map shell stays alive.
+
 ## Controller
 
 ```ts

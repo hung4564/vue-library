@@ -65,6 +65,16 @@ export function useInitSidebar(
     }
   }, [optionDefault.location, itemId, show]);
 
+  // Keep switcher menu labels in sync when locale / title prop updates.
+  useEffect(() => {
+    storeRef.current.registerAction(itemId, {
+      ...optionDefaultRef.current,
+      location: locationRef.current,
+      setZIndex,
+      setShow: (value: boolean) => setShowRef.current(value),
+    });
+  }, [optionDefault.title, itemId]);
+
   useEffect(() => {
     if (show) {
       storeRef.current.registerSideBarShow(itemId, true);

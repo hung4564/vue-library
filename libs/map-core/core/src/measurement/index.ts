@@ -29,6 +29,21 @@ export {
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
 } from './utils';
+export {
+  resolveMeasurementModeToggle,
+  resolveMeasurementToolbarStatus,
+} from './mode';
+export {
+  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
+  MEASUREMENT_MAP_VIEW_IMAGE,
+  createMeasurementMapView,
+  createMeasurementMapViewEmptySource,
+  createMeasurementMapViewLayers,
+} from './map-view-layers';
+export {
+  buildMeasurementGeojsonDownload,
+  draftCoordinatesToFeature,
+} from './geojson-download';
 
 export type { MeasurementHandleInstance } from './model/handle';
 export type {
@@ -37,6 +52,16 @@ export type {
   MeasurementLabelPrefs,
   MeasurementSettingUiFlags,
 } from './utils';
+export type {
+  MeasurementModeToggleResult,
+  MeasurementToolbarStatus,
+} from './mode';
+export type {
+  MeasurementMapViewLayerSpec,
+} from './map-view-layers';
+export type {
+  MeasurementGeojsonDownload,
+} from './geojson-download';
 export type {
   IView,
   IViewProps,

@@ -2,7 +2,7 @@ import { logHelper } from '@hungpvq/map-core';
 import {
   type CrsItem,
   MittTypeMapCrsEventKey,
-  normalizeEpsgCode,
+  normalizeDisplayEpsgs,
   type MittTypeMapCrs,
 } from '@hungpvq/map-core/crs';
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
@@ -87,16 +87,7 @@ export const useMapCrsDisplayEpsgs = (
   const displayEpsgs = shallowRef(store.displayEpsgs ?? ['4326']);
 
   function setDisplayEpsgs(epsgs: string[]) {
-    const normalized = Array.from(
-      new Set(
-        epsgs
-          .map((epsg) => normalizeEpsgCode(epsg))
-          .filter((epsg): epsg is string => !!epsg),
-      ),
-    );
-    if (!normalized.includes('4326')) {
-      normalized.unshift('4326');
-    }
+    const normalized = normalizeDisplayEpsgs(epsgs);
     logHelper(logger, mapId, 'store').debug('setDisplayEpsgs', normalized);
     store.displayEpsgs = normalized;
     emitter.emit(MittTypeMapCrsEventKey.setDisplayEpsgs, normalized);

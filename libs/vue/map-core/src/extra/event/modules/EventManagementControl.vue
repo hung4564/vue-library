@@ -8,8 +8,11 @@ export default {
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   EVENT_CONTROL_LOCALE,
+  groupEventsByMapType,
+  isEventActive,
   MittTypeMapEventEventKey,
   type IEvent,
+  type MapEventStore,
   type MittTypeMapEvent,
 } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
@@ -25,7 +28,6 @@ import { useMapMittStore } from '../../mitt';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
-import { MapEventStore } from '../store';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -75,19 +77,7 @@ const { panelPosition } = useRegisterMapControl(mapId, {
 defineSlots<{
   default(): any;
 }>();
-function isActive(current: MapEventStore['current'], event: IEvent) {
-  const currentCheck = current[event.event_map_type];
-  return currentCheck && currentCheck.id === event.id;
-}
-const groupedViews = computed(() => {
-  const groups: Record<string, IEvent[]> = {};
-  for (const view of events.value) {
-    const type = view.event_map_type;
-    if (!groups[type]) groups[type] = [];
-    groups[type].push(view);
-  }
-  return groups;
-});
+const groupedViews = computed(() => groupEventsByMapType(events.value));
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapEventManagementControl',
   getState() {
@@ -134,7 +124,7 @@ watch(show, () => control.sync());
                 :key="event.id"
                 :class="[
                   'map-event-control__item',
-                  { 'is-active': isActive(current, event) },
+                  { 'is-active': isEventActive(current, event) },
                 ]"
               >
                 <div>
@@ -151,7 +141,7 @@ watch(show, () => control.sync());
                 </div>
                 <div class="map-event-control__status">
                   <span
-                    v-if="isActive(current, event)"
+                    v-if="isEventActive(current, event)"
                     class="map-event-control__status-icon is-active"
                     >✔ Đang kích hoạt</span
                   >

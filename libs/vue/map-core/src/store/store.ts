@@ -7,6 +7,8 @@ import {
   MAP_STORE_KEY,
   MapStoreManager,
   registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanupRegistrar,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
@@ -16,6 +18,10 @@ export { useMapGlobalStore } from './global-store';
 const storeAdapter = new VueMapStoreAdapter();
 const storeManager = new MapStoreManager(storeAdapter);
 registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
+registerMapReadySubscriber((id, cb) => storeManager.subscribeMapReady(id, cb));
+registerMapStoreCleanupRegistrar((mapId, key, cleanup) =>
+  storeManager.registerCleanup(mapId, key, cleanup),
+);
 
 /**
  * Get map store by ID

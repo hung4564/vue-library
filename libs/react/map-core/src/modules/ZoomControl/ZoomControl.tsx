@@ -7,7 +7,13 @@ import React, {
 } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { MAP_ACTION_LOCALE } from '@hungpvq/map-core';
+import {
+  attachRotateListener,
+  MAP_ACTION_LOCALE,
+  resetBearing,
+  zoomIn,
+  zoomOut,
+} from '@hungpvq/map-core';
 import {
   mdiIcon,
   type MapControlButtonUIState,
@@ -26,15 +32,6 @@ export interface ZoomControlProps extends WithMapPropType {
   showZoom?: boolean;
 }
 
-function resolveOriginalEvent(e?: unknown): MouseEvent | undefined {
-  if (e == null || typeof e !== 'object') return undefined;
-  if ('nativeEvent' in e) {
-    const native = (e as { nativeEvent?: unknown }).nativeEvent;
-    return native instanceof MouseEvent ? native : undefined;
-  }
-  return e instanceof MouseEvent ? e : undefined;
-}
-
 export function ZoomControl({
   showCompass = true,
   showZoom = true,
@@ -42,25 +39,15 @@ export function ZoomControl({
 }: ZoomControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const [transform, setTransform] = useState('rotate(0deg)');
-  const bindSyncRotateRef = useRef<(() => void) | null>(null);
-
-  function syncRotate(_map: MapSimple) {
-    const angle = _map.getBearing() * -1;
-    setTransform(`rotate(${angle}deg)`);
-  }
+  const detachRotateRef = useRef<(() => void) | null>(null);
 
   const onInit = useCallback((_map: MapSimple) => {
-    bindSyncRotateRef.current = () => syncRotate(_map);
-    if (bindSyncRotateRef.current) {
-      _map.on('rotate', bindSyncRotateRef.current);
-    }
+    detachRotateRef.current = attachRotateListener(_map, setTransform);
   }, []);
 
   const onDestroy = useCallback((_map: MapSimple) => {
-    if (bindSyncRotateRef.current) {
-      _map.off('rotate', bindSyncRotateRef.current);
-      bindSyncRotateRef.current = null;
-    }
+    detachRotateRef.current?.();
+    detachRotateRef.current = null;
   }, []);
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
@@ -78,7 +65,7 @@ export function ZoomControl({
   const onZoomIn = useCallback(
     (e?: unknown) => {
       callMap((map) => {
-        map.zoomIn({}, { originalEvent: resolveOriginalEvent(e) });
+        zoomIn(map, e);
       });
     },
     [callMap],
@@ -87,7 +74,7 @@ export function ZoomControl({
   const onZoomOut = useCallback(
     (e?: unknown) => {
       callMap((map) => {
-        map.zoomOut({}, { originalEvent: resolveOriginalEvent(e) });
+        zoomOut(map, e);
       });
     },
     [callMap],
@@ -95,10 +82,9 @@ export function ZoomControl({
 
   const onResetBearing = useCallback(() => {
     callMap((map) => {
-      map.easeTo({ bearing: 0, pitch: 0 });
+      resetBearing(map);
     });
   }, [callMap]);
-
   const registerActions = useMemo(
     () => [
       { type: 'mapCompass', run: () => onResetBearing() },

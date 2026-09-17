@@ -5,14 +5,14 @@ import { applyMenuControlPlacement } from './placement';
 
 /** Location on a menu item, if present. */
 export function getMenuItemLocation(
-  item: MenuAction,
+  item: MenuAction<any, any>,
 ): MenuActionLocation | undefined {
   return item.type === 'item' && 'location' in item ? item.location : undefined;
 }
 
 /** Resolve location from host prop or menu item (default `extra`). */
 export function resolveMenuItemLocation(
-  item: MenuAction,
+  item: MenuAction<any, any>,
   location?: MenuActionLocation,
 ): MenuActionLocation {
   return location ?? getMenuItemLocation(item) ?? 'extra';

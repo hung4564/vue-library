@@ -6,17 +6,13 @@ import {
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
   TOOLBAR_CONTROL_LOCALE,
-  cornerVerticalMenuBudgetsPx,
   createToolbarStoreApi,
-  groupToolbarButtons,
-  maxVisibleButtonsInStackHeight,
-  maxVisibleToolbarButtons,
   mdiButtonState,
   measureCornerMenuUsedPx,
   measureCornerStandaloneReserved,
-  splitToolbarOverflow,
-  splitToolbarOverflowKeepGroups,
+  planToolbarLayout,
   toolbarAvailableWidth,
+  toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
 import { mdiDotsHorizontal } from '@mdi/js';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -41,18 +37,6 @@ export type ToolbarControlProps = Omit<
 > & {
   maxVisible?: number;
 };
-
-function overflowClassFor(position: Position) {
-  return [
-    'map-toolbar-overflow',
-    position.startsWith('top')
-      ? 'map-toolbar-overflow-top'
-      : 'map-toolbar-overflow-bottom',
-    position.endsWith('left')
-      ? 'map-toolbar-overflow-left'
-      : 'map-toolbar-overflow-right',
-  ].join(' ');
-}
 
 export function ToolbarControl(props: ToolbarControlProps) {
   const merged = {
@@ -178,55 +162,31 @@ export function ToolbarControl(props: ToolbarControlProps) {
     };
   }, [menuMode, mapId, buttons.length, findMapContainer, syncHost]);
 
-  const groups = useMemo(() => groupToolbarButtons(buttons), [buttons]);
-  const maxVisibleToolbar =
-    props.maxVisible ??
-    maxVisibleToolbarButtons(availableWidth, MAP_BUTTON_SIZE_PX.medium);
-  const toolbarSplit = useMemo(
-    () => splitToolbarOverflow(groups, maxVisibleToolbar),
-    [groups, maxVisibleToolbar],
+  const layout = useMemo(
+    () =>
+      planToolbarLayout({
+        buttons,
+        menuMode,
+        hostHeight,
+        availableWidth,
+        maxVisible: props.maxVisible,
+        buttonSize: MAP_BUTTON_SIZE_PX.medium,
+        reservedByCorner,
+        menuUsedByCorner,
+        cornerPositions: CORNER_POSITIONS,
+      }),
+    [
+      buttons,
+      menuMode,
+      hostHeight,
+      availableWidth,
+      props.maxVisible,
+      reservedByCorner,
+      menuUsedByCorner,
+    ],
   );
 
-  const cornerData = useMemo(() => {
-    return CORNER_POSITIONS.map((position) => {
-      const cornerGroups = groupToolbarButtons(
-        buttons.filter((b) => (b.position || 'bottom-right') === position),
-      );
-      if (!cornerGroups.length) return null;
-      const side = position.endsWith('left') ? 'left' : 'right';
-      const budgets = cornerVerticalMenuBudgetsPx({
-        hostHeight,
-        topReservedPx: reservedByCorner[`top-${side}` as Position]?.height ?? 0,
-        bottomReservedPx:
-          reservedByCorner[`bottom-${side}` as Position]?.height ?? 0,
-        topMenuUsedPx: menuUsedByCorner[`top-${side}` as Position],
-        bottomMenuUsedPx: menuUsedByCorner[`bottom-${side}` as Position],
-      });
-      const budgetPx = position.startsWith('top')
-        ? budgets.topPx
-        : budgets.bottomPx;
-      const prefer = position.startsWith('bottom') ? 'end' : 'start';
-      const maxVisible =
-        props.maxVisible ??
-        maxVisibleButtonsInStackHeight(budgetPx, MAP_BUTTON_SIZE_PX.medium);
-      const split = splitToolbarOverflowKeepGroups(
-        cornerGroups,
-        maxVisible,
-        prefer,
-      );
-      return {
-        position,
-        prefer,
-        maxVisible,
-        split,
-        showMore: split.overflow.length > 0 && maxVisible >= 1,
-        hasChrome:
-          cornerGroups.length > 0 &&
-          (split.visible.length > 0 || maxVisible >= 1),
-      };
-    }).filter((c): c is NonNullable<typeof c> => c != null && c.hasChrome);
-  }, [buttons, hostHeight, props.maxVisible, reservedByCorner, menuUsedByCorner]);
-
+  const { groups, toolbarSplit, corners: cornerData } = layout;
   const overflowOpen = moreOpen && toolbarSplit.overflow.length > 0;
   const pos = merged.position || 'bottom-right';
   const moreOption = mdiButtonState(mdiDotsHorizontal, {
@@ -365,7 +325,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
             ) : null}
           </MapControlGroupButton>
           {overflowOpen ? (
-            <div className={overflowClassFor(pos)} role="menu">
+            <div className={toolbarOverflowPanelClassName(pos)} role="menu">
               {toolbarSplit.overflow.map((group) => (
                 <MapControlGroupButton key={group.id} row>
                   {group.buttons.map((btn) => (

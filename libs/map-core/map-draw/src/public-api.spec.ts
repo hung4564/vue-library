@@ -46,6 +46,7 @@ export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'emptyDraftListSnapshot',
   'ensureFeatureId',
   'getDraftListSnapshot',
+  'getDrawCreateModeEffects',
   'getDrawModeSelectEffects',
   'getFeatureEditMode',
   'logger',

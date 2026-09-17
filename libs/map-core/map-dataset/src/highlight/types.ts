@@ -60,10 +60,21 @@ export type HighlightStyle = {
   layerIds?: HighlightLayerIds | ((baseId: string) => HighlightLayerIds);
 };
 
+export type HighlightAnimState = {
+  frameId: number | null;
+  timeoutId: ReturnType<typeof setTimeout> | null;
+  radius?: number;
+  grow?: boolean;
+  dashOffset?: number;
+  blinkAlpha?: number;
+  blinkDir?: number;
+  [key: string]: unknown;
+};
+
 export type HighlightAnimateFn = (args: {
   map: MapSimple;
   layerIds: HighlightLayerIds;
-  state: Record<string, unknown>;
+  state: HighlightAnimState;
 }) => void;
 
 export type HighlightDataContext = {

@@ -1,11 +1,13 @@
 import {
+  anyWorkerHasHistory,
+  countBusyWorkers,
   filterWorkerSnapshots,
   formatWorkerDuration,
   formatWorkerLogTime,
-  isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
   WorkerMonitor,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -175,20 +177,10 @@ export function WorkerControl(props: WorkerControlProps) {
     controlRef.current.sync();
   }, [show, busy]);
 
-  const busyCount = workers.filter(isWorkerBusy).length;
+  const busyCount = countBusyWorkers(workers);
   const manyWorkers = workers.length > 1;
-  const hasSelectedHistory = Boolean(
-    selected &&
-      (selected.history.length > 0 ||
-        selected.logs.length > 0 ||
-        selected.pending.some((task) => (task.logs?.length ?? 0) > 0)),
-  );
-  const hasAnyHistory = workers.some(
-    (worker) =>
-      worker.history.length > 0 ||
-      worker.logs.length > 0 ||
-      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
-  );
+  const hasSelectedHistory = Boolean(selected && workerHasHistory(selected));
+  const hasAnyHistory = anyWorkerHasHistory(workers);
 
   const statusLabel = (status: WorkerRuntimeStatus) =>
     trans(`map.worker-control.status.${status}`);

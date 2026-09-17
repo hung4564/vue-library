@@ -1,5 +1,3 @@
-import type { MapFCOnUseMap, MapSimple } from '../types';
-
 export type {
   EventEmitter,
   IMapStoreAdapter,
@@ -16,20 +14,20 @@ export type {
   StoreCleanup,
 } from './types';
 
-export type MapAccessor = (
-  mapId: string,
-  cb?: MapFCOnUseMap,
-) => MapSimple | undefined;
+export { MAP_PLATFORM_REGISTRY_METHOD } from './map-platform-keys';
+export type { MapPlatformRegistryMethod } from './map-platform-keys';
 
-let registeredMapAccessor: MapAccessor | undefined;
+export type {
+  MapAccessor,
+  MapReadySubscriber,
+  MapStoreCleanupRegistrar,
+} from './map-platform-registry';
 
-export function registerMapAccessor(fn: MapAccessor) {
-  registeredMapAccessor = fn;
-}
-
-export function getMap(
-  mapId: string,
-  cb?: MapFCOnUseMap,
-): MapSimple | undefined {
-  return registeredMapAccessor?.(mapId, cb);
-}
+export {
+  getMap,
+  registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanup,
+  registerMapStoreCleanupRegistrar,
+  subscribeMapReady,
+} from './map-platform-registry';

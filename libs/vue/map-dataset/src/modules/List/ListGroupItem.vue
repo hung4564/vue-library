@@ -36,17 +36,18 @@
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import { MapControlButton } from '@hungpvq/vue-map-core';
+import type { GroupTree } from '@hungpvq/map-dataset';
 
 import { ref } from 'vue';
 import ListItem from './ListItem.vue';
 
-defineProps({
-  item: { type: Object, required: true },
-  selected: { type: Array, default: () => [] },
-  disabledSelect: Boolean,
-  disabledDrag: Boolean,
-  readonly: Boolean,
-});
+defineProps<{
+  item: GroupTree;
+  selected?: unknown[];
+  disabledSelect?: boolean;
+  disabledDrag?: boolean;
+  readonly?: boolean;
+}>();
 const path = {
   group: {
     open: mdiChevronUp,

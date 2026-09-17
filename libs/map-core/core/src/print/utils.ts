@@ -153,6 +153,30 @@ export function clipCanvasRegion(
 }
 
 /**
+ * Export the map and save via a host-provided saver (e.g. `file-saver` `saveAs`).
+ * Keeps PrintControl Vue/React thin around export + download.
+ */
+export async function printMapToFile(
+  map: MapSimple,
+  options: {
+    fileName?: string;
+    save: (dataUrl: string, fileName: string) => void | Promise<void>;
+    exportOptions?: ExportMapboxOptions;
+    /** Test / override hook; defaults to {@link exportMapbox}. */
+    exportMap?: (
+      map: MapSimple,
+      options?: ExportMapboxOptions,
+    ) => Promise<string>;
+  },
+): Promise<string> {
+  const runExport = options.exportMap ?? exportMapbox;
+  const dataUrl = await runExport(map, options.exportOptions);
+  const fileName = `${options.fileName ?? 'map'}.png`;
+  await options.save(dataUrl, fileName);
+  return dataUrl;
+}
+
+/**
  * Export map as image data URL
  */
 export async function exportMapbox(

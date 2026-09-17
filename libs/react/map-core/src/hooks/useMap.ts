@@ -4,7 +4,7 @@ import type {
   ResolvedControlLayout,
   WithMapPropType,
 } from '@hungpvq/map-core';
-import { resolveControlLayout } from '@hungpvq/map-core';
+import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContext } from '../context/MapContext';
 import { getMap } from '../store/store';
@@ -59,22 +59,29 @@ export const useMap = (
 
   useEffect(() => {
     if (!mapId) return;
-    getMap(mapId, async (_map) => {
+    let cancelled = false;
+    const unsubscribe = subscribeMapReady(mapId, async (_map) => {
+      if (cancelled) return;
       setMapInstance(_map);
       const init = onInitRef.current;
       if (init instanceof Function) {
         await init(_map);
       }
     });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, [mapId]);
 
   useEffect(() => {
     return () => {
       const destroy = onDestroyRef.current;
       if (destroy instanceof Function && mapId) {
-        getMap(mapId, async (_map) => {
-          await destroy(_map);
-        });
+        const map = getMap(mapId);
+        if (map) {
+          void destroy(map);
+        }
       }
     };
   }, [mapId]);

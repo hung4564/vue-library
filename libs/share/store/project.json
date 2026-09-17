@@ -23,6 +23,15 @@
         "assets": ["libs/share/store/*.md"]
       }
     },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"

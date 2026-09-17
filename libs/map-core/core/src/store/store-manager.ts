@@ -3,6 +3,8 @@
  * Handles store operations, map instance registry, and cleanup
  */
 
+import { getOrCreateStore } from '@hungpvq/shared-store';
+import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
 import { hasMapInstance, type MapSimple } from '../types';
 import type { IMapStoreAdapter, MapFCOnUseMap } from './interface';
@@ -20,6 +22,19 @@ import type {
 export const MAP_CORE_EVENT = {
   READY: 'ready',
 } as const;
+
+/** Process-wide bag so Vue + React MapStoreManager copies share removeMap tombstones. */
+const MAP_CORE_META_STORE_KEY = 'map:core:meta';
+
+type MapCoreMetaStore = {
+  removedMapIds: Set<string>;
+};
+
+function getRemovedMapIds(): Set<string> {
+  return getOrCreateStore<MapCoreMetaStore>(MAP_CORE_META_STORE_KEY, () => ({
+    removedMapIds: new Set<string>(),
+  })).removedMapIds;
+}
 
 /**
  * Store manager class
@@ -110,8 +125,41 @@ export class MapStoreManager {
   }
 
   /**
+   * Subscribe to map READY. Invokes `cb` synchronously when the map is already
+   * live; otherwise waits for `initMap`. Tombstoned ids (after `removeMap`)
+   * never wait. Returns an unsubscribe that removes the READY listener.
+   */
+  subscribeMapReady(id: string, cb: MapFCOnUseMap): () => void {
+    const map = this.getMapFromStore(id);
+    if (map) {
+      cb(map);
+      return () => undefined;
+    }
+
+    if (getRemovedMapIds().has(id)) {
+      this.log(id, 'debug', 'subscribeMapReady: skip wait after removeMap');
+      return () => undefined;
+    }
+
+    this.log(id, 'debug', 'subscribeMapReady: waiting for map instance');
+    const emitter = this.adapter.getEventEmitter(id);
+    const handler = () => {
+      const ready = this.getMapFromStore(id);
+      if (ready) {
+        cb(ready);
+        emitter.off(MAP_CORE_EVENT.READY, handler);
+      }
+    };
+    emitter.on(MAP_CORE_EVENT.READY, handler);
+    return () => {
+      emitter.off(MAP_CORE_EVENT.READY, handler);
+    };
+  }
+
+  /**
    * Get map instance.
-   * If callback is provided, will wait for map to be ready.
+   * If callback is provided, will wait for map to be ready — unless the mapId
+   * was removed (tombstoned) and has not been re-init'd.
    */
   getMap(id: string, cb?: MapFCOnUseMap): MapSimple | undefined {
     const map = this.getMapFromStore(id);
@@ -121,16 +169,7 @@ export class MapStoreManager {
     }
 
     if (cb) {
-      this.log(id, 'debug', 'getMap: waiting for map instance');
-      const emitter = this.adapter.getEventEmitter(id);
-      const handler = () => {
-        const ready = this.getMapFromStore(id);
-        if (ready) {
-          cb(ready);
-          emitter.off(MAP_CORE_EVENT.READY, handler);
-        }
-      };
-      emitter.on(MAP_CORE_EVENT.READY, handler);
+      this.subscribeMapReady(id, cb);
     } else {
       this.log(id, 'debug', 'getMap: map instance not ready');
     }
@@ -189,9 +228,18 @@ export class MapStoreManager {
   }
 
   /**
-   * Initialize single map in store
+   * Initialize single map in store.
+   * One mapId may only hold one live map instance at a time.
    */
   initMap(mapId: string, map: MapSimple): void {
+    getRemovedMapIds().delete(mapId);
+    const existing = this.getMapFromStore(mapId);
+    if (existing && existing !== map) {
+      throw new MapInitializationError(
+        `mapId "${mapId}" already has a live map instance`,
+        { context: { mapId } },
+      );
+    }
     this.log(mapId, 'debug', 'init', map);
     const mapStore = this.ensureMapEntry(mapId);
     mapStore.map = map;
@@ -207,6 +255,7 @@ export class MapStoreManager {
     UniversalRegistry.clearMap(mapId);
     const root = this.adapter.getRootStore();
     delete root[mapId];
+    getRemovedMapIds().add(mapId);
   }
 
   /**
@@ -215,8 +264,8 @@ export class MapStoreManager {
   destroyScopedStore(mapId: string, key: string): void {
     const store = this.getMapStore(mapId);
     if (store && key in store) {
-      delete store[key];
       this.runCleanup(mapId, key);
+      delete store[key];
     }
   }
 

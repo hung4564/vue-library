@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import {
+  applyGotoSetting,
   GOTO_CONTROL_LOCALE,
-  parseCoordinateText,
+  gotoSettingFromCoordinateText,
+  readGotoSetting,
+  type GotoSetting,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
@@ -29,11 +32,7 @@ function onToggleShow() {
   setShow(!show.value);
   if (show.value) {
     callMap((_map) => {
-      setting.value.zoom = _map.getZoom();
-      setting.value.center = [
-        +_map.getCenter().lng.toFixed(6),
-        +_map.getCenter().lat.toFixed(6),
-      ];
+      setting.value = readGotoSetting(_map);
     });
   }
 }
@@ -55,23 +54,18 @@ const { panelBind } = useRegisterMapControl(mapId, {
     },
   ],
 });
-const setting = ref<{
-  zoom?: number;
-  center: [number, number];
-}>({ center: [0, 0] });
+const setting = ref<GotoSetting>({ center: [0, 0] });
 const onSetSetting = () => {
   callMap((map) => {
-    if (setting.value.zoom) map.setZoom(setting.value.zoom);
-    if (setting.value.center) map.setCenter(setting.value.center);
+    applyGotoSetting(map, setting.value);
   });
 };
 async function onPasteCoordinates() {
   try {
     const text = await navigator.clipboard?.readText?.();
-    const parsed = parseCoordinateText(text || '');
-    if (!parsed) return;
-    setting.value.center = [parsed.lng, parsed.lat];
-    if (parsed.zoom != null) setting.value.zoom = parsed.zoom;
+    const partial = gotoSettingFromCoordinateText(text || '');
+    if (!partial) return;
+    setting.value = { ...setting.value, ...partial };
   } catch {
     // Clipboard permission denied — ignore.
   }

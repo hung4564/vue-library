@@ -1,14 +1,31 @@
 import { GlobalStoreService } from './index';
 
+const GLOBAL_STORE_STATE_KEY = '$_hungpv_store';
+const GLOBAL_STORE_SERVICE_KEY = '__hungpvq_GlobalStoreService__';
+
+function resetSharedStore() {
+  const host = globalThis as typeof globalThis & {
+    [GLOBAL_STORE_STATE_KEY]?: Record<string, unknown>;
+    [GLOBAL_STORE_SERVICE_KEY]?: GlobalStoreService;
+  };
+  delete host[GLOBAL_STORE_SERVICE_KEY];
+  delete host[GLOBAL_STORE_STATE_KEY];
+}
+
 describe('GlobalStoreService path keys', () => {
   let store: GlobalStoreService;
 
   beforeEach(() => {
-    // Fresh singleton per test so prior paths/listeners do not leak
-    (
-      GlobalStoreService as unknown as { instance?: GlobalStoreService }
-    ).instance = undefined;
+    resetSharedStore();
     store = GlobalStoreService.getInstance();
+  });
+
+  it('pins singleton + state on globalThis across getInstance calls', () => {
+    const a = GlobalStoreService.getInstance();
+    const b = GlobalStoreService.getInstance();
+    expect(a).toBe(b);
+    a.set('probe', 1);
+    expect(b.get('probe')).toBe(1);
   });
 
   it('fires listeners when array path subscribe and set use different array instances', () => {

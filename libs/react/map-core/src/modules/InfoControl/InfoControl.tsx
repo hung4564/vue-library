@@ -1,4 +1,5 @@
 import {
+  attachMapViewInfoListeners,
   copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
@@ -7,7 +8,6 @@ import {
   lngDMS,
   parseCoordinateText,
   readMapViewInfo,
-  type MapSimple,
   type MapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -50,6 +50,7 @@ export function InfoControl(props: InfoControlProps) {
   const [centerDms, setCenterDms] = useState('');
   const [showDms, setShowDms] = useState(false);
   const [capturing, setCapturing] = useState(false);
+  const detachInfoRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     registerLocale('en', INFO_CONTROL_LOCALE);
@@ -63,44 +64,27 @@ export function InfoControl(props: InfoControlProps) {
     });
   }, [callMap]);
 
-  const attachListeners = useCallback(
-    (map: MapSimple) => {
-      map.on('move', syncInfo);
-      map.on('pitch', syncInfo);
-      map.on('rotate', syncInfo);
-      map.on('styledata', syncInfo);
-    },
-    [syncInfo],
-  );
-
-  const detachListeners = useCallback(
-    (map: MapSimple) => {
-      map.off('move', syncInfo);
-      map.off('pitch', syncInfo);
-      map.off('rotate', syncInfo);
-      map.off('styledata', syncInfo);
-    },
-    [syncInfo],
-  );
-
   const callMapRef = useRef(callMap);
   callMapRef.current = callMap;
   const syncInfoRef = useRef(syncInfo);
   syncInfoRef.current = syncInfo;
-  const attachListenersRef = useRef(attachListeners);
-  attachListenersRef.current = attachListeners;
-  const detachListenersRef = useRef(detachListeners);
-  detachListenersRef.current = detachListeners;
 
   useEffect(() => {
     if (!show) {
-      callMapRef.current(detachListenersRef.current);
+      detachInfoRef.current?.();
+      detachInfoRef.current = null;
       return;
     }
     syncInfoRef.current();
-    callMapRef.current(attachListenersRef.current);
+    callMapRef.current((map) => {
+      detachInfoRef.current?.();
+      detachInfoRef.current = attachMapViewInfoListeners(map, () => {
+        syncInfoRef.current();
+      });
+    });
     return () => {
-      callMapRef.current(detachListenersRef.current);
+      detachInfoRef.current?.();
+      detachInfoRef.current = null;
     };
   }, [show]);
 

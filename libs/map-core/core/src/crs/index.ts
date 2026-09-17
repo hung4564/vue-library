@@ -13,6 +13,7 @@ export {
   formatCrsLabel,
   getCrsInputSuggestions,
   lookupCrsItem,
+  normalizeDisplayEpsgs,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
   resolveCrsItemForStore,

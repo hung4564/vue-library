@@ -42,10 +42,13 @@ export {
 } from './registry/module-control-id';
 
 export {
+  REGISTRY_CONTROLS_STORE_KEY,
   REGISTRY_GLOBAL_STORE_KEY,
+  REGISTRY_MAPS_STORE_KEY,
   REGISTRY_NAMESPACES,
   UniversalRegistry,
 } from './registry/universal-registry';
+
 
 export {
   FallbackResolver,
@@ -75,6 +78,54 @@ export {
 export {
   EMPTY_MAP_VIEW_INFO,
 } from './utils/map-info';
+
+export {
+  applyGotoSetting,
+  gotoSettingFromCoordinateText,
+  readGotoSetting,
+} from './controls/goto';
+export type { GotoSetting } from './controls/goto';
+
+export {
+  applyMapScaleLabel,
+  debounce,
+  formatMapScaleLabel,
+  getRoundNum,
+} from './controls/mouse-coordinates';
+
+export {
+  applyMapStyleSettings,
+  inputToSprite,
+  readMapStyleSettings,
+  spriteToInput,
+} from './controls/setting';
+export type { MapStyleSetting } from './controls/setting';
+
+export {
+  attachGlobeProjectionListener,
+  getProjectionType,
+  isGlobeProjection,
+  toggleGlobeProjection,
+} from './controls/globe';
+
+export {
+  attachMapViewInfoListeners,
+} from './controls/info';
+
+export {
+  attachRotateListener,
+  bearingToCompassTransform,
+  resetBearing,
+  resolveOriginalEvent,
+  zoomIn,
+  zoomOut,
+} from './controls/navigation';
+
+export {
+  captureHomeView,
+  goHome,
+} from './controls/home';
+export type { CaptureHomeViewOptions, HomeView } from './controls/home';
 
 export {
   WorkerMonitor,
@@ -231,8 +282,14 @@ export {
 
 export {
   getMap,
+  MAP_PLATFORM_REGISTRY_METHOD,
   registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanup,
+  registerMapStoreCleanupRegistrar,
+  subscribeMapReady,
 } from './store/index';
+export type { MapPlatformRegistryMethod } from './store/index';
 
 export {
   hasMapInstance,
@@ -252,6 +309,17 @@ export {
   resolveMapButtonSizeName,
   resolveMapButtonSizePx,
 } from './ui/map-button';
+
+export {
+  buildModuleBindPosition,
+  isModuleCornerChromeVisible,
+  moduleBtnContainerClassName,
+  moduleCornerHostId,
+  moduleCornerHostSelector,
+  moduleDraggableHostId,
+  moduleDraggableHostSelector,
+  queryModuleHostElement,
+} from './ui/module-container';
 
 export {
   getChartRandomColor,
@@ -288,8 +356,11 @@ export {
 } from './utils/map-info';
 
 export {
+  anyWorkerHasHistory,
+  countBusyWorkers,
   isWorkerBusy,
   resolveSelectedWorkerId,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
 } from './worker/format';
@@ -381,3 +452,7 @@ export type {
   MapButtonSizeName,
   MapButtonVariant,
 } from './ui/map-button';
+export type {
+  ModuleBindPosition,
+  ModuleCornerChromeLayout,
+} from './ui/module-container';

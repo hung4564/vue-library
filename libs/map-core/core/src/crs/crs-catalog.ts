@@ -115,6 +115,23 @@ export function normalizeEpsgCode(value: unknown): string | null {
   return match?.[1] ?? null;
 }
 
+/**
+ * Normalize display EPSG list: strip prefixes, dedupe, always keep `4326` first.
+ */
+export function normalizeDisplayEpsgs(epsgs: string[]): string[] {
+  const normalized = Array.from(
+    new Set(
+      epsgs
+        .map((epsg) => normalizeEpsgCode(epsg))
+        .filter((epsg): epsg is string => !!epsg),
+    ),
+  );
+  if (!normalized.includes('4326')) {
+    normalized.unshift('4326');
+  }
+  return normalized;
+}
+
 export function formatCrsLabel(item: Pick<CrsItem, 'epsg' | 'name'>): string {
   return `EPSG:${item.epsg} — ${item.name}`;
 }

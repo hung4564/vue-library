@@ -13,11 +13,11 @@
         {{ mode }}
       </button>
       <span class="mobile-menu-demo__hint">
-        Resize â‰¤640px (or DevTools mobile) to see promotion / corner menu
+        Resize ≤640px (or DevTools mobile) to see promotion / corner menu
       </span>
     </div>
     <Map :button-in-mobile="buttonInMobile">
-    <DemoLanguageControl />
+      <DemoLanguageControl />
       <AsideControl position="top-left" />
       <ToolbarControl />
       <MeasurementControl position="top-right" />
@@ -36,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import type { ButtonInMobile } from '@hungpvq/map-core';
 import {
   BaseMapControl,
@@ -53,8 +52,9 @@ import {
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
-import AsideControl from '../layout/aside-control.vue';
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 
 const modes: ButtonInMobile[] = ['button', 'toolbar', 'menu'];
 const buttonInMobile = ref<ButtonInMobile>('menu');
