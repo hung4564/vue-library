@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Measurement lives in `@hungpvq/map-core/measurement` (MapView layers, GeoJSON download helpers, units) with thin hosts `MeasurementControl` on `@hungpvq/vue-map-core` and `@hungpvq/react-map-core`. Use it for high-precision distance / area / angle / radius on MapLibre maps, custom actions, unit preferences, and export.
+Measurement lives in `@hungpvq/map-core/measurement` (`createMeasurementSession`, MapView layers, GeoJSON download helpers, units) with thin hosts `MeasurementControl` on `@hungpvq/vue-map-core` and `@hungpvq/react-map-core`. Use it for high-precision distance / area / angle / radius on MapLibre maps, custom actions, unit preferences, and GeoJSON export.
 
 ## 📦 Installation
 
@@ -29,9 +29,9 @@ npm install @hungpvq/react-map-core
 - ✅ **Unit preference** – Distance (auto/m/km/ft/mi) and area (auto/m²/km²/ha/acre) in the setting popup
 - ✅ **Custom actions** – Extend measurement tools with your own actions
 - ✅ **High precision** – Accurate calculations using Turf.js
-- ✅ **Export support** – Export results to GeoJSON, KML, CSV, and JSON
+- ✅ **Export support** – Download measurement geometry as GeoJSON (`buildMeasurementGeojsonDownload`)
 - ✅ **TypeScript support** – Full TypeScript typings
-- ✅ **Vue + React** – Same control id and core MapView on both adapters
+- ✅ **Vue + React** – Same control id; orchestration via Stable `createMeasurementSession`
 
 ## Usage
 
@@ -116,7 +116,7 @@ import '@hungpvq/react-map-dataset/style.css';
 - Modes: point, distance, area, azimuth, **angle** (3 points), and **radius** (toolbar action `radius` / `angle`).
 - Open the measurement setting popup to pick preferred distance/area units (`setMeasurementDistanceUnit` / `setMeasurementAreaUnit` on `@hungpvq/map-core/measurement`). `auto` keeps the previous m/km and m²/km² thresholds.
 - You can provide custom actions via the `actions` prop to extend the measurement workflow (e.g., export, add to layer).
-- Overlay source/layer bootstrap is Stable `createMeasurementMapView` — adapters only register images and toolbar UI. See [MeasurementControl](./module/MeasurementControl.md).
+- Orchestration is Stable **`createMeasurementSession`**; overlay source/layer bootstrap is **`createMeasurementMapView`**. Adapters register measure images, wire EventClick + toolbar/registry, and host the setting popup. See [MeasurementControl](./module/MeasurementControl.md).
 
 ## Links
 

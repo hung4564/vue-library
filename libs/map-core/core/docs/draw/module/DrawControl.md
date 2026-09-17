@@ -27,7 +27,20 @@ Prefer starting a session with `useMapDraw(mapId).start(config)` so CRUD and `dr
 
 - On unmount (Vue `onBeforeUnmount` / React effect cleanup), `DrawControl` calls `close()`: removes Mapbox Draw listeners/control and hides the toolbar.
 - Domain store cleanup on `removeMap` ends an open draw session (`config` cleared + `MAP_DRAW_EVENT.END`) via `getStore` — do not call `useMapDrawStore` from inside the cleanup callback (circular inference).
-- Shared draw modes / styles / create-mode effects live in `@hungpvq/map-draw` (`getDrawCreateModeEffects`, `getDrawStyles`, `isDraftOption`). React `DrawControl` splits UI into `DrawToolbar` / draft hooks; both adapters stay thin hosts over those helpers.
+- Shared draw modes / styles / create-mode effects live in `@hungpvq/map-draw` (`getDrawCreateModeEffects`, `getDrawStyles`, `isDraftOption`).
+
+### Thin host / `createDrawSession`
+
+Vue and React `useDrawEvents` wrap Experimental **`createDrawSession`** (`@hungpvq/map-draw`):
+
+| Host action | Session API |
+| --- | --- |
+| draw.create / update / delete + map-click select/delete | `getMapDrawHandlers` / `handleMapClick` / `selectMethod` / `startCreate` |
+| Toolbar **Save** (before store persist) | `prepareSave()` — select mode + clear `isDraw` / current feature |
+| Toolbar **Cancel** | `finishCancel(onCancel?)` — optional feature callback, select reset, then `redrawNonDraft()` once |
+| Non-draft redraw after delete/cancel | `redrawNonDraft()` (no-op when option is draft) |
+
+Hosts still own `MapDraw` construction, `save(...)` / draft list UI, and `cleanAfterDone` `deleteAll`.
 
 ## Vue
 

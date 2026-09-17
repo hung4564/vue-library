@@ -132,7 +132,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     [onZoomEnd, onMouseMove, onMapMove],
   );
 
-  const { callMap, mapId, moduleContainerProps } = useMap(
+  const { callMap, moduleContainerProps } = useMap(
     {
       ...mergedProps,
       controlId: 'mapMouseCoordinatesControl',

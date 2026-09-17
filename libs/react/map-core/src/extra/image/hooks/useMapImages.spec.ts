@@ -35,7 +35,6 @@ describe('useMapImages reload cleanup', () => {
       });
     subscribeMapStyleImages.mockReturnValue(() => undefined);
 
-    const React = await import('react');
     const { renderHook, act } = await import('@testing-library/react');
     const { useMapImages } = await import('./useMapImages');
 

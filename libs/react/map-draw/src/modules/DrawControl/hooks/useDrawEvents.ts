@@ -29,9 +29,6 @@ export function useDrawEvents(
 ) {
   const [isDraw, setIsDrawState] = useState(false);
   const [method, setMethodState] = useState('');
-  const [currentFeature, setCurrentFeatureState] = useState<
-    Feature | undefined
-  >();
 
   const drawOptionsRef = useRef(drawOptions);
   drawOptionsRef.current = drawOptions;
@@ -62,7 +59,6 @@ export function useDrawEvents(
       onStateChange: (s) => {
         setMethodState(s.method);
         setIsDrawState(s.isDraw);
-        setCurrentFeatureState(s.currentFeature);
       },
     });
   }
@@ -110,14 +106,9 @@ export function useDrawEvents(
       session.setIsDraw(value);
     },
     method,
-    setMethod: (value: string) => {
-      session.setMethod(value);
-    },
-    currentFeature,
     setCurrentFeature: (feature: Feature | undefined) => {
       session.setCurrentFeature(feature);
     },
-    addEventClick,
     removeEventClick,
     handlersRef,
     onSelectMethod,

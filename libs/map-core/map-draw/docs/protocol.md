@@ -78,6 +78,16 @@ Keep these ids identical across Vue and React.
 - `DrawService` — save collection + feature bookkeeping (framework-agnostic).
   - Selecting an existing feature for edit marks **`updated`** (not `added`), even if Mapbox fires `draw.create`.
 
+## Adapter orchestration (Experimental)
+
+`createDrawSession` owns draw.* handlers, map-click select/delete, and save/cancel prelude:
+
+- `prepareSave()` — reset to select + clear edit UI state before the host calls `save(...)`
+- `finishCancel(onCancel?)` — optional cancel callback with current feature, then select reset + `redrawNonDraft()` once
+- `draw-control-helpers` — pure helpers used by the session (`handleDrawMapClick`, mode effects, …)
+
+Vue/React `useDrawEvents` wraps the session; hosts keep `MapDraw` mount and draft chrome. See [DrawControl](./module/DrawControl.md).
+
 ## DrawingType
 
 Use `DrawingType` / `DrawingTypeName` / `DRAW_MODES` from **`@hungpvq/map-draw`** for `drawSupports` and `changeMode`.

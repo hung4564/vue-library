@@ -20,7 +20,6 @@ import { getMapMittStore } from '../../../store/mitt-store';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
-import type { MapEventStore } from '../store';
 
 export interface EventManagementControlProps extends WithMapPropType {
   show?: boolean;

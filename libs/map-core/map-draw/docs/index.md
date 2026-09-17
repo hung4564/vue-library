@@ -40,6 +40,7 @@ import '@hungpvq/react-map-draw/style.css';
 - Edit / save via `MapDrawOption` CRUD + optional `callback`
 - Draft list control id: `mapDrawDraftList`
 - Shared `DrawService`, styles, static mode in `@hungpvq/map-draw`
+- Experimental **`createDrawSession`** — draw.* / map-click orchestration + `prepareSave` / `finishCancel` / `redrawNonDraft` for Vue↔React thin hosts
 
 ## Vue — Basic Draw Control
 

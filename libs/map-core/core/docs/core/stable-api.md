@@ -74,7 +74,7 @@ Pure owners to copy (non-exhaustive):
 | Area | Core helper |
 |------|-------------|
 | Shell controls | root `controls/*` (`captureHomeView`, `goHome`, navigation / globe / goto / setting / mouse-coordinates / info) |
-| Identify session | `createIdentifySession` / `createIdentifyControlModel` (`@hungpvq/map-dataset/identify`) |
+| Identify session | `createIdentifySession` / `createIdentifyControlModel` (`@hungpvq/map-dataset/identify`) — session owns `runIdentifyMulti` + input modes; adapters are thin hosts |
 | Measurement | `createMeasurementSession` / `createMeasurementMapView*` (`./measurement`) |
 | Print advanced | `createPrintAdvancedSession` (`./print`) |
 | Toolbar / CRS | `createLiveToolbarStrategy` (`./toolbar`), `normalizeDisplayEpsgs` (`./crs`) |
@@ -230,7 +230,7 @@ Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`
 | Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` |
 | Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
 | Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
-| Experimental (adapters) | `createDrawSession`, `draw-control-helpers` (`handleDrawMapClick`, …), `logger` |
+| Experimental (`@hungpvq/map-draw`) | `createDrawSession` (`prepareSave` / `finishCancel` / `redrawNonDraft`, …), `draw-control-helpers` (`handleDrawMapClick`, …), `logger` |
 
 Inspect helpers (`brightColor`, `generateInspectStyle`, …) remain public; inventory tagged `in-use-first-party` via InspectControl.
 

@@ -50,10 +50,11 @@ export function classifyDrawCreateFeature(
  * Side effects for select/delete tool modes (pure description).
  * Adapters: detach map click → set method → apply these → attach click if needed.
  */
-export function getDrawModeSelectEffects(_value: 'select' | 'delete'): {
+export function getDrawModeSelectEffects(value: 'select' | 'delete'): {
   attachMapClick: boolean;
   drawMode: 'static';
 } {
+  void value; // select and delete share the same attach/static effects today
   return { attachMapClick: true, drawMode: 'static' };
 }
 
@@ -89,7 +90,7 @@ export function getFeatureEditMode(
   }
   return {
     mode: 'direct_select',
-    options: { featureId: featureIds[0]! },
+    options: { featureId: featureIds[0] ?? '' },
   };
 }
 

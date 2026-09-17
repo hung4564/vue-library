@@ -54,6 +54,8 @@ Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
 | `REGISTRY` | `registry` | Control registry scope |
 | `BASEMAP` | `basemap` | Basemap selection |
 
+Adapter domains may also use **string** scoped keys outside `MAP_STORE_KEY` (e.g. vue/react `map-draw` uses `'draw'` for session config). Prefer `MAP_STORE_KEY` when adding new core-owned stores; document any new string key in the owning package docs.
+
 ```ts
 import { MAP_STORE_KEY } from '@hungpvq/map-core';
 import { createMapScopedStore, getStore } from '@hungpvq/vue-map-core';

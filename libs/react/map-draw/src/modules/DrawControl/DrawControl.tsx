@@ -116,7 +116,6 @@ export function DrawControl(props: DrawControlProps) {
     isDraw,
     setIsDraw,
     method,
-    currentFeature,
     setCurrentFeature,
     removeEventClick,
     handlersRef,

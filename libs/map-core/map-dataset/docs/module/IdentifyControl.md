@@ -4,7 +4,7 @@ Click or box-select features. Presentation uses menus on the identify dataset no
 
 ## Architecture (thin host)
 
-Session state (show / loading / layer filter / origin / click vs bbox mode) is owned by Stable **`createIdentifyControlModel`** (`@hungpvq/map-dataset/identify`). Vue and React `IdentifyControl` sync UI from `model.getState()` after `applyScopedSession` / `toggleShow` / `close` / setters. Query execution stays in adapters via `runIdentifyMulti` + registry actions.
+Orchestration is owned by Experimental **`createIdentifySession`** (`@hungpvq/map-dataset/identify`): control model state, `runIdentifyMulti` query pipeline, and map-click / bbox mode flags. Vue and React `IdentifyControl` stay thin hosts — they wire EventClick / EventBbox, registry, highlight store, and toolbar UI, then sync from `session.getState()` after `applyScopedSession` / `toggleShow` / `closeAndCleanup` / setters.
 
 Identify painting uses the highlight controller with `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer highlight can double-fire on the same click — disable `pointer.click` on parts or skip `HighlightPointer` when Identify owns the click.
 

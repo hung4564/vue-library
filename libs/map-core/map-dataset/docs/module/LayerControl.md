@@ -33,6 +33,18 @@ Keyboard: `/` focuses the layer search input for **that** map (`[data-map-layer-
 
 Do **not** pass a ReactNode as React `title` — the switcher store coerces non-strings to `''` and blank menu labels appear.
 
+### Thin host / core helpers
+
+LayerControl stays a UI host. Shared orchestration lives in `@hungpvq/map-dataset`:
+
+| Helper | Role |
+| --- | --- |
+| `getLayerControlTitleMenuState(roots)` | Aggregate `location: 'title'` menus across dataset list views for `#after-title` / `afterTitle` |
+| `registerAddGeojsonHereForMap(mapId, addDataset)` | Register context-menu “Add GeoJSON here” + default items; returns unregister for unmount |
+| `syncListViewLayerOrder(map, views)` | Apply drag-reorder / index to MapLibre layers (used by `LayerList`) |
+
+Custom LayerControl forks should call `registerAddGeojsonHereForMap` on mount (and its cleanup on unmount) when the map also mounts [`MapContextMenuControl`](/map/core/module/MapContextMenuControl).
+
 ### Layer list types (custom UIs)
 
 Flat rows and drag trees use shared types from `@hungpvq/map-dataset` (not adapter-local aliases):

@@ -63,7 +63,6 @@ function useDrawDrafts(
     draftItems,
     draftCounts,
     showListDraftItem,
-    setShowListDraftItem,
     getCountDraftItem,
     onCommit,
     onDiscard,

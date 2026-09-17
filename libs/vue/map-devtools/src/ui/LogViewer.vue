@@ -128,10 +128,6 @@ const level = ref<LevelFilter>('all');
 const namespace = ref('all');
 const mapId = ref('all');
 
-function formatTime(ts: number) {
-  return new Date(ts).toLocaleTimeString();
-}
-
 function logMapId(log: LogEntry): string | null {
   if (log.namespaces.length > 0 && UUID_RE.test(log.namespaces[0])) {
     return log.namespaces[0];

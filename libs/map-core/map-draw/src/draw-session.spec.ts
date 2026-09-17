@@ -70,7 +70,7 @@ describe('createDrawSession', () => {
       features: [feature],
     } as never);
     expect(scheduled).toHaveLength(1);
-    scheduled[0]!();
+    scheduled[0]?.();
     expect(session.getState().method).toBe('select');
     session.destroy();
   });
@@ -146,7 +146,7 @@ describe('dual behavioral parity — draw delete/redraw', () => {
       ],
     } as never);
     expect(session.getState().method).toBe('delete');
-    scheduled[0]!();
+    scheduled[0]?.();
     expect(session.getState().method).toBe('select');
     session.destroy();
   });

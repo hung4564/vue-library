@@ -11,7 +11,6 @@ import {
   groupEventsByMapType,
   isEventActive,
   MittTypeMapEventEventKey,
-  type IEvent,
   type MapEventStore,
   type MittTypeMapEvent,
 } from '@hungpvq/map-core/event';

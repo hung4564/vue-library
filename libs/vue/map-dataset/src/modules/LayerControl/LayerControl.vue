@@ -35,13 +35,7 @@ import {
 } from '@hungpvq/vue-map-core';
 
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiDelete,
-  mdiDotsVertical,
-  mdiGroup,
-  mdiLayers,
-  mdiPlus,
-} from '@mdi/js';
+import { mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
@@ -88,9 +82,6 @@ warnIfDatasetRegistryMissing(
 
 const path = {
   icon: mdiLayers,
-  menu: mdiDotsVertical,
-  group: { create: mdiGroup },
-  deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
 const [show, setShow] = useShow(props.show);

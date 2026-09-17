@@ -265,10 +265,11 @@ The map library supports extensive customization through CSS variables. All vari
 
 ### Quick Start with Themes
 
-1.  **Import the base theme styles**:
+1.  **Import map-core styles** (theme tokens are included):
 
     ```typescript
-    import '@hungpvq/vue-map-core/src/styles/themes.css';
+    import '@hungpvq/map-core/style.css';
+    // + '@hungpvq/vue-map-core/style.css' or react equivalent
     ```
 
 2. **Apply a theme class** to `html` (recommended so teleported menus inherit tokens), or use ThemeControl:

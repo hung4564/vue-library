@@ -64,9 +64,6 @@ function useDrawEvents(
     onDrawCreated: handlers.onDrawCreated,
     onDrawUpdated: handlers.onDrawUpdated,
     onDrawDeleted: handlers.onDrawDeleted,
-    onMapClick: (e: Parameters<typeof session.handleMapClick>[0]) =>
-      session.handleMapClick(e),
-    addEventClick,
     removeEventClick,
     current_feature,
     isDraw,
@@ -77,7 +74,6 @@ function useDrawEvents(
     finishCancel: (onCancel?: (feature: Feature | undefined) => void) =>
       session.finishCancel(onCancel),
     redrawNonDraft: () => session.redrawNonDraft(),
-    destroy: () => session.destroy(),
   };
 }
 

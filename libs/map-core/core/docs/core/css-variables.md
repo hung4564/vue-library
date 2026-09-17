@@ -190,17 +190,26 @@ When `prefers-contrast: more` is active, `html` also gets `map-theme-contrast` (
 
 ## 🎨 Standard Themes Usage
 
-We provide pre-defined themes in `map/core/src/styles/themes.css`.
+Theme tokens ship in `@hungpvq/map-core` (`src/style/themes.css`, pulled in via package `style.css`). Prefer **`bootstrapMapTheme` / `ThemeControl`** over hand-importing the CSS file.
 
 ### How to use:
 
-1. **Import styles** in your entry file (e.g., `main.ts` or `App.vue`):
+1. **Import map-core styles** (includes theme tokens) in your entry file:
 
 ```typescript
-import '@hungpvq/vue-map-core/src/styles/themes.css';
+import '@hungpvq/map-core/style.css';
+// + framework adapter CSS as needed, e.g. '@hungpvq/vue-map-core/style.css'
 ```
 
-2. **Apply class** to a parent element (e.g., body or app wrapper):
+2. **Bootstrap or use ThemeControl** (process-global on `html` by default):
+
+```typescript
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
+
+bootstrapMapTheme('auto');
+```
+
+3. **Optional:** apply a class to a parent for a one-off chrome override (see [ThemeControl — per-map](./module/ThemeControl.md#optional-per-map-theme-override-advanced)):
 
 ```html
 <!-- Dark Theme -->

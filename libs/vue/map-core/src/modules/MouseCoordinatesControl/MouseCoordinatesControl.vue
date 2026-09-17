@@ -39,7 +39,7 @@ const currentPoint = ref('');
 const lngLat = ref({ latitude: 0, longitude: 0 });
 const currentZoom = ref(0);
 const isDMS = ref(false);
-const { callMap, mapId, moduleContainerProps } = useMap(
+const { callMap, moduleContainerProps } = useMap(
   {
     ...props,
     // Status chrome — never promote/hide under buttonInMobile toolbar|menu.

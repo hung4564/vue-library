@@ -18,7 +18,7 @@ npm install @hungpvq/vue-map-dataset @hungpvq/vue-map-core @hungpvq/map-dataset 
 Peer packages you also need (already used by typical map apps):
 
 ```bash
-npm install maplibre-gl @mdi/js @jamescoyle/vue-icon @hungpvq/vue-draggable @hungpvq/shared @hungpvq/shared-store
+npm install maplibre-gl @mdi/js @jamescoyle/vue-icon @hungpvq/vue-draggable @hungpvq/shared @hungpvq/shared-store @hungpvq/shared-log
 ```
 
 ### React
@@ -28,7 +28,7 @@ npm install @hungpvq/react-map-dataset @hungpvq/react-map-core @hungpvq/map-data
 ```
 
 ```bash
-npm install maplibre-gl @mdi/js @mdi/react @hungpvq/react-draggable @hungpvq/shared
+npm install maplibre-gl @mdi/js @mdi/react @hungpvq/react-draggable @hungpvq/shared @hungpvq/shared-store @hungpvq/shared-log
 ```
 
 Import styles once at the app root. Use the **full** set — shared cores **and** framework adapters **and** draggable. Omitting any line leaves map chrome, list/menus/tables, or panels unstyled.
