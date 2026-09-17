@@ -7,6 +7,7 @@ export {
   BaseCollapse,
   Collapse,
   DragDropFile,
+  InputActionRow,
   InputCheckbox,
   InputChoose,
   InputColorPicker,

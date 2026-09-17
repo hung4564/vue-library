@@ -100,6 +100,7 @@ export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'BaseCollapse',
   'Collapse',
   'DragDropFile',
+  'InputActionRow',
   'InputCheckbox',
   'InputChoose',
   'InputColorPicker',

@@ -236,8 +236,10 @@ export {
 export type { MapLongPressOptions } from './utils/map-long-press';
 
 export {
+  ACTION_FEEDBACK_MS,
   COPY_FEEDBACK_MS,
   copyText,
+  createActionFeedback,
   createCopyFeedback,
   downloadDataUrl,
   copyImageDataUrl,
@@ -246,7 +248,11 @@ export {
   formatLngLatBounds,
   formatProjectionName,
 } from './utils/map-info';
-export type { CopyFeedbackController } from './utils/map-info';
+export type {
+  ActionFeedbackController,
+  ActionFeedbackPhase,
+  CopyFeedbackController,
+} from './utils/map-info';
 
 export {
   formatNumber,

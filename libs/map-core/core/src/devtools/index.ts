@@ -8,7 +8,7 @@ export type {
   BufferingLogStore,
 } from './BufferingLogAdapter';
 export { DEVTOOLS_CONTROL } from './control';
-export { installDevtoolsCore } from './install-core';
+export { installDevtoolsCore, isMapDevtoolsInstalled } from './install-core';
 export {
   DEVTOOLS_MOBILE_BREAKPOINT,
   isDevtoolsMobileViewport,

@@ -111,23 +111,26 @@
             :label="trans('map.layer-control.create.sample')"
             @update:model-value="onSelectSample"
           />
-          <div class="create-control-url-row">
+          <InputActionRow>
             <InputText
               v-model="dataUrl"
               :label="trans('map.layer-control.field.url')"
               @update:model-value="onUrlInput"
             />
-            <MapControlButton
-              class="create-control-url-load"
-              :disabled="loadingUrl || !dataUrl.trim()"
-              @click="onLoadUrl" variant="tonal">
-              {{
-                loadingUrl
-                  ? trans('map.layer-control.create.loading-url')
-                  : trans('map.layer-control.create.load')
-              }}
-            </MapControlButton>
-          </div>
+            <template #action>
+              <MapControlButton
+                :disabled="loadingUrl || !dataUrl.trim()"
+                @click="onLoadUrl"
+                variant="tonal"
+              >
+                {{
+                  loadingUrl
+                    ? trans('map.layer-control.create.loading-url')
+                    : trans('map.layer-control.create.load')
+                }}
+              </MapControlButton>
+            </template>
+          </InputActionRow>
           <div v-if="urlError" class="create-control-sample-error">
             {{ urlError }}
           </div>
@@ -141,6 +144,7 @@
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
 import {
   DragDropFile,
+  InputActionRow,
   InputSelect,
   InputText,
   InputTextArea,

@@ -98,6 +98,16 @@ In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including datas
 - Variant/size SoT lives in `@hungpvq/map-core` `ui/map-button` (locked via dual parity tests).
 - **Text copy chrome:** always use Stable root `MapCopyButton` (wraps `MapControlButton` + core `createCopyFeedback`). Success feedback = icon `mdiContentCopy` → `mdiCheck` + title “Copied” for ~1.5s — **no toast**. Do not reimplement with ad-hoc `createCopyFeedback` + check icon in Vue/React map UI. Low-level `copyText` / `createCopyFeedback` stay on `@hungpvq/map-core` for menus / non-button copy. Docs: `css-variables.md` § MapCopyButton, `stable-api.md`.
 
+### Action-button feedback (Pin, Refresh, Run, save, …)
+
+Các nút có hành động thì phải đủ các trạng thái → loading → thành công sau vài giây thì quay về trạng thái bt.
+
+- **Phases:** `idle` → `loading` → `success` | `error` → `idle` after ~`ACTION_FEEDBACK_MS` (1.5s). **No toast.**
+- **SoT:** `createActionFeedback` from `@hungpvq/map-core` (+ `MapControlButton`). Wire label/icon/title/`disabled` from `phase` + `key`.
+- **Copy** stays on `MapCopyButton` / `createCopyFeedback` (idle → success only).
+- Sync work may use `succeed(key)` (skip loading) when there is nothing to await; async work must use `run(key, work)` so loading is visible.
+- Show success in the control itself (label “Pinned” / check icon / title) — same pattern as copy — not a separate banner.
+
 App/demos that mirror library UI should follow the same rule when building map chrome.
 
 ## Draggable header titles
@@ -162,6 +172,7 @@ Rules:
 - [ ] New React Vite apps that alias `libs/` exclude Fast Refresh on `libs/`
 - [ ] Experimental field names on `./fields`: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea`)
 - [ ] Every new/changed map UI button uses `MapControlButton` (never raw `<button>` / removed `BaseButton`); text-copy actions use `MapCopyButton`
+- [ ] Action buttons (Pin / Run / save / async) use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s); copy uses `MapCopyButton`
 - [ ] Run `nx test @hungpvq/map-core -- vue-react-parity.spec.ts` when adding dual controls or shared exports
 
 **Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable root + shared `/fields` Experimental allowlists + `MapControlButton` `variant`/`size` SoT in `@hungpvq/map-core` `ui/map-button`).

@@ -173,6 +173,7 @@ function runAction(menu: MenuAction, event: MouseEvent) {
     layer: props.data,
     mapId: props.mapId ?? '',
     value: props.value,
+    context: conditionCtx.value.context,
   });
 }
 

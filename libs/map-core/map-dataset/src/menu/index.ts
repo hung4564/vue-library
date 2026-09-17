@@ -31,7 +31,12 @@ export type {
   MenuItemClick,
   MenuItemProps,
 } from './types';
-export { getItemMenuHost, getResolvedMenus } from './dataset';
+export { getItemMenuHost, getLayerMenuHost, getResolvedMenus } from './dataset';
+export {
+  clearGlobalDatasetMenus,
+  getGlobalDatasetMenus,
+  registerGlobalDatasetMenus,
+} from './global-defaults';
 export {
   BuilderCommandHandler,
   DirectCommandHandler,

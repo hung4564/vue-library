@@ -4,7 +4,7 @@ import {
 } from './BufferingLogAdapter';
 import { errorHandler } from '../services/error-handler.service';
 
-export type DevtoolTab = 'store' | 'logs' | 'errors';
+export type DevtoolTab = 'store' | 'logs' | 'errors' | 'dataset';
 
 export interface DevtoolErrorRecord {
   code: string;

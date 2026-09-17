@@ -17,19 +17,22 @@
             :label="trans('map.layer-control.create.sample')"
             @update:model-value="onSelectSample"
           />
-          <div class="create-control-url-row">
+          <InputActionRow>
             <InputText
               v-model="dataUrl"
               :label="trans('map.layer-control.field.url')"
               @update:model-value="onUrlInput"
             />
-            <MapControlButton
-              class="create-control-url-load"
-              :disabled="loadingUrl || !dataUrl.trim()"
-              @click="onLoadUrl" variant="tonal">
-              {{ trans('map.layer-control.create.load') }}
-            </MapControlButton>
-          </div>
+            <template #action>
+              <MapControlButton
+                :disabled="loadingUrl || !dataUrl.trim()"
+                @click="onLoadUrl"
+                variant="tonal"
+              >
+                {{ trans('map.layer-control.create.load') }}
+              </MapControlButton>
+            </template>
+          </InputActionRow>
           <div v-if="loadingUrl" class="create-control-status">
             {{ trans('map.layer-control.create.loading-url') }}
           </div>
@@ -44,7 +47,7 @@
 
 <script setup>
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { InputActionRow, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import {
   applyCreateControlSample,
   applyCreateControlLayerName,

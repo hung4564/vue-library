@@ -21,7 +21,11 @@
           {
             "ignoredDependencies": [
               "@hungpvq/map-core",
-              "@hungpvq/vue-map-core"
+              "@hungpvq/map-debug",
+              "@hungpvq/vue-map-core",
+              "@hungpvq/map-dataset",
+              "@hungpvq/shared-log",
+              "@hungpvq/shared-store"
             ],
             "ignoredFiles": [
               "{projectRoot}/eslint.config.{js,cjs,mjs}",

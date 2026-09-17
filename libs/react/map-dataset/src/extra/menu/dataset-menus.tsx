@@ -105,6 +105,7 @@ export function DatasetMenus<T extends IDataset = IDataset>({
       layer: data,
       mapId: mapId ?? '',
       value,
+      context: conditionCtx.context,
     });
   }
 

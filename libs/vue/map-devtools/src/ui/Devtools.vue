@@ -4,10 +4,9 @@
 </template>
 
 <script setup lang="ts">
-import type { WithMapPropType } from '@hungpvq/map-core';
-import { computed } from 'vue';
-import type { DevtoolsMode } from '@hungpvq/map-core';
+import type { DevtoolsMode, WithMapPropType } from '@hungpvq/map-core';
 import type { WithShowProps } from '@hungpvq/vue-map-core';
+import { computed } from 'vue';
 import DevtoolsControl from './DevtoolsControl.vue';
 import DevtoolsOverlay from './DevtoolsOverlay.vue';
 
@@ -43,3 +42,7 @@ const controlBind = computed(() => ({
   show: props.show,
 }));
 </script>
+
+<style>
+@import '../style.css';
+</style>

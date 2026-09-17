@@ -1,13 +1,25 @@
 # Map Devtools
 
-Debug panel for map apps: **Store**, **Logs**, and **Errors**.
+Debug panel for map apps: **Store**, **Logs**, **Errors**, and **Dataset** (Inspect + Menus).
 
 | Package | Bootstrap | Panel |
 |---------|-----------|-------|
 | `@hungpvq/vue-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
 
-Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`.
+Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (`window.__hungpvqDatasetDebug`).
+
+## Dataset tab
+
+| Pane | Role |
+|------|------|
+| Roots | Pick / pin a dataset from the store tree |
+| Inspect | Node hierarchy, fields, find-by-type |
+| Menus | Resolved menus by placement + detail JSON |
+
+Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Selection is summary-based so anonymous items stay clickable. Shared layout/CSS is owned by `@hungpvq/map-debug` (SoT); Vue/React only host the UI.
+
+See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API and the Debug-dataset menu item.
 
 ## Display modes
 

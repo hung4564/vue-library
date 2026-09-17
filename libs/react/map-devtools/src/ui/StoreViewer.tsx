@@ -1,6 +1,5 @@
-import { GlobalStoreService } from '@hungpvq/shared-store';
+import { snapshotGlobalStore } from '@hungpvq/map-debug';
 import { MapControlButton } from '@hungpvq/react-map-core';
-
 import { useEffect, useState } from 'react';
 import { TreeItem } from './TreeItem';
 
@@ -8,7 +7,7 @@ export function StoreViewer() {
   const [storeState, setStoreState] = useState<Record<string, unknown>>({});
 
   const refresh = () => {
-    setStoreState({ ...GlobalStoreService.getInstance().getState() });
+    setStoreState(snapshotGlobalStore());
   };
 
   useEffect(() => {
@@ -19,12 +18,12 @@ export function StoreViewer() {
 
   return (
     <div className="store-viewer">
-      <div className="store-viewer__controls">
+      <div className="store-viewer__toolbar">
         <MapControlButton variant="text" size="small" onClick={refresh}>
           Refresh
         </MapControlButton>
       </div>
-      <div className="store-viewer__tree">
+      <div className="store-viewer__body">
         <TreeItem data={storeState} />
       </div>
     </div>

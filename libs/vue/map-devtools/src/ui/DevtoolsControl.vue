@@ -122,13 +122,3 @@ function onClose() {
     </template>
   </ModuleContainer>
 </template>
-
-<style scoped>
-.devtools-popup-body {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-</style>

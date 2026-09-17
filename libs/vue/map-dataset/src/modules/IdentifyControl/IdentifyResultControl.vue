@@ -212,6 +212,7 @@ function onMenuAction(
     layer: child.identify,
     mapId: mapId.value,
     value: child.data,
+    context: { control: MENU_CONTROL_ID.identify },
   });
 }
 

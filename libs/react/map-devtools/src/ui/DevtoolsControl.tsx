@@ -13,7 +13,6 @@ import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
 import { setDevtoolOpen, toggleDevtoolOpen } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 import { DevtoolsPanelBody } from './DevtoolsPanelBody';
-import './devtools.css';
 
 export type DevtoolsControlProps = WithMapPropType & {
   show?: boolean;
@@ -29,7 +28,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
     ...merged,
     controlId: DEVTOOLS_CONTROL.id,
   });
-  const { isOpen, activeTab, logs } = useDevtoolState();
+  const { isOpen, activeTab, logs, errors } = useDevtoolState();
 
   const setOpen = (value: boolean) => {
     setDevtoolOpen(value);
@@ -89,6 +88,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
             <DevtoolsPanelBody
               activeTab={activeTab}
               logCount={logs.length}
+              errorCount={errors.length}
             />
           </div>
         </DraggableItemPopup>

@@ -1,6 +1,6 @@
 # `@hungpvq/react-map-devtools`
 
-React debug panel for `@hungpvq/react-map-core` (store, logs, errors).
+React debug panel for `@hungpvq/react-map-core` (store, logs, errors, dataset inspect/menus).
 
 ## Install
 
@@ -8,7 +8,7 @@ React debug panel for `@hungpvq/react-map-core` (store, logs, errors).
 npm install @hungpvq/react-map-devtools
 ```
 
-Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+.
+Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+. Optional peer `@hungpvq/map-dataset` enables the Dataset tab via `@hungpvq/map-debug/dataset`.
 
 ## Styles
 
@@ -16,9 +16,11 @@ Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable
 import '@hungpvq/react-map-devtools/style.css';
 ```
 
+Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus layout included).
+
 ## Usage
 
-Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel and captures map errors). Mount `<Devtools />` where you want the panel:
+Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel, captures map errors, and installs the dataset debug bridge when available). Mount `<Devtools />` where you want the panel:
 
 ```tsx
 import { StrictMode } from 'react';
@@ -42,6 +44,10 @@ createRoot(document.getElementById('root')!).render(
 On mobile (≤640px), overlay mode uses `DraggableItemBottom` when a map drag container exists. Use `mode="control"` for a map corner button + `DraggableItemPopup`.
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
+
+## Dataset tab
+
+Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idGenerated`). Details: [map-debug README](../../map-core/map-debug/README.md).
 
 ## Stable API
 

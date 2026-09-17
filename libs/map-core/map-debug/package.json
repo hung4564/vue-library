@@ -1,0 +1,56 @@
+{
+  "name": "@hungpvq/map-debug",
+  "version": "1.0.0",
+  "author": {
+    "name": "hung.pv"
+  },
+  "bugs": "https://github.com/hung4564/vue-library/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hung4564/vue-library"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": [
+    "**/*.css",
+    "./dataset.js",
+    "./dataset.cjs"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    },
+    "./dataset": {
+      "types": "./dataset/index.d.ts",
+      "import": "./dataset.js",
+      "require": "./dataset.cjs"
+    },
+    "./style.css": {
+      "default": "./style.css"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@hungpvq/map-core": "^1.0.0",
+    "@hungpvq/shared-log": "^0.0.1",
+    "@hungpvq/shared-store": "^0.2.0"
+  },
+  "peerDependencies": {
+    "@hungpvq/map-dataset": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@hungpvq/map-dataset": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@hungpvq/map-dataset": "^1.0.0"
+  }
+}

@@ -1,36 +1,30 @@
-import { copyText } from '@hungpvq/map-core';
-import { MapControlButton } from '@hungpvq/react-map-core';
+import {
+  collectErrorMapIds,
+  errorMapId,
+  filterErrorsByMapId,
+  formatDevtoolErrorForCopy,
+  formatErrorTime,
+  shortErrorMapId,
+} from '@hungpvq/map-debug';
+import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
+import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { useEffect, useMemo, useState } from 'react';
 import { clearDevtoolErrors } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
-
-type DevtoolError = ReturnType<typeof useDevtoolState>['errors'][number];
-
-function formatTime(timestamp: number) {
-  return new Date(timestamp).toLocaleTimeString();
-}
-
-function errorMapId(error: DevtoolError): string | null {
-  const id = (error.context as { mapId?: string } | undefined)?.mapId;
-  return id ? String(id) : null;
-}
-
-function shortMapId(id: string) {
-  return id.length > 13 ? `${id.slice(0, 8)}…` : id;
-}
 
 export function ErrorViewer() {
   const { errors } = useDevtoolState();
   const [selectedMapId, setSelectedMapId] = useState('all');
 
-  const mapIds = useMemo(() => {
-    const set = new Set<string>();
-    for (const error of errors) {
-      const id = errorMapId(error);
-      if (id) set.add(id);
-    }
-    return [...set].sort();
-  }, [errors]);
+  const mapIds = useMemo(() => collectErrorMapIds(errors), [errors]);
+
+  const mapFilterItems = useMemo(
+    () => [
+      { value: 'all', text: 'All maps' },
+      ...mapIds.map((id) => ({ value: id, text: shortErrorMapId(id) })),
+    ],
+    [mapIds],
+  );
 
   useEffect(() => {
     if (selectedMapId !== 'all' && !mapIds.includes(selectedMapId)) {
@@ -38,30 +32,25 @@ export function ErrorViewer() {
     }
   }, [mapIds, selectedMapId]);
 
-  const filteredErrors = useMemo(() => {
-    if (mapIds.length <= 1 || selectedMapId === 'all') return errors;
-    return errors.filter((error) => errorMapId(error) === selectedMapId);
-  }, [errors, mapIds.length, selectedMapId]);
+  const filteredErrors = useMemo(
+    () => filterErrorsByMapId(errors, selectedMapId, mapIds.length),
+    [errors, mapIds.length, selectedMapId],
+  );
 
   return (
     <div className="error-viewer">
-      <div className="error-viewer__header">
-        <h3>Errors ({filteredErrors.length})</h3>
-        <div className="error-viewer__header-actions">
+      <div className="error-viewer__toolbar">
+        <span className="error-viewer__count">
+          Errors {filteredErrors.length}
+        </span>
+        <div className="error-viewer__actions">
           {mapIds.length > 1 ? (
-            <select
-              className="error-viewer__mapid-select"
+            <InputSelect
               aria-label="Filter by mapId"
               value={selectedMapId}
-              onChange={(e) => setSelectedMapId(e.target.value)}
-            >
-              <option value="all">All maps</option>
-              {mapIds.map((id) => (
-                <option key={id} value={id}>
-                  {shortMapId(id)}
-                </option>
-              ))}
-            </select>
+              items={mapFilterItems}
+              onChange={(value) => setSelectedMapId(String(value))}
+            />
           ) : null}
           <MapControlButton
             variant="text"
@@ -72,7 +61,7 @@ export function ErrorViewer() {
           </MapControlButton>
         </div>
       </div>
-      <div className="error-viewer__list">
+      <div className="error-viewer__body">
         {filteredErrors.map((error, index) => (
           <div
             key={`${error.timestamp}-${index}`}
@@ -81,7 +70,7 @@ export function ErrorViewer() {
             <div className="error-viewer__item-header">
               <span className="error-viewer__code">{error.code}</span>
               <span className="error-viewer__time">
-                {formatTime(error.timestamp)}
+                {formatErrorTime(error.timestamp)}
               </span>
             </div>
             <div className="error-viewer__message">{error.message}</div>
@@ -91,23 +80,10 @@ export function ErrorViewer() {
               </div>
             ) : null}
             <div className="error-viewer__actions">
-              <MapControlButton
-                variant="text"
-                size="small"
-                onClick={() => {
-                  const text = [
-                    error.code,
-                    error.message,
-                    error.stack,
-                    error.context ? JSON.stringify(error.context, null, 2) : '',
-                  ]
-                    .filter(Boolean)
-                    .join('\n\n');
-                  void copyText(text);
-                }}
-              >
-                Copy stack
-              </MapControlButton>
+              <MapCopyButton
+                title="Copy stack"
+                value={formatDevtoolErrorForCopy(error)}
+              />
             </div>
             {error.context ? (
               <details className="error-viewer__details">

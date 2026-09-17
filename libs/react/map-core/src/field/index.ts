@@ -23,6 +23,8 @@ export { InputFile } from './input-file';
 export type { InputFileProps } from './input-file';
 export { InputSelect } from './input-select';
 export type { InputSelectProps, SelectItem } from './input-select';
+export { InputActionRow } from './input-action-row';
+export type { InputActionRowProps } from './input-action-row';
 export { InputSlider } from './input-slider';
 export type { InputSliderProps } from './input-slider';
 export { InputText } from './input-text';

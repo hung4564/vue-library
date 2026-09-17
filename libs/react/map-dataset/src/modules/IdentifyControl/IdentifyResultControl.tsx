@@ -186,6 +186,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
       layer: child.identify,
       mapId,
       value: child.data,
+      context: { control: MENU_CONTROL_ID.identify },
     });
   }
 

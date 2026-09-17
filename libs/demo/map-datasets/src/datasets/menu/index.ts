@@ -232,6 +232,7 @@ export function createSharedDatasetMenuDataset() {
  * Demo `byControl`: Fill bound / Fly to → `title` on LayerDetail; Detail / Info / custom
  * "List only" hidden there; custom Favorite stays `extra` on list / identify, `title` on detail.
  * Try: Identify → ⋮ Detail (or Info on layer) → check header after-title actions.
+ * (Debug dataset menu is global via `installDevtools` / `installDatasetDebug`.)
  */
 export function createByControlPlacementDataset() {
   const name = 'byControl · LayerDetail title';

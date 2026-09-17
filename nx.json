@@ -157,6 +157,7 @@
         "projects": [
           "@hungpvq/map-core",
           "@hungpvq/map-dataset",
+          "@hungpvq/map-debug",
           "@hungpvq/map-draw",
           "@hungpvq/vue-map-core",
           "@hungpvq/vue-map-dataset",
@@ -198,6 +199,7 @@
           "!tag:map",
           "!@hungpvq/map-core",
           "!@hungpvq/map-dataset",
+          "!@hungpvq/map-debug",
           "!@hungpvq/map-draw",
           "!@hungpvq/vue-map-core",
           "!@hungpvq/vue-map-dataset",

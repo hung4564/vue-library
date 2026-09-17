@@ -1,31 +1,16 @@
 <script setup lang="ts">
-import { copyText } from '@hungpvq/map-core';
+import { formatDevtoolsLogEntryForCopy } from '@hungpvq/map-core/devtools';
 import {
-  formatDevtoolsLogEntryForCopy,
-  type BufferingLogEntry as LogEntry,
-} from '@hungpvq/map-core/devtools';
-import { MapControlButton } from '@hungpvq/vue-map-core';
+  formatLogTime,
+  levelLetter,
+  namespaceParts,
+  objectArgs,
+  textMessage,
+  type StructuredItem,
+} from '@hungpvq/map-debug';
+import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
 import GroupItem from './GroupItem.vue';
 import TreeItem from './TreeItem.vue';
-
-export type StructuredGroup = {
-  id: string;
-  type: 'group';
-  title: string;
-  collapsed: boolean;
-  children: StructuredItem[];
-};
-
-export type StructuredLog = {
-  id: string;
-  type: 'log';
-  log: LogEntry;
-};
-
-export type StructuredItem = StructuredGroup | StructuredLog;
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 defineProps<{
   item: StructuredItem;
@@ -36,48 +21,7 @@ const emit = defineEmits<{
 }>();
 
 function formatTime(ts: number) {
-  return new Date(ts).toLocaleTimeString();
-}
-
-function isObject(val: unknown) {
-  return val !== null && typeof val === 'object';
-}
-
-function formatArg(arg: unknown) {
-  if (typeof arg === 'string') return arg;
-  try {
-    return JSON.stringify(arg);
-  } catch {
-    return String(arg);
-  }
-}
-
-function namespaceParts(namespaces: string[]) {
-  if (namespaces.length > 1 && UUID_RE.test(namespaces[0])) {
-    return {
-      full: namespaces.join(':'),
-      path: namespaces.slice(1).join(':'),
-      mapId: namespaces[0],
-    };
-  }
-  return {
-    full: namespaces.join(':'),
-    path: namespaces.join(':'),
-    mapId: null as string | null,
-  };
-}
-
-function levelLetter(level: string) {
-  return (level || '?').charAt(0).toUpperCase();
-}
-
-function textMessage(log: LogEntry) {
-  const parts = log.args.filter((arg) => !isObject(arg)).map(formatArg);
-  return parts.join(' ');
-}
-
-function objectArgs(log: LogEntry) {
-  return log.args.filter(isObject);
+  return formatLogTime(ts);
 }
 </script>
 
@@ -112,24 +56,22 @@ function objectArgs(log: LogEntry) {
         <span v-if="textMessage(item.log)" class="log-entry__msg">{{
           textMessage(item.log)
         }}</span>
-        <button
+        <MapControlButton
           v-if="namespaceParts(item.log.namespaces).path"
-          type="button"
+          variant="text"
+          size="small"
           class="log-entry__ns"
           :title="namespaceParts(item.log.namespaces).full"
           @click="emit('namespace-click', namespaceParts(item.log.namespaces).full)"
         >
           {{ namespaceParts(item.log.namespaces).path }}
-        </button>
+        </MapControlButton>
       </div>
-      <MapControlButton
-        variant="text"
-        size="small"
+      <MapCopyButton
         class="log-entry__copy"
-        @click="copyText(formatDevtoolsLogEntryForCopy(item.log))"
-      >
-        Copy
-      </MapControlButton>
+        title="Copy log"
+        :value="formatDevtoolsLogEntryForCopy(item.log)"
+      />
     </div>
     <div
       v-if="objectArgs(item.log).length"
@@ -145,103 +87,3 @@ function objectArgs(log: LogEntry) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.log-entry {
-  padding: 2px 4px 4px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.log-entry:hover {
-  background: #fafafa;
-}
-
-.log-entry__row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.log-entry__time {
-  flex: 0 0 auto;
-  color: #9aa0a6;
-  font-variant-numeric: tabular-nums;
-}
-
-.log-entry__level {
-  flex: 0 0 0.9em;
-  font-weight: 700;
-  color: #5f6368;
-}
-
-.log-entry--error .log-entry__level {
-  color: #c62828;
-}
-
-.log-entry--warn .log-entry__level {
-  color: #ef6c00;
-}
-
-.log-entry--info .log-entry__level {
-  color: #1565c0;
-}
-
-.log-entry--debug .log-entry__level {
-  color: #9aa0a6;
-}
-
-.log-entry__content {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  align-items: baseline;
-}
-
-.log-entry__msg {
-  color: #202124;
-  word-break: break-word;
-}
-
-.log-entry__ns {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  background: none;
-  color: #80868b;
-  font: inherit;
-  font-size: 11px;
-  cursor: pointer;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.log-entry__ns:hover {
-  color: #1565c0;
-  text-decoration: underline;
-}
-
-.log-entry__copy {
-  flex: 0 0 auto;
-  opacity: 0;
-}
-
-.log-entry:hover .log-entry__copy,
-.log-entry:focus-within .log-entry__copy {
-  opacity: 1;
-}
-
-.log-entry__objects {
-  margin: 2px 0 0 4.6em;
-}
-
-.log-entry__object {
-  margin-top: 2px;
-}
-</style>

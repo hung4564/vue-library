@@ -309,6 +309,7 @@ export function AttributeTable(props: AttributeTableProps) {
         layer: itemMenuHost,
         mapId,
         value: convertFeatureToItem(row.feature),
+        context: { control: MENU_CONTROL_ID.attributeTable },
       });
     },
     onExport: menuMode

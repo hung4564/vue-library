@@ -1,12 +1,14 @@
 import { MapControlButton } from '@hungpvq/react-map-core';
 import type { DevtoolTab } from '../store';
 import { setDevtoolActiveTab } from '../store';
+import { DatasetMenuViewer } from './DatasetMenuViewer';
 import { ErrorViewer } from './ErrorViewer';
 import { LogViewer } from './LogViewer';
 import { StoreViewer } from './StoreViewer';
 
 const TABS: { id: DevtoolTab; label: string }[] = [
   { id: 'store', label: 'Store' },
+  { id: 'dataset', label: 'Dataset' },
   { id: 'logs', label: 'Logs' },
   { id: 'errors', label: 'Errors' },
 ];
@@ -14,11 +16,13 @@ const TABS: { id: DevtoolTab; label: string }[] = [
 export function DevtoolsPanelBody({
   activeTab,
   logCount,
+  errorCount,
   showClose,
   onClose,
 }: {
   activeTab: DevtoolTab;
   logCount: number;
+  errorCount: number;
   showClose?: boolean;
   onClose?: () => void;
 }) {
@@ -34,7 +38,11 @@ export function DevtoolsPanelBody({
               active={activeTab === tab.id}
               onClick={() => setDevtoolActiveTab(tab.id)}
             >
-              {tab.id === 'logs' ? `Logs (${logCount})` : tab.label}
+              {tab.id === 'logs'
+                ? `Logs (${logCount})`
+                : tab.id === 'errors'
+                  ? `Errors (${errorCount})`
+                  : tab.label}
             </MapControlButton>
           ))}
         </div>
@@ -50,9 +58,27 @@ export function DevtoolsPanelBody({
         ) : null}
       </div>
       <div className="devtools-content">
-        {activeTab === 'store' ? <StoreViewer /> : null}
-        {activeTab === 'logs' ? <LogViewer /> : null}
-        {activeTab === 'errors' ? <ErrorViewer /> : null}
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'store'}
+        >
+          <StoreViewer />
+        </div>
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'dataset'}
+        >
+          <DatasetMenuViewer />
+        </div>
+        <div className="devtools-content__pane" hidden={activeTab !== 'logs'}>
+          <LogViewer />
+        </div>
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'errors'}
+        >
+          <ErrorViewer />
+        </div>
       </div>
     </>
   );

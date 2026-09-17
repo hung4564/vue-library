@@ -108,6 +108,15 @@
       "@hungpvq/map-dataset/vector-tile": [
         "./libs/map-core/map-dataset/src/vector-tile/index.ts"
       ],
+      "@hungpvq/map-debug": [
+        "./libs/map-core/map-debug/src/index.ts"
+      ],
+      "@hungpvq/map-debug/dataset": [
+        "./libs/map-core/map-debug/src/dataset/index.ts"
+      ],
+      "@hungpvq/map-debug/style.css": [
+        "./libs/map-core/map-debug/src/style.css"
+      ],
       "@hungpvq/map-draw": [
         "./libs/map-core/map-draw/src/index.ts"
       ],

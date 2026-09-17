@@ -29,7 +29,7 @@ import {
   type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { GEOJSON_STYLE_AUTO, terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
-import { DragDropFile, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core/fields';
+import { DragDropFile, InputActionRow, InputCrs, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core/fields';
 import type { GeoJSON } from 'geojson';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DataSourceTabs } from './DataSourceTabs';
@@ -450,22 +450,25 @@ export function ConfigGeojsonDataSource({ config, onChange, trans }: ConfigFormP
                   items={sampleItems}
                   onChange={(v) => onSelectSample(String(v))}
                 />
-                <div className="create-control-url-row">
+                <InputActionRow
+                  action={
+                    <MapControlButton
+                      variant="tonal"
+                      disabled={loadingUrl || !dataUrl.trim()}
+                      onClick={() => void onLoadUrl()}
+                    >
+                      {loadingUrl
+                        ? trans('map.layer-control.create.loading-url')
+                        : trans('map.layer-control.create.load')}
+                    </MapControlButton>
+                  }
+                >
                   <InputText
                     label={trans('map.layer-control.field.url')}
                     value={dataUrl}
                     onChange={(v) => onUrlInput(v)}
                   />
-                  <MapControlButton variant="tonal"
-                    className="create-control-url-load"
-                    disabled={loadingUrl || !dataUrl.trim()}
-                    onClick={() => void onLoadUrl()}
-                  >
-                    {loadingUrl
-                      ? trans('map.layer-control.create.loading-url')
-                      : trans('map.layer-control.create.load')}
-                  </MapControlButton>
-                </div>
+                </InputActionRow>
                 {urlError ? (
                   <div className="create-control-sample-error">{urlError}</div>
                 ) : null}
@@ -614,22 +617,25 @@ export function ConfigRasterDataSource({ config, onChange, trans }: ConfigFormPr
                   items={sampleItems}
                   onChange={(v) => onSelectSample(String(v))}
                 />
-                <div className="create-control-url-row">
+                <InputActionRow
+                  action={
+                    <MapControlButton
+                      variant="tonal"
+                      disabled={loadingUrl || !dataUrl.trim()}
+                      onClick={() => void onLoadUrl()}
+                    >
+                      {loadingUrl
+                        ? trans('map.layer-control.create.loading-url')
+                        : trans('map.layer-control.create.load')}
+                    </MapControlButton>
+                  }
+                >
                   <InputText
                     label={trans('map.layer-control.field.url')}
                     value={dataUrl}
                     onChange={(v) => onUrlInput(v)}
                   />
-                  <MapControlButton variant="tonal"
-                    className="create-control-url-load"
-                    disabled={loadingUrl || !dataUrl.trim()}
-                    onClick={() => void onLoadUrl()}
-                  >
-                    {loadingUrl
-                      ? trans('map.layer-control.create.loading-url')
-                      : trans('map.layer-control.create.load')}
-                  </MapControlButton>
-                </div>
+                </InputActionRow>
                 {urlError ? (
                   <div className="create-control-sample-error">{urlError}</div>
                 ) : null}

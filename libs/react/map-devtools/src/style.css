@@ -1,2 +1,3 @@
-/* Bundled entry for `@hungpvq/react-map-devtools/style.css` */
-@import './ui/devtools.css';
+/* Bundled entry for `@hungpvq/react-map-devtools/style.css`. */
+/* bump: inspect layout grid-areas 2026-09-17 */
+@import '../../../map-core/map-debug/src/style.css';

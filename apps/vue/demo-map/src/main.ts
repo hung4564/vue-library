@@ -6,6 +6,7 @@ import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
 import '@hungpvq/vue-map-draw/style.css';
 import '@hungpvq/vue-draggable/style.css';
+import '@hungpvq/vue-map-devtools/style.css';
 
 import router from './router';
 

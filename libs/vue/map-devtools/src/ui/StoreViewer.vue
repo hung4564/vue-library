@@ -1,28 +1,26 @@
 <template>
   <div class="store-viewer">
-    <div class="store-controls">
+    <div class="store-viewer__toolbar">
       <MapControlButton variant="text" size="small" @click="refresh">
         Refresh
       </MapControlButton>
     </div>
-    <div class="json-tree">
+    <div class="store-viewer__body">
       <TreeItem :data="storeState" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { GlobalStoreService } from '@hungpvq/shared-store';
+import { snapshotGlobalStore } from '@hungpvq/map-debug';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-
 import { onMounted, onUnmounted, shallowRef } from 'vue';
 import TreeItem from './TreeItem.vue';
-// Use shallowRef to avoid deep reactivity overhead for the snapshot
+
 const storeState = shallowRef({});
 
 const refresh = () => {
-  // Get a snapshot of the store
-  storeState.value = { ...GlobalStoreService.getInstance().getState() };
+  storeState.value = snapshotGlobalStore();
 };
 
 let pollTimer: ReturnType<typeof setInterval> | undefined;
@@ -39,20 +37,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style scoped>
-.store-viewer {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.store-controls {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
-.json-tree {
-  flex: 1;
-  overflow: auto;
-  padding: 8px;
-}
-</style>

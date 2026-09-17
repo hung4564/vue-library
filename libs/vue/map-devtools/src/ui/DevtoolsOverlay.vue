@@ -1,83 +1,94 @@
 <template>
-  <div class="devtools-container">
+  <div
+    ref="shellRef"
+    class="devtools-container"
+    :class="{
+      'devtools-container--mobile': isMobile,
+      'devtools-container--open': state.isOpen,
+      'devtools-container--dragging': dragging,
+      'devtools-container--moved': !!pos,
+    }"
+    :style="shellStyle"
+  >
     <MapControlButton
       v-if="!state.isOpen"
       class="devtools-toggle"
       variant="icon"
       :size="48"
-      title="Map Devtools"
+      title="Map Devtools — drag to move"
       aria-label="Map Devtools"
-      @click="open"
+      @pointerdown="onShellPointerDown"
+      @click="onToggleClick"
     >
       <SvgIcon :size="22" type="mdi" :path="mdiTools" />
     </MapControlButton>
 
-    <template v-if="state.isOpen && !isMobile">
-      <div class="devtools-panel">
-        <DevtoolsPanelBody show-close @close="close" />
-      </div>
-    </template>
-
-    <DraggableItemBottom
-      v-if="state.isOpen && isMobile && resolvedContainerId"
-      :id="bottomItemId"
-      :show="state.isOpen"
-      :container-id="resolvedContainerId"
-      title="Map Devtools"
-      @update:show="onBottomShow"
-    >
-      <div class="devtools-bottom-body">
-        <DevtoolsPanelBody />
-      </div>
-    </DraggableItemBottom>
-
     <div
-      v-else-if="state.isOpen && isMobile"
-      class="devtools-panel devtools-panel--sheet"
+      v-else
+      class="devtools-panel"
+      :class="{ 'devtools-panel--mobile': isMobile }"
     >
-      <DevtoolsPanelBody show-close @close="close" />
+      <div
+        class="devtools-drag-bar"
+        title="Drag to move"
+        @pointerdown="onShellPointerDown"
+      >
+        <span class="devtools-drag-bar__label">Map Devtools</span>
+        <span class="devtools-drag-bar__actions">
+          <span class="devtools-drag-bar__hint" aria-hidden="true">⠿</span>
+          <MapControlButton
+            class="devtools-drag-bar__close"
+            variant="icon"
+            size="small"
+            title="Close"
+            aria-label="Close Map Devtools"
+            @pointerdown.stop
+            @click.stop="close"
+          >
+            <SvgIcon :size="16" type="mdi" :path="mdiClose" />
+          </MapControlButton>
+        </span>
+      </div>
+      <DevtoolsPanelBody />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import { DraggableItemBottom } from '@hungpvq/vue-draggable';
+import {
+  beginPanelDrag,
+  panelPosStyle,
+  type PanelPos,
+} from '@hungpvq/map-debug';
+import { isDevtoolsMobileViewport } from '@hungpvq/map-core/devtools';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiTools } from '@mdi/js';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { mdiClose, mdiTools } from '@mdi/js';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { setDevtoolOpen } from '../store';
 import { devtoolState } from '../store';
 import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
-import {
-  isDevtoolsMobileViewport,
-  resolveMapDragContainerId,
-} from '@hungpvq/map-core/devtools';
 
-const props = defineProps<{
+defineProps<{
   containerId?: string;
-  /** When `containerId` is omitted, resolves `map-draggable-${mapId}`. */
   mapId?: string;
 }>();
 
 const state = devtoolState;
 const isMobile = ref(isDevtoolsMobileViewport());
-const resolvedContainerId = ref<string | null>(null);
-const bottomItemId = 'map-devtools-bottom';
+const shellRef = ref<HTMLElement | null>(null);
+const pos = ref<PanelPos | null>(null);
+const dragging = ref(false);
+let dragMoved = false;
+let disposeDrag: (() => void) | undefined;
 
-function refreshContainerId() {
-  resolvedContainerId.value = resolveMapDragContainerId(
-    props.containerId,
-    props.mapId,
-  );
-}
+const shellStyle = computed(() => panelPosStyle(pos.value));
 
 function refreshMobile() {
   isMobile.value = isDevtoolsMobileViewport();
 }
 
 function open() {
-  refreshContainerId();
   setDevtoolOpen(true);
 }
 
@@ -85,117 +96,41 @@ function close() {
   setDevtoolOpen(false);
 }
 
-function onBottomShow(value: boolean) {
-  if (value) refreshContainerId();
-  setDevtoolOpen(value);
+function onShellPointerDown(e: PointerEvent) {
+  if (!shellRef.value) return;
+  dragMoved = false;
+  disposeDrag?.();
+  disposeDrag = beginPanelDrag(shellRef.value, e, {
+    onMove: (next) => {
+      pos.value = next;
+    },
+    onDraggingChange: (v) => {
+      dragging.value = v;
+    },
+    onEnd: (moved) => {
+      dragMoved = moved;
+      disposeDrag = undefined;
+    },
+  });
 }
 
-watch(
-  () => [props.containerId, props.mapId] as const,
-  () => {
-    if (state.isOpen) refreshContainerId();
-  },
-);
-
-watch(
-  () => state.isOpen,
-  (openNow) => {
-    if (openNow) refreshContainerId();
-  },
-);
+function onToggleClick(e: MouseEvent) {
+  if (dragMoved) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragMoved = false;
+    return;
+  }
+  open();
+}
 
 onMounted(() => {
   refreshMobile();
-  refreshContainerId();
   window.addEventListener('resize', refreshMobile);
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', refreshMobile);
+  disposeDrag?.();
 });
 </script>
-
-<style scoped>
-.devtools-container {
-  position: fixed;
-  bottom: 45px;
-  right: 50px;
-  z-index: 9999;
-  font-family: var(--map-font-family, system-ui, sans-serif);
-}
-
-.devtools-container :deep(.devtools-toggle) {
-  --map-button-bg: var(--map-surface-color, #ffffff);
-  color: var(--map-primary-color, #004e98);
-  border: 1px solid
-    color-mix(in srgb, var(--map-border-color, #ccc) 70%, transparent);
-  box-shadow:
-    0 2px 6px rgba(15, 23, 42, 0.08),
-    0 8px 20px rgba(15, 23, 42, 0.1);
-  transition:
-    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.18s ease,
-    background-color 0.18s ease;
-}
-
-.devtools-container :deep(.devtools-toggle:hover:not(:disabled)) {
-  color: var(--map-on-primary-color, #fff);
-  background-color: var(--map-primary-color, #004e98);
-  border-color: transparent;
-  transform: translateY(-2px);
-  box-shadow:
-    0 4px 10px rgba(15, 23, 42, 0.12),
-    0 12px 28px rgba(0, 78, 152, 0.28);
-}
-
-.devtools-container :deep(.devtools-toggle:active:not(:disabled)) {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
-}
-
-.devtools-panel {
-  position: fixed;
-  bottom: 45px;
-  right: 50px;
-  width: min(600px, calc(100vw - 32px));
-  height: min(400px, calc(100vh - 96px));
-  background-color: var(--map-surface-color, #ffffff);
-  border: 1px solid
-    color-mix(in srgb, var(--map-border-color, #ccc) 80%, transparent);
-  border-radius: 12px;
-  box-shadow:
-    0 8px 24px rgba(15, 23, 42, 0.12),
-    0 2px 6px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  color: var(--map-text-primary, #333);
-}
-
-.devtools-panel--sheet {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 85vh;
-  max-height: 85vh;
-  border-radius: 12px 12px 0 0;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.devtools-bottom-body {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-@media (max-width: 640px) {
-  .devtools-container {
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    right: calc(16px + env(safe-area-inset-right, 0px));
-  }
-}
-</style>

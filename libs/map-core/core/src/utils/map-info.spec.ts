@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   EMPTY_MAP_VIEW_INFO,
+  createActionFeedback,
   formatCoordPair,
   formatDegree,
   formatLngLatBounds,
@@ -37,5 +38,36 @@ describe('map-info formatters', () => {
     expect(info.projection).toBe('Mercator');
     expect(info.bounds).toContain('1.0000');
     expect(EMPTY_MAP_VIEW_INFO.center).toBe('');
+  });
+});
+
+describe('createActionFeedback', () => {
+  it('runs loading → success → idle', async () => {
+    vi.useFakeTimers();
+    const phases: string[] = [];
+    const fb = createActionFeedback({
+      durationMs: 100,
+      onChange: (phase, key) => phases.push(`${phase}:${key ?? ''}`),
+    });
+    const result = await fb.run('pin', () => 'ok');
+    expect(result).toBe('ok');
+    expect(fb.getPhase()).toBe('success');
+    expect(fb.getKey()).toBe('pin');
+    vi.advanceTimersByTime(100);
+    expect(fb.getPhase()).toBe('idle');
+    expect(phases).toEqual(['loading:pin', 'success:pin', 'idle:']);
+    fb.dispose();
+    vi.useRealTimers();
+  });
+
+  it('succeed() skips loading', () => {
+    vi.useFakeTimers();
+    const fb = createActionFeedback({ durationMs: 50 });
+    fb.succeed('dataset');
+    expect(fb.getPhase()).toBe('success');
+    vi.advanceTimersByTime(50);
+    expect(fb.getPhase()).toBe('idle');
+    fb.dispose();
+    vi.useRealTimers();
   });
 });

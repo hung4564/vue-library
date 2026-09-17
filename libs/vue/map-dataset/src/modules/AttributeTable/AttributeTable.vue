@@ -269,6 +269,7 @@ const viewProps = computed((): AttributeTableViewProps => {
         layer: itemMenuHost.value,
         mapId: mapId.value,
         value: convertFeatureToItem(row.feature),
+        context: { control: MENU_CONTROL_ID.attributeTable },
       });
     },
     onExport: menuMode

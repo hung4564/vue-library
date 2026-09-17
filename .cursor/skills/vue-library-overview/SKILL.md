@@ -15,7 +15,7 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 
 | Area | Paths | npm scope examples |
 |------|-------|-------------------|
-| Map engine | `libs/map-core/core`, `map-dataset`, `map-draw` | `@hungpvq/map-core`, `map-dataset`, `map-draw` |
+| Map engine | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug` | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
 | Vue map | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/vue-map-*` |
 | React map | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/react-map-*` |
 | Draggable | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
@@ -39,7 +39,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
 
-**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use Stable `MapCopyButton` (icon feedback, no toast).
+**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use Stable `MapCopyButton` (icon feedback, no toast). Other action buttons (Pin, Run, async) must use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s).
 
 ## Logging (`@hungpvq/shared-log`)
 

@@ -1,8 +1,7 @@
-import type { WithMapPropType } from '@hungpvq/map-core';
-import type { DevtoolsMode } from '@hungpvq/map-core';
+import type { DevtoolsMode, WithMapPropType } from '@hungpvq/map-core';
+import '../style.css';
 import { DevtoolsControl, type DevtoolsControlProps } from './DevtoolsControl';
 import { DevtoolsOverlay } from './DevtoolsOverlay';
-
 export type DevtoolsProps = {
   /** Map `DraggableContainer` id (overlay mobile bottom sheet). */
   containerId?: string;

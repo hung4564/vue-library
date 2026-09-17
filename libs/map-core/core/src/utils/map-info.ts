@@ -81,6 +81,9 @@ export function copyText(value: string): Promise<void> {
 /** Default duration for copy success UI feedback (icon / title swap). */
 export const COPY_FEEDBACK_MS = 1500;
 
+/** Default duration for action success / error UI before returning to idle. */
+export const ACTION_FEEDBACK_MS = COPY_FEEDBACK_MS;
+
 export type CopyFeedbackController = {
   /** Currently highlighted copy key, or null. */
   getCopiedKey: () => string | null;
@@ -131,6 +134,86 @@ export function createCopyFeedback(options?: {
       if (timer) clearTimeout(timer);
       timer = undefined;
       setKey(null);
+    },
+  };
+}
+
+export type ActionFeedbackPhase = 'idle' | 'loading' | 'success' | 'error';
+
+export type ActionFeedbackController = {
+  getPhase: () => ActionFeedbackPhase;
+  /** Active action key while not idle; null when idle. */
+  getKey: () => string | null;
+  /**
+   * Run `work` with phase idle → loading → success|error → idle after
+   * {@link ACTION_FEEDBACK_MS} (or `durationMs`). No toast.
+   */
+  run: <T>(key: string, work: () => T | Promise<T>) => Promise<T | undefined>;
+  /** Mark success without a loading step (sync pin / already-done work). */
+  succeed: (key: string) => void;
+  fail: (key: string) => void;
+  dispose: () => void;
+};
+
+/**
+ * Short-lived action-button feedback (Pin, Refresh, Run, …).
+ * Prefer this + `MapControlButton` for non-copy actions; use `MapCopyButton`
+ * for clipboard copy.
+ */
+export function createActionFeedback(options?: {
+  durationMs?: number;
+  onChange?: (phase: ActionFeedbackPhase, key: string | null) => void;
+}): ActionFeedbackController {
+  const durationMs = options?.durationMs ?? ACTION_FEEDBACK_MS;
+  let phase: ActionFeedbackPhase = 'idle';
+  let key: string | null = null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  function setState(nextPhase: ActionFeedbackPhase, nextKey: string | null) {
+    phase = nextPhase;
+    key = nextKey;
+    options?.onChange?.(phase, key);
+  }
+
+  function scheduleIdle() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      setState('idle', null);
+    }, durationMs);
+  }
+
+  return {
+    getPhase: () => phase,
+    getKey: () => key,
+    async run(actionKey, work) {
+      if (timer) clearTimeout(timer);
+      setState('loading', actionKey);
+      try {
+        const result = await work();
+        setState('success', actionKey);
+        scheduleIdle();
+        return result;
+      } catch {
+        setState('error', actionKey);
+        scheduleIdle();
+        return undefined;
+      }
+    },
+    succeed(actionKey) {
+      if (timer) clearTimeout(timer);
+      setState('success', actionKey);
+      scheduleIdle();
+    },
+    fail(actionKey) {
+      if (timer) clearTimeout(timer);
+      setState('error', actionKey);
+      scheduleIdle();
+    },
+    dispose() {
+      if (timer) clearTimeout(timer);
+      timer = undefined;
+      setState('idle', null);
     },
   };
 }

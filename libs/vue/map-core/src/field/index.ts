@@ -9,6 +9,7 @@
  */
 export { default as InputText } from './input-text.vue';
 export { default as InputSelect } from './input-select.vue';
+export { default as InputActionRow } from './input-action-row.vue';
 export { default as Collapse } from './base-collapse.vue';
 export { default as BaseCollapse } from './base-collapse.vue';
 export { default as InputTextArea } from './input-textarea.vue';

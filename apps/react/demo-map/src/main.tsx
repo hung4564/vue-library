@@ -8,6 +8,7 @@ import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 import '@hungpvq/react-map-draw/style.css';
 import '@hungpvq/react-draggable/style.css';
+import '@hungpvq/react-map-devtools/style.css';
 import { installMapApp } from '@hungpvq/react-map-dataset';
 import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
