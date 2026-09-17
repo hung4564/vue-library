@@ -222,7 +222,13 @@ export async function handleMultiIdentify(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
+  signal?: AbortSignal,
 ): Promise<IdentifyMultiResult[]> {
+  if (signal?.aborted) {
+    const err = new Error('Identify aborted');
+    err.name = 'AbortError';
+    throw err;
+  }
   logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
     'start',
     { identifies, config: props, pointOrBox },
@@ -269,6 +275,11 @@ export async function handleMultiIdentify(
     { groupMerge },
   );
   const result = await Promise.all(promises).then((res) => res.flat());
+  if (signal?.aborted) {
+    const err = new Error('Identify aborted');
+    err.name = 'AbortError';
+    throw err;
+  }
   logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
     'end',
     { result },

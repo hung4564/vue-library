@@ -137,6 +137,13 @@ export type {
   MapDrawEditControl,
 } from './draw-control-helpers';
 
+export { createMapDrawControl } from './map-draw-lifecycle';
+export type {
+  CreateMapDrawControlOptions,
+  MapDrawControlHandle,
+  MapDrawHostMap,
+} from './map-draw-lifecycle';
+
 export { createDrawSession } from './draw-session';
 export type {
   DrawMapDrawHandlers,

@@ -40,7 +40,7 @@ Vue and React `useDrawEvents` wrap Experimental **`createDrawSession`** (`@hungp
 | Toolbar **Cancel** | `finishCancel(onCancel?)` — optional feature callback, select reset, then `redrawNonDraft()` once |
 | Non-draft redraw after delete/cancel | `redrawNonDraft()` (no-op when option is draft) |
 
-Hosts still own `MapDraw` construction, `save(...)` / draft list UI, and `cleanAfterDone` `deleteAll`.
+Hosts still own `save(...)` / draft list UI, and `cleanAfterDone` `deleteAll`. Prefer Experimental **`createMapDrawControl`** for MapDraw construct + mount instead of inlining `new MapDraw` in adapters.
 
 ## Vue
 

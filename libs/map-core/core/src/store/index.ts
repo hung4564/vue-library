@@ -19,15 +19,21 @@ export type { MapPlatformRegistryMethod } from './map-platform-keys';
 
 export type {
   MapAccessor,
+  MapPlatformHostId,
+  MapPlatformRegistration,
   MapReadySubscriber,
   MapStoreCleanupRegistrar,
+  RegisterMapPlatformOptions,
 } from './map-platform-registry';
 
 export {
+  MAP_PLATFORM_HOST,
   getMap,
+  listMapPlatformHosts,
   registerMapAccessor,
   registerMapReadySubscriber,
   registerMapStoreCleanup,
   registerMapStoreCleanupRegistrar,
+  resetMapPlatformHostsForTests,
   subscribeMapReady,
 } from './map-platform-registry';

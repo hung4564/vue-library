@@ -88,6 +88,8 @@ export type RunIdentifyMultiOptions = {
   event?: MapMouseEvent;
   filterIdentifyId?: string;
   preferResultControl?: boolean;
+  /** Abort in-flight identify (superseded click / destroy). */
+  signal?: AbortSignal;
 };
 
 export type RunIdentifyResult = {
@@ -97,6 +99,22 @@ export type RunIdentifyResult = {
   durationMs: number;
   empty: boolean;
 };
+
+function throwIfAborted(signal?: AbortSignal) {
+  if (!signal?.aborted) return;
+  const err = new Error('Identify aborted');
+  err.name = 'AbortError';
+  throw err;
+}
+
+export function isIdentifyAbortError(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    (error as { name?: string }).name === 'AbortError'
+  );
+}
 
 /**
  * Shared IdentifyControl query path: filter → handleMultiIdentify →
@@ -112,7 +130,9 @@ export async function runIdentifyMulti(
     event,
     filterIdentifyId,
     preferResultControl,
+    signal,
   } = options;
+  throwIfAborted(signal);
   const log = logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl');
   const loadStartedAt = performance.now();
   log.info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
@@ -124,7 +144,15 @@ export async function runIdentifyMulti(
     filterId: filterIdentifyId,
   });
 
-  const features = await handleMultiIdentify(filtered, mapId, pointOrBox);
+  throwIfAborted(signal);
+  const features = await handleMultiIdentify(
+    filtered,
+    mapId,
+    pointOrBox,
+    { selectThreshold: 5 },
+    signal,
+  );
+  throwIfAborted(signal);
   log.debug('onGetFeatures', { features });
 
   const nonEmpty = filterNonEmptyIdentifyResults(features);
@@ -135,6 +163,7 @@ export async function runIdentifyMulti(
   );
 
   log.debug('onSelectFeatures', nonEmpty);
+  throwIfAborted(signal);
   const res = await identifyResolver.execute({
     records: nonEmpty,
     mapId,
@@ -142,6 +171,7 @@ export async function runIdentifyMulti(
     singleLayer: !!filterIdentifyId,
     preferResultControl: !!preferResultControl,
   });
+  throwIfAborted(signal);
   log.debug('onSelectFeaturesResult', res);
 
   const durationMs = Math.round(performance.now() - loadStartedAt);

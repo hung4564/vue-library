@@ -8,6 +8,7 @@
         v-if="hasSlotBtn"
         :class="btnModuleClass"
         :style="{ order: controlOrder }"
+        :data-map-control-id="resolvedControlId || undefined"
       >
         <slot name="btn" />
       </div>

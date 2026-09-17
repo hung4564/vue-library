@@ -174,4 +174,39 @@ describe('dual behavioral parity — identify session', () => {
     });
     session.destroy();
   });
+
+  it('rapid runAtPoint aborts previous query via AbortSignal', async () => {
+    const signals: AbortSignal[] = [];
+    const spy = vi
+      .spyOn(runIdentify, 'runIdentifyMulti')
+      .mockImplementation(async (opts) => {
+        if (opts.signal) signals.push(opts.signal);
+        await new Promise((r) => setTimeout(r, 15));
+        if (opts.signal?.aborted) {
+          const err = new Error('Identify aborted');
+          err.name = 'AbortError';
+          throw err;
+        }
+        return {
+          records: [],
+          hitCount: 0,
+          featureCount: 0,
+          durationMs: 1,
+          empty: true,
+        };
+      });
+
+    const session = createIdentifySession({
+      mapId: 'parity-abort',
+      getIdentifies: () => [],
+    });
+    const p1 = session.runAtPoint(105, 21, [1, 2]);
+    const p2 = session.runAtPoint(106, 22, [3, 4]);
+    await Promise.all([p1, p2]);
+    expect(signals.length).toBe(2);
+    expect(signals[0]?.aborted).toBe(true);
+    expect(session.getState().loading).toBe(false);
+    session.destroy();
+    spy.mockRestore();
+  });
 });

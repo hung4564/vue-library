@@ -19,6 +19,7 @@ import {
   resolveIdentifyLayerFilterId,
   runIdentifyMulti,
   buildIdentifyResultPanelBase,
+  isIdentifyAbortError,
   type RunIdentifyResult,
 } from './run-identify';
 import {
@@ -122,6 +123,8 @@ export type IdentifySession = {
     extra?: IdentifyResultUpdatePayload,
   ) => IdentifyResultUpdatePayload;
   syncFullResultPanel: (extra?: IdentifyResultUpdatePayload) => void;
+  /** Abort the in-flight query (if any) and clear loading UI. */
+  cancelQuery: () => void;
   destroy: () => void;
 };
 
@@ -152,6 +155,8 @@ export function createIdentifySession(
   /** Effective flags for panel/guards (box teardown may lag model). */
   let mapClickActive = false;
   let boxSelectActive = false;
+  let queryAbort: AbortController | null = null;
+  let queryGeneration = 0;
 
   function clearRemoveBoxTimer() {
     if (removeBoxTimer != null) {
@@ -165,6 +170,21 @@ export function createIdentifySession(
     unbindLongPress = null;
   }
 
+  function clearLoadingUi() {
+    model.setLoading(false);
+    emitState(model, options.onStateChange);
+    options.setCursor?.('');
+    options.syncResultPanel?.({ loading: false });
+  }
+
+  function cancelQuery() {
+    queryAbort?.abort();
+    queryAbort = null;
+    if (!destroyed && model.getState().loading) {
+      clearLoadingUi();
+    }
+  }
+
   async function runQuery(
     input: IdentifyQueryInput,
   ): Promise<RunIdentifyResult | undefined> {
@@ -172,6 +192,11 @@ export function createIdentifySession(
     const pointOrBox =
       input.kind === 'point' ? input.point : input.box;
     const event = input.kind === 'point' ? input.event : undefined;
+
+    queryAbort?.abort();
+    const ac = new AbortController();
+    queryAbort = ac;
+    const generation = ++queryGeneration;
 
     model.setLoading(true);
     emitState(model, options.onStateChange);
@@ -186,13 +211,19 @@ export function createIdentifySession(
         event,
         filterIdentifyId: model.getState().filterIdentifyId,
         preferResultControl: !!options.preferResultControl,
+        signal: ac.signal,
       });
+    } catch (error) {
+      if (isIdentifyAbortError(error) || ac.signal.aborted) {
+        return undefined;
+      }
+      throw error;
     } finally {
-      if (!destroyed) {
-        model.setLoading(false);
-        emitState(model, options.onStateChange);
-        options.setCursor?.('');
-        options.syncResultPanel?.({ loading: false });
+      if (queryAbort === ac) {
+        queryAbort = null;
+      }
+      if (!destroyed && generation === queryGeneration) {
+        clearLoadingUi();
       }
     }
   }
@@ -467,8 +498,11 @@ export function createIdentifySession(
     buildResultPanelPayload,
     syncFullResultPanel,
 
+    cancelQuery,
+
     destroy() {
       destroyed = true;
+      cancelQuery();
       clearRemoveBoxTimer();
       clearLongPress();
       mapClickActive = false;

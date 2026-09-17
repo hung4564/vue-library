@@ -289,6 +289,8 @@ export {
 
 export {
   getMap,
+  listMapPlatformHosts,
+  MAP_PLATFORM_HOST,
   MAP_PLATFORM_REGISTRY_METHOD,
   registerMapAccessor,
   registerMapReadySubscriber,
@@ -296,7 +298,12 @@ export {
   registerMapStoreCleanupRegistrar,
   subscribeMapReady,
 } from './store/index';
-export type { MapPlatformRegistryMethod } from './store/index';
+export type {
+  MapPlatformHostId,
+  MapPlatformRegistration,
+  MapPlatformRegistryMethod,
+  RegisterMapPlatformOptions,
+} from './store/index';
 
 export {
   hasMapInstance,

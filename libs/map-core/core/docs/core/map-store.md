@@ -6,7 +6,7 @@ Each **`mapId`** holds **one** MapLibre instance at a time (one shell / one live
 
 | Concern | Package / entry |
 |---------|-----------------|
-| `getMap`, `subscribeMapReady`, `registerMapAccessor`, `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_REGISTRY_METHOD`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` | `@hungpvq/map-core` |
+| `getMap`, `subscribeMapReady`, `registerMapAccessor`, `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_HOST`, `listMapPlatformHosts`, `MAP_PLATFORM_REGISTRY_METHOD`, `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` | `@hungpvq/map-core` |
 | Domain features (basemap, crs, event, image, legend, measurement, menu, print, theme, toolbar) | `@hungpvq/map-core/<domain>` |
 | In-worker helpers | `@hungpvq/map-core/worker` |
 | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore`, `useMapContainer` | `@hungpvq/vue-map-core` / `@hungpvq/react-map-core` |
@@ -36,7 +36,7 @@ The Vue / React `Map` shell registers the accessor via `registerMapAccessor` / `
 
 Platform accessors are stored as **UniversalRegistry global methods** under reserved keys (`MAP_PLATFORM_REGISTRY_METHOD.*`, e.g. `__platform.getMap`). They live in the shared `map:registry:global` bag — `clearMap` / `removeMap` does **not** remove them — so duplicate package copies still share one wiring.
 
-**`registerMapAccessor` / `registerMapReadySubscriber`:** last-writer-wins for the process. Installing Vue and React map shells (or two package copies) in one page means the last registration owns `getMap` / READY wait. Prefer one framework host per app, or register once at bootstrap.
+**`registerMapAccessor` / `registerMapReadySubscriber` / `registerMapStoreCleanupRegistrar`:** accept optional `{ hostId }` (e.g. `MAP_PLATFORM_HOST.VUE_MAP_CORE` / `REACT_MAP_CORE`). Same `hostId` replaces that host only (version bump); different hosts **coexist** — composite `getMap` / READY fan out until a map is found. Returns `{ hostId, version, unregister }`. Prefer one framework host per app; multi-host pages no longer silently last-writer-wins.
 
 ## Scoped stores
 
@@ -99,11 +99,11 @@ Related process pins outside this table: `__hungpvq_map_errorCapture__`, React `
 ### Multi-map caveats (apps with Map A + Map B)
 
 - **Per-map state is safe** when keyed by `mapId` (`MapStoreManager`, scoped stores, registry maps bag).
-- **Not per-map (default):** theme class on `html`, `MAP_THEME_STORAGE_KEY` in `localStorage`, and platform accessors (`registerMapAccessor` / READY) which are **last-writer-wins** for the process.
+- **Not per-map (default):** theme class on `html`, `MAP_THEME_STORAGE_KEY` in `localStorage`. Platform accessors are **multi-host** (`hostId`); Vue/React register separately and composite `getMap` resolves across hosts.
 - Do not expect ThemeControl on Map A to leave Map B on a different chrome theme — one document theme applies to all maps by default.
 - **Optional override:** `applyMapThemeForMap(mapId, resolved)` puts `.map-theme-*` on `.map-container[data-map-id]` only (see [ThemeControl — per-map override](./module/ThemeControl.md#optional-per-map-theme-override-advanced)). Document theme from `bootstrapMapTheme` / ThemeControl remains global.
 - Prefer `subscribeMapReady(mapId, cb)` over fire-and-forget `getMap(id, cb)` so each shell can unsubscribe on unmount without racing another map’s READY.
-- **Consumer rule:** do not assume per-map theme or per-map `getMap` wiring unless you opt into `applyMapThemeForMap`. Call `bootstrapMapTheme` / `registerMapAccessor` **once per process** (usually via `installMapApp` / Map shell bootstrap).
+- **Consumer rule:** do not assume per-map theme unless you opt into `applyMapThemeForMap`. Call `bootstrapMapTheme` once; adapters register platform accessors with distinct `MAP_PLATFORM_HOST.*` ids.
 
 ## Lifecycle (engine)
 

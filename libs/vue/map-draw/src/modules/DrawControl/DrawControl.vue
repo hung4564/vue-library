@@ -7,9 +7,7 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
-  getDrawStyles,
-  MapDraw,
-  StaticMode,
+  createMapDrawControl,
   type MapDrawConfig,
   type MapDrawOption,
   type MapDrawOptions,
@@ -55,20 +53,12 @@ const props = withDefaults(defineProps<DrawControlProps>(), {
   ...defaultMapProps,
 });
 const drawOptions = ref(props.drawOptions);
-const control = new MapDraw({
-  displayControlsDefault: false,
-  boxSelect: false,
-  styles: getDrawStyles(
-    props.drawOptions?.primaryColor,
-    props.drawOptions?.activeColor,
-  ),
-  ...props.drawControlOptions,
-  modes: {
-    ...MapDraw.modes,
-    static: StaticMode,
-    ...props.drawControlOptions?.modes,
-  },
+const drawHandle = createMapDrawControl({
+  primaryColor: props.drawOptions?.primaryColor,
+  activeColor: props.drawOptions?.activeColor,
+  drawControlOptions: props.drawControlOptions,
 });
+const control = drawHandle.control;
 const { mapId, moduleContainerProps, callMap, order } = useMap(props);
 const { registerLocale } = useLang(mapId.value);
 registerLocale('en', DRAW_CONTROL_LOCALE);
@@ -81,7 +71,7 @@ function onStart(config: MapDrawOption) {
     map.on('draw.create', onDrawCreated);
     map.on('draw.update', onDrawUpdated);
     map.on('draw.delete', onDrawDeleted);
-    if (!map.hasControl(control as never)) map.addControl(control as never);
+    drawHandle.addToMap(map);
   });
   onSelectMethod('select');
 }
@@ -93,7 +83,7 @@ function close() {
     map.off('draw.create', onDrawCreated);
     map.off('draw.update', onDrawUpdated);
     map.off('draw.delete', onDrawDeleted);
-    if (map.hasControl(control as never)) map.removeControl(control as never);
+    drawHandle.removeFromMap(map);
   });
 }
 

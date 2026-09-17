@@ -55,14 +55,20 @@ describe('dual behavioral parity — measurement session', () => {
  * Checklist (implemented in package specs — keep in sync when adding dual tools):
  * - Identify: createIdentifySession runAtPoint / toggle / closeAndCleanup destroy
  *   → map-dataset identify/behavioral-parity.spec.ts
+ * - Identify abort: rapid runAtPoint AbortSignal + cancelQuery
+ *   → map-dataset identify/behavioral-parity.spec.ts
  * - Identify box/scoped: runAtBox / onBboxSelected / finishScopedSession
  *   → map-dataset identify/identify-session.spec.ts + behavioral-parity.spec.ts
  * - Draw: createDrawSession delete→redrawNonDraft + scheduled select after draw.delete
  *   → map-draw draw-session.spec.ts
+ * - Draw lifecycle: createMapDrawControl addToMap/removeFromMap
+ *   → map-draw (adapters) + Experimental export lock
  * - Draw save/cancel: prepareSave / finishCancel (+ redrawNonDraft draft no-op)
  *   → map-draw draw-session.spec.ts
  * - Style: applyStyleTabValue / applyStyleZoom
  *   → map-dataset apply-style-patch.spec.ts
+ * - E2E dual chrome: MAP_DUAL_E2E_SMOKE_CONTROL_IDS
+ *   → vue/react demo-map-e2e dual-controls-smoke.spec.ts
  */
 describe('dual behavioral parity — checklist anchors', () => {
   it('documents cross-package session owners', () => {

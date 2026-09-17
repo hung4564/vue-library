@@ -246,6 +246,7 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
   'handleMultiIdentify',
   'handleMultiIdentifyGetFirst',
   'identifyResolver',
+  'isIdentifyAbortError',
   'isIdentifyForListMenuHidden',
   'isListIdentifyActive',
   'resolveIdentifyLayerFilterId',

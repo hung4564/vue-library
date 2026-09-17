@@ -4,6 +4,7 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  MAP_PLATFORM_HOST,
   MapStoreManager,
   registerMapAccessor,
   registerMapReadySubscriber,
@@ -35,10 +36,15 @@ const storeManager = new MapStoreManager(storeAdapter);
 
 // Set store manager reference for store-utils
 setStoreManager(storeManager);
-registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
-registerMapReadySubscriber((id, cb) => storeManager.subscribeMapReady(id, cb));
-registerMapStoreCleanupRegistrar((mapId, key, cleanup) =>
-  storeManager.registerCleanup(mapId, key, cleanup),
+const platformHost = { hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE } as const;
+registerMapAccessor((id, cb) => storeManager.getMap(id, cb), platformHost);
+registerMapReadySubscriber(
+  (id, cb) => storeManager.subscribeMapReady(id, cb),
+  platformHost,
+);
+registerMapStoreCleanupRegistrar(
+  (mapId, key, cleanup) => storeManager.registerCleanup(mapId, key, cleanup),
+  platformHost,
 );
 
 /**

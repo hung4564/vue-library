@@ -43,6 +43,7 @@ export {
   buildIdentifyResultPanelBase,
   filterIdentifiesForControl,
   filterNonEmptyIdentifyResults,
+  isIdentifyAbortError,
   resolveIdentifyLayerFilterId,
   runIdentifyMulti,
   runIdentifyShowFirst,

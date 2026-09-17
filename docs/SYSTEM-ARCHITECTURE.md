@@ -428,7 +428,7 @@ UI drag via vue-draggable-resizable / react-rnd (position local + store z-order)
 
 | Trigger | Async | Loading | Cancel |
 |---------|-------|---------|--------|
-| Identify query | `runIdentifyMulti` await | session.loading + cursor | destroy ignores further; no AbortSignal in session (**VERIFIED** gap) |
+| Identify query | `runIdentifyMulti` await | session.loading + cursor | AbortSignal on session (`cancelQuery` / new click aborts prior; destroy aborts) |
 | Draw save | await save / redraw | UI local | destroy no-ops session methods |
 | Map READY | wait until initMap | subscribeMapReady | unsub |
 | Dataset add | getMap callback when ready | — | tombstone no-op |
@@ -532,11 +532,8 @@ No circular package deps in intended graph (**VERIFIED** from package.json direc
 | Status | Finding |
 |--------|---------|
 | **INCOMPLETE (by design)** | Identify click → results; highlight needs menu path |
-| **INCOMPLETE** | Identify query has no AbortSignal cancellation |
 | **ORPHAN API (callable, unused in-repo)** | `applyMapThemeForMap` not used by ThemeControl |
-| **RISK FLOW** | Dual Vue+React shells → last-writer `getMap` |
-| **THICK HOST** | DrawControl still owns `new MapDraw` lifecycle |
-| **DOC WAS OUTDATED** | Identify “adapters run runIdentifyMulti” — corrected in docs |
+| **THICK HOST (reduced)** | DrawControl uses `createMapDrawControl` for construct/mount; hosts still own save/draft UI |
 | **NO BACKEND** | No server implementation in workspace |
 
 No verified “function called but missing implementation” in core session paths traced above.
@@ -545,11 +542,10 @@ No verified “function called but missing implementation” in core session pat
 
 # 15. Potential Problems
 
-1. Process-global theme + accessors surprise multi-map / dual-framework apps.  
-2. Draw host duplication Vue↔React for MapDraw mount.  
-3. Adapter peer surface large (install DX).  
-4. String store keys `'dataset'` / `'draw'` outside `MAP_STORE_KEY` table (documented note).  
-5. Race: rapid identify clicks without abort (**INFERRED** UX risk).
+1. Process-global theme surprise multi-map apps (platform accessors are multi-host).  
+2. Adapter peer surface large (install DX).  
+3. String store keys `'dataset'` / `'draw'` outside `MAP_STORE_KEY` table (documented note).  
+4. Draw hosts still own save/draft UI (construct/mount moved to `createMapDrawControl`).
 
 ---
 

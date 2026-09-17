@@ -4,6 +4,7 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  MAP_PLATFORM_HOST,
   MAP_STORE_KEY,
   MapStoreManager,
   registerMapAccessor,
@@ -17,10 +18,15 @@ export { useMapGlobalStore } from './global-store';
 
 const storeAdapter = new VueMapStoreAdapter();
 const storeManager = new MapStoreManager(storeAdapter);
-registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
-registerMapReadySubscriber((id, cb) => storeManager.subscribeMapReady(id, cb));
-registerMapStoreCleanupRegistrar((mapId, key, cleanup) =>
-  storeManager.registerCleanup(mapId, key, cleanup),
+const platformHost = { hostId: MAP_PLATFORM_HOST.VUE_MAP_CORE } as const;
+registerMapAccessor((id, cb) => storeManager.getMap(id, cb), platformHost);
+registerMapReadySubscriber(
+  (id, cb) => storeManager.subscribeMapReady(id, cb),
+  platformHost,
+);
+registerMapStoreCleanupRegistrar(
+  (mapId, key, cleanup) => storeManager.registerCleanup(mapId, key, cleanup),
+  platformHost,
 );
 
 /**

@@ -42,6 +42,36 @@ export const MAP_DUAL_CONTROL_IDS = [
 ] as const;
 
 /**
+ * Dual control ids expected as corner chrome on demo AllMapView (`/` / `#/`).
+ * Used by vue/react demo-map-e2e smoke (class `{id}-btn-module-container`).
+ */
+export const MAP_DUAL_E2E_SMOKE_CONTROL_IDS = [
+  'mapHomeControl',
+  'mapNavigationControl',
+  'mapFullscreenControl',
+  'mapGlobeControl',
+  'mapGeoLocateControl',
+  'mapGotoControl',
+  'mapInfoControl',
+  'mapSettingControl',
+  'mapThemeControl',
+  'mapCrsControl',
+  'mapLegendControl',
+  'mapBaseMapControl',
+  'mapPrintControl',
+  'mapPrintAdvancedControl',
+  'mapWorkerControl',
+  'mapRegistryControl',
+  'mapEventManagementControl',
+  'mapMeasurementControl',
+  'mapLayerControl',
+  'mapDatasetControl',
+  'mapIdentifyControl',
+  'mapInspectControl',
+  'mapDrawControl',
+] as const;
+
+/**
  * Stable root exports that both `@hungpvq/vue-map-core` and `@hungpvq/react-map-core`
  * must publish (framework-idiom symbols excluded).
  */

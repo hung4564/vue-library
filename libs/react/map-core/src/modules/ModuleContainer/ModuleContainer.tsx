@@ -137,7 +137,11 @@ export function ModuleContainer({
         ? createPortal(
             <>
               {hasBtn ? (
-                <div className={btnClassName} style={{ order: controlOrder }}>
+                <div
+                  className={btnClassName}
+                  style={{ order: controlOrder }}
+                  data-map-control-id={controlId || undefined}
+                >
                   {btn}
                 </div>
               ) : null}

@@ -1,9 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
-  MapDraw,
-  StaticMode,
-  getDrawStyles,
+  createMapDrawControl,
   isDraftOption,
   type MapDrawOption,
   type MapDrawOptions,
@@ -66,22 +64,14 @@ export function DrawControl(props: DrawControlProps) {
   const [drawSupport, setDrawSupport] = useState<string[]>([]);
 
   const contextMenuRef = useRef<ContextMenuRef>(null);
-  const controlRef = useRef(
-    new MapDraw({
-      displayControlsDefault: false,
-      boxSelect: false,
-      styles: getDrawStyles(
-        props.drawOptions?.primaryColor,
-        props.drawOptions?.activeColor,
-      ),
-      ...props.drawControlOptions,
-      modes: {
-        ...MapDraw.modes,
-        static: StaticMode,
-        ...props.drawControlOptions?.modes,
-      },
+  const drawHandleRef = useRef(
+    createMapDrawControl({
+      primaryColor: props.drawOptions?.primaryColor,
+      activeColor: props.drawOptions?.activeColor,
+      drawControlOptions: props.drawControlOptions,
     }),
   );
+  const controlRef = useRef(drawHandleRef.current.control);
 
   const startEndRef = useRef<{
     onStart: (config: MapDrawOption) => void;
@@ -133,12 +123,11 @@ export function DrawControl(props: DrawControlProps) {
     setIsDraw(false);
     setIsShow(false);
     callMap((map) => {
-      const control = controlRef.current;
       const h = handlersRef.current;
       map.off('draw.create', h.onDrawCreated);
       map.off('draw.update', h.onDrawUpdated);
       map.off('draw.delete', h.onDrawDeleted);
-      if (map.hasControl(control as never)) map.removeControl(control as never);
+      drawHandleRef.current.removeFromMap(map);
     });
   }, [callMap, handlersRef, removeEventClick, setIsDraw]);
 
@@ -160,7 +149,7 @@ export function DrawControl(props: DrawControlProps) {
         map.on('draw.create', h.onDrawCreated);
         map.on('draw.update', h.onDrawUpdated);
         map.on('draw.delete', h.onDrawDeleted);
-        if (!map.hasControl(control as never)) map.addControl(control as never);
+        drawHandleRef.current.addToMap(map);
         control.changeMode('static');
       });
       onSelectMethod('select');
