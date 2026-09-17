@@ -65,6 +65,16 @@ export type {
   IdentifyScopedSessionResult,
   IdentifySessionToggleResult,
 } from './control-model';
+export {
+  createIdentifySession,
+} from './identify-session';
+export type {
+  IdentifyBboxCorners,
+  IdentifyInputModeFlags,
+  IdentifyQueryInput,
+  IdentifySession,
+  IdentifySessionOptions,
+} from './identify-session';
 
 export type {
   IIdentifyView,

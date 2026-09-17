@@ -51,6 +51,16 @@ Registering only during the parent’s first render can disappear after StrictMo
 
 `registerComponent` (global) is not cleared by `removeMap`.
 
+## Menu handlers (per-map)
+
+Controls that register click handlers with `registerMenuHandlerForMap` should call `unregisterMenuHandlerForMap` on unmount so a remounted control does not leave a stale closure pointing at a destroyed host. `clearMap` / `removeMap` still wipes the whole map bag.
+
+```ts
+UniversalRegistry.registerMenuHandlerForMap(mapId, 'fitBounds', onFit);
+// …
+UniversalRegistry.unregisterMenuHandlerForMap(mapId, 'fitBounds');
+```
+
 ## Dataset plugin helper
 
 Framework plugins call `registerDatasetRegistryComponents` from `@hungpvq/map-dataset/menu` with `UniversalRegistry.registerComponent` and a map of slots (`legendLinear`, `toggleShow`, `attributeTable`, … → `LIST_VIEW_MENU_COMPONENT_KEY`). The helper is generic (`NoInfer`) so heterogeneous Vue/React components type-check against the registry. Prefer `installMapApp` / `createDatasetRegistryPlugin()` over calling it by hand unless you are building a custom subset.

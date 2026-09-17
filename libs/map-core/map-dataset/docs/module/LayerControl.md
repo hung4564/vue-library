@@ -19,7 +19,7 @@ Editable layer list: create, group, reorder, delete, run menus.
 
 **Events:** none. Visibility / opacity fire on the list node (`toggleShow`, `changeOpacity`) — see [Events](../create-dataset/with-helper-event.md). Dialogs from ⋮ menus need [`ComponentManagementControl`](./ComponentManagementControl.md). Create-layer uses [`CreateControl`](./CreateControl.md) internally.
 
-Keyboard: `/` focuses the layer search input (`data-map-layer-search`, with rAF retry until mounted). `Esc` closes the top open control and blurs search only if it was focused.
+Keyboard: `/` focuses the layer search input for **that** map (`[data-map-layer-search][data-map-id="<mapId>"]`, with rAF retry until mounted). `Esc` closes the top open control and blurs search only if that map’s search was focused.
 
 ### Sidebar header (Vue ↔ React)
 
@@ -118,6 +118,6 @@ Read-only list: [`LayerInfoControl`](./LayerInfoControl.md).
 
 ## Search behavior
 
-- Search input uses `data-map-layer-search` and is focused by `/` shortcut (`bindMapKeyboardShortcuts`).
+- Search input uses `data-map-layer-search` + `data-map-id` and is focused by `/` shortcut (`bindMapKeyboardShortcuts`) for that map only.
 - Filtering is debounced on the client (~150ms) and matching text is highlighted in row titles.
 - When the query has no result, the panel shows `search-empty` instead of the regular empty-state.

@@ -5,6 +5,7 @@ import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartL
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
 import { createMenuBuilder, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPen, mdiStar } from '@mdi/js';
 import {
   DEMO_LIST_BBOX,
@@ -15,6 +16,8 @@ import {
 import { createRasterSourceConfig } from '../../fixtures/raster';
 import { createMultiLegend } from '@hungpvq/map-dataset/menu';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '../../registry/menu-handlers';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
 
 /** List-only: bare row in LayerControl. */
 export function createListOnlyDefaultDataset() {
@@ -164,7 +167,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiStar)
         .setHidden(({ context }) => context?.role !== 'admin')
         .setClick(() => {
-          console.info('admin only menu');
+          logger.info('admin only menu');
         })
         .build(),
       createMenuBuilder()
@@ -174,7 +177,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          console.info('pen action');
+          logger.info('pen action');
         })
         .build(),
       createMenuBuilder()
@@ -184,7 +187,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          console.info('pen extra');
+          logger.info('pen extra');
         })
         .build(),
     ])

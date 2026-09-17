@@ -3,7 +3,6 @@ import {
   DrawingTypeName,
   MapDraw,
   StaticMode,
-  getDrawCreateModeEffects,
   getDrawStyles,
   isDraftOption,
   type MapDrawOption,
@@ -108,17 +107,27 @@ export function DrawControl(props: DrawControlProps) {
     onEnd: () => startEndRef.current.onEnd(),
   });
 
+  const redrawSource = useCallback(async () => {
+    if (!drawOptions || isDraftOption(drawOptions)) return;
+    await drawOptions.redraw?.(mapId);
+  }, [drawOptions, mapId]);
+
   const {
     isDraw,
     setIsDraw,
     method,
-    setMethod,
     currentFeature,
     setCurrentFeature,
     removeEventClick,
     handlersRef,
     onSelectMethod,
-  } = useDrawEvents(mapId, controlRef.current, drawOptions, setFeature);
+    startCreate,
+    prepareSave,
+    finishCancel,
+    redrawNonDraft,
+  } = useDrawEvents(mapId, controlRef.current, drawOptions, setFeature, {
+    redrawNonDraft: () => redrawSource(),
+  });
 
   const close = useCallback(() => {
     removeEventClick();
@@ -163,14 +172,8 @@ export function DrawControl(props: DrawControlProps) {
   startEndRef.current = { onStart, onEnd: close };
 
   const onDraw = (type: string) => {
-    const effects = getDrawCreateModeEffects(type);
-    if (effects.detachMapClick) {
-      removeEventClick();
-    }
     setCurrentFeature(undefined);
-    setMethod(effects.method);
-    controlRef.current.changeMode(effects.drawMode);
-    setIsDraw(effects.isDraw);
+    startCreate(type);
   };
 
   const supportItems = useMemo(
@@ -193,23 +196,19 @@ export function DrawControl(props: DrawControlProps) {
   };
 
   const onSave = async () => {
-    setIsDraw(false);
-    onSelectMethod('select');
-    setCurrentFeature(undefined);
+    prepareSave();
     await save(controlRef.current.getAll() as FeatureCollection, { mapId });
     if (drawOptions?.cleanAfterDone) controlRef.current.deleteAll();
     refreshDrafts();
-    if (!isDraftOption(drawOptions)) {
-      await drawOptions?.redraw?.(mapId);
-    }
+    await redrawNonDraft();
   };
 
-  const onCancel = () => {
-    setIsDraw(false);
-    void drawOptions?.cancel?.(currentFeature);
-    if (drawOptions?.cleanAfterDone) controlRef.current.deleteAll();
-    onSelectMethod('select');
-    setCurrentFeature(undefined);
+  const onCancel = async () => {
+    await finishCancel((feature) => {
+      void drawOptions?.cancel?.(feature);
+      if (drawOptions?.cleanAfterDone) controlRef.current.deleteAll();
+    });
+    refreshDrafts();
   };
 
   const { control: toolbarControl } = useToolbarControl(mapId, merged, {

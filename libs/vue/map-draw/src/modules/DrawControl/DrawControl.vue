@@ -7,8 +7,6 @@ export default {
 import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
-  getDrawCreateModeEffects,
-  getDrawModeSelectEffects,
   getDrawStyles,
   MapDraw,
   StaticMode,
@@ -26,7 +24,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { Feature, FeatureCollection } from 'geojson';
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
@@ -122,54 +120,47 @@ const {
   onDrawCreated,
   onDrawUpdated,
   onDrawDeleted,
-  addEventClick,
   removeEventClick,
   current_feature,
   isDraw,
   method,
+  selectMethod,
+  startCreate,
+  prepareSave,
+  finishCancel,
+  redrawNonDraft,
 } = useDrawEvents(mapId.value, control, drawOptions, {
-  onSelectMethod,
   redrawSource,
-  getContext,
 });
 
 function onSelectMethod(value: 'select' | 'delete') {
-  removeEventClick();
-  method.value = value;
-  const effects = getDrawModeSelectEffects(value);
-  if (effects.attachMapClick) {
-    addEventClick();
-  }
-  control.changeMode(effects.drawMode);
+  selectMethod(value);
 }
 function onDraw(type: string) {
-  const effects = getDrawCreateModeEffects(type);
-  if (effects.detachMapClick) {
-    removeEventClick();
-  }
   current_feature.value = undefined;
-  method.value = effects.method;
-  control.changeMode(effects.drawMode);
-  isDraw.value = effects.isDraw;
+  startCreate(type);
 }
 const drawSupport = ref<MapDrawConfig['drawSupports']>([]);
 
 async function onSave() {
-  onSelectMethod('select');
-  isDraw.value = false;
-  current_feature.value = undefined;
+  prepareSave();
   await save(control.getAll() as FeatureCollection, getContext());
-  await clearDraw();
-  await redrawSource();
+  if (drawOptions.value?.cleanAfterDone) {
+    control.deleteAll();
+  }
+  getCountDraftItem();
+  await redrawNonDraft();
 }
 
-function onCancel() {
-  isDraw.value = false;
+async function onCancel() {
   const action = drawOptions.value;
-  action?.cancel && action?.cancel(current_feature.value);
-  clearDraw();
-  redrawSource();
-  current_feature.value = undefined;
+  await finishCancel((feature) => {
+    action?.cancel?.(feature);
+    if (action?.cleanAfterDone) {
+      control.deleteAll();
+    }
+  });
+  getCountDraftItem();
 }
 async function redrawSource() {
   const action = drawOptions.value;
@@ -180,15 +171,6 @@ async function redrawSource() {
   if (!isDraftOption(drawOptions.value)) {
     return action.redraw && action.redraw(mapId.value);
   }
-}
-function clearDraw() {
-  current_feature.value = undefined;
-  if (drawOptions.value?.cleanAfterDone) {
-    control.deleteAll();
-  }
-  nextTick(() => {
-    onSelectMethod('select');
-  });
 }
 
 function getContext() {

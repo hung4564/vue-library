@@ -15,7 +15,7 @@
 import { GlobalStoreService } from '@hungpvq/shared-store';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 
-import { onMounted, shallowRef } from 'vue';
+import { onMounted, onUnmounted, shallowRef } from 'vue';
 import TreeItem from './TreeItem.vue';
 // Use shallowRef to avoid deep reactivity overhead for the snapshot
 const storeState = shallowRef({});
@@ -25,10 +25,18 @@ const refresh = () => {
   storeState.value = { ...GlobalStoreService.getInstance().getState() };
 };
 
+let pollTimer: ReturnType<typeof setInterval> | undefined;
+
 onMounted(() => {
   refresh();
-  // Optional: Poll for changes
-  setInterval(refresh, 1000);
+  pollTimer = setInterval(refresh, 1000);
+});
+
+onUnmounted(() => {
+  if (pollTimer != null) {
+    clearInterval(pollTimer);
+    pollTimer = undefined;
+  }
 });
 </script>
 

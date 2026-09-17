@@ -1,5 +1,6 @@
-import { MapSimple } from '@hungpvq/map-core';
+import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import { StyleSpecification } from 'maplibre-gl';
+import { logger } from '../logger';
 
 export type InspectStyleSpecification = StyleSpecification & {
   metadata: { 'maplibregl-inspect:inspect': boolean };
@@ -71,7 +72,7 @@ export async function getSourcesFromMap(
             throw new Error('Missing vector_layers in source: ' + sourceId);
           }
         } catch {
-          console.warn(
+          logHelper(logger, map.id, 'inspect').warn(
             'Unable to retrieve tileJSON from ' +
               url +
               " using style's layers",

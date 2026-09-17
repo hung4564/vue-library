@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, layerMatchesSearch, listListViewGroups, syncListViewLayerOrder, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
@@ -117,23 +117,7 @@ const groupRef = ref<InstanceType<typeof DraggableGroupList> | undefined>(
 const layers_select = ref<LayerListItem[]>([]);
 function updateLayers() {
   callMap((map: MapSimple) => {
-    let beforeId: string = '';
-    views.value.slice().forEach((view, index, items) => {
-      view.index = items.length - index;
-      const parent = view.getParent();
-      traverseTree(
-        parent || view,
-        (node) => {
-          if (hasMoveLayer(node)) {
-            node.moveLayer(map, beforeId);
-            beforeId = node.getBeforeId() || '';
-          }
-        },
-        {
-          direction: 'rtl',
-        },
-      );
-    });
+    syncListViewLayerOrder(map, views.value.slice());
   });
 }
 function onRemoveGroupLayer(group: LayerListGroupTree) {
@@ -185,6 +169,7 @@ function getMenuGroups() {
       <InputText
         v-model="layerSearch"
         data-map-layer-search
+        :data-map-id="mapId"
         :placeholder="trans('map.layer-control.search')"
         aria-label="Search layers"
       />

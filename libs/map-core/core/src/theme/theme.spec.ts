@@ -3,6 +3,7 @@ import {
   MAP_THEME_CLASS,
   MAP_THEME_STORAGE_KEY,
   applyMapThemeClass,
+  applyMapThemeForMap,
   bootstrapMapTheme,
   cycleMapThemeMode,
   getMapThemeLocaleKey,
@@ -12,6 +13,7 @@ import {
   isMapThemeMode,
   normalizeMapThemeModes,
   resolveMapTheme,
+  resolveMapThemeElement,
   setStoredMapThemeMode,
   toggleMapThemeLightDark,
 } from './index';
@@ -139,18 +141,25 @@ describe('theme helpers', () => {
   });
 
   it('bootstrapMapTheme reads storage, resolves, and applies class', () => {
-    const memory = new Map<string, string>([[MAP_THEME_STORAGE_KEY, 'ocean']]);
+    const store = new Map<string, string>([[MAP_THEME_STORAGE_KEY, 'ocean']]);
     const classes = new Set<string>();
     const style = { colorScheme: '' };
     const originalDocument = globalThis.document;
     const originalStorage = globalThis.localStorage;
+    const originalWindow = globalThis.window;
 
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: {
+        matchMedia: () => ({ matches: false }),
+      },
+    });
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
       value: {
-        getItem: (key: string) => memory.get(key) ?? null,
+        getItem: (key: string) => store.get(key) ?? null,
         setItem: (key: string, value: string) => {
-          memory.set(key, value);
+          store.set(key, value);
         },
       },
     });
@@ -182,6 +191,73 @@ describe('theme helpers', () => {
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
       value: originalStorage,
+    });
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: originalWindow,
+    });
+  });
+
+  it('applyMapThemeForMap targets map container without touching documentElement', () => {
+    const mapClasses = new Set<string>();
+    const htmlClasses = new Set<string>([MAP_THEME_CLASS.light]);
+    const mapStyle = { colorScheme: '' };
+    const htmlStyle = { colorScheme: 'light' };
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+
+    const mapEl = {
+      classList: {
+        remove: (...names: string[]) => {
+          names.forEach((name) => mapClasses.delete(name));
+        },
+        add: (name: string) => {
+          mapClasses.add(name);
+        },
+      },
+      style: mapStyle,
+    };
+
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: {
+        matchMedia: () => ({ matches: false }),
+      },
+    });
+    Object.defineProperty(globalThis, 'document', {
+      configurable: true,
+      value: {
+        documentElement: {
+          classList: {
+            remove: (...names: string[]) => {
+              names.forEach((name) => htmlClasses.delete(name));
+            },
+            add: (name: string) => {
+              htmlClasses.add(name);
+            },
+          },
+          style: htmlStyle,
+        },
+        querySelector: (sel: string) =>
+          sel.includes('data-map-id') ? mapEl : null,
+      },
+    });
+
+    expect(resolveMapThemeElement('m1')).toBe(mapEl);
+    expect(applyMapThemeForMap('m1', 'dark')).toBe(true);
+    expect(mapClasses.has(MAP_THEME_CLASS.dark)).toBe(true);
+    expect(htmlClasses.has(MAP_THEME_CLASS.light)).toBe(true);
+    expect(htmlClasses.has(MAP_THEME_CLASS.dark)).toBe(false);
+    expect(mapStyle.colorScheme).toBe('dark');
+    expect(htmlStyle.colorScheme).toBe('light');
+
+    Object.defineProperty(globalThis, 'document', {
+      configurable: true,
+      value: originalDocument,
+    });
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: originalWindow,
     });
   });
 });

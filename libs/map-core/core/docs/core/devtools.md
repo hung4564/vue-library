@@ -40,15 +40,19 @@ Both packages export `./style.css`. Peers include `@hungpvq/map-core`, the match
 
 On viewports **≤640px** (same tablet breakpoint as map):
 
-- If a map `DraggableContainer` is present (`map-draggable-*`, or pass `containerId`), the open panel uses **`DraggableItemBottom`**.
-- If no container is available yet, a CSS bottom sheet fallback (~85vh) is used.
+- Pass **`containerId`** (`map-draggable-<mapId>`) and/or **`mapId`** so the panel attaches to the correct map. Without either, there is no document-wide first-match — a CSS bottom sheet fallback (~85vh) is used.
+- `resolveMapDragContainerId(explicit, mapId)` prefers `explicit`, else derives `map-draggable-${mapId}`.
 
 ```vue
 <Devtools container-id="map-draggable-my-map" />
+<!-- or -->
+<Devtools map-id="my-map" />
 ```
 
 ```tsx
 <Devtools containerId="map-draggable-my-map" />
+{/* or */}
+<Devtools mapId="my-map" />
 ```
 
 ## Bootstrap (Vue + React)

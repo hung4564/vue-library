@@ -6,6 +6,7 @@ import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, MENU_CONTROL_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   mdiAppleKeyboardCommand,
   mdiCrosshairsGps,
@@ -26,6 +27,8 @@ import {
   DEMO_CUSTOM_MENU_HANDLER_KEY,
   DEMO_LAYER_TOGGLE_SHOW_KEY,
 } from '../../registry/menu-handlers';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:menu', 2);
 
 function createCustomMenuItem(
   icon: string,
@@ -92,7 +95,7 @@ export function createDynamicBoundMenuDataset() {
             const next =
               current[0] === DEMO_BBOX[0] ? DEMO_LIST_BBOX : DEMO_BBOX;
             bound!.setData(next);
-            console.info('bound bbox updated', next);
+            logger.info('bound bbox updated', next);
           })
           .build(),
       ),
@@ -271,7 +274,7 @@ export function createByControlPlacementDataset() {
       [MENU_CONTROL_ID.layerDetail]: { location: 'title' },
     })
     .setClick(({ layer, value }) => {
-      console.info('[byControl demo] Favorite', {
+      logger.info('[byControl demo] Favorite', {
         layer: layer?.getName?.(),
         value,
       });
@@ -285,7 +288,7 @@ export function createByControlPlacementDataset() {
     .setName('List only')
     .setIcon(mdiPen)
     .setClick(() => {
-      console.info('[byControl demo] List only (should not show on LayerDetail)');
+      logger.info('[byControl demo] List only (should not show on LayerDetail)');
     })
     .build();
 
@@ -379,7 +382,7 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              console.info('custom execute', click, props);
+              logger.info('custom execute', click, props);
             },
           })
           .build(),
@@ -396,7 +399,7 @@ export function createCustomSupportDataset() {
         'custom click',
         createMenuClickBuilder()
           .addCommand((props) => {
-            console.info('custom click', props);
+            logger.info('custom click', props);
           })
           .build(),
       ),
@@ -407,12 +410,12 @@ export function createCustomSupportDataset() {
           .addTupleDynamic(
             {
               execute(click, props) {
-                console.info('custom execute', click, props);
+                logger.info('custom execute', click, props);
               },
             },
             (props) => {
               alert('custom use execute and transform');
-              console.info('custom use execute and transform', props);
+              logger.info('custom use execute and transform', props);
               return { value: 'custom' };
             },
           )
@@ -424,7 +427,7 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addTupleDynamic(DEMO_CUSTOM_MENU_HANDLER_KEY, (props) => {
             alert('custom use registry and transform');
-            console.info('custom use registry and transform', props);
+            logger.info('custom use registry and transform', props);
             return { value: 'custom' };
           })
           .build(),
@@ -435,7 +438,7 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
             alert('custom use menu fitBounds and transform');
-            console.info('custom use menu fitBounds and transform', props);
+            logger.info('custom use menu fitBounds and transform', props);
             return {
               value: createMenuClickHighlightBuilder()
                 .setDetail(DEMO_POLYGON)
@@ -465,30 +468,30 @@ export function createCustomMultiSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              console.info('custom execute', click, props);
+              logger.info('custom execute', click, props);
             },
           })
           .addCommand(DEMO_CUSTOM_MENU_HANDLER_KEY)
           .addCommand((props) => {
-            console.info('custom click', props);
+            logger.info('custom click', props);
           })
           .addTupleDynamic(
             {
               execute(click, props) {
-                console.info('custom execute after transform', click, props);
+                logger.info('custom execute after transform', click, props);
               },
             },
             (props) => {
-              console.info('custom use execute and transform', props);
+              logger.info('custom use execute and transform', props);
               return { value: 'custom' };
             },
           )
           .addTupleDynamic(DEMO_CUSTOM_MENU_HANDLER_KEY, (props) => {
-            console.info('custom use registry and transform', props);
+            logger.info('custom use registry and transform', props);
             return { value: 'custom' };
           })
           .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
-            console.info('custom use menu fitBounds and transform', props);
+            logger.info('custom use menu fitBounds and transform', props);
             return {
               value: createMenuClickHighlightBuilder()
                 .setDetail(DEMO_POLYGON)
@@ -518,10 +521,10 @@ export function createCustomChainSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              console.info('custom chain execute', props);
+              logger.info('custom chain execute', props);
               return createMenuClickBuilder().addCommand({
                 execute(click, props) {
-                  console.info('custom chain after execute', click, props);
+                  logger.info('custom chain after execute', click, props);
                 },
               });
             },
@@ -533,10 +536,10 @@ export function createCustomChainSupportDataset() {
         'custom click',
         createMenuClickBuilder()
           .addCommand((props) => {
-            console.info('custom chain click', props);
+            logger.info('custom chain click', props);
             return createMenuClickBuilder().addCommand({
               execute(click, props) {
-                console.info('custom chain after click', click, props);
+                logger.info('custom chain after click', click, props);
               },
             });
           })

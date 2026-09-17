@@ -109,7 +109,7 @@ provide('$map.registerModuleOrder', registerModuleOrder);
   <div
     v-else
     class="map-container"
-    :mapId="id"
+    :data-map-id="id"
     :class="{ 'map-mobile-container': isMobile }"
   >
     <div class="map-viewer">

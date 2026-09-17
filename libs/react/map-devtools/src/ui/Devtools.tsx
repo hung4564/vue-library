@@ -17,10 +17,11 @@ export type DevtoolsProps = {
 export function Devtools({
   containerId,
   mode = 'overlay',
+  mapId,
   ...controlProps
 }: DevtoolsProps = {}) {
   if (mode === 'control') {
-    return <DevtoolsControl {...controlProps} />;
+    return <DevtoolsControl mapId={mapId} {...controlProps} />;
   }
-  return <DevtoolsOverlay containerId={containerId} />;
+  return <DevtoolsOverlay containerId={containerId} mapId={mapId} />;
 }

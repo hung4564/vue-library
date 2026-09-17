@@ -54,6 +54,11 @@ export {
   splitSearchHighlight,
 } from './extra/layer-control/search';
 
+export { getLayerControlTitleMenuState } from './extra/layer-control/title-menus';
+export type { LayerControlTitleMenuState } from './extra/layer-control/title-menus';
+
+export { registerAddGeojsonHereForMap } from './extra/layer-control/add-geojson-here';
+
 export {
   applyGlobalLayerVisibility,
   applyListViewMapVisibility,

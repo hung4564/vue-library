@@ -108,6 +108,13 @@ export class UniversalRegistry {
     store[namespacedKey] = value;
   }
 
+  private static deleteMapValue(mapId: string, namespacedKey: string) {
+    const store = mapsBag()[mapId];
+    if (store) {
+      delete store[namespacedKey];
+    }
+  }
+
   static registerMethod(key: string, fn: RegistryFn) {
     globalBag()[REGISTRY_NAMESPACES.METHOD + key] = fn;
   }
@@ -122,6 +129,11 @@ export class UniversalRegistry {
 
   static registerMenuHandlerForMap(mapId: string, key: string, fn: RegistryFn) {
     this.setMapValue(mapId, REGISTRY_NAMESPACES.MENU_HANDLER + key, fn);
+  }
+
+  /** Remove a map-scoped menu handler. No-op if missing. Global handlers are unchanged. */
+  static unregisterMenuHandlerForMap(mapId: string, key: string) {
+    this.deleteMapValue(mapId, REGISTRY_NAMESPACES.MENU_HANDLER + key);
   }
 
   /**

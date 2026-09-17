@@ -122,6 +122,7 @@ export type {
  * Prefer importing from `@hungpvq/map-draw` (root only; no subpath yet).
  */
 export {
+  applyFeatureEditMode,
   classifyDrawCreateFeature,
   emptyDraftListSnapshot,
   ensureFeatureId,
@@ -129,7 +130,20 @@ export {
   getDrawCreateModeEffects,
   getDrawModeSelectEffects,
   getFeatureEditMode,
+  handleDrawMapClick,
 } from './draw-control-helpers';
+export type {
+  DrawMapClickResult,
+  MapDrawEditControl,
+} from './draw-control-helpers';
+
+export { createDrawSession } from './draw-session';
+export type {
+  DrawMapDrawHandlers,
+  DrawSession,
+  DrawSessionOptions,
+  DrawSessionState,
+} from './draw-session';
 
 /** @experimental Root logger namespace — may change in a minor. */
 export { logger } from './logger';

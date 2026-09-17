@@ -1,28 +1,15 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
-import {
-  clearAddGeojsonHereItems,
-  getDefaultAddGeojsonHereItems,
-  MAP_CONTEXT_MENU_ID,
-  setAddGeojsonHereItems,
-  type AddGeojsonHerePayload,
-  type MapMenuItemProps,
-} from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  findAllComponentsByType,
+  getLayerControlTitleMenuState,
   LAYER_CONTROL_LOCALE,
+  registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
   type IDataset,
-  type IListViewUI,
 } from '@hungpvq/map-dataset';
-import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import {
-  getMenuItemLocation,
-  getResolvedMenus,
-  mergeMenusById,
   MENU_CONTROL_ID,
   resolveMenuContextSource,
-  type MenuAction,
   type MenuContextSource,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
@@ -139,39 +126,15 @@ export function LayerControl(props: LayerControlProps) {
   addDatasetRef.current = addDataset;
 
   useEffect(() => {
-    UniversalRegistry.registerMenuHandlerForMap(
-      mapId,
-      MAP_CONTEXT_MENU_ID.addGeojsonHere,
-      (_props: MapMenuItemProps, payload: AddGeojsonHerePayload) => {
-        void addDatasetRef.current(createGeojsonHereDataset(payload));
-      },
-    );
-    setAddGeojsonHereItems(mapId, getDefaultAddGeojsonHereItems());
-    return () => {
-      clearAddGeojsonHereItems(mapId);
-    };
+    return registerAddGeojsonHereForMap(mapId, (dataset) => {
+      void addDatasetRef.current(dataset);
+    });
   }, [mapId]);
 
   const titleMenuState = useMemo(() => {
     void datasetVersion;
     const roots = getDatasets().filter(Boolean) as IDataset[];
-    const lists: MenuAction[][] = [];
-    let firstData: IDataset | undefined = roots[0];
-    for (const root of roots) {
-      const listViews = findAllComponentsByType<IListViewUI>(root, 'list');
-      for (const list of listViews) {
-        if (!firstData) firstData = list;
-        lists.push(
-          getResolvedMenus(list, 'layer').filter(
-            (menu) => getMenuItemLocation(menu) === 'title',
-          ),
-        );
-      }
-    }
-    return {
-      menus: mergeMenusById(lists),
-      data: firstData,
-    };
+    return getLayerControlTitleMenuState(roots);
   }, [datasetVersion, getDatasets]);
 
   const titleSlot = renderSlot(props.titleList, mapId);

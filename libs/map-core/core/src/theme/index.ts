@@ -150,14 +150,61 @@ export function getMapThemeLocaleKey(mode: MapThemeMode): string {
   return `map.theme-control.${mode}`;
 }
 
-/** Apply resolved theme class on `document.documentElement` (html). */
-export function applyMapThemeClass(resolved: MapThemeResolved): void {
-  if (typeof document === 'undefined') return;
-  const root = document.documentElement;
+/**
+ * Map shell that should carry `map-theme-*` for a scoped override
+ * (`.map-container[data-map-id]`).
+ */
+export function resolveMapThemeElement(mapId: string): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
+  const escaped =
+    typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+      ? CSS.escape(mapId)
+      : mapId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return (
+    document.querySelector<HTMLElement>(
+      `.map-container[data-map-id="${escaped}"]`,
+    ) ??
+    document.querySelector<HTMLElement>(`[data-map-id="${escaped}"]`)
+  );
+}
+
+/**
+ * Apply theme (+ contrast) classes on any element. `--map-*` tokens inherit
+ * to descendants. Use for optional per-map roots; ThemeControl / bootstrap
+ * still target `document.documentElement` by default.
+ */
+export function applyMapThemeClassToElement(
+  root: HTMLElement,
+  resolved: MapThemeResolved,
+  contrastEnabled = getPrefersContrastMore(),
+): void {
   root.classList.remove(...ALL_THEME_CLASSES);
   root.classList.add(MAP_THEME_CLASS[resolved]);
   root.style.colorScheme = MAP_THEME_COLOR_SCHEME[resolved];
-  applyMapThemeContrastClass();
+  if (contrastEnabled) root.classList.add(MAP_THEME_CONTRAST_CLASS);
+  else root.classList.remove(MAP_THEME_CONTRAST_CLASS);
+}
+
+/**
+ * Optional per-`mapId` theme on the map shell. Does **not** change `html`.
+ * Returns false if the container is not mounted yet.
+ */
+export function applyMapThemeForMap(
+  mapId: string,
+  resolved: MapThemeResolved,
+): boolean {
+  const el = resolveMapThemeElement(mapId);
+  if (!el) return false;
+  applyMapThemeClassToElement(el, resolved);
+  return true;
+}
+
+/** Apply resolved theme class on `document.documentElement` (html).
+ * Process-global default: all maps share one page chrome theme.
+ */
+export function applyMapThemeClass(resolved: MapThemeResolved): void {
+  if (typeof document === 'undefined') return;
+  applyMapThemeClassToElement(document.documentElement, resolved);
 }
 
 /** Read stored mode (or fallback), resolve, and apply to html. */

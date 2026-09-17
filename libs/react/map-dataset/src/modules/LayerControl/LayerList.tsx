@@ -1,6 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI, LayerListGroupTree, LayerListItem } from '@hungpvq/map-dataset';
-import { LAYER_CONTROL_LOCALE, hasMoveLayer, layerMatchesSearch, listListViewGroups, traverseTree } from '@hungpvq/map-dataset';
+import { LAYER_CONTROL_LOCALE, layerMatchesSearch, listListViewGroups, syncListViewLayerOrder } from '@hungpvq/map-dataset';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
@@ -71,21 +71,7 @@ export function LayerList({
   }, [datasetVersion, mapId]);
   function updateLayers(items: LayerListItem[]) {
     callMap((map: MapSimple) => {
-      let beforeId = '';
-      items.slice().forEach((view, index, arr) => {
-        view.index = arr.length - index;
-        const parent = view.getParent();
-        traverseTree(
-          parent || view,
-          (node) => {
-            if (hasMoveLayer(node)) {
-              node.moveLayer(map, beforeId);
-              beforeId = node.getBeforeId() || '';
-            }
-          },
-          { direction: 'rtl' },
-        );
-      });
+      syncListViewLayerOrder(map, items.slice());
     });
   }
   function onItemsChange(next: LayerListItem[]) {
@@ -128,6 +114,7 @@ export function LayerList({
             placeholder={trans('map.layer-control.search')}
             aria-label="Search layers"
             data-map-layer-search
+            data-map-id={mapId}
           />
           {layerSearch.trim() ? (
             <MapControlButton variant="plain"

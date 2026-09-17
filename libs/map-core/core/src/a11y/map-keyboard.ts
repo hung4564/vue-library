@@ -2,6 +2,23 @@ import { UniversalRegistry } from '../registry/universal-registry';
 
 export const MAP_LAYER_SEARCH_SELECTOR = '[data-map-layer-search]';
 
+function escapeAttrSelector(value: string): string {
+  if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+    return CSS.escape(value);
+  }
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+/** Selector for the LayerControl search input of a given map. */
+export function mapLayerSearchSelector(mapId: string): string {
+  return `${MAP_LAYER_SEARCH_SELECTOR}[data-map-id="${escapeAttrSelector(mapId)}"]`;
+}
+
+function queryLayerSearch(mapId: string): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
+  return document.querySelector<HTMLElement>(mapLayerSearchSelector(mapId));
+}
+
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
@@ -12,7 +29,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 /**
  * Close the last open panel-like control for a map (popup / sidebar / float).
  * Returns true when a control was closed.
- * Blurs layer search only when it currently owns focus.
+ * Blurs layer search only when that map's search currently owns focus.
  */
 export function closeTopOpenMapControl(mapId: string): boolean {
   const open = UniversalRegistry.listControls(mapId).filter(
@@ -25,7 +42,7 @@ export function closeTopOpenMapControl(mapId: string): boolean {
   const top = open[open.length - 1];
   if (!top) return false;
   const active = document.activeElement;
-  const search = document.querySelector<HTMLElement>(MAP_LAYER_SEARCH_SELECTOR);
+  const search = queryLayerSearch(mapId);
   top.close();
   if (
     search &&
@@ -37,8 +54,8 @@ export function closeTopOpenMapControl(mapId: string): boolean {
   return true;
 }
 
-function tryFocusLayerSearch(): boolean {
-  const el = document.querySelector<HTMLElement>(MAP_LAYER_SEARCH_SELECTOR);
+function tryFocusLayerSearch(mapId: string): boolean {
+  const el = queryLayerSearch(mapId);
   if (!el) return false;
   if (typeof el.focus === 'function') {
     el.focus();
@@ -59,10 +76,10 @@ export function focusMapLayerSearch(mapId: string): boolean {
   if (layer && !layer.isOpen()) {
     layer.open();
   }
-  if (tryFocusLayerSearch()) return true;
+  if (tryFocusLayerSearch(mapId)) return true;
 
   if (typeof requestAnimationFrame !== 'function') {
-    return tryFocusLayerSearch();
+    return tryFocusLayerSearch(mapId);
   }
 
   let done = false;
@@ -76,7 +93,7 @@ export function focusMapLayerSearch(mapId: string): boolean {
   };
 
   const tick = (): boolean => {
-    if (tryFocusLayerSearch()) return finish(true);
+    if (tryFocusLayerSearch(mapId)) return finish(true);
     frames += 1;
     if (frames < 8) {
       requestAnimationFrame(() => {
@@ -89,7 +106,7 @@ export function focusMapLayerSearch(mapId: string): boolean {
 
   if (typeof MutationObserver === 'function' && typeof document !== 'undefined') {
     observer = new MutationObserver(() => {
-      if (tryFocusLayerSearch()) finish(true);
+      if (tryFocusLayerSearch(mapId)) finish(true);
     });
     observer.observe(document.body, { childList: true, subtree: true });
     setTimeout(() => finish(false), 500);
@@ -112,6 +129,7 @@ export type MapKeyboardShortcutOptions = {
 /**
  * Document-level map shortcuts. Returns an unsubscribe function.
  * Skips when the user is typing in an input (except Escape).
+ * Search focus is scoped to `mapId` via `[data-map-layer-search][data-map-id]`.
  */
 export function bindMapKeyboardShortcuts(
   options: MapKeyboardShortcutOptions,

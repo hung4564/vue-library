@@ -4,6 +4,7 @@ import {
   type IDataset,
 } from '@hungpvq/map-dataset';
 import {
+  filterLayerDetailHeaderMenus,
   getItemMenuHost,
   getResolvedMenus,
   MENU_CONTROL_ID,
@@ -111,8 +112,13 @@ export function LayerDetail({
   );
 
   const layerTitleMenus = useMemo(
-    () => (view ? getResolvedMenus(view, 'layer') : []),
-    [view],
+    () =>
+      view
+        ? filterLayerDetailHeaderMenus(getResolvedMenus(view, 'layer'), {
+            hasFeatureItem: item != null,
+          })
+        : [],
+    [view, item],
   );
 
   const itemMenus = useMemo(() => {
@@ -173,7 +179,7 @@ export function LayerDetail({
                     data={host}
                     mapId={mapId}
                     value={item}
-                    locations={['title', 'extra', 'menu']}
+                    locations={['title']}
                   />
                 ) : null}
               </>

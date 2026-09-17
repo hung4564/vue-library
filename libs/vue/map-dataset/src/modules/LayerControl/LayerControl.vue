@@ -6,30 +6,17 @@ export default {
 
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
-import {
-  clearAddGeojsonHereItems,
-  getDefaultAddGeojsonHereItems,
-  MAP_CONTEXT_MENU_ID,
-  setAddGeojsonHereItems,
-  type AddGeojsonHerePayload,
-  type MapMenuItemProps,
-} from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  findAllComponentsByType,
+  getLayerControlTitleMenuState,
   LAYER_CONTROL_LOCALE,
+  registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
   type IDataset,
-  type IListViewUI,
 } from '@hungpvq/map-dataset';
-import { createGeojsonHereDataset } from '@hungpvq/map-dataset/geojson';
 import {
-  getMenuItemLocation,
-  getResolvedMenus,
-  mergeMenusById,
   MENU_CONTROL_ID,
   resolveMenuContextSource,
-  type MenuAction,
   type MenuContextSource,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
@@ -150,44 +137,18 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 watch(show, () => control.sync());
 
 const { addDataset, getDatasets, getDatasetIds } = useMapDataset(mapId.value);
-function onAddGeojsonHere(
-  _props: MapMenuItemProps,
-  payload: AddGeojsonHerePayload,
-) {
-  void addDataset(createGeojsonHereDataset(payload));
-}
-UniversalRegistry.registerMenuHandlerForMap(
-  mapId.value,
-  MAP_CONTEXT_MENU_ID.addGeojsonHere,
-  onAddGeojsonHere,
+onUnmounted(
+  registerAddGeojsonHereForMap(mapId.value, (dataset) => {
+    void addDataset(dataset);
+  }),
 );
-setAddGeojsonHereItems(mapId.value, getDefaultAddGeojsonHereItems());
-onUnmounted(() => {
-  clearAddGeojsonHereItems(mapId.value);
-});
 
 const datasetIds = computed(() => getDatasetIds().value);
 
 const titleMenuState = computed(() => {
   void datasetIds.value;
   const roots = getDatasets().filter(Boolean) as IDataset[];
-  const lists: MenuAction[][] = [];
-  let firstData: IDataset | undefined = roots[0];
-  for (const root of roots) {
-    const listViews = findAllComponentsByType<IListViewUI>(root, 'list');
-    for (const list of listViews) {
-      if (!firstData) firstData = list;
-      lists.push(
-        getResolvedMenus(list, 'layer').filter(
-          (menu) => getMenuItemLocation(menu) === 'title',
-        ),
-      );
-    }
-  }
-  return {
-    menus: mergeMenusById(lists),
-    data: firstData,
-  };
+  return getLayerControlTitleMenuState(roots);
 });
 </script>
 <template>

@@ -1,6 +1,6 @@
 import type { MenuAction } from '../interfaces/dataset.parts';
 import { createMenuConditionContext } from './condition';
-import { partitionMenuActions, mergeMenusById } from './location';
+import { partitionMenuActions, mergeMenusById, filterLayerDetailHeaderMenus } from './location';
 import {
   MENU_CONTROL_ID,
   applyMenuControlPlacement,
@@ -155,5 +155,29 @@ describe('mergeMenusById', () => {
     const merged = mergeMenusById([a, b]);
     expect(merged).toHaveLength(3);
     expect(merged[0]).toMatchObject({ id: 'x', icon: 'a' });
+  });
+});
+
+describe('filterLayerDetailHeaderMenus', () => {
+  it('keeps fill-bound when there is no feature item', () => {
+    const menus: MenuAction[] = [
+      { type: 'item', id: 'fill-bound', icon: 'a', click: () => undefined },
+      { type: 'item', id: 'other', icon: 'b', click: () => undefined },
+    ];
+    expect(
+      filterLayerDetailHeaderMenus(menus, { hasFeatureItem: false }),
+    ).toEqual(menus);
+  });
+
+  it('drops fill-bound when showing a feature item', () => {
+    const menus: MenuAction[] = [
+      { type: 'item', id: 'fill-bound', icon: 'a', click: () => undefined },
+      { type: 'item', id: 'other', icon: 'b', click: () => undefined },
+    ];
+    expect(
+      filterLayerDetailHeaderMenus(menus, { hasFeatureItem: true }).map(
+        (m) => m.id,
+      ),
+    ).toEqual(['other']);
   });
 });

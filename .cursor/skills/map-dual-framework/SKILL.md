@@ -58,7 +58,15 @@ Rules:
 - Parity lock: `MAP_DUAL_CONTROL_IDS` in `libs/map-core/core/src/dual/parity-catalog.ts` + adapter `vue-react-parity.spec.ts`.
 - MapLibre `MapSimple` stays a public Stable type — do not abstract/hide the engine behind a custom map facade.
 
-Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fullscreen helpers, `createIdentifyControlModel`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `createPrintAdvancedSession`, `createLiveToolbarStrategy`, `normalizeDisplayEpsgs`, `InspectController`, `draw-control-helpers`, root `controls/*` (home, globe, navigation, goto, setting, mouse-coordinates, info).
+**Checklist when adding a dual control/tool:**
+
+1. Put orchestration in `create*Session` / helpers under `map-core` / `map-dataset` / `map-draw` **first**.
+2. Vue + React hosts only bind UI (`useRegisterMapControl`, toolbar, EventClick, slots) — no duplicated GIS sequence.
+3. Update `MAP_DUAL_CONTROL_IDS` / adapter `vue-react-parity.spec.ts` when the control id is new.
+4. Add or extend **behavioral** session tests (not only export/id catalog); update the dual checklist comment in `libs/map-core/core/src/dual/behavioral-parity.spec.ts`.
+5. Lock new public exports in the package `public-api.spec.ts` (+ Stable/Experimental docs as needed).
+
+Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fullscreen helpers, `createIdentifyControlModel`, `createIdentifySession`, `createMeasurementSession`, `createDrawSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `createPrintAdvancedSession`, `createLiveToolbarStrategy`, `normalizeDisplayEpsgs`, `InspectController`, `draw-control-helpers`, root `controls/*` (home, globe, navigation, goto, setting, mouse-coordinates, info).
 
 ## Draw checklist
 

@@ -10,6 +10,7 @@ export { DEVTOOLS_CONTROL } from './devtools/control';
 
 export {
   MAP_LAYER_SEARCH_SELECTOR,
+  mapLayerSearchSelector,
 } from './a11y/map-keyboard';
 
 export {

@@ -83,3 +83,18 @@ export function mergeMenusById(lists: MenuAction[][]): MenuAction[] {
   }
   return result;
 }
+
+/**
+ * LayerDetail header: when a feature `item` is shown, drop layer `fill-bound`
+ * so it does not duplicate item `fly-to` (same crosshair icon at `title`).
+ */
+export function filterLayerDetailHeaderMenus(
+  layerMenus: MenuAction[],
+  options: { hasFeatureItem: boolean; fillBoundId?: string },
+): MenuAction[] {
+  if (!options.hasFeatureItem) return layerMenus;
+  const fillBoundId = options.fillBoundId ?? 'fill-bound';
+  return layerMenus.filter(
+    (menu) => menu.type === 'divider' || menu.id !== fillBoundId,
+  );
+}

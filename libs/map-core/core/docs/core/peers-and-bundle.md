@@ -63,9 +63,11 @@ Declared **peerDependencies** (and workspace `@hungpvq/*` deps) must stay **exte
 
 `bootstrapMapTheme('auto')` follows `prefers-color-scheme` (light/dark). ThemeControl also listens to the media query when mode is `auto`.
 
+**Process-global (not per `mapId`):** `bootstrapMapTheme` / `applyMapThemeClass` write the theme class on `document.documentElement` and persist via `MAP_THEME_STORAGE_KEY`. Multiple maps on one page share one chrome theme. Platform accessors (`registerMapAccessor` / READY) are also process-scoped **last-writer-wins** — prefer a single framework host bootstrap (`installMapApp` / Map shell). Details: [Map store — multi-map caveats](./map-store.md#multi-map-caveats-apps-with-map-a--map-b).
+
 ## Keyboard / a11y (map-core)
 
-`bindMapKeyboardShortcuts({ mapId })` (on by default in `Map`): **Esc** closes the top open panel; **`/`** focuses LayerControl search (`data-map-layer-search`). Opt out with `keyboardShortcuts={false}` / `:keyboard-shortcuts="false"`.
+`bindMapKeyboardShortcuts({ mapId })` (on by default in `Map`): **Esc** closes the top open panel; **`/`** focuses that map’s LayerControl search (`[data-map-layer-search][data-map-id]`). Opt out with `keyboardShortcuts={false}` / `:keyboard-shortcuts="false"`.
 
 ## fitBounds overlays
 

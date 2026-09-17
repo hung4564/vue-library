@@ -34,6 +34,15 @@ export {
   resolveMeasurementToolbarStatus,
 } from './mode';
 export {
+  createMeasurementSession,
+} from './measurement-session';
+export type {
+  MeasurementModeType,
+  MeasurementSession,
+  MeasurementSessionOptions,
+  MeasurementUiState,
+} from './measurement-session';
+export {
   MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
   MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementMapView,

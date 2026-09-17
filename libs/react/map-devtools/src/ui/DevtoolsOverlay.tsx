@@ -14,7 +14,14 @@ import './devtools.css';
 
 const BOTTOM_ITEM_ID = 'map-devtools-bottom';
 
-export function DevtoolsOverlay({ containerId }: { containerId?: string }) {
+export function DevtoolsOverlay({
+  containerId,
+  mapId,
+}: {
+  containerId?: string;
+  /** When `containerId` is omitted, resolves `map-draggable-${mapId}`. */
+  mapId?: string;
+}) {
   const { isOpen, activeTab, logs } = useDevtoolState();
   const logCount = logs.length;
   const [isMobile, setIsMobile] = useState(isDevtoolsMobileViewport);
@@ -23,8 +30,8 @@ export function DevtoolsOverlay({ containerId }: { containerId?: string }) {
   );
 
   const refreshContainerId = useCallback(() => {
-    setResolvedContainerId(resolveMapDragContainerId(containerId));
-  }, [containerId]);
+    setResolvedContainerId(resolveMapDragContainerId(containerId, mapId));
+  }, [containerId, mapId]);
 
   useEffect(() => {
     const onResize = () => setIsMobile(isDevtoolsMobileViewport());
@@ -38,7 +45,7 @@ export function DevtoolsOverlay({ containerId }: { containerId?: string }) {
   }, [isOpen, refreshContainerId]);
 
   const open = () => {
-    setResolvedContainerId(resolveMapDragContainerId(containerId));
+    setResolvedContainerId(resolveMapDragContainerId(containerId, mapId));
     setDevtoolOpen(true);
   };
 
@@ -46,7 +53,7 @@ export function DevtoolsOverlay({ containerId }: { containerId?: string }) {
 
   const onBottomShow = (value: boolean) => {
     if (value) {
-      setResolvedContainerId(resolveMapDragContainerId(containerId));
+      setResolvedContainerId(resolveMapDragContainerId(containerId, mapId));
     }
     setDevtoolOpen(value);
   };

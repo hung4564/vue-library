@@ -92,3 +92,91 @@ export function getFeatureEditMode(
     options: { featureId: featureIds[0]! },
   };
 }
+
+/** Minimal MapDraw surface used by select/edit helpers (avoids full class type). */
+export type MapDrawEditControl = {
+  add: (collection: {
+    type: 'FeatureCollection';
+    features: Feature[];
+  }) => string[];
+  delete: (id: string) => void;
+  changeMode: (mode: string, options?: Record<string, unknown>) => void;
+};
+
+/** Apply {@link getFeatureEditMode} on a MapDraw control. */
+export function applyFeatureEditMode(
+  control: MapDrawEditControl,
+  feature: Feature,
+  featureIds: string[],
+): void {
+  const edit = getFeatureEditMode(feature, featureIds);
+  if (edit.mode === 'simple_select') {
+    control.changeMode('simple_select', edit.options);
+  } else {
+    control.changeMode('direct_select', edit.options);
+  }
+}
+
+export type DrawMapClickResult =
+  | { kind: 'none' }
+  | { kind: 'select'; feature: Feature; enteredEdit: boolean }
+  | { kind: 'delete'; feature: Feature };
+
+/**
+ * Shared select/delete map-click path for DrawControl (Vue ↔ React).
+ */
+export async function handleDrawMapClick(options: {
+  method: string;
+  drawOption: MapDrawOption | undefined;
+  control: MapDrawEditControl;
+  mapId: string;
+  point: [number, number];
+  setFeature: (
+    type: 'added' | 'updated' | 'deleted',
+    feature: Feature,
+  ) => void;
+  detachMapClick?: () => void;
+}): Promise<DrawMapClickResult> {
+  const {
+    method,
+    drawOption,
+    control,
+    mapId,
+    point,
+    setFeature,
+    detachMapClick,
+  } = options;
+  if (!drawOption?.selectFeature) {
+    return { kind: 'none' };
+  }
+  const feature = await drawOption.selectFeature({ point }, { mapId });
+  if (!feature) {
+    return { kind: 'none' };
+  }
+  ensureFeatureId(feature);
+
+  if (method === 'select') {
+    setFeature('updated', feature);
+    const featureIds = control.add({
+      type: 'FeatureCollection',
+      features: [feature],
+    });
+    let enteredEdit = false;
+    if (featureIds?.length) {
+      enteredEdit = true;
+      detachMapClick?.();
+      applyFeatureEditMode(control, feature, featureIds);
+    }
+    return { kind: 'select', feature, enteredEdit };
+  }
+
+  if (method === 'delete') {
+    if (feature.id != null) {
+      control.delete(String(feature.id));
+    }
+    await drawOption.deleteFeature?.(feature, { mapId });
+    return { kind: 'delete', feature };
+  }
+
+  return { kind: 'none' };
+}

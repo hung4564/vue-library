@@ -65,6 +65,7 @@ export {
 } from './items';
 export type { IdentifyForListMenuOptions, ListViewGroupOption } from './items';
 export {
+  filterLayerDetailHeaderMenus,
   getMenuItemLocation,
   mergeMenusById,
   partitionMenuActions,

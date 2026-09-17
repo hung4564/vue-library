@@ -1,11 +1,18 @@
-/** Prefer explicit id; otherwise first map DraggableContainer in the DOM. */
+import { moduleDraggableHostId } from '../ui/module-container';
+
+/**
+ * Resolve a map `DraggableContainer` host id.
+ * Prefer `explicit`; otherwise derive from `mapId` (`map-draggable-${mapId}`).
+ * Does **not** fall back to the first `[id^="map-draggable-"]` in the document
+ * (unsafe when multiple maps share a page).
+ */
 export function resolveMapDragContainerId(
   explicit?: string | null,
+  mapId?: string | null,
 ): string | null {
   if (explicit) return explicit;
-  if (typeof document === 'undefined') return null;
-  const el = document.querySelector('[id^="map-draggable-"]');
-  return el?.id ?? null;
+  if (mapId) return moduleDraggableHostId(mapId);
+  return null;
 }
 
 export const DEVTOOLS_MOBILE_BREAKPOINT = 640;

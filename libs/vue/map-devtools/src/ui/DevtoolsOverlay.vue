@@ -56,6 +56,8 @@ import {
 
 const props = defineProps<{
   containerId?: string;
+  /** When `containerId` is omitted, resolves `map-draggable-${mapId}`. */
+  mapId?: string;
 }>();
 
 const state = devtoolState;
@@ -64,7 +66,10 @@ const resolvedContainerId = ref<string | null>(null);
 const bottomItemId = 'map-devtools-bottom';
 
 function refreshContainerId() {
-  resolvedContainerId.value = resolveMapDragContainerId(props.containerId);
+  resolvedContainerId.value = resolveMapDragContainerId(
+    props.containerId,
+    props.mapId,
+  );
 }
 
 function refreshMobile() {
@@ -86,7 +91,7 @@ function onBottomShow(value: boolean) {
 }
 
 watch(
-  () => props.containerId,
+  () => [props.containerId, props.mapId] as const,
   () => {
     if (state.isOpen) refreshContainerId();
   },

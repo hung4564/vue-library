@@ -11,6 +11,7 @@ import {
   type IDataset,
 } from '@hungpvq/map-dataset';
 import {
+  filterLayerDetailHeaderMenus,
   getItemMenuHost,
   getResolvedMenus,
   MENU_CONTROL_ID,
@@ -57,9 +58,12 @@ const itemMenuHost = computed(() =>
   props.view ? getItemMenuHost(props.view) : undefined,
 );
 
-const layerTitleMenus = computed(() =>
-  props.view ? getResolvedMenus(props.view, 'layer') : [],
-);
+const layerTitleMenus = computed(() => {
+  if (!props.view) return [];
+  return filterLayerDetailHeaderMenus(getResolvedMenus(props.view, 'layer'), {
+    hasFeatureItem: props.item != null,
+  });
+});
 
 const itemMenus = computed(() => {
   if (!props.view) return [];
@@ -128,7 +132,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
             :data="itemMenuHost || view"
             :mapId="mapId"
             :value="item"
-            :locations="['title', 'extra', 'menu']"
+            :locations="['title']"
           />
         </template>
         <div class="table-show-info">

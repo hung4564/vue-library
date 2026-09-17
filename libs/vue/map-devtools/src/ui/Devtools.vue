@@ -1,6 +1,6 @@
 <template>
   <DevtoolsControl v-if="mode === 'control'" v-bind="controlBind" />
-  <DevtoolsOverlay v-else :container-id="containerId" />
+  <DevtoolsOverlay v-else :container-id="containerId" :map-id="mapId" />
 </template>
 
 <script setup lang="ts">
@@ -29,6 +29,8 @@ const props = withDefaults(
 );
 
 const mode = computed(() => props.mode ?? 'overlay');
+const containerId = computed(() => props.containerId);
+const mapId = computed(() => props.mapId);
 
 const controlBind = computed(() => ({
   mapId: props.mapId,

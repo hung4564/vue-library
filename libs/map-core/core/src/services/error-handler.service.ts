@@ -134,7 +134,10 @@ export class MapErrorHandler implements ErrorHandler {
       try {
         listener(mapError);
       } catch (listenerError) {
-        console.error('Error in error listener:', listenerError);
+        logHelper(errorLogger, 'global', 'ErrorHandler').error(
+          'Error in error listener',
+          { error: listenerError },
+        );
       }
     });
   }

@@ -42,13 +42,16 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
 
 /** Adapter helpers + logger — may change in a minor. */
 export const MAP_DRAW_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'applyFeatureEditMode',
   'classifyDrawCreateFeature',
+  'createDrawSession',
   'emptyDraftListSnapshot',
   'ensureFeatureId',
   'getDraftListSnapshot',
   'getDrawCreateModeEffects',
   'getDrawModeSelectEffects',
   'getFeatureEditMode',
+  'handleDrawMapClick',
   'logger',
 ] as const;
 

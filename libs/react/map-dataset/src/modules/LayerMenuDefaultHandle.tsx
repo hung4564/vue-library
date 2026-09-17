@@ -127,6 +127,20 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
         refreshList();
       },
     );
+
+    return () => {
+      for (const key of [
+        LIST_VIEW_MENU_ID.addComponent,
+        LIST_VIEW_MENU_ID.fitBounds,
+        LIST_VIEW_MENU_ID.highlight,
+        LIST_VIEW_MENU_ID.layer.addToGroup,
+        LIST_VIEW_MENU_ID.layer.addToExistingGroup,
+        LIST_VIEW_MENU_ID.layer.moveUp,
+        LIST_VIEW_MENU_ID.layer.moveDown,
+      ] as const) {
+        UniversalRegistry.unregisterMenuHandlerForMap(mapId, key);
+      }
+    };
   }, [mapId]);
 
   return null;

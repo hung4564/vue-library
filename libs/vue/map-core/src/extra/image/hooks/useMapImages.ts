@@ -1,4 +1,4 @@
-import { type MapSimple } from '@hungpvq/map-core';
+import { type MapSimple, subscribeMapReady } from '@hungpvq/map-core';
 import {
   listMapStyleImages,
   styleImageToDataURL,
@@ -6,33 +6,42 @@ import {
 } from '@hungpvq/map-core/image';
 import type { StyleImage } from 'maplibre-gl';
 import { onBeforeUnmount, onMounted, shallowRef } from 'vue';
-import { getMap } from '../../../store/store';
 
 export function useMapImages(mapId: string) {
   const images = shallowRef<Record<string, StyleImage>>({});
-  let unsubscribe: (() => void) | undefined;
+  let unsubscribeReady: (() => void) | undefined;
+  let unsubscribeImages: (() => void) | undefined;
 
-  const syncImages = (map: MapSimple) => {
+  const clearImageSubscription = () => {
+    unsubscribeImages?.();
+    unsubscribeImages = undefined;
+  };
+
+  const attach = (map: MapSimple) => {
     images.value = listMapStyleImages(map);
+    clearImageSubscription();
+    unsubscribeImages = subscribeMapStyleImages(map, () => {
+      images.value = listMapStyleImages(map);
+    });
   };
 
   onMounted(() => {
-    getMap(mapId, (map: MapSimple) => {
-      syncImages(map);
-      unsubscribe = subscribeMapStyleImages(map, () => syncImages(map));
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      attach(map);
     });
   });
 
   onBeforeUnmount(() => {
-    unsubscribe?.();
-    unsubscribe = undefined;
+    unsubscribeReady?.();
+    unsubscribeReady = undefined;
+    clearImageSubscription();
   });
 
   const reload = () => {
-    unsubscribe?.();
-    getMap(mapId, (map: MapSimple) => {
-      syncImages(map);
-      unsubscribe = subscribeMapStyleImages(map, () => syncImages(map));
+    clearImageSubscription();
+    unsubscribeReady?.();
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      attach(map);
     });
   };
 

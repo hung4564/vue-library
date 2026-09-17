@@ -22,6 +22,10 @@ export type {
   TabConfig,
 } from './type';
 export {
+  applyStyleTabValue,
+  applyStyleZoom,
+} from './apply-style-patch';
+export {
   LayerRasterMapboxBuild,
   LayerSimpleMapboxBuild,
   getDefaultLayer,

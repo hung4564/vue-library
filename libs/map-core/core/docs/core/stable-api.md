@@ -25,6 +25,40 @@ Root and domain barrels use **explicit named exports** (no public `export *`). R
 - Adding a **runtime** export → named export in the entry barrel + Stable (or Experimental) list in that package’s `public-api.spec.ts` + this page when documenting the area.
 - Removing a root **or** subpath runtime export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
 
+### Canonical imports
+
+Prefer **domain subpaths** for feature APIs; use the root barrel for platform/runtime symbols (`getMap`, `MapStoreManager`, `UniversalRegistry`, …):
+
+```ts
+import { getMap, subscribeMapReady } from '@hungpvq/map-core';
+import { createMeasurementSession } from '@hungpvq/map-core/measurement';
+import { createIdentifySession } from '@hungpvq/map-dataset/identify';
+import { createDrawSession } from '@hungpvq/map-draw';
+```
+
+Adapters (`@hungpvq/vue-*` / `@hungpvq/react-*`) must **not** re-export core protocol — import UI from adapters, protocol from core/dataset/draw.
+
+### Export removal checklist (do not skip)
+
+Before removing a published runtime export (Stable **or** Experimental on a barrel):
+
+1. Classify Stable vs Experimental; confirm it is not a control/menu id, store key, CSS token, or protocol string.
+2. Grep first-party map packages, demos, and docs. Tag: `in-use-first-party` | `docs-only` | `looks-unused-internal` | `unknown-external`.
+3. **SemVer major** for any remove from a published barrel (Experimental included).
+4. Update **together**: barrel `index.ts`, `*_STABLE_*` / `*_EXPERIMENTAL_*` in `public-api.spec.ts`, this page.
+5. Prefer `@deprecated` alias for ≥1 minor when `unknown-external` or docs still reference the symbol.
+6. **Forbidden:** delete an export only because “no monorepo import” without steps 3–4.
+
+### Export inventory (hardening pass)
+
+| Symbol | Package | Tag | Action |
+|--------|---------|-----|--------|
+| `logger` (root) | `@hungpvq/map-draw` | in-use-first-party (vue/react map-draw stores) | **Keep** Experimental |
+| `brightColor`, `generateInspectStyle`, `renderPopup`, … | `@hungpvq/map-draw` | in-use-first-party | Keep (InspectControl) |
+| `emptyDraftListSnapshot` | `@hungpvq/map-draw` | in-use-first-party | Keep (useDrawDrafts) |
+| `cycleMapThemeMode` | `@hungpvq/map-core/theme` | in-use-first-party / docs | Keep |
+| Inspect GIS helpers (`getSourcesFromMap`, …) | `@hungpvq/map-draw` | unknown-external | Keep (public Inspect extension surface) |
+
 Related: [SemVer checklist](https://github.com/hung4564/vue-library/blob/main/libs/map-core/README.md#checklist-semver--breaking-change) · [Minimal starter](./minimal-starter.md) · [Peers and bundle](./peers-and-bundle.md) · [Map store](./map-store.md) · [Error handling](./error-handling.md) · [UniversalRegistry controls](./registry-controls.md) · [components](./registry-components.md)
 
 ## MapLibre-first
@@ -40,11 +74,11 @@ Pure owners to copy (non-exhaustive):
 | Area | Core helper |
 |------|-------------|
 | Shell controls | root `controls/*` (`captureHomeView`, `goHome`, navigation / globe / goto / setting / mouse-coordinates / info) |
-| Identify session | `createIdentifyControlModel` (`@hungpvq/map-dataset/identify`) |
-| Measurement MapView | `createMeasurementMapView` / layers + `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` (`./measurement`) |
+| Identify session | `createIdentifySession` / `createIdentifyControlModel` (`@hungpvq/map-dataset/identify`) |
+| Measurement | `createMeasurementSession` / `createMeasurementMapView*` (`./measurement`) |
 | Print advanced | `createPrintAdvancedSession` (`./print`) |
 | Toolbar / CRS | `createLiveToolbarStrategy` (`./toolbar`), `normalizeDisplayEpsgs` (`./crs`) |
-| Draw / inspect | `draw-control-helpers`, `InspectController` (`@hungpvq/map-draw`) |
+| Draw / inspect | `createDrawSession`, `draw-control-helpers`, `InspectController` (`@hungpvq/map-draw`) |
 | Misc | `GeoLocateSession`, `createCopyFeedback`, theme / fullscreen helpers |
 
 Hosts own UI, registry actions, and framework lifecycle only.
@@ -68,10 +102,10 @@ Hosts own UI, registry actions, and framework lifecycle only.
 | `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive` |
 | `./image` | Map image load/store helpers |
 | `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
-| `./measurement` | `MeasurementService`, measure modes, format helpers, `resolveMeasurementModeToggle` / `resolveMeasurementToolbarStatus`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` |
+| `./measurement` | `MeasurementService`, measure modes, format helpers, `resolveMeasurementModeToggle` / `resolveMeasurementToolbarStatus`, `createMeasurementSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` |
 | `./menu` | Map context menu builders / actions |
 | `./print` | `PrintService`, export helpers (`exportMapbox*`, `printMapToFile`, `clipCanvasRegion`, `waitMapIdleAndTiles`), `createPrintAdvancedSession` / `DEFAULT_PRINT_ADVANCED_SETTING` |
-| `./theme` | Theme bootstrap / resolve / `MAP_THEME_*`, `MAP_THEME_CONTRAST_CLASS`, `subscribePrefersContrastMore` |
+| `./theme` | Theme bootstrap / resolve / `MAP_THEME_*`, `MAP_THEME_CONTRAST_CLASS`, `subscribePrefersContrastMore`; optional per-map helpers `resolveMapThemeElement` / `applyMapThemeClassToElement` / `applyMapThemeForMap` (document theme remains default) |
 | `./toolbar` | Toolbar strategies / store APIs, `createLiveToolbarStrategy` |
 
 ### Root (`.`) highlights
@@ -80,11 +114,11 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 
 | Area | Stable surface |
 |------|----------------|
-| Map access | `getMap` → `MapSimple \| undefined`, `subscribeMapReady` → unsubscribe, `registerMapAccessor`, `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_REGISTRY_METHOD` (reserved UniversalRegistry global keys), `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md) |
+| Map access | `getMap` → `MapSimple \| undefined`, `subscribeMapReady` → unsubscribe, `registerMapAccessor`, `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_REGISTRY_METHOD` (reserved UniversalRegistry global keys), `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md). **`registerMapAccessor` / theme bootstrap are process-global** (last-writer-wins / one `html` theme), not per `mapId`. |
 | Thin-host control helpers | Home (`captureHomeView` / `goHome`), navigation (`zoomIn` / `zoomOut` / `resetBearing` / `attachRotateListener` / …), globe (`toggleGlobeProjection` / …), goto / setting / mouse-coordinates / info attach helpers |
 | Registry | `UniversalRegistry`, `runMapControlAction`, `buildMapControlHandle`, `MapControlHandle`, `REGISTRY_*` (incl. `REGISTRY_GLOBAL_STORE_KEY` / `REGISTRY_MAPS_STORE_KEY` / `REGISTRY_CONTROLS_STORE_KEY`), `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) — backed by `@hungpvq/shared-store` |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
-| A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR` |
+| A11y | `bindMapKeyboardShortcuts`, `closeTopOpenMapControl`, `focusMapLayerSearch`, `MAP_LAYER_SEARCH_SELECTOR`, `mapLayerSearchSelector` |
 | Shared GIS | `fitBounds` (sidebar left/right padding), `bboxFromGeojson`, `isValidBbox`, `reprojectGeojson`, `reprojectGeojsonToWgs84`, coordinate/DMS helpers (`parseCoordinateText`, `latDMS`/`lngDMS`), color/`logHelper`, map-info (`copyImageDataUrl`) |
 | Pointer / touch | `getMapPointerProfile`, `bindMapLongPress` |
 | Fullscreen | `requestElementFullscreen`, `exitDocumentFullscreen`, `toggleElementFullscreen`, `subscribeFullscreenChange`, `getFullscreenElement`, `isDocumentFullscreen`, `isMapRootFullscreen`, `resolveMapFullscreenTarget` |
@@ -106,16 +140,16 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, layer-list types (`LayerListItem` / `LayerListTreeNode` / `LayerListGroupTree` / `ListViewGroupRef` / `IListViewUI` / `IGroupListViewUI`), generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `warnIfDatasetRegistryMissing` / `resetDatasetRegistryWarnFlag`, `IDataset` (+ shared protocol types). Experimental: `upsertDatasetComponent` / `removeDatasetComponent`, `logger` / `loggerIdentify` / `loggerHighlight` |
+| `.` | `DatasetService`, tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, layer-list types (`LayerListItem` / `LayerListTreeNode` / `LayerListGroupTree` / `ListViewGroupRef` / `IListViewUI` / `IGroupListViewUI`), `getLayerControlTitleMenuState` / `registerAddGeojsonHereForMap`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `warnIfDatasetRegistryMissing` / `resetDatasetRegistryWarnFlag`, `IDataset` (+ shared protocol types). Experimental: `upsertDatasetComponent` / `removeDatasetComponent`, `logger` / `loggerIdentify` / `loggerHighlight` |
 | `./highlight` | `createHighlightPart`, `getHighlightController` / `destroyHighlightController` / `bindHighlightPickDatasets`, cascade defaults (`DEFAULT_HIGHLIGHT_*`); types `HighlightPartOptions`, `HighlightController`, `IHighlightPart`, … (cascade/query/resolve + paint-layer helpers are package-internal) |
 | `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui`), `createMenuItemAttributeTable`, column/sort helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
 | `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`configureGisWorker`, `resolveGisWorkerUrl`, `terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), `createIdentifyControlModel` / scoped-session helpers, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), `createIdentifySession` / `createIdentifyControlModel` / scoped-session helpers, scope helpers; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
 | `./menu` | `LIST_VIEW_MENU_*`, `createMenu*` (list-view / dataset builders), `createMapContextMenuBuilder`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
-| `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `STYLE_CONTROL_LOCALE` |
+| `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `applyStyleTabValue` / `applyStyleZoom`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, `collectFilesFromDataTransfer`, `readClipboardGisPaste`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
 | `./geo-export` | `GEO_EXPORT_*` / `GEO_EXPORT_COMPONENT_KEY` (SoT; `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo*` aliases), `createGeoExportController`, `onExport` + `GeoExportContext` (+ `AbortSignal`), `uiMode` modal\|menu\|click, `formComponent` / `loadingComponent`, `resolveGeoExportUiSlot`, `resolveExportCollection`, active-source bridge, `createMenuItemExportGeo`, `createDatasetPartGeoExport`, `openGeoExportModalFromAttributeTable` / `runGeoExportClickFromAttributeTable` / `runGeoExportFormatFromAttributeTable`, `resolveGeoExportCrs`, `downloadBlob` / `sanitizeExportFilename`, `getDatasetFeatureCollection` / `hasGeojsonExportData`, `ExportGeoComponentAttrs` (`exportHandler`) |
 | `./vite` | `mapDatasetGisWorker()` — Vite optimizeDeps + maplibre named-export shim for published package consumers |
@@ -196,6 +230,9 @@ Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`
 | Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` |
 | Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
 | Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |
+| Experimental (adapters) | `createDrawSession`, `draw-control-helpers` (`handleDrawMapClick`, …), `logger` |
+
+Inspect helpers (`brightColor`, `generateInspectStyle`, …) remain public; inventory tagged `in-use-first-party` via InspectControl.
 
 ## `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`
 

@@ -59,6 +59,40 @@ describe('UniversalRegistry', () => {
     UniversalRegistry.clearMap(mapId);
   });
 
+  it('unregisterMenuHandlerForMap drops map handler then falls back to global', () => {
+    const mapId = 'spec-menu-unregister';
+    UniversalRegistry.registerMenuHandler('spec-toggle', () => 'global');
+    UniversalRegistry.registerMenuHandlerForMap(
+      mapId,
+      'spec-toggle',
+      () => 'map',
+    );
+
+    UniversalRegistry.unregisterMenuHandlerForMap(mapId, 'spec-toggle');
+
+    expect(UniversalRegistry.hasMenuHandler('spec-toggle', mapId)).toBe(true);
+    expect(UniversalRegistry.getMenuHandler('spec-toggle', mapId)?.()).toBe(
+      'global',
+    );
+    expect(UniversalRegistry.getKeysForMap(mapId, 'menu-handler')).toEqual([]);
+    expect(UniversalRegistry.getMenuHandler('spec-toggle')?.()).toBe('global');
+
+    UniversalRegistry.unregisterMenuHandlerForMap(mapId, 'missing');
+    UniversalRegistry.clearMap(mapId);
+  });
+
+  it('clearMap still clears remaining menu handlers after partial unregister', () => {
+    const mapId = 'spec-menu-clear-after-unregister';
+    UniversalRegistry.registerMenuHandlerForMap(mapId, 'a', () => 'a');
+    UniversalRegistry.registerMenuHandlerForMap(mapId, 'b', () => 'b');
+    UniversalRegistry.unregisterMenuHandlerForMap(mapId, 'a');
+
+    UniversalRegistry.clearMap(mapId);
+
+    expect(UniversalRegistry.hasMenuHandler('a', mapId)).toBe(false);
+    expect(UniversalRegistry.hasMenuHandler('b', mapId)).toBe(false);
+  });
+
   it('stores control handles per map and runs actions', () => {
     const mapId = 'spec-control-map';
     const calls: unknown[] = [];

@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Feature } from 'geojson';
 import {
+  applyFeatureEditMode,
   classifyDrawCreateFeature,
   emptyDraftListSnapshot,
   ensureFeatureId,
@@ -8,6 +9,7 @@ import {
   getDrawCreateModeEffects,
   getDrawModeSelectEffects,
   getFeatureEditMode,
+  handleDrawMapClick,
 } from './draw-control-helpers';
 import type { MapDrawDraftOption, MapDrawOption } from './types/index';
 
@@ -94,6 +96,63 @@ describe('draw-control-helpers', () => {
     expect(getFeatureEditMode(line, ['b'])).toEqual({
       mode: 'direct_select',
       options: { featureId: 'b' },
+    });
+  });
+
+  it('applyFeatureEditMode calls changeMode', () => {
+    const modes: unknown[] = [];
+    const control = {
+      add: () => ['id1'],
+      delete: () => undefined,
+      changeMode: (mode: string, options?: Record<string, unknown>) => {
+        modes.push([mode, options]);
+      },
+    };
+    const line = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [0, 0],
+          [1, 1],
+        ],
+      },
+    } as Feature;
+    applyFeatureEditMode(control, line, ['id1']);
+    expect(modes).toEqual([['direct_select', { featureId: 'id1' }]]);
+  });
+
+  it('handleDrawMapClick select path sets feature and enters edit', async () => {
+    const setFeature = vi.fn();
+    const detach = vi.fn();
+    const feature = {
+      type: 'Feature',
+      id: 'f1',
+      properties: {},
+      geometry: { type: 'Point', coordinates: [0, 0] },
+    } as Feature;
+    const control = {
+      add: () => ['f1'],
+      delete: vi.fn(),
+      changeMode: vi.fn(),
+    };
+    const result = await handleDrawMapClick({
+      method: 'select',
+      drawOption: {
+        selectFeature: async () => feature,
+      } as MapDrawOption,
+      control,
+      mapId: 'm1',
+      point: [1, 2],
+      setFeature,
+      detachMapClick: detach,
+    });
+    expect(result.kind).toBe('select');
+    expect(setFeature).toHaveBeenCalledWith('updated', feature);
+    expect(detach).toHaveBeenCalledOnce();
+    expect(control.changeMode).toHaveBeenCalledWith('simple_select', {
+      featureIds: ['f1'],
     });
   });
 });

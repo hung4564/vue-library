@@ -36,6 +36,8 @@ The Vue / React `Map` shell registers the accessor via `registerMapAccessor` / `
 
 Platform accessors are stored as **UniversalRegistry global methods** under reserved keys (`MAP_PLATFORM_REGISTRY_METHOD.*`, e.g. `__platform.getMap`). They live in the shared `map:registry:global` bag — `clearMap` / `removeMap` does **not** remove them — so duplicate package copies still share one wiring.
 
+**`registerMapAccessor` / `registerMapReadySubscriber`:** last-writer-wins for the process. Installing Vue and React map shells (or two package copies) in one page means the last registration owns `getMap` / READY wait. Prefer one framework host per app, or register once at bootstrap.
+
 ## Scoped stores
 
 Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
@@ -78,11 +80,28 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 | `map:registry:global` | `getOrCreateStore` | UniversalRegistry global methods / components / menu handlers |
 | `map:registry:maps` | `getOrCreateStore` | Per-`mapId` registry bags |
 | `map:registry:controls` | `getOrCreateStore` | Control handle registry |
-| `hungpvq.map-theme-mode` | `localStorage` (`MAP_THEME_STORAGE_KEY`) | Persisted theme mode (not a shared-store bag) |
+| `hungpvq.map-theme-mode` | `localStorage` (`MAP_THEME_STORAGE_KEY`) | Persisted theme mode (not a shared-store bag). **Process-global** — one theme for the whole page / all maps. |
 | `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups) |
 | `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones after `removeMap` |
 
 Related process pins outside this table: `__hungpvq_map_errorCapture__`, React `__hungpvq_react_map_storeManager__`, and `LoggerFactory` on `@hungpvq/shared-log`’s own `globalThis` key.
+
+## Multi-map DOM notes
+
+| Surface | Scope |
+|---------|--------|
+| Theme (`applyMapThemeClass` → `html`) | Process-global (documented; not per `mapId`) |
+| Layer search (`/` shortcut) | Per `mapId` via `[data-map-layer-search][data-map-id]` |
+| Devtools drag host | `containerId` and/or `mapId` — no first-match in document |
+
+### Multi-map caveats (apps with Map A + Map B)
+
+- **Per-map state is safe** when keyed by `mapId` (`MapStoreManager`, scoped stores, registry maps bag).
+- **Not per-map (default):** theme class on `html`, `MAP_THEME_STORAGE_KEY` in `localStorage`, and platform accessors (`registerMapAccessor` / READY) which are **last-writer-wins** for the process.
+- Do not expect ThemeControl on Map A to leave Map B on a different chrome theme — one document theme applies to all maps by default.
+- **Optional override:** `applyMapThemeForMap(mapId, resolved)` puts `.map-theme-*` on `.map-container[data-map-id]` only (see [ThemeControl — per-map override](./module/ThemeControl.md#optional-per-map-theme-override-advanced)). Document theme from `bootstrapMapTheme` / ThemeControl remains global.
+- Prefer `subscribeMapReady(mapId, cb)` over fire-and-forget `getMap(id, cb)` so each shell can unsubscribe on unmount without racing another map’s READY.
+- **Consumer rule:** do not assume per-map theme or per-map `getMap` wiring unless you opt into `applyMapThemeForMap`. Call `bootstrapMapTheme` / `registerMapAccessor` **once per process** (usually via `installMapApp` / Map shell bootstrap).
 
 ## Lifecycle (engine)
 

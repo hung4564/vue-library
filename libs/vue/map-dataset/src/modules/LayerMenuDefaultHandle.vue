@@ -8,6 +8,7 @@ import {
   UniversalRegistry,
   useMap,
 } from '@hungpvq/vue-map-core';
+import { onUnmounted } from 'vue';
 import { useMapDataset } from '../store/dataset-api';
 import { useMapDatasetComponent } from '../store/component';
 import { useMapHighlight } from '../store/highlight';
@@ -19,6 +20,16 @@ const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
 const hl = useMapHighlight(mapId.value);
 const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId.value);
+
+const MENU_HANDLER_KEYS = [
+  LIST_VIEW_MENU_ID.addComponent,
+  LIST_VIEW_MENU_ID.fitBounds,
+  LIST_VIEW_MENU_ID.highlight,
+  LIST_VIEW_MENU_ID.layer.addToGroup,
+  LIST_VIEW_MENU_ID.layer.addToExistingGroup,
+  LIST_VIEW_MENU_ID.layer.moveUp,
+  LIST_VIEW_MENU_ID.layer.moveDown,
+] as const;
 
 function refreshList() {
   const store = getStoreDataset();
@@ -115,6 +126,12 @@ UniversalRegistry.registerMenuHandlerForMap(
   LIST_VIEW_MENU_ID.layer.moveDown,
   runMove('down'),
 );
+
+onUnmounted(() => {
+  for (const key of MENU_HANDLER_KEYS) {
+    UniversalRegistry.unregisterMenuHandlerForMap(mapId.value, key);
+  }
+});
 </script>
 <template>
   <div></div>

@@ -1,18 +1,13 @@
 import { EventClick } from '@hungpvq/map-core/event';
 import {
   MapDraw,
-  classifyDrawCreateFeature,
-  ensureFeatureId,
-  getFeatureEditMode,
-  type DrawCreateEvent,
-  type DrawDeleteEvent,
-  type DrawUpdateEvent,
+  createDrawSession,
+  type DrawSession,
   type MapDrawOption,
 } from '@hungpvq/map-draw';
 import { useEventMap } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
-import type { MapMouseEvent } from 'maplibre-gl';
-import { nextTick, type Ref, ref } from 'vue';
+import { nextTick, onBeforeUnmount, type Ref, ref } from 'vue';
 import { useConfigDrawControl } from '../../../store';
 
 function useDrawEvents(
@@ -20,9 +15,7 @@ function useDrawEvents(
   control: MapDraw,
   drawOptions: Ref<MapDrawOption | undefined>,
   callbacks: {
-    onSelectMethod: (value: 'select' | 'delete') => void;
     redrawSource: () => Promise<void>;
-    getContext: () => { mapId: string };
   },
 ) {
   const { setFeature } = useConfigDrawControl(mapId);
@@ -30,95 +23,61 @@ function useDrawEvents(
   const isDraw = ref(false);
   const method = ref('');
 
+  const sessionHolder: { current: DrawSession | null } = { current: null };
+
   const { add: addEventClick, remove: removeEventClick } = useEventMap(
     mapId,
-    new EventClick().setHandler(onMapClick),
+    new EventClick().setHandler((e) => {
+      void sessionHolder.current?.handleMapClick(e);
+    }),
   );
 
-  function onDrawCreated(event: DrawCreateEvent) {
-    for (const feature of event.features) {
-      const kind = classifyDrawCreateFeature(method.value);
-      setFeature(
-        kind,
-        kind === 'updated' ? ensureFeatureId(feature) : feature,
-      );
-    }
-  }
+  const session = createDrawSession({
+    mapId,
+    control,
+    getDrawOption: () => drawOptions.value,
+    setFeature,
+    schedule: (fn) => {
+      void nextTick(fn);
+    },
+    setMapClickActive: (active) => {
+      if (active) addEventClick();
+      else removeEventClick();
+    },
+    redrawNonDraft: () => callbacks.redrawSource(),
+    onStateChange: (s) => {
+      method.value = s.method;
+      isDraw.value = s.isDraw;
+      current_feature.value = s.currentFeature;
+    },
+  });
+  sessionHolder.current = session;
 
-  function onDrawUpdated(event: DrawUpdateEvent) {
-    for (const feature of event.features) {
-      setFeature('updated', feature);
-    }
-  }
+  // After delete, session schedules selectMethod via its own schedule.
+  const handlers = session.getMapDrawHandlers();
 
-  function onDrawDeleted(event: DrawDeleteEvent) {
-    for (const feature of event.features) {
-      setFeature('deleted', feature);
-    }
-    nextTick(() => {
-      callbacks.onSelectMethod('select');
-    });
-  }
-
-  async function onMapClick(e: MapMouseEvent) {
-    const action = drawOptions.value;
-    if (!action) {
-      return;
-    }
-    const feature = await (action.selectFeature &&
-      action.selectFeature(
-        { point: [e.lngLat.lng, e.lngLat.lat] },
-        callbacks.getContext(),
-      ));
-    if (!feature) {
-      current_feature.value = undefined;
-      return;
-    }
-    ensureFeatureId(feature);
-    current_feature.value = feature;
-    switch (method.value) {
-      case 'select': {
-        setFeature('updated', feature);
-        const feature_ids = control.add({
-          type: 'FeatureCollection',
-          features: [feature],
-        });
-
-        if (feature_ids && feature_ids.length > 0) {
-          isDraw.value = true;
-          removeEventClick();
-          const edit = getFeatureEditMode(feature, feature_ids);
-          if (edit.mode === 'simple_select') {
-            control.changeMode('simple_select', edit.options);
-          } else {
-            control.changeMode('direct_select', edit.options);
-          }
-        }
-        break;
-      }
-
-      case 'delete': {
-        if (feature.id != null) {
-          control.delete(String(feature.id));
-        }
-        action.deleteFeature &&
-          (await action.deleteFeature(feature, callbacks.getContext()));
-        await callbacks.redrawSource();
-        break;
-      }
-    }
-  }
+  onBeforeUnmount(() => {
+    session.destroy();
+  });
 
   return {
-    onDrawCreated,
-    onDrawUpdated,
-    onDrawDeleted,
-    onMapClick,
+    onDrawCreated: handlers.onDrawCreated,
+    onDrawUpdated: handlers.onDrawUpdated,
+    onDrawDeleted: handlers.onDrawDeleted,
+    onMapClick: (e: Parameters<typeof session.handleMapClick>[0]) =>
+      session.handleMapClick(e),
     addEventClick,
     removeEventClick,
     current_feature,
     isDraw,
     method,
+    selectMethod: (value: 'select' | 'delete') => session.selectMethod(value),
+    startCreate: (drawMode: string) => session.startCreate(drawMode),
+    prepareSave: () => session.prepareSave(),
+    finishCancel: (onCancel?: (feature: Feature | undefined) => void) =>
+      session.finishCancel(onCancel),
+    redrawNonDraft: () => session.redrawNonDraft(),
+    destroy: () => session.destroy(),
   };
 }
 

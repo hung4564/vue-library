@@ -1,93 +1,78 @@
 import { EventClick } from '@hungpvq/map-core/event';
 import {
   MapDraw,
-  classifyDrawCreateFeature,
-  ensureFeatureId,
-  getDrawModeSelectEffects,
-  getFeatureEditMode,
-  isDraftOption,
-  type DrawCreateEvent,
-  type DrawDeleteEvent,
-  type DrawUpdateEvent,
+  createDrawSession,
+  type DrawSession,
   type MapDrawOption,
 } from '@hungpvq/map-draw';
 import { useEventMap } from '@hungpvq/react-map-core';
 import type { Feature } from 'geojson';
 import type { MapMouseEvent } from 'maplibre-gl';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type SetFeature = (
   type: 'added' | 'updated' | 'deleted',
   feature: Feature,
 ) => void;
 
+/**
+ * Vue parity: schedule post-delete reset + optional non-draft redraw.
+ */
 export function useDrawEvents(
   mapId: string,
   control: MapDraw,
   drawOptions: MapDrawOption | undefined,
   setFeature: SetFeature,
+  callbacks?: {
+    redrawNonDraft?: () => void | Promise<void>;
+  },
 ) {
-  const [isDraw, setIsDraw] = useState(false);
-  const [method, setMethod] = useState('');
-  const [currentFeature, setCurrentFeature] = useState<Feature | undefined>();
+  const [isDraw, setIsDrawState] = useState(false);
+  const [method, setMethodState] = useState('');
+  const [currentFeature, setCurrentFeatureState] = useState<
+    Feature | undefined
+  >();
 
-  const methodRef = useRef(method);
-  methodRef.current = method;
   const drawOptionsRef = useRef(drawOptions);
   drawOptionsRef.current = drawOptions;
   const setFeatureRef = useRef(setFeature);
   setFeatureRef.current = setFeature;
+  const redrawNonDraftRef = useRef(callbacks?.redrawNonDraft);
+  redrawNonDraftRef.current = callbacks?.redrawNonDraft;
 
-  const handlersRef = useRef<{
-    onDrawCreated: (e: DrawCreateEvent) => void;
-    onDrawUpdated: (e: DrawUpdateEvent) => void;
-    onDrawDeleted: (e: DrawDeleteEvent) => void;
-  }>({
-    onDrawCreated: () => undefined,
-    onDrawUpdated: () => undefined,
-    onDrawDeleted: () => undefined,
-  });
+  const sessionRef = useRef<DrawSession | null>(null);
+  const addEventClickRef = useRef<() => void>(() => undefined);
+  const removeEventClickRef = useRef<() => void>(() => undefined);
+
+  if (!sessionRef.current) {
+    sessionRef.current = createDrawSession({
+      mapId,
+      control,
+      getDrawOption: () => drawOptionsRef.current,
+      setFeature: (...args) => setFeatureRef.current(...args),
+      // Match Vue `nextTick`: defer select reset after draw.delete.
+      schedule: (fn) => {
+        queueMicrotask(fn);
+      },
+      setMapClickActive: (active) => {
+        if (active) addEventClickRef.current();
+        else removeEventClickRef.current();
+      },
+      redrawNonDraft: () => redrawNonDraftRef.current?.(),
+      onStateChange: (s) => {
+        setMethodState(s.method);
+        setIsDrawState(s.isDraw);
+        setCurrentFeatureState(s.currentFeature);
+      },
+    });
+  }
+  const session = sessionRef.current;
 
   const onMapClick = useCallback(
-    async (e: MapMouseEvent) => {
-      const action = drawOptionsRef.current;
-      if (!action?.selectFeature) return;
-      const feature = await action.selectFeature(
-        { point: [e.lngLat.lng, e.lngLat.lat] },
-        { mapId },
-      );
-      if (!feature) {
-        setCurrentFeature(undefined);
-        return;
-      }
-      ensureFeatureId(feature);
-      setCurrentFeature(feature);
-      const m = methodRef.current;
-      if (m === 'select') {
-        setFeatureRef.current('updated', feature);
-        const ids = control.add({
-          type: 'FeatureCollection',
-          features: [feature],
-        });
-        if (ids.length) {
-          setIsDraw(true);
-          removeEventClickRef.current();
-          const edit = getFeatureEditMode(feature, ids);
-          if (edit.mode === 'simple_select') {
-            control.changeMode('simple_select', edit.options);
-          } else {
-            control.changeMode('direct_select', edit.options);
-          }
-        }
-      } else if (m === 'delete') {
-        if (feature.id != null) {
-          control.delete(String(feature.id));
-        }
-        await action.deleteFeature?.(feature, { mapId });
-        if (!isDraftOption(action)) await action.redraw?.(mapId);
-      }
+    (e: MapMouseEvent) => {
+      void session.handleMapClick(e);
     },
-    [control, mapId],
+    [session],
   );
 
   const clickEvent = useMemo(
@@ -98,53 +83,48 @@ export function useDrawEvents(
     mapId,
     clickEvent,
   );
-  const removeEventClickRef = useRef(removeEventClick);
+  addEventClickRef.current = addEventClick;
   removeEventClickRef.current = removeEventClick;
 
   const onSelectMethod = useCallback(
     (value: 'select' | 'delete') => {
-      removeEventClick();
-      setMethod(value);
-      const effects = getDrawModeSelectEffects(value);
-      if (effects.attachMapClick) {
-        addEventClick();
-      }
-      control.changeMode(effects.drawMode);
+      session.selectMethod(value);
     },
-    [addEventClick, control, removeEventClick],
+    [session],
   );
 
-  handlersRef.current = {
-    onDrawCreated(event) {
-      for (const feature of event.features) {
-        const kind = classifyDrawCreateFeature(methodRef.current);
-        setFeatureRef.current(
-          kind,
-          kind === 'updated' ? ensureFeatureId(feature) : feature,
-        );
-      }
-    },
-    onDrawUpdated(event) {
-      for (const feature of event.features)
-        setFeatureRef.current('updated', feature);
-    },
-    onDrawDeleted(event) {
-      for (const feature of event.features)
-        setFeatureRef.current('deleted', feature);
-      onSelectMethod('select');
-    },
-  };
+  const handlers = session.getMapDrawHandlers();
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
+
+  useEffect(() => {
+    return () => {
+      sessionRef.current?.destroy();
+      sessionRef.current = null;
+    };
+  }, []);
 
   return {
     isDraw,
-    setIsDraw,
+    setIsDraw: (value: boolean) => {
+      session.setIsDraw(value);
+    },
     method,
-    setMethod,
+    setMethod: (value: string) => {
+      session.setMethod(value);
+    },
     currentFeature,
-    setCurrentFeature,
+    setCurrentFeature: (feature: Feature | undefined) => {
+      session.setCurrentFeature(feature);
+    },
     addEventClick,
     removeEventClick,
     handlersRef,
     onSelectMethod,
+    startCreate: (drawMode: string) => session.startCreate(drawMode),
+    prepareSave: () => session.prepareSave(),
+    finishCancel: (onCancel?: (feature: Feature | undefined) => void) =>
+      session.finishCancel(onCancel),
+    redrawNonDraft: () => session.redrawNonDraft(),
   };
 }
