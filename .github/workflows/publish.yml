@@ -7,6 +7,7 @@ on:
       # Group releases from scripts/release-group.js
       - 'draggable@*'
       - 'map@*'
+      - 'shared-store@*'
 
 jobs:
   publish:
@@ -34,8 +35,11 @@ jobs:
             map@*)
               echo "group=map" >> "$GITHUB_OUTPUT"
               ;;
+            shared-store@*)
+              echo "group=shared-store" >> "$GITHUB_OUTPUT"
+              ;;
             *)
-              echo "Unsupported tag: $TAG (expected draggable@<version> or map@<version>)"
+              echo "Unsupported tag: $TAG (expected draggable@ / map@ / shared-store@)"
               exit 1
               ;;
           esac

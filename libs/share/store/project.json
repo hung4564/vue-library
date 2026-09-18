@@ -8,10 +8,10 @@
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk",
       "preserveLocalDependencyProtocols": false,
-      "manifestRootsToUpdate": ["dist/{projectRoot}"]
+      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
     }
   },
-  "tags": ["share", "store"],
+  "tags": ["share", "store", "shared-store"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",

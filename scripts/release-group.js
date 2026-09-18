@@ -1,18 +1,19 @@
 /**
- * Thin wrapper around Nx Release for map / draggable groups.
+ * Thin wrapper around Nx Release for map / draggable / shared-store groups.
  *
  * Tag pattern comes from nx.json:
- *   release.groups.<name>.releaseTagPattern = "draggable@{version}" | "map@{version}"
+ *   release.groups.<name>.releaseTagPattern
+ *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}"
  *
  * Extra steps Nx does not own:
  *   - sync SemVer markers in draggable docs
  *   - sync peer/deps in consumer packages (Nx skips peerDependencies)
- *   - build + push GitHub Pages deploy submodule
+ *   - build + push GitHub Pages deploy submodule (map / draggable only)
  *
  * Flow:
  *   1) nx release version  (no git yet)
  *   2) sync-workspace-peers (consumers → ^MAJOR.MINOR.0)
- *   3) docs sync (draggable) + site build/push
+ *   3) docs sync (draggable) + site build/push (if site configured)
  *   4) nx release changelog + git commit/tag/push via Nx
  *   5) optional local publish (else CI on tag push)
  *
@@ -20,8 +21,9 @@
  *   node scripts/release-group.js draggable
  *   node scripts/release-group.js draggable minor
  *   node scripts/release-group.js map --dry-run
+ *   node scripts/release-group.js shared-store patch
  *   node scripts/release-group.js draggable --skip-site --skip-push
- *   node scripts/release-group.js draggable --local-publish --yes
+ *   node scripts/release-group.js shared-store --local-publish --yes
  */
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
@@ -40,6 +42,11 @@ const GROUPS = {
     site: 'map',
     syncDocs: false,
   },
+  'shared-store': {
+    leadPkg: 'libs/share/store/package.json',
+    site: null,
+    syncDocs: false,
+  },
 };
 
 function parseArgs(argv) {
@@ -49,7 +56,7 @@ function parseArgs(argv) {
   const specifier = positional[1];
   if (!group || !GROUPS[group]) {
     console.error(
-      `Usage: node scripts/release-group.js <draggable|map> [specifier] [flags]`,
+      `Usage: node scripts/release-group.js <draggable|map|shared-store> [specifier] [flags]`,
     );
     process.exit(1);
   }
@@ -57,7 +64,7 @@ function parseArgs(argv) {
     group,
     specifier,
     dryRun: flags.has('--dry-run') || flags.has('-d'),
-    skipSite: flags.has('--skip-site'),
+    skipSite: flags.has('--skip-site') || !GROUPS[group].site,
     skipPush: flags.has('--skip-push'),
     localPublish: flags.has('--local-publish'),
     yes: flags.has('--yes') || flags.has('-y'),
@@ -235,5 +242,5 @@ if (opts.localPublish) {
 console.log(`
 Done (${opts.group}@${version}).
   expected tag: ${expectedTag}
-  site: ${opts.skipSite ? 'skipped' : `deploy/demo-${cfg.site}`}
+  site: ${!cfg.site || opts.skipSite ? 'skipped' : `deploy/demo-${cfg.site}`}
 `);

@@ -112,7 +112,6 @@
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
-          "authors": true,
           "commitReferences": true,
           "versionTitleDate": true,
           "applyUsernameToAuthors": true
@@ -146,7 +145,6 @@
           "file": "{projectRoot}/CHANGELOG.md",
           "createRelease": "github",
           "renderOptions": {
-            "authors": true,
             "commitReferences": true,
             "versionTitleDate": true,
             "applyUsernameToAuthors": true
@@ -184,7 +182,28 @@
           "file": "{projectRoot}/CHANGELOG.md",
           "createRelease": "github",
           "renderOptions": {
-            "authors": true,
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
+        }
+      },
+      "shared-store": {
+        "projects": ["shared-store"],
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "shared-store@{version}",
+        "version": {
+          "conventionalCommits": true,
+          "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run shared-store:build"
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
+          "createRelease": "github",
+          "renderOptions": {
             "commitReferences": true,
             "versionTitleDate": true,
             "applyUsernameToAuthors": true
@@ -197,7 +216,8 @@
           "libs/ui/*",
           "libs/map/*",
           "libs/*",
-          "shared-store",
+          "!shared-store",
+          "!@hungpvq/shared-store",
           "!tag:map",
           "!@hungpvq/map-core",
           "!@hungpvq/map-dataset",

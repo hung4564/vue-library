@@ -9,6 +9,7 @@
  * Usage:
  *   node scripts/sync-workspace-peers.js draggable
  *   node scripts/sync-workspace-peers.js map
+ *   node scripts/sync-workspace-peers.js shared-store
  *   node scripts/sync-workspace-peers.js draggable --dry-run
  */
 const fs = require('fs');
@@ -46,6 +47,10 @@ const GROUPS = {
     ],
     leadPkg: 'libs/map-core/core/package.json',
   },
+  'shared-store': {
+    packages: ['@hungpvq/shared-store'],
+    leadPkg: 'libs/share/store/package.json',
+  },
 };
 
 const DEP_FIELDS = [
@@ -57,7 +62,7 @@ const DEP_FIELDS = [
 
 if (!group || !GROUPS[group]) {
   console.error(
-    'Usage: node scripts/sync-workspace-peers.js <draggable|map> [--dry-run]',
+    'Usage: node scripts/sync-workspace-peers.js <draggable|map|shared-store> [--dry-run]',
   );
   process.exit(1);
 }

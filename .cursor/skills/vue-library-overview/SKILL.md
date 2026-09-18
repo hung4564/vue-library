@@ -22,7 +22,7 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 | Share / UI | `libs/share/*`, `libs/ui/core`, `libs/router` | `@hungpvq/shared*`, UI kit |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*` | VitePress sites |
 
-Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Release groups: `map`, `draggable` (see root `nx.json`).
+Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Release groups: `map`, `draggable`, `shared-store` (see root `nx.json`).
 
 ## Where to change code
 
@@ -73,6 +73,9 @@ npm run draggable:build
 npm run draggable:test
 npm run draggable:dev-vue / draggable:dev-react
 npm run share:build
+npm run shared-store:build
+npm run shared-store:release   # version + peer sync + tag shared-store@<ver>
+npm run shared-store:release:local
 
 npm run docs:dev          # VitePress docs/
 npm run build / lint / ts-check   # run-many --all

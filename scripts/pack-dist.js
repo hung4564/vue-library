@@ -38,6 +38,7 @@ const MAP_CORE = [
   'libs/map-core/core',
   'libs/map-core/map-dataset',
   'libs/map-core/map-draw',
+  'libs/map-core/map-debug',
 ];
 
 const MAP_VUE = [
@@ -99,7 +100,9 @@ function packOne(relDist) {
   }
   const meta = JSON.parse(fs.readFileSync(pkgJson, 'utf8'));
   console.log(`\n> npm pack ${meta.name}@${meta.version} (${relDist})`);
-  const before = new Set(fs.readdirSync(outDir).filter((f) => f.endsWith('.tgz')));
+  const before = new Set(
+    fs.readdirSync(outDir).filter((f) => f.endsWith('.tgz')),
+  );
   execSync(`npm pack --pack-destination "${outDir}"`, {
     cwd: pkgDir,
     stdio: 'inherit',
@@ -127,7 +130,7 @@ function main() {
   console.log(`\nPacked ${packed.length} tarball(s) → ${outDir}`);
   for (const f of packed) console.log(`  ${f}`);
   console.log(
-    `\nConsumer example:\n  npm i ${packed.map((f) => `./${f}`).join(' ')}`,
+    `\nConsumer example:\n  npm i ${packed.map((f) => `./libs/${f}`).join(' ')}`,
   );
 }
 
