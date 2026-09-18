@@ -1,3 +1,59 @@
+## 1.1.0 (2026-09-18)
+
+### 🚀 Features
+
+- add Vue and React meta packages for streamlined installation ([0395edeb](https://github.com/hung4564/vue-library/commit/0395edeb))
+- introduce map-debug library and enhance debugging capabilities ([2f3d2270](https://github.com/hung4564/vue-library/commit/2f3d2270))
+- enhance dual control/tool checklist and logging in demo datasets ([d48e8a95](https://github.com/hung4564/vue-library/commit/d48e8a95))
+- implement language control and localization features in demo applications ([54592a2f](https://github.com/hung4564/vue-library/commit/54592a2f))
+- enhance map control functionality and measurement features ([4bb0f6bf](https://github.com/hung4564/vue-library/commit/4bb0f6bf))
+- enhance CSS imports and worker configuration for map datasets ([e1b6bba0](https://github.com/hung4564/vue-library/commit/e1b6bba0))
+- enhance draggable sidebar functionality and documentation ([7440abd4](https://github.com/hung4564/vue-library/commit/7440abd4))
+- replace LayerHighlight with HighlightPointer component in demo applications ([dd2c03f6](https://github.com/hung4564/vue-library/commit/dd2c03f6))
+- update TypeScript configuration and add orphan scan scripts ([d7674ea9](https://github.com/hung4564/vue-library/commit/d7674ea9))
+- add DemoHelpPanel component to enhance user guidance in demo applications ([8fb6dd74](https://github.com/hung4564/vue-library/commit/8fb6dd74))
+- add geo export functionality to demo applications ([f160d590](https://github.com/hung4564/vue-library/commit/f160d590))
+- enhance ESLint rules and improve package configurations ([6a30edfc](https://github.com/hung4564/vue-library/commit/6a30edfc))
+- enhance package configurations and improve type safety ([1945262a](https://github.com/hung4564/vue-library/commit/1945262a))
+- enhance dependency management and improve component interactions ([6f4ec365](https://github.com/hung4564/vue-library/commit/6f4ec365))
+- add dataset attribute table functionality and enhance data management features ([6f32c48f](https://github.com/hung4564/vue-library/commit/6f32c48f))
+- add legend and story-telling GPS pages to demo-map ([f766a394](https://github.com/hung4564/vue-library/commit/f766a394))
+- enhance map-dataset functionality and improve documentation ([5a6b85e1](https://github.com/hung4564/vue-library/commit/5a6b85e1))
+- add map-draw package and integrate drawing functionality ([6acae3e4](https://github.com/hung4564/vue-library/commit/6acae3e4))
+- refactor export structure and enhance documentation for map-core ([11a30514](https://github.com/hung4564/vue-library/commit/11a30514))
+- add minimal starter and enhance documentation ([0aa16302](https://github.com/hung4564/vue-library/commit/0aa16302))
+- add dataset menu ([d6dc0be4](https://github.com/hung4564/vue-library/commit/d6dc0be4))
+- handle new toggle support global, custom display, docs ([cab4eb71](https://github.com/hung4564/vue-library/commit/cab4eb71))
+- add support for identify ([01adde64](https://github.com/hung4564/vue-library/commit/01adde64))
+- add doc for worker ([a5821ebc](https://github.com/hung4564/vue-library/commit/a5821ebc))
+- remove @hungpvq/vue-content-menu ([5e396a97](https://github.com/hung4564/vue-library/commit/5e396a97))
+- fix worker for bbox, readfile ([75529ac6](https://github.com/hung4564/vue-library/commit/75529ac6))
+- add registry control ([66cf6ac7](https://github.com/hung4564/vue-library/commit/66cf6ac7))
+- change locale to js lib ([e4dddb78](https://github.com/hung4564/vue-library/commit/e4dddb78))
+- add create control ([b086604b](https://github.com/hung4564/vue-library/commit/b086604b))
+- add doc ([92d821d8](https://github.com/hung4564/vue-library/commit/92d821d8))
+- add icon for raster, vector ([2fa46fd1](https://github.com/hung4564/vue-library/commit/2fa46fd1))
+- add context menu ([b8177103](https://github.com/hung4564/vue-library/commit/b8177103))
+- table export, select ([9e6db4e6](https://github.com/hung4564/vue-library/commit/9e6db4e6))
+- add attribute table ([a4de22f3](https://github.com/hung4564/vue-library/commit/a4de22f3))
+- add download ([6a7dbec8](https://github.com/hung4564/vue-library/commit/6a7dbec8))
+- add menu ([5ffe5685](https://github.com/hung4564/vue-library/commit/5ffe5685))
+- add support highlight ([b96c27f9](https://github.com/hung4564/vue-library/commit/b96c27f9))
+- add style control ([4b4e8b62](https://github.com/hung4564/vue-library/commit/4b4e8b62))
+- split react ([91d47afb](https://github.com/hung4564/vue-library/commit/91d47afb))
+
+### 🩹 Fixes
+
+- version ([e426cf21](https://github.com/hung4564/vue-library/commit/e426cf21))
+- style, doc ([723ccc2c](https://github.com/hung4564/vue-library/commit/723ccc2c))
+- icon size ([41867a88](https://github.com/hung4564/vue-library/commit/41867a88))
+- fix build worker ([8b592a9f](https://github.com/hung4564/vue-library/commit/8b592a9f))
+- style ([d2161d36](https://github.com/hung4564/vue-library/commit/d2161d36))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.0.1 (2026-09-05)
 
 ### 🚀 Features

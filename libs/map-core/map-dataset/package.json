@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-dataset",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "hung.pv"
   },
@@ -84,7 +84,7 @@
     }
   },
   "dependencies": {
-    "@hungpvq/map-core": "^1.0.0",
+    "@hungpvq/map-core": "^1.1.0",
     "@turf/boolean-intersects": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "mitt": "^3.0.1",

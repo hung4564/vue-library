@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-draw",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "hung.pv"
   },
@@ -25,7 +25,7 @@
     }
   },
   "dependencies": {
-    "@hungpvq/map-core": "^1.0.0",
+    "@hungpvq/map-core": "^1.1.0",
     "@hungpvq/shared": "^0.3.0",
     "@hungpvq/shared-log": "^0.0.1",
     "mitt": "^3.0.1"
