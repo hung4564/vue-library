@@ -12,17 +12,24 @@ export function listMapIds(): string[] {
   return Object.keys(root ?? {}).sort();
 }
 
-/** Peek a map-scoped store bag by key. */
-export function getMapScopedStore<T = unknown>(
+/** Full store bag under `map:core[mapId]` (all keys for that map). */
+export function getMapBag(
   mapId: string,
-  key: string,
-): T | undefined {
+): Record<string, unknown> | undefined {
   const root = GlobalStoreService.getInstance().getState()[
     MAP_CORE_KEY
   ] as MapCoreBag | undefined;
   const bag = root?.[mapId];
   if (!bag || typeof bag !== 'object') return undefined;
-  return bag[key] as T | undefined;
+  return bag;
+}
+
+/** Peek a map-scoped store bag by key. */
+export function getMapScopedStore<T = unknown>(
+  mapId: string,
+  key: string,
+): T | undefined {
+  return getMapBag(mapId)?.[key] as T | undefined;
 }
 
 export type DatasetStoreLike = {

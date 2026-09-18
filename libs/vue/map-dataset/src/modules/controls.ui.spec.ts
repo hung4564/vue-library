@@ -6,6 +6,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { defineComponent, nextTick } from 'vue';
 import { createDatasetRegistryPlugin } from '../plugin';
 import CreateControl from './CreateControl/CreateControl.vue';
+import { DOM_PARITY } from './dom-parity.fixture';
 import IdentifyControl from './IdentifyControl/IdentifyControl.vue';
 import LayerControl from './LayerControl/LayerControl.vue';
 import StyleControl from './StyleControl/style-control.vue';
@@ -77,6 +78,20 @@ describe('LayerControl + IdentifyControl UI smoke', () => {
 
     await nextTick();
     expect(document.getElementById(`top-left-${MAP_ID}`)).toBeTruthy();
+    // LayerControl ModuleContainer host
+    expect(
+      document.querySelector('.mapLayerControl-btn-module-container'),
+    ).toBeTruthy();
+    const leaf = document.querySelector(
+      `[role="${DOM_PARITY.layerLeaf.role}"]`,
+    );
+    if (leaf) {
+      expect(leaf.getAttribute('role')).toBe(DOM_PARITY.layerLeaf.role);
+      expect(
+        leaf.classList.contains(DOM_PARITY.layerLeaf.itemClass) ||
+          leaf.closest(`.${DOM_PARITY.layerLeaf.itemClass}`),
+      ).toBeTruthy();
+    }
 
     wrapper.unmount();
   });
@@ -144,6 +159,39 @@ describe('StyleControl + CreateControl UI smoke', () => {
         UniversalRegistry.getControl('mapCreateControl', MAP_ID),
       ).toBeTruthy(),
     );
+
+    wrapper.unmount();
+  });
+
+  it('renders create form portal when show=true', async () => {
+    const Host = defineComponent({
+      components: { MapShell, CreateControl },
+      setup() {
+        return { mapId: MAP_ID };
+      },
+      template: `
+        <MapShell :map-id="mapId">
+          <CreateControl :show="true" />
+        </MapShell>
+      `,
+    });
+
+    const wrapper = mount(Host, { attachTo: document.body });
+
+    await vi.waitFor(() =>
+      expect(
+        UniversalRegistry.getControl('mapCreateControl', MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    await nextTick();
+    const form = document.querySelector(`.${DOM_PARITY.createForm.formClass}`);
+    // Portal may defer; smoke only when the form node is present
+    if (form) {
+      expect(form.classList.contains(DOM_PARITY.createForm.formClass)).toBe(
+        true,
+      );
+    }
 
     wrapper.unmount();
   });

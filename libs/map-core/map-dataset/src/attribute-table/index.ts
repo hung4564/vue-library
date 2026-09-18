@@ -10,6 +10,7 @@ export type {
   AttributeTableControllerEvent,
   AttributeTableControllerReason,
   AttributeTableControllerState,
+  AttributeTableColumnFilterOptions,
   CreateAttributeTableControllerOptions,
 } from './controller';
 
@@ -79,10 +80,20 @@ export type {
 } from './props';
 
 export {
+  ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
   filterAttributeTableRowsByColumnText,
+  getAttributeTableColumnFilterMode,
+  getAttributeTableColumnFilterQuery,
+  getAttributeTableColumnFilterQueryEnd,
+  matchAttributeTableColumnFilter,
   matchAttributeTableColumnText,
+  resolveAttributeTableVisibleColumns,
 } from './filter';
 export type {
+  AttributeTableColumnFilter,
+  AttributeTableColumnFilterEntry,
+  AttributeTableColumnFilterMode,
+  AttributeTableColumnFilters,
   AttributeTableColumnTextFilter,
   AttributeTableColumnTextFilterMode,
   AttributeTableColumnTextFilters,

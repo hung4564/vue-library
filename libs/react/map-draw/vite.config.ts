@@ -46,7 +46,6 @@ export default defineConfig(() => ({
         '@hungpvq/react-map-core',
         '@hungpvq/shared',
         '@hungpvq/shared-log',
-        'maplibre-gl',
         '@mdi/js',
         '@mdi/react',
         'randomcolor',

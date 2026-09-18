@@ -18,7 +18,31 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
     text: GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
   }));
   const hasColumnFilter =
-    !!props.columnFilterKey || !!String(props.columnFilterQuery ?? '').trim();
+    !!props.columnFilterKey ||
+    !!String(props.columnFilterQuery ?? '').trim() ||
+    props.columnFilterMode !== 'contains';
+  const visibleKeySet = new Set(props.visibleColumnKeys);
+
+  function isColumnVisible(key: string) {
+    if (props.columnVisibilityAll) return true;
+    return visibleKeySet.has(key);
+  }
+
+  function toggleColumnVisibility(key: string) {
+    const allKeys = props.columnVisibilityItems.map((i) => String(i.value));
+    if (props.columnVisibilityAll) {
+      props.onVisibleColumnKeysChange(allKeys.filter((k) => k !== key));
+      return;
+    }
+    const next = new Set(props.visibleColumnKeys);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    if (next.size === allKeys.length) {
+      props.onShowAllColumns();
+      return;
+    }
+    props.onVisibleColumnKeysChange(Array.from(next));
+  }
 
   function onExportClick(event: MouseEvent) {
     if (props.exportFormats?.length && props.onExportFormat) {
@@ -80,6 +104,14 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
               props.onColumnFilterKeyChange(String(value ?? ''))
             }
           />
+          <InputSelect
+            value={props.columnFilterMode}
+            items={props.columnFilterModeItems}
+            aria-label={props.columnFilterModeLabel}
+            onChange={(value) =>
+              props.onColumnFilterModeChange(String(value ?? 'contains'))
+            }
+          />
           <InputText
             value={props.columnFilterQuery}
             placeholder={props.columnFilterQueryPlaceholder}
@@ -95,6 +127,40 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
           >
             {props.clearColumnFilterLabel}
           </MapControlButton>
+        </div>
+      ) : null}
+      {ui.columnVisibility && props.columnVisibilityItems.length ? (
+        <div
+          className="attribute-table__toolbar-row attribute-table__toolbar-row--columns"
+          role="group"
+          aria-label={props.columnVisibilityLabel}
+        >
+          <span className="attribute-table__columns-label">
+            {props.columnVisibilityLabel}
+          </span>
+          <MapControlButton
+            variant="outlined"
+            size="small"
+            disabled={props.columnVisibilityAll}
+            onClick={props.onShowAllColumns}
+          >
+            {props.columnsShowAllLabel}
+          </MapControlButton>
+          {props.columnVisibilityItems.map((item) => {
+            const key = String(item.value);
+            const visible = isColumnVisible(key);
+            return (
+              <MapControlButton
+                key={key}
+                variant="outlined"
+                size="small"
+                active={visible}
+                onClick={() => toggleColumnVisibility(key)}
+              >
+                {item.text}
+              </MapControlButton>
+            );
+          })}
         </div>
       ) : null}
       {ui.zoomToSelection || ui.rowFilter || ui.clearSelection ? (

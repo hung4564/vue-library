@@ -66,7 +66,7 @@ function pickSections(
 }
 
 /** Routes available in one framework only (hash path without trailing slash). */
-const REACT_ONLY_ROUTES = new Set(['/map-dataset']);
+const REACT_ONLY_ROUTES = new Set<string>();
 
 /** Per-route bilingual guides (hash path without trailing slash). */
 const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
@@ -118,10 +118,12 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
     guide('Run a sample GIS worker task and watch progress.', [
       ['run', 'Run sum-range', 'Set From/To in the side panel, then Run.'],
       ['inspect', 'Workers control', 'Also open Workers on the map to watch progress and shared logs.'],
+      ['errors', 'Parse errors', 'Invalid GIS text with strict:true throws (see parseGisText / worker error path); use strict:false to get null geojson.'],
     ]),
     guide('Chạy task GIS worker mẫu và theo dõi tiến độ.', [
       ['run', 'Chạy sum-range', 'Nhập From/To ở panel bên, rồi Run.'],
       ['inspect', 'Workers', 'Mở Workers trên bản đồ để xem tiến độ và log dùng chung.'],
+      ['errors', 'Lỗi parse', 'Chuỗi GIS sai với strict:true sẽ throw (parseGisText / đường lỗi worker); strict:false trả geojson null.'],
     ]),
   ),
 
@@ -223,33 +225,73 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
   ),
 
   '/story-telling': guideI18n(
-    guide('Chapter playback on the map (Vue has the full action engine).', [
-      ['vue', 'Vue', 'Play / Pause / Prev / Next — chapters zoom, pan, rotate, draw route, orbit, highlight DOM.'],
-      ['react', 'React', 'Simplified 3-chapter flyTo (Hanoi → HCMC → reset).'],
+    guide('Chapter playback on the map — Vue and React share the same chapter action engine.', [
+      ['both', 'Play / Pause / Prev / Next', 'Chapters zoom, pan, rotate, draw route, orbit, and highlight DOM.'],
     ]),
-    guide('Phát chương trên bản đồ (Vue có engine action đầy đủ).', [
-      ['vue', 'Vue', 'Play / Pause / Prev / Next — chương zoom, pan, xoay, vẽ tuyến, orbit, highlight DOM.'],
-      ['react', 'React', 'flyTo 3 chương đơn giản (Hà Nội → TP.HCM → reset).'],
+    guide('Phát chương trên bản đồ — Vue và React dùng chung chapter action engine.', [
+      ['both', 'Play / Pause / Prev / Next', 'Chương zoom, pan, xoay, vẽ tuyến, orbit và highlight DOM.'],
     ]),
   ),
 
   '/story-telling-gps': guideI18n(
-    guide('GPS track playback with a moving marker.', [
-      ['vue', 'Vue', 'Play chapter playback — red marker animates along the GPS track with a trail.'],
-      ['react', 'React', 'Use Play trail / Reset in the side panel for marker + line animation.'],
+    guide('GPS track playback with a moving marker — same chapter engine on Vue and React.', [
+      ['both', 'Play / Pause / Prev / Next', 'Red marker animates along the GPS track with a trail.'],
     ]),
-    guide('Phát quỹ đạo GPS với marker chuyển động.', [
-      ['vue', 'Vue', 'Play chương — marker đỏ chạy theo track GPS kèm đường vệt.'],
-      ['react', 'React', 'Dùng Play trail / Reset ở panel bên cho animation marker + đường.'],
+    guide('Phát quỹ đạo GPS với marker chuyển động — cùng chapter engine trên Vue và React.', [
+      ['both', 'Play / Pause / Prev / Next', 'Marker đỏ chạy theo track GPS kèm đường vệt.'],
     ]),
   ),
 
   '/map-dataset': guideI18n(
-    guide('React-only: loads all demo datasets on map load.', [
+    guide('Loads all demo datasets on map load (Vue + React).', [
       ['explore', 'Explore', 'Use LayerControl, DatasetControl, Identify, measurement, and event controls.'],
     ]),
-    guide('Chỉ React: tải mọi dataset demo khi map load.', [
+    guide('Tải mọi dataset demo khi map load (Vue + React).', [
       ['explore', 'Khám phá', 'Dùng LayerControl, DatasetControl, Identify, đo đạc và event controls.'],
+    ]),
+  ),
+
+  '/print': guideI18n(
+    guide('Focused PrintControl demo with a sample GeoJSON layer.', [
+      ['print', 'Print', 'Open PrintControl (default corner) and export / print the current map view.'],
+      ['layer', 'Sample layer', 'LayerControl lists a small point dataset loaded on map ready.'],
+    ]),
+    guide('Demo PrintControl với lớp GeoJSON mẫu.', [
+      ['print', 'In', 'Mở PrintControl (góc mặc định) và xuất / in khung bản đồ hiện tại.'],
+      ['layer', 'Lớp mẫu', 'LayerControl liệt kê lớp điểm nhỏ được tải khi map sẵn sàng.'],
+    ]),
+  ),
+
+  '/crs': guideI18n(
+    guide('Focused CrsControl demo — switch display CRS / EPSG for coordinates.', [
+      ['crs', 'CRS', 'Open CrsControl and pick a display CRS. Mouse / goto coordinates follow the selection.'],
+    ]),
+    guide('Demo CrsControl — đổi CRS / EPSG hiển thị tọa độ.', [
+      ['crs', 'CRS', 'Mở CrsControl và chọn CRS hiển thị. Tọa độ chuột / goto theo lựa chọn.'],
+    ]),
+  ),
+
+  '/devtools': guideI18n(
+    guide('Devtools is installed at the app root (not as a map corner control on this page).', [
+      ['open', 'Open', 'Look for the Map Devtools FAB / overlay (bottom). On mobile you can drag the panel.'],
+      ['install', 'Install pattern', 'App shell calls installDevtools() and mounts <Devtools /> once for all routes.'],
+      ['multi', 'Multi-map', 'See also #/multi-map — each mapId has its own store; Devtools lists maps in the process.'],
+    ]),
+    guide('Devtools được cài ở app root (không gắn control góc bản đồ trên trang này).', [
+      ['open', 'Mở', 'Tìm FAB / overlay Map Devtools (dưới). Trên mobile có thể kéo panel.'],
+      ['install', 'Cách cài', 'App shell gọi installDevtools() và mount <Devtools /> một lần cho mọi route.'],
+      ['multi', 'Multi-map', 'Xem thêm #/multi-map — mỗi mapId có store riêng; Devtools liệt kê các map trong process.'],
+    ]),
+  ),
+
+  '/theme': guideI18n(
+    guide('ThemeControl plus a live panel of computed CSS theme tokens.', [
+      ['switch', 'Switch theme', 'Use ThemeControl to pick auto / light / dark (and other modes). Class lands on html as map-theme-*.'],
+      ['tokens', 'CSS vars', 'The side panel reads getComputedStyle(document.documentElement) for --map-primary-color and --map-background-color.'],
+    ]),
+    guide('ThemeControl kèm panel token CSS theo theme hiện tại.', [
+      ['switch', 'Đổi theme', 'Dùng ThemeControl chọn auto / sáng / tối (và các mode khác). Class trên html là map-theme-*.'],
+      ['tokens', 'Biến CSS', 'Panel bên đọc getComputedStyle(document.documentElement) cho --map-primary-color và --map-background-color.'],
     ]),
   ),
 };

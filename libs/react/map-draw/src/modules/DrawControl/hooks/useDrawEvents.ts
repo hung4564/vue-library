@@ -7,7 +7,6 @@ import {
 } from '@hungpvq/map-draw';
 import { useEventMap } from '@hungpvq/react-map-core';
 import type { Feature } from 'geojson';
-import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type SetFeature = (
@@ -65,7 +64,7 @@ export function useDrawEvents(
   const session = sessionRef.current;
 
   const onMapClick = useCallback(
-    (e: MapMouseEvent) => {
+    (e: Parameters<DrawSession['handleMapClick']>[0]) => {
       void session.handleMapClick(e);
     },
     [session],

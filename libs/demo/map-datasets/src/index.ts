@@ -1,4 +1,5 @@
 export * from './demo-guides';
+export * from './demo-aside-nav';
 export * from './create-demo-loaders';
 export * from './helpers/create-geojson-list-dataset';
 export * from './fixtures/geojson';

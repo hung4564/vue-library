@@ -165,14 +165,14 @@ function createDatasetMeasure(
     <ToolbarControl position="top-left" />
     <ComponentManagementControl />
     <MeasurementControl position="top-right" :actions="actionMeasures" />
+    <IdentifyControl position="top-right" />
     <DrawControl position="top-right" />
-    <InspectControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <IdentifyControl position="top-right" />
+    <InspectControl position="top-right" />
     <PrintAdvancedControl />
     <PrintControl />
     <GotoControl position="top-right" />

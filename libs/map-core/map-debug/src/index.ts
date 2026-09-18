@@ -4,12 +4,16 @@
 export { installMapDebug, uninstallMapDebug, isMapDebugInstalled } from './install';
 export {
   listMapIds,
+  getMapBag,
   getMapScopedStore,
   getDatasetStore,
 } from './store-access';
 export type { MapCoreBag, DatasetStoreLike } from './store-access';
 
-export { snapshotGlobalStore } from './viewers/store-helpers';
+export {
+  snapshotGlobalStore,
+  snapshotMapScopedStore,
+} from './viewers/store-helpers';
 export {
   getValueType,
   hasChildren,

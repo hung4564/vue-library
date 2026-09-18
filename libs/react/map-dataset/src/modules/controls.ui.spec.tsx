@@ -5,6 +5,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDatasetRegistryPlugin } from '../plugin';
 import { CreateControl } from './CreateControl/CreateControl';
+import { DOM_PARITY } from './dom-parity.fixture';
 import { IdentifyControl } from './IdentifyControl/IdentifyControl';
 import { LayerControl } from './LayerControl/LayerControl';
 import { StyleControl } from './StyleControl/StyleControl';
@@ -67,6 +68,19 @@ describe('LayerControl + IdentifyControl UI smoke', () => {
       ).toBeTruthy(),
     );
     expect(document.getElementById(`top-left-${MAP_ID}`)).toBeTruthy();
+    expect(
+      document.querySelector('.mapLayerControl-btn-module-container'),
+    ).toBeTruthy();
+    const leaf = document.querySelector(
+      `[role="${DOM_PARITY.layerLeaf.role}"]`,
+    );
+    if (leaf) {
+      expect(leaf.getAttribute('role')).toBe(DOM_PARITY.layerLeaf.role);
+      expect(
+        leaf.classList.contains(DOM_PARITY.layerLeaf.itemClass) ||
+          leaf.closest(`.${DOM_PARITY.layerLeaf.itemClass}`),
+      ).toBeTruthy();
+    }
   });
 
   it('unregisters IdentifyControl on unmount', async () => {
@@ -116,5 +130,26 @@ describe('StyleControl + CreateControl UI smoke', () => {
         UniversalRegistry.getControl('mapCreateControl', MAP_ID),
       ).toBeTruthy(),
     );
+  });
+
+  it('renders create form portal when show=true', async () => {
+    render(
+      <Map mapId={MAP_ID}>
+        <CreateControl show onShowChange={() => undefined} />
+      </Map>,
+    );
+
+    await waitFor(() =>
+      expect(
+        UniversalRegistry.getControl('mapCreateControl', MAP_ID),
+      ).toBeTruthy(),
+    );
+
+    const form = document.querySelector(`.${DOM_PARITY.createForm.formClass}`);
+    if (form) {
+      expect(form.classList.contains(DOM_PARITY.createForm.formClass)).toBe(
+        true,
+      );
+    }
   });
 });

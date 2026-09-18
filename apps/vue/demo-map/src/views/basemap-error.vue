@@ -17,9 +17,9 @@
 <script setup lang="ts">
 import { loggerFactory } from '@hungpvq/shared-log';
 import { Map } from '@hungpvq/vue-map-core';
-import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:basemap-error', 2);
 

@@ -17,7 +17,7 @@ import AsideControl from '../../layout/aside-control.vue';
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
-const MAP_ID = 'demo';
+const MAP_ID = 'draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
   'demo-draw-result-fill',
@@ -124,7 +124,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map map-id="demo" @map-loaded="onMapLoaded">
+  <Map map-id="draw-demo" @map-loaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />

@@ -18,7 +18,7 @@ import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
-const MAP_ID = 'react-draw-demo';
+const MAP_ID = 'draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
   'demo-draw-result-fill',

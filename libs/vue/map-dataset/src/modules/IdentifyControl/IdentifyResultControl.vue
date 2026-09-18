@@ -387,6 +387,14 @@ function onResultKeydown(event: KeyboardEvent) {
                           focusedChildKey === `${item.id}:${child.id}`,
                       }"
                       @click="focusedChildKey = `${item.id}:${child.id}`"
+                      @keydown="
+                        ($event) => {
+                          if ($event.key !== 'Enter' && $event.key !== ' ')
+                            return;
+                          $event.preventDefault();
+                          focusedChildKey = `${item.id}:${child.id}`;
+                        }
+                      "
                     >
                       <span class="identify-control-child-item__name">
                         {{ child.name }}

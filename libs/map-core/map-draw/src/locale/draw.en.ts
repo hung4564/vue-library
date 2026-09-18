@@ -3,6 +3,7 @@ export const DRAW_CONTROL_LOCALE = {
     'draw-control': {
       draftList: {
         title: 'Draft items',
+        empty: 'No draft items',
         field: {
           id: 'Id',
           type: 'Type',

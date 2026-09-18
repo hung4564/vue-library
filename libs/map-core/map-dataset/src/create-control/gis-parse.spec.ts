@@ -59,6 +59,38 @@ describe('parseGisText', () => {
     expect(result.geojson).toBeNull();
   });
 
+  it('throws when strict is true and input is invalid', () => {
+    expect(() =>
+      parseGisText('not-valid-gis{{{', { strict: true }),
+    ).toThrow(/Unsupported or invalid GIS data/);
+  });
+
+  it('throws by default (strict) on invalid GeoJSON object', () => {
+    expect(() =>
+      parseGisText(JSON.stringify({ type: 'NotAFeature', properties: {} })),
+    ).toThrow(/Unsupported or invalid GIS data/);
+  });
+
+  it('throws on invalid WKT when named as .wkt', () => {
+    expect(() =>
+      parseGisText('NOT_A_WKT (1 2)', { name: 'broken.wkt', strict: true }),
+    ).toThrow();
+  });
+
+  it('throws on truncated GeoJSONL line', () => {
+    const text = [
+      JSON.stringify({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      }),
+      '{broken-json',
+    ].join('\n');
+    expect(() =>
+      parseGisText(text, { name: 'sample.geojsonl', strict: true }),
+    ).toThrow();
+  });
+
   it('rejects CSV on sync path (use parseGisTextAsync)', () => {
     const text = 'name,lat,lng\nA,10.8,106.7\n';
     expect(() => parseGisText(text, { name: 'sample.csv' })).toThrow(
@@ -74,5 +106,19 @@ describe('parseGisTextAsync', () => {
     const fc = asGisFeatureCollection(result.geojson);
     expect(fc?.features.length).toBe(2);
     expect(fc?.features[0]?.geometry?.type).toBe('Point');
+  });
+
+  it('returns null when strict is false and CSV is invalid', async () => {
+    const result = await parseGisTextAsync('not,csv,at,all\n???', {
+      name: 'bad.csv',
+      strict: false,
+    });
+    expect(result.geojson).toBeNull();
+  });
+
+  it('throws when strict is true and text is invalid', async () => {
+    await expect(
+      parseGisTextAsync('not-valid-gis{{{', { strict: true }),
+    ).rejects.toThrow(/Unsupported or invalid GIS data/);
   });
 });

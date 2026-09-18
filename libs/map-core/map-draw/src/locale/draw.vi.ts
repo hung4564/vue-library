@@ -3,6 +3,7 @@ export const DRAW_CONTROL_LOCALE_VI = {
     'draw-control': {
       draftList: {
         title: 'Bản nháp',
+        empty: 'Không có bản nháp',
         field: {
           id: 'Id',
           type: 'Loại',

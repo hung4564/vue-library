@@ -18,8 +18,16 @@ describe('attribute-table locale a11y', () => {
     expect(keys.rowFilter).toBeTruthy();
     expect(keys.columnFilter).toBeTruthy();
     expect(keys.columnFilterQuery).toBeTruthy();
+    expect(keys.columnFilterQueryEquals).toBeTruthy();
     expect(keys.clearColumnFilter).toBeTruthy();
     expect(keys.columnFilterFor).toContain('{column}');
+    expect(keys.columnFilterMode).toBeTruthy();
+    expect(keys.columnFilterModeContains).toBeTruthy();
+    expect(keys.columnFilterModeEquals).toBeTruthy();
+    expect(keys.columnFilterModeNumberBetween).toBeTruthy();
+    expect(keys.columnFilterModeDateEq).toBeTruthy();
+    expect(keys.columnsVisibility).toBeTruthy();
+    expect(keys.columnsShowAll).toBeTruthy();
     expect(keys.sortedAsc).toBeTruthy();
     expect(keys.sortedDesc).toBeTruthy();
     expect(keys.notSorted).toBeTruthy();

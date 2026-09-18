@@ -75,6 +75,11 @@ const path = {
         </tr>
       </thead>
       <tbody>
+        <tr v-if="!draftItems.length">
+          <td colspan="3" class="table-col-empty">
+            {{ trans('map.draw-control.draftList.empty') }}
+          </td>
+        </tr>
         <tr v-for="item in draftItems" :key="item.id">
           <td :title="item.id + ''" class="table-col-id">{{ item.id }}</td>
           <td class="table-col-type">
@@ -138,6 +143,11 @@ const path = {
 }
 .table-col-action {
   width: 64px;
+}
+.table-col-empty {
+  text-align: center;
+  opacity: 0.75;
+  font-style: italic;
 }
 .menu-item {
   cursor: pointer;

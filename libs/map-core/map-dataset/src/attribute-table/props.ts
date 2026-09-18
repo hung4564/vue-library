@@ -69,10 +69,32 @@ export type AttributeTableViewLabels = {
   columnFilter: string;
   /** Placeholder for column filter text (contains). */
   columnFilterQuery: string;
+  /** Placeholder when mode is equals. */
+  columnFilterQueryEquals: string;
+  /** Placeholder for numeric filter modes. */
+  columnFilterQueryNumber: string;
+  /** Placeholder for number_between (`1..10`). */
+  columnFilterQueryNumberBetween: string;
+  /** Placeholder for date filter modes. */
+  columnFilterQueryDate: string;
   /** Clear all column text filters. */
   clearColumnFilter: string;
   /** Per-column filter input aria (template with `{column}`). */
   columnFilterFor: string;
+  /** Toolbar: filter mode select aria. */
+  columnFilterMode: string;
+  columnFilterModeContains: string;
+  columnFilterModeEquals: string;
+  columnFilterModeNumberEq: string;
+  columnFilterModeNumberGte: string;
+  columnFilterModeNumberLte: string;
+  columnFilterModeNumberBetween: string;
+  columnFilterModeDateEq: string;
+  columnFilterModeDateGte: string;
+  columnFilterModeDateLte: string;
+  /** Toolbar: column visibility checklist. */
+  columnsVisibility: string;
+  columnsShowAll: string;
   sortedAsc: string;
   sortedDesc: string;
   notSorted: string;
@@ -90,6 +112,8 @@ export type AttributeTableUiOptions = {
   rowFilter?: boolean;
   /** Column text contains filter (toolbar + grid). Default true. */
   columnFilter?: boolean;
+  /** Column visibility checklist in toolbar. Default true. */
+  columnVisibility?: boolean;
   pager?: boolean;
   checkbox?: boolean;
   rowMenus?: boolean;
@@ -108,6 +132,7 @@ export const ATTRIBUTE_TABLE_UI_DEFAULTS: Required<AttributeTableUiOptions> = {
   clearSelection: true,
   rowFilter: true,
   columnFilter: true,
+  columnVisibility: true,
   pager: true,
   checkbox: true,
   rowMenus: true,
@@ -205,6 +230,17 @@ export type AttributeTableToolbarProps = {
   columnFilterLabel: string;
   columnFilterQueryPlaceholder: string;
   clearColumnFilterLabel: string;
+  /** Filter mode for the active toolbar column. */
+  columnFilterMode: string;
+  columnFilterModeItems: AttributeTableSelectItem[];
+  columnFilterModeLabel: string;
+  /** All columns for the visibility checklist. */
+  columnVisibilityItems: AttributeTableSelectItem[];
+  /** Currently visible keys; empty / all means show-all when `columnVisibilityAll`. */
+  visibleColumnKeys: string[];
+  columnVisibilityAll: boolean;
+  columnVisibilityLabel: string;
+  columnsShowAllLabel: string;
   clearLabel: string;
   clearDisabled: boolean;
   exportLabel?: string;
@@ -216,7 +252,10 @@ export type AttributeTableToolbarProps = {
   onRowFilterChange: (value: AttributeTableRowFilter) => void;
   onColumnFilterKeyChange: (key: string) => void;
   onColumnFilterQueryChange: (value: string) => void;
+  onColumnFilterModeChange: (mode: string) => void;
   onClearColumnFilters: () => void;
+  onVisibleColumnKeysChange: (keys: string[] | null) => void;
+  onShowAllColumns: () => void;
   onClearSelection: () => void;
   onExport?: (event: MouseEvent) => void;
   onExportFormat?: (format: string, event: MouseEvent) => void;

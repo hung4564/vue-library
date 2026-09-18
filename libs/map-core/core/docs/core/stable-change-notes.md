@@ -12,12 +12,14 @@ Short notes for app authors following `@hungpvq` map **Stable** surfaces. Packag
 
 | Area | Note |
 |------|------|
-| Attribute table | Optional column **contains** text filter (`@hungpvq/map-dataset/attribute-table` helpers + Vue/React toolbar). Additive on the attribute-table subpath. |
+| Attribute table | Optional column **contains** text filter; **number** / **date** filter ops; **column visibility** toggles (`@hungpvq/map-dataset/attribute-table` helpers + Vue/React toolbar). Additive on the attribute-table subpath. |
 | LayerControl | Tree keyboard / ARIA (`role="tree"` / `treeitem`); `/` still focuses layer search. |
-| Identify result | Polite `aria-live` on the result region. |
-| Draw toolbar | `role="toolbar"`; Esc cancels while drawing when focus is in draw chrome. |
+| Identify result | Polite `aria-live` on the result region (Vue/React Identify result chrome). |
+| Draw toolbar | `role="toolbar"`; Esc cancels while drawing when focus is in draw chrome (Vue/React DrawControl). |
 | InputSelect (Vue) | `TItem` / `TValue` generics so `{ value, text }[]` items work with string-union `v-model`. |
-| Demos | `#/basemap-error`, `#/multi-map`; kitchen-sink guide lists key controls. Local dist smoke: `npm run map:smoke:dist`. |
+| Story telling | React demo `#/story-telling` / `#/story-telling-gps` shares the chapter action engine with Vue (parity). |
+| Demos | Focused routes `#/print`, `#/crs`, `#/devtools`, `#/theme` (plus `#/basemap-error`, `#/multi-map`). Kitchen-sink guide lists key controls. |
+| Dist smoke | `npm run map:smoke:dist` checks map package dist outputs / declared exports (core, dataset, draw, vue/react adapters). |
 
 ## Related
 

@@ -19,5 +19,6 @@ export const {
   loadIdentifyPresentDemoDatasets,
   loadHighlightDemoDatasets,
   loadGeoExportDemoDatasets,
+  loadAllMapDatasets,
   loadDataManagementDemoDatasets,
 } = loaders;

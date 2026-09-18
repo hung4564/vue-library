@@ -27,8 +27,33 @@ const formatItems = computed(() =>
 
 const hasColumnFilter = computed(
   () =>
-    !!props.columnFilterKey || !!String(props.columnFilterQuery ?? '').trim(),
+    !!props.columnFilterKey ||
+    !!String(props.columnFilterQuery ?? '').trim() ||
+    props.columnFilterMode !== 'contains',
 );
+
+const visibleKeySet = computed(() => new Set(props.visibleColumnKeys));
+
+function isColumnVisible(key: string) {
+  if (props.columnVisibilityAll) return true;
+  return visibleKeySet.value.has(key);
+}
+
+function toggleColumnVisibility(key: string) {
+  const allKeys = props.columnVisibilityItems.map((i) => String(i.value));
+  if (props.columnVisibilityAll) {
+    props.onVisibleColumnKeysChange(allKeys.filter((k) => k !== key));
+    return;
+  }
+  const next = new Set(props.visibleColumnKeys);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  if (next.size === allKeys.length) {
+    props.onShowAllColumns();
+    return;
+  }
+  props.onVisibleColumnKeysChange(Array.from(next));
+}
 
 function onExportClick(event: MouseEvent) {
   if (props.exportFormats?.length && props.onExportFormat) {
@@ -96,6 +121,16 @@ function onFormatPick(fmt: string, event: MouseEvent) {
           props.onColumnFilterKeyChange(String($event ?? ''))
         "
       />
+      <InputSelect
+        :model-value="props.columnFilterMode"
+        :items="props.columnFilterModeItems"
+        item-value="value"
+        item-text="text"
+        :aria-label="props.columnFilterModeLabel"
+        @update:model-value="
+          props.onColumnFilterModeChange(String($event ?? 'contains'))
+        "
+      />
       <InputText
         :model-value="props.columnFilterQuery"
         :placeholder="props.columnFilterQueryPlaceholder"
@@ -112,6 +147,34 @@ function onFormatPick(fmt: string, event: MouseEvent) {
         @click="props.onClearColumnFilters()"
       >
         {{ props.clearColumnFilterLabel }}
+      </MapControlButton>
+    </div>
+    <div
+      v-if="ui.columnVisibility && props.columnVisibilityItems.length"
+      class="attribute-table__toolbar-row attribute-table__toolbar-row--columns"
+      role="group"
+      :aria-label="props.columnVisibilityLabel"
+    >
+      <span class="attribute-table__columns-label">{{
+        props.columnVisibilityLabel
+      }}</span>
+      <MapControlButton
+        variant="outlined"
+        size="small"
+        :disabled="props.columnVisibilityAll"
+        @click="props.onShowAllColumns()"
+      >
+        {{ props.columnsShowAllLabel }}
+      </MapControlButton>
+      <MapControlButton
+        v-for="item in props.columnVisibilityItems"
+        :key="String(item.value)"
+        variant="outlined"
+        size="small"
+        :active="isColumnVisible(String(item.value))"
+        @click="toggleColumnVisibility(String(item.value))"
+      >
+        {{ item.text }}
       </MapControlButton>
     </div>
     <div

@@ -21,89 +21,10 @@
           </span>
         </template>
         <v-list>
-          <v-list-item>
-            <RouterLink to="/">Home </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/map-core">Map - Core </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/language">Language </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/minimal">Minimal starter </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/worker-sample">Worker - Sample </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/mobile-menu">Map - Mobile menu </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/legend">Legend </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/story-telling">Story telling </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/story-telling-gps">Story telling GPS </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/basemap">BaseMap </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/basemap-error">Basemap error </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/multi-map">Multi-map </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/measurement">Measurement </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-highlight"
-              >Dataset - Highlight
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-identify">Dataset - Identify </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-identify-present"
-              >Dataset - Identify present
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-menu">Dataset - Menu </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-list">Dataset - List </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/registry-control"
-              >UniversalRegistry - Controls
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-data-management"
-              >Dataset - Data management
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-attribute-table"
-              >Dataset - Attribute table
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-geo-export"
-              >Dataset - Geo export
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/draw">Draw </RouterLink>
+          <v-list-item v-for="item in navItems" :key="item.to">
+            <RouterLink :to="item.to" @click="toggleShow(false)">{{
+              item.label
+            }}</RouterLink>
           </v-list-item>
         </v-list>
       </DraggableItemSideBar>
@@ -111,6 +32,7 @@
   </ModuleContainer>
 </template>
 <script>
+import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
@@ -179,6 +101,7 @@ export default {
       moduleContainerProps,
       trans,
       path,
+      navItems: getDemoAsideNavItems('vue'),
     };
   },
 };

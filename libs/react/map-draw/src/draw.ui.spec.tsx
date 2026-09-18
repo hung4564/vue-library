@@ -2,6 +2,7 @@ import { MapInitializer, UniversalRegistry } from '@hungpvq/map-core';
 import { Map } from '@hungpvq/react-map-core';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DOM_PARITY } from './dom-parity.fixture';
 import { DrawControl } from './modules/DrawControl/DrawControl';
 
 beforeEach(() => {
@@ -60,6 +61,15 @@ describe('DrawControl UI smoke', () => {
         UniversalRegistry.getControl('mapDrawDraftList', MAP_ID),
       ).toBeTruthy(),
     );
+
+    const draftTable = document.querySelector(
+      `.${DOM_PARITY.draftTable.tableClass}`,
+    );
+    if (draftTable) {
+      expect(
+        draftTable.classList.contains(DOM_PARITY.draftTable.tableClass),
+      ).toBe(true);
+    }
   });
 
   it('removes MapboxDraw control on unmount when still attached', async () => {

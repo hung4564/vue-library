@@ -7,7 +7,6 @@ import {
   Map,
   ThemeControl,
   UniversalRegistry,
-  ZoomControl,
 } from '@hungpvq/react-map-core';
 
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
@@ -70,7 +69,6 @@ export function DatasetMenuPage() {
         <IdentifyControl position="top-right" />
         <ComponentManagementControl />
         <ThemeControl />
-        <ZoomControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>

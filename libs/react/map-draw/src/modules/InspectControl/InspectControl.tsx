@@ -21,7 +21,6 @@ import {
   useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
-import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 /** Same icon pair as Vue InspectControl: map when idle, map-search when inspecting. */
@@ -43,7 +42,7 @@ export type InspectControlProps = WithMapPropType & {
   assignLayerColor?: InspectControllerOptions['assignLayerColor'];
   renderPopup?: InspectControllerOptions['renderPopup'];
   selectThreshold?: number;
-  queryParameters?: QueryRenderedFeaturesOptions;
+  queryParameters?: InspectControllerOptions['queryParameters'];
 };
 
 /**

@@ -1,5 +1,8 @@
 import type { IDataset } from '../interfaces/dataset.base';
-import type { AttributeTableColumnTextFilters } from './filter';
+import type {
+  AttributeTableColumnFilterMode,
+  AttributeTableColumnFilters,
+} from './filter';
 import {
   resolveAttributeTableSelectedRowIds,
   type AttributeTableColumn,
@@ -25,11 +28,17 @@ export type AttributeTableControllerReason =
   | 'search'
   | 'column-filter'
   | 'sort'
-  | 'selection';
+  | 'selection'
+  | 'columns-visibility';
 
 export type AttributeTableControllerEvent = {
   type: 'change';
   reason: AttributeTableControllerReason;
+};
+
+export type AttributeTableColumnFilterOptions = {
+  mode?: AttributeTableColumnFilterMode;
+  queryEnd?: string;
 };
 
 export type AttributeTableControllerState = {
@@ -40,8 +49,13 @@ export type AttributeTableControllerState = {
   columns: AttributeTableColumn[];
   rows: AttributeTableRow[];
   search: string;
-  /** Per-column contains filters (key → query). */
-  columnFilters: AttributeTableColumnTextFilters;
+  /** Per-column filters (key → query string or entry with mode). */
+  columnFilters: AttributeTableColumnFilters;
+  /**
+   * When set, View/Grid show only these column keys (order from `columns`).
+   * `null` = show all.
+   */
+  visibleColumnKeys: string[] | null;
   sortStates: AttributeTableSortState[];
   selectedIds: string[];
   rowFilter: AttributeTableRowFilter;
@@ -59,9 +73,20 @@ export type AttributeTableController = {
   goNext(): Promise<void>;
   setPageSize(pageSize: number | string): Promise<void>;
   setSearch(value: string): void;
-  /** Set or clear one column text filter (`query` empty clears that key). */
-  setColumnFilter(key: string, query: string): void;
+  /**
+   * Set or clear one column filter (`query` empty clears that key,
+   * unless `number_between` with `queryEnd`).
+   */
+  setColumnFilter(
+    key: string,
+    query: string,
+    options?: AttributeTableColumnFilterOptions,
+  ): void;
   clearColumnFilters(): void;
+  /** Restrict visible columns; `null` shows all. */
+  setVisibleColumnKeys(keys: string[] | null): void;
+  /** Clear visibility restriction (show every column). */
+  showAllColumns(): void;
   toggleSort(key: string, append?: boolean): void;
   setRowFilter(value: AttributeTableRowFilter): void;
   setZoomToSelection(value: boolean): void;
@@ -114,6 +139,7 @@ export function createAttributeTableController(
     rows: [],
     search: '',
     columnFilters: {},
+    visibleColumnKeys: null,
     sortStates: [],
     selectedIds: [],
     rowFilter: options.rowFilter === 'selected' ? 'selected' : 'all',
@@ -226,11 +252,25 @@ export function createAttributeTableController(
     }, 200);
   }
 
-  function setColumnFilter(key: string, query: string) {
+  function setColumnFilter(
+    key: string,
+    query: string,
+    options?: AttributeTableColumnFilterOptions,
+  ) {
     const next = { ...state.columnFilters };
     const trimmed = query.trim();
-    if (!trimmed) {
+    const queryEnd = options?.queryEnd?.trim() ?? '';
+    const mode = options?.mode;
+    const active =
+      mode === 'number_between' ? !!(trimmed || queryEnd) : !!trimmed;
+    if (!active) {
       delete next[key];
+    } else if (mode || queryEnd) {
+      next[key] = {
+        query,
+        ...(mode ? { mode } : {}),
+        ...(queryEnd ? { queryEnd } : {}),
+      };
     } else {
       next[key] = query;
     }
@@ -242,6 +282,27 @@ export function createAttributeTableController(
     if (!Object.keys(state.columnFilters).length) return;
     state.columnFilters = {};
     scheduleColumnFilterLoad();
+  }
+
+  function setVisibleColumnKeys(keys: string[] | null) {
+    const next =
+      keys == null
+        ? null
+        : Array.from(new Set(keys.map(String).filter(Boolean)));
+    const prev = state.visibleColumnKeys;
+    const same =
+      (prev == null && next == null) ||
+      (prev != null &&
+        next != null &&
+        prev.length === next.length &&
+        prev.every((k, i) => k === next[i]));
+    if (same) return;
+    state.visibleColumnKeys = next;
+    notify('columns-visibility');
+  }
+
+  function showAllColumns() {
+    setVisibleColumnKeys(null);
   }
 
   function toggleSort(key: string, append = false) {
@@ -371,6 +432,10 @@ export function createAttributeTableController(
       columns: state.columns,
       rows: state.rows,
       columnFilters: { ...state.columnFilters },
+      visibleColumnKeys:
+        state.visibleColumnKeys == null
+          ? null
+          : state.visibleColumnKeys.slice(),
       sortStates: state.sortStates.slice(),
       selectedIds: state.selectedIds.slice(),
     }),
@@ -390,6 +455,8 @@ export function createAttributeTableController(
     setSearch,
     setColumnFilter,
     clearColumnFilters,
+    setVisibleColumnKeys,
+    showAllColumns,
     toggleSort,
     setRowFilter,
     setZoomToSelection,

@@ -78,38 +78,46 @@ export function DrawDraftList({
           </tr>
         </thead>
         <tbody>
-          {draftItems.map((item) => (
-            <tr key={String(item.id)}>
-              <td title={String(item.id)} className="table-col-id">
-                {item.id}
+          {draftItems.length === 0 ? (
+            <tr>
+              <td colSpan={3} className="table-col-empty">
+                {trans('map.draw-control.draftList.empty')}
               </td>
-              <td className="table-col-type">
-                {trans(`map.draw-control.draftList.type.${item.status}`)}
-              </td>
-              <td className="table-col-action">
-                {item.modified ? (
+            </tr>
+          ) : (
+            draftItems.map((item) => (
+              <tr key={String(item.id)}>
+                <td title={String(item.id)} className="table-col-id">
+                  {item.id}
+                </td>
+                <td className="table-col-type">
+                  {trans(`map.draw-control.draftList.type.${item.status}`)}
+                </td>
+                <td className="table-col-action">
+                  {item.modified ? (
+                    <MapControlButton
+                      variant="plain"
+                      type="button"
+                      className="menu-item"
+                      title={trans('map.draw-control.draftList.action.fillBound')}
+                      onClick={() => onFlyTo(item.modified as Feature)}
+                    >
+                      <Icon path={mdiCrosshairsGps} size="16px" />
+                    </MapControlButton>
+                  ) : null}
                   <MapControlButton
                     variant="plain"
                     type="button"
                     className="menu-item"
-                    title={trans('map.draw-control.draftList.action.fillBound')}
-                    onClick={() => onFlyTo(item.modified as Feature)}
+                    title={trans('map.draw-control.draftList.action.discard')}
+                    onClick={() => onDiscardItem(item)}
                   >
-                    <Icon path={mdiCrosshairsGps} size="16px" />
+                    <Icon path={mdiDeleteOutline} size="16px" />
                   </MapControlButton>
-                ) : null}
-                <MapControlButton
-                  variant="plain"
-                  type="button"
-                  className="menu-item"
-                  title={trans('map.draw-control.draftList.action.discard')}
-                  onClick={() => onDiscardItem(item)}
-                >
-                  <Icon path={mdiDeleteOutline} size="16px" />
-                </MapControlButton>
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </DraggableItemPopup>

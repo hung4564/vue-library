@@ -28,6 +28,7 @@ export const MAP_DEBUG_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'formatErrorTime',
   'formatLogTime',
   'getDatasetStore',
+  'getMapBag',
   'getMapScopedStore',
   'getValueType',
   'hasChildren',
@@ -47,6 +48,7 @@ export const MAP_DEBUG_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'shortErrorMapId',
   'shortMapId',
   'snapshotGlobalStore',
+  'snapshotMapScopedStore',
   'textMessage',
   'uninstallMapDebug',
 ] as const;

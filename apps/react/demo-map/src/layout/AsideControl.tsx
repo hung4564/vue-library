@@ -1,3 +1,4 @@
+import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
@@ -10,46 +11,26 @@ import {
   useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiMenu } from '@mdi/js';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
 import './demo-nav.css';
 
-const NAV_ITEMS = [
-  { to: '/', label: 'Home (All Map)' },
-  { to: '/map-core', label: 'Map - Core' },
-  { to: '/language', label: 'Language' },
-  { to: '/minimal', label: 'Minimal starter' },
-  { to: '/map-dataset', label: 'Map - Dataset (all)' },
-  { to: '/worker-sample', label: 'Worker - Sample' },
-  { to: '/toolbar', label: 'Map - Toolbar' },
-  { to: '/mobile-menu', label: 'Map - Mobile menu' },
-  { to: '/basemap', label: 'BaseMap' },
-  { to: '/basemap-error', label: 'Basemap error' },
-  { to: '/multi-map', label: 'Multi-map' },
-  { to: '/measurement', label: 'Measurement' },
-  { to: '/dataset-highlight', label: 'Dataset - Highlight' },
-  { to: '/dataset-identify', label: 'Dataset - Identify' },
-  { to: '/dataset-identify-present', label: 'Dataset - Identify present' },
-  { to: '/dataset-menu', label: 'Dataset - Menu' },
-  { to: '/dataset-list', label: 'Dataset - List' },
-  { to: '/registry-control', label: 'UniversalRegistry - Controls' },
-  { to: '/dataset-data-management', label: 'Dataset - Data management' },
-  { to: '/dataset-attribute-table', label: 'Dataset - Attribute table' },
-  { to: '/dataset-geo-export', label: 'Dataset - Geo export' },
-  { to: '/story-telling', label: 'Story telling' },
-  { to: '/story-telling-gps', label: 'Story telling GPS' },
-  { to: '/legend', label: 'Legend' },
-  { to: '/draw', label: 'Draw' },
-];
+const NAV_ITEMS = getDemoAsideNavItems('react');
 
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'asideControl' });
+  const { mapId, moduleContainerProps } = useMap({
+    ...merged,
+    controlId: 'asideControl',
+  });
   const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
+  const navItems = useMemo(() => NAV_ITEMS, []);
 
   useEffect(() => {
-    registerLocale('en', { map: { 'aside-control': { title: 'Aside Control' } } });
+    registerLocale('en', {
+      map: { 'aside-control': { title: 'Aside Control' } },
+    });
   }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
@@ -95,7 +76,7 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
           containerId={bind.containerId}
         >
           <ul className="v-list">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <li key={item.to} className="v-list-item">
                 <Link to={item.to} onClick={() => toggleShow(false)}>
                   {item.label}

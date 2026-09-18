@@ -141,8 +141,50 @@ const labels = computed((): AttributeTableViewLabels => ({
   rowFilter: trans.value('map.attribute-table.rowFilter'),
   columnFilter: trans.value('map.attribute-table.columnFilter'),
   columnFilterQuery: trans.value('map.attribute-table.columnFilterQuery'),
+  columnFilterQueryEquals: trans.value(
+    'map.attribute-table.columnFilterQueryEquals',
+  ),
+  columnFilterQueryNumber: trans.value(
+    'map.attribute-table.columnFilterQueryNumber',
+  ),
+  columnFilterQueryNumberBetween: trans.value(
+    'map.attribute-table.columnFilterQueryNumberBetween',
+  ),
+  columnFilterQueryDate: trans.value(
+    'map.attribute-table.columnFilterQueryDate',
+  ),
   clearColumnFilter: trans.value('map.attribute-table.clearColumnFilter'),
   columnFilterFor: trans.value('map.attribute-table.columnFilterFor'),
+  columnFilterMode: trans.value('map.attribute-table.columnFilterMode'),
+  columnFilterModeContains: trans.value(
+    'map.attribute-table.columnFilterModeContains',
+  ),
+  columnFilterModeEquals: trans.value(
+    'map.attribute-table.columnFilterModeEquals',
+  ),
+  columnFilterModeNumberEq: trans.value(
+    'map.attribute-table.columnFilterModeNumberEq',
+  ),
+  columnFilterModeNumberGte: trans.value(
+    'map.attribute-table.columnFilterModeNumberGte',
+  ),
+  columnFilterModeNumberLte: trans.value(
+    'map.attribute-table.columnFilterModeNumberLte',
+  ),
+  columnFilterModeNumberBetween: trans.value(
+    'map.attribute-table.columnFilterModeNumberBetween',
+  ),
+  columnFilterModeDateEq: trans.value(
+    'map.attribute-table.columnFilterModeDateEq',
+  ),
+  columnFilterModeDateGte: trans.value(
+    'map.attribute-table.columnFilterModeDateGte',
+  ),
+  columnFilterModeDateLte: trans.value(
+    'map.attribute-table.columnFilterModeDateLte',
+  ),
+  columnsVisibility: trans.value('map.attribute-table.columnsVisibility'),
+  columnsShowAll: trans.value('map.attribute-table.columnsShowAll'),
   sortedAsc: trans.value('map.attribute-table.sortedAsc'),
   sortedDesc: trans.value('map.attribute-table.sortedDesc'),
   notSorted: trans.value('map.attribute-table.notSorted'),

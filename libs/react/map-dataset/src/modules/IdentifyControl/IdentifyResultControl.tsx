@@ -384,6 +384,16 @@ export function IdentifyResultControl(props: WithMapPropType) {
                                 role="button"
                                 tabIndex={0}
                                 onClick={() => setFocusedChildKey(childKey)}
+                                onKeyDown={(event) => {
+                                  if (
+                                    event.key !== 'Enter' &&
+                                    event.key !== ' '
+                                  ) {
+                                    return;
+                                  }
+                                  event.preventDefault();
+                                  setFocusedChildKey(childKey);
+                                }}
                               >
                                 <span className="identify-control-child-item__name">
                                   {child.name || String(child.id) || '---'}

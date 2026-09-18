@@ -1,6 +1,7 @@
 <template lang="">
   <Map ref="mapRef" @map-loaded="onMapLoaded">
     <DemoLanguageControl />
+    <AsideControl position="top-left" />
     <GotoControl position="top-right" />
     <GlobeControl />
     <SettingControl />
@@ -37,6 +38,7 @@ import {
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { shallowRef } from 'vue';
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import AsideControl from '../layout/aside-control.vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);
 function onMapLoaded(map: MapSimple) {

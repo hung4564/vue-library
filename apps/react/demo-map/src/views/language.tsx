@@ -21,8 +21,9 @@ import {
   useMapContext,
 } from '@hungpvq/react-map-core';
 import { useCallback, useMemo, useState } from 'react';
-import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { MapPageShell } from '../components/MapPageShell';
+import { AsideControl } from '../layout/AsideControl';
 
 const FR_LOCALE: MapLangLocale = {
   map: {
@@ -102,26 +103,28 @@ export function LanguagePage() {
   }, []);
 
   return (
-    <Map>
-      <AsideControl position="top-left" />
-      <LanguageControl
-        defaultLanguage="vi"
-        languages={['en', 'vi', 'fr']}
-        labels={{ en: 'English', vi: 'Tiếng Việt', fr: 'Français' }}
-        locales={locales}
-        localeLoader={localeLoader}
-        reloadOnSelect={reloadOnSelect}
-      />
-      <ThemeControl />
-      <HomeControl />
-      <ZoomControl />
-      <GotoControl position="top-right" />
-      <InfoControl position="top-right" />
-      <MeasurementControl position="top-right" />
-      <BaseMapControl position="bottom-left" />
-      <MouseCoordinatesControl />
-      <DemoHelpPanel />
-      <ReloadToggle checked={reloadOnSelect} onChange={setReloadOnSelect} />
-    </Map>
+    <MapPageShell>
+      <Map>
+        <AsideControl position="top-left" />
+        <LanguageControl
+          defaultLanguage="vi"
+          languages={['en', 'vi', 'fr']}
+          labels={{ en: 'English', vi: 'Tiếng Việt', fr: 'Français' }}
+          locales={locales}
+          localeLoader={localeLoader}
+          reloadOnSelect={reloadOnSelect}
+        />
+        <ThemeControl />
+        <HomeControl />
+        <ZoomControl />
+        <GotoControl position="top-right" />
+        <InfoControl position="top-right" />
+        <MeasurementControl position="top-right" />
+        <BaseMapControl position="bottom-left" />
+        <MouseCoordinatesControl />
+        <DemoHelpPanel />
+        <ReloadToggle checked={reloadOnSelect} onChange={setReloadOnSelect} />
+      </Map>
+    </MapPageShell>
   );
 }

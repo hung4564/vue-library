@@ -1,9 +1,14 @@
 import {
+  ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   ATTRIBUTE_TABLE_ROW_HEIGHT,
   formatAttributeTableSelectionStatus,
+  getAttributeTableColumnFilterMode,
+  getAttributeTableColumnFilterQuery,
   getVirtualRowWindow,
   resolveAttributeTableUi,
+  resolveAttributeTableVisibleColumns,
+  type AttributeTableColumnFilterMode,
   type AttributeTableGridProps,
   type AttributeTablePagerProps,
   type AttributeTableToolbarProps,
@@ -16,11 +21,61 @@ import { AttributeTableGrid } from './AttributeTableGrid';
 import { AttributeTablePager } from './AttributeTablePager';
 import { AttributeTableToolbar } from './AttributeTableToolbar';
 
+function modeLabel(
+  mode: AttributeTableColumnFilterMode,
+  labels: AttributeTableViewProps['labels'],
+): string {
+  switch (mode) {
+    case 'equals':
+      return labels.columnFilterModeEquals;
+    case 'number_eq':
+      return labels.columnFilterModeNumberEq;
+    case 'number_gte':
+      return labels.columnFilterModeNumberGte;
+    case 'number_lte':
+      return labels.columnFilterModeNumberLte;
+    case 'number_between':
+      return labels.columnFilterModeNumberBetween;
+    case 'date_eq':
+      return labels.columnFilterModeDateEq;
+    case 'date_gte':
+      return labels.columnFilterModeDateGte;
+    case 'date_lte':
+      return labels.columnFilterModeDateLte;
+    default:
+      return labels.columnFilterModeContains;
+  }
+}
+
+function queryPlaceholder(
+  mode: AttributeTableColumnFilterMode,
+  labels: AttributeTableViewProps['labels'],
+): string {
+  switch (mode) {
+    case 'equals':
+      return labels.columnFilterQueryEquals;
+    case 'number_eq':
+    case 'number_gte':
+    case 'number_lte':
+      return labels.columnFilterQueryNumber;
+    case 'number_between':
+      return labels.columnFilterQueryNumberBetween;
+    case 'date_eq':
+    case 'date_gte':
+    case 'date_lte':
+      return labels.columnFilterQueryDate;
+    default:
+      return labels.columnFilterQuery;
+  }
+}
+
 export function AttributeTableView(props: AttributeTableViewProps) {
   const [, setTick] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(320);
   const [toolbarColumnKey, setToolbarColumnKey] = useState('');
+  const [toolbarColumnMode, setToolbarColumnMode] =
+    useState<AttributeTableColumnFilterMode>('contains');
   const ui = resolveAttributeTableUi(props.ui);
 
   useEffect(() => {
@@ -39,6 +94,33 @@ export function AttributeTableView(props: AttributeTableViewProps) {
       prev && keys.includes(prev) ? prev : (keys[0] ?? ''),
     );
   }, [state.columns]);
+
+  useEffect(() => {
+    if (!toolbarColumnKey) {
+      setToolbarColumnMode('contains');
+      return;
+    }
+    setToolbarColumnMode(
+      getAttributeTableColumnFilterMode(state.columnFilters[toolbarColumnKey]),
+    );
+  }, [toolbarColumnKey, state.columnFilters]);
+
+  const displayColumns = useMemo(
+    () =>
+      resolveAttributeTableVisibleColumns(
+        state.columns,
+        state.visibleColumnKeys,
+      ),
+    [state.columns, state.visibleColumnKeys],
+  );
+
+  const columnFilterQueries = useMemo(() => {
+    const out: Record<string, string> = {};
+    for (const [key, entry] of Object.entries(state.columnFilters)) {
+      out[key] = getAttributeTableColumnFilterQuery(entry);
+    }
+    return out;
+  }, [state.columnFilters]);
 
   const visibleRows = useMemo(() => {
     if (state.rowFilter !== 'selected') return state.rows;
@@ -85,6 +167,20 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     value: c.key,
     text: c.label,
   }));
+  const columnFilterModeItems = ATTRIBUTE_TABLE_COLUMN_FILTER_MODES.map(
+    (mode) => ({
+      value: mode,
+      text: modeLabel(mode, props.labels),
+    }),
+  );
+
+  function applyColumnFilter(
+    key: string,
+    query: string,
+    mode: AttributeTableColumnFilterMode,
+  ) {
+    props.controller.setColumnFilter(key, query, { mode });
+  }
 
   const toolbarProps: AttributeTableToolbarProps = {
     mapId: props.mapId,
@@ -101,10 +197,23 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     rowFilterLabel: props.labels.rowFilter,
     columnFilterItems,
     columnFilterKey: toolbarColumnKey,
-    columnFilterQuery: state.columnFilters[toolbarColumnKey] ?? '',
+    columnFilterQuery: getAttributeTableColumnFilterQuery(
+      state.columnFilters[toolbarColumnKey],
+    ),
     columnFilterLabel: props.labels.columnFilter,
-    columnFilterQueryPlaceholder: props.labels.columnFilterQuery,
+    columnFilterQueryPlaceholder: queryPlaceholder(
+      toolbarColumnMode,
+      props.labels,
+    ),
     clearColumnFilterLabel: props.labels.clearColumnFilter,
+    columnFilterMode: toolbarColumnMode,
+    columnFilterModeItems,
+    columnFilterModeLabel: props.labels.columnFilterMode,
+    columnVisibilityItems: columnFilterItems,
+    visibleColumnKeys: state.visibleColumnKeys ?? [],
+    columnVisibilityAll: state.visibleColumnKeys == null,
+    columnVisibilityLabel: props.labels.columnsVisibility,
+    columnsShowAllLabel: props.labels.columnsShowAll,
     clearLabel: props.labels.clear,
     clearDisabled: state.selectedIds.length === 0,
     exportLabel: props.labels.export,
@@ -116,9 +225,29 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     onColumnFilterKeyChange: setToolbarColumnKey,
     onColumnFilterQueryChange: (value) => {
       if (!toolbarColumnKey) return;
-      props.controller.setColumnFilter(toolbarColumnKey, value);
+      applyColumnFilter(toolbarColumnKey, value, toolbarColumnMode);
+    },
+    onColumnFilterModeChange: (mode) => {
+      const next = (
+        ATTRIBUTE_TABLE_COLUMN_FILTER_MODES.includes(
+          mode as AttributeTableColumnFilterMode,
+        )
+          ? mode
+          : 'contains'
+      ) as AttributeTableColumnFilterMode;
+      setToolbarColumnMode(next);
+      if (!toolbarColumnKey) return;
+      const query = getAttributeTableColumnFilterQuery(
+        state.columnFilters[toolbarColumnKey],
+      );
+      if (query.trim() || next === 'number_between') {
+        applyColumnFilter(toolbarColumnKey, query, next);
+      }
     },
     onClearColumnFilters: () => props.controller.clearColumnFilters(),
+    onVisibleColumnKeysChange: (keys) =>
+      props.controller.setVisibleColumnKeys(keys),
+    onShowAllColumns: () => props.controller.showAllColumns(),
     onClearSelection: () => props.controller.clearSelection(),
     onExport: props.onExport,
     onExportFormat: props.onExportFormat,
@@ -167,10 +296,10 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     sortedDescLabel: props.labels.sortedDesc,
     notSortedLabel: props.labels.notSorted,
     columnFilterForLabel: props.labels.columnFilterFor,
-    columns: state.columns,
+    columns: displayColumns,
     windowedRows,
     sortStates: state.sortStates,
-    columnFilters: state.columnFilters,
+    columnFilters: columnFilterQueries,
     selectedIds: selectedSet,
     allVisibleSelected,
     checkbox: ui.checkbox,
@@ -188,8 +317,10 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     },
     onSortColumn: (key, shiftKey) =>
       props.controller.toggleSort(key, shiftKey),
-    onColumnFilterChange: (key, query) =>
-      props.controller.setColumnFilter(key, query),
+    onColumnFilterChange: (key, query) => {
+      const mode = getAttributeTableColumnFilterMode(state.columnFilters[key]);
+      applyColumnFilter(key, query, mode);
+    },
     onToggleSelectAll: () => {
       void props.controller.toggleSelectAll(visibleRows);
     },

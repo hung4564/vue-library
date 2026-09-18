@@ -31,6 +31,7 @@ import {
   IdentifyShowFirstControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
@@ -59,6 +60,8 @@ export function RegistryControlPage() {
         <InfoControl position="top-right" />
         <WorkerControl position="top-left" />
         <IdentifyControl position="top-right" />
+        <DrawControl position="top-right" />
+        <InspectControl position="top-right" />
         <GeoLocateControl position="top-right" />
 
         <PrintAdvancedControl />

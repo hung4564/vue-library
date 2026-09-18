@@ -33,7 +33,6 @@
     "@hungpvq/react-map-core": "^1.1.0",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.2.0",
-    "maplibre-gl": "^5.4.0",
     "react": "^18.0.0"
   }
 }

@@ -37,6 +37,10 @@ import { LegendPage } from './views/legend';
 import { ToolbarPage } from './views/toolbar';
 import { MobileMenuPage } from './views/mobile-menu';
 import { WorkerSamplePage } from './views/worker-sample';
+import { PrintPage } from './views/print';
+import { CrsPage } from './views/crs';
+import { DevtoolsPage } from './views/devtools';
+import { ThemePage } from './views/theme';
 
 // Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
 installMapApp({ theme: false });
@@ -88,6 +92,10 @@ root.render(
           <Route path="story-telling-gps" element={<StoryTellingGpsPage />} />
           <Route path="legend" element={<LegendPage />} />
           <Route path="draw" element={<DrawPage />} />
+          <Route path="print" element={<PrintPage />} />
+          <Route path="crs" element={<CrsPage />} />
+          <Route path="devtools" element={<DevtoolsPage />} />
+          <Route path="theme" element={<ThemePage />} />
         </Route>
       </Routes>
     </HashRouter>

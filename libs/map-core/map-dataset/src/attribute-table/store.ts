@@ -2,7 +2,7 @@ import { isDataManagementView } from '../utils/check';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import {
   filterAttributeTableRowsByColumnText,
-  type AttributeTableColumnTextFilters,
+  type AttributeTableColumnFilters,
 } from './filter';
 import {
   buildAttributeTable,
@@ -38,8 +38,8 @@ export type AttributeTableStoreQuery = {
   page?: number;
   pageSize?: number | 'all';
   search?: string;
-  /** Per-column text contains filters (ANDed after global search). */
-  columnFilters?: AttributeTableColumnTextFilters;
+  /** Per-column filters (ANDed after global search). */
+  columnFilters?: AttributeTableColumnFilters;
   sort?: AttributeTableSortState[];
   /** Required when intent === 'select' */
   ids?: string[];

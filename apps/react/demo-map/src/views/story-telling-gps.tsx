@@ -1,22 +1,32 @@
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
+  CrsControl,
   FullScreenControl,
+  GeoLocateControl,
   GotoControl,
   HomeControl,
   Map,
+  MeasurementControl,
   MouseCoordinatesControl,
   SettingControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
+import { MapCard } from '@hungpvq/react-map-core/fields';
+import * as turf from '@turf/turf';
+import { GeoJSONSource, Marker } from 'maplibre-gl';
+import { useMemo, useRef, useState } from 'react';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import { Marker } from 'maplibre-gl';
-import { useCallback, useRef, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { createZoomAction } from './StoryTelling/helper-action';
+import { withMapReady } from './StoryTelling/helper-global';
+import {
+  type Chapter,
+  useMapStorytelling,
+} from './StoryTelling/useStorytelling';
 import './story-telling.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 const GPS_TRACK = [
   { lng: 105.84146352698633, lat: 21.017689539749725, timestamp: 0 },
@@ -29,135 +39,208 @@ const GPS_TRACK = [
 
 const TRAIL_SOURCE_ID = 'gps-trail';
 
+function isValidCoordinate(coord: [number, number]): boolean {
+  const [lng, lat] = coord;
+  return (
+    !isNaN(lng) && !isNaN(lat) && Math.abs(lng) <= 180 && Math.abs(lat) <= 90
+  );
+}
+
+const isSameCoord = (a: [number, number], b: [number, number]) =>
+  a[0] === b[0] && a[1] === b[1];
+
 export function StoryTellingGpsPage() {
   const [mapId, setMapId] = useState('');
-  const [playing, setPlaying] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const markerRef = useRef<Marker | null>(null);
-  const trailRef = useRef<[number, number][]>([]);
-  const rafRef = useRef<number | null>(null);
+  const mapIdRef = useRef('');
+  mapIdRef.current = mapId;
 
-  const updateTrail = useCallback(
-    (coord: [number, number]) => {
-      trailRef.current = [...trailRef.current, coord];
-      if (!mapId) return;
-      getMap(mapId, (map) => {
-        const source = map.getSource(TRAIL_SOURCE_ID) as
-          | { setData: (data: unknown) => void }
-          | undefined;
-        source?.setData({
+  const markerRef = useRef(new Marker({ color: 'red' }));
+  const trailCoordsRef = useRef<[number, number][]>([]);
+
+  const updateTrail = (coord: [number, number]) => {
+    getMap(mapIdRef.current, (map) => {
+      trailCoordsRef.current.push(coord);
+      const source = map.getSource(TRAIL_SOURCE_ID) as GeoJSONSource;
+      if (source) {
+        source.setData({
           type: 'Feature',
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: trailRef.current,
+            coordinates: trailCoordsRef.current,
           },
         });
-      });
-    },
-    [mapId],
+      }
+    });
+  };
+
+  const chapters: Chapter[] = useMemo(() => {
+    const list: Chapter[] = GPS_TRACK.map((point, index) => {
+      const nextPoint = GPS_TRACK[index + 1];
+      return {
+        id: `point-${index}`,
+        duration: nextPoint
+          ? (nextPoint.timestamp - point.timestamp) * 1000
+          : 1000,
+        actions: [
+          {
+            type: 'moveMarkerTo',
+            payload: {
+              lng: point.lng,
+              lat: point.lat,
+            },
+          },
+          ...(nextPoint
+            ? [
+                {
+                  type: 'animateSegment',
+                  payload: {
+                    segment: {
+                      start: point,
+                      end: nextPoint,
+                      duration: (nextPoint.timestamp - point.timestamp) * 1000,
+                    },
+                  },
+                },
+              ]
+            : []),
+        ],
+      };
+    });
+    list[0].actions?.push(
+      createZoomAction([GPS_TRACK[0].lng, GPS_TRACK[0].lat], 12),
+    );
+    return list;
+  }, []);
+
+  const globalActions = useMemo(
+    () => ({
+      moveMarkerTo: ({ lng, lat }: { lng: number; lat: number }) => ({
+        add: () => {
+          markerRef.current.setLngLat([lng, lat]);
+        },
+      }),
+      updateTrail: ({ coord }: { coord: [number, number] }) => ({
+        add: () => {
+          updateTrail(coord);
+        },
+      }),
+      animateSegment: ({
+        segment,
+        speed = 1,
+        onFinish,
+      }: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        segment: any;
+        speed?: number;
+        onFinish?: () => void;
+      }) => ({
+        add: () => {
+          if (
+            !segment ||
+            !segment.start ||
+            !segment.end ||
+            !segment.duration
+          ) {
+            console.error('Invalid segment data', segment);
+            return;
+          }
+
+          const startCoord: [number, number] = [
+            segment.start.lng,
+            segment.start.lat,
+          ];
+          const endCoord: [number, number] = [
+            segment.end.lng,
+            segment.end.lat,
+          ];
+
+          if (isSameCoord(startCoord, endCoord)) {
+            console.warn('Skipping segment: start and end are identical');
+            onFinish?.();
+            return;
+          }
+          if (!isValidCoordinate(startCoord) || !isValidCoordinate(endCoord)) {
+            console.error(
+              'Invalid coordinates for segment',
+              startCoord,
+              endCoord,
+            );
+            return;
+          }
+
+          const line = turf.lineString([startCoord, endCoord]);
+          const distance = turf.length(line);
+          const duration = segment.duration / speed;
+
+          let startTime: number | null = null;
+
+          function frame(now: number) {
+            if (startTime === null) startTime = now;
+            const elapsed = now - startTime;
+            const t = Math.min(Math.max(elapsed / duration, 0), 1);
+
+            const interpolated = turf.along(line, distance * t).geometry
+              .coordinates as [number, number];
+
+            markerRef.current.setLngLat(interpolated);
+            updateTrail(interpolated);
+
+            if (t < 1) {
+              requestAnimationFrame(frame);
+            } else {
+              onFinish?.();
+            }
+          }
+
+          requestAnimationFrame(frame);
+        },
+      }),
+    }),
+    [],
   );
+
+  const { play, pause, next, prev, isPlaying, currentIndex } =
+    useMapStorytelling(mapIdRef, {
+      chapters,
+      autoPlay: false,
+      autoNext: true,
+      loop: false,
+      globalActions,
+    });
 
   function onMapLoaded(map: MapSimple) {
     setMapId(map.id);
-    getMap(map.id, (m) => {
-      const marker = new Marker({ color: 'red' });
-      marker
+    mapIdRef.current = map.id;
+    withMapReady(map.id, (m) => {
+      markerRef.current
         .setLngLat([GPS_TRACK[0].lng, GPS_TRACK[0].lat])
-        .addTo(m as never);
-      markerRef.current = marker;
-
+        .addTo(m);
+    });
+    withMapReady(map.id, (m) => {
       if (!m.getSource(TRAIL_SOURCE_ID)) {
         m.addSource(TRAIL_SOURCE_ID, {
           type: 'geojson',
           data: {
             type: 'Feature',
             properties: {},
-            geometry: { type: 'LineString', coordinates: [] },
+            geometry: {
+              type: 'LineString',
+              coordinates: [],
+            },
           },
         });
+
         m.addLayer({
           id: TRAIL_SOURCE_ID,
           type: 'line',
           source: TRAIL_SOURCE_ID,
-          paint: { 'line-color': '#FF0000', 'line-width': 4 },
+          paint: {
+            'line-color': '#FF0000',
+            'line-width': 4,
+          },
         });
       }
-      m.flyTo({
-        center: [GPS_TRACK[0].lng, GPS_TRACK[0].lat],
-        zoom: 12,
-        duration: 0,
-      });
-    });
-  }
-
-  function stopAnim() {
-    if (rafRef.current != null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-  }
-
-  function play() {
-    if (!mapId || !markerRef.current) return;
-    stopAnim();
-    setPlaying(true);
-    trailRef.current = [];
-    let index = 0;
-
-    const runSegment = () => {
-      if (index >= GPS_TRACK.length - 1) {
-        setPlaying(false);
-        setCurrent(GPS_TRACK.length - 1);
-        return;
-      }
-      setCurrent(index);
-      const start = GPS_TRACK[index];
-      const end = GPS_TRACK[index + 1];
-      const duration = Math.max((end.timestamp - start.timestamp) * 1000, 200);
-      const startCoord: [number, number] = [start.lng, start.lat];
-      const endCoord: [number, number] = [end.lng, end.lat];
-      markerRef.current?.setLngLat(startCoord);
-      updateTrail(startCoord);
-
-      const t0 = performance.now();
-      const frame = (now: number) => {
-        const t = Math.min((now - t0) / duration, 1);
-        const lng = startCoord[0] + (endCoord[0] - startCoord[0]) * t;
-        const lat = startCoord[1] + (endCoord[1] - startCoord[1]) * t;
-        const coord: [number, number] = [lng, lat];
-        markerRef.current?.setLngLat(coord);
-        updateTrail(coord);
-        if (t < 1) {
-          rafRef.current = requestAnimationFrame(frame);
-        } else {
-          index += 1;
-          runSegment();
-        }
-      };
-      rafRef.current = requestAnimationFrame(frame);
-    };
-
-    runSegment();
-  }
-
-  function reset() {
-    stopAnim();
-    setPlaying(false);
-    setCurrent(0);
-    trailRef.current = [];
-    if (!mapId) return;
-    getMap(mapId, (m) => {
-      markerRef.current
-        ?.setLngLat([GPS_TRACK[0].lng, GPS_TRACK[0].lat]);
-      const source = m.getSource(TRAIL_SOURCE_ID) as
-        | { setData: (data: unknown) => void }
-        | undefined;
-      source?.setData({
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'LineString', coordinates: [] },
-      });
     });
   }
 
@@ -166,8 +249,11 @@ export function StoryTellingGpsPage() {
       <Map onMapLoaded={onMapLoaded}>
         <DemoLanguageControl />
         <AsideControl position="top-left" />
+        <MeasurementControl position="top-right" />
         <GotoControl position="top-right" />
+        <CrsControl />
         <SettingControl />
+        <GeoLocateControl />
         <FullScreenControl />
         <ZoomControl />
         <HomeControl />
@@ -175,20 +261,26 @@ export function StoryTellingGpsPage() {
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>
-      <div className="story-panel">
-        <h3>Story telling GPS</h3>
-        <p>
-          Point {current + 1} / {GPS_TRACK.length}
-          {playing ? ' (playing)' : ''}
-        </p>
-        <div className="story-panel__actions">
-          <button type="button" disabled={playing || !mapId} onClick={play}>
-            Play trail
+      <div className="buttons-container">
+        <MapCard>
+          <button type="button" disabled={!mapId} onClick={play}>
+            Play
           </button>
-          <button type="button" disabled={!mapId} onClick={reset}>
-            Reset
+          <button type="button" disabled={!mapId} onClick={pause}>
+            Pause
           </button>
-        </div>
+          <button type="button" disabled={!mapId} onClick={prev}>
+            Prev
+          </button>
+          <button type="button" disabled={!mapId} onClick={next}>
+            Next
+          </button>
+          <div style={{ padding: 8 }}>
+            <div>Current: {currentIndex}</div>
+            {isPlaying ? <div>Playing</div> : null}
+            <div id="btn-highlight" />
+          </div>
+        </MapCard>
       </div>
     </MapPageShell>
   );

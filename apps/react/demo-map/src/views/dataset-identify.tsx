@@ -3,7 +3,6 @@ import {
   BaseMapCard,
   BaseMapControl,
   Map,
-  ZoomControl,
 } from '@hungpvq/react-map-core';
 
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
@@ -41,7 +40,6 @@ export function DatasetIdentifyPage() {
         <IdentifyControl position="top-right" />
         <HighlightPointer enableClick />
         <IdentifyShowFirstControl />
-        <ZoomControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>

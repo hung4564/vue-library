@@ -22,6 +22,10 @@ const router = createRouter({
       component: () => import('../views/minimal.vue'),
     },
     {
+      path: '/map-dataset/',
+      component: () => import('../views/map-dataset.vue'),
+    },
+    {
       path: '/worker-sample/',
       component: () => import('../views/worker-sample/example.vue'),
     },
@@ -101,6 +105,22 @@ const router = createRouter({
     {
       path: '/story-telling-gps/',
       component: () => import('../views/StoryTelling/example-gps.vue'),
+    },
+    {
+      path: '/print/',
+      component: () => import('../views/print.vue'),
+    },
+    {
+      path: '/crs/',
+      component: () => import('../views/crs.vue'),
+    },
+    {
+      path: '/devtools/',
+      component: () => import('../views/devtools.vue'),
+    },
+    {
+      path: '/theme/',
+      component: () => import('../views/theme.vue'),
     },
   ],
 });

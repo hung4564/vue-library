@@ -223,8 +223,48 @@ export function AttributeTable(props: AttributeTableProps) {
       rowFilter: trans('map.attribute-table.rowFilter'),
       columnFilter: trans('map.attribute-table.columnFilter'),
       columnFilterQuery: trans('map.attribute-table.columnFilterQuery'),
+      columnFilterQueryEquals: trans(
+        'map.attribute-table.columnFilterQueryEquals',
+      ),
+      columnFilterQueryNumber: trans(
+        'map.attribute-table.columnFilterQueryNumber',
+      ),
+      columnFilterQueryNumberBetween: trans(
+        'map.attribute-table.columnFilterQueryNumberBetween',
+      ),
+      columnFilterQueryDate: trans('map.attribute-table.columnFilterQueryDate'),
       clearColumnFilter: trans('map.attribute-table.clearColumnFilter'),
       columnFilterFor: trans('map.attribute-table.columnFilterFor'),
+      columnFilterMode: trans('map.attribute-table.columnFilterMode'),
+      columnFilterModeContains: trans(
+        'map.attribute-table.columnFilterModeContains',
+      ),
+      columnFilterModeEquals: trans(
+        'map.attribute-table.columnFilterModeEquals',
+      ),
+      columnFilterModeNumberEq: trans(
+        'map.attribute-table.columnFilterModeNumberEq',
+      ),
+      columnFilterModeNumberGte: trans(
+        'map.attribute-table.columnFilterModeNumberGte',
+      ),
+      columnFilterModeNumberLte: trans(
+        'map.attribute-table.columnFilterModeNumberLte',
+      ),
+      columnFilterModeNumberBetween: trans(
+        'map.attribute-table.columnFilterModeNumberBetween',
+      ),
+      columnFilterModeDateEq: trans(
+        'map.attribute-table.columnFilterModeDateEq',
+      ),
+      columnFilterModeDateGte: trans(
+        'map.attribute-table.columnFilterModeDateGte',
+      ),
+      columnFilterModeDateLte: trans(
+        'map.attribute-table.columnFilterModeDateLte',
+      ),
+      columnsVisibility: trans('map.attribute-table.columnsVisibility'),
+      columnsShowAll: trans('map.attribute-table.columnsShowAll'),
       sortedAsc: trans('map.attribute-table.sortedAsc'),
       sortedDesc: trans('map.attribute-table.sortedDesc'),
       notSorted: trans('map.attribute-table.notSorted'),

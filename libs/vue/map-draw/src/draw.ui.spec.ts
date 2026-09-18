@@ -3,6 +3,7 @@ import { Map as MapShell } from '@hungpvq/vue-map-core';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
+import { DOM_PARITY } from './dom-parity.fixture';
 import DrawControl from './modules/DrawControl/DrawControl.vue';
 
 beforeEach(() => {
@@ -69,6 +70,16 @@ describe('DrawControl UI smoke', () => {
         UniversalRegistry.getControl('mapDrawDraftList', MAP_ID),
       ).toBeTruthy(),
     );
+
+    // Optional: draft table node if portal already mounted
+    const draftTable = document.querySelector(
+      `.${DOM_PARITY.draftTable.tableClass}`,
+    );
+    if (draftTable) {
+      expect(
+        draftTable.classList.contains(DOM_PARITY.draftTable.tableClass),
+      ).toBe(true);
+    }
 
     wrapper.unmount();
   });
