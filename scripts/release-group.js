@@ -15,7 +15,8 @@
  *   2) sync-workspace-peers (consumers → ^MAJOR.MINOR.0)
  *   3) docs sync (draggable) + site build/push (if site configured)
  *   4) nx release changelog + git commit/tag/push via Nx
- *   5) optional local publish (else CI on tag push)
+ *   5) one GitHub Release for group tag (needs GH_TOKEN / GITHUB_TOKEN)
+ *   6) optional local publish (else CI on tag push)
  *
  * Usage:
  *   node scripts/release-group.js draggable
@@ -237,106 +238,118 @@ Or dry-run with an absolute next version (skips relative bump from stale tag):
   }
 }
 
-const opts = parseArgs(process.argv.slice(2));
-const cfg = GROUPS[opts.group];
-const diskVersion = readVersion(cfg.leadPkg);
+async function main() {
+  const opts = parseArgs(process.argv.slice(2));
+  const cfg = GROUPS[opts.group];
+  const diskVersion = readVersion(cfg.leadPkg);
 
-console.log(`
+  console.log(`
 === release-group: ${opts.group} (Nx releaseTagPattern = ${opts.group}@{version}) ===
 specifier: ${opts.specifier || '(conventional / prompt)'}
 diskVersion=${diskVersion}
 dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localPublish=${opts.localPublish}
 `);
 
-const isAbsoluteVersion =
-  !!opts.specifier && /^\d+\.\d+\.\d+/.test(opts.specifier);
-if (!isAbsoluteVersion) {
-  assertTagAligned(opts.group, diskVersion);
-}
-
-// 1) Version packages only — git handled after site/docs so they land in the same commit
-{
-  // git defaults: nx.json release.version.git (commit/tag false, stageChanges true)
-  const parts = [
-    'npx',
-    'nx',
-    'release',
-    'version',
-    ...(opts.specifier ? [opts.specifier] : []),
-    `--group=${opts.group}`,
-  ];
-  if (opts.dryRun) parts.push('--dry-run');
-  run(parts.join(' '));
-}
-
-if (opts.dryRun) {
-  console.log('dry-run: stop after version preview.');
-  process.exit(0);
-}
-
-const version = readVersion(cfg.leadPkg);
-const expectedTag = `${opts.group}@${version}`;
-
-// 2) Sync consumers' peer/deps to ^MAJOR.MINOR.0 (Nx skips peerDependencies)
-runNode(path.join(__dirname, 'sync-workspace-peers.js'), [opts.group]);
-
-// 3) Docs sync (draggable markers)
-if (cfg.syncDocs) {
-  runNode(path.join(__dirname, 'sync-draggable-docs-version.js'), []);
-}
-
-// 4) Site build + push deploy submodule (before Nx commit so pointer can be included)
-if (!opts.skipSite) {
-  if (opts.skipPush) {
-    run(`npm run ${cfg.site}:site:build`);
-    console.log('skip-push: site built, not pushing deploy submodule.');
-  } else {
-    runNode(path.join(__dirname, 'push-deploy-site.js'), [
-      cfg.site,
-      '--version',
-      version,
-    ]);
+  const isAbsoluteVersion =
+    !!opts.specifier && /^\d+\.\d+\.\d+/.test(opts.specifier);
+  if (!isAbsoluteVersion) {
+    assertTagAligned(opts.group, diskVersion);
   }
-}
 
-// Stage docs sync + peer sync + submodule pointer (Nx stages its own version/changelog files)
-{
-  const extras = ['libs', 'apps'];
-  if (!opts.skipSite) extras.push(`deploy/demo-${cfg.site}`);
-  run(`git add -- ${extras.join(' ')}`);
-}
+  // 1) Version packages only — git handled after site/docs so they land in the same commit
+  {
+    const parts = [
+      'npx',
+      'nx',
+      'release',
+      'version',
+      ...(opts.specifier ? [opts.specifier] : []),
+      `--group=${opts.group}`,
+    ];
+    if (opts.dryRun) parts.push('--dry-run');
+    run(parts.join(' '));
+  }
 
-// 5) Changelog + Nx git commit / tag / push
-// git defaults: nx.json release.changelog.git + releaseTag.pattern
-{
-  const parts = [
-    'npx',
-    'nx',
-    'release',
-    'changelog',
-    version,
-    `--group=${opts.group}`,
-  ];
-  if (opts.skipPush) parts.push('--git-push=false');
-  if (opts.skipPush) {
+  if (opts.dryRun) {
+    console.log('dry-run: stop after version preview.');
+    return;
+  }
+
+  const version = readVersion(cfg.leadPkg);
+  const expectedTag = `${opts.group}@${version}`;
+
+  // 2) Sync consumers' peer/deps to ^MAJOR.MINOR.0 (Nx skips peerDependencies)
+  runNode(path.join(__dirname, 'sync-workspace-peers.js'), [opts.group]);
+
+  // 3) Docs sync (draggable markers)
+  if (cfg.syncDocs) {
+    runNode(path.join(__dirname, 'sync-draggable-docs-version.js'), []);
+  }
+
+  // 4) Site build + push deploy submodule (before Nx commit so pointer can be included)
+  if (!opts.skipSite) {
+    if (opts.skipPush) {
+      run(`npm run ${cfg.site}:site:build`);
+      console.log('skip-push: site built, not pushing deploy submodule.');
+    } else {
+      runNode(path.join(__dirname, 'push-deploy-site.js'), [
+        cfg.site,
+        '--version',
+        version,
+      ]);
+    }
+  }
+
+  // Stage docs sync + peer sync + submodule pointer
+  {
+    const extras = ['libs', 'apps'];
+    if (!opts.skipSite) extras.push(`deploy/demo-${cfg.site}`);
+    run(`git add -- ${extras.join(' ')}`);
+  }
+
+  // 5) Changelog + Nx git commit / tag / push
+  {
+    const parts = [
+      'npx',
+      'nx',
+      'release',
+      'changelog',
+      version,
+      `--group=${opts.group}`,
+    ];
+    if (opts.skipPush) parts.push('--git-push=false');
+    run(parts.join(' '));
+  }
+
+  console.log(
+    `\nNx should have created tag ${expectedTag} (see nx.json releaseTagPattern).\n`,
+  );
+
+  // 6) One GitHub Release for the group tag
+  if (!opts.skipPush) {
+    const body =
+      readLatestChangelogSection(cfg.leadPkg) || `Release ${expectedTag}`;
+    await createOrUpdateGroupGithubRelease(expectedTag, body);
+  } else {
     console.warn(
-      'Note: --skip-push sets --git-push=false. Nx rejects that when createRelease is "github" in nx.json.\n' +
-        'For a full release (changelog + GitHub Release), omit --skip-push. Use --skip-site if you only want to skip the demo site.',
+      `skip-push: skipped GitHub Release for ${expectedTag}. Create manually after push.`,
     );
   }
-  run(parts.join(' '));
-}
 
-console.log(`\nNx should have created tag ${expectedTag} (see nx.json releaseTagPattern).\n`);
+  // 7) Optional local npm publish (CI normally publishes on tag)
+  if (opts.localPublish) {
+    const yes = opts.yes ? ' --yes' : '';
+    run(`npx nx release publish --group=${opts.group}${yes}`);
+  }
 
-// 6) Optional local npm publish (CI normally publishes on tag)
-if (opts.localPublish) {
-  const yes = opts.yes ? ' --yes' : '';
-  run(`npx nx release publish --group=${opts.group}${yes}`);
-}
-
-console.log(`
+  console.log(`
 Done (${opts.group}@${version}).
   expected tag: ${expectedTag}
   site: ${!cfg.site || opts.skipSite ? 'skipped' : `deploy/demo-${cfg.site}`}
 `);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

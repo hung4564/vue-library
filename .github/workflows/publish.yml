@@ -61,7 +61,7 @@ jobs:
         shell: bash
 
       - name: Build release group (no cache — dist must match tag version)
-        run: npx nx run-many --projects=tag:${{ steps.meta.outputs.group }} --exclude=tag:demo --target=build --skip-nx-cache
+        run: npx nx run-many --projects=tag:${{ steps.meta.outputs.group }} --exclude=tag:demo,tag:e2e --target=build --skip-nx-cache
         shell: bash
 
       - name: Verify dist versions match tag
@@ -78,7 +78,7 @@ jobs:
           const ver = tag.split('@')[1];
           const group = process.env.GROUP;
           const projects = execSync(
-            `npx nx show projects --projects=tag:${group} --exclude=tag:demo`,
+            `npx nx show projects --projects=tag:${group} --exclude=tag:demo,tag:e2e`,
             { encoding: 'utf8' },
           )
             .trim()

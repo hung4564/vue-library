@@ -15,13 +15,13 @@ Independent versioning via Nx release groups in root `nx.json`. Conventional Com
 
 | Group | Relationship | Tag | GitHub Release | Peers within group |
 |-------|--------------|-----|----------------|--------------------|
-| `draggable` | fixed | `draggable@{version}` | yes (`createRelease`) | `versionPrefix: "^"` + peers sync `^MAJOR.MINOR.0` + `updateDependents: auto` |
-| `map` | fixed | `map@{version}` | yes | same |
-| `shared-store` | fixed (single pkg) | `shared-store@{version}` | yes | peers sync `@hungpvq/shared-store` → `^MAJOR.MINOR.0` across workspace |
+| `draggable` | fixed | `draggable@{version}` | yes (one release via `release-group.js`) | `versionPrefix: "^"` + peers sync `^MAJOR.MINOR.0` + `updateDependents: auto` |
+| `map` | fixed | `map@{version}` | yes (one release via `release-group.js`) | same |
+| `shared-store` | fixed (single pkg) | `shared-store@{version}` | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-store` → `^MAJOR.MINOR.0` across workspace |
 | `packages` | independent | `{projectName}@{version}` | no | `versionPrefix: "^"` + `updateDependents: auto` |
 
 - **Version step:** no commit/tag (`release.version.git`); stage only.
-- **Changelog step:** commit + tag + push (`release.changelog.git`) then GitHub Release.
+- **Changelog step:** commit + tag + push (`release.changelog.git`). GitHub Release is created **once per group** by `scripts/release-group.js` (needs `GH_TOKEN` / `GITHUB_TOKEN`). Backfill: `node scripts/create-group-github-release.js map@1.1.0`.
 - **preVersionCommand:** build only that group (`tag:draggable` / `tag:map` / `shared-store:build`), never `--all`.
 - Current version comes from **git-tag** matching `releaseTagPattern` (fallback: disk). Keep tags aligned with `package.json`.
 - Cross-group **peer** deps are synced by `scripts/sync-workspace-peers.js` after version (wired in `release-group.js`) → `^MAJOR.MINOR.0` (e.g. `1.2.0` → `^1.2.0`). Manual: `npm run draggable:peers:sync` / `map:peers:sync` / `shared-store:peers:sync`.

@@ -200,7 +200,6 @@
         },
         "changelog": {
           "file": "{projectRoot}/CHANGELOG.md",
-          "createRelease": "github",
           "renderOptions": {
             "commitReferences": true,
             "versionTitleDate": true,
