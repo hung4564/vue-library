@@ -5,8 +5,19 @@ export default {
 </script>
 <script setup lang="ts">
 import ContextMenu from '../../ContextMenu.vue';
-import { computed, inject, PropType, ref, Ref, watch } from 'vue';
-import { type LocationSideBar } from '../../../types';
+import ContextMenuItem from '../../ContextMenuItem.vue';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  PropType,
+  ref,
+  Ref,
+  watch,
+} from 'vue';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import {
   useComponent,
   useContainerSize,
@@ -14,9 +25,9 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useDragComponent, useSidebarItem } from '../../../store';
-import MapButton from '../../parts/MapButton.vue';
-import MapSidebarToggle from '../../parts/MapSidebarToggle.vue';
+import { useDragComponent, useDragContainer, useSidebarItem } from '../../../store';
+import DragButton from '../../parts/DragButton.vue';
+import DragSidebarToggle from '../../parts/DragSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
 const contextMenuRef = ref<
   | {
@@ -25,6 +36,9 @@ const contextMenuRef = ref<
     }
   | undefined
 >();
+const menuOpen = ref(false);
+const shellRoot = ref<HTMLElement>();
+let previousFocus: HTMLElement | null = null;
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 const props = defineProps({
   ...withShareComponent,
@@ -60,6 +74,7 @@ const {
   toggleExpand: onToggleExpand,
   isVertical,
   titleTo,
+  afterTitleTo,
   contentTo,
 } = useSidebarBehavior(props, containerId);
 const { componentCard, componentCardHeader } = useComponent({
@@ -67,14 +82,56 @@ const { componentCard, componentCardHeader } = useComponent({
   containerId: containerId.value,
 });
 const storeDragItem = useSidebarItem(containerId.value);
-const ComponentMapSidebarToggle = computed(
-  () => store.getComponentCardSidebarToggle() || MapSidebarToggle,
+const { getItemAction } = useDragContainer(containerId.value);
+const ComponentSidebarToggle = computed(
+  () => store.getComponentCardSidebarToggle() || DragSidebarToggle,
 );
 function onClose() {
-  show.value = false;
   const itemShow = getShowForLocation(props.location);
-  if (itemShow) storeDragItem.registerSideBarShow(itemShow, false);
+  if (itemShow) {
+    const action = getItemAction(itemShow);
+    if (action?.close) {
+      action.close();
+      return;
+    }
+    storeDragItem.registerSideBarShow(itemShow, false);
+  }
+  show.value = false;
 }
+
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  if (menuOpen.value) return;
+  const root = shellRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
+watch(
+  show,
+  async (visible) => {
+    document.removeEventListener('keydown', onKeydown);
+    if (!visible) {
+      restoreFocus(previousFocus);
+      previousFocus = null;
+      return;
+    }
+    previousFocus = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', onKeydown);
+    await nextTick();
+    if (shellRoot.value) focusFirst(shellRoot.value);
+  },
+);
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+});
+
 const c_getShowForLocation = computed(() => getShowForLocation(props.location));
 watch(
   c_getShowForLocation,
@@ -100,7 +157,12 @@ function selectSideBar(nextId: string) {
 
 <template>
   <div
+    ref="shellRoot"
     class="sidebar-container auto-sidebar-container"
+    role="complementary"
+    :aria-label="`Sidebar ${location}`"
+    :aria-labelledby="titleTo"
+    tabindex="-1"
     :class="{
       expand,
       show,
@@ -118,27 +180,25 @@ function selectSideBar(nextId: string) {
         <div class="draggable-sidebar">
           <component :is="componentCardHeader">
             <template #title>
-              <div name="title">
-                <span :id="titleTo"> </span>
-              </div>
+              <span :id="titleTo"> </span>
+            </template>
+            <template #after-title>
+              <span :id="afterTitleTo"> </span>
             </template>
             <template #extra-btn>
               <slot name="extra-btn"></slot>
-              <map-button
+              <drag-button
                 @click="openMenu"
                 v-if="showSwitcher"
                 aria-label="Open sidebar menu"
-                role="button"
+                aria-haspopup="menu"
+                :aria-expanded="menuOpen ? 'true' : 'false'"
               >
                 <SidebarOpenMenu :size="16" />
-              </map-button>
-              <map-button
-                @click="onClose"
-                aria-label="Close sidebar"
-                role="button"
-              >
+              </drag-button>
+              <drag-button @click="onClose" aria-label="Close sidebar">
                 <CloseIcon :size="16" />
-              </map-button>
+              </drag-button>
             </template>
           </component>
           <div class="draggable-sidebar-content" :id="contentTo">
@@ -148,26 +208,29 @@ function selectSideBar(nextId: string) {
       </component>
     </div>
     <div class="complex-button-close" v-if="show">
-      <ComponentMapSidebarToggle
+      <ComponentSidebarToggle
         @click="onToggleExpand"
         :expand="expand"
-        aria-controls="contentTo"
-        aria-label="Toggle expand"
-        role="button"
-      ></ComponentMapSidebarToggle>
+        :aria-controls="contentTo"
+        :aria-expanded="expand ? 'true' : 'false'"
+        :aria-label="expand ? 'Collapse sidebar' : 'Expand sidebar'"
+      ></ComponentSidebarToggle>
     </div>
   </div>
-  <ContextMenu ref="contextMenuRef">
-    <ul class="context-menu">
-      <li
+  <ContextMenu
+    ref="contextMenuRef"
+    aria-label="Switch sidebar panel"
+    @update:open="menuOpen = $event"
+  >
+    <ul class="context-menu" role="presentation">
+      <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"
-        @click.stop="selectSideBar(option.id)"
-        class="context-menu__item clickable"
-        :class="{ 'is-active': option.id === activeSidebarId }"
+        :active="option.id === activeSidebarId"
+        @click="selectSideBar(option.id)"
       >
-        <span v-html="option.title"></span>
-      </li>
+        <span>{{ option.title }}</span>
+      </ContextMenuItem>
     </ul>
   </ContextMenu>
 </template>

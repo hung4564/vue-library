@@ -1,0 +1,135 @@
+---
+name: draggable-semver-api
+description: >-
+  Enforces SemVer and Stable API rules for @hungpvq draggable packages (exports,
+  store key drag:core, item/location protocol, peers, CSS entry paths, a11y
+  helpers, public-api lock tests). Use when changing public API, store/notify
+  paths, item type strings, component props, a11y surface, or preparing a
+  draggable release bump decision.
+---
+
+# Draggable SemVer & Stable API
+
+Packages are on **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** (published). SemVer is strict: breaking → **major**, additive → **minor**, fix within contract → **patch**.
+
+## Required reading before API edits
+
+1. `libs/draggable/README.md` — full SemVer / breaking checklist
+2. `libs/draggable/core/docs/stable-api.md` — Stable allowlist vs experimental
+3. `libs/draggable/core/docs/header-slots.md` — header slot layout (`pre-title` / `title` / `after-title` / `extra-btn`)
+4. `libs/draggable/core/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
+5. `libs/draggable/core/docs/testing.md` — unit / public-api lock expectations
+6. `libs/draggable/core/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
+
+## Release (docs site + git tag)
+
+Prefer the orchestrator (syncs `<!-- docs-ver:draggable.* -->` markers, builds/pushes `deploy/demo-draggable`, tags `draggable@<version>`, pushes — CI Publish runs on `draggable@*` / `map@*`):
+
+```bash
+npm run draggable:test
+npm run draggable:release          # node scripts/release-group.js draggable
+# or: node scripts/release-group.js draggable minor --skip-push
+```
+
+Docs-only version rewrite: `node scripts/sync-draggable-docs-version.js`
+
+## Bump flowchart
+
+```
+Can the change break an existing consumer (compile / runtime / CSS / store key)?
+  ├─ Yes → MAJOR
+  ├─ No, only adds API / components / optional props (old code still works) → MINOR
+  └─ No, only bug fix / docs / perf (documented behavior unchanged) → PATCH
+```
+
+**Exception:** fixing a bug apps already rely on → prefer **minor** (or major if widespread). Note the intent for release notes; do **not** hand-edit `CHANGELOG.md` unless asked.
+
+## CHANGELOG
+
+- **Do not** automatically create or append entries in any package `CHANGELOG.md` during feature/fix work.
+- CHANGELOG is owned by release tooling (`draggable:version` / Nx release) or an **explicit** user request.
+- When proposing a bump, state SemVer + suggested bullet points in chat / PR text only.
+
+## Treat as public / breaking
+
+- Symbols on the [Stable API allowlist](../../libs/draggable/core/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
+- Package `exports` paths: `.`, `./style.css`
+- Store id `drag:core` and documented notify path prefixes
+- `DraggableItemType` / `LocationSideBar` / `ItemGroupKey` string values
+- Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
+- Documented **header slots** (`pre-title` / `title` / `after-title` / `extra-btn` and React `preTitle` / `title` / `afterTitle` / `extraBtn`) — see [header-slots.md](../../libs/draggable/core/docs/header-slots.md); rename = **major**
+- Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
+- **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
+- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->` pins on adapters
+- Vue/React adapters share core store contracts — breaks propagate
+- Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
+- Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
+
+## Header slots (Stable contract)
+
+Documented header slot / prop names are **Stable** (rename = **major**). Source of truth: `libs/draggable/core/docs/header-slots.md`.
+
+```
+[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]
+```
+
+| Vue | React | Notes |
+| --- | --- | --- |
+| `pre-title` | `preTitle` | Before title group |
+| `title` (prop) | `title` | Plain string for switcher store + default header |
+| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar` (falls back to `title`) |
+| `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
+| `extra-btn` | `extraBtn` | Trailing actions after spacer |
+
+When proposing a header-slot change, remind to update `header-slots.md`, `stable-api.md`, and the affected `draggable-*.md` Slots tables (and map-dataset menu docs if `location: 'title'` is involved — **edit both trees, do not cross-link**; see `map-docs-vitepress` Doc isolation). Explicitly list **`titleNode`** when touching `DraggableItemSideBar` props (Stable; rename = **major**).
+
+Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
+
+## Public API lock (required when touching barrels)
+
+Root `src/index.ts` must use **named exports only** — never reintroduce `export *`.
+
+| Package | Lock file |
+|---------|-----------|
+| `@hungpvq/draggable` | `libs/draggable/core/src/public-api.spec.ts` |
+| `@hungpvq/vue-draggable` | `libs/vue/draggable/src/public-api.spec.ts` |
+| `@hungpvq/react-draggable` | `libs/react/draggable/src/public-api.spec.ts` |
+
+When adding/removing a **runtime** export:
+
+1. Edit `index.ts` (and `experimental.ts` if experimental)
+2. Update the matching `public-api.spec.ts` allowlist arrays (Stable vs Experimental)
+3. Update `stable-api.md` tables
+4. Run `npx nx test <package>` (or `npm run draggable:test`)
+
+Type-only exports are erased at runtime and are **not** in the lock arrays — still document them on `stable-api.md`.
+
+## Safe patterns
+
+- Alias: `export { Old as New }`, mark `Old` `@deprecated` for ≥1 minor, remove in a later **major**
+- Prefer adding over renaming protocol strings
+- Bumping `@hungpvq/draggable` major/minor requires same-release bump of `@hungpvq/vue-draggable` and `@hungpvq/react-draggable` (fixed release group). Do not publish core alone
+- Prefer `import type` for React type-only imports from `react` / props types (avoids Vite ESM “missing export” noise)
+- React: keep `useStoreReactive` **out of** `store/index.ts` re-exports; import from `store/useStoreReactive.ts` (avoids circular barrel that breaks Vite named exports)
+
+## React demos / Vite Fast Refresh
+
+Workspace apps resolve `@hungpvq/react-*` to **source under `libs/`**. `@vitejs/plugin-react` Fast Refresh on those files rewrites exports and causes browser errors like:
+
+`does not provide an export named 'DraggableContainer' | 'DragHeader' | …`
+
+**Rule:** React Vite demos must exclude `libs/` from the React plugin:
+
+```ts
+react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })
+```
+
+Already applied on `apps/react/demo-draggable` and `apps/react/demo-map`. Apply the same pattern to any new React app that path-aliases into `libs/`.
+
+## When proposing a change, state
+
+1. Packages touched
+2. Stable vs experimental
+3. Suggested SemVer bump
+4. Peer / coordinated release needed (yes/no)
+5. Docs to update (`stable-api.md`, `header-slots.md` if header slots, `a11y.md` if focus/ARIA, component docs, README checklist, `public-api.spec.ts`)

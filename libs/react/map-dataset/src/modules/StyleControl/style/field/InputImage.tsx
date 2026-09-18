@@ -1,4 +1,5 @@
-import { InputText, useMapImages } from '@hungpvq/react-map-core';
+import { useMapImages } from '@hungpvq/react-map-core';
+import { InputText } from '@hungpvq/react-map-core/fields';
 
 export function InputImage({
   value,

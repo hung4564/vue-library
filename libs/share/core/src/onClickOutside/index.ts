@@ -118,3 +118,5 @@ export function onClickOutside<T extends OnClickOutsideOptions>(
 
   return stop;
 }
+
+export * from './directive';

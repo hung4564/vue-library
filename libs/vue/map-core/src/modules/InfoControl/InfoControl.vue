@@ -5,16 +5,21 @@ export default {
 </script>
 <script setup lang="ts">
 import {
-  copyText,
+  attachMapViewInfoListeners,
+  copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
   INFO_CONTROL_LOCALE,
-  exportMapbox,
+  latDMS,
+  lngDMS,
+  parseCoordinateText,
   readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { exportMapbox } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
@@ -24,9 +29,14 @@ import {
 } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { BaseButton } from '../../field';
-import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import MapControlButton from '../../components/MapControlButton.vue';
+import MapCopyButton from '../../components/MapCopyButton.vue';
+
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const props = withDefaults(
@@ -44,8 +54,8 @@ const props = withDefaults(
 
 const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(INFO_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', INFO_CONTROL_LOCALE);
 
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapInfoControl',
@@ -69,29 +79,34 @@ const { panelBind } = useRegisterMapControl(mapId, {
 
 const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);
+const showDms = ref(false);
+const centerDms = ref('');
+let detachInfo: (() => void) | undefined;
 
 function syncInfo() {
   callMap((map) => {
     info.value = readMapViewInfo(map);
+    const c = map.getCenter();
+    centerDms.value = `${latDMS(c.lat)}, ${lngDMS(c.lng)}`;
   });
 }
 
 function attachListeners(map: MapSimple) {
-  map.on('move', syncInfo);
-  map.on('pitch', syncInfo);
-  map.on('rotate', syncInfo);
-  map.on('styledata', syncInfo);
+  detachInfo?.();
+  detachInfo = attachMapViewInfoListeners(map, syncInfo);
 }
 
-function detachListeners(map: MapSimple) {
-  map.off('move', syncInfo);
-  map.off('pitch', syncInfo);
-  map.off('rotate', syncInfo);
-  map.off('styledata', syncInfo);
+function detachListeners() {
+  detachInfo?.();
+  detachInfo = undefined;
 }
 
 const rows = computed(() => [
-  { key: 'center', label: trans.value('map.info-control.center'), value: info.value.center },
+  {
+    key: 'center',
+    label: trans.value('map.info-control.center'),
+    value: showDms.value ? centerDms.value || info.value.center : info.value.center,
+  },
   { key: 'zoom', label: trans.value('map.info-control.zoom'), value: info.value.zoom },
   { key: 'pitch', label: trans.value('map.info-control.pitch'), value: info.value.pitch },
   { key: 'bearing', label: trans.value('map.info-control.bearing'), value: info.value.bearing },
@@ -106,16 +121,12 @@ const rows = computed(() => [
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapInfoControl',
   getState() {
-    return {
+    return mdiButtonState(mdiInformationOutline, {
       visible: true,
       active: show.value,
       title: trans.value('map.info-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiInformationOutline,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();
@@ -129,22 +140,18 @@ watch(
       syncInfo();
       callMap(attachListeners);
     } else {
-      callMap(detachListeners);
+      detachListeners();
     }
     control.sync();
   },
 );
 
 onUnmounted(() => {
-  callMap(detachListeners);
+  detachListeners();
 });
 
 function onToggleShow() {
   setShow(!show.value);
-}
-
-function onCopy(value: string) {
-  void copyText(value);
 }
 
 function onScreenshot() {
@@ -157,6 +164,36 @@ function onScreenshot() {
       capturing.value = false;
     }
   });
+}
+
+function onCopyImage() {
+  callMap(async (map) => {
+    capturing.value = true;
+    try {
+      const image = await exportMapbox(map);
+      await copyImageDataUrl(image);
+    } finally {
+      capturing.value = false;
+    }
+  });
+}
+
+function toggleDms() {
+  showDms.value = !showDms.value;
+}
+
+async function onPasteGoTo() {
+  try {
+    const text = await navigator.clipboard?.readText?.();
+    const parsed = parseCoordinateText(text || '');
+    if (!parsed) return;
+    callMap((map) => {
+      map.setCenter([parsed.lng, parsed.lat]);
+      if (parsed.zoom != null) map.setZoom(parsed.zoom);
+    });
+  } catch {
+    // Clipboard permission denied — ignore.
+  }
 }
 </script>
 
@@ -177,19 +214,40 @@ function onScreenshot() {
         @update:show="setShow"
         @close="setShow(false)"
         :width="360"
-        :height="340"
+        :height="380"
         :title="trans('map.info-control.title')"
       >
         <template #extra-btn>
-          <BaseButton
+          <MapControlButton
             :title="trans('map.info-control.screenshot')"
             :disabled="capturing"
-            @click.stop="onScreenshot"
-          >
+            @click.stop="onScreenshot" variant="plain">
             <SvgIcon :size="16" type="mdi" :path="mdiCameraOutline" />
-          </BaseButton>
+          </MapControlButton>
+          <MapControlButton
+            :title="trans('map.info-control.copy-image')"
+            :disabled="capturing"
+            @click.stop="onCopyImage" variant="plain">
+            <SvgIcon :size="16" type="mdi" :path="mdiContentCopy" />
+          </MapControlButton>
         </template>
         <div class="map-info-control">
+          <div class="map-info-control__actions">
+            <MapControlButton
+              variant="outlined"
+              :title="showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms')"
+              @click.stop="toggleDms"
+            >
+              {{ showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms') }}
+            </MapControlButton>
+            <MapControlButton
+              variant="outlined"
+              :title="trans('map.info-control.paste')"
+              @click.stop="onPasteGoTo"
+            >
+              {{ trans('map.info-control.paste') }}
+            </MapControlButton>
+          </div>
           <div class="map-info-control__rows">
             <div
               v-for="row in rows"
@@ -198,13 +256,12 @@ function onScreenshot() {
             >
               <div class="map-info-control__label">{{ row.label }}</div>
               <div class="map-info-control__value">{{ row.value }}</div>
-              <BaseButton
+              <MapCopyButton
                 class="map-info-control__copy"
+                :value="row.value"
                 :title="trans('map.info-control.copy')"
-                @click.stop="onCopy(row.value)"
-              >
-                <SvgIcon :size="14" type="mdi" :path="mdiContentCopy" />
-              </BaseButton>
+                :copied-title="trans('map.info-control.copied')"
+              />
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, Ref } from 'vue';
+import { computed, inject, ref, toRef, Ref } from 'vue';
 import {
   useInitAction,
   useShow,
@@ -15,13 +15,13 @@ import {
   withShowProps,
 } from '../../hook';
 import { useInitSidebar } from '../../hook/useInitSidebar';
-import { LocationSideBar } from '../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import SidebarModule from './sidebar/sidebar-module.vue';
 const props = defineProps({
   ...withShowProps,
   ...withShareComponent,
   ...withShareProps,
-  componentMapSidebarToggle: { type: [String, Object] },
+  componentSidebarToggle: { type: [String, Object] },
   width: { type: [Number, String], default: 'auto' },
   right: Boolean,
   location: { type: [String] },
@@ -32,7 +32,7 @@ const containerId = inject<Ref<string>>(
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
 const c_location = computed<LocationSideBar>(() =>
@@ -42,11 +42,16 @@ const c_location = computed<LocationSideBar>(() =>
       ? 'right'
       : 'left',
 );
-const { location, itemId } = useInitSidebar(containerId.value, show, {
-  title: props.title,
-  type: 'item-sidebar',
-  location: c_location,
-});
+const { location, itemId } = useInitSidebar(
+  containerId.value,
+  show,
+  {
+    title: toRef(props, 'title'),
+    type: 'item-sidebar',
+    location: c_location,
+  },
+  props.id,
+);
 useInitAction(containerId.value, itemId.value, {
   open,
   close,
@@ -63,6 +68,9 @@ useInitAction(containerId.value, itemId.value, {
       <slot name="title">
         {{ title }}
       </slot>
+    </template>
+    <template #after-title>
+      <slot name="after-title"></slot>
     </template>
     <slot></slot>
   </SidebarModule>

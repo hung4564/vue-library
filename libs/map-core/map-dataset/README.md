@@ -7,20 +7,21 @@ UI packages:
 - Vue: [`@hungpvq/vue-map-dataset`](../../vue/map-dataset)
 - React: [`@hungpvq/react-map-dataset`](../../react/map-dataset)
 
-**Docs:** [Getting started](./docs/index.md) · [GIS worker](./docs/worker.md)
+**Docs:** [Getting started](./docs/index.md) · [GIS worker](./docs/worker.md) · [CreateControl](./docs/module/CreateControl.md)
 
 ```bash
 npm install @hungpvq/map-dataset @hungpvq/map-core
 ```
 
-Create-layer / GIS parse runs in a Web Worker. Apps that install this package from npm must sync the worker file into `public/assets` — use the Vite plugin (do not copy by hand):
+For **CreateControl** / GIS file import, also install optional format peers:
 
-```ts
-import { mapDatasetGisWorker } from '@hungpvq/map-dataset/vite';
-
-export default defineConfig({
-  plugins: [vue(), mapDatasetGisWorker()],
-});
+```bash
+npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
 ```
 
-In this Nx monorepo (source), configure `worker.format` + `nxViteTsPaths` on `worker.plugins` instead — see [GIS worker](./docs/worker.md).
+- Create-layer / GIS parse runs in a Web Worker shipped as `assets/geojson.worker.js`.
+- **Vite:** add `mapDatasetGisWorker()` (excludes package from `optimizeDeps` so `import.meta.url` stays under `node_modules`).
+- **Native ESM:** zero config if package files stay together.
+- **Webpack / CDN / static:** copy `@hungpvq/map-dataset/geojson-worker` and call `configureGisWorker({ url })` — see [GIS worker](./docs/worker.md).
+
+In this Nx monorepo (source), configure `worker.format` + `nxViteTsPaths` on `worker.plugins` instead.

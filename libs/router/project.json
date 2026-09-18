@@ -3,7 +3,17 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/router/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["share", "vue"],
   "// targets": "to see all targets run: nx show project router --web",
-  "targets": {}
+  "targets": {
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
+      }
+    }
+  }
 }

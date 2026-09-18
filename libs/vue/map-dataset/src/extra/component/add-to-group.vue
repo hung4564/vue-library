@@ -42,12 +42,9 @@
   </li>
 </template>
 <script setup lang="ts">
-import type { MenuAction } from '@hungpvq/map-dataset';
-import {
-  createAddToGroupSubmenu,
-  getListViewGroupInfo,
-  handleMenuAction,
-} from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { createAddToGroupSubmenu, handleMenuAction } from '@hungpvq/map-dataset/menu';
+import { getListViewGroupInfo } from '@hungpvq/map-dataset';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiChevronRight,

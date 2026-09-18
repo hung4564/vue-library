@@ -8,6 +8,7 @@ const links = [
   { to: '/bottom', label: 'Bottom' },
   { to: '/drawer', label: 'Drawer' },
   { to: '/modal', label: 'Modal' },
+  { to: '/menu', label: 'Menu' },
   { to: '/custom-card', label: 'Custom card' },
 ];
 

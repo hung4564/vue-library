@@ -10,7 +10,7 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/libs/react/map-dataset',
   plugins: [
-    react(),
+    react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] }),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
@@ -30,10 +30,17 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        // CSS-only graph so `./style.css` includes dataset styles (not a JS export).
+        css: 'src/style.ts',
+      },
       name: '@hungpvq/react-map-dataset',
-      fileName: 'index',
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       external: [
@@ -41,7 +48,9 @@ export default defineConfig(() => ({
         'react-dom',
         'react/jsx-runtime',
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
         '@hungpvq/map-dataset',
+        /^@hungpvq\/map-dataset\//,
         '@hungpvq/react-map-core',
         '@hungpvq/react-draggable',
         '@hungpvq/shared',
@@ -53,6 +62,18 @@ export default defineConfig(() => ({
       output: {
         assetFileNames: 'style.css',
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/react/map-dataset',
+      provider: 'v8' as const,
     },
   },
 }));

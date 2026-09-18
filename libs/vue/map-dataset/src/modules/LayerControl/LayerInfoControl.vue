@@ -16,9 +16,10 @@ import {
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
 
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemFloat } from '@hungpvq/vue-draggable';
 import {
   mdiDelete,
@@ -34,8 +35,8 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_INFO_CONTROL_LOCALE);
 const path = {
   icon: mdiLayers,
   menu: mdiDotsVertical,
@@ -65,16 +66,11 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerInfoControl',
   getState() {
-    return {
-      visible: !show.value,
+    return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.layer-info-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     toggleShow();
@@ -97,11 +93,12 @@ watch(show, () => control.sync());
       <DraggableItemFloat
         v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
+        :title="trans('map.layer-info-control.title')"
         headerLocation="bottom"
       >
         <template #title>
           <span class="layer-control__title">
-            {{ trans('map.layer-control.title') }}
+            {{ trans('map.layer-info-control.title') }}
           </span>
         </template>
         <div class="layer-control">

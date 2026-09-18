@@ -1,4 +1,5 @@
-import type { IDataset, IDatasetVisitor } from '../../interfaces';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { IDatasetVisitor } from '../../interfaces/dataset.visitor';
 import { isComposite } from '../../utils/check';
 
 type VisitFunction = (

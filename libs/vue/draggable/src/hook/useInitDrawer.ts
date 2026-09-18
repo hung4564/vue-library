@@ -1,7 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { useDragItem, useDrawerItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitDrawer(
   containerId: string,
@@ -11,8 +11,9 @@ export function useInitDrawer(
     type: 'item-drawer';
     location: LocationSideBar | Ref<LocationSideBar>;
   },
+  stableId?: string,
 ) {
-  const itemId = ref(`draggable-item-${getUUIDv4()}`);
+  const itemId = ref(stableId || `draggable-item-${getUUIDv4()}`);
   const zIndex = ref(0);
   function setZIndex(value: number) {
     zIndex.value = value;

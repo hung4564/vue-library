@@ -1,60 +1,53 @@
-import { type MapSimple, styleImageToDataURL } from '@hungpvq/map-core';
+import { type MapSimple, subscribeMapReady } from '@hungpvq/map-core';
+import {
+  listMapStyleImages,
+  styleImageToDataURL,
+  subscribeMapStyleImages,
+} from '@hungpvq/map-core/image';
 import type { StyleImage } from 'maplibre-gl';
 import { onBeforeUnmount, onMounted, shallowRef } from 'vue';
-import { getMap } from '../../../store';
 
 export function useMapImages(mapId: string) {
   const images = shallowRef<Record<string, StyleImage>>({});
-  const loadImages = (map: MapSimple) => {
-    if (!map) return;
-    const names = map.listImages();
-    const result: Record<string, maplibregl.StyleImage> = {};
-    names.forEach((name: string) => {
-      const img = map.getImage(name);
-      if (img) {
-        result[name] = img;
-      }
-    });
-    images.value = result;
-  };
-  let handleMap: undefined | (() => void) = undefined;
-  const setupListeners = (map: MapSimple) => {
-    if (!map) return;
-    handleMap = () => loadImages(map);
-    map.on('styledata', handleMap);
-    map.on('idle', handleMap);
+  let unsubscribeReady: (() => void) | undefined;
+  let unsubscribeImages: (() => void) | undefined;
+
+  const clearImageSubscription = () => {
+    unsubscribeImages?.();
+    unsubscribeImages = undefined;
   };
 
-  const removeListeners = (map: MapSimple) => {
-    if (!map) return;
-    if (handleMap) {
-      map.off('styledata', handleMap);
-      map.off('idle', handleMap);
-    }
+  const attach = (map: MapSimple) => {
+    images.value = listMapStyleImages(map);
+    clearImageSubscription();
+    unsubscribeImages = subscribeMapStyleImages(map, () => {
+      images.value = listMapStyleImages(map);
+    });
   };
 
   onMounted(() => {
-    getMap(mapId, (map: MapSimple) => {
-      loadImages(map);
-      setupListeners(map);
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      attach(map);
     });
   });
 
   onBeforeUnmount(() => {
-    getMap(mapId, (map: MapSimple) => {
-      removeListeners(map);
-    });
+    unsubscribeReady?.();
+    unsubscribeReady = undefined;
+    clearImageSubscription();
   });
+
   const reload = () => {
-    getMap(mapId, (map: MapSimple) => {
-      loadImages(map);
-      setupListeners(map);
+    clearImageSubscription();
+    unsubscribeReady?.();
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      attach(map);
     });
   };
+
   return {
     images,
     reload,
     toDataURL: styleImageToDataURL,
   };
 }
-

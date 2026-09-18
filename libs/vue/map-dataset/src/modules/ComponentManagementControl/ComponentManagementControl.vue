@@ -4,13 +4,14 @@
     :key="item.id"
     :componentKey="item.componentKey"
     v-bind="item.attr"
+    :revision="item.revision"
     @close="onRemoveComponent(item)"
   ></RegistryItem>
 </template>
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
-import { computed, getCurrentInstance, ref, watch } from 'vue';
+import { computed, shallowRef, watch } from 'vue';
 import {
   type ComponentItem,
   useMapDatasetComponent,
@@ -20,7 +21,6 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const { mapId } = useMap(props);
 
-const instance = getCurrentInstance();
 const { getAllComponentIds, getStore, removeComponent } =
   useMapDatasetComponent(mapId.value);
 const store = getStore();
@@ -31,15 +31,14 @@ function onRemoveComponent(item: ComponentItem) {
 const storeComponents = computed(() => {
   return getAllComponentIds()?.value || [];
 });
-const components = ref<ComponentItem[]>([]);
-// Watch for changes in components and update the view
+/** shallowRef: avoid deep-proxied Vue components inside `attr` (cell/header). */
+const components = shallowRef<ComponentItem[]>([]);
 watch(
-  storeComponents,
+  // Copy so in-place `push`/`splice` on componentIds still triggers the watch.
+  () => storeComponents.value.slice(),
   () => {
-    components.value = store?.components || [];
-    instance?.proxy?.$forceUpdate();
-    // Force update to re-render components
+    components.value = store?.components ? store.components.slice() : [];
   },
-  { deep: true },
+  { immediate: true },
 );
 </script>

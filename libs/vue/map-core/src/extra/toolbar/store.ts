@@ -1,13 +1,12 @@
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
+import type { ResolvedControlLayout } from '@hungpvq/map-core';
 import {
-  logHelper,
-  MAP_STORE_KEY,
   createDefaultToolbarStore,
   createToolbarStoreApi,
   createToolbarModuleApi,
   type MapToolbarStore,
-} from '@hungpvq/map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+} from '@hungpvq/map-core/toolbar';
+import { createMapScopedStore } from '../../store/store';
 import { logger } from './logger';
 
 export type { MapToolbarStore };
@@ -25,7 +24,11 @@ export const useMapToolbar = (mapId: string) => {
 
 export const useMapToolbarModule = (
   mapId: string,
-  controlLayout: WithMapPropType['controlLayout'],
+  controlLayout:
+    | ResolvedControlLayout
+    | 'button'
+    | undefined
+    | (() => ResolvedControlLayout | 'button' | undefined),
 ) => {
   const store = useMapToolbarStore(mapId);
   return createToolbarModuleApi(store, controlLayout);

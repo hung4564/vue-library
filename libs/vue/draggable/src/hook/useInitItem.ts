@@ -2,7 +2,7 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Ref, computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDragContainer, useDragItem, useDragStore } from '../store';
-import { InitOption } from '../types';
+import type { InitOption } from '@hungpvq/draggable';
 
 export function useInitItem(
   containerId: string,
@@ -10,8 +10,9 @@ export function useInitItem(
   optionDefault: InitOption = {
     type: 'item-popup',
   },
+  stableId?: string,
 ) {
-  const itemId = ref(`draggable-item-${getUUIDv4()}`);
+  const itemId = ref(stableId || `draggable-item-${getUUIDv4()}`);
   const zIndex = ref(10);
   function setZIndex(value: number) {
     zIndex.value = value;
@@ -102,7 +103,9 @@ export function useManagement(containerId: string) {
   const popup = computed(() => container?.popup || { items: [], show: [] });
   const modal = computed(() => container?.modal || { items: [], show: [] });
   const float = computed(() => container?.float || { items: [], show: [] });
-  const bottom = computed(() => container?.bottom || { items: [], show: [] });
+  const bottom = computed(
+    () => container?.bottom || { items: [], show: undefined as string | undefined },
+  );
   const sideBar = computed(() => container?.sideBar);
   const drawer = computed(() => container?.drawer);
   const width = computed(() => container?.width || 0);

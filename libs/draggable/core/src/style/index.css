@@ -1,16 +1,16 @@
-/* ===== MapButton ===== */
+/* ===== DragButton ===== */
 .hungpvq-draggable-button {
   cursor: pointer;
   pointer-events: all;
   border-style: none;
   background-color: transparent;
-  font-size: var(--map-font-size-xs, 10px);
-  font-family: var(--map-font-family, inherit);
+  font-size: var(--draggable-font-size-xs, var(--map-font-size-xs, 10px));
+  font-family: var(--draggable-font-family, var(--map-font-family, inherit));
   align-items: center;
   border-radius: 4px;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: var(--map-font-weight-medium, 500);
+  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
   letter-spacing: 0.0892857143em;
   justify-content: center;
   outline: 0;
@@ -79,7 +79,7 @@
   pointer-events: none;
 }
 
-/* ===== MapHeader ===== */
+/* ===== DragHeader ===== */
 .draggable-header .map-spacer {
   flex-grow: 1;
 }
@@ -96,7 +96,7 @@
 }
 
 .draggable-header__content {
-  padding: var(--map-padding-header, 0 4px 0 8px);
+  padding: var(--draggable-padding-header, var(--map-padding-header, 0 4px 0 8px));
   align-items: center;
   display: flex;
   position: relative;
@@ -106,7 +106,7 @@
 
 .draggable-header,
 .draggable-header__content {
-  height: 48px;
+  height: var(--draggable-header-height, 48px);
 }
 
 .draggable-header .hungpvq-draggable-button {
@@ -114,21 +114,38 @@
 }
 
 .draggable-header__title {
-  font-size: var(--map-font-size-2xl, 20px);
-  font-weight: var(--map-font-weight-medium, 500);
-  line-height: var(--map-line-height, 1.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: var(--draggable-font-size-2xl, var(--map-font-size-2xl, 20px));
+  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
+  line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
   font-family: inherit;
+}
+
+.draggable-header__title-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
-/* ===== MapCard ===== */
+.draggable-header__after-title {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+/* ===== DragCard ===== */
 .hungpvq-draggable-card {
-  background-color: var(--card-background-color, var(--map-card-bg, rgba(32, 43, 54, 0.9)));
-  color: var(--card-color, var(--map-card-text, #fff));
+  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
+  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
   position: relative;
   border: 2px solid transparent;
+  border-radius: var(--draggable-radius, 0px);
+  box-shadow: var(--draggable-shadow, none);
   overflow: auto;
   padding: 1px;
 }
@@ -390,7 +407,7 @@
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   position: relative;
-  z-index: 10000;
+  z-index: var(--draggable-z-modal, 10000);
   pointer-events: none;
   min-width: 0;
   min-height: 0;
@@ -428,9 +445,14 @@
 }
 
 :root {
-  --card-background-color: var(--map-card-bg, rgba(32, 43, 54, 0.9));
-  --card-highlight-background-color: var(--map-card-highlight-bg, rgba(26, 115, 232));
-  --card-color: var(--map-card-text, #fff);
+  --card-background-color: var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)));
+  --card-highlight-background-color: var(--draggable-card-highlight-bg, var(--map-card-highlight-bg, rgba(26, 115, 232)));
+  --card-color: var(--draggable-card-text, var(--map-card-text, #fff));
+  --draggable-radius: 0px;
+  --draggable-shadow: none;
+  --draggable-mask-bg: rgba(0, 0, 0, 0.45);
+  --draggable-z-modal: 10000;
+  --draggable-header-height: 48px;
 }
 
 /* ===== Item float ===== */
@@ -760,8 +782,8 @@
   height: 48px;
   width: 23px;
   display: flex;
-  background-color: var(--card-background-color, var(--map-card-bg, rgba(32, 43, 54, 0.9)));
-  color: var(--card-color, var(--map-card-text, #fff));
+  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
+  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
   align-items: center;
   justify-content: center;
   border-radius: 0px;
@@ -867,15 +889,29 @@
   width: 100%;
   min-height: 40px;
   box-sizing: border-box;
+  list-style: none;
+  outline: none;
 }
 
-.context-menu li:hover {
+.context-menu li:hover,
+.context-menu__item:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
-.context-menu li.is-active {
+.context-menu li.is-active,
+.context-menu__item.is-active {
   background: rgba(0, 0, 0, 0.1);
   font-weight: 600;
+}
+
+.context-menu__item:focus-visible {
+  box-shadow: inset 0 0 0 2px #8ed0f9;
+}
+
+.context-menu__item.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* ===== Sidebar module ===== */
@@ -1185,7 +1221,7 @@
 .draggable-modal-mask {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--draggable-mask-bg, rgba(0, 0, 0, 0.45));
   pointer-events: all;
 }
 
@@ -1325,4 +1361,35 @@
   right: 0;
   height: 2px;
   top: 3px;
+}
+
+/* ===== Variant: plain (non-GIS chrome) ===== */
+.draggable-variant-plain {
+  --draggable-card-bg: transparent;
+  --draggable-card-text: inherit;
+  --draggable-card-highlight-bg: transparent;
+  --card-background-color: transparent;
+  --card-color: inherit;
+  --card-highlight-background-color: transparent;
+  --draggable-shadow: none;
+  --draggable-radius: 0px;
+  --draggable-mask-bg: rgba(0, 0, 0, 0.2);
+}
+
+.draggable-variant-plain .hungpvq-draggable-card {
+  background-color: transparent;
+  color: inherit;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.draggable-variant-plain .hungpvq-draggable-card:not(.border-0):before,
+.draggable-variant-plain .hungpvq-draggable-card:not(.border-0):after {
+  opacity: 0;
+  border: none;
+}
+
+.draggable-variant-plain .map-divider {
+  border-color: currentColor;
+  opacity: 0.15;
 }

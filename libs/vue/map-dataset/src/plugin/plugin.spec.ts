@@ -1,0 +1,42 @@
+import { describe, expect, it } from 'vitest';
+import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
+import { UniversalRegistry } from '@hungpvq/vue-map-core';
+import { createDatasetRegistryPlugin } from './index';
+
+const REGISTERED_KEYS = [
+  LIST_VIEW_MENU_COMPONENT_KEY.legendLinear,
+  LIST_VIEW_MENU_COMPONENT_KEY.legendColor,
+  LIST_VIEW_MENU_COMPONENT_KEY.legendText,
+  LIST_VIEW_MENU_COMPONENT_KEY.legendMulti,
+  LIST_VIEW_MENU_COMPONENT_KEY.layerIcon,
+  LIST_VIEW_MENU_COMPONENT_KEY.layerDetail,
+  LIST_VIEW_MENU_COMPONENT_KEY.styleControl,
+  LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail,
+  LIST_VIEW_MENU_COMPONENT_KEY.styleMultiControl,
+  LIST_VIEW_MENU_COMPONENT_KEY.toggleShow,
+  LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
+  LIST_VIEW_MENU_COMPONENT_KEY.setOpacity,
+  LIST_VIEW_MENU_COMPONENT_KEY.addToGroup,
+  GEO_EXPORT_COMPONENT_KEY.root,
+  GEO_EXPORT_COMPONENT_KEY.formatMenu,
+  LIST_VIEW_MENU_COMPONENT_KEY.identify,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTable,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableView,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableToolbar,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTablePager,
+  LIST_VIEW_MENU_COMPONENT_KEY.attributeTableGrid,
+] as const;
+
+describe('createDatasetRegistryPlugin', () => {
+  it('registers dataset UI components on UniversalRegistry', () => {
+    createDatasetRegistryPlugin().install();
+    for (const key of REGISTERED_KEYS) {
+      const comp = UniversalRegistry.getComponent(key);
+      expect(comp, key).toBeTruthy();
+      expect(typeof comp === 'function' || typeof comp === 'object', key).toBe(
+        true,
+      );
+    }
+  });
+});

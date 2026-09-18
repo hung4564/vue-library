@@ -12,6 +12,7 @@ category: Component
 
 | Prop             | Description                                   | Type      | Required | Default Value |
 | ---------------- | --------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.  | `string`  | false    | auto UUID     |
 | `title`          | Title displayed in the float header.          | `string`  | false    | -             |
 | `disabledExpand` | Disables the expand/collapse feature.         | `boolean` | false    | false         |
 | `disabledHeader` | Hides the header section.                     | `boolean` | false    | false         |
@@ -41,11 +42,14 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the float panel.         |
-| `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the float panel.                      |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 
 ## Usage
 
@@ -87,3 +91,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Same non-modal dialog pattern as popup (Escape, focus restore, labelled chrome). Keyboard drag/resize is out of scope. See [a11y.md](./a11y.md).

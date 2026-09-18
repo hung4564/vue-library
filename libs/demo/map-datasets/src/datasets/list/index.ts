@@ -1,20 +1,11 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import {
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartMetadataComponent,
-  createDatasetPartRasterSourceComponent,
-  createDatasetPartSubListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuBuilder,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemToBoundActionForList,
-  createMenuItemToggleShow,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
-  LayerSimpleMapboxBuild,
-} from '@hungpvq/map-dataset';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
+import { createMenuBuilder, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPen, mdiStar } from '@mdi/js';
 import {
   DEMO_LIST_BBOX,
@@ -23,8 +14,10 @@ import {
   demoPolygon,
 } from '../../fixtures/geojson';
 import { createRasterSourceConfig } from '../../fixtures/raster';
-import { createMultiLegend } from '../../legend/create-legend';
+import { createMultiLegend } from '@hungpvq/map-dataset/menu';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '../../registry/menu-handlers';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
 
 /** List-only: bare row in LayerControl. */
 export function createListOnlyDefaultDataset() {
@@ -34,9 +27,6 @@ export function createListOnlyDefaultDataset() {
   dataset.add(list1);
   return dataset;
 }
-
-/** @deprecated Use createListOnlyDefaultDataset */
-export const createDefaultListDataset = createListOnlyDefaultDataset;
 
 export function createCustomColorListDataset() {
   const dataset = createRootDataset('Default custom simple');
@@ -177,7 +167,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiStar)
         .setHidden(({ context }) => context?.role !== 'admin')
         .setClick(() => {
-          console.info('admin only menu');
+          logger.info('admin only menu');
         })
         .build(),
       createMenuBuilder()
@@ -187,7 +177,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          console.info('pen action');
+          logger.info('pen action');
         })
         .build(),
       createMenuBuilder()
@@ -197,7 +187,7 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          console.info('pen extra');
+          logger.info('pen extra');
         })
         .build(),
     ])
@@ -274,30 +264,18 @@ function createVectorListDataset(
   styleType: 'point' | 'line',
   feature: ReturnType<typeof demoPoint> | ReturnType<typeof demoLine>,
 ) {
-  const dataset = createRootDataset(name);
-  const source = createDatasetPartGeojsonSourceComponent('source', {
-    type: 'FeatureCollection',
+  return createGeoJsonListDataset({
+    name,
+    groupName: 'Group layer',
     features: [feature],
+    layers: [{ styleType, layerId: `layer ${styleType}` }],
+    configure: ({ list }) => {
+      list.addMenus([
+        createMenuItemToggleShow(),
+        createMenuItemShowDetailInfoSource(),
+      ]);
+    },
   });
-  const groupLayer = createGroupDataset('Group layer');
-  const list = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor(getChartRandomColor())
-    .build();
-  const layer = createMultiMapboxLayerComponent(`layer ${styleType}`, [
-    new LayerSimpleMapboxBuild()
-      .setStyleType(styleType)
-      .setColor(list.color)
-      .build(),
-  ]);
-  groupLayer.add(layer);
-  groupLayer.add(list);
-  list.addMenus([
-    createMenuItemToggleShow(),
-    createMenuItemShowDetailInfoSource(),
-  ]);
-  dataset.add(source);
-  dataset.add(groupLayer);
-  return dataset;
 }
 
 export function createVectorPointListDataset() {
@@ -444,3 +422,5 @@ export const LIST_DEMO_DATASET_FACTORIES = [
   createListWithSublistDataset,
   createListWithSublistMenuDataset,
 ] as const;
+
+export { LIST_DEMO_HELP } from './help';

@@ -1,12 +1,4 @@
 import {
-  ComponentManagementControl,
-  DatasetControl,
-  IdentifyControl,
-  IdentifyShowFirstControl,
-  LayerControl,
-  LayerHighlight,
-} from '@hungpvq/react-map-dataset';
-import {
   BaseMapCard,
   BaseMapControl,
   CrsControl,
@@ -26,9 +18,21 @@ import {
   PrintControl,
   RegistryControl,
   SettingControl,
+  ThemeControl,
+  ToolbarControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import {
+  ComponentManagementControl,
+  DatasetControl,
+  HighlightPointer,
+  IdentifyControl,
+  IdentifyShowFirstControl,
+  LayerControl,
+} from '@hungpvq/react-map-dataset';
+import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
@@ -38,16 +42,19 @@ export function AllMapView() {
 
   return (
     <MapPageShell>
-      <Map>
+      <Map buttonInMobile="toolbar">
         <AsideControl position="top-left" />
+        <ToolbarControl position="top-left" />
         <ComponentManagementControl />
         <MeasurementControl position="top-right" />
+        <IdentifyControl position="top-right" />
+        <DrawControl position="top-right" />
         <LayerControl
           position="top-left"
           show
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <IdentifyControl position="top-right" />
+        <InspectControl position="top-right" />
         <PrintAdvancedControl />
         <PrintControl />
         <GotoControl position="top-right" />
@@ -58,6 +65,8 @@ export function AllMapView() {
         <LegendControl />
         <CrsControl />
         <SettingControl />
+        <ThemeControl />
+        <DemoLanguageControl />
         <GeoLocateControl />
         <FullScreenControl />
         <ZoomControl />
@@ -66,7 +75,7 @@ export function AllMapView() {
         <MapContextMenuControl />
         <BaseMapControl position="bottom-left" />
         <IdentifyShowFirstControl />
-        <LayerHighlight />
+        <HighlightPointer enableClick />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
       </Map>

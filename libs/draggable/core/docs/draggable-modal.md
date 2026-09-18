@@ -12,6 +12,7 @@ category: Component
 
 | Prop             | Description                                        | Type      | Required | Default Value |
 | ---------------- | -------------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.       | `string`  | false    | auto UUID     |
 | `title`          | Title displayed in the modal header.               | `string`  | false    | -             |
 | `show`           | Controls the visibility of the modal.              | `boolean` | false    | false         |
 | `width`          | Width of the modal.                                | `number`  | false    | 480           |
@@ -29,24 +30,32 @@ category: Component
 | `resizable`      | Allows resizing the modal.                         | `boolean` | false    | true          |
 | `disabledHeader` | Hides the header section.                          | `boolean` | false    | false         |
 | `disabledClose`  | Hides the close button.                            | `boolean` | false    | false         |
+| `highlightMs`    | How long highlight stays on (ms).                  | `number`  | false    | `5000`        |
 | `containerId`    | ID of the parent container (for teleporting).      | `string`  | false    | -             |
 
 ## Events
 
-| Name          | Description                                                     |
-| ------------- | --------------------------------------------------------------- |
-| `close`       | Emitted when the modal is closed. Payload: `()`                 |
-| `update:show` | Emitted when the visibility changes. Payload: `(value:boolean)` |
+| Name            | Description                                                     |
+| --------------- | --------------------------------------------------------------- |
+| `close`         | Emitted when the modal is closed. Payload: `()`                 |
+| `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)` |
+| `update:bounds` | Emitted on drag/resize stop. Payload: `{x,y,width,height}`      |
 
-React: use `onUpdateShow` / `onClose` instead of Vue `update:*` / `close` events.
+React: use `onUpdateShow` / `onClose` / `onBoundsChange` instead of Vue `update:*` / `close` events.
+
+A11y: root uses `role="dialog"`, `aria-modal`, Esc closes, focus moves into the dialog and Tab is trapped.
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the modal.               |
-| `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the modal.                            |
+| `pre-title`     | `preTitle`   | Before the title group.                          |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 
 ## Usage
 
@@ -89,3 +98,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Modal dialog: `aria-modal`, Tab trap, Escape, focus restore, sibling inert. See [a11y.md](./a11y.md).

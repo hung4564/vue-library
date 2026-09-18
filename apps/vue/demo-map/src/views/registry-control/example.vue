@@ -1,5 +1,6 @@
 <template>
     <Map :mapId="mapId">
+    <DemoLanguageControl />
       <AsideControl position="top-left" />
       <MeasurementControl position="top-right" />
       <ComponentManagementControl />
@@ -34,13 +35,15 @@
       <BaseMapControl position="bottom-left" />
 
       <IdentifyShowFirstControl />
-      <LayerHighlight />
+      <HighlightPointer enableClick />
 
       <RegistryControl position="top-right" show />
+      <DemoHelpPanel />
     </Map>
 </template>
 
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -68,14 +71,15 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 </script>

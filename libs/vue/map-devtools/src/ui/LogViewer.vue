@@ -1,206 +1,237 @@
 <template>
   <div class="log-viewer">
-    <div class="log-controls">
-      <BaseButton @click="clear">Clear</BaseButton>
-      <label>
-        <input type="checkbox" v-model="autoScroll" /> Auto-scroll
-      </label>
+    <div class="log-viewer__toolbar">
+      <span class="log-viewer__count"
+        >{{ showingCount }}/{{ totalCount }}</span
+      >
+      <div class="log-viewer__levels" role="group" aria-label="Level filter">
+        <MapControlButton
+          v-for="item in levelFilters"
+          :key="item"
+          variant="text"
+          size="small"
+          :active="level === item"
+          @click="level = item"
+        >
+          {{ item }}
+        </MapControlButton>
+      </div>
+      <div class="log-viewer__actions">
+        <MapControlButton
+          class="log-viewer__pause"
+          variant="text"
+          size="small"
+          @click="togglePause"
+        >
+          {{
+            paused
+              ? newCount > 0
+                ? `Resume (${newCount})`
+                : 'Resume'
+              : 'Pause'
+          }}
+        </MapControlButton>
+        <MapCopyButton title="Copy visible logs" :value="visibleCopyText" />
+        <MapControlButton variant="text" size="small" @click="clear">
+          Clear
+        </MapControlButton>
+        <InputCheckbox
+          class="log-viewer__autoscroll"
+          v-model="autoScroll"
+          label="Auto-scroll"
+          :disabled="paused"
+        />
+      </div>
     </div>
-    <div class="log-list" ref="logListRef">
-      <template v-for="item in structuredLogs" :key="item.id">
-        <component :is="RenderItem" :item="item" />
-      </template>
+      <div class="log-viewer__filters">
+      <div class="log-viewer__search">
+        <InputText
+          v-model="search"
+          type="search"
+          placeholder="Search"
+          aria-label="Search logs"
+        />
+      </div>
+      <div v-if="mapIds.length > 1" class="log-viewer__mapid">
+        <InputSelect
+          v-model="mapId"
+          :items="mapFilterItems"
+          aria-label="Filter by mapId"
+        />
+      </div>
+      <div class="log-viewer__namespace">
+        <InputSelect
+          v-model="namespace"
+          :items="namespaceFilterItems"
+          aria-label="Filter by namespace"
+        />
+      </div>
+    </div>
+    <div class="log-viewer__body" ref="logListRef">
+      <div v-if="structuredLogs.length === 0" class="log-viewer__empty">
+        {{
+          sourceLogs.length === 0
+            ? 'No logs'
+            : hasActiveFilter
+              ? 'No matching logs'
+              : 'No logs'
+        }}
+      </div>
+      <LogRenderNode
+        v-for="item in structuredLogs"
+        :key="item.id"
+        :item="item"
+        @namespace-click="namespace = $event"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@hungpvq/vue-map-core';
-import { computed, h, nextTick, ref, watch } from 'vue';
-import { devtoolState } from '../store';
-import GroupItem from './GroupItem.vue';
-import TreeItem from './TreeItem.vue';
+import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
+import {
+  InputCheckbox,
+  InputSelect,
+  InputText,
+} from '@hungpvq/vue-map-core/fields';
+import {
+  formatDevtoolsLogEntryForCopy,
+  type BufferingLogEntry as LogEntry,
+} from '@hungpvq/map-core/devtools';
+import {
+  LEVEL_FILTERS,
+  buildStructuredLogs,
+  collectLogMapIds,
+  collectNamespaces,
+  collectStructuredLogs,
+  countNewLogsWhilePaused,
+  displayNamespace,
+  filterLogs,
+  shortMapId,
+  type LevelFilter,
+} from '@hungpvq/map-debug';
+import { computed, nextTick, ref, watch } from 'vue';
+import { clearDevtoolLogs, devtoolState } from '../store';
+import LogRenderNode from './LogRenderNode.vue';
+
+const levelFilters = LEVEL_FILTERS;
 
 const logs = computed(() => devtoolState.logs);
 const logListRef = ref<HTMLElement | null>(null);
 const autoScroll = ref(true);
+const paused = ref(false);
+const frozenLogs = ref<LogEntry[] | null>(null);
+const search = ref('');
+const level = ref<LevelFilter>('all');
+const namespace = ref('all');
+const mapId = ref('all');
 
-const clear = () => {
-  devtoolState.logs = [];
-};
-const formatTime = (ts: number) => new Date(ts).toLocaleTimeString();
-const isObject = (val: any) => val !== null && typeof val === 'object';
-const formatArg = (arg: any) => String(arg);
+const sourceLogs = computed(() =>
+  paused.value && frozenLogs.value ? frozenLogs.value : logs.value,
+);
 
-// Build tree structure from logs
-const structuredLogs = computed(() => {
-  const stack: any[] = [];
-  const root: any[] = [];
+const newCount = computed(() =>
+  countNewLogsWhilePaused(logs.value, frozenLogs.value, paused.value),
+);
 
-  logs.value.forEach((log) => {
-    if (log.level === 'groupCollapsed') {
-      const group = {
-        id: log.id,
-        type: 'group',
-        title: log.args.map((a: any) => String(a)).join(' '),
-        collapsed: log.level === 'groupCollapsed',
-        children: [],
-      };
+const mapIds = computed(() => collectLogMapIds(logs.value));
 
-      if (stack.length > 0) stack[stack.length - 1].children.push(group);
-      else root.push(group);
+const mapFilterItems = computed(() => [
+  { value: 'all', text: 'All maps' },
+  ...mapIds.value.map((id) => ({ value: id, text: shortMapId(id) })),
+]);
 
-      stack.push(group);
-    } else if (log.level === 'groupEnd') {
-      stack.pop();
-    } else {
-      const entry = { id: log.id, type: 'log', log };
-
-      if (stack.length > 0) stack[stack.length - 1].children.push(entry);
-      else root.push(entry);
-    }
-  });
-
-  return root;
+watch(mapIds, (ids) => {
+  if (mapId.value !== 'all' && !ids.includes(mapId.value)) {
+    mapId.value = 'all';
+  }
 });
 
-// Renderer for each tree item
-const RenderItem = (props: { item: any }) => {
-  const item = props.item;
+const namespaces = computed(() =>
+  collectNamespaces(logs.value, mapId.value, mapIds.value.length),
+);
 
-  if (item.type === 'group') {
-    return h(
-      GroupItem,
-      { title: item.title, collapsed: item.collapsed },
-      {
-        default: () =>
-          item.children.map((child: any) => h(RenderItem, { item: child })),
-      },
-    );
+const namespaceFilterItems = computed(() => [
+  { value: 'all', text: 'All namespaces' },
+  ...namespaces.value.map((ns) => ({
+    value: ns,
+    text: displayNamespace(ns),
+  })),
+]);
+
+watch(namespaces, (ns) => {
+  if (namespace.value !== 'all' && !ns.includes(namespace.value)) {
+    namespace.value = 'all';
   }
+});
 
-  if (item.type === 'log') {
-    const log = item.log;
+const filteredLogs = computed(() =>
+  filterLogs(
+    sourceLogs.value,
+    search.value,
+    level.value,
+    namespace.value,
+    mapId.value,
+    mapIds.value.length,
+  ),
+);
 
-    return h('div', { class: ['log-entry', log.level] }, [
-      // Dòng header: timestamp + level + namespaces
-      h('div', { class: 'log-header' }, [
-        h('span', { class: 'timestamp' }, formatTime(log.timestamp)),
-        h(
-          'span',
-          { class: 'level' },
-          `[${(log.level || 'unknown').toUpperCase()}]`,
-        ),
-        ...(log.namespaces && log.namespaces.length
-          ? [
-              h(
-                'span',
-                { class: 'namespaces' },
-                `[${log.namespaces.join(':')}]`,
-              ),
-            ]
-          : []),
-      ]),
+const structuredLogs = computed(() => buildStructuredLogs(filteredLogs.value));
 
-      // Dòng riêng cho args
-      h(
-        'div',
-        { class: 'log-args' },
-        log.args.map((arg: any, i: number) =>
-          isObject(arg)
-            ? h('div', { class: 'arg-object', key: i }, [
-                h(TreeItem, { data: arg }),
-              ])
-            : h('span', { class: 'arg', key: i }, formatArg(arg)),
-        ),
-      ),
-    ]);
+const totalCount = computed(
+  () =>
+    sourceLogs.value.filter((l) => l.level !== 'groupCollapsed' && l.level !== 'groupEnd')
+      .length,
+);
+const showingCount = computed(
+  () => collectStructuredLogs(structuredLogs.value).length,
+);
+
+const hasActiveFilter = computed(() => {
+  return (
+    Boolean(search.value.trim()) ||
+    level.value !== 'all' ||
+    namespace.value !== 'all' ||
+    (mapIds.value.length > 1 && mapId.value !== 'all')
+  );
+});
+
+const visibleCopyText = computed(() =>
+  collectStructuredLogs(structuredLogs.value)
+    .map(formatDevtoolsLogEntryForCopy)
+    .join('\n'),
+);
+
+function togglePause() {
+  if (paused.value) {
+    paused.value = false;
+    frozenLogs.value = null;
+  } else {
+    frozenLogs.value = [...logs.value];
+    paused.value = true;
   }
+}
 
-  return null;
-};
+function clear() {
+  clearDevtoolLogs();
+  frozenLogs.value = paused.value ? [] : null;
+}
 
-// Auto scroll to top when new logs inserted
+async function scrollLogsToNewest() {
+  await nextTick();
+  const el = logListRef.value;
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
 watch(
-  () => logs.value.length,
+  () => structuredLogs.value.length,
   () => {
-    if (!autoScroll.value) return;
-
-    nextTick(() => {
-      requestAnimationFrame(() => {
-        const list = logListRef.value;
-        if (list) list.scrollTop = 0;
-      });
-    });
+    if (!autoScroll.value || paused.value) return;
+    void scrollLogsToNewest();
   },
 );
+
+watch([search, level, namespace, mapId], () => {
+  void scrollLogsToNewest();
+});
 </script>
-
-<style scoped>
-.log-viewer {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.log-controls {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  gap: 8px;
-}
-
-.log-list {
-  flex: 1;
-  overflow-y: scroll;
-  padding: 8px;
-  font-family: monospace;
-  font-size: 12px;
-}
-
-.log-header {
-  display: flex;
-  gap: 4px;
-}
-
-::v-deep(.log-args) {
-  margin-left: 20px;
-  margin-top: 2px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.log-entry {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 2px;
-  margin-bottom: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.log-entry.error {
-  color: red;
-}
-.log-entry.warn {
-  color: orange;
-}
-.log-entry.debug {
-  color: gray;
-}
-
-.timestamp {
-  color: #888;
-}
-.level {
-  font-weight: bold;
-}
-.namespaces {
-  color: #007acc;
-}
-.arg-object {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: 8px;
-}
-</style>

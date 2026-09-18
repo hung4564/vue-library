@@ -53,13 +53,6 @@ export const breakpointsVuetifyV3 = {
 };
 
 /**
- * Alias to `breakpointsVuetifyV2`
- *
- * @deprecated explictly use `breakpointsVuetifyV2` or `breakpointsVuetifyV3` instead
- */
-export const breakpointsVuetify = breakpointsVuetifyV2;
-
-/**
  * Breakpoints from Ant Design
  *
  * @see https://ant.design/components/layout/#breakpoint-width

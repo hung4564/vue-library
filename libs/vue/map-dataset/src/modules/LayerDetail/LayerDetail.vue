@@ -1,11 +1,21 @@
-<script>
+<script lang="ts">
 export default {
   name: 'detail-layer-info',
 };
 </script>
 
-<script setup>
-import { LAYER_DETAIL_LOCALE } from '@hungpvq/map-dataset';
+<script setup lang="ts">
+import {
+  LAYER_DETAIL_LOCALE,
+  type FieldFeaturesDef,
+  type IDataset,
+} from '@hungpvq/map-dataset';
+import {
+  filterLayerDetailHeaderMenus,
+  getItemMenuHost,
+  getResolvedMenus,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
@@ -13,37 +23,65 @@ import {
   useMap,
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import { ref } from 'vue';
-import { useMapDatasetHighlight } from '../../store';
+import { computed, ref } from 'vue';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
+import { useMapHighlight } from '../../store/highlight';
 import TableTdLayer from './table-td-layer.vue';
-const props = defineProps({
-  item: {},
-  view: {},
-  fields: {
-    type: Array,
-    default: () => [],
+
+const props = withDefaults(
+  defineProps<{
+    item?: Record<string, unknown>;
+    view?: IDataset;
+    fields?: FieldFeaturesDef;
+    popupProps?: Record<string, unknown>;
+  }>(),
+  {
+    fields: () => [],
+    popupProps: () => ({}),
   },
-  popupProps: {
-    type: Object,
-    default: () => ({}),
-  },
-});
+);
+
+const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_DETAIL_LOCALE);
-const emit = defineEmits(['close']);
+const hl = useMapHighlight(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_DETAIL_LOCALE);
+
 const show = ref(true);
+
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.layerDetail,
+}));
+
+const itemMenuHost = computed(() =>
+  props.view ? getItemMenuHost(props.view) : undefined,
+);
+
+const layerTitleMenus = computed(() => {
+  if (!props.view) return [];
+  return filterLayerDetailHeaderMenus(getResolvedMenus(props.view, 'layer'), {
+    hasFeatureItem: props.item != null,
+  });
+});
+
+const itemMenus = computed(() => {
+  if (!props.view) return [];
+  return getResolvedMenus(props.view, 'item').filter(
+    (menu) => menu.type !== 'divider',
+  );
+});
+
 function handleClose() {
-  setFeatureHighlight(undefined, 'detail');
+  hl.hideIfSource('detail');
   emit('close');
 }
-function onUpdateShow(val) {
+
+function onUpdateShow(val: boolean) {
   show.value = val;
-  if (!val) {
-    handleClose();
-  }
+  if (!val) handleClose();
 }
+
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapLayerDetail',
   panelKind: 'popup',
@@ -81,13 +119,28 @@ const { panelBind } = useRegisterMapControl(mapId, {
         <template #title>
           {{ trans('map.layer-control.info.title') }}
         </template>
+        <template v-if="view" #after-title>
+          <DatasetMenus
+            :menus="layerTitleMenus"
+            :data="view"
+            :mapId="mapId"
+            :locations="['title']"
+          />
+          <DatasetMenus
+            v-if="itemMenuHost || view"
+            :menus="itemMenus"
+            :data="itemMenuHost || view"
+            :mapId="mapId"
+            :value="item"
+            :locations="['title']"
+          />
+        </template>
         <div class="table-show-info">
           <div class="table-content">
             <TableTdLayer
               :field="field"
-              :label="field.trans ? trans(field.trans) : field.text"
+              :label="'trans' in field ? trans(field.trans) : field.text"
               :item="item"
-              :view="view"
               v-for="(field, i) in fields"
               :key="i"
             />

@@ -28,25 +28,29 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        css: 'src/style.ts',
+      },
       name: 'vue-map-draw',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: [
         'vue',
         '@hungpvq/map-core',
+        '@hungpvq/map-draw',
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         'maplibre-gl',
-        '@mapbox/mapbox-gl-draw',
         '@mdi/js',
-        'lodash',
         'randomcolor',
       ],
       output: {
@@ -55,6 +59,18 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/vue/map-draw',
+      provider: 'v8' as const,
     },
   },
 });

@@ -15,89 +15,104 @@
         :title="item.getName()"
         @click="emit('click', item)"
       >
-        <span>{{ item.getName() }}</span>
+        <template v-for="(part, i) in nameParts" :key="i">
+          <mark v-if="part.match" class="layer-item__search-match">{{
+            part.text
+          }}</mark>
+          <span v-else>{{ part.text }}</span>
+        </template>
       </span>
       <div class="v-spacer"></div>
       <div class="layer-item__title-action">
         <slot name="pre-btn" :loading="loading" />
-        <template v-for="(menu, i) in extra_menus" :key="i">
-          <LayerMenu
-            :item="menu"
-            :data="item"
-            :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-            :mapId="mapId"
-            @click="onLayerAction($event, menu)"
-          />
-        </template>
-        <BaseButton
+        <DatasetMenus
+          :menus="button_menus"
+          :data="item"
+          :mapId="mapId"
+          :locations="['extra', 'menu']"
+          :disabled="loading"
+          :getGroups="getGroups"
+          :menuContext="rowMenuContexts"
+        />
+        <MapControlButton
           v-if="!item.config.disabled_delete && !props.readonly"
           :disabled="loading"
           @click.stop="onRemove"
+          variant="plain"
+          size="small"
         >
           <SvgIcon size="14" type="mdi" :path="path.delete" />
-        </BaseButton>
+        </MapControlButton>
         <slot name="extra-btn" :loading="loading" />
-        <BaseButton
-          v-if="content_menus.length > 0"
-          :disabled="loading"
-          @click.prevent.stop="handleContextClick"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.menu" />
-        </BaseButton>
         <template v-if="!showBottom">
-          <template v-for="(menu, i) in extra_bottoms" :key="i">
-            <LayerMenu
-              :item="menu"
-              :data="item"
-              :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-              :mapId="mapId"
-              @click="onLayerAction($event, menu)"
-            />
-          </template>
-          <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
+          <DatasetMenus
+            :menus="button_menus"
+            :data="item"
+            :mapId="mapId"
+            :locations="['bottom']"
+            :disabled="loading"
+            :getGroups="getGroups"
+            :menuContext="rowMenuContexts"
+          />
+          <MapControlButton
+            @click.stop="onToggleLegend()"
+            v-if="isHasLegend"
+            variant="plain"
+            size="small"
+          >
             <SvgIcon
               size="14"
               type="mdi"
               :path="legendShow ? path.legendClose : path.legendOpen"
             />
-          </BaseButton>
+          </MapControlButton>
         </template>
       </div>
     </div>
     <div class="layer-item__action" v-if="showBottom">
-      <template v-for="(menu, i) in bottoms" :key="i">
-        <LayerMenu
-          :item="menu"
-          :data="item"
-          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-          :mapId="mapId"
-          @click="onLayerAction($event, menu)"
-        />
-      </template>
+      <DatasetMenus
+        :menus="button_menus"
+        :data="item"
+        :mapId="mapId"
+        :locations="['prebottom']"
+        :disabled="loading"
+        :getGroups="getGroups"
+        :menuContext="rowMenuContexts"
+      />
       <div class="v-spacer"></div>
-      <template v-for="(menu, i) in extra_bottoms" :key="i">
-        <LayerMenu
-          :item="menu"
-          :data="item"
-          :disabled="loading || isMenuItemDisabled(menu, conditionCtx)"
-          :mapId="mapId"
-          @click="onLayerAction($event, menu)"
-        />
-      </template>
-      <BaseButton @click.stop="onToggleChildren()" v-if="isHasChildren">
+      <DatasetMenus
+        :menus="button_menus"
+        :data="item"
+        :mapId="mapId"
+        :locations="['bottom']"
+        :disabled="loading"
+        :getGroups="getGroups"
+        :menuContext="rowMenuContexts"
+      />
+      <MapControlButton
+        @click.stop="onToggleChildren()"
+        v-if="isHasChildren"
+        variant="plain"
+        size="small"
+      >
         <SvgIcon
           size="14"
           type="mdi"
           :path="childrenShow ? path.legendClose : path.legendOpen"
         />
-      </BaseButton>
-      <BaseButton @click.stop="onToggleLegend()" v-if="isHasLegend">
+      </MapControlButton>
+      <MapControlButton
+        @click.stop="onToggleLegend()"
+        v-if="isHasLegend"
+        variant="plain"
+        size="small"
+      >
         <SvgIcon
           size="14"
           type="mdi"
           :path="legendShow ? path.legendClose : path.legendOpen"
         />
-      </BaseButton>
+      </MapControlButton>
     </div>
 
     <div v-if="isHasLegend && legendShow">
@@ -118,36 +133,35 @@
         :disabledMove="disabledMove"
         :disabledCreateGroup="disabledCreateGroup"
         :menuContext="menuContext"
-        @click:action="emit('click:action', $event)"
-        @click:content-menu="emit('click:content-menu', $event)"
+        :getGroups="getGroups"
       ></LayerSubItem>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import type { IListViewUI, MenuAction, MenuContextSource } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import {
+  findAllComponentsByType,
+  splitSearchHighlight,
+} from '@hungpvq/map-dataset';
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import {
   createMenuConditionContext,
-  findAllComponentsByType,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-} from '@hungpvq/map-dataset';
-import { BaseButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
+  getResolvedMenus,
+  partitionMenuActions,
+} from '@hungpvq/map-dataset/menu';
+import { MapControlButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiCrosshairsGps,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiLayers,
-  mdiLoading,
-  mdiMenuDown,
-  mdiMenuLeft,
-  mdiPencilOutline,
-} from '@mdi/js';
+import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
+import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
 import LayerSubItem from './layer-sub-item.vue';
-import LayerMenu from './menu/index.vue';
 const props = defineProps<{
   item: IListViewUI;
   mapId: string;
@@ -155,90 +169,52 @@ const props = defineProps<{
   disabledMove?: boolean;
   disabledCreateGroup?: boolean;
   menuContext?: MenuContextSource;
+  searchQuery?: string;
+  getGroups?: () => ListViewGroupOption[];
 }>();
-const emit = defineEmits([
-  'update:item',
-  'click',
-  'click:remove',
-  'click:action',
-  'click:content-menu',
-]);
+const emit = defineEmits(['click', 'click:remove']);
 const path = {
-  menu: mdiDotsVertical,
-  loading: mdiLoading,
-  layer: mdiLayers,
-  flyTo: mdiCrosshairsGps,
   delete: mdiDelete,
-  edit: mdiPencilOutline,
   legendOpen: mdiMenuLeft,
   legendClose: mdiMenuDown,
 };
 const loading = ref(false);
 const injectedMenuContext = useMenuConditionSource();
+const rowMenuContexts = computed(() => [
+  {
+    readonly: props.readonly,
+    disabledMove: props.disabledMove,
+    disabledCreateGroup: props.disabledCreateGroup,
+  },
+  props.menuContext,
+]);
 const conditionCtx = computed(() =>
   createMenuConditionContext(props.item, {
     mapId: props.mapId,
-    context: [
-      {
-        readonly: props.readonly,
-        disabledMove: props.disabledMove,
-        disabledCreateGroup: props.disabledCreateGroup,
-      },
-      injectedMenuContext,
-      props.menuContext,
-    ],
+    context: [injectedMenuContext, ...rowMenuContexts.value],
   }),
 );
 const onRemove = () => {
   emit('click:remove', props.item);
 };
-const button_menus = computed<MenuAction<any>[]>(() => {
+const nameParts = computed(() =>
+  splitSearchHighlight(props.item.getName?.() ?? '', props.searchQuery ?? ''),
+);
+const button_menus = computed<MenuAction[]>(() => {
   if (!props.item) {
     return [];
   }
-  return props.item.getMenus() || [];
+  return getResolvedMenus(props.item, 'layer');
 });
-const extra_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => !x.location || x.location == 'extra')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const bottoms = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'prebottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const extra_bottoms = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'bottom')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
-const content_menus = computed(() => {
-  return button_menus.value
-    .filter((x) => x.location == 'menu')
-    .filter((x) => !isMenuItemHidden(x, conditionCtx.value))
-    .sort((a, b) => (a.order || 0) - (b.order || 0));
-});
+const partitioned = computed(() =>
+  partitionMenuActions(button_menus.value, conditionCtx.value),
+);
 const showBottom = computed(() => {
   return (
     !props.readonly &&
-    (!props.item.config.disabled_opacity || extra_bottoms.value.length > 0)
+    (!props.item.config.disabled_opacity || partitioned.value.bottom.length > 0)
   );
 });
-function onLayerAction(event: MouseEvent, action: MenuAction<IListViewUI>) {
-  if (isMenuItemDisabled(action, conditionCtx.value)) return;
-  emit('click:action', { event, action, item: props.item });
-}
-function handleContextClick(event: MouseEvent) {
-  emit('click:content-menu', {
-    event,
-    actions: content_menus.value,
-    item: props.item,
-  });
-}
 
 const isHasIcon = computed(() => props.item && props.item.icon);
 const isHasLegend = computed(() => props.item && !!props.item.legend);

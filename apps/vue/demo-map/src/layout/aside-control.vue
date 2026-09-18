@@ -28,10 +28,22 @@
             <RouterLink to="/map-core">Map - Core </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/language">Language </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/minimal">Minimal starter </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/worker-sample">Worker - Sample </RouterLink>
           </v-list-item>
           <v-list-item>
             <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/mobile-menu">Map - Mobile menu </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/legend">Legend </RouterLink>
           </v-list-item>
           <v-list-item>
             <RouterLink to="/story-telling">Story telling </RouterLink>
@@ -54,6 +66,11 @@
             <RouterLink to="/dataset-identify">Dataset - Identify </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/dataset-identify-present"
+              >Dataset - Identify present
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/dataset-menu">Dataset - Menu </RouterLink>
           </v-list-item>
           <v-list-item>
@@ -68,6 +85,19 @@
             <RouterLink to="/dataset-data-management"
               >Dataset - Data management
             </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/dataset-attribute-table"
+              >Dataset - Attribute table
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/dataset-geo-export"
+              >Dataset - Geo export
+            </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/draw">Draw </RouterLink>
           </v-list-item>
         </v-list>
       </DraggableItemSideBar>
@@ -87,6 +117,7 @@ import {
   useToolbarControl,
   withMapProps,
 } from '@hungpvq/vue-map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMenu } from '@mdi/js';
 import { RouterLink } from 'vue-router';
 export default {
@@ -112,9 +143,9 @@ export default {
       ...props,
       controlId: 'asideControl',
     });
-    const { trans, setLocale } = useLang(mapId.value);
+    const { trans, registerLocale } = useLang(mapId.value);
 
-    setLocale({
+    registerLocale('en', {
       map: {
         'aside-control': {
           title: 'Aside Control',
@@ -125,14 +156,10 @@ export default {
     const { state, control } = useToolbarControl(mapId.value, props, {
       id: 'asideControl',
       getState() {
-        return {
+        return mdiButtonState(path.icon, {
           visible: true,
           title: trans.value('map.aside-control.title'),
-          icon: {
-            type: 'mdi',
-            path: path.icon,
-          },
-        };
+        });
       },
       onClick() {
         toggleShow();

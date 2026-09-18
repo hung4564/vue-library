@@ -38,8 +38,15 @@ yarn add @hungpvq/react-map-core
 - ✅ **Print preview** - Preview before printing
 - ✅ **Advanced options** - Advanced printing settings
 - ✅ **Export support** - Export to PDF and images
+- ✅ **Crop + DPR** - Export honors printable-area crop and `devicePixelRatio` (capped)
+- ✅ **Clipboard image** - `copyImageDataUrl` / InfoControl “Copy image”
 - ✅ **TypeScript support** - Full TypeScript support
 - ✅ **Vue 3 Composition API** - Modern Vue 3 Composition API
+
+## Export notes
+
+- Snapshots wait for map idle and loaded tiles through `waitMapIdleAndTiles`.
+- Print utilities support optional watermark text and DPI-aware export sizing.
 
 ## 🚀 Basic Usage
 

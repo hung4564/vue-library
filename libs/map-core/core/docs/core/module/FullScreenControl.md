@@ -5,6 +5,8 @@
 - Present the map in full screen for demos or dashboards.
 - Improve focus on the map by hiding surrounding layout when needed.
 
+Uses shared helpers with **webkit/moz** prefixes for Safari / older Firefox. Prefer `isMapRootFullscreen` / `isDocumentFullscreen(doc, root)` when the active element should be the map root (not any page fullscreen).
+
 ## Props
 
 <!--@include: ./props.md-->

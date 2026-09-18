@@ -1,9 +1,11 @@
-import type { IListViewUI, MenuAction } from '@hungpvq/map-dataset';
+import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useState } from 'react';
 
-export const SAMPLE_LAYER_MENU_KEY = 'sample-layer-menu';
+const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
 
 export function SampleCustomMenu({
   item,
@@ -45,7 +47,7 @@ export function SampleCustomMenu({
           className="layer-context-menu__item"
           onClick={(event) => {
             event.stopPropagation();
-            console.info('[sample-layer-menu]', {
+            logger.info('layer menu', {
               mapId,
               layerId: data?.id,
               layerName: data?.getName?.(),

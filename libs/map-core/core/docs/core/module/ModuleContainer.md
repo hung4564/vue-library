@@ -13,10 +13,11 @@
 
 ## Slots
 
-| Name        | Description |
-| ----------- | ----------- |
-| `btn`       |             |
-| `draggable` |             |
+| Name         | Description |
+| ------------ | ----------- |
+| `btn`        | Control chrome inside `.btn-module-container` (flex `order` applies here) |
+| `btnOutside` | Same corner Teleport target as `btn`, but **sibling outside** `.btn-module-container` — use for absolute panels that must pin to the map corner host (e.g. toolbar/menu More). React: `btnOutside` prop |
+| `draggable`  |             |
 
 ## Usage
 
@@ -48,7 +49,8 @@ const { moduleContainerProps } = useMap(props);
 
 ```vue
 <script setup lang="ts">
-import { MapControlButton, ModuleContainer, { ... defaultMapProps}, type WithMapPropType } from '@hungpvq/vue-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { MapControlButton, ModuleContainer, defaultMapProps } from '@hungpvq/vue-map-core';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -82,8 +84,8 @@ import {
   ModuleContainer,
   defaultMapProps,
   useMap,
-  type WithMapPropType,
 } from '@hungpvq/react-map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { Icon } from '@mdi/react';
 import { mdiHome } from '@mdi/js';
 import type { ReactNode } from 'react';

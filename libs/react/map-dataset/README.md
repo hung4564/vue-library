@@ -10,17 +10,22 @@ React UI for map datasets. Same core as Vue: [`@hungpvq/map-dataset`](../../map-
 npm install @hungpvq/react-map-dataset @hungpvq/react-map-core @hungpvq/map-dataset @hungpvq/map-core
 ```
 
+Import the **full** style set (shared cores + adapters + draggable — dataset UI is not covered by map-core CSS alone):
+
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-draggable/style.css';
 ```
 
-Register built-in components once (legend, opacity, add-to-group, export, attribute table, …):
+Bootstrap once (`installMapApp` = theme + dataset registry: legend, opacity, add-to-group, export, attribute table, …):
 
 ```ts
-import { createDatasetRegistryPlugin } from '@hungpvq/react-map-dataset';
+import { installMapApp } from '@hungpvq/react-map-dataset';
 
-createDatasetRegistryPlugin().install();
+installMapApp();
 ```
 
 Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that install the published package need `mapDatasetGisWorker()` from `@hungpvq/map-dataset/vite`. In this Nx workspace use `worker.format: 'es'` + `nxViteTsPaths()` on `worker.plugins` — see [GIS worker](../../map-core/map-dataset/docs/worker.md).
@@ -33,9 +38,11 @@ import { Map } from '@hungpvq/react-map-core';
 import {
   LayerControl,
   useMapDataset,
+} from '@hungpvq/react-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/react-map-dataset';
+} from '@hungpvq/map-dataset';
 
 function Page() {
   function onMapLoaded(map: MapSimple) {
@@ -60,6 +67,9 @@ Pass app state into menu conditions:
 ```
 
 Or wrap with `MenuConditionProvider` from `@hungpvq/react-map-dataset`.
+
+Import dataset builders, services, protocols, locale bags, and shared types from
+`@hungpvq/map-dataset`.
 
 ## License
 

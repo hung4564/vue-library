@@ -1,23 +1,39 @@
-import type { MapFCOnUseMap, MapSimple } from '../types';
+export type {
+  EventEmitter,
+  IMapStoreAdapter,
+  LoggerFunction,
+  MapFCOnUseMap,
+} from './interface';
+export { MAP_CORE_EVENT, MapStoreManager } from './store-manager';
+export type {
+  AddStoreOptions,
+  DefaultValue,
+  MapRootStore,
+  MapStore,
+  MapStoreInternal,
+  StoreCleanup,
+} from './types';
 
-export type MapAccessor = (
-  mapId: string,
-  cb?: MapFCOnUseMap,
-) => MapSimple | MapSimple[] | undefined;
+export { MAP_PLATFORM_REGISTRY_METHOD } from './map-platform-keys';
+export type { MapPlatformRegistryMethod } from './map-platform-keys';
 
-let registeredMapAccessor: MapAccessor | undefined;
+export type {
+  MapAccessor,
+  MapPlatformHostId,
+  MapPlatformRegistration,
+  MapReadySubscriber,
+  MapStoreCleanupRegistrar,
+  RegisterMapPlatformOptions,
+} from './map-platform-registry';
 
-export function registerMapAccessor(fn: MapAccessor) {
-  registeredMapAccessor = fn;
-}
-
-export function getMap(
-  mapId: string,
-  cb?: MapFCOnUseMap,
-): MapSimple | MapSimple[] | undefined {
-  return registeredMapAccessor?.(mapId, cb);
-}
-
-export * from './interface';
-export * from './store-manager';
-export * from './types';
+export {
+  MAP_PLATFORM_HOST,
+  getMap,
+  listMapPlatformHosts,
+  registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanup,
+  registerMapStoreCleanupRegistrar,
+  resetMapPlatformHostsForTests,
+  subscribeMapReady,
+} from './map-platform-registry';

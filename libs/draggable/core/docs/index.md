@@ -150,40 +150,30 @@ export function App() {
 }
 ```
 
-Visibility updates differ by framework: Vue uses `v-model:show` / `@update:show`; React uses `show` + `onUpdateShow`.
+Visibility updates differ by framework: Vue uses `v-model:show` / `@update:show`; React uses `show` + `onUpdateShow`. Prefer controlled `show` so store-driven open/close (ManagementControl, `useDragCommands`) stays in sync with the parent.
 
-### Vue — teleporting a popup
+### Stable item id + commands
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import { DraggableContainer, DraggableItemPopup } from '@hungpvq/vue-draggable';
-const containerId = ref('my-container');
-</script>
+Pass optional `id` on any item so remounts and imperative APIs share the same store key:
 
-<template>
-  <DraggableContainer :containerId="containerId">
-    <!-- Main content here -->
-  </DraggableContainer>
-  <Teleport :to="`#${containerId}`">
-    <DraggableItemPopup
-      show
-      title="Teleported Popup"
-      :top="20"
-      :left="300"
-      :containerId="containerId"
-    >
-      <div style="height: 100px">Teleported Popup Content</div>
-    </DraggableItemPopup>
-  </Teleport>
-</template>
+```ts
+import { useDragCommands } from '@hungpvq/vue-draggable'; // or react-draggable
+
+const cmds = useDragCommands('my-container');
+cmds.open('layers');
+cmds.setFront('layers');
+cmds.close('layers');
 ```
+
+Popup / modal emit `update:bounds` (React: `onBoundsChange`) on drag/resize **stop**. Drawer already has `update:size`.
+
+Theme tokens: [css-tokens.md](./css-tokens.md).
 
 ## FAQ
 
 ### Why is my draggable item not visible?
 
-- Ensure the `show` prop is set to `true`.
+- Ensure the `show` prop is set to `true` (and bind `v-model:show` / `onUpdateShow` if something else can close it).
 - Check container and item z-index and overflow settings.
 
 ### How do I render outside the default tree?
@@ -194,6 +184,24 @@ const containerId = ref('my-container');
 
 - Import styles at the app root — see [Styles](#styles).
 - UI CSS lives in `@hungpvq/draggable`; the Vue/React packages re-export it via `/style.css`.
+- Override `--draggable-*` (or `--map-*`) — see [css-tokens.md](./css-tokens.md).
+
+### Why does the React demo say a named export is missing?
+
+Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fast Refresh runs on those files, the browser can report `does not provide an export named '…'`. Exclude `libs/` from the React plugin (already done for `demo-draggable` / `demo-map`). See [SemVer §7](../../README.md#7-reducing-everything-is-breaking).
+
+## Stable API & SemVer
+
+- [Stable API allowlist](./stable-api.md) (named exports + `public-api.spec.ts` lock; layout persist cookbook)
+- [Header slots](./header-slots.md) (`pre-title` / `title` / `after-title` / `extra-btn`; `location: 'title'` → after-title)
+- [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
+- [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
+- [Testing](./testing.md) (`draggable:test`, public-api locks)
+- [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
+
+Current line: **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->`** (fixed release group for core + Vue + React adapters).
+
+**Next minor (prep):** [releases/v1.2.md](./releases/v1.2.md) — peer matrix `~1.2.0`, migration, release-day checklist. Index: [releases/](./releases/).
 
 ## Components
 
@@ -204,6 +212,7 @@ const containerId = ref('my-container');
 - [DraggableItemFloat](./draggable-item-float.md)
 - [DraggableModal](./draggable-modal.md)
 - [DraggableDrawer](./draggable-drawer.md)
+- [ContextMenu / ContextMenuItem](./context-menu.md) (experimental)
 
 ## Contributing
 

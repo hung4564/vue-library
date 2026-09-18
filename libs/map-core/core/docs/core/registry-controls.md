@@ -1,6 +1,18 @@
 # UniversalRegistry — map controls
 
-Mounted ModuleContainer controls (popup, sidebar, float, and button-only) register themselves on the map via `UniversalRegistry.registerControl`. Apps can list them, open/close panels, move panels, and run button actions.
+Mounted ModuleContainer controls (popup, sidebar, float, and button-only) register themselves via `UniversalRegistry.registerControl`. The class lives in `@hungpvq/map-core` (bags on `@hungpvq/shared-store`); Vue / React adapters **extend** it with typed component registration only. Methods, menu handlers, components, and control handles share **one store and one resolve path** (`runMapControlAction` included).
+
+Reserved global method keys `MAP_PLATFORM_REGISTRY_METHOD.*` (`__platform.getMap`, `__platform.subscribeMapReady`, `__platform.registerStoreCleanup`) wire map accessors — they are **not** app controls and survive `clearMap`.
+
+Menu / UI components (`registerComponent` / `registerComponentForMap`): [UniversalRegistry components](./registry-components.md).
+
+```ts
+import { UniversalRegistry, runMapControlAction } from '@hungpvq/map-core';
+// or `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`
+
+UniversalRegistry.openControl(mapId, 'mapLayerControl');
+runMapControlAction(mapId, 'mapHomeControl');
+```
 
 ## List & inspect
 
@@ -85,13 +97,15 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 | `mapEventManagementControl` | sidebar | |
 | `mapHomeControl` | button | |
 | `mapFullscreenControl` | button | |
+| `mapThemeControl` | button | Toggle light/dark; hover menu for themes |
 | `mapGeoLocateControl` | button | |
 | `mapGlobeControl` | button | |
 | `mapPrintControl` | button | |
 | `mapNavigationControl` | button | multi: `mapCompass`, `mapZoomIn`, `mapZoomOut` |
 | `mapMeasurementControl` | button | multi: `distance`, `area`, … |
 | `mapPrintAdvancedControl` | button | multi: `mapPrintShow`, `mapPrintSave`, … |
-| `mapInspectControl` | button | Vue draw only |
+| `mapInspectControl` | button | Draw packages (Vue + React); Inspect docs under `/map/draw/#inspect` |
+| `mapDrawDraftList` | popup | Draw draft list when draft mode is on |
 | `mapRegistryControl` | popup | Inspector for registered controls |
 
 Ids match toolbar / module ids where those exist.

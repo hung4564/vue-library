@@ -1,4 +1,4 @@
-import type { MapControlButtonUIState } from '@hungpvq/map-core';
+import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import { Icon } from '@mdi/react';
 import React from 'react';
 import { MapControlButton } from './MapControlButton';
@@ -19,7 +19,8 @@ export function MapCommonButton({
   return (
     <MapControlButton
       title={option.title}
-      className={`${option.active ? 'active' : ''} ${className}`}
+      active={option.active}
+      className={className}
       disabled={option.disabled}
       loading={option.loading}
       {...props}
@@ -37,6 +38,22 @@ export function MapCommonButton({
             <path d="M12 21l-4-8h8z" fill="#9E9E9E"></path>
           </g>
         </svg>
+      ) : option.text ? (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '1.25rem',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            lineHeight: 1,
+            textTransform: 'uppercase',
+          }}
+        >
+          {option.text}
+        </span>
       ) : option.icon?.type === 'mdi' && option.icon.path ? (
         <Icon path={option.icon.path} size="18px" />
       ) : null}

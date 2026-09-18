@@ -3,42 +3,7 @@
   Prefer --map-* tokens; flatten nesting.
 */
 
-/* ---------- Field action button (.map-control__button) ---------- */
-.map-control__button {
-  display: inline-flex;
-  min-width: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  box-shadow: unset;
-  outline: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  color: inherit;
-  font: inherit;
-  line-height: 1;
-}
-
-.map-control__button svg {
-  flex-shrink: 0;
-}
-
-.map-control__button .spin {
-  width: 14px;
-  height: 14px;
-}
-
-.map-control__button-active {
-  color: var(--map-accent-color, #1a73e8) !important;
-}
-
-.map-control__button-disabled {
-  pointer-events: none;
-  cursor: none;
-  opacity: 0.8;
-}
+/* ---------- Field action button styles removed; use Stable MapControlButton (.map-control-button) ---------- */
 
 /* ---------- Collapse ---------- */
 .collapse .collapse-header {
@@ -122,23 +87,84 @@
   resize: vertical;
 }
 
-.input-container > select {
-  position: relative;
-}
-
 .input-container > input:focus,
-.input-container > textarea:focus,
-.input-container > select:focus {
-  border: 1px solid var(--map-primary-color, #fff);
+.input-container > textarea:focus {
+  border-color: var(--map-accent-color, #1a73e8);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--map-accent-color, #1a73e8) 28%, transparent);
 }
 
-.input-container option:not(:disabled) {
-  background-color: transparent;
-  color: black;
+/* Native select — custom chrome so Vue/React match across themes */
+.input-container > select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  min-height: 2rem;
+  line-height: var(--map-line-height, 1.4);
+  padding-right: 2rem;
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 0.75rem;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input-container > select::-ms-expand {
+  display: none;
+}
+
+.input-container > select:hover:not(:disabled) {
+  border-color: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 40%,
+    var(--map-border-color, #ccc)
+  );
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.input-container > select:focus {
+  border-color: var(--map-accent-color, #1a73e8);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--map-accent-color, #1a73e8) 28%, transparent);
+}
+
+.input-container > select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.input-container > select option {
+  background-color: var(--map-surface-color, #ffffff);
+  color: var(--map-text-primary, #333333);
+}
+
+.input-container > select option:disabled {
+  color: var(--map-text-secondary, #666666);
 }
 
 .input-container > select:invalid {
-  color: gray;
+  color: var(--map-text-secondary, #666666);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-xs, 4px);
+  min-width: 0;
+}
+
+.form-group > label {
+  display: block;
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-medium, 500);
+  line-height: var(--map-line-height-tight, 1.25);
+  letter-spacing: 0.01em;
+  opacity: 0.88;
 }
 
 /* ---------- Slider ---------- */
@@ -376,4 +402,115 @@ input[type='range']:focus::-ms-fill-upper {
     --map-card-text,
     var(--card-color, #fff)
   );
+}
+
+/* ---------- InputActionRow (joined field + action button) ---------- */
+.input-action-row {
+  --input-action-row-h: max(
+    2rem,
+    calc(
+      1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) + 2px
+    )
+  );
+  display: flex;
+  align-items: flex-end;
+  margin-top: var(--map-space-sm, 4px);
+  min-width: 0;
+  gap: 0;
+}
+
+.input-action-row--flush {
+  margin-top: 0;
+}
+
+.input-action-row > .form-group {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.input-action-row > .form-group .input-container > input,
+.input-action-row > .form-group .input-container > select,
+.input-action-row > .form-group .input-container > textarea {
+  box-sizing: border-box;
+  height: var(--input-action-row-h);
+  min-height: var(--input-action-row-h);
+  border-right-width: 0;
+  border-radius: var(--map-radius-sm, 4px) 0 0 var(--map-radius-sm, 4px);
+}
+
+.input-action-row > .form-group .input-container > input:focus,
+.input-action-row > .form-group .input-container > select:focus,
+.input-action-row > .form-group .input-container > textarea:focus {
+  border-right-width: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.input-action-row__action {
+  flex-shrink: 0;
+  align-self: flex-end;
+  display: flex;
+  box-sizing: border-box;
+  height: var(--input-action-row-h);
+  margin: 0;
+}
+
+/* Joined action chrome — match CreateControl Load without consumer CSS */
+.input-action-row__action > .map-control-button,
+.input-action-row__action > button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0 var(--map-button-pad-x, var(--map-space-lg, 12px));
+  border-radius: 0 var(--map-radius-sm, 4px) var(--map-radius-sm, 4px) 0;
+  border: 1px solid
+    color-mix(in srgb, var(--map-text-primary, #333) 28%, transparent);
+  border-left-color: color-mix(
+    in srgb,
+    var(--map-border-color, #ccc) 80%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 22%,
+    var(--map-surface-color, #fff)
+  );
+  color: var(--map-text-primary, #333);
+  font-size: var(--map-font-size-sm, 12px);
+  font-weight: var(--map-font-weight-semibold, 600);
+  letter-spacing: 0.02em;
+  text-indent: 0;
+  white-space: nowrap;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.input-action-row__action > .map-control-button:hover,
+.input-action-row__action > button:hover {
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 32%,
+    var(--map-surface-color, #fff)
+  );
+}
+
+.input-action-row__action > .map-control-button:focus-visible,
+.input-action-row__action > button:focus-visible {
+  outline: none;
+  z-index: 1;
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--map-accent-color, #1a73e8) 28%, transparent);
+}
+
+.input-action-row__action > .map-control-button.map-control-button-disabled,
+.input-action-row__action > .map-control-button:disabled,
+.input-action-row__action > button:disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }

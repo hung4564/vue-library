@@ -11,8 +11,7 @@ export function createStoreRegistryPlugin() {
 }
 
 export function useStoreRegistry() {
-  // FIXME: cần xử lý trường hợp inject
-  //const registry = inject<GlobalStoreService>(STORE_KEY) || GlobalStoreService.getInstance();
+  // Inject deferred: always use singleton until inject(STORE_KEY) is wired.
   const registry = GlobalStoreService.getInstance();
   if (!registry)
     throw new Error(
@@ -22,16 +21,33 @@ export function useStoreRegistry() {
 }
 
 type StoreDefinition<T = any> = () => T;
+
+/**
+ * Lazy store factory by id/path. Returns a getter that creates the value once
+ * in {@link GlobalStoreService} (shared across package copies via globalThis).
+ */
 export function defineStore<T>(
   id: string | string[],
   setup: StoreDefinition<T>,
 ): () => T {
   return function useStore(): T {
-    const storeRegistry = useStoreRegistry();
-    if (!storeRegistry.has(id)) {
-      const store = setup();
-      storeRegistry.set(id, store);
-    }
-    return storeRegistry.get(id) as T;
+    return getOrCreateStore(id, setup);
   };
 }
+
+/**
+ * Eager get-or-create for non-hook contexts (class statics, services).
+ * Same backing store as {@link defineStore}.
+ */
+export function getOrCreateStore<T>(
+  id: string | string[],
+  setup: StoreDefinition<T>,
+): T {
+  const storeRegistry = useStoreRegistry();
+  if (!storeRegistry.has(id)) {
+    const store = setup();
+    storeRegistry.set(id, store);
+  }
+  return storeRegistry.get(id) as T;
+}
+

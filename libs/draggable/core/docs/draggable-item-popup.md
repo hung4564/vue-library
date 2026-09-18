@@ -12,11 +12,13 @@ category: Component
 
 | Prop             | Description                                        | Type      | Required | Default Value |
 | ---------------- | -------------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.       | `string`  | false    | auto UUID     |
 | `title`          | Title displayed in the popup header.               | `string`  | false    | -             |
 | `disabledExpand` | Disables the expand/collapse feature.              | `boolean` | false    | false         |
 | `disabledHeader` | Hides the header section.                          | `boolean` | false    | false         |
 | `disabledClose`  | Hides the close button.                            | `boolean` | false    | false         |
 | `disabledOrder`  | Disables drag ordering with other items.           | `boolean` | false    | false         |
+| `highlightMs`    | How long highlight stays on (ms).                  | `number`  | false    | `5000`        |
 | `containerId`    | ID of the parent container (for teleporting).      | `string`  | false    | -             |
 | `show`           | Controls the visibility of the popup.              | `boolean` | false    | false         |
 | `expand`         | Whether the popup is expanded.                     | `boolean` | false    | false         |
@@ -37,16 +39,23 @@ category: Component
 | `update:expand` | Emitted when the expand state changes. Payload: `(value:boolean)` |
 | `close`         | Emitted when the popup is closed. Payload: `()`                   |
 | `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)`   |
+| `update:bounds` | Emitted on drag/resize stop. Payload: `{x,y,width,height}`        |
 
-React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
+React: use `onUpdateShow` / `onUpdateExpand` / `onClose` / `onBoundsChange`.
+
+Prefer `v-model:show` (Vue) or controlled `show` + `onUpdateShow` (React) so store-driven open/close stays in sync.
 
 ## Slots
 
-| Name        | Description                         |
-| ----------- | ----------------------------------- |
-| `default`   | Content of the popup.               |
-| `title`     | Custom content for the header area. |
-| `extra-btn` | Extra buttons in the header.        |
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the popup.                            |
+| `pre-title`     | `preTitle`   | Before the title group.                          |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 
 ## Usage
 
@@ -81,3 +90,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Non-modal `role="dialog"` + `aria-labelledby`; Escape closes when focus is inside the panel; expand uses `aria-expanded`. Icon-only chrome is labelled. Keyboard drag/resize is out of scope. See [a11y.md](./a11y.md).

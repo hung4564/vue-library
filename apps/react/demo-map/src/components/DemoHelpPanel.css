@@ -1,0 +1,122 @@
+.demo-help {
+  position: absolute;
+  z-index: 3;
+  /* Below top toolbar; inset from right so nav stays free; short of FAB */
+  top: 56px;
+  right: 56px;
+  left: auto;
+  bottom: auto;
+  width: min(300px, calc(100vw - 96px));
+  max-height: min(45vh, calc(100% - 56px - 100px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  background: color-mix(in srgb, canvas 94%, transparent);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 18%);
+  font:
+    12px/1.45 system-ui,
+    sans-serif;
+  color: CanvasText;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.demo-help--moved {
+  right: auto;
+  bottom: auto;
+}
+
+.demo-help--dragging {
+  user-select: none;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 28%);
+}
+
+.demo-help__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: grab;
+  text-align: left;
+  touch-action: none;
+}
+
+.demo-help__toggle:active {
+  cursor: grabbing;
+}
+
+.demo-help__toggle:hover {
+  background: color-mix(in srgb, CanvasText 6%, transparent);
+}
+
+.demo-help__toggle-icon {
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+.demo-help__body {
+  padding: 0 12px 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.demo-help__intro {
+  margin: 0 0 10px;
+  opacity: 0.85;
+}
+
+.demo-help__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.demo-help__title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.demo-help__text {
+  opacity: 0.88;
+  font-size: 11px;
+}
+
+.demo-help--mobile {
+  top: auto;
+  left: 8px;
+  right: 8px;
+  /* Above map-devtools FAB (~bottom:45px / right:50px) */
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  max-height: min(36vh, calc(100% - 120px));
+}
+
+.demo-help--mobile.demo-help--moved {
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: min(300px, calc(100vw - 16px));
+}
+
+.demo-help--mobile:not(.demo-help--open):not(.demo-help--moved) {
+  width: auto;
+  left: auto;
+  right: 8px;
+  max-width: calc(100vw - 16px);
+}
+
+.demo-help--mobile:not(.demo-help--open) .demo-help__toggle {
+  padding: 10px 14px;
+}

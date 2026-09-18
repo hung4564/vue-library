@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import {
+  createPrintAdvancedSession,
+  PRINT_CONTROL_LOCALE,
+  type PrintAdvancedUiState,
+  type PrintOption,
+} from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { BaseButton, InputSelect, InputText } from '../../../field';
-import { MapCommonButton, MapControlGroupButton } from '../../../components';
-import { ModuleContainer } from '../../../modules';
-import { useLang } from '../../../extra/lang';
-import { useRegisterMapControl } from '../../../extra/registry';
-import { useToolbarControl } from '../../../extra/toolbar';
+import { InputSelect, InputText } from '../../../field';
+import MapCommonButton from '../../../components/MapCommonButton.vue';
+import MapControlButton from '../../../components/MapControlButton.vue';
+import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useLang } from '../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
 import {
   mdiClose,
   mdiCogOutline,
@@ -15,11 +24,9 @@ import {
   mdiPrinterEye,
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
-import { onBeforeUnmount, ref } from 'vue';
-import type { PrintOption } from '@hungpvq/map-core';
-import { exportMapbox, exportMapboxWithOptions } from '@hungpvq/map-core';
+import { onBeforeUnmount, ref, watch } from 'vue';
 import { useMapPrint } from '../store';
-import { CrosshairManager, PrintableAreaManager } from './print';
+
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -42,196 +49,120 @@ const path = {
   setting: mdiCogOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(PRINT_CONTROL_LOCALE);
-const print = ref({
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', PRINT_CONTROL_LOCALE);
+
+const print = ref<PrintAdvancedUiState>({
   show: false,
   loading: false,
   setting_show: false,
-  setting: { ratio: 1, orientation: 'portrait' } as PrintOption,
+  setting: {
+    ratio: 1,
+    orientation: 'portrait',
+    format: 'png',
+    paper: 'custom',
+    dpi: 96,
+    watermark: '',
+  },
 });
+
+const syncToolbar = { run: () => undefined as void };
+
+const session = createPrintAdvancedSession({
+  callMap,
+  saveFile: (dataUrl, name) => saveAs(dataUrl, name),
+  getDisabledCrosshair: () => props.disabledCrosshair,
+  getDisabledPrintableArea: () => props.disabledPrintableArea,
+  getFileName: () => props.fileName,
+  onStateChange: (next) => {
+    print.value = next;
+    syncToolbar.run();
+  },
+});
+
 onBeforeUnmount(() => {
-  onClosePrint();
+  session.destroy();
 });
+
 const { initPrint } = useMapPrint(mapId.value);
 function onInit() {
-  initPrint({
-    show: (options) => onShowPrint(options),
-    close: () => onClosePrint(),
-    save: (cb) => onSave(cb),
-    saveAll: (cb) => onSaveAll(cb),
-  });
-}
-function onSaveAll(cb?: (image: string) => Promise<void>) {
-  callMap(async (map) => {
-    print.value.loading = true;
-    control.sync();
-    try {
-      let image = await exportMapbox(map);
-      if (cb) {
-        cb(image);
-      } else await onDownload(image);
-    } finally {
-      print.value.loading = false;
-      control.sync();
-    }
-  });
-}
-async function onSave(cb?: (image: string) => Promise<void>) {
-  callMap(async (map) => {
-    if (!printableArea) return;
-    try {
-      print.value.loading = true;
-      control.sync();
-      let image = await exportMapboxWithOptions(
-        map,
-        printableArea.getCutSize(),
-      );
-      if (cb) {
-        cb(image);
-      } else {
-        await onDownload(image);
-      }
-    } finally {
-      print.value.loading = false;
-      control.sync();
-    }
-  });
-}
-function onClosePrint() {
-  print.value.loading = false;
-  print.value.show = false;
-  toggleCrosshair(print.value.show);
-  togglePrintableArea(print.value.show, print.value.setting);
-  control.sync();
+  initPrint(session.getStoreHandlers());
 }
 
-function onShowPrint(options: PrintOption) {
-  print.value.show = true;
-  toggleCrosshair(print.value.show);
-  togglePrintableArea(print.value.show, options);
-  control.sync();
-}
-async function onDownload(data64: string) {
-  saveAs(data64, `${props.fileName}.png`);
-}
-let crosshair: CrosshairManager | undefined = undefined;
-let printableArea: PrintableAreaManager | undefined = undefined;
-function toggleCrosshair(show: boolean) {
-  if (props.disabledCrosshair) {
-    return;
-  }
-  callMap((map) => {
-    if (show === false) {
-      if (crosshair !== undefined) {
-        crosshair.destroy();
-        crosshair = undefined;
-      }
-    } else {
-      crosshair = new CrosshairManager(map.getCanvas());
-      crosshair.create();
-    }
-  });
-}
-function togglePrintableArea(show: boolean, options: PrintOption) {
-  if (props.disabledPrintableArea) {
-    return;
-  }
-  callMap((map) => {
-    if (show === false) {
-      map.off('resize', onMapResize);
-      if (printableArea !== undefined) {
-        printableArea.destroy();
-        printableArea = undefined;
-      }
-    } else {
-      map.on('resize', onMapResize);
-      printableArea = new PrintableAreaManager(map.getCanvas(), options);
-      printableArea.create();
-    }
-  });
-}
-function onMapResize() {
-  if (printableArea) {
-    printableArea.mapResize();
-  }
-  if (crosshair) {
-    crosshair.mapResize();
-  }
-}
-function toggleSetting() {
-  print.value.setting_show = !print.value.setting_show;
-  control.sync();
-}
-function onChangeSetting() {
-  if (printableArea) {
-    printableArea.setOption(print.value.setting);
-  }
-}
 const items = [
   { value: 'landscape', text: 'Landscape' },
   { value: 'portrait', text: 'Portrait' },
 ];
+const paperItems = [
+  { value: 'custom', text: 'Custom' },
+  { value: 'a4', text: 'A4' },
+  { value: 'letter', text: 'Letter' },
+];
+
+function onPaperChange(
+  value: string | { value: string; text: string } | undefined,
+) {
+  const raw =
+    value && typeof value === 'object' && 'value' in value
+      ? value.value
+      : value;
+  session.applyPaper(String(raw ?? '') as NonNullable<PrintOption['paper']>);
+}
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   moduleId: 'mapPrintAdvancedControl',
-  moduleOrder: order.value,
+  order: order.value,
   kind: 'module',
+  orientation: 'row',
   buttons: [
     {
       id: 'mapPrintShow',
-      getState: () => ({
-        visible: !print.value.show,
-        title: trans.value('map.print.title'),
-        icon: {
-          type: 'mdi',
-          path: path.print,
-        },
-      }),
-      onClick: () => onShowPrint(print.value.setting),
+      getState: () =>
+        mdiButtonState(path.print, {
+          visible: !print.value.show,
+          title: trans.value('map.print.title'),
+        }),
+      onClick: () => session.show(print.value.setting),
     },
     {
       id: 'mapPrintSave',
-      getState: () => ({
-        visible: print.value.show,
-        title: trans.value('map.print.actions.save'),
-        icon: {
-          type: 'mdi',
-          path: path.save,
-        },
-        loading: print.value.loading,
-      }),
-      onClick: () => onSave(),
+      getState: () =>
+        mdiButtonState(path.save, {
+          visible: print.value.show,
+          title: trans.value('map.print.actions.save'),
+          loading: print.value.loading,
+        }),
+      onClick: () => session.save(),
     },
     {
       id: 'mapPrintClose',
-      getState: () => ({
-        visible: print.value.show,
-        title: trans.value('map.print.actions.clear'),
-        icon: {
-          type: 'mdi',
-          path: path.close,
-        },
-        loading: print.value.loading,
-      }),
-      onClick: () => onClosePrint(),
+      getState: () =>
+        mdiButtonState(path.close, {
+          visible: print.value.show,
+          title: trans.value('map.print.actions.clear'),
+          loading: print.value.loading,
+        }),
+      onClick: () => session.close(),
     },
     {
       id: 'mapPrintSetting',
-      getState: () => ({
-        visible: true,
-        active: print.value.setting_show,
-        title: trans.value('map.print.actions.setting'),
-        icon: {
-          type: 'mdi',
-          path: path.setting,
-        },
-        loading: print.value.loading,
-      }),
-      onClick: () => toggleSetting(),
+      getState: () =>
+        mdiButtonState(path.setting, {
+          visible: true,
+          active: print.value.setting_show,
+          title: trans.value('map.print.actions.setting'),
+          loading: print.value.loading,
+        }),
+      onClick: () => session.toggleSetting(),
     },
   ],
 });
+syncToolbar.run = () => control.sync();
+
+watch(
+  () => print.value.setting_show,
+  () => control.sync(),
+);
 
 useRegisterMapControl(mapId, {
   id: 'mapPrintAdvancedControl',
@@ -247,19 +178,19 @@ useRegisterMapControl(mapId, {
   actions: [
     {
       type: 'mapPrintShow',
-      run: () => onShowPrint(print.value.setting),
+      run: () => session.show(print.value.setting),
     },
     {
       type: 'mapPrintSave',
-      run: () => onSave(),
+      run: () => session.save(),
     },
     {
       type: 'mapPrintClose',
-      run: () => onClosePrint(),
+      run: () => session.close(),
     },
     {
       type: 'mapPrintSetting',
-      run: () => toggleSetting(),
+      run: () => session.toggleSetting(),
     },
   ],
 });
@@ -268,25 +199,21 @@ useRegisterMapControl(mapId, {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton row>
-        <template v-if="!print.show">
-          <MapCommonButton
-            v-if="state && state.mapPrintShow"
-            :option="state.mapPrintShow"
-            @click="control.onAction('mapPrintShow', $event)"
-          />
-        </template>
-        <template v-else>
-          <MapCommonButton
-            v-if="state && state.mapPrintSave"
-            :option="state.mapPrintSave"
-            @click="control.onAction('mapPrintSave', $event)"
-          />
-          <MapCommonButton
-            v-if="state && state.mapPrintClose"
-            :option="state.mapPrintClose"
-            @click="control.onAction('mapPrintClose', $event)"
-          />
-        </template>
+        <MapCommonButton
+          v-if="state && state.mapPrintShow"
+          :option="state.mapPrintShow"
+          @click="control.onAction('mapPrintShow', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapPrintSave"
+          :option="state.mapPrintSave"
+          @click="control.onAction('mapPrintSave', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapPrintClose"
+          :option="state.mapPrintClose"
+          @click="control.onAction('mapPrintClose', $event)"
+        />
         <MapCommonButton
           v-if="state && state.mapPrintSetting"
           :option="state.mapPrintSetting"
@@ -295,38 +222,90 @@ useRegisterMapControl(mapId, {
       </MapControlGroupButton>
     </template>
 
-    <template #draggable="props">
+    <template #draggable="bind">
       <DraggableItemPopup
         v-if="print.setting_show"
-        v-bind="props"
-        :height="220"
-        v-model:show="print.setting_show"
+        v-bind="bind"
+        :height="340"
+        :show="print.setting_show"
         :title="trans('map.print.setting.title')"
+        @update:show="session.setSettingShow(!!$event)"
       >
         <div class="map-print-advanced-setting">
           <div>
+            <input-select
+              :model-value="print.setting.paper || 'custom'"
+              :items="paperItems"
+              :label="trans('map.print.field.paper')"
+              @update:model-value="onPaperChange"
+            />
+          </div>
+          <div>
             <input-text
-              v-model="print.setting.ratio"
+              :model-value="print.setting.ratio"
               :label="trans('map.print.field.ratio')"
-              @change="onChangeSetting()"
+              @update:model-value="
+                session.updateSetting({
+                  ...print.setting,
+                  paper: 'custom',
+                  ratio: Number($event) || 1,
+                })
+              "
             />
           </div>
           <div>
             <input-select
-              v-model="print.setting.orientation"
+              :model-value="print.setting.orientation"
               :items="items"
               :label="trans('map.print.field.orientation')"
-              @change="onChangeSetting()"
+              @update:model-value="
+                session.updateSetting({
+                  ...print.setting,
+                  orientation: $event as PrintOption['orientation'],
+                })
+              "
             />
           </div>
+          <div>
+            <input-text
+              :model-value="print.setting.dpi"
+              :label="trans('map.print.field.dpi')"
+              @update:model-value="
+                session.updateSetting({
+                  ...print.setting,
+                  dpi: Number($event) || 96,
+                })
+              "
+            />
+          </div>
+          <div>
+            <input-text
+              :model-value="print.setting.watermark"
+              :label="trans('map.print.field.watermark')"
+              @update:model-value="
+                session.updateSetting({
+                  ...print.setting,
+                  watermark: String($event ?? ''),
+                })
+              "
+            />
+            <div
+              v-if="print.setting.watermark"
+              class="map-print-watermark-preview"
+              aria-hidden="true"
+            >
+              {{ print.setting.watermark }}
+            </div>
+          </div>
           <div class="map-print-advanced-setting__grow"></div>
-          <base-button
+          <map-control-button
             class="map-print-advanced-setting__apply"
-            @click="onSave()"
+            @click="session.save()"
             v-if="print.show"
+            variant="filled"
           >
             {{ trans('map.print.btn.apply') }}
-          </base-button>
+          </map-control-button>
         </div>
       </DraggableItemPopup>
     </template>

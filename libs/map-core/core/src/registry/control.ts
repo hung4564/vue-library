@@ -54,8 +54,6 @@ export type MapControlHandle = {
   runAction(type?: string, event?: unknown): void;
 };
 
-export const REGISTRY_CONTROL_PREFIX = 'control:' as const;
-
 export function filterMapControls(
   controls: readonly MapControlHandle[],
   query: string,

@@ -7,35 +7,39 @@ export default {
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
+import { DATASET_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import {
-  DATASET_CONTROL_LOCALE,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   handleMenuActionClick,
-} from '@hungpvq/map-dataset';
+  LIST_VIEW_MENU_COMPONENT_KEY,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
-  BaseButton,
   defaultMapProps,
   MapCommonButton,
+  MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
+
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { computed, onMounted, shallowRef, watch } from 'vue';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(DATASET_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', DATASET_CONTROL_LOCALE);
 const path = {
   icon: mdiDatabaseOutline,
   detail: mdiInformation,
@@ -84,9 +88,9 @@ function getViewFromStore() {
 function onShowDetail(view: IDataset) {
   handleMenuActionClick(
     createMenuClickBuilder()
-      .addTupleStatic('addComponent', {
+      .addTupleStatic(LIST_VIEW_MENU_ID.addComponent, {
         value: createMenuClickAddComponentBuilder()
-          .setComponentKey('dataset-detail')
+          .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail)
           .setAttr({
             dataset: view,
           })
@@ -110,16 +114,11 @@ defineSlots<{
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapDatasetControl',
   getState() {
-    return {
-      visible: !show.value,
+    return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.dataset-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     setShow();
@@ -152,13 +151,19 @@ watch(show, () => control.sync());
               <div class="dataset-item">
                 <span class="dataset-item__title">{{ view.getName() }}</span>
                 <div class="dataset-item__title-action">
-                  <BaseButton @click.stop="onShowDetail(view)">
+                  <MapControlButton
+                    @click.stop="onShowDetail(view)"
+                    variant="plain"
+                  >
                     <SvgIcon size="16" type="mdi" :path="path.detail" />
-                  </BaseButton>
+                  </MapControlButton>
 
-                  <BaseButton @click.stop="onRemove(view)">
+                  <MapControlButton
+                    @click.stop="onRemove(view)"
+                    variant="plain"
+                  >
                     <SvgIcon size="16" type="mdi" :path="path.delete" />
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
               </div>
             </slot>

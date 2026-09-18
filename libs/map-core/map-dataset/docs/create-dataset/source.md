@@ -7,7 +7,7 @@ Data source for MapLibre layers. Put the source node **before** the layer node o
 ## GeoJSON
 
 ```ts
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 
 const source = createDatasetPartGeojsonSourceComponent(
   'my-source',
@@ -34,12 +34,12 @@ const source = createDatasetPartGeojsonSourceComponent(
 
 After add: `source.updateData(map, nextGeoJSON)` to replace features.
 
-List ⋮ **Export** downloads this source as GeoJSON / KML / CSV / Shapefile. **Attribute table** lists feature properties. See [Export](./export.md) and [Attribute table](./attribute-table.md).
+When the list has **Export** / **Attribute table** menus (opt-in via `addMenu`, or from `createGeoJsonDataset`), Export downloads this source as GeoJSON / KML / CSV / Shapefile and Attribute table lists feature properties. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
 ## Raster tiles
 
 ```ts
-import { createDatasetPartRasterSourceComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
 
 const raster = createDatasetPartRasterSourceComponent('raster-source', {
   type: 'raster',
@@ -56,7 +56,7 @@ Second argument is a MapLibre `RasterSourceSpecification`.
 ## Vector tiles
 
 ```ts
-import { createDatasetPartVectorTileComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartVectorTileComponent } from '@hungpvq/map-dataset/vector-tile';
 
 const vector = createDatasetPartVectorTileComponent('vector-source', {
   tiles: ['https://example.com/tiles/{z}/{x}/{y}.pbf'],

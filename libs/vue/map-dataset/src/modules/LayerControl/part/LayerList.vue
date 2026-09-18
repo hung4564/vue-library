@@ -1,27 +1,13 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import type { MenuAction } from '@hungpvq/map-dataset';
-import {
-  LAYER_CONTROL_LOCALE,
-  handleMenuAction,
-  hasMoveLayer,
-  IGroupListViewUI,
-  IListViewUI,
-  listListViewGroups,
-  traverseTree,
-} from '@hungpvq/map-dataset';
-import { ContextMenu } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  defaultMapProps,
-  RegistryItem,
-  useLang,
-  useMap,
-} from '@hungpvq/vue-map-core';
+import { LAYER_CONTROL_LOCALE, layerMatchesSearch, listListViewGroups, syncListViewLayerOrder, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
+import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
+import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
+  mdiClose,
   mdiDelete,
-  mdiDotsVertical,
   mdiGroup,
   mdiLayers,
   mdiPlus,
@@ -30,18 +16,16 @@ import {
   computed,
   nextTick,
   onMounted,
+  onUnmounted,
   ref,
-  shallowReactive,
   VNode,
   watch,
 } from 'vue';
-import { useMapDataset } from '../../../store';
+import { useMapDataset } from '../../../store/dataset-api';
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
-import LayerContextMenuList from './item/layer-context-menu-list.vue';
-
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -66,41 +50,47 @@ const props = withDefaults(
 const emit = defineEmits<{
   create: [];
 }>();
-
 provideMenuConditionContext(() => ({
   readonly: false,
   disabledMove: props.disabledMove,
   disabledCreateGroup: props.disabledCreateGroup,
+  control: MENU_CONTROL_ID.layerControl,
 }));
-
 defineSlots<{
-  title(): VNode[];
-  item(_props: {
+  title: () => VNode[];
+  item: (_props: {
     item: IListViewUI;
     isSelected: boolean;
     toggleSelect: (_item: IListViewUI) => void;
-  }): VNode[];
+  }) => VNode[];
 }>();
-
 const path = {
   icon: mdiLayers,
-  menu: mdiDotsVertical,
   group: { create: mdiGroup },
   deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
-
 const { callMap, mapId } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_CONTROL_LOCALE);
 const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
-
-const views = ref<Array<IListViewUI>>([]);
+const views = ref<Array<LayerListItem>>([]);
+const layerSearch = ref('');
+const debouncedSearch = ref('');
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 const datasetIds = computed(() => {
   return getDatasetIds().value;
 });
-
+const listDisabledDrag = computed(
+  () => props.disabledDrag || Boolean(debouncedSearch.value.trim()),
+);
+function getFilteredViews() {
+  const q = debouncedSearch.value;
+  if (!q.trim()) return views.value;
+  return views.value.filter((view) => layerMatchesSearch(view, q));
+}
+const filteredViews = computed(() => getFilteredViews());
 watch(
   datasetIds,
   () => {
@@ -108,78 +98,57 @@ watch(
   },
   { deep: true },
 );
-
+watch(layerSearch, (value) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    debouncedSearch.value = value;
+    nextTick(() => updateTree());
+  }, 150);
+});
 onMounted(() => {
   updateList();
 });
-
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer);
+});
 const groupRef = ref<InstanceType<typeof DraggableGroupList> | undefined>(
   undefined,
 );
-const layers_select = ref<IListViewUI[]>([]);
-
+const layers_select = ref<LayerListItem[]>([]);
 function updateLayers() {
   callMap((map: MapSimple) => {
-    let beforeId: string = '';
-    views.value.slice().forEach((view, index, items) => {
-      view.index = items.length - index;
-      const parent = view.getParent();
-      traverseTree(
-        parent || view,
-        (node) => {
-          if (hasMoveLayer(node)) {
-            node.moveLayer(map, beforeId);
-            beforeId = node.getBeforeId() || '';
-          }
-        },
-        {
-          direction: 'rtl',
-        },
-      );
-    });
+    syncListViewLayerOrder(map, views.value.slice());
   });
 }
-
-function onRemoveGroupLayer(group: IGroupListViewUI<IListViewUI>) {
-  if (
-    !group ||
-    typeof group === 'string' ||
-    !group.children ||
-    group.children.length === 0
-  ) {
+function onRemoveGroupLayer(group: LayerListGroupTree) {
+  if (!group || !group.children || group.children.length === 0) {
     return;
   }
-  group.children.forEach((view: IListViewUI) => {
+  group.children.forEach((view: LayerListItem) => {
     removeComponent(view);
   });
 }
-
 function onRemoveLayer(view: IListViewUI) {
   if (!view) return;
   removeComponent(view);
   updateList();
 }
-
 function updateList() {
   getViewFromStore();
   nextTick(() => {
     updateTree();
   });
 }
-
 function updateTree() {
-  if (groupRef.value) groupRef.value.update(views.value as any);
+  if (groupRef.value) groupRef.value.update(filteredViews.value);
 }
-
 function getViewFromStore() {
-  const viewSource = getAllComponentsByType<IListViewUI>('list');
+  const viewSource = getAllComponentsByType<LayerListItem>('list');
   views.value = viewSource.sort((a, b) => b.index - a.index) || [];
 }
-
 function addNewGroup() {
   if (groupRef.value) groupRef.value.addNewGroup('');
 }
-
 function onRemoveAllLayer() {
   if (!views.value || views.value.length === 0) {
     return;
@@ -189,77 +158,39 @@ function onRemoveAllLayer() {
   });
   updateList();
 }
-
-const contextMenuRef = ref<
-  | {
-      open(_event: MouseEvent, _item: IListViewUI): void;
-      close(): void;
-    }
-  | undefined
->();
-
-const menu_context = shallowReactive<{
-  items: MenuAction<IListViewUI>[];
-  view: IListViewUI | undefined;
-}>({
-  items: [],
-  view: undefined,
-});
-
-function handleContextClick({
-  event,
-  item,
-  actions,
-}: {
-  event: MouseEvent;
-  item: IListViewUI;
-  actions: MenuAction<IListViewUI>[];
-}) {
-  menu_context.items = actions ? [...actions] : [];
-  menu_context.view = item;
-  if (contextMenuRef.value) contextMenuRef.value.open(event, item);
-}
-
 function getMenuGroups() {
   const treeGroups = groupRef.value?.getGroups?.() ?? [];
   return treeGroups.length > 0 ? treeGroups : listListViewGroups(views.value);
 }
-
-function closeContextMenu() {
-  menu_context.items = [];
-  menu_context.view = undefined;
-  if (contextMenuRef.value) contextMenuRef.value.close();
-}
-
-function onLayerAction({
-  event,
-  action,
-  item,
-}: {
-  event: MouseEvent;
-  action: MenuAction<IListViewUI>;
-  item: IListViewUI;
-}) {
-  handleMenuAction(action, {
-    event,
-    layer: item,
-    mapId: mapId.value,
-    value: item,
-  });
-}
 </script>
 <template>
   <div class="layer-control-container">
+    <div class="layer-control__search">
+      <InputText
+        v-model="layerSearch"
+        data-map-layer-search
+        :data-map-id="mapId"
+        :placeholder="trans('map.layer-control.search')"
+        aria-label="Search layers"
+      />
+      <MapControlButton
+        v-if="layerSearch.trim()"
+        class="layer-control__search-clear"
+        aria-label="Clear search"
+        @click="layerSearch = ''" variant="plain">
+        <SvgIcon size="14" type="mdi" :path="mdiClose" />
+      </MapControlButton>
+    </div>
     <div v-if="views.length" class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
       <ButtonToggleShowALl :items="views" />
-      <BaseButton @click="addNewGroup()" v-if="!disabledCreateGroup">
+      <MapControlButton @click="addNewGroup()" v-if="!disabledCreateGroup" variant="plain">
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
-      </BaseButton>
-      <BaseButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll">
+      </MapControlButton>
+      <MapControlButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll" variant="plain">
         <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
-      </BaseButton>
+      </MapControlButton>
     </div>
     <div class="layer-control__list">
       <div v-if="!views.length" class="layer-control__empty">
@@ -285,13 +216,18 @@ function onLayerAction({
           {{ trans('map.layer-control.create-btn') }}
         </button>
       </div>
+      <div v-else-if="debouncedSearch.trim() && !filteredViews.length" class="layer-control__empty">
+        <div class="layer-control__empty-title">
+          {{ trans('map.layer-control.search-empty') }}
+        </div>
+      </div>
       <DraggableGroupList
-        v-show="views.length"
+        v-show="views.length && filteredViews.length"
         ref="groupRef"
         v-model:items="views"
         v-model:selected="layers_select"
         :disabled="disabled"
-        :disabled-drag="disabledDrag"
+        :disabled-drag="listDisabledDrag"
         @click-drag:done="updateLayers()"
         @click-group:remove="onRemoveGroupLayer"
       >
@@ -307,38 +243,20 @@ function onLayerAction({
               :item="item"
               :defaultComponent="LayerItem"
               :is-selected="isSelected"
+              :searchQuery="debouncedSearch"
               @click="toggleSelect(item)"
               @click:remove="onRemoveLayer"
-              @click:content-menu="handleContextClick"
-              @click:action="onLayerAction"
               :map-id="mapId"
               :readonly="false"
               :disabledMove="disabledMove"
               :disabledCreateGroup="disabledCreateGroup"
+              :getGroups="getMenuGroups"
             >
             </RegistryItem>
           </slot>
         </template>
       </DraggableGroupList>
     </div>
-    <ContextMenu ref="contextMenuRef">
-      <LayerContextMenuList
-        :items="menu_context.items"
-        :view="menu_context.view"
-        :mapId="mapId"
-        :getGroups="getMenuGroups"
-        @close="closeContextMenu"
-        @select="
-          if (menu_context.view) {
-            onLayerAction({
-              action: $event.action,
-              item: menu_context.view,
-              event: $event.event,
-            });
-          }
-          closeContextMenu();
-        "
-      />
-    </ContextMenu>
   </div>
 </template>
+

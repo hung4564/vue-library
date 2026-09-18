@@ -1,24 +1,15 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import {
-  CREATE_CONTROL_LOCALE,
-  reportCreateLayerError,
-  suggestLayerName,
-} from '@hungpvq/map-dataset';
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  defaultMapProps,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/react-map-core';
+import { CREATE_CONTROL_LOCALE, LAYER_TYPES, LayerHelper, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName, type LayerType } from '@hungpvq/map-dataset/create-control';
+import { defaultMapProps, MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/react-map-core';
+import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useMapDataset } from '../../store';
-import { CreateConfigForm, hasCreateConfigSettings } from './config';
-import { LAYER_TYPES, LayerHelper, type LayerType } from './helper';
+import { useMapDataset } from '../../store/dataset-api';
+import {
+  CreateConfigForm,
+  createControlComponentKey,
+  hasCreateConfigSettings,
+} from './config/CreateConfigForm';
 
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;
@@ -28,7 +19,7 @@ export interface CreateControlProps extends WithMapPropType {
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapCreateControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCreateControl',
     panelKind: 'popup',
@@ -49,7 +40,7 @@ export function CreateControl(props: CreateControlProps) {
   });
   const localeInitialized = useRef(false);
   if (!localeInitialized.current) {
-    setLocaleDefault(CREATE_CONTROL_LOCALE);
+    registerLocale('en', CREATE_CONTROL_LOCALE);
     localeInitialized.current = true;
   }
 
@@ -64,6 +55,7 @@ export function CreateControl(props: CreateControlProps) {
 
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const itemsType = useMemo(
     () => (Object.keys(LAYER_TYPES) as LayerType[]).map((x) => ({ value: x, text: LAYER_TYPES[x] })),
@@ -77,6 +69,8 @@ export function CreateControl(props: CreateControlProps) {
     const keepName = form.config.name && form.config.name !== prevSuggested;
 
     setHelper(nextHelper);
+    setValidationErrors([]);
+    setCreateError('');
     setForm((prev) => ({
       type: layerType,
       config: {
@@ -88,7 +82,10 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   async function onAddLayer() {
-    if (creating || !helper.validate(form.config)) return;
+    if (creating) return;
+    const errors = helper.validationErrors(form.config);
+    setValidationErrors(errors);
+    if (errors.length) return;
     const name = String(form.config.name ?? '');
     setCreating(true);
     setCreateError('');
@@ -119,6 +116,7 @@ export function CreateControl(props: CreateControlProps) {
     setConfigKey((k) => k + 1);
     setCreating(false);
     setCreateError('');
+    setValidationErrors([]);
     setForm({
       type: initialType,
       config: { name: suggestLayerName(initialType), ...nextHelper.default_value },
@@ -126,9 +124,34 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   useEffect(() => {
+    const draft = loadCreateControlDraft(mapId);
+    if (draft) {
+      if (draft.type === 'vector' || draft.type === 'raster') {
+        onChangeType(draft.type);
+      }
+      setForm((prev) => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          ...(draft.name ? { name: draft.name } : {}),
+          ...(draft.crs ? { crs: draft.crs } : {}),
+        },
+      }));
+      return;
+    }
     onChangeType(initialType);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    saveCreateControlDraft(mapId, {
+      type: form.type,
+      name: typeof form.config.name === 'string' ? form.config.name : undefined,
+      crs: typeof form.config.crs === 'string' ? form.config.crs : undefined,
+    });
+  }, [form.type, form.config.name, form.config.crs, mapId]);
+
+  const componentKey = createControlComponentKey(form.type);
 
   return (
     <ModuleContainer
@@ -173,7 +196,7 @@ export function CreateControl(props: CreateControlProps) {
                 <CreateConfigForm
                   key={`${configKey}-data`}
                   section="data"
-                  componentKey={helper.componentKey}
+                  componentKey={componentKey}
                   config={form.config}
                   trans={trans}
                   onChange={(patch) =>
@@ -181,7 +204,7 @@ export function CreateControl(props: CreateControlProps) {
                   }
                 />
 
-                {hasCreateConfigSettings(helper.componentKey) ? (
+                {hasCreateConfigSettings(componentKey) ? (
                   <>
                     <div className="map-col-12 create-control-section-label">
                       {trans('map.layer-control.create.layer-setting')}
@@ -190,7 +213,7 @@ export function CreateControl(props: CreateControlProps) {
                     <CreateConfigForm
                       key={`${configKey}-settings`}
                       section="settings"
-                      componentKey={helper.componentKey}
+                      componentKey={componentKey}
                       config={form.config}
                       trans={trans}
                       onChange={(patch) =>
@@ -201,21 +224,32 @@ export function CreateControl(props: CreateControlProps) {
                 ) : null}
               </div>
 
-              {creating ? (
-                <div className="create-control-status">
-                  {trans('map.layer-control.create.creating')}
-                </div>
-              ) : null}
-              {createError ? (
-                <div className="create-control-sample-error">{createError}</div>
-              ) : null}
-              <BaseButton
-                className="btn-container"
-                disabled={creating}
-                onClick={() => void onAddLayer()}
-              >
-                {trans('map.layer-control.create-btn')}
-              </BaseButton>
+              <div className="create-control-actions">
+                {validationErrors.length ? (
+                  <div className="create-control-validation">
+                    {validationErrors.map((key) => (
+                      <div key={key} className="create-control-validation__item">
+                        {trans(`map.layer-control.create.${key}`)}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {createError ? (
+                  <div className="create-control-sample-error">{createError}</div>
+                ) : null}
+                {creating ? (
+                  <div className="create-control-actions__status">
+                    {trans('map.layer-control.create.creating')}
+                  </div>
+                ) : null}
+                <MapControlButton variant="filled"
+                  className="btn-container"
+                  disabled={creating}
+                  onClick={() => void onAddLayer()}
+                >
+                  {trans('map.layer-control.create-btn')}
+                </MapControlButton>
+              </div>
             </div>
           </DraggableItemPopup>
         ) : null

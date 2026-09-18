@@ -1,27 +1,25 @@
-import type { BaseMapItem } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
-  logHelper,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/basemap';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiLayersOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  MapCard,
-  MapControlButton,
-  MapIcon,
-  MapImage,
-} from '../../../components';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MapCard } from '../../../components/MapCard';
+import { MapControlButton } from '../../../components/MapControlButton';
+import { MapIcon } from '../../../components/MapIcon';
+import { MapImage } from '../../../components/MapImage';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
+import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
-import { useBaseMap } from '../hooks';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 
 const SIZE_BASE_MAP = 70;
@@ -49,7 +47,7 @@ export function BaseMapControl({
     controlIcon,
   };
   const { mapId, moduleContainerProps, order, mapInstance } = useMap({ ...props, controlId: 'mapBaseMapControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const {
     setBaseMaps,
     baseMaps: c_baseMaps,
@@ -69,8 +67,8 @@ export function BaseMapControl({
   }, [props.defaultBaseMap, setDefaultBaseMap]);
 
   useEffect(() => {
-    setLocaleDefault(BASEMAP_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', BASEMAP_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const [show, setShow] = useState(false);
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -111,20 +109,24 @@ export function BaseMapControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
   }, [mapInstance]);
 
-  useToolbarControl(mapId, props, {
+  const { control } = useToolbarControl(mapId, props, {
     kind: 'single',
     id: 'mapBaseMapControl',
-    getState: () => ({
-      visible: true,
-      order,
-      title: title || trans('map.basemap.title'),
-      icon: {
-        type: 'mdi' as const,
-        path: mdiLayersOutline,
-      },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayersOutline, {
+        visible: true,
+        active: show,
+        order,
+        title: title || trans('map.basemap.title'),
+      }),
     onClick: onToggleList,
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   const draggableContent = useCallback(
     (bindDrag: BindPosition) => (
@@ -183,9 +185,12 @@ export function BaseMapControl({
   const btnContent = (
     <MapControlButton
       tooltip={title}
+      active={show}
       contentButton={
         <MapCard
-          className="clickable base-map-button__container"
+          className={`clickable base-map-button__container${
+            show ? ' base-map-button__container--active' : ''
+          }`}
           height="70px"
           width="70px"
           onClick={onToggleList}

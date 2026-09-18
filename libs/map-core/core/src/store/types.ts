@@ -5,12 +5,10 @@
 import type { MapSimple } from '../types';
 
 /**
- * Map store structure
+ * Map store structure (one MapLibre instance per mapId)
  */
 export type MapStore = {
   map?: MapSimple;
-  maps?: MapSimple[];
-  isMulti?: boolean;
   [key: string]: any;
 };
 

@@ -3,13 +3,10 @@
  * Provides functions for coordinate formatting and conversion
  */
 
-import {
-  type CoordinatesNumber,
-  type CrsItem,
-  type DraftCoordinatesNumber,
-} from '../types';
-import { MapError } from '../errors';
-import { errorHandler } from '../services/error-handler.service';
+import { type CoordinatesNumber, type DraftCoordinatesNumber } from '../types';
+
+import { type CrsItem } from '../crs/types';
+import { transformWgs84ToCrs } from './coordinate-proj4';
 
 export function isCoordinatesNumber(
   value: DraftCoordinatesNumber | null | undefined,
@@ -25,67 +22,6 @@ export function toCoordinatesNumberList(
   coords: DraftCoordinatesNumber[] = [],
 ): CoordinatesNumber[] {
   return coords.filter(isCoordinatesNumber);
-}
-
-// Type for proj4 function
-// proj4(from, to, coordinates) or proj4(from, coordinates) where from is projection string
-// proj4 can also return a curried function in some cases
-type Proj4Function = (
-  from: string,
-  to: string | [number, number],
-  coordinates?: [number, number],
-) => [number, number] | ((coordinates: [number, number]) => [number, number]);
-
-// Optional proj4 - will be loaded dynamically if available
-let proj4Fn: Proj4Function | undefined;
-let proj4ModulePromise: Promise<Proj4Function | undefined> | undefined;
-
-/**
- * Try to get proj4 function synchronously
- * This allows the library to work even if proj4 is not installed
- * Proj4 should be available as a peer dependency
- *
- * Note: This will attempt to load proj4 on first call. If proj4 is not available,
- * it will return undefined and the transformation will be skipped.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getProj4(): Proj4Function | undefined {
-  if (proj4Fn) {
-    return proj4Fn;
-  }
-
-  // Try to access proj4 from global scope first
-  // This works for browser environments where proj4 might be loaded globally
-  if (typeof window !== 'undefined') {
-    const globalProj4 = (window as unknown as Record<string, unknown>)['proj4'];
-    if (globalProj4 && typeof globalProj4 === 'function') {
-      proj4Fn = globalProj4 as Proj4Function;
-      return proj4Fn;
-    }
-  }
-
-  // For module environments, try to load proj4 asynchronously
-  // This will work on subsequent calls after the first async load completes
-  if (!proj4ModulePromise) {
-    proj4ModulePromise = (async () => {
-      try {
-        // Use dynamic import (ES modules)
-        // Note: This requires proj4 to be installed as a peer dependency
-        const proj4Module = await import('proj4');
-        const mod = proj4Module as unknown as Proj4Function & {
-          default?: Proj4Function;
-        };
-        proj4Fn = (mod.default ?? mod) as Proj4Function;
-        return proj4Fn;
-      } catch {
-        // proj4 is not available
-        return undefined;
-      }
-    })();
-  }
-
-  // Return undefined for now - will be available on next call after async load
-  return undefined;
 }
 
 /**
@@ -106,14 +42,8 @@ export interface DMS {
 }
 
 /**
- * Formats coordinates based on CRS and DMS settings
- * Supports coordinate transformation via proj4
- *
- * @param longitude - Longitude value
- * @param latitude - Latitude value
- * @param crs - Optional CRS item for transformation
- * @param isDMS - Whether to format as DMS (Degrees, Minutes, Seconds)
- * @returns Formatted coordinate object with string values
+ * Formats coordinates based on CRS and DMS settings.
+ * Transforms WGS84 → target CRS via proj4 when needed.
  */
 export function formatCoordinate(
   { longitude, latitude }: { longitude: number; latitude: number },
@@ -122,71 +52,42 @@ export function formatCoordinate(
   precision?: number | null,
 ): FormattedCoordinate {
   const currentPoint: FormattedCoordinate = { longitude: '0', latitude: '0' };
-  if (!longitude || !latitude) return currentPoint;
-
-  // Transform coordinates if CRS is provided and not default
-  let transformedLng = longitude;
-  let transformedLat = latitude;
-
-  if (crs && !crs.default && crs.proj4js) {
-    // Note: getProj4() is async, but we can't make formatCoordinate async
-    // So we'll try to get it synchronously if already loaded, otherwise skip transformation
-    if (proj4Fn) {
-      try {
-        // proj4(from, coordinates) - transforms coordinates using the from projection
-        const result = proj4Fn(crs.proj4js, [longitude, latitude]);
-        if (Array.isArray(result) && result.length === 2) {
-          [transformedLng, transformedLat] = result;
-        } else if (typeof result === 'function') {
-          // If result is a function (curried), call it
-          const transformed = (
-            result as (coordinates: [number, number]) => [number, number]
-          )([longitude, latitude]);
-          if (Array.isArray(transformed) && transformed.length === 2) {
-            [transformedLng, transformedLat] = transformed;
-          }
-        }
-      } catch (error) {
-        errorHandler.handle(
-          new MapError('proj4 transformation failed', 'CRS_ERROR', {
-            recoverable: true,
-            cause: error,
-            context: { epsg: crs.epsg },
-          }),
-        );
-        transformedLng = longitude;
-        transformedLat = latitude;
-      }
-    } else {
-      // Proj4 not loaded yet, trigger async load for next time
-      // For now, use original coordinates
-      // Note: getProj4() is synchronous, but it will trigger async loading
-      // for subsequent calls. The promise is stored internally.
-      void proj4ModulePromise;
-    }
-    // If proj4 is not available, silently use original coordinates
-    // (no warning to avoid console spam if proj4 is intentionally not installed)
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return currentPoint;
   }
 
-  // Format based on unit
+  let transformedLng = longitude;
+  let transformedLat = latitude;
+  let didTransform = !crs || !!crs.default || crs.epsg === '4326';
+
+  if (crs && !crs.default && crs.epsg !== '4326') {
+    const transformed = transformWgs84ToCrs(longitude, latitude, crs);
+    if (transformed) {
+      [transformedLng, transformedLat] = transformed;
+      didTransform = true;
+    }
+  }
+
+  // Only apply meter rounding after a successful projected transform.
+  // Otherwise untransformed lon/lat become nonsense like "105, 22" for EPSG:3857.
+  const useMeter = !!crs && crs.unit === 'meter' && didTransform;
+
   const formatNumber = (value: number) => {
     if (precision === null) return String(value);
     if (typeof precision === 'number') return value.toFixed(precision);
-    if (crs && crs.unit === 'meter') return value.toFixed(0);
+    if (useMeter) return value.toFixed(0);
     return value.toFixed(6);
   };
 
-  if (crs && crs.unit === 'meter') {
+  if (useMeter) {
     currentPoint.longitude = formatNumber(transformedLng);
     currentPoint.latitude = formatNumber(transformedLat);
+  } else if (isDMS) {
+    currentPoint.longitude = lngDMS(+transformedLng);
+    currentPoint.latitude = latDMS(+transformedLat);
   } else {
-    if (isDMS) {
-      currentPoint.longitude = lngDMS(+transformedLng);
-      currentPoint.latitude = latDMS(+transformedLat);
-    } else {
-      currentPoint.longitude = formatNumber(transformedLng);
-      currentPoint.latitude = formatNumber(transformedLat);
-    }
+    currentPoint.longitude = formatNumber(transformedLng);
+    currentPoint.latitude = formatNumber(transformedLat);
   }
 
   return currentPoint;
@@ -195,27 +96,23 @@ export function formatCoordinate(
 /**
  * Converts decimal degrees to DMS (Degrees, Minutes, Seconds)
  *
- * @param deg - Decimal degrees
- * @returns DMS object with degrees, minutes, and seconds
+ * @param deg - Decimal degrees (sign ignored for component magnitudes)
+ * @returns DMS object with degrees, minutes, and seconds (non-negative parts)
  */
 export function degToDms(deg: number): DMS {
-  let d = Math.floor(deg);
-  const minFloat = (deg - d) * 60;
-  let m = Math.floor(minFloat);
-  const secFloat = (minFloat - m) * 60;
-  let s = Math.round(secFloat);
-
-  // After rounding, the seconds might become 60
-  if (s == 60) {
-    m++;
-    s = 0;
+  const { deg: d, min: m, sec: s } = decimalToDmsParts(deg);
+  let sec = Math.round(s);
+  let min = m;
+  let degrees = d;
+  if (sec === 60) {
+    min++;
+    sec = 0;
   }
-  if (m == 60) {
-    d++;
-    m = 0;
+  if (min === 60) {
+    degrees++;
+    min = 0;
   }
-
-  return { deg: d, min: m, sec: s };
+  return { deg: degrees, min, sec };
 }
 
 /**
@@ -263,9 +160,8 @@ export function degToDmsString(deg: number): string {
  * @returns DMS string with N/S suffix
  */
 export function latDMS(lat: number): string {
-  return `${dcToDeg(lat)}° ${dcToMin(lat)}' ${parseFloat(
-    dcToSec(lat).toFixed(2),
-  )}" ${lat > 0 ? 'N' : 'S'}`;
+  const { deg, min, sec } = decimalToDmsParts(lat);
+  return `${deg}° ${min}' ${parseFloat(sec.toFixed(2))}" ${lat > 0 ? 'N' : 'S'}`;
 }
 
 /**
@@ -275,42 +171,196 @@ export function latDMS(lat: number): string {
  * @returns DMS string with E/W suffix
  */
 export function lngDMS(lng: number): string {
-  return `${dcToDeg(lng)}° ${dcToMin(lng)}' ${parseFloat(
-    dcToSec(lng).toFixed(2),
-  )}" ${lng > 0 ? 'E' : 'W'}`;
+  const { deg, min, sec } = decimalToDmsParts(lng);
+  return `${deg}° ${min}' ${parseFloat(sec.toFixed(2))}" ${lng > 0 ? 'E' : 'W'}`;
+}
+
+/** Shared absolute DMS breakdown (fractional seconds). */
+function decimalToDmsParts(deg: number): DMS {
+  if (deg === 0) return { deg: 0, min: 0, sec: 0 };
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const minFloat = (abs - d) * 60;
+  const m = Math.floor(minFloat);
+  const s = (minFloat - m) * 60;
+  return { deg: d, min: m, sec: s };
+}
+
+export type ParsedCoordinateText = {
+  lng: number;
+  lat: number;
+  zoom?: number;
+};
+
+function parseDmsToken(token: string): number | null {
+  const cleaned = token.trim().replace(/,/g, '');
+  if (!cleaned) return null;
+  const hemi = cleaned.match(/[NnSsEeWw]/)?.[0];
+  const nums = cleaned.match(/-?\d+(?:\.\d+)?/g);
+  if (!nums?.length) return null;
+  const deg = Number(nums[0]);
+  const min = nums[1] != null ? Number(nums[1]) : 0;
+  const sec = nums[2] != null ? Number(nums[2]) : 0;
+  if ([deg, min, sec].some((n) => Number.isNaN(n))) return null;
+  let value = Number(dmsToDeg({ deg: Math.abs(deg), min, sec }));
+  if (Number.isNaN(value)) return null;
+  if (deg < 0) value = -value;
+  if (hemi && /[SsWw]/.test(hemi)) value = -Math.abs(value);
+  if (hemi && /[NnEe]/.test(hemi)) value = Math.abs(value);
+  return value;
 }
 
 /**
- * Helper: Extract degrees from decimal
+ * Parse pasted coordinate text into lng/lat (and optional zoom).
+ * Supports decimal pairs, Google Maps `lat,lng,Nz`, and simple DMS with N/S/E/W.
  */
-function dcToDeg(val: number): number {
-  if (val === 0) {
-    return 0;
+export function parseCoordinateText(text: string): ParsedCoordinateText | null {
+  const raw = text.trim();
+  if (!raw) return null;
+
+  // Google Maps clipboard / URL: "20.99,105.84,21z" or "@20.99,105.84,21z"
+  // Also "lat,lng,zoom" without trailing z (e.g. "20.73,106.30,8.96")
+  const google = raw.match(
+    /@?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)(z)?\b/i,
+  );
+  if (google) {
+    const a = Number(google[1]);
+    const b = Number(google[2]);
+    const zoom = Number(google[3]);
+    const hasZ = Boolean(google[4]);
+    // With "z": always lat,lng,zoom. Without "z": only if third looks like a zoom level.
+    const zoomOk =
+      !Number.isNaN(zoom) &&
+      (hasZ || (zoom >= 0 && zoom <= 24));
+    if (
+      zoomOk &&
+      !Number.isNaN(a) &&
+      !Number.isNaN(b) &&
+      Math.abs(a) <= 90 &&
+      Math.abs(b) <= 180
+    ) {
+      return {
+        lat: a,
+        lng: b,
+        zoom,
+      };
+    }
   }
-  return Math.floor(Math.abs(val));
+
+  // Labeled zoom ("zoom 12" / "z:12") or bare trailing ",12z" already handled above
+  const labeledZoom = raw.match(
+    /(?:^|[\s,;])(?:zoom)\s*[:=]?\s*(-?\d+(?:\.\d+)?)/i,
+  );
+  const zoom =
+    labeledZoom != null && !Number.isNaN(Number(labeledZoom[1]))
+      ? Number(labeledZoom[1])
+      : undefined;
+
+  const withoutZoom = raw
+    .replace(/@?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*-?\d+(?:\.\d+)?z\b/i, '$1, $2')
+    .replace(/(?:^|[\s,;])(?:zoom)\s*[:=]?\s*-?\d+(?:\.\d+)?/i, ' ')
+    .replace(/^@\s*/, '')
+    .trim();
+
+  // Decimal pair: "lng, lat" or "lng lat"
+  const decimal = withoutZoom.match(
+    /^\s*(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)\s*$/,
+  );
+  if (decimal) {
+    const a = Number(decimal[1]);
+    const b = Number(decimal[2]);
+    if (Number.isNaN(a) || Number.isNaN(b)) return null;
+    // Prefer lng,lat; if first looks like latitude-only range and second like lng, swap.
+    let lng = a;
+    let lat = b;
+    if (Math.abs(a) <= 90 && Math.abs(b) > 90 && Math.abs(b) <= 180) {
+      lat = a;
+      lng = b;
+    }
+    if (Math.abs(lng) > 180 || Math.abs(lat) > 90) return null;
+    return {
+      lng,
+      lat,
+      zoom,
+    };
+  }
+
+  // DMS pair split on comma / semicolon / "and"
+  const parts = withoutZoom.split(/\s*[,;]\s*|\s+and\s+/i).filter(Boolean);
+  if (parts.length >= 2) {
+    const first = parseDmsToken(parts[0]);
+    const second = parseDmsToken(parts[1]);
+    if (first == null || second == null) return null;
+    let lng = first;
+    let lat = second;
+    const firstHemi = parts[0].match(/[NnSsEeWw]/)?.[0];
+    if (firstHemi && /[NnSs]/.test(firstHemi)) {
+      lat = first;
+      lng = second;
+    } else if (Math.abs(first) <= 90 && Math.abs(second) > 90 && Math.abs(second) <= 180) {
+      lat = first;
+      lng = second;
+    }
+    if (Math.abs(lng) > 180 || Math.abs(lat) > 90) return null;
+    return {
+      lng,
+      lat,
+      zoom,
+    };
+  }
+
+  return null;
 }
 
 /**
- * Helper: Extract minutes from decimal
+ * Parse multi-line / CSV paste into lng/lat pairs.
+ * One coordinate pair per line (comma, semicolon, or tab). Skips header rows.
  */
-function dcToMin(val: number): number {
-  if (val === 0) {
-    return 0;
-  }
-  return Math.floor((Math.abs(val) - Math.floor(Math.abs(val))) * 60);
-}
+export function parseCoordinateListText(text: string): CoordinatesNumber[] {
+  const raw = text.replace(/^\uFEFF/, '').trim();
+  if (!raw) return [];
 
-/**
- * Helper: Extract seconds from decimal
- */
-function dcToSec(val: number): number {
-  if (val === 0) {
-    return 0;
-  }
-  return (Math.abs(val) - dcToDeg(val) - dcToMin(val) / 60) * 3600;
-}
+  const lines = raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 
-// Legacy exports for backward compatibility
-export const deg_to_dms = degToDms;
-export const dms_to_des = dmsToDeg;
-export const deg_to_dms_string = degToDmsString;
+  // Single-line paste: reuse the richer single-pair parser (Google z, DMS, …).
+  if (lines.length === 1) {
+    const one = parseCoordinateText(lines[0]);
+    return one ? [[one.lng, one.lat]] : [];
+  }
+
+  const coords: CoordinatesNumber[] = [];
+  for (const line of lines) {
+    if (
+      /^(lng|lon|long|longitude|x)\s*[,;\t]\s*(lat|latitude|y)\b/i.test(line) ||
+      /^(lat|latitude|y)\s*[,;\t]\s*(lng|lon|long|longitude|x)\b/i.test(line)
+    ) {
+      continue;
+    }
+
+    const parsed = parseCoordinateText(line);
+    if (parsed) {
+      coords.push([parsed.lng, parsed.lat]);
+      continue;
+    }
+
+    // CSV row with extra columns: take the first two numeric fields.
+    const cells = line.split(/[,;\t]/).map((c) => c.trim());
+    if (cells.length < 2) continue;
+    const a = Number(cells[0]);
+    const b = Number(cells[1]);
+    if (Number.isNaN(a) || Number.isNaN(b)) continue;
+    let lng = a;
+    let lat = b;
+    if (Math.abs(a) <= 90 && Math.abs(b) > 90 && Math.abs(b) <= 180) {
+      lat = a;
+      lng = b;
+    }
+    if (Math.abs(lng) > 180 || Math.abs(lat) > 90) continue;
+    coords.push([lng, lat]);
+  }
+
+  return coords;
+}

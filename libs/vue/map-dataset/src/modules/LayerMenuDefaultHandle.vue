@@ -1,37 +1,35 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import { fitBounds } from '@hungpvq/map-core';
-import {
-  addListViewsToGroup,
-  addListViewsToNewGroup,
-  canMoveListView,
-  type IListViewUI,
-  LIST_VIEW_MENU_ID,
-  MenuClickAddComponent,
-  MenuClickFitBounds,
-  MenuClickHighlight,
-  MenuItemProps,
-  moveListView,
-  syncListViewLayerOrder,
-} from '@hungpvq/map-dataset';
+import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
+import { LIST_VIEW_MENU_ID, MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
 import {
   defaultMapProps,
   UniversalRegistry,
   useMap,
 } from '@hungpvq/vue-map-core';
-import {
-  useMapDataset,
-  useMapDatasetComponent,
-  useMapDatasetHighlight,
-} from '../store';
+import { onUnmounted } from 'vue';
+import { useMapDataset } from '../store/dataset-api';
+import { useMapDatasetComponent } from '../store/component';
+import { useMapHighlight } from '../store/highlight';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
+const hl = useMapHighlight(mapId.value);
 const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId.value);
+
+const MENU_HANDLER_KEYS = [
+  LIST_VIEW_MENU_ID.addComponent,
+  LIST_VIEW_MENU_ID.fitBounds,
+  LIST_VIEW_MENU_ID.highlight,
+  LIST_VIEW_MENU_ID.layer.addToGroup,
+  LIST_VIEW_MENU_ID.layer.addToExistingGroup,
+  LIST_VIEW_MENU_ID.layer.moveUp,
+  LIST_VIEW_MENU_ID.layer.moveDown,
+] as const;
 
 function refreshList() {
   const store = getStoreDataset();
@@ -75,47 +73,65 @@ function runMove(direction: 'up' | 'down') {
 
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'addComponent',
+  LIST_VIEW_MENU_ID.addComponent,
   ({ value }: MenuItemProps<MenuClickAddComponent>) => {
     if (value) addComponent(value);
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'fitBounds',
-  ({ value }: MenuItemProps<MenuClickFitBounds>) => {
+  LIST_VIEW_MENU_ID.fitBounds,
+  ({ value }: MenuItemProps<MenuClickFitBounds | unknown>) => {
     callMap((map) => {
-      fitBounds(map, value?.detail);
+      const target =
+        value &&
+        typeof value === 'object' &&
+        'detail' in value &&
+        (value as MenuClickFitBounds).detail != null
+          ? (value as MenuClickFitBounds).detail
+          : value;
+      if (target) fitBounds(map, target as never);
     });
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  'highlight',
+  LIST_VIEW_MENU_ID.highlight,
   ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
-    if (value) setFeatureHighlight(value.detail, value.key, layer);
+    if (value) {
+      void hl.show(value.detail, {
+        source: value.key,
+        dataset: layer,
+      });
+    }
   },
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.addToGroup,
+  LIST_VIEW_MENU_ID.layer.addToGroup,
   runAddToGroup,
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.addToExistingGroup,
+  LIST_VIEW_MENU_ID.layer.addToExistingGroup,
   runAddToExistingGroup,
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.moveUp,
+  LIST_VIEW_MENU_ID.layer.moveUp,
   runMove('up'),
 );
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
-  LIST_VIEW_MENU_ID.moveDown,
+  LIST_VIEW_MENU_ID.layer.moveDown,
   runMove('down'),
 );
+
+onUnmounted(() => {
+  for (const key of MENU_HANDLER_KEYS) {
+    UniversalRegistry.unregisterMenuHandlerForMap(mapId.value, key);
+  }
+});
 </script>
 <template>
   <div></div>

@@ -15,7 +15,7 @@ export function getCurrentInstance(name: string, message?: string) {
     );
   }
 
-  return vm as any;
+  return vm;
 }
 
 export function getCurrentInstanceName(name = 'composables') {
@@ -29,12 +29,11 @@ let _map = new WeakMap<ComponentInternalInstance, number>();
 export function getUid() {
   const vm = getCurrentInstance('getUid');
 
-  if (_map.has(vm)) return _map.get(vm)!;
-  else {
-    const uid = _uid++;
-    _map.set(vm, uid);
-    return uid;
-  }
+  const existing = _map.get(vm);
+  if (existing !== undefined) return existing;
+  const uid = _uid++;
+  _map.set(vm, uid);
+  return uid;
 }
 getUid.reset = () => {
   _uid = 0;

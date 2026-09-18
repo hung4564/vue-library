@@ -42,7 +42,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['vue', '@hungpvq/shared', 'vue-router'],
+      external: ['vue', '@hungpvq/shared-store', 'vue-router'],
     },
   },
 });

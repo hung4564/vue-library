@@ -16,7 +16,8 @@ type _NotAUnion<T, U> = U extends any
   : never;
 
 export function toKebabCase(str = '') {
-  if (toKebabCase.cache.has(str)) return toKebabCase.cache.get(str)!;
+  const cached = toKebabCase.cache.get(str);
+  if (cached !== undefined) return cached;
   const kebab = str
     .replace(/[^a-z]/gi, '-')
     .replace(/\B([A-Z])/g, '-$1')
@@ -154,11 +155,13 @@ export function convertToUnit(
 ): string | undefined {
   if (str == null || str === '') {
     return undefined;
-  } else if (isNaN(+str!)) {
-    return String(str);
-  } else if (!isFinite(+str!)) {
-    return undefined;
-  } else {
-    return `${Number(str)}${unit}`;
   }
+  const asNumber = Number(str);
+  if (Number.isNaN(asNumber)) {
+    return String(str);
+  }
+  if (!Number.isFinite(asNumber)) {
+    return undefined;
+  }
+  return `${asNumber}${unit}`;
 }

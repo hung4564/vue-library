@@ -1,4 +1,9 @@
-import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
+import type { DraftCoordinatesNumber } from '@hungpvq/map-core';
+import { parseCoordinateListText } from '@hungpvq/map-core';
+import {
+  buildMeasurementGeojsonDownload,
+  draftCoordinatesToFeature,
+} from '@hungpvq/map-core/measurement';
 import {
   mdiCrosshairsGps,
   mdiDeleteOutline,
@@ -6,10 +11,9 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { lineString, point, polygon } from '@turf/helpers';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { saveAs } from 'file-saver';
-import { useMemo } from 'react';
+import { useMemo, type ClipboardEvent } from 'react';
 
 type Coord = DraftCoordinatesNumber;
 
@@ -25,16 +29,6 @@ export interface FieldGeometryProps {
     geometry: Geometry | Feature | FeatureCollection,
   ) => void;
   onClickRemove?: (index: number) => void;
-}
-
-function toGeometry(coordinates: Coord[]) {
-  const validCoords = coordinates.filter(
-    (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
-  );
-  if (!validCoords.length) return undefined;
-  if (validCoords.length === 1) return point(validCoords[0]);
-  if (validCoords.length === 2) return lineString(validCoords);
-  return polygon([[...validCoords, validCoords[0]]]);
 }
 
 export function FieldGeometry({
@@ -71,6 +65,31 @@ export function FieldGeometry({
     submit(next);
   }
 
+  /** Paste one pair or multi-line CSV into the list (from this row). */
+  function onPasteCoordinate(
+    event: ClipboardEvent<HTMLInputElement>,
+    index: number,
+  ) {
+    const text = event.clipboardData.getData('text');
+    const parsed = parseCoordinateListText(text);
+    if (!parsed.length) return;
+    event.preventDefault();
+
+    let points = parsed.map(([lng, lat]) => [lng, lat] as Coord);
+    if (maxLength > 0) {
+      const room = Math.max(0, maxLength - index);
+      points = points.slice(0, room);
+    }
+    if (!points.length) return;
+
+    const next = [
+      ...value.slice(0, index),
+      ...points,
+      ...value.slice(index + points.length),
+    ];
+    submit(maxLength > 0 && next.length > maxLength ? next.slice(0, maxLength) : next);
+  }
+
   function onDeleteItem(index: number) {
     const next = value.slice();
     next.splice(index, 1);
@@ -79,27 +98,22 @@ export function FieldGeometry({
   }
 
   function onDownload() {
-    const geom = toGeometry(value);
-    if (!geom) return;
-    const geojson = {
-      type: 'FeatureCollection',
-      features: [geom],
-    };
-    const blob = new Blob([JSON.stringify(geojson)], {
-      type: 'text/plain;charset=utf-8',
-    });
-    saveAs(blob, 'geojson.json');
+    const download = buildMeasurementGeojsonDownload(value);
+    if (!download) return;
+    saveAs(download.blob, download.fileName);
   }
 
   function onFlyTo() {
-    const geom = toGeometry(value);
+    const geom = draftCoordinatesToFeature(value);
     if (geom) onClickFillBound?.(geom);
   }
 
   return (
     <div className="map-measurement-geometry">
       <div className="map-measurement-geometry__header">
-        <div className="map-measurement-geometry__title">{title}</div>
+        {title ? (
+          <div className="map-measurement-geometry__title">{title}</div>
+        ) : null}
         <div className="map-measurement-geometry__actions">
           <button
             type="button"
@@ -142,6 +156,7 @@ export function FieldGeometry({
                 step="any"
                 value={item[0] ?? ''}
                 onChange={(e) => onUpdateCoord(index, 0, e.target.value)}
+                onPaste={(e) => onPasteCoordinate(e, index)}
               />
             </div>
             <div>
@@ -151,6 +166,7 @@ export function FieldGeometry({
                 step="any"
                 value={item[1] ?? ''}
                 onChange={(e) => onUpdateCoord(index, 1, e.target.value)}
+                onPaste={(e) => onPasteCoordinate(e, index)}
               />
             </div>
             <div>

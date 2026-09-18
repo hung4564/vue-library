@@ -12,7 +12,7 @@ import { logHelper } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
 import { getMapGlobalStore } from './global-store';
 import { logger } from './logger';
-import { useMapMittStore } from './mitt-store';
+import { getMapMittStore } from './mitt-store';
 
 /**
  * React store adapter
@@ -33,7 +33,7 @@ export class ReactMapStoreAdapter implements IMapStoreAdapter {
     T extends Record<EventType, unknown> = Record<EventType, unknown>,
   >(mapId: string): Emitter<T> {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useMapMittStore<T>(mapId);
+    return getMapMittStore<T>(mapId);
   }
 
   /**

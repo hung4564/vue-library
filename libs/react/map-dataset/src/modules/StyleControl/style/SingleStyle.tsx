@@ -1,12 +1,13 @@
 import {
+  applyStyleTabValue,
+  applyStyleZoom,
   convertTabWithDefaultConfig,
   DEFAULT_VALUE,
   TABS,
   type Tab,
   type TabConfig,
-} from '@hungpvq/map-dataset';
-import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core';
-import { copyByJson } from '@hungpvq/shared';
+} from '@hungpvq/map-dataset/style';
+import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core/fields';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useEffect, useMemo, useState } from 'react';
 import { TabContent } from '../component/TabContent';
@@ -99,35 +100,15 @@ export function SingleStyle({
   }
 
   function emitInput(raw: unknown, currentTab: Tab, currentLayer: LayerSpecification) {
-    if (currentTab.type === 'divider' || !('key' in currentTab)) return;
-    let nextValue = raw;
-    if (currentTab.format) {
-      nextValue = currentTab.format(nextValue);
-    }
-    const next = copyByJson(currentLayer) as LayerSpecification;
-    const part = currentTab.part || 'paint';
-    const bag = {
-      ...((next[part] as Record<string, unknown> | undefined) || {}),
-      [String(currentTab.key)]: nextValue,
-    };
-    (next as Record<string, unknown>)[part] = bag;
-    emitLayer(next);
+    emitLayer(applyStyleTabValue(currentLayer, currentTab, raw));
   }
 
   function onChangeMinZoom(zoom: number, currentLayer: LayerSpecification) {
-    const next = copyByJson(currentLayer) as LayerSpecification & {
-      'min-zoom'?: number;
-    };
-    next['min-zoom'] = zoom;
-    emitLayer(next);
+    emitLayer(applyStyleZoom(currentLayer, 'min-zoom', zoom));
   }
 
   function onChangeMaxZoom(zoom: number, currentLayer: LayerSpecification) {
-    const next = copyByJson(currentLayer) as LayerSpecification & {
-      'max-zoom'?: number;
-    };
-    next['max-zoom'] = zoom;
-    emitLayer(next);
+    emitLayer(applyStyleZoom(currentLayer, 'max-zoom', zoom));
   }
 
   if (!layer) return null;

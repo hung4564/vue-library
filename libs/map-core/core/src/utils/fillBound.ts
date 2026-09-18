@@ -1,5 +1,6 @@
-import type { LngLatBoundsLike } from 'maplibre-gl';
-import { bbox as turfBbox } from '@turf/turf';
+import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
+import turfBbox from '@turf/bbox';
+import { isValidBbox } from './bbox';
 import type {
   CoordinatesNumber,
   Feature,
@@ -25,9 +26,96 @@ type FitBoundsValue =
  */
 export interface FitBoundsOptions {
   zoom?: number;
+  /**
+   * Padding for MapLibre `fitBounds`.
+   * Default: inset plus open left/right sidebar width.
+   */
+  padding?: number | PaddingOptions;
+  /** When true, skip sidebar padding (flat inset only). */
+  ignoreOverlays?: boolean;
 }
 
 export type GeojsonBbox = [number, number, number, number];
+
+const DEFAULT_INSET = 50;
+
+type EdgePadding = Required<PaddingOptions>;
+
+function basePadding(inset: number): EdgePadding {
+  return { top: inset, bottom: inset, left: inset, right: inset };
+}
+
+function resolveMapShell(container: HTMLElement): HTMLElement {
+  return (
+    (container.closest('.map-viewer') as HTMLElement | null) ||
+    (container.closest('.map-container') as HTMLElement | null) ||
+    container.parentElement ||
+    container
+  );
+}
+
+function sidebarWidth(node: HTMLElement, mapRect: DOMRect): number {
+  const rect = node.getBoundingClientRect();
+  if (rect.width < 8 || rect.height < 8) return 0;
+  const overlapW =
+    Math.min(rect.right, mapRect.right) - Math.max(rect.left, mapRect.left);
+  return overlapW > 0 ? overlapW : 0;
+}
+
+/**
+ * Padding = base inset + open left/right sidebar widths only.
+ */
+export function getMapFitBoundsPadding(
+  map: MapSimple,
+  inset: number = DEFAULT_INSET,
+): EdgePadding {
+  const padding = basePadding(inset);
+  if (typeof document === 'undefined') return padding;
+
+  const container =
+    typeof map.getContainer === 'function' ? map.getContainer() : null;
+  if (!container) return padding;
+
+  const mapRect = container.getBoundingClientRect();
+  if (!(mapRect.width > 0) || !(mapRect.height > 0)) return padding;
+
+  const shell = resolveMapShell(container);
+  let left = 0;
+  let right = 0;
+
+  shell
+    .querySelectorAll('.sidebar-container.show.expand')
+    .forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      const style = getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden') return;
+      if (style.opacity === '0') return;
+
+      const w = sidebarWidth(node, mapRect);
+      if (!w) return;
+      if (node.classList.contains('right-sidebar-container')) {
+        right = Math.max(right, w);
+      } else if (node.classList.contains('left-sidebar-container')) {
+        left = Math.max(left, w);
+      }
+    });
+
+  return {
+    top: inset,
+    bottom: inset,
+    left: inset + left,
+    right: inset + right,
+  };
+}
+
+function resolvePadding(
+  map: MapSimple,
+  options: FitBoundsOptions,
+): number | PaddingOptions {
+  if (options.padding != null) return options.padding;
+  if (options.ignoreOverlays) return DEFAULT_INSET;
+  return getMapFitBoundsPadding(map, DEFAULT_INSET);
+}
 
 /**
  * Fit bounds to map
@@ -35,7 +123,7 @@ export type GeojsonBbox = [number, number, number, number];
 export function fitBounds(
   map: MapSimple,
   value: FitBoundsValue,
-  { zoom = 15 }: FitBoundsOptions = {},
+  { zoom = 15, ...rest }: FitBoundsOptions = {},
 ) {
   if (!map || !value) {
     return;
@@ -76,18 +164,11 @@ export function fitBounds(
 
   if (bounds) {
     map.fitBounds(bounds, {
-      padding: 50,
+      padding: resolvePadding(map, rest),
       duration: 0,
       maxZoom: zoom,
     });
   }
-}
-
-function isValidTurfBbox(box: number[]): box is GeojsonBbox {
-  return (
-    box.length === 4 &&
-    box.every((n) => typeof n === 'number' && Number.isFinite(n))
-  );
 }
 
 /**
@@ -99,7 +180,7 @@ export function bboxFromGeojson(
   if (!feature) return undefined;
   try {
     const box = turfBbox(feature as never);
-    if (!isValidTurfBbox(box)) return undefined;
+    if (!isValidBbox(box)) return undefined;
     return [box[0], box[1], box[2], box[3]];
   } catch {
     return undefined;

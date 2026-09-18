@@ -1,7 +1,7 @@
 <template>
   <!-- Group Item -->
   <ListGroupItem
-    :item="item"
+    :item="(item as GroupTree)"
     :disabled-drag="disabledDrag"
     v-if="isGroup(item)"
   >
@@ -72,8 +72,8 @@ withDefaults(
 );
 
 defineSlots<{
-  group(_props: { item: TreeItem }): VNode[];
-  leaf(_props: { item: Item }): VNode[];
-  'group-extra-data'(_props: { item: TreeItem }): VNode[];
+  group: (_props: { item: TreeItem }) => VNode[];
+  leaf: (_props: { item: Item }) => VNode[];
+  'group-extra-data': (_props: { item: TreeItem }) => VNode[];
 }>();
 </script>

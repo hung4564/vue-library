@@ -4,7 +4,9 @@ import type {
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
-import type { FieldFeaturesDef, MenuItemClick, WithDataHelper } from '../extra';
+import type { WithDataHelper } from '../extra/data';
+import type { FieldFeaturesDef } from '../extra/field';
+import type { MenuItemClick } from '../menu/types';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 
 import type { MapSimple } from '@hungpvq/map-core';
@@ -18,16 +20,42 @@ import type { IDatasetMap } from './dataset.map';
  * These types define the structure of menu items and actions in the dataset
  */
 
-export type MenuConditionContext<T = IDataset, C = Record<string, any>> = {
+export type MenuConditionContext<T = IDataset, C = Record<string, unknown>> = {
   layer: T;
   mapId?: string;
   /** External data from UI: React context, Pinia, props, etc. */
   context?: C;
 };
 
-export type MenuCondition<T = IDataset, C = Record<string, any>> =
+export type MenuCondition<T = IDataset, C = Record<string, unknown>> =
   | boolean
   | ((ctx: MenuConditionContext<T, C>) => boolean);
+
+/** Where a menu action renders (list row, overflow, panel title, …). */
+export type MenuActionLocation =
+  | 'extra'
+  | 'menu'
+  | 'bottom'
+  | 'prebottom'
+  | 'title';
+
+/** Stable ids for dataset UI hosts that render menus (injected as `context.control`). */
+export type MenuControlId =
+  | 'layer-control'
+  | 'layer-detail'
+  | 'identify'
+  | 'attribute-table'
+  | string;
+
+/** Placement overrides for one control id. */
+export type MenuControlPlacement = {
+  location?: MenuActionLocation;
+  /** When set, replaces `hidden` for that control only. */
+  hidden?: boolean;
+};
+
+/** Map of control id → placement. Unlisted controls keep the menu defaults. */
+export type MenuByControl = Partial<Record<string, MenuControlPlacement>>;
 
 /** Base type for all menu items */
 type MenuCommon = {
@@ -36,76 +64,77 @@ type MenuCommon = {
   class?: string;
   disabled?: MenuCondition;
   hidden?: MenuCondition;
+  /**
+   * Per-control placement overrides (`context.control` from menu hosts).
+   * Applied at render via `applyMenuControlPlacement` / `partitionMenuActions`.
+   */
+  byControl?: MenuByControl;
 };
 
 /** Divider menu item type */
 export type MenuDivider = MenuCommon & {
-  location?: 'extra' | 'menu' | 'bottom' | 'prebottom';
+  location?: MenuActionLocation;
   type: 'divider';
 };
 
 /** Common properties for all menu items */
-export type MenuItemCommon<P = any, T = IDataset> = MenuCommon & {
+export type MenuItemCommon<P = unknown, T = IDataset> = MenuCommon & {
   type: 'item';
   click: MenuItemClick<P, T>;
 };
 
-/** Menu item type for bottom or extra location */
-export type MenuItemBottomOrExtra<P = any, T = IDataset> = MenuItemCommon<
+/** Menu item type for bottom, extra, or title location */
+export type MenuItemBottomOrExtra<P = unknown, T = IDataset> = MenuItemCommon<
   P,
   T
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra';
+  location?: Extract<MenuActionLocation, 'bottom' | 'extra' | 'title'>;
   icon: string;
   name?: string;
 };
 
 /** Menu item type custom component for bottom or extra location */
-export type MenuItemCustomComponentBottomOrExtra<P = any, T = IDataset> = Omit<
+export type MenuItemCustomComponentBottomOrExtra<P = unknown, T = IDataset> = Omit<
   MenuItemCommon<P, T>,
   'click'
 > & {
   type: 'item';
-  location?: 'bottom' | 'extra' | 'prebottom';
+  location?: Extract<
+    MenuActionLocation,
+    'bottom' | 'extra' | 'prebottom' | 'title'
+  >;
   componentKey: string;
 };
 
 /** Menu item type for menu location */
-export type MenuItemContentMenu<P = any, T = IDataset> = Omit<
+export type MenuItemContentMenu<P = unknown, T = IDataset> = Omit<
   MenuItemCommon<P, T>,
   'click'
 > & {
   type: 'item';
-  location: 'menu';
+  location: Extract<MenuActionLocation, 'menu'>;
   name: string;
   icon?: string;
   click?: MenuItemClick<P, T>;
   /** Registry key of a component that renders this item inside the context menu */
   componentMenuKey?: string;
 };
-export type MenuAction<P = any, T = IDataset> =
+export type MenuAction<P = unknown, T = IDataset> =
   | MenuDivider
   | MenuItemBottomOrExtra<P, T>
   | MenuItemContentMenu<P, T>
   | MenuItemCustomComponentBottomOrExtra<P, T>;
 
-export type IBaseMapboxSourceView = IDatasetMap &
+export type IMapboxSourceView = IDatasetMap &
   WithDataHelper &
   IDataset & {
     getMapboxSource: () => SourceSpecification & { id?: string };
-    updateData?(map: MapSimple, data: any): void;
+    updateData?(map: MapSimple, data: unknown): void;
     getFieldsInfo(): IFieldInfo[];
-    getDataInfo(): any;
+    getDataInfo(): unknown;
     getSourceId(): string;
   };
-export type IMapboxSourceView = IBaseMapboxSourceView & {
-  getMapboxSource: () => SourceSpecification & { id?: string };
-  updateData?(map: MapSimple, data: any): void;
-  getFieldsInfo(): IFieldInfo[];
-  getDataInfo(): any;
-  getSourceId(): string;
-};
 
 export type IMapboxLayerView = IDatasetMap &
   WithToggleShow &
@@ -115,14 +144,25 @@ export type IMapboxLayerView = IDatasetMap &
     getLayers(): LayerSpecification[];
     moveLayer(map: MapSimple, beforeId: string): void;
     getComponentUpdate(): ComponentType;
-    updateValue(map: MapSimple, value: any): void;
+    updateValue(map: MapSimple, value: unknown): void;
   };
+export type IdentifyFeatureRow<TData = unknown> = {
+  id: string | number;
+  name: string;
+  data: TData;
+};
+
 export type IIdentifyViewBase = IDataset &
   WithMenuHelper & {
     config: {
       field_name?: string;
       field_id?: string;
       fields?: FieldFeaturesDef;
+      /**
+       * When true, identify resolver skips auto show-detail / attribute-table
+       * for this node and uses the Identify Result panel instead.
+       */
+      preferResultControl?: boolean;
     };
     group?: {
       name: string;
@@ -131,9 +171,8 @@ export type IIdentifyViewBase = IDataset &
     getFeatures: (
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
-    ) => Promise<{ id: string; name: string; data: any }[]>; // Feature's result type
-    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>; // Feature's result type
-    showDetail?: (mapId: string, feature: MapGeoJSONFeature) => void; // Feature's result type
+    ) => Promise<IdentifyFeatureRow[]>;
+    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>;
   };
 
 // IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase
@@ -143,51 +182,67 @@ export type IIdentifyViewWithoutMerge = IIdentifyViewBase;
 export type IIdentifyViewWithMerge = IIdentifyViewBase & {
   identifyGroupId: string;
   mergePayload(
-    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
+    identifies: IIdentifyView[],
     mapId: string,
     pointOrBox?: PointLike | [PointLike, PointLike],
-  ): any; // Đảm bảo return kiểu hợp lý cho payload
+  ): unknown;
 
   splitResponse(
-    identifies: IIdentifyView[], // Dùng IIdentifyView thay cho IIdentifyViewBase
-    payload: any, // Kiểu của payload từ merge
-    response: any, // Response từ getMergedFeatures
-  ): IdentifyResult[]; // Trả về array kết quả từng identify
+    identifies: IIdentifyView[],
+    payload: unknown,
+    response: unknown,
+  ): IdentifyMultiResult[];
 
-  getMergedFeatures(identifies: IIdentifyView[], payload: any): any; // Trả về kết quả đã merge
+  getMergedFeatures(identifies: IIdentifyView[], payload: unknown): unknown;
 };
 
 export type IdentifyMultiResult = {
-  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-  features: { id: string | number; name: string; data: any }[]; // Features của mỗi identify
+  identify: IIdentifyView;
+  features: IdentifyFeatureRow[];
 };
-export type IdentifySingleResult = {
-  identify: IIdentifyView; // Dùng IIdentifyView thay cho IIdentifyViewBase
-  layer: LayerSpecification;
-  feature: { id: string | number; name: string; data: MapGeoJSONFeature }; // Features của mỗi identify
-};
-
-// Define kiểu trả về cho mỗi kết quả sau khi split
-export type IdentifyResult = IdentifyMultiResult | IdentifySingleResult;
 // Union type cho IIdentifyView
 export type IIdentifyView = IIdentifyViewWithoutMerge | IIdentifyViewWithMerge;
 
 export type WithMenuHelper<T extends IDataset = IDataset> = {
-  addMenu(menu: MenuAction<T>): void;
-  addMenus(menusToAdd: MenuAction<T>[]): void;
-  getMenus(): MenuAction<T>[];
+  addMenu(menu: MenuAction<unknown, T>): void;
+  addMenus(menusToAdd: MenuAction<unknown, T>[]): void;
+  getMenus(): MenuAction<unknown, T>[];
   removeMenu: (id: string) => void;
   updateMenu: (
     id: string,
-    updater: (menu: MenuAction<T>) => MenuAction<T>,
+    updater: (menu: MenuAction<unknown, T>) => MenuAction<unknown, T>,
   ) => void;
-  getMenu(id: string): MenuAction<T> | undefined;
+  getMenu(id: string): MenuAction<unknown, T> | undefined;
   hasMenu(id: string): boolean;
 };
 
 export type IMetadataView = {
   metadata?: { loading?: boolean; bbox?: BBox };
 };
+
+/** Dataset part that stores a layer bounding box via WithDataHelper. */
+export type IBoundView = IDataset &
+  WithDataHelper<BBox> & {
+    type: 'bound';
+  };
+
+/** Who consumes a default menu from the shared menu dataset. */
+export type DatasetMenuFor = 'item' | 'layer';
+
+/** One default menu stored on a `menu` dataset part. `key` matches `menu.id`. */
+export type DatasetMenuEntry = {
+  for: DatasetMenuFor;
+  key: string;
+  menu: MenuAction;
+  /** Merged onto `menu.byControl` when resolving defaults. */
+  byControl?: MenuByControl;
+};
+
+/** Shared default menus (`getData` / `setData`) for list, identify, and tables. */
+export type IMenuView = IDataset &
+  WithDataHelper<DatasetMenuEntry[]> & {
+    type: 'menu';
+  };
 
 export type IFieldInfo = {
   trans?: string;

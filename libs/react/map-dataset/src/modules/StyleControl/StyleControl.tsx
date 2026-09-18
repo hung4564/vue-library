@@ -1,9 +1,6 @@
 import type { ComponentType, IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
-import {
-  findSiblingOrNearestLeaf,
-  isMapboxLayerView,
-  STYLE_CONTROL_LOCALE,
-} from '@hungpvq/map-dataset';
+import { findSiblingOrNearestLeaf, isMapboxLayerView } from '@hungpvq/map-dataset';
+import { STYLE_CONTROL_LOCALE } from '@hungpvq/map-dataset/style';
 import { copyByJson } from '@hungpvq/shared';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
@@ -26,7 +23,7 @@ export function StyleControl({
   const { mapId, moduleContainerProps, callMap } = useMap({
     controlId: 'mapStyleControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(false);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapStyleControl',
@@ -46,12 +43,12 @@ export function StyleControl({
   layerViewRef.current = layerView;
 
   useEffect(() => {
-    setLocaleDefault(STYLE_CONTROL_LOCALE);
+    registerLocale('en', STYLE_CONTROL_LOCALE);
     toggleShow(true);
     setLayerView(undefined);
     updateValue();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item, setLocaleDefault]);
+  }, [item, registerLocale]);
 
   function updateValue() {
     const layerViewFound = findSiblingOrNearestLeaf<IMapboxLayerView & IDataset>(

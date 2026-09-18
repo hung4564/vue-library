@@ -1,0 +1,36 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [
+    "./types/shims/turf-turf.d.ts",
+    "./types/shims/vue-deps.d.ts"
+  ],
+  "references": [
+    { "path": "./apps/react/demo-draggable" },
+    { "path": "./apps/react/demo-map" },
+    { "path": "./apps/vue/demo-draggable" },
+    { "path": "./apps/vue/demo-map" },
+    { "path": "./libs/demo/map-datasets" },
+    { "path": "./libs/draggable/core" },
+    { "path": "./libs/map-core/core" },
+    { "path": "./libs/map-core/map-dataset" },
+    { "path": "./libs/map-core/map-draw" },
+    { "path": "./libs/react/draggable" },
+    { "path": "./libs/react/map-core" },
+    { "path": "./libs/react/map-dataset" },
+    { "path": "./libs/react/map-devtools" },
+    { "path": "./libs/react/map-draw" },
+    { "path": "./libs/router" },
+    { "path": "./libs/share/core" },
+    { "path": "./libs/share/file" },
+    { "path": "./libs/share/log" },
+    { "path": "./libs/share/shared" },
+    { "path": "./libs/share/store" },
+    { "path": "./libs/ui/core" },
+    { "path": "./libs/vue/draggable" },
+    { "path": "./libs/vue/map-core" },
+    { "path": "./libs/vue/map-dataset" },
+    { "path": "./libs/vue/map-devtools" },
+    { "path": "./libs/vue/map-draw" }
+  ]
+}

@@ -1,4 +1,4 @@
-export type ItemGroupKey = 'popup' | 'modal' | 'float' | 'bottom';
+export type ItemGroupKey = 'popup' | 'modal' | 'float';
 
 export type ItemGroupConfig = {
   items: string[];
@@ -6,12 +6,44 @@ export type ItemGroupConfig = {
   show: string[];
 };
 
+/** Exclusive bottom sheet slot (one active id). */
+export type BottomConfig = {
+  items: string[];
+  show?: string;
+};
+
+/** Persisted geometry for an item (popup/modal bounds or drawer size/edge). */
+export type ItemLayoutState = {
+  bounds?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  size?: number;
+  location?: LocationSideBar;
+};
+
+/** Serializable panel row for getLayout / applyLayout. */
+export type PanelSnapshot = {
+  id: string;
+  type: DraggableItemType | string;
+  show: boolean;
+  title?: string;
+  bounds?: ItemLayoutState['bounds'];
+  size?: number;
+  location?: LocationSideBar;
+};
+
 export type ContainerStore = {
   popup: ItemGroupConfig;
   modal: ItemGroupConfig;
   float: ItemGroupConfig;
-  bottom: ItemGroupConfig;
+  /** Exclusive bottom sheet (one visible panel). */
+  bottom: BottomConfig;
   actions: Record<string, ContainerStoreAction>;
+  /** Cached geometry keyed by stable item id. */
+  layouts: Record<string, ItemLayoutState>;
   height: number;
   width: number;
   isMobile: boolean;
@@ -27,6 +59,12 @@ export type ContainerStoreOtherAction = {
   setHighLight: (highlight?: boolean) => void;
   open: () => void;
   close: () => void;
+  /**
+   * Per-item shell card override for shared chrome (e.g. BottomContainer).
+   * Framework component refs — typed unknown in core.
+   */
+  componentCard?: unknown;
+  componentCardHeader?: unknown;
 };
 
 export type DraggableItemType =
@@ -50,7 +88,11 @@ export type InitOption =
     }
   | {
       title?: string;
-      type: 'item-popup' | 'item-float' | 'item-bottom' | 'item-modal' | string;
+      type: 'item-bottom';
+    }
+  | {
+      title?: string;
+      type: 'item-popup' | 'item-float' | 'item-modal' | string;
     };
 
 export type LocationSideBar = 'left' | 'right' | 'top' | 'bottom';
@@ -68,14 +110,16 @@ export function createEmptyItemGroup(): ItemGroupConfig {
   return { items: [], show: [] };
 }
 
+export function createEmptyBottom(): BottomConfig {
+  return { items: [], show: undefined };
+}
+
 export function itemTypeToGroup(type?: string): ItemGroupKey {
   switch (type) {
     case 'item-modal':
       return 'modal';
     case 'item-float':
       return 'float';
-    case 'item-bottom':
-      return 'bottom';
     case 'item-popup':
     default:
       return 'popup';
@@ -105,9 +149,10 @@ export function createEmptyContainer(): ContainerStore {
     popup: createEmptyItemGroup(),
     modal: createEmptyItemGroup(),
     float: createEmptyItemGroup(),
-    bottom: createEmptyItemGroup(),
+    bottom: createEmptyBottom(),
     sideBar: createEmptySideBar(),
     actions: {},
+    layouts: {},
     height: 0,
     width: 0,
     isMobile: false,

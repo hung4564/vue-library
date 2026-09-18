@@ -1,10 +1,15 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps" :btnWidth="70">
     <template #btn>
-      <MapControlButton v-if="current_baseMaps" :tooltip="title">
+      <MapControlButton
+        v-if="current_baseMaps"
+        :tooltip="title"
+        :active="show"
+      >
         <template #content>
           <map-card
             class="clickable base-map-button__container"
+            :class="{ 'base-map-button__container--active': show }"
             height="70px"
             width="70px"
             @click.stop="onToggleList"
@@ -75,29 +80,27 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import type { BaseMapItem } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
-  logHelper,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/basemap';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayersOutline } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import {
-  MapCard,
-  MapControlButton,
-  MapIcon,
-  MapImage,
-} from '../../../components';
-import { useLang } from '../../../extra/lang';
-import { useRegisterMapControl } from '../../../extra/registry';
-import { useToolbarControl } from '../../../extra/toolbar';
+import MapCard from '../../../components/MapCard.vue';
+import MapControlButton from '../../../components/MapControlButton.vue';
+import MapIcon from '../../../components/MapIcon.vue';
+import MapImage from '../../../components/MapImage.vue';
+import { useLang } from '../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
-import { useBaseMap } from '../hooks';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useBaseMap } from '../hooks/useBaseMap';
 import { logger } from '../logger';
 const props = withDefaults(
   defineProps<
@@ -117,7 +120,7 @@ const props = withDefaults(
   },
 );
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -139,7 +142,7 @@ watch(
     setDefaultBaseMap(value);
   },
 );
-setLocaleDefault(BASEMAP_CONTROL_LOCALE);
+registerLocale('en', BASEMAP_CONTROL_LOCALE);
 const sizeBaseMap = computed(() => {
   return 70;
 });
@@ -187,21 +190,19 @@ onMounted(() => {
 onBeforeUnmount(() => {
   remove();
 });
-useToolbarControl(mapId.value, props, {
+const { control } = useToolbarControl(mapId.value, props, {
   id: 'mapBaseMapControl',
   getState() {
-    return {
+    return mdiButtonState(path.layer, {
       visible: true,
+      active: show.value,
       order: order.value,
       title: props.title || trans.value('map.basemap.title'),
-      icon: {
-        type: 'mdi',
-        path: path.layer,
-      },
-    };
+    });
   },
   onClick() {
     onToggleList();
   },
 });
+watch(show, () => control.sync());
 </script>

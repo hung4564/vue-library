@@ -7,6 +7,10 @@
 
 The `MeasurementControl` component provides a user interface for measuring distances, areas, and angles on the map. It is highly configurable and supports custom actions, multiple units, and event hooks for integration with your application logic.
 
+## Architecture (thin host)
+
+Orchestration lives in Stable **`createMeasurementSession`** (`@hungpvq/map-core/measurement`): mode toggle, Measure* actions, MapView / MarkerView / FormView, click → coordinates, destroy. MapLibre source/layer bootstrap uses **`createMeasurementMapView`** / **`createMeasurementMapViewLayers`**. GeoJSON download helpers (**`draftCoordinatesToFeature`**, **`buildMeasurementGeojsonDownload`**) are used by the setting geometry field. Adapters register measure images, wire EventClick + toolbar/registry, and host the setting popup only.
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

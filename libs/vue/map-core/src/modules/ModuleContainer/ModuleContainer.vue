@@ -1,12 +1,18 @@
 <template>
   <div class="module__container">
     <Teleport
-      v-if="controlVisible && hasSlotBtn && isStandaloneButton"
+      v-if="controlVisible && hasCornerChrome && showCornerChrome"
       :to="btnTo"
     >
-      <div :class="btnModuleClass" :style="{ order: order }">
+      <div
+        v-if="hasSlotBtn"
+        :class="btnModuleClass"
+        :style="{ order: controlOrder }"
+        :data-map-control-id="resolvedControlId || undefined"
+      >
         <slot name="btn" />
       </div>
+      <slot name="btnOutside" />
     </Teleport>
     <slot />
     <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
@@ -20,14 +26,21 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
+import {
+  MAP_MODULE_CONTROL_ID_KEY,
+  buildModuleBindPosition,
+  isModuleCornerChromeVisible,
+  moduleBtnContainerClassName,
+  moduleCornerHostSelector,
+  moduleDraggableHostSelector,
+} from '@hungpvq/map-core';
 import { computed, inject, useSlots } from 'vue';
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },
   dragId: { type: String, default: '' },
   btnWidth: { type: Number, default: 40 },
-  order: { type: Number, default: 0 },
+  controlOrder: { type: Number, default: 0 },
   controlId: { type: String, default: '' },
   position: {
     type: String,
@@ -48,16 +61,22 @@ const props = defineProps({
     type: String,
     default: 'standalone',
     validator(value: string) {
-      return ['toolbar', 'standalone'].indexOf(value) !== -1;
+      return (
+        ['toolbar', 'standalone', 'button', 'menu'].indexOf(value) !== -1
+      );
     },
   },
-  top: Number,
-  bottom: Number,
-  left: Number,
-  right: Number,
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
-const isStandaloneButton = computed(() => props.controlLayout == 'standalone');
+const hasSlotBtnOutside = computed(() => !!slots['btnOutside']);
+const hasCornerChrome = computed(
+  () => hasSlotBtn.value || hasSlotBtnOutside.value,
+);
+const showCornerChrome = computed(() =>
+  isModuleCornerChromeVisible(
+    props.controlLayout as 'toolbar' | 'standalone' | 'button' | 'menu',
+  ),
+);
 const hasSlotDraggable = computed(() => !!slots['draggable']);
 const i_dragId = inject<string>('$map.dragId');
 const i_map_id = inject<string>('$map.id');
@@ -68,12 +87,9 @@ const injectedControlId = inject<string | undefined>(
 const resolvedControlId = computed(
   () => props.controlId || injectedControlId || '',
 );
-const btnModuleClass = computed(() => {
-  const id = resolvedControlId.value;
-  return id
-    ? ['btn-module-container', `${id}-btn-module-container`]
-    : ['btn-module-container'];
-});
+const btnModuleClass = computed(() =>
+  moduleBtnContainerClassName(resolvedControlId.value),
+);
 const c_containerId = computed<string>(() => {
   return props.dragId || i_dragId!;
 });
@@ -81,41 +97,25 @@ const c_mapId = computed<string>(() => {
   return props.mapId || i_map_id!;
 });
 
-const draggableTo = computed(() => {
-  return `#map-draggable-${c_mapId.value}`;
-});
-const btnTo = computed(() => {
-  return `#${props.position}-${c_mapId.value}`;
-});
+const draggableTo = computed(() =>
+  moduleDraggableHostSelector(c_mapId.value),
+);
+const btnTo = computed(() =>
+  moduleCornerHostSelector(
+    props.position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+    c_mapId.value,
+  ),
+);
 
-interface BindPosition {
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-  containerId: string;
-}
-const bindDrag = computed(() => {
-  const result: BindPosition = {
+const bindDrag = computed(() =>
+  buildModuleBindPosition({
+    position: props.position as
+      | 'top-left'
+      | 'top-right'
+      | 'bottom-left'
+      | 'bottom-right',
+    btnWidth: props.btnWidth,
     containerId: c_containerId.value,
-  };
-
-  const configs = [
-    { key: 'left', fallback: 18 + props.btnWidth },
-    { key: 'right', fallback: 18 + props.btnWidth },
-    { key: 'top', fallback: 10 },
-    { key: 'bottom', fallback: 10 },
-  ] as const;
-
-  configs.forEach(({ key, fallback }) => {
-    const val = (props as any)[key];
-    if (val !== undefined) {
-      result[key] = val;
-    } else if (props.position.includes(key)) {
-      result[key] = fallback;
-    }
-  });
-
-  return result;
-});
+  }),
+);
 </script>

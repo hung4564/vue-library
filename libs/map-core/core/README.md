@@ -8,18 +8,24 @@ This is the core vanilla JavaScript/TypeScript library extracted from `@hungpvq/
 
 ## 📦 Installation
 
-```bash
-npm install @hungpvq/map-core
-```
+For a full Vue/React app shell, prefer the meta packages — [Install from npm](./docs/core/install-from-npm.md):
 
 ```bash
-yarn add @hungpvq/map-core
+npm install @hungpvq/vue-map maplibre-gl vue
+# or: npm install @hungpvq/react-map maplibre-gl react react-dom
+```
+
+Core-only (protocol / services; no UI):
+
+```bash
+npm install @hungpvq/map-core
 ```
 
 ## 🎯 Features
 
 - ✅ **Error Classes** - MapError, MapInitializationError, MapEventError
-- ✅ **Error Handler** - Centralized error handling system
+- ✅ **Error Handler** - Centralized `errorHandler` with shared-log defaults ([docs](./docs/core/error-handling.md))
+- ✅ **Map store** - One MapLibre instance per `mapId`; `getMap` / `MapStoreManager` ([docs](./docs/core/map-store.md))
 - ✅ **Utilities** - Color utilities and helper functions
 - ✅ **Base Model** - Base class for map-related entities
 - ✅ **Types** - Framework-agnostic TypeScript types
@@ -73,22 +79,29 @@ throw new MapEventError('Map event failed', {
 
 #### ErrorHandler
 
-Centralized error handler for map operations.
+Centralized error handler for map operations. The singleton already logs via `@hungpvq/shared-log` (`map:core` / `ErrorHandler`). Adapters do not re-export it — import from `@hungpvq/map-core` only. Docs: [error-handling.md](./docs/core/error-handling.md).
 
 ```typescript
 import { errorHandler, MapErrorHandler } from '@hungpvq/map-core';
 
-// Use default singleton
+// Default singleton (built-in logger)
 errorHandler.handle(new Error('Something went wrong'), {
   mapId: 'map-1',
 });
 
-// Subscribe to errors
+// Subscribe to errors (e.g. Devtools Errors tab)
 const unsubscribe = errorHandler.onError((error: MapError) => {
   console.error('Error occurred:', error);
 });
 
-// Create custom instance
+// Optional: wire production tracking on the singleton
+errorHandler.configure({
+  logToService: (error) => {
+    // Send to Sentry, LogRocket, etc.
+  },
+});
+
+// Or create an isolated custom instance
 const customHandler = new MapErrorHandler({
   isDevelopment: false,
   logError: (error) => {
@@ -99,6 +112,22 @@ const customHandler = new MapErrorHandler({
   },
 });
 ```
+
+### Map store
+
+One MapLibre instance per `mapId`. Docs: [map-store.md](./docs/core/map-store.md).
+
+```typescript
+import { getMap, MAP_STORE_KEY } from '@hungpvq/map-core';
+
+const map = getMap('map-1'); // MapSimple | undefined
+
+getMap('map-1', (ready) => {
+  // called when the map is registered
+});
+```
+
+Scoped feature state uses `MAP_STORE_KEY` via adapter helpers (`createMapScopedStore` / `getStore` on vue/react map-core).
 
 ### Utils
 
@@ -145,7 +174,11 @@ const props: WithMapPropType = {
 ### Error Handling
 
 ```typescript
-import { errorHandler, MapInitializationError, MapError } from '@hungpvq/map-core';
+import {
+  errorHandler,
+  MapInitializationError,
+  MapError,
+} from '@hungpvq/map-core';
 
 try {
   // Map initialization logic
@@ -167,22 +200,26 @@ errorHandler.onError((error: MapError) => {
 
 ### Custom Error Handler
 
-```typescript
-import { MapErrorHandler } from '@hungpvq/map-core';
+Prefer `errorHandler.configure({ logToService })` on the singleton so Devtools and map shell share the same handler. Use `new MapErrorHandler({ … })` only when you need an isolated instance.
 
-const customHandler = new MapErrorHandler({
-  isDevelopment: process.env.NODE_ENV === 'development',
-  logError: (error) => {
-    // Custom development logging
-    console.log('[DEV]', error);
-  },
+```typescript
+import { errorHandler } from '@hungpvq/map-core';
+
+errorHandler.configure({
   logToService: (error) => {
-    // Send to Sentry, LogRocket, etc.
     Sentry.captureException(error);
   },
 });
+```
 
-customHandler.handle(new Error('Something went wrong'));
+## 🧪 Testing
+
+Unit tests live next to sources as `*.spec.ts` and run with Vitest (`environment: 'node'`). Cover behavioral domains (utils, store/services, toolbar/menu, workers, MapLibre fakes) — not line-by-line.
+
+**Out of unit scope:** full interactive draw UX, real Worker threads, canvas screenshot fidelity, and SCSS.
+
+```bash
+npx nx test @hungpvq/map-core
 ```
 
 ## 🤝 Contributing
@@ -196,4 +233,6 @@ MIT License
 ## 🔗 Related Packages
 
 - `@hungpvq/vue-map-core` - Vue implementation
-- `@hungpvq/react-map-core` - React implementation (coming soon)
+- `@hungpvq/react-map-core` - React implementation
+- `@hungpvq/map-dataset` - Dataset tree, builders, identify
+- Docs hub: [docs/index.md](./docs/index.md) · [Stable API](./docs/core/stable-api.md)

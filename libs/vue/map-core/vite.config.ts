@@ -28,23 +28,28 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        fields: 'src/fields.ts',
+        // CSS-only graph so `./style.css` includes shared map SCSS (not a JS export).
+        css: 'src/style.ts',
+      },
       name: 'vue-map-core',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: [
         'vue',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         '@hungpvq/map-core',
-        '@mapbox/mapbox-gl-sync-move',
         'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
-        'lodash',
         'maplibre-gl',
         '@mdi/js',
         'geojson',
@@ -55,6 +60,18 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/vue/map-core',
+      provider: 'v8' as const,
     },
   },
 });

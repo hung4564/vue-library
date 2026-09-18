@@ -1,28 +1,25 @@
-import { useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { type Position, type WithMapPropType } from '@hungpvq/map-core';
 import {
   type AnyToolbarOptions,
   type AnyToolbarStrategy,
   type ControlStrategy,
+  type MapControlButtonState,
   type MapControlButtonUIState,
-  type ToolbarButtonConfig,
+  type Toolbar,
   type ToolbarKind,
-  type ToolbarModuleOptions,
-  type ToolbarSingleOptions,
-  createToolbarStrategy,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+  createLiveToolbarStrategy,
+} from '@hungpvq/map-core/toolbar';
 
+import { useResolvedControlLayout } from '../../hooks/useMap';
+import { useLang } from '../lang/hook';
 import { useMapToolbarModule } from './store';
 
-export {
-  createSubscribable,
-  createToolbarControl,
-  createToolbarModule,
-} from '@hungpvq/map-core';
-export type { ToolbarButtonConfig } from '@hungpvq/map-core';
-
-export function useInitToolbarControl<T extends AnyToolbarStrategy>(control: T) {
+export function useInitToolbarControl<T extends AnyToolbarStrategy>(
+  control: T,
+  layoutKey?: string,
+) {
   type StateType = T extends ControlStrategy
     ? MapControlButtonUIState
     : Record<string, MapControlButtonUIState>;
@@ -38,65 +35,15 @@ export function useInitToolbarControl<T extends AnyToolbarStrategy>(control: T) 
       unsubscribe?.();
       control.unmount();
     };
-  }, [control]);
+  }, [control, layoutKey]);
 
   return { state };
 }
 
 type ToolbarSingleOptionsControl = Pick<
   WithMapPropType,
-  'controlLayout' | 'controlOrder'
+  'controlLayout' | 'controlOrder' | 'position'
 >;
-
-function createLiveToolbarStrategy(
-  optionsRef: MutableRefObject<AnyToolbarOptions>,
-  toolbar: ReturnType<typeof useMapToolbarModule>,
-  kind: ToolbarKind,
-): AnyToolbarStrategy {
-  if (kind === 'module') {
-    const initial = optionsRef.current as ToolbarModuleOptions;
-
-    const buttons: ToolbarButtonConfig[] = initial.buttons.map((btn) => ({
-      id: btn.id,
-      get order() {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        return (live ?? btn).order;
-      },
-      getState: () => {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        return (live ?? btn).getState();
-      },
-      onClick: async (e: MouseEvent) => {
-        const current = optionsRef.current as ToolbarModuleOptions;
-        const live = current.buttons.find((b) => b.id === btn.id);
-        await (live ?? btn).onClick?.(e);
-      },
-    }));
-
-    return createToolbarStrategy({
-      kind: 'module',
-      get moduleId() {
-        return (optionsRef.current as ToolbarModuleOptions).moduleId;
-      },
-      get moduleOrder() {
-        return (optionsRef.current as ToolbarModuleOptions).moduleOrder;
-      },
-      toolbar,
-      buttons,
-    });
-  }
-
-  return createToolbarStrategy({
-    kind: 'single',
-    id: (optionsRef.current as ToolbarSingleOptions).id,
-    toolbar,
-    getState: () => (optionsRef.current as ToolbarSingleOptions).getState(),
-    onClick: (e: MouseEvent) =>
-      (optionsRef.current as ToolbarSingleOptions).onClick?.(e),
-  });
-}
 
 export function useToolbarControl(
   mapId: string,
@@ -109,9 +56,35 @@ export function useToolbarControl(
     | Record<string, MapControlButtonUIState>
     | undefined;
 } {
-  const toolbar = useMapToolbarModule(
-    mapId,
-    opts.controlLayout ?? 'standalone',
+  const controlLayout = useResolvedControlLayout(opts.controlLayout);
+  const layoutRef = useRef(controlLayout);
+  layoutRef.current = controlLayout;
+  const toolbarBase = useMapToolbarModule(mapId, () => layoutRef.current);
+
+  const positionRef = useRef<Position>(
+    (opts.position || 'bottom-right') as Position,
+  );
+  positionRef.current = (opts.position || 'bottom-right') as Position;
+
+  const toolbar = useMemo<Toolbar>(
+    () => ({
+      register(state: MapControlButtonState) {
+        toolbarBase.register({
+          ...state,
+          position: positionRef.current,
+        });
+      },
+      update(id, patch) {
+        toolbarBase.update(id, {
+          ...patch,
+          position: positionRef.current,
+        });
+      },
+      unregister(id) {
+        toolbarBase.unregister(id);
+      },
+    }),
+    [toolbarBase],
   );
 
   const kind: ToolbarKind = (options.kind ?? 'single') as ToolbarKind;
@@ -120,10 +93,15 @@ export function useToolbarControl(
   optionsRef.current = options;
 
   const [control] = useState(() =>
-    createLiveToolbarStrategy(optionsRef, toolbar, kind),
+    createLiveToolbarStrategy(() => optionsRef.current, toolbar, kind),
   );
 
-  const { state } = useInitToolbarControl(control);
+  const { state } = useInitToolbarControl(control, controlLayout);
+
+  const { language } = useLang(mapId);
+  useEffect(() => {
+    control.sync();
+  }, [language, control]);
 
   return { state, control };
 }

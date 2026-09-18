@@ -1,0 +1,72 @@
+# UniversalRegistry — components
+
+Register Vue / React components for layer menus, legends, and other UI resolved by `RegistryItem` / `componentKey`.
+
+Methods, menu handlers, components, and control handles live on `UniversalRegistry` in `@hungpvq/map-core`, backed by `@hungpvq/shared-store` (`map:registry:*` keys on `globalThis`). The Vue / React class **extends** that host and only adds typed component APIs (+ Vue `markRaw`) — storage and resolve path are identical.
+
+```ts
+import { UniversalRegistry } from '@hungpvq/vue-map-core';
+// or `@hungpvq/react-map-core`
+```
+
+## Global vs per-map
+
+| API | Scope | Use when |
+| --- | --- | --- |
+| `registerComponent(key, Comp)` | All maps | Defaults from `installMapApp` / `createDatasetRegistryPlugin`, app-wide overrides |
+| `registerComponentForMap(mapId, key, Comp)` | One `mapId` | Page / demo overrides that must win over global (and not leak to other maps) |
+
+Lookup order in `getComponent(key, mapId)`: **map-specific first**, then global.
+
+```ts
+// Global (plugin / bootstrap)
+UniversalRegistry.registerComponent('layer-action-toggle-show', ToggleShow);
+
+// Per map — overrides global for that map only
+UniversalRegistry.registerComponentForMap(
+  mapId,
+  'layer-action-toggle-show-button',
+  SampleToggleShowButton,
+);
+```
+
+## Register after map load
+
+Map-scoped components / methods / controls live in the shared registry maps bag (`map:registry:maps` / `map:registry:controls`). When the map unmounts, `removeMap()` → `UniversalRegistry.clearMap(mapId)` clears that map’s entries (React StrictMode remounts the map once in development).
+
+**Prefer registering in `onMapLoaded` / `@map-loaded`**, so entries are written after each mount:
+
+```ts
+function onMapLoaded(map: MapSimple) {
+  UniversalRegistry.registerComponentForMap(
+    map.id,
+    'demo-layer-toggle-show',
+    SampleLayerToggleShow,
+  );
+  // load datasets…
+}
+```
+
+Registering only during the parent’s first render can disappear after StrictMode remount if the parent does not re-run that code.
+
+`registerComponent` (global) is not cleared by `removeMap`.
+
+## Menu handlers (per-map)
+
+Controls that register click handlers with `registerMenuHandlerForMap` should call `unregisterMenuHandlerForMap` on unmount so a remounted control does not leave a stale closure pointing at a destroyed host. `clearMap` / `removeMap` still wipes the whole map bag.
+
+```ts
+UniversalRegistry.registerMenuHandlerForMap(mapId, 'fitBounds', onFit);
+// …
+UniversalRegistry.unregisterMenuHandlerForMap(mapId, 'fitBounds');
+```
+
+## Dataset plugin helper
+
+Framework plugins call `registerDatasetRegistryComponents` from `@hungpvq/map-dataset/menu` with `UniversalRegistry.registerComponent` and a map of slots (`legendLinear`, `toggleShow`, `attributeTable`, … → `LIST_VIEW_MENU_COMPONENT_KEY`). The helper is generic (`NoInfer`) so heterogeneous Vue/React components type-check against the registry. Prefer `installMapApp` / `createDatasetRegistryPlugin()` over calling it by hand unless you are building a custom subset.
+
+## Related
+
+- Layer menus / `componentKey`: [Menus](/map/dataset/create-dataset/with-helper-menu)
+- Attribute table parts (`attribute-table`, `attribute-table-view`, `attribute-table-toolbar`, `attribute-table-grid`, `attribute-table-pager`): [Attribute table](/map/dataset/create-dataset/attribute-table)
+- Map control handles: [UniversalRegistry controls](./registry-controls.md)

@@ -4,13 +4,16 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  EventClick,
-  EventMouseMove,
-  WithMapPropType,
-  type MapSimple,
-} from '@hungpvq/map-core';
-import { INSPECT_CONTROL_LOCALE } from '../../locale';
+  InspectController,
+  brightColor,
+  generateInspectStyle,
+  renderPopup as _renderPopup,
+  type InspectControllerOptions,
+} from '@hungpvq/map-draw';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -22,225 +25,124 @@ import {
   useToolbarControl,
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
-import { isEqual } from 'lodash';
-import {
-  PointLike,
-  Popup,
-  QueryRenderedFeaturesOptions,
-  type MapMouseEvent,
-  type MapSourceDataEvent,
-  type StyleSpecification,
-} from 'maplibre-gl';
-import { ref, shallowRef } from 'vue';
-import { brightColor } from './colors';
-import {
-  getSourcesFromMap,
-  isInspectStyle,
-  markInspectStyle,
-  type InspectStyleSpecification,
-} from './inspect';
-import _renderPopup from './renderPopup';
-import { generateColoredLayers, generateInspectStyle } from './stylegen';
-const props = withDefaults(
-  defineProps<
-    WithMapPropType & {
-      showInspectDefault?: boolean;
-      useInspectStyle?: boolean;
-      showInspectMapPopup?: boolean;
-      showInspectMapPopupOnHover?: boolean;
-      showMapPopup?: boolean;
-      showMapPopupOnHover?: boolean;
-      blockHoverPopupOnClick?: boolean;
-      buildInspectStyle?: (...args: any[]) => any;
-      backgroundColor?: string;
-      assignLayerColor?: (...args: any[]) => any;
-      renderPopup?: (...args: any[]) => any;
-      selectThreshold?: number;
-      queryParameters?: QueryRenderedFeaturesOptions;
-    }
-  >(),
-  {
-    ...defaultMapProps,
-    showInspectDefault: false,
-    useInspectStyle: true,
-    showInspectMapPopup: true,
-    showInspectMapPopupOnHover: false,
-    showMapPopup: false,
-    showMapPopupOnHover: true,
-    blockHoverPopupOnClick: false,
-    buildInspectStyle: generateInspectStyle,
-    backgroundColor: '#fff',
-    assignLayerColor: brightColor,
-    renderPopup: _renderPopup,
-    selectThreshold: 5,
-    queryParameters: () => ({}),
-  },
-);
-const _popup = shallowRef(
-  new Popup({
-    closeButton: false,
-    closeOnClick: false,
-  }),
-);
-const { callMap, mapId, moduleContainerProps, order } = useMap(
-  props,
-  onInit,
-  onDestroy,
-);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
+import { ref } from 'vue';
+import { INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';
+
+/** Local interface so Vue resolve props used in withDefaults / defaultMapProps. */
+interface InspectControlProps extends WithMapPropType {
+  // Keys present in defaultMapProps (Vue needs them declared on this SFC type)
+  mapId?: string;
+  dragId?: string;
+  btnWidth?: number;
+  position?: WithMapPropType['position'];
+  controlVisible?: boolean;
+  showInspectDefault?: boolean;
+  useInspectStyle?: boolean;
+  showInspectMapPopup?: boolean;
+  showInspectMapPopupOnHover?: boolean;
+  showMapPopup?: boolean;
+  showMapPopupOnHover?: boolean;
+  blockHoverPopupOnClick?: boolean;
+  buildInspectStyle?: InspectControllerOptions['buildInspectStyle'];
+  backgroundColor?: string;
+  assignLayerColor?: InspectControllerOptions['assignLayerColor'];
+  renderPopup?: InspectControllerOptions['renderPopup'];
+  selectThreshold?: number;
+  queryParameters?: QueryRenderedFeaturesOptions;
+}
+
+const props = withDefaults(defineProps<InspectControlProps>(), {
+  ...defaultMapProps,
+  showInspectDefault: false,
+  useInspectStyle: true,
+  showInspectMapPopup: true,
+  showInspectMapPopupOnHover: false,
+  showMapPopup: false,
+  showMapPopupOnHover: true,
+  blockHoverPopupOnClick: false,
+  buildInspectStyle: generateInspectStyle,
+  backgroundColor: '#fff',
+  assignLayerColor: brightColor,
+  renderPopup: _renderPopup,
+  selectThreshold: 5,
+  queryParameters: () => ({}),
+});
+
 const showInspect = ref(props.showInspectDefault);
-setLocaleDefault(INSPECT_CONTROL_LOCALE);
-const event = new EventClick().setHandler(onMapMouseMove);
-const eventMouseMove = new EventMouseMove().setHandler(onMapMouseMove);
-const _popupBlocked = ref(false);
-const { add: addEventClick, remove: removeEventClick } = useEventMap(
-  mapId.value,
-  event,
-);
-const { add: addEventMouseMove, remove: removeEventMouseMove } = useEventMap(
-  mapId.value,
-  eventMouseMove,
-);
-function onMapMouseMove(e: MapMouseEvent) {
-  if (showInspect.value) {
-    if (!props.showInspectMapPopup) return;
-    if (e.type === 'mousemove' && !props.showInspectMapPopupOnHover) return;
-    if (
-      e.type === 'click' &&
-      props.showInspectMapPopupOnHover &&
-      props.blockHoverPopupOnClick
-    ) {
-      _popupBlocked.value = !_popupBlocked.value;
-    }
-  } else {
-    if (!props.showMapPopup) return;
-    if (e.type === 'mousemove' && !props.showMapPopupOnHover) return;
-    if (
-      e.type === 'click' &&
-      props.showMapPopupOnHover &&
-      props.blockHoverPopupOnClick
-    ) {
-      _popupBlocked.value = !_popupBlocked.value;
-    }
-  }
-
-  if (!_popupBlocked.value && _popup.value) {
-    let queryBox: PointLike | [PointLike, PointLike];
-    if (props.selectThreshold === 0) {
-      queryBox = e.point;
-    } else {
-      // set a bbox around the pointer
-      queryBox = [
-        [e.point.x - props.selectThreshold, e.point.y + props.selectThreshold], // bottom left (SW)
-        [e.point.x + props.selectThreshold, e.point.y - props.selectThreshold], // top right (NE)
-      ];
-    }
-
-    callMap((map) => {
-      const features =
-        map.queryRenderedFeatures(queryBox, props.queryParameters) || [];
-      map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-      if (!features.length) {
-        _popup.value.remove();
-      } else {
-        _popup.value.setLngLat(e.lngLat);
-
-        const renderedPopup = props.renderPopup(features);
-
-        if (typeof renderedPopup === 'string') {
-          _popup.value.setHTML(renderedPopup);
-        } else {
-          _popup.value.setDOMContent(renderedPopup);
-        }
-
-        _popup.value.addTo(map);
-      }
-    });
-  }
-}
-function toggleInspect() {
-  showInspect.value = !showInspect.value;
-  if (showInspect.value) {
-    addEventClick();
-    addEventMouseMove();
-  } else {
-    _popup.value?.remove();
-    removeEventClick();
-    removeEventMouseMove();
-  }
-  callMap((map) => render(map));
-  control.sync();
-}
 const path = {
   map: mdiMap,
   inspect: mdiMapSearch,
 };
-let sources: { [key: string]: string[] } = {};
-let _originalStyle: StyleSpecification | undefined;
-const onSourceChange = (e: MapSourceDataEvent, map: MapSimple) => {
-  if (e.sourceDataType === 'visibility' || !e.isSourceLoaded) {
-    return;
-  }
-  const previousSources = Object.assign({}, sources);
-  sources = getSourcesFromMap(map);
 
-  if (!isEqual(previousSources, sources) && Object.keys(sources).length > 0) {
-    // If the sources have changed, we need to re-render the inspect style but not too fast
-    setTimeout(() => render(map), 1000);
-  }
-};
-const onStyleChange = (map: MapSimple) => {
-  const style = map.getStyle();
-  if (!isInspectStyle(style as InspectStyleSpecification)) {
-    _originalStyle = style;
-  }
-};
-let _onSourceChange: any;
-let _onStyleChange: any;
-function onInit(map: MapSimple) {
-  _onSourceChange = (e: MapSourceDataEvent) => onSourceChange(e, map);
-  _onStyleChange = () => onStyleChange(map);
-  // if sources have already been passed as options
-  // we do not need to figure out the sources ourselves
-  if (Object.keys(sources).length === 0) {
-    map.on('tiledata', _onSourceChange);
-    map.on('sourcedata', _onSourceChange);
-  }
+const controller = new InspectController({
+  showInspectMap: props.showInspectDefault,
+  useInspectStyle: props.useInspectStyle,
+  showInspectMapPopup: props.showInspectMapPopup,
+  showInspectMapPopupOnHover: props.showInspectMapPopupOnHover,
+  showMapPopup: props.showMapPopup,
+  showMapPopupOnHover: props.showMapPopupOnHover,
+  blockHoverPopupOnClick: props.blockHoverPopupOnClick,
+  buildInspectStyle: props.buildInspectStyle,
+  backgroundColor: props.backgroundColor,
+  assignLayerColor: props.assignLayerColor,
+  renderPopup: props.renderPopup,
+  selectThreshold: props.selectThreshold,
+  queryParameters: props.queryParameters,
+  onToggle: (show) => {
+    showInspect.value = show;
+    syncPointerEvents();
+    control.sync();
+  },
+});
 
-  map.on('styledata', _onStyleChange);
-  map.on('load', _onStyleChange);
-}
-function onDestroy(map: MapSimple) {
-  showInspect.value = false;
-  map.off('styledata', _onSourceChange);
-  map.off('load', _onSourceChange);
-  map.off('tiledata', _onStyleChange);
-  map.off('sourcedata', _onStyleChange);
+const clickEvent = new EventClick().setHandler(controller.handlePointerEvent);
+const moveEvent = new EventMouseMove().setHandler(
+  controller.handlePointerEvent,
+);
+
+const { mapId, moduleContainerProps, order } = useMap(
+  props,
+  onInit,
+  onDestroy,
+);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', INSPECT_CONTROL_LOCALE);
+
+const { add: addEventClick, remove: removeEventClick } = useEventMap(
+  mapId.value,
+  clickEvent,
+);
+const { add: addEventMouseMove, remove: removeEventMouseMove } = useEventMap(
+  mapId.value,
+  moveEvent,
+);
+
+function syncPointerEvents() {
   removeEventClick();
   removeEventMouseMove();
-  render(map);
-}
-function render(map: MapSimple) {
-  if (showInspect.value) {
-    if (props.useInspectStyle) {
-      map.setStyle(markInspectStyle(_inspectStyle(map)));
-    }
-  } else if (_originalStyle) {
-    if (props.useInspectStyle) {
-      map.setStyle(_originalStyle);
-    }
+  if (controller.needsClickEvent()) {
+    addEventClick();
+  }
+  if (controller.needsHoverEvent()) {
+    addEventMouseMove();
   }
 }
-function _inspectStyle(map: MapSimple) {
-  const coloredLayers = generateColoredLayers(
-    sources,
-    props.assignLayerColor as (layerId: string, alpha: number) => string,
-  );
-  return props.buildInspectStyle(map.getStyle(), coloredLayers, {
-    backgroundColor: props.backgroundColor,
-  });
+
+function onInit(map: MapSimple) {
+  controller.attach(map);
+  syncPointerEvents();
 }
-const isDrawShow = ref(false);
+function onDestroy() {
+  removeEventClick();
+  removeEventMouseMove();
+  controller.detach();
+}
+
+function toggleInspect() {
+  controller.toggle();
+}
+
 useRegisterMapControl(mapId, {
   id: 'mapInspectControl',
   panelKind: 'button',
@@ -258,18 +160,15 @@ useRegisterMapControl(mapId, {
     },
   ],
 });
+
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapInspectControl',
   getState() {
-    return {
-      visible: !isDrawShow.value,
+    return mdiButtonState(!showInspect.value ? path.map : path.inspect, {
+      visible: true,
       title: trans.value('map.inspect-control.button'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: !showInspect.value ? path.map : path.inspect,
-      },
-    };
+    });
   },
   onClick() {
     toggleInspect();

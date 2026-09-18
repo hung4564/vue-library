@@ -10,13 +10,13 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 | [IdentifyShowFirstControl](./IdentifyShowFirstControl.md) | Click → first identify menu | none |
 | [DatasetControl](./DatasetControl.md) | Root dataset list | none |
 | [ComponentManagementControl](./ComponentManagementControl.md) | Dialogs from menus (`addComponent`) | none |
-| [LayerHighlight](./LayerHighlight.md) | Click / hover highlight | none |
 | [CreateControl](./CreateControl.md) | Create-layer dialog | Vue `update:show` / React `onShowChange` |
 
 ## Helpers
 
 - [GIS worker](../worker.md) — Vite / Nx config for parse + CRS off the main thread
 - [Legend](./Legend.md) — `createLegend` / `createMultiLegend`
+- [List UI types](../create-dataset/list.md#types-for-custom-list--drag-uis) — `LayerListItem` / tree helpers for custom LayerControl-like UIs
 - [LayerSimpleMapboxBuild](./LayerSimpleMapboxBuild.md)
 - [useMapDataset](../helper/useMapDataset.md)
 - [Create dataset](../create-dataset/)

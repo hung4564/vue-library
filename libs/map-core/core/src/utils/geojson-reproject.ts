@@ -2,8 +2,8 @@ import type { Feature, GeoJSON, Geometry, Position } from 'geojson';
 import proj4 from 'proj4';
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
-import { normalizeEpsgCode, resolveCrsProjection } from './crs-catalog';
-import { WGS84_LONGLAT } from './proj4-crs-catalog';
+import { normalizeEpsgCode, resolveCrsProjection } from '../crs/crs-catalog';
+import { WGS84_LONGLAT } from '../crs/proj4-crs-catalog';
 
 const COORDINATE_MAX_DEPTH = 6;
 const GEOMETRY_MAX_DEPTH = 16;
@@ -117,7 +117,9 @@ function cloneJsonValueIterative(root: unknown): unknown {
     return rootUnwrapped;
   }
 
-  const createTarget = (source: object): Record<string, unknown> | unknown[] => {
+  const createTarget = (
+    source: object,
+  ): Record<string, unknown> | unknown[] => {
     if (ArrayBuffer.isView(source) && !(source instanceof DataView)) {
       return Array.from(source as unknown as ArrayLike<number>);
     }
@@ -309,9 +311,7 @@ function cloneJsonArray(value: unknown, depth = 0): unknown {
   return out;
 }
 
-function plainProperties(
-  properties: unknown,
-): Record<string, unknown> | null {
+function plainProperties(properties: unknown): Record<string, unknown> | null {
   if (properties == null) return null;
   const raw = unwrapVueRaw(properties);
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
@@ -361,10 +361,11 @@ function plainGeometry(geometry: unknown, depth = 0): Geometry | null {
 
 function plainFeature(feature: unknown): Feature {
   const raw = unwrapVueRaw(feature) as Feature;
+  const geometry = plainGeometry(raw?.geometry);
   const out: Feature = {
     type: 'Feature',
     properties: plainProperties(raw?.properties),
-    geometry: plainGeometry(raw?.geometry),
+    geometry: geometry as Feature['geometry'],
   };
   if (raw && 'id' in raw && raw.id !== undefined) out.id = raw.id;
   return out;
@@ -430,7 +431,9 @@ function createForward(from: string, to: string): ForwardFn {
     if (!Number.isFinite(x) || !Number.isFinite(y)) return position;
     try {
       const [lng, lat] = converter.forward([x, y]);
-      return position.length > 2 ? [lng, lat, ...position.slice(2)] : [lng, lat];
+      return position.length > 2
+        ? [lng, lat, ...position.slice(2)]
+        : [lng, lat];
     } catch (error) {
       throw new MapError(
         isCallStackOverflow(error)
@@ -449,9 +452,13 @@ function transformCoordinates(
   depth = 0,
 ): Position | Position[] | Position[][] | Position[][][] {
   if (depth > COORDINATE_MAX_DEPTH) {
-    throw new MapError('GeoJSON coordinates are too deeply nested', 'CRS_ERROR', {
-      recoverable: false,
-    });
+    throw new MapError(
+      'GeoJSON coordinates are too deeply nested',
+      'CRS_ERROR',
+      {
+        recoverable: false,
+      },
+    );
   }
   if (!Array.isArray(coordinates)) {
     throw new MapError('Invalid GeoJSON coordinates', 'CRS_ERROR', {
@@ -546,16 +553,23 @@ function wrapReprojectError(
 
 export type ReprojectProgress = (current: number, total: number) => void;
 
-export function reprojectGeojsonToWgs84(
+/**
+ * Reproject GeoJSON between CRS codes (EPSG). No-op when from === to.
+ * Map data after import is typically EPSG:4326.
+ */
+export function reprojectGeojson(
   geojson: GeoJSON,
   fromCrs: string | null | undefined,
+  toCrs: string | null | undefined,
   onProgress?: ReprojectProgress,
 ): GeoJSON {
-  const epsg = normalizeEpsgCode(fromCrs) ?? '4326';
-  if (epsg === '4326') return geojson;
+  const fromEpsg = normalizeEpsgCode(fromCrs) ?? '4326';
+  const toEpsg = normalizeEpsgCode(toCrs) ?? '4326';
+  if (fromEpsg === toEpsg) return geojson;
 
-  const from = resolveCrsProjection(epsg);
-  const to = WGS84_LONGLAT;
+  const from = resolveCrsProjection(fromEpsg);
+  const to =
+    toEpsg === '4326' ? WGS84_LONGLAT : resolveCrsProjection(toEpsg);
 
   try {
     const clone = toPlainJson(geojson);
@@ -595,7 +609,12 @@ export function reprojectGeojsonToWgs84(
     onProgress?.(1, 1);
     return geometry;
   } catch (error) {
-    const wrapped = wrapReprojectError(error, epsg, from, geojson);
+    const wrapped = wrapReprojectError(error, fromEpsg, from, geojson);
+    wrapped.setContext({
+      ...wrapped.context,
+      toEpsg,
+      fromEpsg,
+    });
     if (typeof window !== 'undefined') {
       try {
         errorHandler.handleOnce(wrapped);
@@ -605,4 +624,12 @@ export function reprojectGeojsonToWgs84(
     }
     throw wrapped;
   }
+}
+
+export function reprojectGeojsonToWgs84(
+  geojson: GeoJSON,
+  fromCrs: string | null | undefined,
+  onProgress?: ReprojectProgress,
+): GeoJSON {
+  return reprojectGeojson(geojson, fromCrs, '4326', onProgress);
 }

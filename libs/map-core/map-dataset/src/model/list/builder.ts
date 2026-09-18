@@ -1,17 +1,17 @@
 import type { MapSimple } from '@hungpvq/map-core';
+import { createWithEventHelper } from '../../extra/event/model';
 import {
-  createMenuItemSetOpacity,
-  createMenuItemMoveUp,
-  createMenuItemMoveDown,
+  addMenuBuilder,
   createMenuItemAddToGroup,
-  createMenuItemExportGeo,
-  createMenuItemAttributeTable,
+  createMenuItemMoveDown,
+  createMenuItemMoveUp,
+  createMenuItemSetOpacity,
   createWithMenuHelper,
-} from '../../extra';
-import { createWithEventHelper } from '../../extra/event';
-import { addMenuBuilder, type WithMenuBuilder } from '../../extra/menu';
-import type { WithChildren } from '../../interfaces';
-import { setOpacity, toggleShow } from '../../interfaces';
+  LIST_VIEW_MENU_COMPONENT_KEY,
+  type WithMenuBuilder,
+} from '../../menu';
+import type { WithChildren } from '../../interfaces/dataset.base';
+import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
 import {
   addDatasetWithChildren,
@@ -29,8 +29,6 @@ export interface ListViewUIBuilder {
   configDisabledDelete(disabled?: boolean): this;
   configDisabledMove(disabled?: boolean): this;
   configDisabledAddToGroup(disabled?: boolean): this;
-  configDisabledExport(disabled?: boolean): this;
-  configDisabledAttributeTable(disabled?: boolean): this;
   configInitShowLegend(initShow?: boolean): this;
   build(): IListViewUI;
 }
@@ -49,8 +47,6 @@ function createBaseListViewUiBuilder(
       disabled_opacity: false,
       disabled_move: false,
       disabled_add_to_group: false,
-      disabled_export: false,
-      disabled_attribute_table: false,
       init_show_legend: false,
     },
     index: 0,
@@ -94,14 +90,6 @@ function createBaseListViewUiBuilder(
       state.config!.disabled_add_to_group = disabled ?? true;
       return this;
     },
-    configDisabledExport(disabled) {
-      state.config!.disabled_export = disabled ?? true;
-      return this;
-    },
-    configDisabledAttributeTable(disabled) {
-      state.config!.disabled_attribute_table = disabled ?? true;
-      return this;
-    },
     configInitShowLegend(initShow) {
       state.config!.init_show_legend = initShow ?? true;
       return this;
@@ -133,8 +121,6 @@ function createBaseListViewUiBuilder(
           disabled_opacity: false,
           disabled_move: false,
           disabled_add_to_group: false,
-          disabled_export: false,
-          disabled_attribute_table: false,
           ...state.config,
         },
         toggleShow(map: MapSimple, show: boolean) {
@@ -145,7 +131,7 @@ function createBaseListViewUiBuilder(
         },
       };
       if (!state.icon) {
-        dataset.icon = { componentKey: 'layer-icon' };
+        dataset.icon = { componentKey: LIST_VIEW_MENU_COMPONENT_KEY.layerIcon };
       }
       if (!dataset.config.disabled_opacity) {
         dataset.addMenu(createMenuItemSetOpacity());
@@ -161,12 +147,8 @@ function createBaseListViewUiBuilder(
           dataset.addMenu(createMenuItemAddToGroup());
         }
       }
-      if (!dataset.config.disabled_export) {
-        dataset.addMenu(createMenuItemExportGeo());
-      }
-      if (!dataset.config.disabled_attribute_table) {
-        dataset.addMenu(createMenuItemAttributeTable());
-      }
+      // Export / Attribute table: opt-in via `.addMenu(createMenuItem…)`
+      // or helpers like `createGeoJsonDataset({ export, attributeTable })`.
       return dataset;
     },
   };
@@ -223,8 +205,6 @@ export function createDatasetPartGroupSubListViewUiComponentBuilder(
       disabled_opacity: false,
       disabled_move: false,
       disabled_add_to_group: false,
-      disabled_export: false,
-      disabled_attribute_table: false,
       init_show_legend: false,
       init_show_children: false,
     },

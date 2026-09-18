@@ -1,9 +1,6 @@
-import type {
-  IDataset,
-  IMapboxLayerView,
-  IMapboxSourceView,
-} from '../interfaces';
-import { findSiblingOrNearestLeaf } from '../model/visitors';
+import type { IDataset } from '../interfaces/dataset.base';
+import type { IMapboxLayerView, IMapboxSourceView } from '../interfaces/dataset.parts';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 
 export type DatasetSourceKind = 'vector' | 'raster' | 'unknown';
 

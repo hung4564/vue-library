@@ -1,10 +1,15 @@
+import {
+  isMapButtonFluidVariant,
+  type MapButtonSize,
+  type MapButtonVariant,
+} from '@hungpvq/map-core';
 import React, { createContext, useContext } from 'react';
 import { MapButton } from './MapButton';
 import { MapIcon } from './MapIcon';
 
 interface MapControlButtonGroupContextValue {
   isGroup: boolean;
-  groupSize: number;
+  groupSize: MapButtonSize | string;
 }
 
 const MapControlButtonGroupContext =
@@ -15,9 +20,12 @@ export interface MapControlButtonProps extends React.ButtonHTMLAttributes<HTMLBu
   tooltip?: string;
   title?: string;
   loading?: boolean;
-  size?: number;
+  /** small | medium | large | number (px). Applies to every variant. */
+  size?: MapButtonSize | string;
   active?: boolean;
   disabled?: boolean;
+  /** icon (default) | plain | text | tonal | outlined | filled */
+  variant?: MapButtonVariant;
   contentButton?: React.ReactNode;
   children?: React.ReactNode;
 }
@@ -27,43 +35,53 @@ export function MapControlButton({
   tooltip,
   title,
   loading = false,
-  size = 32,
+  size = 'medium',
   active = false,
   disabled = false,
+  variant = 'icon',
   contentButton,
   children,
   ...props
 }: MapControlButtonProps) {
   const groupContext = useContext(MapControlButtonGroupContext);
   const isGroup = groupContext?.isGroup ?? false;
-  const groupSize = groupContext?.groupSize ?? 0;
+  const groupSize = groupContext?.groupSize;
 
-  if (isGroup) {
+  const label = tooltip || title;
+  const isFluid = isMapButtonFluidVariant(variant);
+  const resolvedSize =
+    isGroup && groupSize != null && groupSize !== '' ? groupSize : size;
+
+  if (isGroup || isFluid) {
     return (
       <MapButton
+        variant={isFluid ? variant : 'icon'}
+        size={resolvedSize}
         active={active}
-        height={groupSize}
-        title={tooltip || title}
-        width={groupSize}
+        title={label}
+        aria-label={label}
+        aria-pressed={active}
         disabled={disabled}
         loading={loading}
         {...props}
       >
-        {children || <MapIcon>{icon}</MapIcon>}
+        {children || (isFluid ? null : <MapIcon>{icon}</MapIcon>)}
       </MapButton>
     );
   }
 
   return (
     <div className="button-container">
-      <div title={tooltip || title}>
+      <div title={label}>
         {contentButton || (
           <MapButton
+            variant="icon"
+            size={resolvedSize}
             active={active}
-            height={size}
             loading={loading}
-            width={size}
             disabled={disabled}
+            aria-label={label}
+            aria-pressed={active}
             {...props}
           >
             {children || <MapIcon>{icon}</MapIcon>}

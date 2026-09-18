@@ -1,36 +1,34 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   EVENT_CONTROL_LOCALE,
+  groupEventsByMapType,
+  isEventActive,
   MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useMapMittStore } from '../../mitt';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
-import { useEventMapItems } from '../hook';
-import type { MapEventStore } from '../store';
+import { useLang } from '../../lang/hook';
+import { getMapMittStore } from '../../../store/mitt-store';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
+import { useEventMapItems } from '../hook/useEventMapItems';
 
 export interface EventManagementControlProps extends WithMapPropType {
   show?: boolean;
 }
 
-function isActive(current: MapEventStore['current'], event: IEvent) {
-  const currentCheck = current[event.event_map_type];
-  return !!(currentCheck && currentCheck.id === event.id);
-}
-
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapEventManagementControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapEventManagementControl',
@@ -49,15 +47,15 @@ export function EventManagementControl(props: EventManagementControlProps) {
     ],
   });
   const [events, setEvents] = useState<IEvent[]>([]);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const { getCurrent } = useEventMapItems(mapId, {
     onChange: (p) => setEvents(p.slice()),
   });
   const [current, setCurrent] = useState(getCurrent);
 
   useEffect(() => {
-    setLocaleDefault(EVENT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', EVENT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     const update = () => setCurrent(getCurrent());
@@ -68,25 +66,27 @@ export function EventManagementControl(props: EventManagementControlProps) {
     };
   }, [emitter, getCurrent]);
 
-  const groupedViews = useMemo(() => {
-    const groups: Record<string, IEvent[]> = {};
-    for (const view of events) {
-      const type = view.event_map_type;
-      if (!groups[type]) groups[type] = [];
-      groups[type].push(view);
-    }
-    return groups;
-  }, [events]);
+  const groupedViews = useMemo(
+    () => groupEventsByMapType(events),
+    [events],
+  );
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapEventManagementControl',
-    getState: () => ({
-      title: trans('map.event-control.title'),
-      icon: { type: 'mdi' as const, path: mdiCalendarSearch },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCalendarSearch, {
+        active: show,
+        title: trans('map.event-control.title'),
+      }),
     onClick: () => toggleShow(),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer
@@ -116,7 +116,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
                 <h2 className="map-event-control__group-title">{type}</h2>
                 <ul className="map-event-control__list">
                   {group.map((event) => {
-                    const active = isActive(current, event);
+                    const active = isEventActive(current, event);
                     return (
                       <li
                         key={event.id}

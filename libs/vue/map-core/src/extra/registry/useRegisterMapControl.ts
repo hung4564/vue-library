@@ -1,11 +1,12 @@
-import type {
-  MapControlAction,
-  MapControlHandle,
-  MapControlPanelKind,
-  MapControlPanelPosition,
-  Position,
+import {
+  buildMapControlHandle,
+  type MapControlAction,
+  type MapControlHandle,
+  type MapControlPanelKind,
+  type MapControlPanelPosition,
+  type Position,
+  MAP_MODULE_CONTROL_ID_KEY,
 } from '@hungpvq/map-core';
-import { MAP_MODULE_CONTROL_ID_KEY } from '@hungpvq/map-core';
 import {
   computed,
   nextTick,
@@ -43,15 +44,6 @@ export function useRegisterMapControl(
     ...(options.initialPanelPosition ?? {}),
   });
 
-  const actionMap = new Map<string, MapControlAction['run']>();
-
-  function syncActionMap(list: MapControlAction[]) {
-    actionMap.clear();
-    for (const action of list) {
-      actionMap.set(action.type, action.run);
-    }
-  }
-
   function setShow(value: boolean) {
     if (options.setShow) {
       options.setShow(value);
@@ -61,43 +53,18 @@ export function useRegisterMapControl(
   }
 
   function buildHandle(): MapControlHandle {
-    const actions = toValue(options.actions) ?? [];
-    syncActionMap(actions);
-    const title = toValue(options.title);
-    const buttonPosition = toValue(options.buttonPosition);
-    const defaultActionType = toValue(options.defaultActionType);
-
-    return {
+    return buildMapControlHandle({
       id: options.id,
       panelKind: options.panelKind,
-      title,
-      buttonPosition,
-      defaultActionType,
-      props: {
-        panelKind: options.panelKind,
-        buttonPosition,
-        title,
-        defaultActionType,
-        ...(options.getProps?.() ?? {}),
-      },
-      actions: actions.map(({ type, title: t }) => ({ type, title: t })),
-      isOpen() {
-        return !!options.show?.value;
-      },
-      open() {
-        setShow(true);
-      },
-      close() {
-        setShow(false);
-      },
-      toggle() {
-        setShow(!options.show?.value);
-      },
+      title: toValue(options.title),
+      buttonPosition: toValue(options.buttonPosition),
+      defaultActionType: toValue(options.defaultActionType),
+      getProps: options.getProps,
+      actions: toValue(options.actions) ?? [],
+      isOpen: () => !!options.show?.value,
       setShow,
-      getPanelPosition() {
-        return { ...panelPosition };
-      },
-      setPanelPosition(pos: MapControlPanelPosition) {
+      getPanelPosition: () => ({ ...panelPosition }),
+      setPanelPosition(pos) {
         Object.assign(panelPosition, pos);
         if (options.panelKind === 'popup' || options.panelKind === 'float') {
           if (options.show?.value) {
@@ -106,38 +73,7 @@ export function useRegisterMapControl(
           }
         }
       },
-      runAction(type?: string, event?: unknown) {
-        const list = toValue(options.actions) ?? [];
-        syncActionMap(list);
-        if (!type) {
-          if (list.length === 1) {
-            list[0].run(event);
-            return;
-          }
-          if (list.length === 0) {
-            setShow(!options.show?.value);
-            return;
-          }
-          const preferred =
-            toValue(options.defaultActionType) || options.id;
-          const fallback = actionMap.get(preferred);
-          if (fallback) {
-            fallback(event);
-            return;
-          }
-          throw new Error(
-            `[UniversalRegistry] Control '${options.id}' has multiple actions; pass type or set defaultActionType`,
-          );
-        }
-        const run = actionMap.get(type);
-        if (!run) {
-          throw new Error(
-            `[UniversalRegistry] Control '${options.id}' has no action '${type}'`,
-          );
-        }
-        run(event);
-      },
-    };
+    });
   }
 
   let currentMapId = '';

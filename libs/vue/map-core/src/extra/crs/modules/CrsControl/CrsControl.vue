@@ -1,37 +1,34 @@
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
   type CrsItem,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import MapCommonButton from '../../../../components/MapCommonButton.vue';
-import { useLang } from '../../../../extra/lang';
+import { useLang } from '../../../../extra/lang/hook';
 import { Collapse, InputSelect, InputText } from '../../../../field';
-import {
-  defaultMapProps,
-  useMap,
-  useShow,
-  WithShowProps,
-} from '../../../../hooks';
+import { defaultMapProps, useMap } from '../../../../hooks/useMap';
+import { useShow, type WithShowProps } from '../../../../hooks/useShow';
 import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useToolbarControl } from '../../../toolbar';
-import { useRegisterMapControl } from '../../../registry';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks';
+import { useToolbarControl } from '../../../toolbar/helper';
+import { useRegisterMapControl } from '../../../registry/useRegisterMapControl';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../hooks/useMapCrsItems';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(CRS_CONTROL_LOCALE);
+registerLocale('en', CRS_CONTROL_LOCALE);
 const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {
@@ -90,6 +87,18 @@ const patchCustomItem = (item: CrsItem, patch: Partial<CrsItem>) => {
   Object.assign(item, patch);
   setItems([...crs_items.value]);
 };
+const patchCustomUnit = (
+  item: CrsItem,
+  value: string | { text: string; value: string } | undefined,
+) => {
+  const raw =
+    value && typeof value === 'object' && 'value' in value
+      ? value.value
+      : value;
+  if (raw === 'meter' || raw === 'degree') {
+    patchCustomItem(item, { unit: raw });
+  }
+};
 const isDisplayed = (epsg: string) => displayEpsgs.value.includes(epsg);
 const toggleDisplay = (epsg: string, checked: boolean) => {
   if (epsg === '4326') return;
@@ -105,19 +114,17 @@ const toggleDisplay = (epsg: string, checked: boolean) => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapCrsControl',
   getState() {
-    return {
+    return mdiButtonState(mdiInboxOutline, {
       visible: true,
+      active: show.value,
       title: trans.value('map.crs-control.title'),
-      icon: {
-        type: 'mdi',
-        path: mdiInboxOutline,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -224,7 +231,7 @@ const { state, control } = useToolbarControl(mapId.value, props, {
                       :model-value="crs_item.unit"
                       :label="trans('map.crs-control.field.unit')"
                       :items="unit_items"
-                      @update:model-value="patchCustomItem(crs_item, { unit: $event })"
+                      @update:model-value="patchCustomUnit(crs_item, $event)"
                     />
                   </div>
                 </div>

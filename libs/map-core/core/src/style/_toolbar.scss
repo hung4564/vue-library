@@ -1,0 +1,165 @@
+.map-toolbar-control {
+  position: relative;
+  pointer-events: all;
+  width: max-content;
+  max-width: 100%;
+}
+
+.map-toolbar-control > .button-container {
+  max-width: 100%;
+}
+
+.map-toolbar-control > .button-container > .button-group-sheet {
+  flex-wrap: nowrap;
+}
+
+.map-toolbar-overflow {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: min(calc(100vw - 24px), 360px);
+  padding: 6px;
+  border-radius: 18px;
+  background-color: var(--map-button-bg, var(--map-surface-color, #ffffff));
+  box-shadow:
+    0 3px 1px -2px rgb(0 0 0 / 20%),
+    0 2px 2px 0 rgb(0 0 0 / 14%),
+    0 1px 5px 0 rgb(0 0 0 / 12%);
+}
+
+.map-toolbar-overflow-top {
+  top: calc(100% + 8px);
+  bottom: auto;
+}
+
+.map-toolbar-overflow-bottom {
+  bottom: calc(100% + 8px);
+  top: auto;
+}
+
+.map-toolbar-overflow-left {
+  left: 0;
+  right: auto;
+}
+
+.map-toolbar-overflow-right {
+  right: 0;
+  left: auto;
+}
+
+.map-toolbar-menu-hosts {
+  display: contents;
+}
+
+.map-toolbar-menu-hosts > .module__container {
+  display: contents;
+}
+
+.map-toolbar-corner {
+  z-index: 3;
+  max-width: min(50vw, 100%);
+  box-sizing: border-box;
+}
+
+.map-toolbar-corner-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  width: max-content;
+}
+
+.map-toolbar-corner[data-position$='-left'] .map-toolbar-corner-stack {
+  align-items: flex-start;
+}
+
+/* Bottom corners: pack clusters toward the map edge. */
+.map-toolbar-corner[data-position^='bottom'] .map-toolbar-corner-stack {
+  justify-content: flex-end;
+}
+
+/* Corner More (#btnOutside): pin to map corner host, not btn wrapper. */
+.right-top-container > .map-toolbar-overflow,
+.left-top-container > .map-toolbar-overflow,
+.right-bottom-container > .map-toolbar-overflow,
+.left-bottom-container > .map-toolbar-overflow {
+  z-index: 20;
+  max-height: min(50vh, 320px);
+  overflow-y: auto;
+}
+
+.right-top-container > .map-toolbar-overflow {
+  top: 10px;
+  bottom: auto;
+  right: calc(10px + var(--map-control-button-size, 32px) + 8px);
+  left: auto;
+  align-items: flex-end;
+}
+
+.left-top-container > .map-toolbar-overflow {
+  top: 10px;
+  bottom: auto;
+  left: calc(10px + var(--map-control-button-size, 32px) + 8px);
+  right: auto;
+  align-items: flex-start;
+}
+
+.right-bottom-container > .map-toolbar-overflow {
+  top: auto;
+  bottom: 10px;
+  right: calc(10px + var(--map-control-button-size, 32px) + 8px);
+  left: auto;
+  align-items: flex-end;
+}
+
+.left-bottom-container > .map-toolbar-overflow {
+  top: auto;
+  bottom: 10px;
+  left: calc(10px + var(--map-control-button-size, 32px) + 8px);
+  right: auto;
+  align-items: flex-start;
+}
+
+.map-mobile-container {
+  --map-toolbar-edge-inset: 10px;
+
+  .right-bottom-container,
+  .left-bottom-container {
+    justify-content: flex-end;
+  }
+
+  /* Toolbar mode only (exclude `.map-toolbar-corner` menu hosts). */
+  .right-bottom-container:has(
+    > .btn-module-container > .map-toolbar-control:not(.map-toolbar-corner)
+  ),
+  .right-top-container:has(
+    > .btn-module-container > .map-toolbar-control:not(.map-toolbar-corner)
+  ),
+  .left-bottom-container:has(
+    > .btn-module-container > .map-toolbar-control:not(.map-toolbar-corner)
+  ),
+  .left-top-container:has(
+    > .btn-module-container > .map-toolbar-control:not(.map-toolbar-corner)
+  ) {
+    left: 0;
+    right: 0;
+  }
+
+  .right-bottom-container
+    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+  .right-top-container
+    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+  .left-bottom-container
+    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+  .left-top-container
+    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)) {
+    align-self: flex-start;
+    width: max-content;
+    max-width: calc(100% - 2 * var(--map-toolbar-edge-inset));
+    margin-left: var(--map-toolbar-edge-inset);
+    margin-right: var(--map-toolbar-edge-inset);
+  }
+}

@@ -1,9 +1,9 @@
+import { logHelper } from '@hungpvq/map-core';
 import {
   type AnyIEvent,
-  logHelper,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import { onMounted, onUnmounted, shallowRef } from 'vue';
 import { useMapMittStore } from '../../mitt';
 import { logger } from '../logger';

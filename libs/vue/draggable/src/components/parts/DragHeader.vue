@@ -1,0 +1,26 @@
+<script lang="ts">
+export default {
+  name: 'DragHeader',
+};
+</script>
+<script setup lang="ts"></script>
+
+<template>
+  <hr class="map-divider" aria-hidden="true" />
+  <div class="draggable-header">
+    <div class="draggable-header__content">
+      <slot name="pre-title"> </slot>
+      <div class="draggable-header__title">
+        <div class="draggable-header__title-text">
+          <slot name="title"> </slot>
+        </div>
+        <div class="draggable-header__after-title">
+          <slot name="after-title"> </slot>
+        </div>
+      </div>
+      <div class="map-spacer"></div>
+      <slot name="extra-btn"></slot>
+    </div>
+  </div>
+  <hr class="map-divider" aria-hidden="true" />
+</template>

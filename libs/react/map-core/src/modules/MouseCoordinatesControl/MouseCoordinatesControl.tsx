@@ -1,40 +1,12 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
+import { applyMapScaleLabel, debounce } from '@hungpvq/map-core';
+import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { debounce } from 'lodash';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCoordinate } from '../../extra/crs';
-import { defaultMapProps, useMap } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-
-function getDecimalRoundNum(d: number) {
-  const multiplier = Math.pow(10, Math.ceil(-Math.log(d) / Math.LN10));
-  return Math.round(d * multiplier) / multiplier;
-}
-
-function getRoundNum(num: number) {
-  const pow10 = Math.pow(10, `${Math.floor(num)}`.length - 1);
-  let d = num / pow10;
-  d =
-    d >= 10
-      ? 10
-      : d >= 5
-        ? 5
-        : d >= 3
-          ? 3
-          : d >= 2
-            ? 2
-            : d >= 1
-              ? 1
-              : getDecimalRoundNum(d);
-  return pow10 * d;
-}
-
-function setScale(container: HTMLElement, maxDistance: number, unit: string) {
-  const distance = getRoundNum(maxDistance);
-  if (container) container.innerHTML = `${distance}&nbsp;${unit}`;
-}
 
 export interface MouseCoordinatesControlProps extends WithMapPropType {
   hideZoom?: boolean;
@@ -74,16 +46,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
 
   const updateScale = useCallback((map: MapSimple, container: HTMLElement) => {
     if (hideScaleRef.current || !container) return;
-    const maxWidth = 100;
-    const y = map.getContainer().clientHeight / 2;
-    const left = map.unproject([0, y]);
-    const right = map.unproject([maxWidth, y]);
-    const maxMeters = left.distanceTo(right);
-    if (maxMeters >= 1000) {
-      setScale(container, maxMeters / 1000, 'km');
-    } else {
-      setScale(container, maxMeters, 'm');
-    }
+    applyMapScaleLabel(map, container);
   }, []);
 
   const syncScale = useCallback(
@@ -120,7 +83,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
             isDMSRef.current,
           );
           setCurrentPoint(
-            formatted.longitude + ', &nbsp;' + formatted.latitude,
+            `${formatted.longitude}, ${formatted.latitude}`,
           );
         }
       }, 15),
@@ -151,7 +114,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
           centerLngLat,
           isDMSRef.current,
         );
-        setCurrentPoint(point.longitude + ', &nbsp;' + point.latitude);
+        setCurrentPoint(`${point.longitude}, ${point.latitude}`);
       }
       syncScale(map);
       // Portal may not have mounted yet; retry after paint like Vue nextTick.
@@ -169,14 +132,22 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
     [onZoomEnd, onMouseMove, onMapMove],
   );
 
-  const { callMap, mapId, moduleContainerProps } = useMap(
-    { ...mergedProps, controlId: 'mapMouseCoordinatesControl' },
+  const { callMap, moduleContainerProps } = useMap(
+    {
+      ...mergedProps,
+      controlId: 'mapMouseCoordinatesControl',
+      // Status chrome — never promote/hide under buttonInMobile toolbar|menu.
+      controlLayout: 'button',
+    },
     onInit,
     onDestroy,
   );
   callMapRef.current = callMap;
 
-  const { format: formatCoordinate } = useCoordinate(mapId);
+  const formatCoordinate = useMemo(
+    () => createMapDisplayCoordinateFormatter(),
+    [],
+  );
 
   const changePixelValueRef = useRef<() => void>(() => {
     return;
@@ -192,7 +163,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
         lngLatRef.current,
         isDMSRef.current,
       );
-      setCurrentPoint(point.longitude + ', &nbsp;' + point.latitude);
+      setCurrentPoint(`${point.longitude}, ${point.latitude}`);
     }
   }, []);
 
@@ -228,12 +199,13 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
               <div className="mouse-coordinates-point">
                 <div
                   className="selectable"
-                  dangerouslySetInnerHTML={{ __html: currentPoint }}
                   style={{
                     minWidth: isDMS ? '220px' : '100px',
                     marginLeft: '4px',
                   }}
-                />
+                >
+                  {currentPoint}
+                </div>
                 <i
                   title={
                     isDMS

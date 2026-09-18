@@ -1,7 +1,7 @@
 /* Dynamic registry item: props vary by registered component. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComponentType } from 'react';
-import { useMap } from '../../../hooks';
+import { useMap } from '../../../hooks/useMap';
 import { useUniversalRegistry } from '../plugin';
 
 export interface RegistryItemProps {

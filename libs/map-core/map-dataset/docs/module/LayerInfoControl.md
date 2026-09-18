@@ -2,6 +2,8 @@
 
 Read-only layer list (no create / delete / move). Same list data as `LayerControl`.
 
+Uses `DraggableItemFloat` with locale key **`map.layer-info-control.title`** (Vue `:title` + `#title`, React `title={trans(...)}`). Do not reuse `map.layer-control.title`.
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->
@@ -25,8 +27,11 @@ Read-only layer list (no create / delete / move). Same list data as `LayerContro
 <script setup lang="ts">
 import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
 import { LayerInfoControl } from '@hungpvq/vue-map-dataset';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 </script>
 
 <template>

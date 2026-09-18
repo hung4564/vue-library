@@ -2,7 +2,10 @@
   "recommendations": [
     "nrwl.angular-console",
     "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "Vue.volar",
     "firsttris.vscode-jest-runner",
     "ms-playwright.playwright"
-  ]
+  ],
+  "unwantedRecommendations": ["octref.vetur"]
 }

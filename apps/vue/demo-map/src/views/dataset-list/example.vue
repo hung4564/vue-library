@@ -1,18 +1,20 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map, UniversalRegistry, WorkerControl } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import { reactive, ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
 import { loadListDemoDatasets } from '../../data/loaders';
 import SampleCustomMenu from './sample-custom-menu.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
 loggerFactory.enable('menu');
@@ -28,6 +30,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />
@@ -54,8 +57,9 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

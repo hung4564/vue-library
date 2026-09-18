@@ -87,7 +87,10 @@
   }
 }
 .hungpvq-draggable-card {
-  background-color: var(--map-card-bg, var(--card-background-color, rgba(32, 43, 54, 0.9)));
+  background-color: var(
+    --map-card-bg,
+    var(--card-background-color, rgba(32, 43, 54, 0.9))
+  );
   color: var(--map-card-text, var(--card-color, #fff));
   box-shadow: var(--map-shadow-1, 0 1px 3px rgba(0, 0, 0, 0.12));
   border-radius: var(--map-radius-sm, 4px);
@@ -108,6 +111,32 @@
   font-weight: var(--map-font-weight-normal, 400);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Override draggable chrome borders/corners to follow theme text color */
+  &:not(.border-0):before {
+    border-top-color: var(--map-card-text, currentColor);
+    border-bottom-color: var(--map-card-text, currentColor);
+  }
+
+  &:not(.border-0):after {
+    border-left-color: var(--map-card-text, currentColor);
+    border-right-color: var(--map-card-text, currentColor);
+  }
+
+  .card-arrow-top-left:before,
+  .card-arrow-top-right:before,
+  .card-arrow-bottom-left:before,
+  .card-arrow-bottom-right:before,
+  .card-arrow-top-left:after,
+  .card-arrow-top-right:after,
+  .card-arrow-bottom-left:after,
+  .card-arrow-bottom-right:after {
+    background: var(--map-card-text, currentColor);
+  }
+
+  .map-divider {
+    border-color: var(--map-card-text, currentColor);
+  }
 }
 .hungpvq-draggable-card button,
 .hungpvq-draggable-card input,
@@ -118,7 +147,12 @@
 .hungpvq-draggable-card button {
   color: var(--map-card-text, var(--map-text-primary, #333));
 }
-
+.hungpvq-draggable-card button.map-control-button--filled {
+  color: var(--map-on-primary-color, var(--map-text-inverse, #fff));
+}
+.hungpvq-draggable-card .card-container hr.map-divider:first-child {
+  display: none;
+}
 .btn-close {
   overflow: hidden;
   position: absolute;
@@ -206,7 +240,6 @@
   }
 }
 
-.map-compare-container,
 .map-container {
   .map-control-button,
   .button-group-container > .button-group-sheet {
@@ -231,14 +264,21 @@
     pointer-events: none;
     z-index: 2;
     position: absolute;
+    gap: 10px;
 
     & > * {
       clear: both;
     }
 
     & > .button-container,
-    & > .button-custom-container {
+    & > .button-custom-container,
+    & > .btn-module-container {
       pointer-events: all;
+    }
+
+    /* Hidden chrome (e.g. MapCommonButton visible=false) must not keep margin/gap. */
+    & > .btn-module-container:not(:has(*)) {
+      display: none;
     }
   }
 
@@ -248,10 +288,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    padding: 0 10px 10px 0;
 
-    & > .btn-module-container > .button-container,
-    & > .btn-module-container > .button-custom-container {
-      margin: 0 10px 10px 0;
+    & > .btn-module-container {
+      margin: 0;
       float: right;
       clear: both;
     }
@@ -263,10 +303,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 0 0 10px 10px;
 
-    & > .btn-module-container > .button-container,
-    & > .btn-module-container > .button-custom-container {
-      margin: 0 0 10px 10px;
+    & > .btn-module-container {
+      margin: 0;
       float: left;
     }
   }
@@ -277,10 +317,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 10px 0 0 10px;
 
-    & > .btn-module-container > .button-container,
-    & > .btn-module-container > .button-custom-container {
-      margin: 10px 0 0 10px;
+    & > .btn-module-container {
+      margin: 0;
       float: left;
     }
   }
@@ -291,10 +331,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    padding: 10px 10px 0 0;
 
-    & > .btn-module-container > .button-container,
-    & > .btn-module-container > .button-custom-container {
-      margin: 10px 10px 0 0;
+    & > .btn-module-container {
+      margin: 0;
       float: right;
     }
   }

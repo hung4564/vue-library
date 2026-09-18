@@ -41,8 +41,12 @@ export function parseColor(color: Color): RGB {
       b: color & 0xff,
     };
   } else if (typeof color === 'string' && cssColorRe.test(color)) {
-    const { groups } = color.match(cssColorRe)!;
-    const { fn, values } = groups as {
+    const matched = color.match(cssColorRe);
+    if (!matched?.groups) {
+      consoleWarn(`'${color}' is not a valid css color`);
+      return { r: 0, g: 0, b: 0 };
+    }
+    const { fn, values } = matched.groups as {
       fn: keyof typeof mappers;
       values: string;
     };

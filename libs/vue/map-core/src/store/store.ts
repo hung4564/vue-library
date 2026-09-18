@@ -4,18 +4,30 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  MAP_PLATFORM_HOST,
   MAP_STORE_KEY,
   MapStoreManager,
   registerMapAccessor,
+  registerMapReadySubscriber,
+  registerMapStoreCleanupRegistrar,
   type AddStoreOptions,
   type MapStore,
 } from '@hungpvq/map-core';
 import { VueMapStoreAdapter } from './vue-adapter';
-export { useMapGLobalStore } from './global-store';
+export { useMapGlobalStore } from './global-store';
 
 const storeAdapter = new VueMapStoreAdapter();
 const storeManager = new MapStoreManager(storeAdapter);
-registerMapAccessor((id, cb) => storeManager.getMap(id, cb));
+const platformHost = { hostId: MAP_PLATFORM_HOST.VUE_MAP_CORE } as const;
+registerMapAccessor((id, cb) => storeManager.getMap(id, cb), platformHost);
+registerMapReadySubscriber(
+  (id, cb) => storeManager.subscribeMapReady(id, cb),
+  platformHost,
+);
+registerMapStoreCleanupRegistrar(
+  (mapId, key, cleanup) => storeManager.registerCleanup(mapId, key, cleanup),
+  platformHost,
+);
 
 /**
  * Get map store by ID
@@ -44,26 +56,12 @@ export function getStore<T>(mapId: string, key: string): T | undefined {
 }
 
 /**
- * Check if store is multi-map
- */
-export function getIsMulti(id: string): boolean {
-  return storeManager.getIsMulti(id);
-}
-
-/**
- * Get maps from store
- */
-export function getMaps(id: string): MapSimple[] {
-  return storeManager.getMaps(id);
-}
-
-/**
- * Get map instance(s)
+ * Get map instance
  */
 export function getMap(
   id: string,
   cb?: MapFCOnUseMap,
-): MapSimple | MapSimple[] | undefined {
+): MapSimple | undefined {
   return storeManager.getMap(id, cb);
 }
 
@@ -100,13 +98,6 @@ export function destroyMapScopedStore(mapId: string, key: MapScopedKey) {
  */
 export const useMapStore = (mapId: string) => {
   return {
-    getIsMulti(): boolean {
-      return storeManager.getIsMulti(mapId);
-    },
-    getMaps(): MapSimple[] | undefined {
-      const maps = storeManager.getMaps(mapId);
-      return maps.length ? maps : undefined;
-    },
     getMap(cb?: MapFCOnUseMap) {
       return storeManager.getMap(mapId, cb);
     },
@@ -118,9 +109,6 @@ export const useMapStore = (mapId: string) => {
  */
 export const useMapContainer = (mapId: string) => {
   return {
-    initMaps(maps: MapSimple[]) {
-      storeManager.initMaps(mapId, maps);
-    },
     initMap(map: MapSimple) {
       storeManager.initMap(mapId, map);
     },

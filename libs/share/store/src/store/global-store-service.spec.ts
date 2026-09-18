@@ -1,0 +1,83 @@
+import { GlobalStoreService } from './index';
+
+const GLOBAL_STORE_STATE_KEY = '$_hungpv_store';
+const GLOBAL_STORE_SERVICE_KEY = '__hungpvq_GlobalStoreService__';
+
+function resetSharedStore() {
+  const host = globalThis as typeof globalThis & {
+    [GLOBAL_STORE_STATE_KEY]?: Record<string, unknown>;
+    [GLOBAL_STORE_SERVICE_KEY]?: GlobalStoreService;
+  };
+  delete host[GLOBAL_STORE_SERVICE_KEY];
+  delete host[GLOBAL_STORE_STATE_KEY];
+}
+
+describe('GlobalStoreService path keys', () => {
+  let store: GlobalStoreService;
+
+  beforeEach(() => {
+    resetSharedStore();
+    store = GlobalStoreService.getInstance();
+  });
+
+  it('pins singleton + state on globalThis across getInstance calls', () => {
+    const a = GlobalStoreService.getInstance();
+    const b = GlobalStoreService.getInstance();
+    expect(a).toBe(b);
+    a.set('probe', 1);
+    expect(b.get('probe')).toBe(1);
+  });
+
+  it('fires listeners when array path subscribe and set use different array instances', () => {
+    const listener = jest.fn();
+    store.subscribe(['drag', 'containers', 'main'], listener);
+
+    store.set(['drag', 'containers', 'main'], { width: 100 });
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(store.get(['drag', 'containers', 'main'])).toEqual({ width: 100 });
+  });
+
+  it('notifies parent path listeners for array set paths', () => {
+    const parent = jest.fn();
+    const exact = jest.fn();
+    store.subscribe('drag.containers', parent);
+    store.subscribe(['drag', 'containers', 'main'], exact);
+
+    store.set(['drag', 'containers', 'main'], { height: 40 });
+
+    expect(exact).toHaveBeenCalledTimes(1);
+    expect(parent).toHaveBeenCalledTimes(1);
+  });
+
+  it('unsubscribes using the normalized path key', () => {
+    const listener = jest.fn();
+    const unsubscribe = store.subscribe(['a', 'b'], listener);
+
+    unsubscribe();
+    store.set(['a', 'b'], 1);
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('supports string path subscribe with string set', () => {
+    const listener = jest.fn();
+    store.subscribe('root.child', listener);
+    store.set('root.child', 'ok');
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(store.get('root.child')).toBe('ok');
+  });
+
+  it('sibling container path set does not notify another container listener', () => {
+    store.set('drag:core', { container: {} });
+    const containerA = jest.fn();
+    const containerB = jest.fn();
+    store.subscribe(['drag:core', 'container', 'a'], containerA);
+    store.subscribe(['drag:core', 'container', 'b'], containerB);
+
+    store.set(['drag:core', 'container', 'a'], { width: 1 });
+
+    expect(containerA).toHaveBeenCalledTimes(1);
+    expect(containerB).not.toHaveBeenCalled();
+  });
+});

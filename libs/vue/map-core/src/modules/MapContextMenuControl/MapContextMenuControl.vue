@@ -4,26 +4,26 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { EventContextMenu } from '@hungpvq/map-core/event';
 import {
   copyMapPointCoords,
   createDefaultMapContextMenuItems,
   createMapMenuItemProps,
-  EventContextMenu,
   filterVisibleMapMenuItems,
   formatMapContextCoords,
   handleMapMenuAction,
   resolveMapMenuCondition,
   type MapContextMenuItem,
   type MapContextMenuTarget,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiMapMarkerOutline } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
-import { useEventMap } from '../../extra/event';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useEventMap } from '../../extra/event/hook/useEvent';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 
 const props = withDefaults(
   defineProps<

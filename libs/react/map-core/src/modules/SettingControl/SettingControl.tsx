@@ -1,14 +1,24 @@
-import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  applyMapStyleSettings,
+  inputToSprite,
+  readMapStyleSettings,
+  SETTING_CONTROL_LOCALE,
+  spriteToInput,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
-import type { SpriteSpecification } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { useToolbarControl } from '../../extra/toolbar';
-import { BaseButton, InputText } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { InputText } from '../../field';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { MapControlButton } from '../../components/MapControlButton';
 
 export interface SettingControlProps extends WithMapPropType {
   show?: boolean;
@@ -21,28 +31,10 @@ type SettingState = {
   glyphs?: string;
 };
 
-function spriteToInput(sprite?: SpriteSpecification): string {
-  if (sprite == null) return '';
-  return typeof sprite === 'string' ? sprite : JSON.stringify(sprite);
-}
-
-function inputToSprite(value?: string): SpriteSpecification | undefined {
-  if (!value?.trim()) return undefined;
-  try {
-    const parsed = JSON.parse(value);
-    if (typeof parsed === 'object' && parsed !== null) {
-      return parsed as SpriteSpecification;
-    }
-  } catch {
-    // keep as url string
-  }
-  return value;
-}
-
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
     zoom: undefined,
@@ -52,20 +44,17 @@ export function SettingControl(props: SettingControlProps) {
   });
 
   useEffect(() => {
-    setLocaleDefault(SETTING_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', SETTING_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   function loadCurrentView() {
     callMap((map) => {
-      const style = map.getStyle();
+      const next = readMapStyleSettings(map);
       setSetting({
-        zoom: map.getZoom(),
-        center: [
-          +map.getCenter().lng.toFixed(6),
-          +map.getCenter().lat.toFixed(6),
-        ],
-        sprite: spriteToInput(style.sprite),
-        glyphs: style.glyphs,
+        zoom: next.zoom,
+        center: next.center,
+        sprite: spriteToInput(next.sprite),
+        glyphs: next.glyphs,
       });
     });
   }
@@ -94,31 +83,33 @@ export function SettingControl(props: SettingControlProps) {
 
   function onSetSetting() {
     callMap((map) => {
-      if (setting.zoom) map.setZoom(setting.zoom);
-      if (setting.center) map.setCenter(setting.center);
-      const style = map.getStyle();
-      const sprite = inputToSprite(setting.sprite);
-      if (sprite) {
-        style.sprite = sprite;
-      }
-      if (setting.glyphs) {
-        style.glyphs = setting.glyphs;
-      }
-      map.setStyle(style);
+      applyMapStyleSettings(map, {
+        zoom: setting.zoom,
+        center: setting.center,
+        sprite: inputToSprite(setting.sprite),
+        glyphs: setting.glyphs,
+      });
     });
   }
 
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapSettingControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.setting-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiCog },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCog, {
+        visible: true,
+        active: show,
+        title: trans('map.setting-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer
@@ -207,12 +198,11 @@ export function SettingControl(props: SettingControlProps) {
                   />
                 </div>
               </div>
-              <BaseButton
+              <MapControlButton
                 className="map-setting-control__apply"
-                onClick={onSetSetting}
-              >
+                onClick={onSetSetting} variant="filled">
                 {trans('map.setting-control.btn.apply')}
-              </BaseButton>
+              </MapControlButton>
             </div>
           </DraggableItemPopup>
         ) : null

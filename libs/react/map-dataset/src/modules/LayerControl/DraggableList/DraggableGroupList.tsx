@@ -17,10 +17,10 @@ import {
   createDefaultGroup,
   isGroupNode,
   mergeEmptyGroups,
-  type GroupTree,
+  type LayerListGroupTree,
   type LayerListItem,
-  type TreeNode,
-} from './utils';
+  type LayerListTreeNode,
+} from '@hungpvq/map-dataset';
 
 export interface DraggableGroupListRef {
   update: (items?: LayerListItem[]) => void;
@@ -35,7 +35,7 @@ export interface DraggableGroupListProps {
   disabledSelect?: boolean;
   onItemsChange?: (items: LayerListItem[]) => void;
   onDragDone?: () => void;
-  onGroupRemove?: (group: GroupTree) => void;
+  onGroupRemove?: (group: LayerListGroupTree) => void;
   onSelectedChange?: (selected: string[]) => void;
   renderItem: (props: {
     item: LayerListItem;
@@ -133,8 +133,8 @@ export const DraggableGroupList = forwardRef<
   },
   ref,
 ) {
-  const [tree, setTree] = useState<TreeNode[]>([]);
-  const treeRef = useRef<TreeNode[]>([]);
+  const [tree, setTree] = useState<LayerListTreeNode[]>([]);
+  const treeRef = useRef<LayerListTreeNode[]>([]);
   treeRef.current = tree;
   const selectedObjectsRef = useRef<Record<string, LayerListItem>>({});
   const rootRef = useRef<HTMLDivElement>(null);
@@ -144,7 +144,7 @@ export const DraggableGroupList = forwardRef<
   });
 
   const emitChange = useCallback(
-    (nextTree: TreeNode[]) => {
+    (nextTree: LayerListTreeNode[]) => {
       onItemsChange?.(convertTreeToList(nextTree));
       onDragDone?.();
     },
@@ -226,7 +226,7 @@ export const DraggableGroupList = forwardRef<
       setTree((prev) => {
         let next = [...prev];
 
-        if (from.kind === to.kind && (from.kind === 'root' || from.groupId === to.groupId)) {
+        if (from.kind === to.kind && (from.kind === 'root' || (from.kind === 'group' && to.kind === 'group' && from.groupId === to.groupId))) {
           if (from.kind === 'root') {
             next = reorder(next, oldIndex, newIndex);
           } else {
@@ -265,7 +265,7 @@ export const DraggableGroupList = forwardRef<
           } else {
             const toGroupId = to.groupId;
             const targetGroup = next.find(
-              (node): node is GroupTree => isGroupNode(node) && node.id === toGroupId,
+              (node): node is LayerListGroupTree => isGroupNode(node) && node.id === toGroupId,
             );
             if (!targetGroup) return prev;
             movedItem.group = { id: targetGroup.id, name: targetGroup.name };
@@ -313,7 +313,7 @@ export const DraggableGroupList = forwardRef<
     return () => instance.destroy();
   }, [disabledDrag]);
 
-  function deleteGroup(group: GroupTree, groupIndex: number) {
+  function deleteGroup(group: LayerListGroupTree, groupIndex: number) {
     setTree((prev) => {
       const next = [...prev];
       next.splice(groupIndex, 1);
@@ -323,7 +323,7 @@ export const DraggableGroupList = forwardRef<
     });
   }
 
-  function unGroup(group: GroupTree, groupIndex: number) {
+  function unGroup(group: LayerListGroupTree, groupIndex: number) {
     setTree((prev) => {
       const next = [...prev];
       next.splice(groupIndex, 1);

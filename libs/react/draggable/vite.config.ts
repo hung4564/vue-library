@@ -29,7 +29,7 @@ export default defineConfig(() => ({
       entry: 'src/index.ts',
       name: '@hungpvq/react-draggable',
       fileName: 'index',
-      formats: ['es' as const],
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       external: [
@@ -40,14 +40,24 @@ export default defineConfig(() => ({
         '@hungpvq/shared',
         '@hungpvq/shared-store',
         '@hungpvq/shared-store/react',
-        'lodash',
         '@mdi/js',
         '@mdi/react',
-        'react-draggable-resizable',
+        'react-rnd',
       ],
       output: {
         assetFileNames: 'style.css',
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/react/draggable',
+      provider: 'v8' as const,
     },
   },
 }));

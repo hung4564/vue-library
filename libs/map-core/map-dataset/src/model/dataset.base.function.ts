@@ -1,4 +1,4 @@
-import type { IDataset, WithChildren } from '../interfaces';
+import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import { createBase } from './base';
 
 function addDependsOnImpl(this: IDataset, input: string | IDataset): void {

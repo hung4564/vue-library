@@ -78,7 +78,7 @@ export function InputSelect<T = SelectItem>({
           {...props}
           value={value !== undefined ? String(value) : ''}
           onChange={handleChange}
-          className={className}
+          className={['input-select', className].filter(Boolean).join(' ')}
         >
           {placeholder && (
             <option value="" disabled hidden>

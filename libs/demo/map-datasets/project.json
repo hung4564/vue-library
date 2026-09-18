@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/demo/map-datasets/src",
   "projectType": "library",
-  "tags": ["demo", "map"],
+  "tags": ["demo"],
   "targets": {
     "ts-check": {
       "executor": "nx:run-commands",

@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { useMapGLobalStore } from '../store/store';
+import { useMapGlobalStore } from '../store/store';
 import type { MapStore } from '@hungpvq/map-core';
 
 /**
@@ -9,6 +9,6 @@ import type { MapStore } from '@hungpvq/map-core';
  * @returns A computed ref containing the map's store state (draw, dataset, basemap, etc.).
  */
 export function useMapState(mapId: string) {
-  const store = useMapGLobalStore();
+  const store = useMapGlobalStore();
   return computed<MapStore | undefined>(() => store[mapId]);
 }

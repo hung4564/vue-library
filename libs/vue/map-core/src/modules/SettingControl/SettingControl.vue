@@ -1,33 +1,44 @@
 <script setup lang="ts">
-import { SETTING_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  applyMapStyleSettings,
+  inputToSprite,
+  readMapStyleSettings,
+  SETTING_CONTROL_LOCALE,
+  spriteToInput,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
-import type { SpriteSpecification } from 'maplibre-gl';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { BaseButton, InputText } from '../../field';
-import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { InputText } from '../../field';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(SETTING_CONTROL_LOCALE);
+registerLocale('en', SETTING_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {
     callMap((_map) => {
-      setting.value.zoom = _map.getZoom();
-      setting.value.center = [
-        +_map.getCenter().lng.toFixed(6),
-        +_map.getCenter().lat.toFixed(6),
-      ];
-      setting.value.sprite = _map.getStyle().sprite;
-      setting.value.glyphs = _map.getStyle().glyphs;
+      const next = readMapStyleSettings(_map);
+      setting.value = {
+        zoom: next.zoom,
+        center: next.center,
+        sprite: spriteToInput(next.sprite),
+        glyphs: next.glyphs,
+      };
     });
   }
 }
@@ -52,7 +63,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const setting = ref<{
   zoom?: number;
   center: [number, number];
-  sprite?: SpriteSpecification;
+  sprite?: string;
   glyphs?: string;
 }>({
   zoom: undefined,
@@ -62,35 +73,29 @@ const setting = ref<{
 });
 const onSetSetting = () => {
   callMap((map) => {
-    if (setting.value.zoom) map.setZoom(setting.value.zoom);
-    if (setting.value.center) map.setCenter(setting.value.center);
-    const style = map.getStyle();
-    if (setting.value.sprite) {
-      style.sprite = setting.value.sprite;
-    }
-    if (setting.value.glyphs) {
-      style.glyphs = setting.value.glyphs;
-    }
-    map.setStyle(style);
+    applyMapStyleSettings(map, {
+      zoom: setting.value.zoom,
+      center: setting.value.center,
+      sprite: inputToSprite(setting.value.sprite),
+      glyphs: setting.value.glyphs,
+    });
   });
 };
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapSettingControl',
   getState() {
-    return {
+    return mdiButtonState(mdiCog, {
       visible: true,
+      active: show.value,
       title: trans.value('map.setting-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiCog,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -151,12 +156,11 @@ const { state, control } = useToolbarControl(mapId.value, props, {
             </div>
           </div>
 
-          <base-button
+          <map-control-button
             class="map-setting-control__apply"
-            @click="onSetSetting()"
-          >
+            @click="onSetSetting()" variant="filled">
             {{ trans('map.setting-control.btn.apply') }}
-          </base-button>
+          </map-control-button>
         </div>
       </DraggableItemPopup>
     </template>

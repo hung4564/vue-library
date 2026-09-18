@@ -5,7 +5,7 @@ import type { App } from 'vue';
 import { getUid } from './utils/getCurrentInstance';
 
 export function createUI() {
-  const install = (app: App) => {
+  const install = (_app: App) => {
     getUid.reset();
   };
   return {

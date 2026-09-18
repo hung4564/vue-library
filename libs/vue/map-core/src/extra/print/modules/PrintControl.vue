@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { exportMapbox, PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
-import { mdiClose, mdiContentSaveOutline, mdiPrinterOutline } from '@mdi/js';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { printMapToFile, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
-import { MapCommonButton } from '../../../components';
-import { useLang } from '../../../extra/lang';
-import { useRegisterMapControl } from '../../../extra/registry';
-import { useToolbarControl } from '../../../extra/toolbar';
+import MapCommonButton from '../../../components/MapCommonButton.vue';
+import { useLang } from '../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {
@@ -22,31 +24,25 @@ const props = withDefaults(
 );
 const path = {
   print: mdiPrinterOutline,
-  close: mdiClose,
-  save: mdiContentSaveOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(PRINT_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', PRINT_CONTROL_LOCALE);
 const print = ref({ show: false, loading: false });
-function onSaveAll(cb?: (image: string) => Promise<void>) {
+function onPrint() {
   callMap(async (map) => {
     print.value.loading = true;
     control.sync();
     try {
-      let image = await exportMapbox(map);
-      if (cb) {
-        cb(image);
-      } else await onDownload(image);
+      await printMapToFile(map, {
+        fileName: props.fileName,
+        save: (dataUrl, name) => saveAs(dataUrl, name),
+      });
     } finally {
       print.value.loading = false;
       control.sync();
     }
   });
-}
-
-async function onDownload(data64: string) {
-  saveAs(data64, `${props.fileName}.png`);
 }
 useRegisterMapControl(mapId, {
   id: 'mapPrintControl',
@@ -60,7 +56,7 @@ useRegisterMapControl(mapId, {
     {
       type: 'mapPrintControl',
       run: () => {
-        onSaveAll(onDownload);
+        onPrint();
       },
     },
   ],
@@ -68,19 +64,15 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapPrintControl',
   getState() {
-    return {
+    return mdiButtonState(path.print, {
       visible: true,
       title: trans.value('map.print.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: path.print,
-      },
       loading: print.value.loading,
-    };
+    });
   },
   onClick() {
-    onSaveAll(onDownload);
+    onPrint();
   },
 });
 </script>

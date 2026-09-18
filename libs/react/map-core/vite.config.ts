@@ -10,7 +10,7 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/libs/react/map-core',
   plugins: [
-    react(),
+    react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] }),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
@@ -32,13 +32,18 @@ export default defineConfig(() => ({
       transformMixedEsModules: true,
     },
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        fields: 'src/fields.ts',
+        // CSS-only graph so `./style.css` includes shared map SCSS (not a JS export).
+        css: 'src/style.ts',
+      },
       name: '@hungpvq/react-map-core',
-      fileName: 'index',
-      // Change this to the formats you want to support.
-      // Don't forget to update your package.json as well.
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -47,21 +52,34 @@ export default defineConfig(() => ({
         'react-dom',
         'react/jsx-runtime',
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
+        '@hungpvq/react-draggable',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         '@hungpvq/shared-store/react',
         'maplibre-gl',
         'mitt',
-        'lodash',
         '@mdi/js',
         '@mdi/react',
-        'react-color',
+        '@uiw/react-color-sketch',
+        'file-saver',
       ],
       output: {
         assetFileNames: 'style.css',
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/react/map-core',
+      provider: 'v8' as const,
     },
   },
 }));

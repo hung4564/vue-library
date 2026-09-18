@@ -3,9 +3,9 @@
  * Handles map instance creation, event setup, and cleanup
  */
 
-import type { MapSimple } from '../types';
 import type { MapOptions } from 'maplibre-gl';
 import { MapEventError, MapInitializationError } from '../errors';
+import type { MapSimple } from '../types';
 
 /**
  * Map event callbacks interface
@@ -97,8 +97,8 @@ export class MapInitializer {
       metadata: {},
       sources: {},
       layers: [],
-      sprite: 'https://tiles.mattech.vn/styles/basic/sprite',
-      glyphs: 'https://tiles.mattech.vn/fonts/{fontstack}/{range}.pbf',
+      sprite: undefined,
+      glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     };
 
     return Object.assign({}, defaultStyle, customStyle);
@@ -151,10 +151,16 @@ export class MapInitializer {
    * Cleanup map instance
    *
    * @param map - Map instance to cleanup
+   * @param callbacks - Optional destroy callback (invoked before map.remove)
    */
-  static cleanupMap(map: MapSimple): void {
-    if (map && typeof map.remove === 'function') {
-      map.remove();
+  static cleanupMap(map: MapSimple, callbacks?: MapEventCallbacks): void {
+    if (!map) return;
+    try {
+      callbacks?.onDestroy?.(map);
+    } finally {
+      if (typeof map.remove === 'function') {
+        map.remove();
+      }
     }
   }
 }

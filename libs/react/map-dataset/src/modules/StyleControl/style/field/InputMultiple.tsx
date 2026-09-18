@@ -1,6 +1,8 @@
-import { BaseButton, InputText } from '@hungpvq/react-map-core';
+
 import Icon from '@mdi/react';
 import { mdiDelete } from '@mdi/js';
+import { MapControlButton } from '@hungpvq/react-map-core';
+import { InputText } from '@hungpvq/react-map-core/fields';
 
 export function InputMultiple({
   value = [0, 0],
@@ -38,14 +40,14 @@ export function InputMultiple({
           />
           <div className="input-array-item__action">
             {form.length > 2 && (
-              <BaseButton onClick={() => onRemove(index)}>
+              <MapControlButton variant="text" onClick={() => onRemove(index)}>
                 <Icon path={mdiDelete} size="16px" />
-              </BaseButton>
+              </MapControlButton>
             )}
           </div>
         </div>
       ))}
-      <BaseButton onClick={onAdd}> Add</BaseButton>
+      <MapControlButton onClick={onAdd} variant="text"> Add</MapControlButton>
     </div>
   );
 }

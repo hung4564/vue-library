@@ -61,12 +61,11 @@ import '@hungpvq/vue-map-core/style.css';
 Hide some items, add one with `createMenuBuilder` (or `createMapMenuBuilder` / `createMapContextMenuBuilder`):
 
 ```ts
+import { createMenuBuilder, createMapContextMenuBuilder } from '@hungpvq/map-dataset/menu';
 import {
-  createMenuBuilder,
-  createMapContextMenuBuilder,
+  createMapMenuBuilder,
   type MapContextMenuTarget,
-} from '@hungpvq/map-dataset';
-import { createMapMenuBuilder } from '@hungpvq/map-core';
+} from '@hungpvq/map-core/menu';
 
 const extra = createMenuBuilder<MapContextMenuTarget>()
   .item()
@@ -102,7 +101,7 @@ const fromCore = createMapMenuBuilder()
 Without a menu UI, listen yourself:
 
 ```ts
-import { EventContextMenu } from '@hungpvq/map-core';
+import { EventContextMenu } from '@hungpvq/map-core/event';
 import { useEventMap } from '@hungpvq/vue-map-core';
 
 const { add, remove } = useEventMap(

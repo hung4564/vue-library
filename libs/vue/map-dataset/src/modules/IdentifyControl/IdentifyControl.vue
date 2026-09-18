@@ -1,404 +1,284 @@
 <script lang="ts">
 export default {
-  name: 'InspectControl',
+  name: 'IdentifyControl',
 };
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   EventBboxRanger,
-  EventBboxRangerHandle,
   EventClick,
-  logHelper,
+} from '@hungpvq/map-core/event';
+import {
   MAP_CONTEXT_MENU_ID,
   type MapMenuItemProps,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
-import type {
-  IdentifyMultiResult,
-  IIdentifyView,
-  MenuAction,
-} from '@hungpvq/map-dataset';
-import { handleMenuAction, handleMultiIdentify, IDENTIFY_CONTROL_LOCALE } from '@hungpvq/map-dataset';
-import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+} from '@hungpvq/map-core/menu';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
-  BaseButton,
+  createIdentifySession,
+  IDENTIFY_CONTROL,
+  IDENTIFY_CONTROL_LOCALE,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyLayerFilterPayload,
+  type IdentifyResultUpdatePayload,
+  type IdentifyScopeToggleResult,
+  type IdentifySession,
+} from '@hungpvq/map-dataset/identify';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
   defaultMapProps,
   MapCommonButton,
   ModuleContainer,
   UniversalRegistry,
-  useCoordinate,
   useEventMap,
   useLang,
   useMap,
   useRegisterMapControl,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
-import { LngLatBounds, MapMouseEvent, type PointLike } from 'maplibre-gl';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { loggerIdentify } from '../../logger';
-import { useMapDataset } from '../../store';
-import { useMapDatasetHighlight } from '../../store/highlight';
-import MenuItem from './menu/index.vue';
+import { mdiHandPointingUp } from '@mdi/js';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useMapDataset } from '../../store/dataset-api';
+import { useMapHighlight } from '../../store/highlight';
+import IdentifyResultControl from './IdentifyResultControl.vue';
 
 const path = {
   icon: mdiHandPointingUp,
-  boxSelect: mdiSelect,
-  mapClick: mdiCursorPointer,
 };
 const props = withDefaults(
   defineProps<
     WithMapPropType &
       WithShowProps & {
         immediately?: boolean;
+        /**
+         * Always open Identify Result panel (skip auto show-detail / attribute-table),
+         * even when those menus are registered.
+         */
+        preferResultControl?: boolean;
       }
   >(),
-  { ...defaultMapProps },
+  { ...defaultMapProps, preferResultControl: false },
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
-const { setFeatureHighlight } = useMapDatasetHighlight(mapId.value);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-const { format: formatCoordinate } = useCoordinate(mapId.value);
-setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
+const hl = useMapHighlight(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', IDENTIFY_CONTROL_LOCALE);
+
 const views = ref<Array<IIdentifyView>>([]);
-const datasetIds = computed(() => {
-  return getDatasetIds().value;
-});
-watch(
-  datasetIds,
-  () => {
-    updateList();
-  },
-  { deep: true },
-);
-onMounted(() => {
-  updateList();
-});
-const cUsedIdentify = computed(() => {
-  return views.value;
-});
-function updateList() {
-  getViewFromStore();
-}
-function getViewFromStore() {
-  views.value = (
-    getAllComponentsByType<IIdentifyView>('identify') || []
-  ).reverse();
-}
-const hasViews = computed(() => {
-  return views.value.length > 0;
-});
-watch(hasViews, () => {
-  control.sync();
-});
+const show = ref(!!props.show);
+const loading = ref(false);
+
+let session!: IdentifySession;
+let syncResultPanelRef: (extra?: IdentifyResultUpdatePayload) => void = () =>
+  undefined;
+let controlSyncRef: () => void = () => undefined;
+
 const {
   add: addEventClick,
   remove: removeEventClick,
   isActive: isEventClickActive,
-} = useEventMap(mapId.value, new EventClick().setHandler(onMapClick));
+} = useEventMap(
+  mapId.value,
+  new EventClick().setHandler((e) => session.onMapClick(e)),
+);
 const {
   add: addEventBbox,
   remove: removeEventBbox,
   isActive: isEventClickBox,
-} = useEventMap(mapId.value, new EventBboxRanger().setHandler(onBboxSelect));
+} = useEventMap(
+  mapId.value,
+  new EventBboxRanger().setHandler((bbox) => session.onBboxSelected(bbox)),
+);
 
-const origin = reactive({ latitude: 0, longitude: 0 });
-const show = ref(props.show);
-function setShow(value: boolean) {
-  show.value = value;
+function updateResultPanel(payload: IdentifyResultUpdatePayload) {
+  UniversalRegistry.runControlAction(
+    mapId.value,
+    IDENTIFY_RESULT_CONTROL.id,
+    IDENTIFY_RESULT_CONTROL.actionUpdate,
+    payload,
+  );
 }
-const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapIdentifyControl',
-  panelKind: 'popup',
+
+session = createIdentifySession({
+  mapId: mapId.value,
+  getIdentifies: () => views.value,
+  preferResultControl: !!props.preferResultControl,
+  immediately: () => !!props.immediately,
+  callMap,
+  translateAllLayers: () => trans.value('map.identify.all_layers'),
+  onStateChange: () => {
+    syncFromModel();
+    controlSyncRef();
+  },
+  setCursor: (cursor) => {
+    callMap((map) => {
+      map.getCanvas().style.cursor = cursor;
+    });
+  },
+  syncResultPanel: (extra) => syncResultPanelRef(extra),
+  onEventClickActive: (active) => {
+    if (active) addEventClick();
+    else removeEventClick();
+  },
+  onEventBoxSelectActive: (active) => {
+    if (active) addEventBbox();
+    else removeEventBbox();
+  },
+  onCloseSideEffects: () => {
+    hl.hideIfSource('identify');
+  },
+});
+
+if (props.show) session.setShow(true);
+
+function syncFromModel() {
+  const s = session.getState();
+  show.value = s.show;
+  loading.value = s.loading;
+}
+
+function syncResultPanel(extra?: IdentifyResultUpdatePayload) {
+  updateResultPanel(session.buildResultPanelPayload(extra));
+}
+syncResultPanelRef = syncResultPanel;
+
+function refreshViews() {
+  views.value = (
+    getAllComponentsByType<IIdentifyView>('identify') || []
+  ).reverse();
+}
+watch(getDatasetIds(), refreshViews, { deep: true, immediate: true });
+
+const hasViews = computed(() => views.value.length > 0);
+watch(hasViews, () => {
+  control.sync();
+});
+
+useRegisterMapControl(mapId, {
+  id: IDENTIFY_CONTROL.id,
+  panelKind: 'button',
   title: () => trans.value('map.identify.title'),
   buttonPosition: () => props.position,
   show,
-  setShow,
+  setShow: (value) => {
+    session.setShow(value);
+    syncFromModel();
+    updateResultPanel({ show: value });
+  },
   getProps: () => ({
     position: props.position,
     controlLayout: props.controlLayout,
     immediately: props.immediately,
+    preferResultControl: props.preferResultControl,
   }),
   actions: [
     {
-      type: 'mapIdentifyControl',
-      run: () => toggleShow(),
+      type: IDENTIFY_CONTROL.id,
+      run: () => {
+        const resolved = session.toggleShow();
+        syncFromModel();
+        session.applyToggleShowEffects(resolved);
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetScoped,
+      run: (event) => {
+        const resolved = session.applyScopedSession(
+          event as IdentifyScopeToggleResult | undefined,
+        );
+        syncFromModel();
+        session.finishScopedSession(resolved);
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionUseMapClick,
+      run: () => session.toggleMapClickMode(),
+    },
+    {
+      type: IDENTIFY_CONTROL.actionUseBoxSelect,
+      run: () => session.toggleBoxSelectMode(),
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetLayerFilter,
+      run: (event) => {
+        const payload = event as IdentifyLayerFilterPayload | undefined;
+        void session.applyLayerFilter(payload?.identifyId ?? '');
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionClose,
+      run: () => {
+        session.closeAndCleanup();
+        syncFromModel();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetLoading,
+      run: (event) => {
+        session.setLoading(!!event);
+        syncFromModel();
+        control.sync();
+      },
     },
   ],
 });
-function runIdentifyAt(
-  lng: number,
-  lat: number,
-  point: PointLike,
-  event?: MapMouseEvent,
-) {
-  origin.latitude = lat;
-  origin.longitude = lng;
-  show.value = true;
-  onGetFeatures(event ?? ({ point, lngLat: { lng, lat } } as MapMouseEvent));
-}
-function onMapClick(e: MapMouseEvent) {
-  if (isEventClickBox.value) return;
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onMapClick',
-    { event: e },
+
+function onIdentifyHere(menuProps: MapMenuItemProps) {
+  const { lng, lat } = menuProps.layer.lngLat;
+  const point = menuProps.layer.point;
+  session.onIdentifyHere(
+    lng,
+    lat,
+    point ? [point.x, point.y] : undefined,
   );
-  runIdentifyAt(e.lngLat.lng, e.lngLat.lat, e.point, e);
-}
-function onIdentifyHere(props: MapMenuItemProps) {
-  const { lng, lat } = props.layer.lngLat;
-  const point = props.layer.point;
-  if (point) {
-    runIdentifyAt(lng, lat, point);
-    return;
-  }
-  callMap((map) => {
-    runIdentifyAt(lng, lat, map.project([lng, lat]));
-  });
-}
-function onBboxSelect(bbox: Parameters<EventBboxRangerHandle>[0]) {
-  if (isEventClickActive.value) return;
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onBboxSelect',
-    bbox,
-  );
-  onRemoveBox();
-  if (!bbox) return;
-
-  const bounds = new LngLatBounds([bbox[0].x, bbox[0].y, bbox[1].x, bbox[1].y]);
-  onGetFeatures(bounds);
-}
-const result = reactive<{
-  items: Grouped[];
-  loading: boolean;
-}>({
-  items: [],
-  loading: false,
-});
-const currentPoint = computed(() => {
-  if (!origin) {
-    return '';
-  }
-  const point = formatCoordinate(origin);
-  return point.longitude + ', &nbsp;' + point.latitude;
-});
-const hasSelectedPoint = computed(() => {
-  return origin.latitude !== 0 || origin.longitude !== 0;
-});
-function onSelectFeatures(
-  event?: MapMouseEvent,
-  features: IdentifyMultiResult[] = [],
-) {
-  logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-    'onSelectFeatures',
-    features,
-  );
-  result.items = groupItems(features);
-  if (
-    props.immediately &&
-    features &&
-    features[0] &&
-    features[0].features &&
-    features[0].features[0]
-  ) {
-    const menu = features[0].identify.getMenu('show-detail');
-    if (menu)
-      onMenuAction(
-        features[0].identify,
-        menu,
-        features[0].features[0].data,
-        event,
-      );
-  }
-}
-async function onGetFeatures(e: MapMouseEvent | LngLatBounds) {
-  let pointOrBox: PointLike | [PointLike, PointLike];
-  if ('point' in e) {
-    pointOrBox = e.point;
-  } else {
-    // Convert LngLatBounds to PointLike box
-    // This assumes the map instance is available or handleMultiIdentify can handle bounds.
-    // However, coordinate-to-point conversion needs the map.
-    // For now, let's keep it as is if handleMultiIdentify handles unknown types loosely,
-    // but better to cast specifically.
-    pointOrBox = e as unknown as [PointLike, PointLike];
-  }
-
-  result.loading = true;
-  try {
-    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-      'onGetFeatures',
-      { pointOrBox, identifies: cUsedIdentify.value },
-    );
-    const startTime = Date.now();
-    const features = await handleMultiIdentify(
-      cUsedIdentify.value,
-      mapId.value,
-      pointOrBox,
-    );
-    const elapsedTime = Date.now() - startTime;
-    if (elapsedTime < 500) {
-      await new Promise((resolve) => setTimeout(resolve, 500 - elapsedTime));
-    }
-    logHelper(loggerIdentify, mapId.value, 'MULTI', 'IdentifyControl').debug(
-      'onGetFeatures',
-      { features },
-    );
-    onSelectFeatures(
-      'point' in e ? e : undefined,
-      features.filter(
-        (item): item is IdentifyMultiResult =>
-          'features' in item && item.features.length > 0,
-      ),
-    );
-  } finally {
-    result.loading = false;
-  }
-}
-function toggleShow() {
-  show.value = !show.value;
-  onUseMapClick();
-}
-function close() {
-  onRemoveIdentify();
-  setFeatureHighlight(undefined, 'identify');
-  onSelectFeatures(undefined, []);
-}
-function onRemoveIdentify() {
-  if (props.immediately) {
-    return;
-  }
-  onRemoveMapClick();
-  onRemoveBox();
 }
 
-const isUseClick = ref(false);
-function onUseMapClick() {
-  if (!isUseClick.value) {
-    onStartMapClick();
-  } else {
-    onRemoveMapClick();
-  }
-}
-function onStartMapClick() {
-  isUseClick.value = true;
-  addEventClick();
-}
-function onRemoveMapClick() {
-  isUseClick.value = false;
-  removeEventClick();
-}
-const isSelectBbox = ref(false);
-function onUseBoxSelect() {
-  if (!isSelectBbox.value) {
-    onStartBox();
-  } else {
-    onRemoveBox();
-  }
-}
-function onStartBox() {
-  isSelectBbox.value = true;
-  addEventBbox();
-}
-function onRemoveBox() {
-  isSelectBbox.value = false;
-  setTimeout(() => {
-    removeEventBbox();
-  }, 500);
-}
-
-function onMenuAction(
-  identify: IIdentifyView,
-  menu: MenuAction,
-  item: unknown,
-  event?: MapMouseEvent | MouseEvent,
-) {
-  handleMenuAction(menu, {
-    event,
-    layer: identify,
-    mapId: mapId.value,
-    value: item,
-  });
-}
 onMounted(() => {
-  if (props.immediately) onUseMapClick();
+  if (props.immediately) session.toggleMapClickMode();
+  syncResultPanel();
+});
+onUnmounted(() => {
+  session.teardownInputModes({ immediate: true });
+  session.destroy();
+  UniversalRegistry.unregisterMenuHandlerForMap(
+    mapId.value,
+    MAP_CONTEXT_MENU_ID.identifyHere,
+  );
 });
 UniversalRegistry.registerMenuHandlerForMap(
   mapId.value,
   MAP_CONTEXT_MENU_ID.identifyHere,
   onIdentifyHere,
 );
-interface Grouped {
-  id: string;
-  name: string;
-  items: ({ id: string | number; name?: string; data: unknown } & {
-    identify: IIdentifyView;
-  })[];
-}
-function groupItems(items: IdentifyMultiResult[]): Grouped[] {
-  const groups: Grouped[] = [];
-  const groupExistingIds = new Map<string, Set<string | number>>();
 
-  for (const item of items) {
-    let group: Grouped | undefined;
-    const groupIdentify = item.identify.group;
-    if (groupIdentify) {
-      group = groups.find((g) => g.id === groupIdentify.id);
-      if (!group) {
-        group = { id: groupIdentify.id, name: groupIdentify.name, items: [] };
-        groups.push(group);
-      }
-    } else {
-      group = {
-        id: item.identify.id,
-        name: item.identify.getName(),
-        items: [],
-      };
-      groups.push(group);
-    }
-    let existingIds = groupExistingIds.get(group.id);
-    if (!existingIds) {
-      existingIds = new Set<string | number>();
-      groupExistingIds.set(group.id, existingIds);
-    }
+watch(views, () => syncResultPanel(), { deep: true });
+watch([isEventClickActive, isEventClickBox], () => syncResultPanel());
 
-    // gộp features + add identify
-    for (const f of item.features) {
-      const fid = f.id;
-
-      if (!existingIds.has(fid)) {
-        group.items.push({ ...f, identify: item.identify });
-        existingIds.add(fid);
-      }
-    }
-  }
-  return groups;
-}
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'single',
-  id: 'mapIdentifyControl',
+  id: IDENTIFY_CONTROL.id,
   getState() {
-    return {
+    return mdiButtonState(path.icon, {
       visible: hasViews.value,
       active: show.value,
+      loading: loading.value,
       title: trans.value('map.identify.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
-    toggleShow();
+    const resolved = session.toggleShow();
+    syncFromModel();
+    session.applyToggleShowEffects(resolved);
   },
 });
-watch(show, () => control.sync());
+controlSyncRef = () => control.sync();
+watch([show, loading], () => control.sync());
 </script>
+
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
@@ -409,115 +289,9 @@ watch(show, () => control.sync());
       >
       </MapCommonButton>
     </template>
-
-    <template #draggable="p">
-      <DraggableItemPopup
-        v-if="show"
-        v-model:show="show"
-        v-bind="{ ...p, ...panelBind }"
-        :width="400"
-        :height="300"
-        @close="close"
-        :title="trans('map.identify.title')"
-      >
-        <template #extra-btn>
-          <BaseButton
-            @click.stop="onUseMapClick()"
-            :active="isEventClickActive"
-            :disabled="isEventClickActive"
-          >
-            <SvgIcon size="16" type="mdi" :path="path.mapClick" />
-          </BaseButton>
-          <BaseButton
-            @click.stop="onUseBoxSelect()"
-            :active="isEventClickBox"
-            :disabled="isEventClickBox"
-          >
-            <SvgIcon size="16" type="mdi" :path="path.boxSelect" />
-          </BaseButton>
-        </template>
-        <div class="identify-control-container">
-          <div class="identify-control-header">
-            <b>{{ trans('map.identify.point') }}:</b>
-            <span v-html="currentPoint"> </span>
-          </div>
-          <hr class="identify-control-separator" />
-          <div class="identify-control-body">
-            <!-- Loading state -->
-            <div v-if="result.loading" class="identify-control-state">
-              <div class="identify-control-state__content">
-                <div class="identify-control-state__loading"></div>
-                <span>{{ trans('map.identify.loading') }}</span>
-              </div>
-            </div>
-            <!-- No selection state -->
-            <div v-else-if="!hasSelectedPoint" class="identify-control-state">
-              <div class="identify-control-state__content">
-                <span>{{ trans('map.identify.no_selection') }}</span>
-              </div>
-            </div>
-
-            <!-- Empty result state -->
-            <div
-              v-else-if="result.items.length === 0"
-              class="identify-control-state"
-            >
-              <div class="identify-control-state__content">
-                <span>{{ trans('map.identify.no_data') }}</span>
-              </div>
-            </div>
-
-            <!-- Results list -->
-            <template v-else>
-              <div
-                v-for="item in result.items"
-                :key="item.id"
-                class="identify-control-list-item"
-              >
-                <div class="identify-control-list-item__container">
-                  <div
-                    class="identify-control-list-item__header"
-                    :title="item.name"
-                  >
-                    {{ item.name || '---' }}
-                  </div>
-                  <div class="identify-control-list-item__child-container">
-                    <div
-                      class="identify-control-child-item"
-                      v-for="child in item.items"
-                      :key="child.id"
-                      :title="child.name"
-                    >
-                      <span class="identify-control-child-item__name">
-                        {{ child.name }}
-                      </span>
-                      <div class="identify-control-child-item__spacer"></div>
-                      <div class="identify-control-child-item__action">
-                        <template
-                          v-for="(menu, i) in child.identify.getMenus()"
-                          :key="i"
-                        >
-                          <MenuItem
-                            :item="menu"
-                            @click="
-                              onMenuAction(
-                                child.identify,
-                                menu,
-                                child.data,
-                                $event,
-                              )
-                            "
-                          />
-                        </template>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </div>
-        </div>
-      </DraggableItemPopup>
-    </template>
   </ModuleContainer>
+  <IdentifyResultControl
+    :position="props.position"
+    :control-layout="props.controlLayout"
+  />
 </template>

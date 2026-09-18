@@ -1,10 +1,10 @@
 # Map Measurement docs
 
-> Vue.js library for advanced map measurement tools and controls
+> Distance, area, radius, and angle tools for Vue and React map apps
 
-## 🚀 Introduction
+## Introduction
 
-Map Measurement is a Vue.js library that provides robust and flexible tools for measuring distances, areas, and angles directly on interactive maps. It is designed for high-precision, professional use cases, and supports custom measurement actions, multiple units, and seamless integration with other map modules.
+Measurement lives in `@hungpvq/map-core/measurement` (`createMeasurementSession`, MapView layers, GeoJSON download helpers, units) with thin hosts `MeasurementControl` on `@hungpvq/vue-map-core` and `@hungpvq/react-map-core`. Use it for high-precision distance / area / angle / radius on MapLibre maps, custom actions, unit preferences, and GeoJSON export.
 
 ## 📦 Installation
 
@@ -24,15 +24,16 @@ npm install @hungpvq/react-map-core
 
 - ✅ **Distance measurement** – Measure distances between points
 - ✅ **Area measurement** – Calculate areas of polygons
-- ✅ **Angle and bearing** – Measure angles and bearings
-- ✅ **Multiple units** – Support for meters, kilometers, feet, miles, acres, hectares, and more
+- ✅ **Radius measurement** – Center + edge point (radius + circumference)
+- ✅ **Angle and bearing** – Measure azimuth and the angle formed by three points
+- ✅ **Unit preference** – Distance (auto/m/km/ft/mi) and area (auto/m²/km²/ha/acre) in the setting popup
 - ✅ **Custom actions** – Extend measurement tools with your own actions
 - ✅ **High precision** – Accurate calculations using Turf.js
-- ✅ **Export support** – Export results to GeoJSON, KML, CSV, and JSON
+- ✅ **Export support** – Download measurement geometry as GeoJSON (`buildMeasurementGeojsonDownload`)
 - ✅ **TypeScript support** – Full TypeScript typings
-- ✅ **Vue 3 Composition API** – Modern, composable API
+- ✅ **Vue + React** – Same control id; orchestration via Stable `createMeasurementSession`
 
-## 🚀 Usage
+## Usage
 
 ### With Map Core
 
@@ -112,11 +113,12 @@ import '@hungpvq/react-map-dataset/style.css';
 
 ### Usage Notes
 
+- Modes: point, distance, area, azimuth, **angle** (3 points), and **radius** (toolbar action `radius` / `angle`).
+- Open the measurement setting popup to pick preferred distance/area units (`setMeasurementDistanceUnit` / `setMeasurementAreaUnit` on `@hungpvq/map-core/measurement`). `auto` keeps the previous m/km and m²/km² thresholds.
 - You can provide custom actions via the `actions` prop to extend the measurement workflow (e.g., export, add to layer).
-- The component emits events for integration with your application's state or analytics.
-- Supports both Composition API and Options API in Vue 3.
+- Orchestration is Stable **`createMeasurementSession`**; overlay source/layer bootstrap is **`createMeasurementMapView`**. Adapters register measure images, wire EventClick + toolbar/registry, and host the setting popup. See [MeasurementControl](./module/MeasurementControl.md).
 
-## 🔗 Links
+## Links
 
 - **[GitHub Repository](https://github.com/hung4564/vue-library)**
 - **[Documentation](/)**

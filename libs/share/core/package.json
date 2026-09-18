@@ -23,6 +23,6 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/shared": ">=0.0.1"
+    "@hungpvq/shared": "^0.3.0"
   }
 }

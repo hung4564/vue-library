@@ -6,6 +6,56 @@
       "docs": "/map/"
     },
     {
+      "name": "Install from npm",
+      "package": "Map - Core",
+      "docs": "/map/core/install-from-npm",
+      "category": "Core",
+      "order": 1.05
+    },
+    {
+      "name": "Minimal starter",
+      "package": "Map - Core",
+      "docs": "/map/core/minimal-starter",
+      "category": "Core",
+      "order": 1.1
+    },
+    {
+      "name": "Peers and bundle",
+      "package": "Map - Core",
+      "docs": "/map/core/peers-and-bundle",
+      "category": "Core",
+      "order": 1.15
+    },
+    {
+      "name": "Stable API",
+      "package": "Map - Core",
+      "docs": "/map/core/stable-api",
+      "category": "Core",
+      "order": 1.2
+    },
+    {
+      "name": "Devtools",
+      "package": "Map - Core",
+      "docs": "/map/core/devtools",
+      "category": "Core",
+      "order": 1.3
+    },
+    {
+      "name": "Error handling",
+      "package": "Map - Core",
+      "docs": "/map/core/error-handling",
+      "category": "Core",
+      "order": 1.4
+    },
+    {
+      "name": "Map store",
+      "package": "Map - Core",
+      "docs": "/map/core/map-store",
+      "category": "Core",
+      "order": 1.5
+    },
+
+    {
       "name": "Map",
       "package": "Map - Core",
       "docs": "/map/core/module/core/",
@@ -34,9 +84,23 @@
       "order": 2.3
     },
     {
+      "name": "UniversalRegistry components",
+      "package": "Map - Core",
+      "docs": "/map/core/registry-components",
+      "category": "Core",
+      "order": 2.31
+    },
+    {
       "name": "FullScreenControl",
       "package": "Map - Core",
       "docs": "/map/core/module/FullScreenControl",
+      "category": "Component",
+      "order": 3
+    },
+    {
+      "name": "ToolbarControl",
+      "package": "Map - Core",
+      "docs": "/map/core/module/ToolbarControl",
       "category": "Component",
       "order": 3
     },
@@ -200,10 +264,23 @@
       "order": 5
     },
     {
+      "name": "Protocol",
+      "package": "Map - Draw",
+      "docs": "/map/draw/protocol",
+      "order": 5.1
+    },
+    {
       "name": "Component",
       "package": "Map - Draw",
       "docs": "/map/draw/module/",
       "order": 5.2
+    },
+    {
+      "name": "DrawControl",
+      "package": "Map - Draw",
+      "docs": "/map/draw/module/DrawControl",
+      "category": "Component",
+      "order": 5.21
     },
     {
       "name": "Getting start",
@@ -260,13 +337,6 @@
       "order": 5.21
     },
     {
-      "name": "LayerHighlight",
-      "package": "Map - Dataset",
-      "docs": "/map/dataset/module/LayerHighlight",
-      "category": "Component",
-      "order": 5.21
-    },
-    {
       "name": "CreateControl",
       "package": "Map - Dataset",
       "docs": "/map/dataset/module/CreateControl",
@@ -309,6 +379,12 @@
       "package": "Map - Dataset",
       "docs": "/map/dataset/create-dataset/attribute-table",
       "order": 5.43
+    },
+    {
+      "name": "Highlight",
+      "package": "Map - Dataset",
+      "docs": "/map/dataset/create-dataset/highlight",
+      "order": 5.435
     },
     {
       "name": "GeoJSON worker",

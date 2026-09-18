@@ -2,22 +2,24 @@
 import { WithMapPropType } from '@hungpvq/map-core';
 import {
   CREATE_CONTROL_LOCALE,
+  LAYER_TYPES,
+  LayerHelper,
+  loadCreateControlDraft,
   reportCreateLayerError,
+  saveCreateControlDraft,
   suggestLayerName,
-} from '@hungpvq/map-dataset';
+  type LayerType,
+} from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  ModuleContainer,
-  useLang,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
-import { computed, onMounted, ref, type Ref } from 'vue';
-import { useMapDataset } from '../../store';
-import { LAYER_TYPES, LayerHelper, LayerType } from './helper';
+import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { computed, onMounted, ref, watch, type Component, type Ref } from 'vue';
+import { useMapDataset } from '../../store/dataset-api';
+import ConfigNo from './config/no-config.vue';
+import ConfigRasterJson from './config/xyz-json.vue';
+import ConfigRasterSettings from './config/xyz-settings.vue';
+import GeojsonSettings from './config/geojson-settings.vue';
+import GeojsonUpload from './config/geojson-upload.vue';
 
 defineOptions({
   name: 'CreateLayerControl',
@@ -30,8 +32,8 @@ const props = defineProps<
 >();
 
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(CREATE_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', CREATE_CONTROL_LOCALE);
 const { addDataset } = useMapDataset(mapId.value);
 const emit = defineEmits(['update:show']);
 
@@ -74,6 +76,28 @@ const initialState = {
 const keyRender = ref(1);
 const helper = new LayerHelper(initialState.type);
 
+function dataSourceComponent(type: LayerType): Component {
+  switch (type) {
+    case 'vector':
+      return GeojsonUpload;
+    case 'rasterxyz':
+      return ConfigRasterJson;
+    default:
+      return ConfigNo;
+  }
+}
+
+function settingsComponent(type: LayerType): Component | undefined {
+  switch (type) {
+    case 'vector':
+      return GeojsonSettings;
+    case 'rasterxyz':
+      return ConfigRasterSettings;
+    default:
+      return undefined;
+  }
+}
+
 const form = ref({
   type: initialState.type,
   config: {
@@ -82,6 +106,32 @@ const form = ref({
   } as Record<string, any>,
 });
 
+onMounted(() => {
+  const draft = loadCreateControlDraft(mapId.value);
+  if (!draft) return;
+  if (draft.type === 'vector' || draft.type === 'raster') {
+    onChangeType(draft.type);
+  }
+  if (draft.name) form.value.config.name = draft.name;
+  if (draft.crs) form.value.config.crs = draft.crs;
+});
+
+watch(
+  () => ({
+    type: form.value.type,
+    name: form.value.config?.name,
+    crs: form.value.config?.crs,
+  }),
+  (snapshot) => {
+    saveCreateControlDraft(mapId.value, {
+      type: snapshot.type,
+      name: snapshot.name,
+      crs: snapshot.crs,
+    });
+  },
+  { deep: true },
+);
+
 const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
   value: x,
   text: LAYER_TYPES[x],
@@ -89,6 +139,7 @@ const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
 
 const creating = ref(false);
 const createError = ref('');
+const validationErrors = ref<string[]>([]);
 
 function onChangeType(type: unknown) {
   if (typeof type !== 'string') return;
@@ -99,6 +150,8 @@ function onChangeType(type: unknown) {
     form.value.config.name && form.value.config.name !== prevSuggested;
 
   helper.setType(layerType);
+  validationErrors.value = [];
+  createError.value = '';
 
   form.value = {
     type: layerType,
@@ -113,11 +166,15 @@ function onChangeType(type: unknown) {
 async function onAddLayer() {
   const handle = helper.create;
   if (!handle || creating.value) return;
-  if (!helper.validate(form.value.config)) return;
+  const errors = helper.validationErrors(form.value.config);
+  validationErrors.value = errors;
+  if (errors.length) return;
   creating.value = true;
   createError.value = '';
   try {
-    addDataset(await handle(form.value.config));
+    addDataset(
+      await handle(form.value.config as Record<string, unknown> & { name: string }),
+    );
     reset();
     cShow.value = false;
   } catch (err) {
@@ -146,6 +203,7 @@ function reset() {
   helper.setType(initialState.type);
   createError.value = '';
   creating.value = false;
+  validationErrors.value = [];
   form.value = {
     type: initialState.type,
     config: {
@@ -202,12 +260,12 @@ onMounted(() => {
             </div>
 
             <component
-              :is="helper.dataSourceComponent()"
+              :is="dataSourceComponent(form.type)"
               v-model="form.config"
               :key="`${keyRender}-data`"
             />
 
-            <template v-if="helper.hasLayerSettings">
+            <template v-if="settingsComponent(form.type)">
               <div class="map-col-12">
                 <div class="create-control-section-label">
                   {{ trans('map.layer-control.create.layer-setting') }}
@@ -215,26 +273,39 @@ onMounted(() => {
               </div>
 
               <component
-                :is="helper.settingsComponent()"
+                :is="settingsComponent(form.type)"
                 v-model="form.config"
                 :key="`${keyRender}-settings`"
               />
             </template>
           </div>
 
-          <div v-if="creating" class="create-control-status">
-            {{ trans('map.layer-control.create.creating') }}
+          <div class="create-control-actions">
+            <div
+              v-if="validationErrors.length"
+              class="create-control-validation"
+            >
+              <div
+                v-for="key in validationErrors"
+                :key="key"
+                class="create-control-validation__item"
+              >
+                {{ trans(`map.layer-control.create.${key}`) }}
+              </div>
+            </div>
+            <div v-if="createError" class="create-control-sample-error">
+              {{ createError }}
+            </div>
+            <div v-if="creating" class="create-control-actions__status">
+              {{ trans('map.layer-control.create.creating') }}
+            </div>
+            <MapControlButton
+              :disabled="creating"
+              @click="onAddLayer()"
+              class="btn-container" variant="filled">
+              {{ trans('map.layer-control.create-btn') }}
+            </MapControlButton>
           </div>
-          <div v-if="createError" class="create-control-sample-error">
-            {{ createError }}
-          </div>
-          <BaseButton
-            :disabled="creating"
-            @click="onAddLayer()"
-            class="btn-container"
-          >
-            {{ trans('map.layer-control.create-btn') }}
-          </BaseButton>
         </div>
       </DraggableItemPopup>
     </template>

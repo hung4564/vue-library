@@ -53,8 +53,8 @@ function getKey(item: T): string | number {
       {{ label }}
     </label>
     <div class="input-container">
-      <select v-bind="$attrs" v-model="model" required>
-        <option value="" disabled selected hidden>
+      <select class="input-select" v-bind="$attrs" v-model="model">
+        <option v-if="$attrs.placeholder" value="" disabled hidden>
           {{ $attrs.placeholder as string }}
         </option>
         <option

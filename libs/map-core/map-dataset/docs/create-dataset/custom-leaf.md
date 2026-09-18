@@ -1,9 +1,12 @@
 # Creating a Custom Dataset Leaf
 
-A leaf is a node without children. Built-in types (`list`, `layer`, `source`, `identify`, `highlight`, `dataManagement`, `list-item`) are reserved — pick another `type`.
+A leaf is a node without children. Built-in types (`list`, `layer`, `source`, `identify`, `highlight`, `dataManagement`, `list-item`, `bound`, `menu`) are reserved — pick another `type`.
 
 ```typescript
-import { createRootDataset, createDatasetLeaf } from '@hungpvq/vue-map-dataset';
+import {
+  createRootDataset,
+  createDatasetLeaf,
+} from '@hungpvq/map-dataset';
 
 const root = createRootDataset('Root');
 const leaf = {
@@ -24,12 +27,8 @@ root.add(leaf);
 Menus and events (same helpers as list UI):
 
 ```typescript
-import {
-  createDatasetLeaf,
-  createWithMenuHelper,
-  createWithEventHelper,
-  createMenuBuilder,
-} from '@hungpvq/vue-map-dataset';
+import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/map-dataset';
+import { createWithMenuHelper, createMenuBuilder } from '@hungpvq/map-dataset/menu';
 
 const menu = createWithMenuHelper();
 const event = createWithEventHelper();

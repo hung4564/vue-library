@@ -1,5 +1,5 @@
 import { CircleLayerSpecification } from 'maplibre-gl';
-import type { LegendElement, PropsLegendOption } from '../../types/legend';
+import type { LegendElement, PropsLegendOption } from '../types';
 
 export default function Circle(
   props: PropsLegendOption<CircleLayerSpecification>,

@@ -1,11 +1,8 @@
 import { errorHandler, type MapSimple } from '@hungpvq/map-core';
-import type { IDataset } from '../interfaces';
+import type { IDataset } from '../interfaces/dataset.base';
 import type { IListViewUI } from '../model/list/types';
-import {
-  applyToAllLeaves,
-  findAllComponentsByType,
-  traverseTree,
-} from '../model/visitors';
+import { findAllComponentsByType } from '../model/visitors/helpers';
+import { traverseTree } from '../model/visitors/traverse';
 import { DatasetError } from '../errors';
 import {
   isComposite,
@@ -121,13 +118,18 @@ export class DatasetService {
     if (isDatasetMapHasRemoveFromMap(component)) {
       component.removeFromMap(map);
     }
-    applyToAllLeaves(parent, [
-      (leaf) => {
-        if (isDatasetMapHasRemoveFromMap(leaf)) {
-          leaf.removeFromMap(map);
+
+    // RTL: remove layers before sources (LTR removeSource-while-layer-exists → MapLibre MapEventError)
+    traverseTree(
+      parent,
+      (node) => {
+        if (isComposite(node)) return;
+        if (isDatasetMapHasRemoveFromMap(node)) {
+          node.removeFromMap(map);
         }
       },
-    ]);
+      { direction: 'rtl' },
+    );
 
     if (parent && isComposite(parent)) {
       parent.remove(component);

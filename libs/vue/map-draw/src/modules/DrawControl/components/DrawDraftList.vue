@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { Feature } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  BaseButton,
-  useLang,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useRegisterMapControl } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
+import type { IDraftRecord } from '@hungpvq/map-draw';
+import type { Feature } from 'geojson';
 import { computed, type Ref } from 'vue';
-import { IDraftRecord } from '../../../types';
 
 const props = defineProps<{
   show: boolean;
@@ -18,9 +15,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:show', value: boolean): void;
-  (e: 'fly-to', feature: Feature): void;
-  (e: 'discard-item', item: IDraftRecord): void;
+  'update:show': [value: boolean];
+  'fly-to': [feature: Feature];
+  'discard-item': [item: IDraftRecord];
 }>();
 
 const { trans } = useLang(props.mapId);
@@ -84,7 +81,7 @@ const path = {
             {{ trans('map.draw-control.draftList.type.' + item.status) }}
           </td>
           <td class="table-col-action">
-            <BaseButton
+            <MapControlButton variant="plain"
               type="button"
               v-if="item.modified"
               @click="emit('fly-to', item.modified as any)"
@@ -97,8 +94,8 @@ const path = {
                 :path="path.fillBound"
                 :title="trans('map.draw-control.draftList.action.fillBound')"
               />
-            </BaseButton>
-            <BaseButton
+            </MapControlButton>
+            <MapControlButton variant="plain"
               type="button"
               @click="emit('discard-item', item)"
               class="menu-item"
@@ -110,7 +107,7 @@ const path = {
                 :path="path.delete"
                 :title="trans('map.draw-control.draftList.action.discard')"
               />
-            </BaseButton>
+            </MapControlButton>
           </td>
         </tr>
       </tbody>

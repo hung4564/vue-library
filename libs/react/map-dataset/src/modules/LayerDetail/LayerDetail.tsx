@@ -1,33 +1,38 @@
-import { LAYER_DETAIL_LOCALE, type FieldFeaturesDef } from '@hungpvq/map-dataset';
+import {
+  LAYER_DETAIL_LOCALE,
+  type FieldFeaturesDef,
+  type IDataset,
+} from '@hungpvq/map-dataset';
+import {
+  filterLayerDetailHeaderMenus,
+  getItemMenuHost,
+  getResolvedMenus,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
-  BaseButton,
-  InputTextarea,
+  MapCopyButton,
   ModuleContainer,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
-import Icon from '@mdi/react';
-import { mdiContentCopy } from '@mdi/js';
-import { useEffect, type ReactNode } from 'react';
-import { useMapDatasetHighlight } from '../../store';
+import { InputTextarea } from '@hungpvq/react-map-core/fields';
+import { useEffect, useMemo, type ReactNode } from 'react';
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { useMapHighlight } from '../../store/highlight';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
 
 type LayerDetailProps = {
   item?: Record<string, unknown>;
-  view?: unknown;
+  view?: IDataset;
   fields?: DetailField[];
   popupProps?: Record<string, unknown>;
   onClose?: () => void;
 };
-
-function copyText(value: unknown) {
-  const text = value == null ? '' : String(value);
-  void navigator.clipboard?.writeText(text);
-}
 
 function TableTdCopy({
   value,
@@ -39,9 +44,7 @@ function TableTdCopy({
   return (
     <div className="layer-detail-row">
       <div className="layer-detail-row__copy">
-        <BaseButton onClick={() => copyText(value)} aria-label="Copy">
-          <Icon path={mdiContentCopy} size={14 / 24} />
-        </BaseButton>
+        <MapCopyButton value={value == null ? '' : String(value)} />
       </div>
       {children}
     </div>
@@ -87,6 +90,7 @@ function TableTdLayer({
 
 export function LayerDetail({
   item,
+  view,
   fields = [],
   popupProps = {},
   onClose,
@@ -94,16 +98,38 @@ export function LayerDetail({
   const { mapId, moduleContainerProps } = useMap({
     controlId: 'mapLayerDetail',
   });
-  const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const hl = useMapHighlight(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
 
   useEffect(() => {
-    setLocaleDefault(LAYER_DETAIL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_DETAIL_LOCALE);
+  }, [registerLocale]);
+
+  const itemMenuHost = useMemo(
+    () => (view ? getItemMenuHost(view) : undefined),
+    [view],
+  );
+
+  const layerTitleMenus = useMemo(
+    () =>
+      view
+        ? filterLayerDetailHeaderMenus(getResolvedMenus(view, 'layer'), {
+            hasFeatureItem: item != null,
+          })
+        : [],
+    [view, item],
+  );
+
+  const itemMenus = useMemo(() => {
+    if (!view) return [];
+    return getResolvedMenus(view, 'item').filter(
+      (menu) => menu.type !== 'divider',
+    );
+  }, [view]);
 
   function handleClose() {
-    setFeatureHighlight(undefined, 'detail');
+    hl.hideIfSource('detail');
     toggleShow(false);
     onClose?.();
   }
@@ -115,15 +141,15 @@ export function LayerDetail({
     show,
     setShow: (v) => {
       toggleShow(v);
-      if (!v) {
-        setFeatureHighlight(undefined, 'detail');
-        onClose?.();
-      }
+      if (!v) handleClose();
     },
     actions: [{ type: 'mapLayerDetail', run: () => toggleShow() }],
   });
 
+  const host = itemMenuHost ?? view;
+
   return (
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.layerDetail }}>
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
@@ -138,6 +164,27 @@ export function LayerDetail({
           {...panelBind}
           {...popupProps}
           title={trans('map.layer-control.info.title')}
+          afterTitle={
+            view ? (
+              <>
+                <DatasetMenus
+                  menus={layerTitleMenus}
+                  data={view}
+                  mapId={mapId}
+                  locations={['title']}
+                />
+                {host ? (
+                  <DatasetMenus
+                    menus={itemMenus}
+                    data={host}
+                    mapId={mapId}
+                    value={item}
+                    locations={['title']}
+                  />
+                ) : null}
+              </>
+            ) : undefined
+          }
         >
           <div className="table-show-info">
             <div className="table-content">
@@ -160,5 +207,6 @@ export function LayerDetail({
         </DraggableItemPopup>
       )}
     />
+    </MenuConditionProvider>
   );
 }

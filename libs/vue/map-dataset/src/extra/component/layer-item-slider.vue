@@ -1,7 +1,7 @@
 <template>
   <input
     :value="form"
-    @change="({ target }) => (form = parseFloat(target.value))"
+    @input="({ target }) => (form = parseFloat(target.value))"
     type="range"
     :min="min"
     :max="max"

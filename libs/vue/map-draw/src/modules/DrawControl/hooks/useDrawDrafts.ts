@@ -1,9 +1,13 @@
+import type { IDraftRecord, MapDrawOption } from '@hungpvq/map-draw';
+import {
+  emptyDraftListSnapshot,
+  getDraftListSnapshot,
+} from '@hungpvq/map-draw';
 import { useShow } from '@hungpvq/vue-map-core';
-import { Ref, ref } from 'vue';
-import { isDraftOption, useConfigDrawControl } from '../../../store';
-import { IDraftRecord, MapDrawOption } from '../../../types';
+import { type Ref, ref } from 'vue';
+import { useConfigDrawControl } from '../../../store';
 
-export function useDrawDrafts(
+function useDrawDrafts(
   mapId: string,
   drawOptions: Ref<MapDrawOption | undefined>,
   callbacks: {
@@ -16,12 +20,12 @@ export function useDrawDrafts(
   const [showListDraftItem, setShowListDraftItem] = useShow();
 
   function getCountDraftItem() {
-    if (!isDraftOption(drawOptions.value)) {
+    const snap = getDraftListSnapshot(drawOptions.value);
+    if (!snap) {
       return;
     }
-    const action = drawOptions.value;
-    draftItems.value = action.getDraftItems();
-    draftCounts.value = draftItems.value.length;
+    draftItems.value = snap.items;
+    draftCounts.value = snap.count;
   }
 
   const { commit, discard, save } = useConfigDrawControl(mapId, {
@@ -31,8 +35,9 @@ export function useDrawDrafts(
       getCountDraftItem();
     },
     onCommit: () => {
-      draftCounts.value = 0;
-      draftItems.value = [];
+      const empty = emptyDraftListSnapshot();
+      draftCounts.value = empty.count;
+      draftItems.value = empty.items;
     },
   });
 
@@ -58,7 +63,6 @@ export function useDrawDrafts(
     draftItems,
     draftCounts,
     showListDraftItem,
-    setShowListDraftItem,
     getCountDraftItem,
     onCommit,
     onDiscard,
@@ -67,3 +71,5 @@ export function useDrawDrafts(
     save,
   };
 }
+
+export { useDrawDrafts };

@@ -3,13 +3,18 @@ import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Map,
-  MapCard,
+  Map
 } from '@hungpvq/react-map-core';
+
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import {
+  MapCard
+} from '@hungpvq/react-map-core/fields';
 import { useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './basemap.css';
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function BasemapPage() {
   const [mapId, setMapId] = useState('');
@@ -21,9 +26,11 @@ export function BasemapPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
         <BaseMapTagControl position="bottom-left" />
+        <DemoHelpPanel />
       </Map>
       {mapId ? (
         <div className="base-map-card-demo">

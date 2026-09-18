@@ -6,13 +6,13 @@
       </span>
       <div class="draggable-group__action">
         <slot name="extra-data" :item="item"></slot>
-        <BaseButton @click="toggleShowChildrenGroup()">
+        <MapControlButton @click="toggleShowChildrenGroup()" variant="plain" size="small">
           <SvgIcon
             size="14"
             type="mdi"
             :path="isGroupShow ? path.group.close : path.group.open"
           />
-        </BaseButton>
+        </MapControlButton>
       </div>
     </div>
     <div v-if="isGroupShow" class="draggable-group__divider"></div>
@@ -35,17 +35,19 @@
 <script setup lang="ts">
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { MapControlButton } from '@hungpvq/vue-map-core';
+import type { GroupTree } from '@hungpvq/map-dataset';
+
 import { ref } from 'vue';
 import ListItem from './ListItem.vue';
 
-defineProps({
-  item: { type: Object, required: true },
-  selected: { type: Array, default: () => [] },
-  disabledSelect: Boolean,
-  disabledDrag: Boolean,
-  readonly: Boolean,
-});
+defineProps<{
+  item: GroupTree;
+  selected?: unknown[];
+  disabledSelect?: boolean;
+  disabledDrag?: boolean;
+  readonly?: boolean;
+}>();
 const path = {
   group: {
     open: mdiChevronUp,

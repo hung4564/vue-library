@@ -10,13 +10,19 @@ import {
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl, UniversalRegistry } from '../../extra';
+import MapControlButton from '../../components/MapControlButton.vue';
+import { useLang } from '../../extra/lang/hook';
+import { UniversalRegistry } from '../../extra/registry/plugin';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
 import { InputSelect } from '../../field';
-import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const CONTROL_ID = 'mapRegistryControl';
@@ -31,8 +37,8 @@ const { mapId, moduleContainerProps, order } = useMap({
   ...props,
   controlId: CONTROL_ID,
 });
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(REGISTRY_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', REGISTRY_CONTROL_LOCALE);
 
 const controls = ref<MapControlHandle[]>([]);
 const query = ref('');
@@ -85,16 +91,12 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: CONTROL_ID,
   getState() {
-    return {
+    return mdiButtonState(mdiConsole, {
       visible: true,
       active: show.value,
       title: trans.value('map.registry-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiConsole,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();
@@ -215,13 +217,14 @@ onUnmounted(() => {
             <p class="map-registry-control__hint">
               {{ trans('map.registry-control.hint') }}
             </p>
-            <button
-              type="button"
+            <MapControlButton
               class="map-registry-control__btn"
+              variant="outlined"
+              size="small"
               @click="refresh"
             >
               {{ trans('map.registry-control.refresh') }}
-            </button>
+            </MapControlButton>
           </header>
 
           <input
@@ -242,9 +245,10 @@ onUnmounted(() => {
               class="map-registry-control__item"
               :class="{ 'is-selected': selectedId === ctrl.id }"
             >
-              <button
-                type="button"
+              <MapControlButton
                 class="map-registry-control__select"
+                variant="plain"
+                size="small"
                 @click="select(ctrl.id)"
               >
                 <strong>{{ ctrl.id }}</strong>
@@ -257,7 +261,7 @@ onUnmounted(() => {
                       : trans('map.registry-control.closedState')
                   }}
                 </span>
-              </button>
+              </MapControlButton>
             </li>
           </ul>
 
@@ -267,39 +271,43 @@ onUnmounted(() => {
 
             <div class="map-registry-control__actions">
               <template v-if="selected.panelKind !== 'button'">
-                <button
-                  type="button"
+                <MapControlButton
                   class="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   @click="open"
                 >
                   {{ trans('map.registry-control.open') }}
-                </button>
-                <button
-                  type="button"
+                </MapControlButton>
+                <MapControlButton
                   class="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   @click="close"
                 >
                   {{ trans('map.registry-control.close') }}
-                </button>
-                <button
+                </MapControlButton>
+                <MapControlButton
                   v-if="
                     selected.panelKind === 'popup' ||
                     selected.panelKind === 'float'
                   "
-                  type="button"
                   class="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   @click="movePopup"
                 >
                   {{ trans('map.registry-control.movePopup') }}
-                </button>
-                <button
+                </MapControlButton>
+                <MapControlButton
                   v-if="selected.panelKind === 'sidebar'"
-                  type="button"
                   class="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   @click="toggleSidebarSide"
                 >
                   {{ trans('map.registry-control.toggleSidebar') }}
-                </button>
+                </MapControlButton>
               </template>
 
               <div class="map-registry-control__run">
@@ -310,13 +318,14 @@ onUnmounted(() => {
                   item-value="value"
                   item-text="text"
                 />
-                <button
-                  type="button"
+                <MapControlButton
                   class="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   @click="run"
                 >
                   {{ trans('map.registry-control.runAction') }}
-                </button>
+                </MapControlButton>
               </div>
             </div>
           </section>

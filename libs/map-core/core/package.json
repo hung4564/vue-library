@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-core",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "hung.pv"
   },
@@ -16,30 +16,113 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "./index.js",
+    "./index.cjs",
+    "./worker/client.js",
+    "./worker/client.cjs"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
-      "require": "./index.cjs",
-      "types": "./index.d.ts"
+      "require": "./index.cjs"
     },
     "./style.css": {
       "default": "./style.css"
     },
     "./worker": {
+      "types": "./worker-entry.d.ts",
       "import": "./worker.js",
-      "types": "./worker.d.ts"
+      "require": "./worker.cjs"
+    },
+    "./basemap": {
+      "types": "./basemap/index.d.ts",
+      "import": "./basemap.js",
+      "require": "./basemap.cjs"
+    },
+    "./crs": {
+      "types": "./crs/index.d.ts",
+      "import": "./crs.js",
+      "require": "./crs.cjs"
+    },
+    "./devtools": {
+      "types": "./devtools/index.d.ts",
+      "import": "./devtools.js",
+      "require": "./devtools.cjs"
+    },
+    "./event": {
+      "types": "./event/index.d.ts",
+      "import": "./event.js",
+      "require": "./event.cjs"
+    },
+    "./image": {
+      "types": "./image/index.d.ts",
+      "import": "./image.js",
+      "require": "./image.cjs"
+    },
+    "./legend": {
+      "types": "./legend/index.d.ts",
+      "import": "./legend.js",
+      "require": "./legend.cjs"
+    },
+    "./measurement": {
+      "types": "./measurement/index.d.ts",
+      "import": "./measurement.js",
+      "require": "./measurement.cjs"
+    },
+    "./menu": {
+      "types": "./menu/index.d.ts",
+      "import": "./menu.js",
+      "require": "./menu.cjs"
+    },
+    "./print": {
+      "types": "./print/index.d.ts",
+      "import": "./print.js",
+      "require": "./print.cjs"
+    },
+    "./theme": {
+      "types": "./theme/index.d.ts",
+      "import": "./theme.js",
+      "require": "./theme.cjs"
+    },
+    "./toolbar": {
+      "types": "./toolbar/index.d.ts",
+      "import": "./toolbar.js",
+      "require": "./toolbar.cjs"
     }
   },
   "dependencies": {
-    "mitt": "^3.0.1"
+    "@mdi/js": "^7.4.47",
+    "@turf/area": "^6.5.0",
+    "@turf/bbox": "^6.5.0",
+    "@turf/bearing": "^6.5.0",
+    "@turf/centroid": "^6.5.0",
+    "@turf/circle": "^6.5.0",
+    "@turf/destination": "^6.5.0",
+    "@turf/distance": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/length": "^6.5.0",
+    "@turf/line-arc": "^6.5.0",
+    "@turf/midpoint": "^6.5.0",
+    "mitt": "^3.0.1",
+    "proj4": "^2.11.0"
   },
   "peerDependencies": {
-    "@mdi/js": "^7.4.47",
-    "proj4": "^2.11.0",
     "maplibre-gl": "^5.4.0",
-    "@hungpvq/shared-log": ">=0.0.1",
-    "@turf/turf": "^6.5.0",
+    "@hungpvq/shared-log": "^0.0.1",
+    "@hungpvq/shared-store": "^0.3.0",
     "@maplibre/maplibre-gl-style-spec": "^23.2.1",
     "file-saver": "^2.0.5"
+  },
+  "peerDependenciesMeta": {
+    "@maplibre/maplibre-gl-style-spec": {
+      "optional": true
+    },
+    "file-saver": {
+      "optional": true
+    }
   }
 }

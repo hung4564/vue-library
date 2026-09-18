@@ -1,5 +1,4 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { debounce } from 'lodash';
 import {
   CSSProperties,
   ReactNode,
@@ -11,8 +10,31 @@ import {
 } from 'react';
 import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer, useDragStore } from '../../store';
-import { useStoreReactive } from '../../store/useStoreReactive';
+import { useContainerReactive } from '../../store/useStoreReactive';
 import { SidebarContainer } from './sidebar/sidebar-container';
+import { BottomContainer } from './bottom/bottom-container';
+
+/** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): ((...args: TArgs) => void) & { cancel: () => void } {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const debounced = ((...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  }) as ((...args: TArgs) => void) & { cancel: () => void };
+  debounced.cancel = () => {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+  };
+  return debounced;
+}
 
 type ResultShow = {
   sidebar?: {
@@ -25,6 +47,9 @@ type ResultShow = {
 export interface DraggableContainerProps {
   containerId?: string;
   className?: string;
+  mobileBreakpoint?: number;
+  /** `plain` drops map-heavy card chrome (transparent/inherit). */
+  variant?: 'default' | 'plain';
   children?: ReactNode;
   onInit?: (id: string) => void;
   onDestroy?: (id: string) => void;
@@ -34,6 +59,8 @@ export interface DraggableContainerProps {
 export function DraggableContainer({
   containerId: propContainerId,
   className,
+  mobileBreakpoint = 600,
+  variant = 'default',
   children,
   onInit,
   onDestroy,
@@ -54,15 +81,13 @@ export function DraggableContainer({
   onDestroyRef.current = onDestroy;
   const onChangeShowRef = useRef(onChangeShow);
   onChangeShowRef.current = onChangeShow;
+  const mobileBreakpointRef = useRef(mobileBreakpoint);
+  mobileBreakpointRef.current = mobileBreakpoint;
 
-  useStoreReactive();
+  useContainerReactive(containerId);
   const dragStore = useDragStore();
   const drawer = dragStore.container[containerId]?.drawer;
   const itemShows = store.getItemShows();
-
-  /** Breakpoint for WithMobileHandle — must use root width, not center
-   *  (center shrinks when drawers open and would oscillate desktop ↔ mobile). */
-  const MOBILE_BREAKPOINT = 600;
 
   const drawerStyle = useMemo(() => {
     const style: CSSProperties & Record<string, string> = {
@@ -85,7 +110,7 @@ export function DraggableContainer({
     storeRef.current.setParentProps({
       width: clientWidth,
       height: boxRef.current?.clientHeight || 0,
-      isMobile: layoutWidth < MOBILE_BREAKPOINT,
+      isMobile: layoutWidth < mobileBreakpointRef.current,
     });
   }, []);
 
@@ -106,7 +131,8 @@ export function DraggableContainer({
 
       if ('location' in item && typeof item.location === 'string') {
         const key = `${item.location}Count`;
-        const group = (acc[baseType] as Record<string, number> | undefined) ?? {};
+        const group =
+          (acc[baseType] as Record<string, number> | undefined) ?? {};
         group[key] = (group[key] || 0) + 1;
         acc[baseType] = group;
       } else {
@@ -147,11 +173,21 @@ export function DraggableContainer({
     };
   }, [containerId, handleResize, onResize]);
 
+  useEffect(() => {
+    onResize();
+  }, [mobileBreakpoint, onResize]);
+
   return (
     <ContainerProvider containerId={containerId}>
       <div
         ref={rootRef}
-        className={['draggable-root', className].filter(Boolean).join(' ')}
+        className={[
+          'draggable-root',
+          variant === 'plain' ? 'draggable-variant-plain' : '',
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         style={drawerStyle}
       >
         <div
@@ -169,6 +205,7 @@ export function DraggableContainer({
               <SidebarContainer location="right" />
               <SidebarContainer location="top" />
               <SidebarContainer location="bottom" />
+              <BottomContainer />
               {children}
             </>
           )}

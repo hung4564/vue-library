@@ -1,0 +1,6 @@
+/* One-line CSS entry for the Vue map shell (resolves via app node_modules). */
+@import '@hungpvq/map-core/style.css';
+@import '@hungpvq/map-dataset/style.css';
+@import '@hungpvq/vue-map-core/style.css';
+@import '@hungpvq/vue-map-dataset/style.css';
+@import '@hungpvq/vue-draggable/style.css';

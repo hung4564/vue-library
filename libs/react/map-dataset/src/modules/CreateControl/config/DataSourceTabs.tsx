@@ -1,5 +1,5 @@
-import type { CreateControlDataTab } from '@hungpvq/map-dataset';
-import { CREATE_CONTROL_DEFAULT_DATA_TAB } from '@hungpvq/map-dataset';
+import type { CreateControlDataTab } from '@hungpvq/map-dataset/create-control';
+import { CREATE_CONTROL_DEFAULT_DATA_TAB } from '@hungpvq/map-dataset/create-control';
 import { useEffect, useState, type ReactNode } from 'react';
 
 type DataSourceTabsProps = {

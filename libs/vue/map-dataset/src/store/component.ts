@@ -1,26 +1,22 @@
 import { logHelper } from '@hungpvq/map-core';
-import type { ComponentType } from '@hungpvq/map-dataset';
+import {
+  removeDatasetComponent,
+  upsertDatasetComponent,
+  type DatasetComponentItem,
+} from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-dataset';
+
 const KEY = 'dataset-component' as const;
 
-export type ComponentItem = {
-  id: string;
-  check?: string;
-} & ComponentType;
+export type ComponentItem = DatasetComponentItem;
 
 export type MapDatasetComponentStore = {
   components: ComponentItem[];
   componentIds: Ref<string[]>;
 };
-
-function generateId(prefix = 'component'): string {
-  return `${prefix}-${Date.now()}-${Math.random()
-    .toString(36)
-    .substring(2, 11)}`;
-}
 
 export const useMapDatasetComponentStore = (mapId: string) =>
   createMapScopedStore<MapDatasetComponentStore>(mapId, KEY as any, () => {
@@ -43,30 +39,11 @@ export const useMapDatasetComponent = (mapId: string) => {
   }
   function addComponent(component: Omit<ComponentItem, 'id'>) {
     if (!store) return;
-
     logHelper(logger, mapId, 'store-component').debug('addComponent', {
       component,
       store,
     });
-    if (component.check) {
-      const index = store.components.findIndex(
-        (x) => x.check == component.check,
-      );
-      if (index >= 0) {
-        const id = store.components[index].id;
-        Object.assign(store.components[index], component);
-        store.componentIds.value.splice(index, 1);
-        store.componentIds.value.push(id);
-        return id;
-      }
-    }
-    const id = generateId();
-    store.components.push({
-      ...component,
-      id,
-    });
-    store.componentIds.value.push(id);
-    return id;
+    return upsertDatasetComponent(store, component);
   }
   function removeComponent(id: string) {
     if (!store) return;
@@ -74,8 +51,7 @@ export const useMapDatasetComponent = (mapId: string) => {
       id,
       store,
     });
-    store.components = store.components.filter((x) => x.id !== id);
-    store.componentIds.value = store.componentIds.value.filter((x) => x !== id);
+    removeDatasetComponent(store, id);
   }
 
   return { getStore, getAllComponentIds, addComponent, removeComponent };

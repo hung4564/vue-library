@@ -14,6 +14,14 @@ const router = createRouter({
       component: () => import('../views/map-core.vue'),
     },
     {
+      path: '/language/',
+      component: () => import('../views/language.vue'),
+    },
+    {
+      path: '/minimal/',
+      component: () => import('../views/minimal.vue'),
+    },
+    {
       path: '/worker-sample/',
       component: () => import('../views/worker-sample/example.vue'),
     },
@@ -22,12 +30,16 @@ const router = createRouter({
       component: () => import('../views/toolbar.vue'),
     },
     {
+      path: '/mobile-menu/',
+      component: () => import('../views/mobile-menu.vue'),
+    },
+    {
       path: '/legend/',
       component: () => import('../views/legend.vue'),
     },
     {
-      path: '/inspect/',
-      component: () => import('../views/Draw/inspect.vue'),
+      path: '/draw/',
+      component: () => import('../views/Draw/example.vue'),
     },
     {
       path: '/basemap/',
@@ -40,6 +52,11 @@ const router = createRouter({
     {
       path: '/dataset-identify/',
       component: () => import('../views/dataset-identify/example.vue'),
+    },
+    {
+      path: '/dataset-identify-present/',
+      component: () =>
+        import('../views/dataset-identify-present/example.vue'),
     },
     {
       path: '/dataset-menu/',
@@ -56,6 +73,14 @@ const router = createRouter({
     {
       path: '/dataset-data-management/',
       component: () => import('../views/dataset-data-management/example.vue'),
+    },
+    {
+      path: '/dataset-attribute-table/',
+      component: () => import('../views/dataset-attribute-table/example.vue'),
+    },
+    {
+      path: '/dataset-geo-export/',
+      component: () => import('../views/dataset-geo-export/example.vue'),
     },
     {
       path: '/measurement/',

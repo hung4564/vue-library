@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-dataset",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "hung.pv"
   },
@@ -16,16 +16,67 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
-      "require": "./index.cjs",
-      "types": "./index.d.ts"
+      "require": "./index.cjs"
     },
     "./package.json": "./package.json",
     "./vite": {
-      "import": "./vite.js",
-      "types": "./vite.d.ts"
+      "types": "./vite.d.ts",
+      "import": "./vite.js"
+    },
+    "./geojson": {
+      "types": "./geojson/index.d.ts",
+      "import": "./geojson.js"
+    },
+    "./raster": {
+      "types": "./raster/index.d.ts",
+      "import": "./raster.js"
+    },
+    "./vector-tile": {
+      "types": "./vector-tile/index.d.ts",
+      "import": "./vector-tile.js"
+    },
+    "./identify": {
+      "types": "./identify/index.d.ts",
+      "import": "./identify.js"
+    },
+    "./menu": {
+      "types": "./menu/index.d.ts",
+      "import": "./menu.js"
+    },
+    "./style": {
+      "types": "./style/index.d.ts",
+      "import": "./style.js"
+    },
+    "./create-control": {
+      "types": "./create-control/index.d.ts",
+      "import": "./create-control.js"
+    },
+    "./geo-export": {
+      "types": "./geo-export/index.d.ts",
+      "import": "./geo-export.js"
+    },
+    "./data-management": {
+      "types": "./data-management/index.d.ts",
+      "import": "./data-management.js"
+    },
+    "./attribute-table": {
+      "types": "./attribute-table/index.d.ts",
+      "import": "./attribute-table.js"
+    },
+    "./highlight": {
+      "types": "./highlight/index.d.ts",
+      "import": "./highlight.js"
+    },
+    "./geojson-worker": {
+      "default": "./assets/geojson.worker.js"
     },
     "./assets/*": "./assets/*",
     "./style.css": {
@@ -33,27 +84,46 @@
     }
   },
   "dependencies": {
-    "@hungpvq/map-core": "1.0.1",
-    "@tmcw/togeojson": "^7.1.2",
+    "@hungpvq/map-core": "^1.1.0",
     "@turf/boolean-intersects": "^6.5.0",
-    "@turf/turf": "^6.5.0",
-    "@xmldom/xmldom": "^0.9.12",
-    "jszip": "^3.10.1",
+    "@turf/helpers": "^6.5.0",
     "mitt": "^3.0.1",
-    "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/shared-log": ">=0.0.1",
-    "maplibre-gl": "^5.4.0",
-    "@mdi/js": "^7.4.47",
-    "papaparse": "^5.5.2",
-    "shpjs": "^6.2.0",
-    "topojson-client": "^3.1.0"
+    "@hungpvq/shared": "^0.3.0",
+    "@hungpvq/shared-log": "^0.0.1",
+    "@mdi/js": "^7.4.47"
   },
   "peerDependencies": {
+    "@hungpvq/shared-store": "^0.3.0",
+    "maplibre-gl": "^5.4.0",
+    "@tmcw/togeojson": "^7.1.2",
+    "@xmldom/xmldom": "^0.9.12",
+    "jszip": "^3.10.1",
+    "papaparse": "^5.5.2",
+    "shpjs": "^6.2.0",
+    "topojson-client": "^3.1.0",
     "tokml": "^0.4.0",
     "@mapbox/shp-write": "^0.4.3",
     "vite": ">=5.0.0"
   },
   "peerDependenciesMeta": {
+    "@tmcw/togeojson": {
+      "optional": true
+    },
+    "@xmldom/xmldom": {
+      "optional": true
+    },
+    "jszip": {
+      "optional": true
+    },
+    "papaparse": {
+      "optional": true
+    },
+    "shpjs": {
+      "optional": true
+    },
+    "topojson-client": {
+      "optional": true
+    },
     "tokml": {
       "optional": true
     },

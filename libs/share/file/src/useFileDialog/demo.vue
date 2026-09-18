@@ -2,7 +2,7 @@
 import { useFileDialog } from '.';
 
 const { files, open, reset, onChange } = useFileDialog();
-onChange((files) => {
+onChange((_files) => {
   /** do something with files */
 });
 </script>

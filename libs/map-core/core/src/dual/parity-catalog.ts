@@ -1,0 +1,241 @@
+/**
+ * Dual Vue ↔ React parity catalog (test / docs source of truth).
+ * Not a package public entry — imported by parity specs only.
+ *
+ * Thin-host ownership: for each dual control id, orchestration/pure logic
+ * belongs in `@hungpvq/map-core` (or map-dataset / map-draw). Adapters only
+ * wire hooks + SFC/JSX + ModuleContainer / toolbar / register.
+ * See `.cursor/skills/map-dual-framework/SKILL.md` § Thin-host controls.
+ */
+
+/** Control / toolbar ids that must appear in both Vue and React adapter sources. */
+export const MAP_DUAL_CONTROL_IDS = [
+  'mapLayerControl',
+  'mapDatasetControl',
+  'mapGotoControl',
+  'mapSettingControl',
+  'mapInfoControl',
+  'mapWorkerControl',
+  'mapIdentifyControl',
+  'mapCrsControl',
+  'mapLegendControl',
+  'mapBaseMapControl',
+  'mapEventManagementControl',
+  'mapHomeControl',
+  'mapFullscreenControl',
+  'mapThemeControl',
+  'mapLanguageControl',
+  'mapGeoLocateControl',
+  'mapGlobeControl',
+  'mapPrintControl',
+  'mapNavigationControl',
+  'mapMeasurementControl',
+  'mapPrintAdvancedControl',
+  'mapInspectControl',
+  'mapDrawDraftList',
+  'mapDrawControl',
+  'mapBaseMapTagControl',
+  'mapRegistryControl',
+  'mapAttributeTable',
+  'mapMeasurementSetting',
+  'mapCreateControl',
+] as const;
+
+/**
+ * Dual control ids expected as corner chrome on demo AllMapView (`/` / `#/`).
+ * Used by vue/react demo-map-e2e smoke (class `{id}-btn-module-container`).
+ */
+export const MAP_DUAL_E2E_SMOKE_CONTROL_IDS = [
+  'mapHomeControl',
+  'mapNavigationControl',
+  'mapFullscreenControl',
+  'mapGlobeControl',
+  'mapGeoLocateControl',
+  'mapGotoControl',
+  'mapInfoControl',
+  'mapSettingControl',
+  'mapThemeControl',
+  'mapCrsControl',
+  'mapLegendControl',
+  'mapBaseMapControl',
+  'mapPrintControl',
+  'mapPrintAdvancedControl',
+  'mapWorkerControl',
+  'mapRegistryControl',
+  'mapEventManagementControl',
+  'mapMeasurementControl',
+  'mapLayerControl',
+  'mapDatasetControl',
+  'mapIdentifyControl',
+  'mapInspectControl',
+  'mapDrawControl',
+] as const;
+
+/**
+ * Stable root exports that both `@hungpvq/vue-map-core` and `@hungpvq/react-map-core`
+ * must publish (framework-idiom symbols excluded).
+ */
+export const MAP_CORE_ADAPTER_SHARED_STABLE = [
+  'ActionControl',
+  'BaseMapCard',
+  'BaseMapControl',
+  'BaseMapTagControl',
+  'CrsControl',
+  'CrsDisplaySettings',
+  'DefaultBaseMapAdapter',
+  'EventManagementControl',
+  'FullScreenControl',
+  'GeoLocateControl',
+  'GlobeControl',
+  'GotoControl',
+  'HomeControl',
+  'InfoControl',
+  'LanguageControl',
+  'LegendControl',
+  'Map',
+  'MapCommonButton',
+  'MapContextMenuControl',
+  'MapControlButton',
+  'MapCopyButton',
+  'MapControlGroupButton',
+  'MeasurementControl',
+  'MeasurementSettingPopup',
+  'ModuleContainer',
+  'MouseCoordinatesControl',
+  'PrintAdvancedControl',
+  'PrintControl',
+  'RegistryControl',
+  'RegistryItem',
+  'SettingControl',
+  'ThemeControl',
+  'ToolbarControl',
+  'UniversalRegistry',
+  'WorkerControl',
+  'ZoomControl',
+  'addStore',
+  'createMapScopedStore',
+  'defaultMapProps',
+  'destroyMapScopedStore',
+  'getStore',
+  'langStore',
+  'useBaseMap',
+  'useBaseMapAdapter',
+  'useBreakpoints',
+  'useComponentName',
+  'useEventListener',
+  'useEventMap',
+  'useEventMapItems',
+  'useInitToolbarControl',
+  'useLang',
+  'useLayerLegend',
+  'useMap',
+  'useMapBaseMapStore',
+  'useMapContainer',
+  'useMapCrsCurrent',
+  'useMapCrsDisplayEpsgs',
+  'useMapCrsItems',
+  'useMapCrsStore',
+  'useMapEventStore',
+  'useMapGlobalStore',
+  'useMapImage',
+  'useMapImages',
+  'useMapInstance',
+  'useMapPrint',
+  'useMapPrintStore',
+  'useMapState',
+  'useMapStore',
+  'useMapToolbar',
+  'useMapToolbarModule',
+  'useMapToolbarStore',
+  'useRegisterMapControl',
+  'useShow',
+  'useToolbarControl',
+  'useUniversalRegistry',
+  'useWorkerMonitor',
+] as const;
+
+/** Shared Experimental field helpers on `./fields` (aliases included). */
+export const MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL = [
+  'BaseCollapse',
+  'Collapse',
+  'InputCheckbox',
+  'InputChoose',
+  'InputColorPicker',
+  'InputCrs',
+  'InputFile',
+  'InputSelect',
+  'InputSlider',
+  'InputText',
+  'InputTextArea',
+  'InputTextarea',
+  'MapButton',
+  'MapCard',
+  'MapErrorToast',
+  'MapIcon',
+  'MapImage',
+] as const;
+
+export const MAP_DATASET_ADAPTER_SHARED_STABLE = [
+  'AddToGroup',
+  'AttributeTable',
+  'ComponentManagementControl',
+  'CreateControl',
+  'createDatasetRegistryPlugin',
+  'DatasetControl',
+  'DatasetDetail',
+  'DatasetMenuButton',
+  'ExportGeo',
+  'IdentifyControl',
+  'IdentifyLayerAction',
+  'IdentifyResultControl',
+  'IdentifyShowFirstControl',
+  'installMapApp',
+  'LayerControl',
+  'LayerDetail',
+  'LayerInfoControl',
+  'LayerItemIcon',
+  'LayerMenuDefaultHandle',
+  'ListGroupItem',
+  'ListItem',
+  'RecursiveList',
+  'SetOpacity',
+  'StyleControl',
+  'ToggleShow',
+  'ToggleShowButton',
+  'useMapHighlight',
+  'useMapDataset',
+  'useMapDatasetComponent',
+  'useMapDatasetComponentStore',
+  'useMapDatasetStore',
+  'useMenuConditionContext',
+  'useToggleShowAction',
+] as const;
+
+export const MAP_DRAW_ADAPTER_SHARED_STABLE = [
+  'DrawControl',
+  'InspectControl',
+  'useConfigDrawControl',
+  'useMapDraw',
+  'useMapDrawStore',
+] as const;
+
+/** Canonical Experimental names — prefer these in new code. */
+export const MAP_CORE_EXPERIMENTAL_CANONICAL = {
+  collapse: 'BaseCollapse',
+  textArea: 'InputTextArea',
+} as const;
+
+/**
+ * MapControlButton / MapButton public prop contract (SoT in `@hungpvq/map-core` `ui/map-button`).
+ * Both adapters must import helpers from core — do not fork variant/size literals.
+ */
+export const MAP_CONTROL_BUTTON_VARIANTS = [
+  'icon',
+  'plain',
+  'text',
+  'tonal',
+  'outlined',
+  'filled',
+] as const;
+
+export const MAP_CONTROL_BUTTON_SIZES = ['small', 'medium', 'large'] as const;

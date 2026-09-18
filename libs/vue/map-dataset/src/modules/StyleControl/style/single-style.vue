@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { Collapse, InputSlider } from '@hungpvq/vue-map-core';
+import { Collapse, InputSlider } from '@hungpvq/vue-map-core/fields';
 import {
+  applyStyleTabValue,
+  applyStyleZoom,
   convertTabWithDefaultConfig,
   DEFAULT_VALUE,
   TABS,
   type Tab,
   type TabConfig,
-} from '@hungpvq/map-dataset';
+} from '@hungpvq/map-dataset/style';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
 import TabContent from '../component/tab-content.vue';
@@ -27,14 +29,14 @@ const tabs_format = computed<TabConfig[]>(() => {
   if (tab.type === 'multi') {
     return tab.tabs.map((x) => ({
       ...x,
-        items: convertTabWithDefaultConfig(x.items, CONFIG_TABS),
+      items: convertTabWithDefaultConfig(x.items, CONFIG_TABS),
     }));
   }
   return [
     {
       type: 'single',
       text: 'style',
-        items: convertTabWithDefaultConfig(tab.items, CONFIG_TABS),
+      items: convertTabWithDefaultConfig(tab.items, CONFIG_TABS),
     },
   ];
 });
@@ -57,31 +59,20 @@ const onSelectTabGroup = (group: TabConfig) => {
   if (tab_group.value && tab_group.value.items)
     onSelectTab(tab_group.value.items[0]);
 };
-const emitInput = (value: any, tab: Tab, layer: any) => {
-  if (tab.type === 'divider') {
-    return;
-  }
-  if (tab.format) {
-    value = tab.format(value);
-  }
-  if ('key' in tab) {
-    if (tab.format) {
-      value = tab.format(value);
-    }
-    layer[tab.part || 'paint'][tab.key] = value;
-  }
-  emit('update-style', layer);
+const emitInput = (value: unknown, currentTab: Tab) => {
+  layer.value = applyStyleTabValue(layer.value, currentTab, value);
+  emit('update-style', layer.value);
 };
 onMounted(() => {
   if (tabs_format.value) onSelectTabGroup(tabs_format.value[0]);
 });
-const onChangeMinZoom = (zoom: number, layer: any) => {
-  layer['min-zoom'] = zoom;
-  emit('update-style', layer);
+const onChangeMinZoom = (zoom: number) => {
+  layer.value = applyStyleZoom(layer.value, 'min-zoom', zoom);
+  emit('update-style', layer.value);
 };
-const onChangeMaxZoom = (zoom: number, layer: any) => {
-  layer['max-zoom'] = zoom;
-  emit('update-style', layer);
+const onChangeMaxZoom = (zoom: number) => {
+  layer.value = applyStyleZoom(layer.value, 'max-zoom', zoom);
+  emit('update-style', layer.value);
 };
 </script>
 <template lang="">
@@ -110,7 +101,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
           <div class="label-config-item__input">
             <InputSlider
               :modelValue="layer['min-zoom'] != null ? layer['min-zoom'] : 0"
-              @update:modelValue="onChangeMinZoom($event, layer)"
+              @update:modelValue="onChangeMinZoom($event)"
               min="0"
               max="24"
               step="1"
@@ -124,7 +115,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
           <div class="label-config-item__input">
             <InputSlider
               :modelValue="layer['max-zoom'] != null ? layer['max-zoom'] : 24"
-              @update:modelValue="onChangeMaxZoom($event, layer)"
+              @update:modelValue="onChangeMaxZoom($event)"
               min="0"
               max="24"
               step="1"
@@ -181,7 +172,7 @@ const onChangeMaxZoom = (zoom: number, layer: any) => {
               v-if="tab"
               :item="tab"
               :value="layer[tab.part || 'paint'][tab.key]"
-              @input="emitInput($event, tab, layer)"
+              @input="emitInput($event, tab)"
               :default_value="default_value[tab.part || 'paint'][tab.key]"
               :trans="trans"
               :mapId="mapId"

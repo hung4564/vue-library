@@ -5,8 +5,8 @@ import {
   Map,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
-import { styleImageToDataURL } from '../utils/image';
-import type { LegendElement, PropsLegendOption } from '../types/legend';
+import { styleImageToDataURL } from '../image/utils';
+import type { LegendElement, PropsLegendOption } from './types';
 import Circle from './part/Circle';
 import Fill from './part/Fill';
 import Line from './part/Line';

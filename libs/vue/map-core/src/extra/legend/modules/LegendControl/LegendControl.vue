@@ -1,29 +1,33 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LEGEND_CONTROL_LOCALE } from '@hungpvq/map-core';
+import {
+  getLegendName,
+  isSupportGenLayerLegend,
+  LEGEND_CONTROL_LOCALE,
+} from '@hungpvq/map-core/legend';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
-import { MapCommonButton } from '../../../../components';
-import { useEventListener } from '../../../../extra/event';
-import { useLang } from '../../../../extra/lang';
-import { useRegisterMapControl } from '../../../../extra/registry';
-import { useToolbarControl } from '../../../../extra/toolbar';
+import MapCommonButton from '../../../../components/MapCommonButton.vue';
+import { useEventListener } from '../../../../extra/event/hook/useEvent';
+import { useLang } from '../../../../extra/lang/hook';
+import { useRegisterMapControl } from '../../../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../../../extra/toolbar/helper';
 import { InputCheckbox } from '../../../../field';
 import { defaultMapProps, useMap } from '../../../../hooks/useMap';
 import { useShow } from '../../../../hooks/useShow';
-import { ModuleContainer } from '../../../../modules';
-import { getLegendName, isSupportGenLayerLegend } from '../../check';
+import ModuleContainer from '../../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLayerLegend } from '../../lib/useLayerLegend';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
-setLocaleDefault(LEGEND_CONTROL_LOCALE);
+registerLocale('en', LEGEND_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
 }
@@ -92,20 +96,18 @@ watch(onlyRender, (newValue) => {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLegendControl',
   getState() {
-    return {
+    return mdiButtonState(mdiMapLegend, {
       visible: true,
+      active: show.value,
       title: trans.value('map.legend-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi',
-        path: mdiMapLegend,
-      },
-    };
+    });
   },
   onClick() {
     onToggleShow();
   },
 });
+watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">

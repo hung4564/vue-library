@@ -1,6 +1,7 @@
 import {
   DraggableContainer,
   DraggableDrawer,
+  DraggableItemBottom,
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
@@ -111,6 +112,17 @@ export function CustomCardPage() {
       >
         <div className="panel">Drawer with global card.</div>
       </DraggableDrawer>
+
+      <DraggableItemBottom
+        show
+        title="Bottom (local)"
+        componentCard={LocalCard}
+        componentCardHeader={LocalHeader}
+      >
+        <div className="panel">
+          Bottom shell uses local override while this item is active.
+        </div>
+      </DraggableItemBottom>
 
       <DraggableModal
         show={showModal}

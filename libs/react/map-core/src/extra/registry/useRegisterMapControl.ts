@@ -1,9 +1,10 @@
-import type {
-  MapControlAction,
-  MapControlHandle,
-  MapControlPanelKind,
-  MapControlPanelPosition,
-  Position,
+import {
+  buildMapControlHandle,
+  type MapControlAction,
+  type MapControlHandle,
+  type MapControlPanelKind,
+  type MapControlPanelPosition,
+  type Position,
 } from '@hungpvq/map-core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UniversalRegistry } from './plugin';
@@ -47,42 +48,18 @@ export function useRegisterMapControl(
 
     const buildHandle = (): MapControlHandle => {
       const opts = optionsRef.current;
-      const actions = opts.actions ?? [];
-      const title = opts.title;
-      const buttonPosition = opts.buttonPosition;
-      const defaultActionType = opts.defaultActionType;
-
-      return {
+      return buildMapControlHandle({
         id: opts.id,
         panelKind: opts.panelKind,
-        title,
-        buttonPosition,
-        defaultActionType,
-        props: {
-          panelKind: opts.panelKind,
-          buttonPosition,
-          title,
-          defaultActionType,
-          ...(opts.getProps?.() ?? {}),
-        },
-        actions: actions.map(({ type, title: t }) => ({ type, title: t })),
-        isOpen() {
-          return !!optionsRef.current.show;
-        },
-        open() {
-          setShow(true);
-        },
-        close() {
-          setShow(false);
-        },
-        toggle() {
-          setShow(!optionsRef.current.show);
-        },
+        title: opts.title,
+        buttonPosition: opts.buttonPosition,
+        defaultActionType: opts.defaultActionType,
+        getProps: opts.getProps,
+        actions: opts.actions ?? [],
+        isOpen: () => !!optionsRef.current.show,
         setShow,
-        getPanelPosition() {
-          return { ...panelPositionRef.current };
-        },
-        setPanelPosition(pos: MapControlPanelPosition) {
+        getPanelPosition: () => ({ ...panelPositionRef.current }),
+        setPanelPosition(pos) {
           setPanelPositionState((prev) => ({ ...prev, ...pos }));
           if (opts.panelKind === 'popup' || opts.panelKind === 'float') {
             if (optionsRef.current.show) {
@@ -91,38 +68,7 @@ export function useRegisterMapControl(
             }
           }
         },
-        runAction(type?: string, event?: unknown) {
-          const current = optionsRef.current;
-          const list = current.actions ?? [];
-          const map = new Map(list.map((a) => [a.type, a.run]));
-          if (!type) {
-            if (list.length === 1) {
-              list[0].run(event);
-              return;
-            }
-            if (list.length === 0) {
-              setShow(!current.show);
-              return;
-            }
-            const preferred = current.defaultActionType || current.id;
-            const fallback = map.get(preferred);
-            if (fallback) {
-              fallback(event);
-              return;
-            }
-            throw new Error(
-              `[UniversalRegistry] Control '${current.id}' has multiple actions; pass type or set defaultActionType`,
-            );
-          }
-          const run = map.get(type);
-          if (!run) {
-            throw new Error(
-              `[UniversalRegistry] Control '${current.id}' has no action '${type}'`,
-            );
-          }
-          run(event);
-        },
-      };
+      });
     };
 
     UniversalRegistry.registerControl(mapId, options.id, buildHandle());

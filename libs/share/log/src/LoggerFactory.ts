@@ -3,7 +3,6 @@ import { Logger } from './Logger';
 import { LogAdapter } from './types';
 
 export class LoggerFactory {
-  private static instance: LoggerFactory;
   private adapters: LogAdapter[] = [new ConsoleAdapter()];
 
   private enableAll = true;
@@ -11,10 +10,13 @@ export class LoggerFactory {
   private enabledNamespaces: Set<string> = new Set();
 
   static getInstance(): LoggerFactory {
-    if (!LoggerFactory.instance) {
-      LoggerFactory.instance = new LoggerFactory();
+    const host = globalThis as typeof globalThis & {
+      __hungpvq_LoggerFactory__?: LoggerFactory;
+    };
+    if (!host.__hungpvq_LoggerFactory__) {
+      host.__hungpvq_LoggerFactory__ = new LoggerFactory();
     }
-    return LoggerFactory.instance;
+    return host.__hungpvq_LoggerFactory__;
   }
 
   /**

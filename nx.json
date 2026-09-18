@@ -89,29 +89,40 @@
         "cwd": "{projectRoot}",
         "commands": ["tsc -p tsconfig.lib.json --noEmit"],
         "forwardAllArgs": false,
-        "description": "Type check with tsc"
+        "description": "Type check with tsc (Vue packages override to vue-tsc)"
       }
     }
   },
   "release": {
     "projectsRelationship": "independent",
     "version": {
-      "preVersionCommand": "npx nx run-many -t build",
       "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": true,
-      "updateDependents": "never",
-      "manifestRootsToUpdate": ["{projectRoot}"]
+      "updateDependents": "auto",
+      "versionPrefix": "^",
+      "manifestRootsToUpdate": ["{projectRoot}"],
+      "git": {
+        "commit": false,
+        "tag": false,
+        "stageChanges": true
+      }
     },
     "changelog": {
+      "automaticFromRef": true,
       "projectChangelogs": {
+        "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
-          "authors": true,
           "commitReferences": true,
           "versionTitleDate": true,
           "applyUsernameToAuthors": true
         }
       },
-      "automaticFromRef": true
+      "git": {
+        "commit": true,
+        "tag": true,
+        "push": true,
+        "commitMessage": "chore(release): publish {version}"
+      }
     },
     "groups": {
       "draggable": {
@@ -121,37 +132,79 @@
           "@hungpvq/react-draggable"
         ],
         "projectsRelationship": "fixed",
+        "releaseTagPattern": "draggable@{version}",
         "version": {
+          "conventionalCommits": true,
           "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build",
-          "updateDependents": "auto"
+          "preVersionCommand": "npx nx run-many --projects=tag:draggable --exclude=tag:demo --target=build"
         },
         "changelog": {
-          "projectChangelogs": true
+          "file": "{projectRoot}/CHANGELOG.md",
+          "renderOptions": {
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
         }
       },
       "map": {
         "projects": [
           "@hungpvq/map-core",
           "@hungpvq/map-dataset",
+          "@hungpvq/map-debug",
+          "@hungpvq/map-draw",
+          "@hungpvq/vue-map",
           "@hungpvq/vue-map-core",
           "@hungpvq/vue-map-dataset",
           "@hungpvq/vue-map-draw",
           "@hungpvq/vue-map-devtools",
+          "@hungpvq/react-map",
           "@hungpvq/react-map-core",
           "@hungpvq/react-map-dataset",
+          "@hungpvq/react-map-draw",
           "@hungpvq/react-map-devtools"
         ],
-        "projectsRelationship": "independent",
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "map@{version}",
         "version": {
+          "conventionalCommits": true,
           "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build",
-          "updateDependents": "never"
+          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=build"
         },
         "changelog": {
-          "projectChangelogs": true
+          "file": "{projectRoot}/CHANGELOG.md",
+          "renderOptions": {
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
+        }
+      },
+      "shared-store": {
+        "projects": ["shared-store"],
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "shared-store@{version}",
+        "version": {
+          "conventionalCommits": true,
+          "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run shared-store:build"
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
+          "renderOptions": {
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
         }
       },
       "packages": {
@@ -160,24 +213,35 @@
           "libs/ui/*",
           "libs/map/*",
           "libs/*",
-          "shared-store",
+          "!shared-store",
+          "!@hungpvq/shared-store",
           "!tag:map",
           "!@hungpvq/map-core",
           "!@hungpvq/map-dataset",
+          "!@hungpvq/map-debug",
+          "!@hungpvq/map-draw",
+          "!@hungpvq/vue-map",
           "!@hungpvq/vue-map-core",
           "!@hungpvq/vue-map-dataset",
           "!@hungpvq/vue-map-draw",
           "!@hungpvq/vue-map-devtools",
+          "!@hungpvq/react-map",
           "!@hungpvq/react-map-core",
           "!@hungpvq/react-map-dataset",
+          "!@hungpvq/react-map-draw",
           "!@hungpvq/react-map-devtools",
           "!@hungpvq/draggable",
           "!@hungpvq/vue-draggable",
           "!@hungpvq/react-draggable"
         ],
         "projectsRelationship": "independent",
+        "releaseTagPattern": "{projectName}@{version}",
         "version": {
-          "updateDependents": "never"
+          "updateDependents": "auto",
+          "versionPrefix": "^"
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md"
         }
       }
     }

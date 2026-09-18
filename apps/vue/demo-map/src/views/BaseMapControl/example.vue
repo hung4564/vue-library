@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
+  Map,
 } from '@hungpvq/vue-map-core';
-import { Map, MapCard } from '@hungpvq/vue-map-core';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
 import { ref } from 'vue';
 import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
@@ -15,6 +18,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <BaseMapTagControl position="bottom-left" />
@@ -23,6 +27,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </MapCard>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

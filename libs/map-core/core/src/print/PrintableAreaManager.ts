@@ -1,4 +1,4 @@
-import type { PrintOption } from '../types';
+import type { PrintOption } from './types';
 
 export class PrintableAreaManager {
   private mapCanvas: HTMLCanvasElement;

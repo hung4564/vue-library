@@ -1,10 +1,11 @@
-import { createStore } from '@hungpvq/shared';
+import { getOrCreateStore } from '@hungpvq/shared-store';
 import { Component } from 'vue';
 import { MiddlewareFn } from '../types';
-const store = createStore<{
+
+const store = getOrCreateStore<{
   middleware: Record<string, MiddlewareFn>;
   layout: Record<string, Component>;
-}>('route', { middleware: {}, layout: {} });
+}>('route', () => ({ middleware: {}, layout: {} }));
 
 export function createMiddleware(key: string, fn: MiddlewareFn) {
   store['middleware'][key] = fn;

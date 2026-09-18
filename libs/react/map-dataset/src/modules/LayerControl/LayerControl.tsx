@@ -1,35 +1,37 @@
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  MAP_CONTEXT_MENU_ID,
-  clearAddGeojsonHereItems,
-  getDefaultAddGeojsonHereItems,
-  setAddGeojsonHereItems,
-  type AddGeojsonHerePayload,
-  type MapMenuItemProps,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
-import {
+  getLayerControlTitleMenuState,
   LAYER_CONTROL_LOCALE,
-  createGeojsonHereDataset,
-  type MenuContextSource,
+  registerAddGeojsonHereForMap,
+  warnIfDatasetRegistryMissing,
+  type IDataset,
 } from '@hungpvq/map-dataset';
+import {
+  MENU_CONTROL_ID,
+  resolveMenuContextSource,
+  type MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
-  BaseButton,
+  defaultMapProps,
   MapCommonButton,
+  MapControlButton,
   ModuleContainer,
   UniversalRegistry,
-  defaultMapProps,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
+
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
-import { useMapDataset } from '../../store';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { useMapDataset } from '../../store/dataset-api';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
 import { LayerList } from './LayerList';
@@ -57,10 +59,29 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
 
 export function LayerControl(props: LayerControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapLayerControl',
+  });
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
+
+  useEffect(() => {
+    warnIfDatasetRegistryMissing(
+      (key) => UniversalRegistry.getComponent(key),
+      'react-map-dataset',
+    );
+  }, []);
+
+  const layerMenuContext = useMemo(
+    () => () => ({
+      control: MENU_CONTROL_ID.layerControl,
+      ...resolveMenuContextSource(props.menuContext),
+    }),
+    [props.menuContext],
+  );
+
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapLayerControl',
     panelKind: 'sidebar',
@@ -81,19 +102,18 @@ export function LayerControl(props: LayerControlProps) {
   });
 
   useEffect(() => {
-    setLocaleDefault(LAYER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.layer-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiLayers },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayers, {
+        active: show,
+        title: trans('map.layer-control.title'),
+        order,
+      }),
     onClick: () => setShow(),
   });
 
@@ -101,23 +121,21 @@ export function LayerControl(props: LayerControlProps) {
     control.sync();
   }, [show, control]);
 
-  const { addDataset } = useMapDataset(mapId);
+  const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId);
   const addDatasetRef = useRef(addDataset);
   addDatasetRef.current = addDataset;
 
   useEffect(() => {
-    UniversalRegistry.registerMenuHandlerForMap(
-      mapId,
-      MAP_CONTEXT_MENU_ID.addGeojsonHere,
-      (_props: MapMenuItemProps, payload: AddGeojsonHerePayload) => {
-        void addDatasetRef.current(createGeojsonHereDataset(payload));
-      },
-    );
-    setAddGeojsonHereItems(mapId, getDefaultAddGeojsonHereItems());
-    return () => {
-      clearAddGeojsonHereItems(mapId);
-    };
+    return registerAddGeojsonHereForMap(mapId, (dataset) => {
+      void addDatasetRef.current(dataset);
+    });
   }, [mapId]);
+
+  const titleMenuState = useMemo(() => {
+    void datasetVersion;
+    const roots = getDatasets().filter(Boolean) as IDataset[];
+    return getLayerControlTitleMenuState(roots);
+  }, [datasetVersion, getDatasets]);
 
   const titleSlot = renderSlot(props.titleList, mapId);
   const endSlot = renderSlot(props.endList, mapId);
@@ -146,11 +164,24 @@ export function LayerControl(props: LayerControlProps) {
               {trans('map.layer-control.title')}
             </span>
           }
+          afterTitle={
+            titleMenuState.data ? (
+              <MenuConditionProvider value={layerMenuContext}>
+                <DatasetMenus
+                  menus={titleMenuState.menus}
+                  data={titleMenuState.data}
+                  mapId={mapId}
+                  locations={['title']}
+                  menuContext={layerMenuContext}
+                />
+              </MenuConditionProvider>
+            ) : undefined
+          }
           containerId={bind.containerId}
           location={panelPosition.location || 'left'}
         >
           <div className="layer-control">
-            <MenuConditionProvider value={props.menuContext}>
+            <MenuConditionProvider value={layerMenuContext}>
               <LayerList
                 mapId={mapId}
                 disabledCreate={props.disabledCreate}
@@ -162,9 +193,13 @@ export function LayerControl(props: LayerControlProps) {
                   titleSlot !== null && titleSlot !== undefined ? (
                     titleSlot
                   ) : !props.disabledCreate ? (
-                    <BaseButton onClick={() => toggleShowCreate(true)}>
+                    <MapControlButton
+                      variant="plain"
+                      data-testid="map-layer-create"
+                      onClick={() => toggleShowCreate(true)}
+                    >
                       <Icon path={mdiPlus} size="14px" />
-                    </BaseButton>
+                    </MapControlButton>
                   ) : null
                 }
               />

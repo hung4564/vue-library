@@ -1,5 +1,6 @@
 <template>
   <Map ref="mapRef">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <ToolbarControl position="top-right" />
     <GotoControl position="top-right" control-layout="toolbar" />
@@ -21,9 +22,11 @@
     />
     <PrintControl position="top-left" control-layout="toolbar" />
     <PrintAdvancedControl position="top-left" control-layout="toolbar" />
+    <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
@@ -43,6 +46,7 @@ import { LegendControl } from '@hungpvq/vue-map-core';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 </script>
 <style>
 * {

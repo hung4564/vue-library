@@ -4,12 +4,22 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, Ref, watch } from 'vue';
-import MapButton from '../parts/MapButton.vue';
+import { clampBounds, focusFirst, setModalSiblingsInert, trapTabKey } from '@hungpvq/draggable';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  Ref,
+  watch,
+} from 'vue';
+import DragButton from '../parts/DragButton.vue';
 
 import VueDraggableResizable from 'vue-draggable-resizable';
 import {
   useComponent,
+  useContainerOrder,
   useHighlight,
   useIcon,
   useInitAction,
@@ -19,6 +29,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
+import { useDragLayout } from '../../store';
 
 const MODAL_Z_INDEX = 10000;
 
@@ -41,37 +52,103 @@ const props = defineProps({
   draggable: { type: Boolean, default: true },
   resizable: { type: Boolean, default: true },
 });
-const emit = defineEmits({ ...withShowEmit });
+const emit = defineEmits({
+  ...withShowEmit,
+  'update:bounds': (value: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) =>
+    typeof value?.x === 'number' &&
+    typeof value?.y === 'number' &&
+    typeof value?.width === 'number' &&
+    typeof value?.height === 'number',
+});
 const containerId = inject<Ref<string>>(
   'containerId',
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
-const { itemId, zIndex } = useInitItem(containerId.value, show, {
-  title: props.title,
-  type: 'item-modal',
-});
+const { itemId, zIndex } = useInitItem(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-modal',
+  },
+  props.id,
+);
 const stackZIndex = computed(() => MODAL_Z_INDEX + zIndex.value);
-const { isHighlight, setHighLight } = useHighlight();
+const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
   setHighLight,
   open,
   close,
 });
+const { onToFront } = useContainerOrder(containerId.value, itemId.value);
+const dragLayout = useDragLayout(containerId.value);
 const layerWidth = ref(0);
 const layerHeight = ref(0);
 const modalLayerTo = computed(() => `#modal-layer-${containerId.value}`);
+const titleId = computed(() => `draggable-modal-title-${itemId.value}`);
 const init_done = ref(false);
 const isActive = ref(true);
 const p_height = ref(props.height || 320);
 const p_width = ref(props.width || 480);
 const p_x = ref(0);
 const p_y = ref(0);
+const modalRoot = ref<HTMLDivElement>();
+let previousFocus: HTMLElement | null = null;
+/** True while this instance has incremented the root modal inert refcount. */
+let inertHeld = false;
+
+function releaseModalInert() {
+  if (!inertHeld) return;
+  setModalSiblingsInert(
+    document.getElementById(`modal-layer-${containerId.value}`),
+    false,
+  );
+  inertHeld = false;
+}
+
+function holdModalInert() {
+  const layer = document.getElementById(`modal-layer-${containerId.value}`);
+  if (!layer || inertHeld) return;
+  setModalSiblingsInert(layer, true);
+  inertHeld = true;
+}
+
+function emitBounds() {
+  const bounds = {
+    x: p_x.value,
+    y: p_y.value,
+    width: p_width.value,
+    height: p_height.value,
+  };
+  dragLayout.setItemLayout(itemId.value, { bounds });
+  emit('update:bounds', bounds);
+}
+function applyClamp() {
+  const next = clampBounds(
+    p_x.value,
+    p_y.value,
+    p_width.value,
+    p_height.value,
+    layerWidth.value,
+    layerHeight.value,
+  );
+  p_x.value = next.x;
+  p_y.value = next.y;
+  p_width.value = next.width;
+  p_height.value = next.height;
+}
 function activateEv() {
   isActive.value = true;
+  onToFront();
 }
 function deactivateEv() {
   isActive.value = false;
@@ -91,32 +168,98 @@ function onResize(x: number, y: number, width: number, height: number) {
   p_x.value = x;
   p_y.value = y;
 }
-function onDrag(x: number, y: number) {
+function onDragging(x: number, y: number) {
   p_x.value = x;
   p_y.value = y;
+  window?.getSelection()?.removeAllRanges();
+}
+function onDragStop(x: number, y: number) {
+  p_x.value = x;
+  p_y.value = y;
+  applyClamp();
+  emitBounds();
+}
+function onResizeStop(x: number, y: number, width: number, height: number) {
+  p_width.value = width;
+  p_height.value = height;
+  p_x.value = x;
+  p_y.value = y;
+  applyClamp();
+  emitBounds();
 }
 function onClose() {
-  show.value = false;
+  close();
 }
 function onMaskClick() {
   if (props.maskClosable) {
     onClose();
   }
 }
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || !modalRoot.value) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    onClose();
+    return;
+  }
+  trapTabKey(modalRoot.value, event);
+}
 watch(
   show,
-  async () => {
+  async (visible) => {
     init_done.value = false;
-    if (!show.value) return;
+    if (!visible) {
+      releaseModalInert();
+      document.removeEventListener('keydown', onKeydown);
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        previousFocus.focus();
+      }
+      previousFocus = null;
+      return;
+    }
+    holdModalInert();
+    previousFocus = document.activeElement as HTMLElement | null;
     await nextTick();
     init();
+    await nextTick();
+    if (modalRoot.value) {
+      focusFirst(modalRoot.value);
+    }
+    document.addEventListener('keydown', onKeydown);
   },
   { immediate: true },
+);
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+  // Always release: parent may unmount after close() sets show=false but
+  // before the show watcher runs, which would leave siblings stuck inert.
+  releaseModalInert();
+});
+watch(
+  () => [props.left, props.top, props.width, props.height] as const,
+  ([left, top, width, height]) => {
+    if (!init_done.value || !show.value) return;
+    if (width != null) p_width.value = width;
+    if (height != null) p_height.value = height;
+    if (left != null) p_x.value = left;
+    if (top != null) p_y.value = top;
+    applyClamp();
+  },
 );
 function init() {
   measureLayer();
   if (layerWidth.value <= 0 || layerHeight.value <= 0) {
     init_done.value = false;
+    return;
+  }
+  const saved = dragLayout.getItemLayout(itemId.value)?.bounds;
+  if (saved) {
+    p_width.value = saved.width;
+    p_height.value = saved.height;
+    p_x.value = saved.x;
+    p_y.value = saved.y;
+    applyClamp();
+    init_done.value = true;
     return;
   }
   p_width.value = props.width || 480;
@@ -141,22 +284,26 @@ function init() {
   if (!hasY && (props.center || props.centerY)) {
     p_y.value = Math.max(0, (layerHeight.value - p_height.value) / 2);
   }
+  applyClamp();
   init_done.value = true;
-}
-function onDragging() {
-  window?.getSelection()?.removeAllRanges();
 }
 </script>
 
 <template>
   <Teleport v-if="show && init_done" :to="modalLayerTo">
     <div
+      ref="modalRoot"
       class="draggable-modal-root"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="titleId"
+      tabindex="-1"
       :style="{ zIndex: stackZIndex }"
     >
       <div
         v-if="mask"
         class="draggable-modal-mask"
+        aria-hidden="true"
         @click="onMaskClick"
       />
       <VueDraggableResizable
@@ -173,8 +320,9 @@ function onDragging() {
         :y="p_y"
         :z="stackZIndex + 1"
         @resizing="onResize"
+        @resizeStop="onResizeStop"
         @dragging="onDragging"
-        @dragstop="onDrag"
+        @dragStop="onDragStop"
         :active="isActive"
         @activated="activateEv()"
         @deactivated="deactivateEv()"
@@ -189,9 +337,14 @@ function onDragging() {
             <template v-if="!disabledHeader">
               <component :is="componentCardHeader">
                 <template #title>
-                  <slot name="title">
-                    {{ title }}
-                  </slot>
+                  <span :id="titleId">
+                    <slot name="title">
+                      {{ title }}
+                    </slot>
+                  </span>
+                </template>
+                <template #after-title>
+                  <slot name="after-title"></slot>
                 </template>
                 <template #pre-title>
                   <div v-if="draggable" class="draggable-popup-drag-container">
@@ -201,9 +354,13 @@ function onDragging() {
                 </template>
                 <template #extra-btn>
                   <slot name="extra-btn"></slot>
-                  <map-button v-if="!disabledClose" @click.stop="onClose">
+                  <drag-button
+                v-if="!disabledClose"
+                aria-label="Close dialog"
+                @click.stop="onClose"
+              >
                     <CloseIcon :size="16" />
-                  </map-button>
+                  </drag-button>
                 </template>
               </component>
             </template>

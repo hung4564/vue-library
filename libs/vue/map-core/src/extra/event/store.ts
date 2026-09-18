@@ -1,13 +1,27 @@
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
-  logHelper,
-  MAP_STORE_KEY,
   createDefaultEventStore,
   type MapEventStore,
-} from '@hungpvq/map-core';
-import { createMapScopedStore } from '../../store';
+} from '@hungpvq/map-core/event';
+import { createMapScopedStore, getStore } from '../../store/store';
 import { logger } from './logger';
-export const useMapEventStore = (mapId: string) =>
-  createMapScopedStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT, () => {
-    logHelper(logger, mapId, 'store').debug('init');
-    return createDefaultEventStore();
-  });
+
+export function useMapEventStore(mapId: string): MapEventStore {
+  return createMapScopedStore<MapEventStore>(
+    mapId,
+    MAP_STORE_KEY.EVENT,
+    () => {
+      logHelper(logger, mapId, 'store').debug('init');
+      return createDefaultEventStore();
+    },
+    {
+      cleanup: (): void => {
+        const store = getStore<MapEventStore>(mapId, MAP_STORE_KEY.EVENT);
+        if (!store) return;
+        store.items.length = 0;
+        store.current = {};
+        logHelper(logger, mapId, 'store').debug('clear on removeMap');
+      },
+    },
+  );
+}

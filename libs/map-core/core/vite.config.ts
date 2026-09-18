@@ -31,14 +31,30 @@ export default defineConfig(() => ({
     },
     lib: {
       // `worker` is a CSS/DOM-free entry for Web Workers (`@hungpvq/map-core/worker`).
+      // The remaining entries are the domain subpaths (`@hungpvq/map-core/<name>`).
       entry: {
         index: 'src/index.ts',
+        // CSS-only graph so `./style.css` is emitted (not a package JS export).
+        css: 'src/style.ts',
         worker: 'src/worker-entry.ts',
+        basemap: 'src/basemap/index.ts',
+        devtools: 'src/devtools/index.ts',
+        crs: 'src/crs/index.ts',
+        event: 'src/event/index.ts',
+        image: 'src/image/index.ts',
+        legend: 'src/legend/index.ts',
+        measurement: 'src/measurement/index.ts',
+        menu: 'src/menu/index.ts',
+        print: 'src/print/index.ts',
+        theme: 'src/theme/index.ts',
+        toolbar: 'src/toolbar/index.ts',
       },
       name: '@hungpvq/map-core',
-      fileName: (format, entryName) =>
-        entryName === 'index' ? 'index.js' : `${entryName}.js`,
-      formats: ['es' as const],
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
+      formats: ['es' as const, 'cjs' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -47,7 +63,11 @@ export default defineConfig(() => ({
         'maplibre-gl',
         'mitt',
         '@hungpvq/shared-log',
+        '@hungpvq/shared-store',
         '@mdi/js',
+        /^@turf\//,
+        '@maplibre/maplibre-gl-style-spec',
+        'file-saver',
       ],
       output: {
         assetFileNames: 'style.css',
@@ -58,6 +78,7 @@ export default defineConfig(() => ({
     watch: false,
     globals: true,
     environment: 'node',
+    setupFiles: ['./src/test-setup.ts'],
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

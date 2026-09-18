@@ -22,33 +22,30 @@ npm install @hungpvq/react-map-core
 
 ## 🎯 Features
 
-- ✅ **Map container** - Main MapLibre GL wrapper component
+- ✅ **Map container** - Main MapLibre GL wrapper component (one instance per `mapId`)
 - ✅ **Navigation controls** - Zoom, Home, Fullscreen, Geolocate
 - ✅ **Info controls** - Mouse coordinates, Settings, map INFO panel, worker monitor, right-click context menu
-- ✅ **Compare & CRS extras** - Optional extras for map compare and CRS
+- ✅ **CRS extras** - Optional CRS control and display settings
+- ✅ **Store / `getMap`** - Scoped stores + map access from `@hungpvq/map-core` — [map-store](./map-store.md)
 - ✅ **Composable hooks** - `useMap`, `useShow` and more
 - ✅ **TypeScript support** - Full TypeScript types
 - ✅ **Vue 3 / React** - Framework wrappers over `@hungpvq/map-core`
 
 ## Styles
 
-Import CSS once at the app entry:
+Import CSS once at the app entry. For map-core only, import **both** shared core and the framework adapter:
 
 ```ts
+import '@hungpvq/map-core/style.css';
 import '@hungpvq/vue-map-core/style.css';
 ```
 
 ```ts
+import '@hungpvq/map-core/style.css';
 import '@hungpvq/react-map-core/style.css';
 ```
 
-Or import the shared core styles directly:
-
-```ts
-import '@hungpvq/map-core/style.css';
-```
-
-You only need one of the above. Prefer the framework package so it stays aligned with the wrapper you use.
+Dataset apps need the full set (`map-core` + `map-dataset` + framework adapters + `*-draggable`) — see [Getting started](../index.md).
 
 ## 🚀 Usage
 
@@ -69,8 +66,6 @@ You only need one of the above. Prefer the framework package so it stays aligned
   <!-- <CrsControl position="bottom-right" /> -->
   <!-- <EventManagementControl position="top-right" /> -->
   <!-- <ActionControl position="top-right" /> -->
-  <!-- <CompareSettingControl position="top-right" /> -->
-  <!-- <MapCompare /> -->
 </template>
 
 <script setup lang="ts">
@@ -122,6 +117,8 @@ function App() {
 }
 ```
 
-Open / move / run controls from code: [UniversalRegistry controls](./registry-controls.md).
+Open / move / run controls from code: [UniversalRegistry controls](./registry-controls.md).  
+Register menu / UI components: [UniversalRegistry components](./registry-components.md).  
+Stable allowlist: [Stable API](./stable-api.md).
 
 Demo (Vue / React): [Vue `#/registry-control`](https://hung4564.github.io/demo-map/vue/#/registry-control) · [React `#/registry-control`](https://hung4564.github.io/demo-map/react/#/registry-control).

@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
-import { useFullscreen } from '@hungpvq/shared-core';
+import {
+  MAP_ACTION_LOCALE,
+  isDocumentFullscreen,
+  resolveMapFullscreenTarget,
+  subscribeFullscreenChange,
+  toggleElementFullscreen,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
-import { watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+
 const path = {
   fullscreen: mdiFullscreen,
   exitFullscreen: mdiFullscreenExit,
@@ -17,24 +27,39 @@ const props = withDefaults(defineProps<WithMapPropType & { type?: string }>(), {
   type: 'body',
 });
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(MAP_ACTION_LOCALE);
-const { isFullscreen, toggle } = useFullscreen(
-  props.type == 'body' ? document.querySelector('body') : getMapContainer(),
-);
-function getMapContainer(el?: HTMLElement | null): HTMLElement {
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', MAP_ACTION_LOCALE);
+
+const isFullscreen = ref(false);
+let stopFullscreen: (() => void) | undefined;
+
+function resolveTarget(): HTMLElement | null {
+  if (props.type === 'body') {
+    return document.body;
+  }
+  let el: HTMLElement | undefined;
   callMap((map) => {
-    if (!el) {
-      el = map.getContainer();
-    }
-    if (el.classList.contains('map-container') || el.tagName === 'BODY') {
-      return el;
-    } else {
-      el = getMapContainer(el.parentElement);
-    }
+    el = resolveMapFullscreenTarget(map.getContainer()) ?? undefined;
   });
-  return el!;
+  return el ?? null;
 }
+
+async function toggle() {
+  await toggleElementFullscreen(resolveTarget());
+  isFullscreen.value = isDocumentFullscreen();
+}
+
+onMounted(() => {
+  isFullscreen.value = isDocumentFullscreen();
+  stopFullscreen = subscribeFullscreenChange(() => {
+    isFullscreen.value = isDocumentFullscreen();
+  });
+});
+onUnmounted(() => {
+  stopFullscreen?.();
+  stopFullscreen = undefined;
+});
+
 useRegisterMapControl(mapId, {
   id: 'mapFullscreenControl',
   panelKind: 'button',
@@ -56,18 +81,14 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapFullscreenControl',
   getState() {
     const active = isFullscreen.value;
-    return {
+    return mdiButtonState(active ? path.exitFullscreen : path.fullscreen, {
       visible: true,
       active,
       order: order.value,
       title: active
         ? trans.value('map.action.fullscreen-control-exit')
         : trans.value('map.action.fullscreen-control-enter'),
-      icon: {
-        type: 'mdi',
-        path: active ? path.exitFullscreen : path.fullscreen,
-      },
-    };
+    });
   },
 
   async onClick() {

@@ -2,8 +2,11 @@
 
 One-call helpers that build a root dataset (source + list UI + layer).
 
+For a full Map + LayerControl walkthrough with **inline GeoJSON and no GIS worker**, see [Minimal starter](/map/core/minimal-starter).
+
 ```typescript
-import { createGeoJsonDataset, createRasterUrlDataset } from '@hungpvq/vue-map-dataset';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
+import { createRasterUrlDataset } from '@hungpvq/map-dataset/raster';
 
 const points = createGeoJsonDataset({
   name: 'Cities',
@@ -30,8 +33,22 @@ const raster = createRasterUrlDataset({
 | `type` | `'point' \| 'line' \| 'area' \| 'symbol'` | yes | Layer style |
 | `color` | color | no | List swatch + paint (random if omitted) |
 | `opacity` | `number` | no | Fill / line / circle opacity |
+| `export` | `boolean` | no | Add list ⋮ Export (default `true`) |
+| `attributeTable` | `boolean` | no | Add list ⋮ Attribute table (default `true`) |
 
-Computes bbox from `geojson`, stores it on a metadata node, and adds a **Fill bound** extra button on the list row. Also adds an identify node with zoom-to-bounds and show-detail menus. Mount `IdentifyControl` + `ComponentManagementControl` to use identify.
+Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus, a per-layer **Identify** extra toggle (scoped IdentifyControl), plus list ⋮ **Export** and **Attribute table** unless you pass `export: false` / `attributeTable: false`. Mount `IdentifyControl` + `ComponentManagementControl` to use identify / those dialogs.
+
+To change the fit target later without rebuilding the menu:
+
+```ts
+import { findSiblingOrNearestLeaf } from '@hungpvq/map-dataset';
+
+const bound = findSiblingOrNearestLeaf(
+  list,
+  (node) => node.type === 'bound',
+);
+bound?.setData([105.5, 20.5, 106.5, 21.5]);
+```
 
 ## `createRasterUrlDataset`
 

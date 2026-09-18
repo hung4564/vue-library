@@ -1,0 +1,1525 @@
+.tree-item {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tree-item__row {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tree-item__row:hover {
+  background-color: #f0f0f0;
+}
+
+.tree-item__toggle {
+  width: 16px;
+  text-align: center;
+  color: #666;
+  user-select: none;
+}
+
+.tree-item__toggle--open {
+  transform: rotate(90deg);
+}
+
+.tree-item__key {
+  color: #881391;
+  margin-right: 4px;
+}
+
+.tree-item__value {
+  color: #333;
+}
+
+.tree-item__value--string {
+  color: #c41a16;
+}
+
+.tree-item__value--number {
+  color: #1c00cf;
+}
+
+.tree-item__value--boolean {
+  color: #0d22aa;
+}
+
+.tree-item__value--null,
+.tree-item__value--undefined {
+  color: #808080;
+}
+
+.tree-item__value--function {
+  color: #0033cc;
+  font-style: italic;
+}
+
+.tree-item__preview {
+  color: #999;
+  margin-left: 4px;
+}
+
+.tree-item__children {
+  padding-left: 8px;
+  margin-left: 8px;
+  border-left: 1px solid #ccc;
+}
+
+.group-item__header {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.group-item__header:hover {
+  background-color: #f0f0f0;
+}
+
+.group-item__icon-column {
+  position: relative;
+  width: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.group-item__toggle {
+  width: 16px;
+  text-align: center;
+  color: #666;
+  user-select: none;
+  line-height: 16px;
+  transform: rotate(90deg);
+}
+
+.group-item__toggle--collapsed {
+  transform: rotate(0);
+}
+
+.group-item__line {
+  display: block;
+  width: 1px;
+  background: #ccc;
+  height: calc(100% - 16px);
+  margin-top: 2px;
+}
+
+.group-item__body {
+  margin-left: 8px;
+  border-left: 1px solid #ccc;
+  padding-left: 8px;
+}
+
+.group-item__title {
+  font-weight: bold;
+  font-family: monospace;
+  color: #0a7aca;
+}
+
+/* Shared viewer chrome — Store / Dataset / Logs / Errors */
+.store-viewer,
+.log-viewer,
+.error-viewer,
+.dataset-viewer {
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-x: hidden;
+  background: var(--map-surface-color, #fff);
+  color: var(--map-text-primary, #333);
+  font-size: 12px;
+}
+
+.store-viewer__toolbar,
+.log-viewer__toolbar,
+.error-viewer__toolbar,
+.dataset-viewer__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 85%, transparent);
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.store-viewer__body,
+.log-viewer__body,
+.error-viewer__body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  padding: 8px 10px;
+}
+
+.dataset-viewer__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  padding: 8px 10px;
+  container-type: inline-size;
+  container-name: dataset-viewer;
+}
+
+.log-viewer__toolbar {
+  flex-wrap: nowrap;
+}
+
+.error-viewer__toolbar {
+  justify-content: flex-end;
+}
+
+.log-viewer__filters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 85%, transparent);
+  flex-shrink: 0;
+}
+
+.log-viewer__search,
+.log-viewer__namespace,
+.log-viewer__mapid {
+  min-width: 0;
+}
+
+.log-viewer__search > *,
+.log-viewer__namespace > *,
+.log-viewer__mapid > * {
+  width: 100%;
+  max-width: 100%;
+}
+
+.log-viewer__search {
+  flex: 1 1 auto;
+}
+
+.log-viewer__mapid {
+  flex: 0 0 140px;
+  width: 140px;
+}
+
+.log-viewer__namespace {
+  flex: 0 0 200px;
+  width: 200px;
+}
+
+.log-viewer__count {
+  font-size: 11px;
+  color: #80868b;
+  white-space: nowrap;
+  flex: 0 0 9ch;
+  width: 9ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-viewer__levels {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.log-viewer__actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.log-viewer__pause {
+  min-width: 7.5em;
+  justify-content: center;
+}
+
+.log-viewer__autoscroll {
+  font-size: 12px;
+  color: #5f6368;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.log-viewer__body {
+  padding: 4px 6px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.error-viewer__body {
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.store-viewer__body {
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.log-viewer__empty {
+  text-align: center;
+  padding: 32px 12px;
+  color: #9aa0a6;
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+.log-entry {
+  padding: 2px 4px 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.log-entry:hover {
+  background: var(--map-hover-color, #f5f5f5);
+}
+
+.log-entry__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.log-entry__time {
+  flex: 0 0 auto;
+  color: #9aa0a6;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-entry__level {
+  flex: 0 0 0.9em;
+  font-weight: 700;
+  color: #5f6368;
+}
+
+.log-entry--error .log-entry__level {
+  color: #c62828;
+}
+
+.log-entry--warn .log-entry__level {
+  color: #ef6c00;
+}
+
+.log-entry--info .log-entry__level {
+  color: #1565c0;
+}
+
+.log-entry--debug .log-entry__level {
+  color: #9aa0a6;
+}
+
+.log-entry__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+
+.log-entry__msg {
+  color: #202124;
+  word-break: break-word;
+}
+
+.log-entry__ns {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  color: #80868b;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log-entry__ns:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+.log-entry__copy {
+  flex: 0 0 auto;
+  opacity: 0;
+}
+
+.log-entry:hover .log-entry__copy,
+.log-entry:focus-within .log-entry__copy {
+  opacity: 1;
+}
+
+.log-entry__objects {
+  margin: 2px 0 0 4.6em;
+}
+
+.log-entry__object {
+  margin-top: 2px;
+}
+
+.error-viewer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.error-viewer__count {
+  font-size: 11px;
+  color: #80868b;
+  white-space: nowrap;
+  margin-right: auto;
+  flex: 0 0 4ch;
+  width: 4ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.error-viewer__mapid-select {
+  max-width: 160px;
+}
+
+.error-viewer__item {
+  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid;
+  background: #fff;
+}
+
+.error-viewer__item--recoverable {
+  border-left-color: #ff9800;
+  background: #fff3e0;
+}
+
+.error-viewer__item--fatal {
+  border-left-color: #f44336;
+  background: #ffebee;
+}
+
+.error-viewer__item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.error-viewer__code {
+  font-weight: 600;
+  font-size: 12px;
+  color: #333;
+}
+
+.error-viewer__time {
+  font-size: 11px;
+  color: #666;
+}
+
+.error-viewer__message {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.error-viewer__mapid {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.error-viewer__item .error-viewer__actions {
+  margin: 0 0 6px;
+  margin-left: 0;
+}
+
+.error-viewer__details {
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.error-viewer__details summary {
+  cursor: pointer;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+.error-viewer__details pre {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 4px 0 0 0;
+  font-size: 10px;
+}
+
+.error-viewer__empty {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 14px;
+}
+
+.dataset-viewer__toolbar {
+  align-items: flex-end;
+}
+
+.dataset-viewer__toolbar--tight {
+  border-bottom: none;
+  padding: 0 0 4px;
+}
+
+.dataset-viewer__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dataset-viewer__field--grow {
+  flex: 1 1 140px;
+}
+
+.dataset-viewer__field.form-group,
+.dataset-viewer__field .form-group {
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.dataset-viewer__field .input-container > input,
+.dataset-viewer__field .input-container > select,
+.dataset-viewer__field .input-select {
+  max-width: none;
+  width: 100%;
+}
+
+.dataset-viewer__actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.store-viewer__toolbar {
+  justify-content: flex-end;
+}
+
+.dataset-viewer__panes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: center;
+  padding: 4px 8px;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 85%, transparent);
+  flex-shrink: 0;
+  background: transparent;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.dataset-viewer__panes-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+  min-width: 0;
+}
+
+.dataset-viewer__panes-refresh {
+  margin-left: auto;
+}
+
+.dataset-viewer__panes .map-control-button.map-control-button-active,
+.devtools-tabs .map-control-button.map-control-button-active {
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 12%,
+    transparent
+  );
+  color: var(--map-button-active-color, var(--map-primary-color, #004e98));
+  font-weight: 600;
+}
+
+.dataset-viewer__empty {
+  margin: 8px 0;
+  opacity: 0.6;
+}
+
+.dataset-viewer__mono {
+  font-size: 11px;
+  opacity: 0.7;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.dataset-viewer__menus {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.dataset-viewer__menus > .dataset-viewer__menus-toolbar {
+  flex-shrink: 0;
+}
+
+.dataset-viewer__menus-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-viewer__menus-target {
+  flex: 0 1 7.5rem;
+  max-width: 8.5rem;
+}
+
+.dataset-viewer__menus-layout {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  /* Stack by default so narrow popup / mobile never get horizontal scroll */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-content: start;
+}
+
+/* Wide panels only: side-by-side with independent column scroll */
+@container dataset-viewer (min-width: 520px) {
+  .dataset-viewer__menus-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    overflow: hidden;
+    align-items: stretch;
+  }
+
+  .dataset-viewer__buckets,
+  .dataset-viewer__menu-detail {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.dataset-viewer__buckets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-viewer__bucket,
+.dataset-viewer__menu-detail,
+.dataset-viewer__aside,
+.dataset-viewer__detail {
+  border: 1px solid
+    color-mix(in srgb, var(--map-border-color, #ccc) 75%, transparent);
+  border-radius: 8px;
+  background: var(--map-surface-color, #fff);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-viewer__bucket,
+.dataset-viewer__aside {
+  padding: 6px 8px;
+}
+
+.dataset-viewer__menu-detail,
+.dataset-viewer__detail {
+  padding: 8px 10px;
+}
+
+.dataset-viewer__bucket-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.dataset-viewer__count {
+  font-variant-numeric: tabular-nums;
+}
+
+.dataset-viewer__bucket ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dataset-viewer__bucket li,
+.dataset-viewer__menu-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dataset-viewer__menu-item:hover {
+  background: var(--map-hover-color, #f5f5f5);
+}
+
+.dataset-viewer__menu-item.is-selected {
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 12%,
+    transparent
+  );
+  box-shadow: inset 2px 0 0 var(--map-primary-color, #004e98);
+}
+
+.dataset-viewer__menu-item.is-muted {
+  opacity: 0.55;
+}
+
+.dataset-viewer__menu-name {
+  font-weight: 600;
+  color: var(--map-text-primary, #333);
+}
+
+.dataset-viewer__menu-id {
+  font-size: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  opacity: 0.65;
+  color: var(--map-text-primary, #333);
+}
+
+.dataset-viewer__flags {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.dataset-viewer__chip {
+  font-size: 9px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, #888 18%, transparent);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.dataset-viewer__chip[data-source='global'] {
+  background: color-mix(in srgb, #1565c0 18%, transparent);
+  color: #1565c0;
+}
+
+.dataset-viewer__chip[data-source='menu-part'] {
+  background: color-mix(in srgb, #2e7d32 18%, transparent);
+  color: #2e7d32;
+}
+
+.dataset-viewer__chip[data-source='local'] {
+  background: color-mix(in srgb, #ef6c00 18%, transparent);
+  color: #ef6c00;
+}
+
+.dataset-viewer__chip[data-source='generated'] {
+  background: color-mix(in srgb, #64748b 18%, transparent);
+  color: #475569;
+}
+
+.dataset-viewer__menu-detail-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.dataset-viewer__menu-raw {
+  margin-top: 8px;
+}
+
+.dataset-viewer__foot {
+  margin: 0;
+  padding: 4px 10px 6px;
+  font-size: 10px;
+  opacity: 0.5;
+  border-top: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 80%, transparent);
+  flex-shrink: 0;
+}
+
+.dataset-viewer__foot code {
+  font-size: 10px;
+}
+
+.dataset-viewer__current {
+  flex: 1 1 160px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 4px;
+}
+
+.dataset-viewer__current strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * Inspect layout (desktop):
+ *   aside | find
+ *   aside | detail
+ * Mobile / narrow: find → aside → detail (flat outer scroll).
+ *
+ * IMPORTANT: place items with grid-area always (not only inside @container),
+ * otherwise 2-col auto-flow puts find|aside / detail|empty.
+ */
+.dataset-viewer__inspect {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.dataset-viewer__inspect-layout {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  gap: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  align-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+  grid-template-areas:
+    'find'
+    'aside'
+    'detail';
+}
+
+.dataset-viewer__find {
+  grid-area: find !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-viewer__aside {
+  grid-area: aside !important;
+}
+
+.dataset-viewer__detail {
+  grid-area: detail !important;
+}
+
+.dataset-viewer__find > .input-action-row {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@container dataset-viewer (min-width: 520px) {
+  .dataset-viewer__inspect-layout {
+    grid-template-columns: minmax(140px, 34%) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'aside find'
+      'aside detail';
+    overflow: hidden;
+    align-content: stretch;
+    align-items: stretch;
+  }
+
+  .dataset-viewer__aside,
+  .dataset-viewer__detail {
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 640px) {
+  .dataset-viewer__inspect-layout {
+    grid-template-columns: minmax(140px, 34%) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'aside find'
+      'aside detail';
+    overflow: hidden;
+    align-content: stretch;
+    align-items: stretch;
+  }
+
+  .dataset-viewer__aside,
+  .dataset-viewer__detail {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.dataset-viewer__find-type[data-special='true'] .input-select,
+.dataset-viewer__find-select--special {
+  border-color: color-mix(
+    in srgb,
+    var(--map-primary-color, #2563eb) 55%,
+    var(--map-border-color, #ccc)
+  );
+  color: var(--map-primary-color, #2563eb);
+  font-weight: 600;
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #2563eb) 10%,
+    var(--map-surface-color, #fff)
+  );
+}
+
+.dataset-viewer__find-option--special {
+  font-weight: 600;
+  color: var(--map-primary-color, #2563eb);
+}
+
+.dataset-viewer__find-miss {
+  margin: 0;
+  width: 100%;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.dataset-viewer__roots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.dataset-viewer__root-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dataset-viewer__root-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid
+    color-mix(in srgb, var(--map-border-color, #ccc) 75%, transparent);
+  border-radius: 6px;
+  background: var(--map-surface-color, #fff);
+  cursor: pointer;
+}
+
+.dataset-viewer__root-item:hover {
+  background: var(--map-hover-color, #f5f5f5);
+}
+
+.dataset-viewer__root-item:focus-visible {
+  outline: 2px solid var(--map-primary-color, #004e98);
+  outline-offset: 1px;
+}
+
+.dataset-viewer__root-item.is-selected {
+  border-color: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 55%,
+    var(--map-border-color, #ccc)
+  );
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 12%,
+    var(--map-surface-color, #fff)
+  );
+  box-shadow: inset 3px 0 0 var(--map-primary-color, #004e98);
+}
+
+.dataset-viewer__root-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dataset-viewer__root-meta strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dataset-viewer__root-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+}
+
+.dataset-viewer__kind {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, #888 16%, transparent);
+  flex-shrink: 0;
+}
+
+.dataset-viewer__kind[data-kind='root'] {
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 16%,
+    transparent
+  );
+  color: var(--map-primary-color, #004e98);
+}
+
+.dataset-viewer__kind[data-kind='group'] {
+  background: color-mix(in srgb, #b8860b 18%, transparent);
+  color: #7a5c00;
+}
+
+.dataset-viewer__kind[data-kind='leaf'] {
+  background: color-mix(in srgb, #2e7d32 14%, transparent);
+  color: #1b5e20;
+}
+
+.dataset-viewer__section {
+  margin: 0 0 12px;
+}
+
+.dataset-viewer__section-h {
+  margin: 0 0 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 80%, transparent);
+  padding-bottom: 4px;
+}
+
+.dataset-viewer__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(52px, 72px) minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
+  padding: 4px 0;
+  border-radius: 4px;
+  min-width: 0;
+  max-width: 100%;
+  transition: background-color 0.12s ease;
+}
+
+.dataset-viewer__row:hover,
+.dataset-viewer__row:focus-within {
+  background: var(--map-hover-color, #f5f5f5);
+}
+
+.dataset-viewer__row-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.5;
+  padding-top: 2px;
+}
+
+.dataset-viewer__row-value {
+  min-width: 0;
+  word-break: break-word;
+  padding-right: 28px;
+}
+
+.dataset-viewer__row-copy {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: inline-flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.dataset-viewer__row:hover .dataset-viewer__row-copy,
+.dataset-viewer__row:focus-within .dataset-viewer__row-copy {
+  opacity: 0.9;
+  pointer-events: auto;
+}
+
+.dataset-viewer__methods {
+  display: block;
+  max-height: 88px;
+  overflow: auto;
+  line-height: 1.45;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.dataset-viewer__child-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-viewer__muted {
+  opacity: 0.55;
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+.dataset-tree-nav {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.dataset-tree-nav__empty {
+  margin: 8px;
+  opacity: 0.5;
+}
+
+.dataset-tree-nav-node {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dataset-tree-nav-node__row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.dataset-tree-nav-node__row.is-selected {
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 14%,
+    var(--map-surface-color, transparent)
+  );
+  border-radius: 4px;
+}
+
+@keyframes dataset-tree-find-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.28;
+  }
+}
+
+.dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__name,
+.dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__kind,
+.dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__type {
+  color: var(--map-primary-color, #004e98);
+  font-weight: 700;
+  animation: dataset-tree-find-pulse 0.7s ease-in-out 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__name,
+  .dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__kind,
+  .dataset-tree-nav-node__row.is-highlighted .dataset-tree-nav-node__type {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.dataset-tree-nav-node__toggle {
+  flex-shrink: 0;
+  width: 18px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.dataset-tree-nav-node__toggle.is-leaf {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.dataset-tree-nav-node__select {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dataset-tree-nav-node__select:hover,
+.dataset-tree-nav-node__select:focus-visible {
+  background: color-mix(
+    in srgb,
+    var(--map-surface-variant-color, #f5f5f5) 90%,
+    transparent
+  );
+  outline: none;
+}
+
+.dataset-tree-nav-node__kind {
+  flex-shrink: 0;
+  width: 14px;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0.55;
+}
+
+.is-kind-root .dataset-tree-nav-node__kind {
+  color: var(--map-primary-color, #004e98);
+  opacity: 1;
+}
+
+.is-kind-group .dataset-tree-nav-node__kind {
+  color: #7a5c00;
+  opacity: 1;
+}
+
+.dataset-tree-nav-node__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.dataset-tree-nav-node__type {
+  flex-shrink: 0;
+  margin-left: 6px;
+  font-size: 10px;
+  opacity: 0.5;
+  max-width: 36%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dataset-tree-nav-node__children {
+  min-width: 0;
+}
+
+.devtools-container {
+  position: fixed;
+  bottom: 45px;
+  right: 50px;
+  z-index: 9999;
+  font-family: var(--map-font-family, system-ui, sans-serif);
+}
+
+.devtools-container--moved {
+  right: auto;
+  bottom: auto;
+}
+
+.devtools-container--dragging {
+  user-select: none;
+}
+
+.devtools-toggle {
+  --map-button-bg: var(--map-surface-color, #ffffff);
+  color: var(--map-primary-color, #004e98);
+  border: 1px solid
+    color-mix(in srgb, var(--map-border-color, #ccc) 70%, transparent);
+  box-shadow:
+    0 2px 6px rgba(15, 23, 42, 0.08),
+    0 8px 20px rgba(15, 23, 42, 0.1);
+  cursor: grab;
+  touch-action: none;
+  transition:
+    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.devtools-toggle:active {
+  cursor: grabbing;
+}
+
+.devtools-toggle:hover:not(:disabled) {
+  color: var(--map-on-primary-color, #fff);
+  background-color: var(--map-primary-color, #004e98);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    0 12px 28px rgba(0, 78, 152, 0.28);
+}
+
+.devtools-toggle:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+}
+
+.devtools-popup-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.devtools-panel {
+  width: min(600px, calc(100vw - 32px));
+  height: min(400px, calc(100vh - 96px));
+  background-color: var(--map-surface-color, #ffffff);
+  border: 1px solid
+    color-mix(in srgb, var(--map-border-color, #ccc) 80%, transparent);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.12),
+    0 2px 6px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--map-text-primary, #333);
+}
+
+.devtools-panel--mobile {
+  width: min(100vw - 16px, 420px);
+  height: min(70vh, calc(100vh - 80px));
+  max-height: min(70vh, calc(100vh - 80px));
+}
+
+.devtools-drag-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  background: color-mix(
+    in srgb,
+    var(--map-surface-variant-color, #f5f5f5) 88%,
+    var(--map-surface-color, #fff)
+  );
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 85%, transparent);
+  flex-shrink: 0;
+}
+
+.devtools-drag-bar:active {
+  cursor: grabbing;
+}
+
+.devtools-drag-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.devtools-drag-bar__hint {
+  opacity: 0.55;
+  letter-spacing: 2px;
+}
+
+.devtools-drag-bar__close {
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.devtools-container--dragging .devtools-panel {
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.18),
+    0 4px 10px rgba(15, 23, 42, 0.1);
+}
+
+.devtools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background-color: color-mix(
+    in srgb,
+    var(--map-surface-variant-color, #f5f5f5) 88%,
+    var(--map-surface-color, #fff)
+  );
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--map-divider-color, #ddd) 85%, transparent);
+  flex-shrink: 0;
+}
+
+.devtools-tabs {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.devtools-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.devtools-content__pane {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.devtools-content__pane[hidden] {
+  display: none !important;
+}
+
+/* Vue MapControlButton wrappers on tree select/toggle */
+.dataset-tree-nav-node__select .button-container,
+.dataset-tree-nav-node__select .map-control-button,
+.dataset-tree-nav-node__select .map-control-button__content,
+.dataset-tree-nav-node__select .map-button {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.dataset-tree-nav-node__select .map-control-button__content,
+.dataset-tree-nav-node__select .map-button {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .devtools-container:not(.devtools-container--moved) {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+  }
+
+  .devtools-container--mobile.devtools-container--open:not(
+      .devtools-container--moved
+    ) {
+    left: 8px;
+    right: 8px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+  }
+
+  .devtools-container--mobile.devtools-container--open:not(
+      .devtools-container--moved
+    )
+    .devtools-panel {
+    width: 100%;
+  }
+}

@@ -5,11 +5,14 @@ export default {
 </script>
 <script setup lang="ts">
 import {
+  anyWorkerHasHistory,
+  countBusyWorkers,
   filterWorkerSnapshots,
   formatWorkerDuration,
-  isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  WorkerMonitor,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -17,25 +20,30 @@ import {
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton, Collapse } from '../../field';
-import { defaultMapProps, useMap, useShow, WithShowProps } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
+import { Collapse } from '../../field';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 import WorkerLogList from './WorkerLogList.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(WORKER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', WORKER_CONTROL_LOCALE);
 
 const { workers, now, busy, clearHistory } = useWorkerMonitor();
 const [show, toggleShow] = useShow(props.show);
@@ -68,22 +76,12 @@ const selected = computed(
 const selectedLogs = computed(() =>
   selected.value ? workerLogsForDisplay(selected.value.logs) : [],
 );
-const busyCount = computed(() => workers.value.filter(isWorkerBusy).length);
+const busyCount = computed(() => countBusyWorkers(workers.value));
 const manyWorkers = computed(() => workers.value.length > 1);
-const hasSelectedHistory = computed(() => {
-  const worker = selected.value;
-  if (!worker) return false;
-  if (worker.history.length > 0 || worker.logs.length > 0) return true;
-  return worker.pending.some((task) => (task.logs?.length ?? 0) > 0);
-});
-const hasAnyHistory = computed(() =>
-  workers.value.some(
-    (worker) =>
-      worker.history.length > 0 ||
-      worker.logs.length > 0 ||
-      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
-  ),
+const hasSelectedHistory = computed(() =>
+  selected.value ? workerHasHistory(selected.value) : false,
 );
+const hasAnyHistory = computed(() => anyWorkerHasHistory(workers.value));
 
 const { panelPosition } = useRegisterMapControl(mapId, {
   id: 'mapWorkerControl',
@@ -108,15 +106,11 @@ const { panelPosition } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapWorkerControl',
   getState() {
-    return {
+    return mdiButtonState(mdiCogs, {
       title: trans.value('map.worker-control.title'),
       order: order.value,
       active: show.value || busy.value,
-      icon: {
-        type: 'mdi' as const,
-        path: mdiCogs,
-      },
-    };
+    });
   },
   onClick() {
     toggleShow();
@@ -196,25 +190,23 @@ function summaryText() {
               {{ summaryText() }}
             </span>
             <div class="map-worker-control__toolbar-actions">
-              <BaseButton
+              <MapControlButton
                 :title="trans('map.worker-control.action.clear')"
                 :disabled="!hasSelectedHistory"
-                @click.stop="selected && clearHistory(selected.id)"
-              >
+                @click.stop="selected && clearHistory(selected.id)" variant="plain">
                 <SvgIcon :size="16" type="mdi" :path="mdiEraser" />
-              </BaseButton>
-              <BaseButton
+              </MapControlButton>
+              <MapControlButton
                 v-if="manyWorkers"
                 :title="trans('map.worker-control.action.clearAll')"
                 :disabled="!hasAnyHistory"
-                @click.stop="clearHistory()"
-              >
+                @click.stop="clearHistory()" variant="plain">
                 <SvgIcon
                   :size="16"
                   type="mdi"
                   :path="mdiNotificationClearAll"
                 />
-              </BaseButton>
+              </MapControlButton>
             </div>
           </div>
           <p v-if="!workers.length" class="map-worker-control__empty">
@@ -241,9 +233,10 @@ function summaryText() {
                 class="map-worker-control__item"
                 :class="{ 'is-selected': selected?.id === worker.id }"
               >
-                <button
-                  type="button"
+                <MapControlButton
                   class="map-worker-control__pick"
+                  variant="plain"
+                  size="small"
                   @click="selectedId = worker.id"
                 >
                   <span class="map-worker-control__pick-name">{{
@@ -268,7 +261,7 @@ function summaryText() {
                         .join(' · ')
                     }}
                   </span>
-                </button>
+                </MapControlButton>
               </li>
             </ul>
           </template>
@@ -310,6 +303,14 @@ function summaryText() {
                         >{{ engineLabel(task.engine) }} ·
                         {{ elapsed(task) }}</span
                       >
+                    </div>
+                    <div class="map-worker-control__task-actions">
+                      <MapControlButton
+                        variant="outlined"
+                        @click.stop="WorkerMonitor.abortTask(selected.id, task.id)"
+                      >
+                        {{ trans('map.worker-control.action.cancel') }}
+                      </MapControlButton>
                     </div>
                     <div
                       class="map-worker-control__bar"

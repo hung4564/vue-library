@@ -4,18 +4,19 @@ import {
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MapControlButton } from '../../components/MapControlButton';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import {
-  UniversalRegistry,
-  useLang,
-  useRegisterMapControl,
-  useToolbarControl,
-} from '../../extra';
+import { useLang } from '../../extra/lang/hook';
+import { UniversalRegistry } from '../../extra/registry/plugin';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
 import { InputSelect } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
 export interface RegistryControlProps extends WithMapPropType {
@@ -34,7 +35,7 @@ export function RegistryControl(props: RegistryControlProps) {
     ...merged,
     controlId: CONTROL_ID,
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show ?? false);
   const [controls, setControls] = useState<MapControlHandle[]>([]);
   const [query, setQuery] = useState('');
@@ -42,8 +43,8 @@ export function RegistryControl(props: RegistryControlProps) {
   const [actionType, setActionType] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(REGISTRY_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', REGISTRY_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const refresh = useCallback(() => {
     if (!mapId) return;
@@ -111,13 +112,13 @@ export function RegistryControl(props: RegistryControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: CONTROL_ID,
-    getState: () => ({
-      visible: true,
-      active: show,
-      title: trans('map.registry-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiConsole },
-    }),
+    getState: () =>
+      mdiButtonState(mdiConsole, {
+        visible: true,
+        active: show,
+        title: trans('map.registry-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
 
@@ -198,13 +199,14 @@ export function RegistryControl(props: RegistryControlProps) {
                 <p className="map-registry-control__hint">
                   {trans('map.registry-control.hint')}
                 </p>
-                <button
-                  type="button"
+                <MapControlButton
                   className="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
                   onClick={refresh}
                 >
                   {trans('map.registry-control.refresh')}
-                </button>
+                </MapControlButton>
               </header>
 
               <input
@@ -229,9 +231,10 @@ export function RegistryControl(props: RegistryControlProps) {
                         selectedId === ctrl.id ? ' is-selected' : ''
                       }`}
                     >
-                      <button
-                        type="button"
+                      <MapControlButton
                         className="map-registry-control__select"
+                        variant="plain"
+                        size="small"
                         onClick={() => {
                           setSelectedId(ctrl.id);
                           setActionType('');
@@ -248,7 +251,7 @@ export function RegistryControl(props: RegistryControlProps) {
                               : trans('map.registry-control.closedState')}
                           </span>
                         ) : null}
-                      </button>
+                      </MapControlButton>
                     </li>
                   ))}
                 </ul>
@@ -262,38 +265,42 @@ export function RegistryControl(props: RegistryControlProps) {
                   <div className="map-registry-control__actions">
                     {selected.panelKind !== 'button' ? (
                       <>
-                        <button
-                          type="button"
+                        <MapControlButton
                           className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
                           onClick={open}
                         >
                           {trans('map.registry-control.open')}
-                        </button>
-                        <button
-                          type="button"
+                        </MapControlButton>
+                        <MapControlButton
                           className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
                           onClick={close}
                         >
                           {trans('map.registry-control.close')}
-                        </button>
+                        </MapControlButton>
                         {(selected.panelKind === 'popup' ||
                           selected.panelKind === 'float') && (
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-registry-control__btn"
+                            variant="outlined"
+                            size="small"
                             onClick={movePopup}
                           >
                             {trans('map.registry-control.movePopup')}
-                          </button>
+                          </MapControlButton>
                         )}
                         {selected.panelKind === 'sidebar' && (
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-registry-control__btn"
+                            variant="outlined"
+                            size="small"
                             onClick={toggleSidebarSide}
                           >
                             {trans('map.registry-control.toggleSidebar')}
-                          </button>
+                          </MapControlButton>
                         )}
                       </>
                     ) : null}
@@ -305,13 +312,14 @@ export function RegistryControl(props: RegistryControlProps) {
                         items={actionTypeItems}
                         onChange={(value) => setActionType(String(value))}
                       />
-                      <button
-                        type="button"
+                      <MapControlButton
                         className="map-registry-control__btn"
+                        variant="outlined"
+                        size="small"
                         onClick={run}
                       >
                         {trans('map.registry-control.runAction')}
-                      </button>
+                      </MapControlButton>
                     </div>
                   </div>
                 </section>

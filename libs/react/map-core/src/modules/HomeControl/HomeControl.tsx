@@ -1,12 +1,20 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import { HOME_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  captureHomeView,
+  goHome,
+  HOME_CONTROL_LOCALE,
+  type HomeView,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiHome } from '@mdi/js';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core';
 
 export interface HomeControlProps extends WithMapPropType {
   zoom?: number;
@@ -15,21 +23,19 @@ export interface HomeControlProps extends WithMapPropType {
 
 export function HomeControl(props: HomeControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const [center, setCenter] = useState({ lat: 0, lng: 0 });
-  const [zoom, setZoom] = useState(props.zoom || 0);
+  const [homeView, setHomeView] = useState<HomeView>({
+    zoom: props.zoom || 0,
+    center: { lat: 0, lng: 0 },
+  });
 
   const onInit = useCallback(
     (_map: MapSimple) => {
-      if (props.zoom != null) {
-        setZoom(props.zoom);
-      } else {
-        setZoom(_map.getZoom());
-      }
-      if (props.center != null) {
-        setCenter({ lat: props.center[1], lng: props.center[0] });
-      } else {
-        setCenter(_map.getCenter());
-      }
+      setHomeView(
+        captureHomeView(_map, {
+          zoom: props.zoom,
+          center: props.center,
+        }),
+      );
     },
     [props.zoom, props.center],
   );
@@ -38,17 +44,16 @@ export function HomeControl(props: HomeControlProps) {
     { ...mergedProps, controlId: 'mapHomeControl' },
     onInit,
   );
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(HOME_CONTROL_LOCALE);
+    registerLocale('en', HOME_CONTROL_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onGoHome() {
     callMap((map) => {
-      map.setZoom(zoom);
-      map.setCenter(center);
+      goHome(map, homeView);
     });
   }
 
@@ -70,27 +75,31 @@ export function HomeControl(props: HomeControlProps) {
     ],
   });
 
-  const buttonState: MapControlButtonUIState = {
-    visible: true,
-    title: trans('map.home.title'),
-    order: order,
-    icon: {
-      type: 'mdi',
-      path: mdiHome,
-    },
-  };
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapHomeControl',
+    getState: () =>
+      mdiButtonState(mdiHome, {
+        visible: true,
+        title: trans('map.home.title'),
+        order,
+      }),
+    onClick: () => onGoHome(),
+  });
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapCommonButton
-          option={buttonState}
-          onClick={(e) => {
-            e.stopPropagation();
-            onGoHome();
-          }}
-        />
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction(e);
+            }}
+          />
+        ) : null
       }
     />
   );

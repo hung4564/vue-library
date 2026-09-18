@@ -13,7 +13,7 @@ type MapRootStore = Record<string, MapStore>;
 /**
  * Vue global store
  */
-export const useMapGLobalStore = defineStore<MapRootStore>(
+export const useMapGlobalStore = defineStore<MapRootStore>(
   MAP_CORE_STORE_ID,
   () => ({}),
 );

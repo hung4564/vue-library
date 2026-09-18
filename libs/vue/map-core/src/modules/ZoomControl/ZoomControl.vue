@@ -2,25 +2,21 @@
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton>
-        <template v-if="showCompass">
-          <MapCommonButton
-            v-if="state && state.mapCompass"
-            :option="state.mapCompass"
-            @click.stop="control.onAction('mapCompass', $event)"
-          />
-        </template>
-        <template v-if="showZoom">
-          <MapCommonButton
-            v-if="state && state.mapZoomIn"
-            :option="state.mapZoomIn"
-            @click.stop="control.onAction('mapZoomIn', $event)"
-          />
-          <MapCommonButton
-            v-if="state && state.mapZoomOut"
-            :option="state.mapZoomOut"
-            @click.stop="control.onAction('mapZoomOut', $event)"
-          />
-        </template>
+        <MapCommonButton
+          v-if="state && state.mapCompass"
+          :option="state.mapCompass"
+          @click.stop="control.onAction('mapCompass', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapZoomIn"
+          :option="state.mapZoomIn"
+          @click.stop="control.onAction('mapZoomIn', $event)"
+        />
+        <MapCommonButton
+          v-if="state && state.mapZoomOut"
+          :option="state.mapZoomOut"
+          @click.stop="control.onAction('mapZoomOut', $event)"
+        />
       </MapControlGroupButton>
     </template>
     <slot />
@@ -28,13 +24,24 @@
 </template>
 
 <script setup lang="ts">
-import { MAP_ACTION_LOCALE, MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  attachRotateListener,
+  MAP_ACTION_LOCALE,
+  MapSimple,
+  resetBearing,
+  type WithMapPropType,
+  zoomIn,
+  zoomOut,
+} from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
-import { useLang, useRegisterMapControl, useToolbarControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const props = withDefaults(
@@ -57,38 +64,39 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(MAP_ACTION_LOCALE);
+registerLocale('en', MAP_ACTION_LOCALE);
 
-let bindSyncRotate: (() => void) | null = null;
+let detachRotate: (() => void) | null = null;
 
 function onInit(_map: MapSimple) {
-  bindSyncRotate = syncRotate.bind(null, _map);
-  _map.on('rotate', bindSyncRotate);
+  detachRotate = attachRotateListener(_map, (next) => {
+    transform.value = next;
+    control.sync();
+  });
 }
 
 function onDestroy(_map: MapSimple) {
-  if (bindSyncRotate) {
-    _map.off('rotate', bindSyncRotate);
-  }
+  detachRotate?.();
+  detachRotate = null;
 }
 
 function onZoomIn(e?: MouseEvent) {
   callMap((map) => {
-    map.zoomIn({}, { originalEvent: e });
+    zoomIn(map, e);
   });
 }
 
 function onZoomOut(e?: MouseEvent) {
   callMap((map) => {
-    map.zoomOut({}, { originalEvent: e });
+    zoomOut(map, e);
   });
 }
 
 function onResetBearing() {
   callMap((map) => {
-    map.easeTo({ bearing: 0, pitch: 0 });
+    resetBearing(map);
   });
 }
 useRegisterMapControl(mapId, {
@@ -111,7 +119,7 @@ useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'module',
   moduleId: 'mapNavigationControl',
-  moduleOrder: order.value,
+  order: order.value,
   buttons: [
     {
       id: 'mapCompass',
@@ -127,27 +135,22 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     },
     {
       id: 'mapZoomIn',
-      getState: () => ({
-        visible: props.showZoom,
-        title: trans.value('map.action.navigation-control-zoom-in'),
-        icon: { path: mdiPlus, type: 'mdi' },
-      }),
+      getState: () =>
+        mdiButtonState(mdiPlus, {
+          visible: props.showZoom,
+          title: trans.value('map.action.navigation-control-zoom-in'),
+        }),
       onClick: (e) => onZoomIn(e),
     },
     {
       id: 'mapZoomOut',
-      getState: () => ({
-        visible: props.showZoom,
-        title: trans.value('map.action.navigation-control-zoom-out'),
-        icon: { path: mdiMinus, type: 'mdi' },
-      }),
+      getState: () =>
+        mdiButtonState(mdiMinus, {
+          visible: props.showZoom,
+          title: trans.value('map.action.navigation-control-zoom-out'),
+        }),
       onClick: (e) => onZoomOut(e),
     },
   ],
 });
-function syncRotate(_map: MapSimple) {
-  const angle = _map.getBearing() * -1;
-  transform.value = `rotate(${angle}deg)`;
-  control.sync();
-}
 </script>

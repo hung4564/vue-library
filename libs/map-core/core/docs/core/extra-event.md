@@ -18,12 +18,17 @@ const { add: addContextMenu, remove: removeContextMenu } = useEventMap(
 **Import event models directly from `@hungpvq/map-core`:**
 
 ```ts
-import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import {
+  EventClick,
+  EventContextMenu,
+  EventBboxRanger,
+  EventMouseMove,
+} from '@hungpvq/map-core/event';
 ```
 
 - `EventClick` - Click event handler
-- `EventContextMenu` (alias: `EventRightClick`) - Right-click / `contextmenu` handler. Uses `event_map_type: 'contextmenu'`, so it can run together with `EventClick` (`click`). `ActionControl` (already mounted by `Map`) attaches both.
-- `EventBboxRanger` (alias: `EventBboxSelect`) - Bounding box selection handler
+- `EventContextMenu` - Right-click / `contextmenu` handler. Uses `event_map_type: 'contextmenu'`, so it can run together with `EventClick` (`click`). `ActionControl` (already mounted by `Map`) attaches both.
+- `EventBboxRanger` - Bounding box selection handler
 - `EventMouseMove` - Mouse move event handler
 
 ---
@@ -58,7 +63,7 @@ The `useEventMap` hook provides a convenient way to add, remove, and check the s
 
 ```ts
 import { useEventMap } from '@hungpvq/vue-map-core';
-import { EventClick, EventContextMenu } from '@hungpvq/map-core';
+import { EventClick, EventContextMenu } from '@hungpvq/map-core/event';
 ```
 
 **Usage:**
@@ -83,14 +88,19 @@ You can use several built-in event models provided by the library:
 **Import:**
 
 ```ts
-import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core';
+import {
+  EventClick,
+  EventContextMenu,
+  EventBboxRanger,
+  EventMouseMove,
+} from '@hungpvq/map-core/event';
 ```
 
 **Available Events:**
 
 - `EventClick` - Click event handler
 - `EventContextMenu` - Right-click / `contextmenu` handler
-- `EventBboxRanger` - Bounding box selection handler (can be imported as `EventBboxSelect` for backward compatibility)
+- `EventBboxRanger` - Bounding box selection handler
 - `EventMouseMove` - Mouse move event handler
 
 Each event can be instantiated and assigned a handler function using `.setHandler(fn)`.
@@ -102,7 +112,7 @@ You can create your own custom event by extending the base event class or by fol
 **Example:**
 
 ```ts
-import { IEvent } from '@hungpvq/map-core';
+import { IEvent } from '@hungpvq/map-core/event';
 
 class CustomEvent implements IEvent {
   id = 'custom-event';

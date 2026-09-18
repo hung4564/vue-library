@@ -5,25 +5,25 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  clearAddGeojsonHereItems,
-  getDefaultAddGeojsonHereItems,
-  MAP_CONTEXT_MENU_ID,
-  setAddGeojsonHereItems,
-  type AddGeojsonHerePayload,
-  type MapMenuItemProps,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
-import {
+  getLayerControlTitleMenuState,
   LAYER_CONTROL_LOCALE,
-  createGeojsonHereDataset,
-  type MenuContextSource,
+  registerAddGeojsonHereForMap,
+  warnIfDatasetRegistryMissing,
+  type IDataset,
 } from '@hungpvq/map-dataset';
+import {
+  MENU_CONTROL_ID,
+  resolveMenuContextSource,
+  type MenuContextSource,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
-  BaseButton,
   defaultMapProps,
   MapCommonButton,
+  MapControlButton,
   ModuleContainer,
   UniversalRegistry,
   useLang,
@@ -31,19 +31,15 @@ import {
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  WithShowProps,
+  type WithShowProps,
 } from '@hungpvq/vue-map-core';
+
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiDelete,
-  mdiDotsVertical,
-  mdiGroup,
-  mdiLayers,
-  mdiPlus,
-} from '@mdi/js';
-import { onUnmounted, watch } from 'vue';
+import { mdiLayers, mdiPlus } from '@mdi/js';
+import { computed, onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
-import { useMapDataset } from '../../store';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
+import { useMapDataset } from '../../store/dataset-api';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
 import LayerList from './part/LayerList.vue';
@@ -67,20 +63,25 @@ const props = withDefaults(
     disabledMove: false,
   },
 );
-provideMenuConditionContext(() => props.menuContext);
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.layerControl,
+  ...resolveMenuContextSource(props.menuContext),
+}));
 defineSlots<{
   titleList: (props: { mapId: string }) => any;
   endList: (props: { mapId: string }) => any;
   default(): any;
 }>();
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(LAYER_CONTROL_LOCALE);
+const { trans, registerLocale } = useLang(mapId.value);
+registerLocale('en', LAYER_CONTROL_LOCALE);
+warnIfDatasetRegistryMissing(
+  (key) => UniversalRegistry.getComponent(key),
+  'vue-map-dataset',
+);
+
 const path = {
   icon: mdiLayers,
-  menu: mdiDotsVertical,
-  group: { create: mdiGroup },
-  deleteAll: mdiDelete,
   layer: { create: mdiPlus },
 };
 const [show, setShow] = useShow(props.show);
@@ -114,16 +115,11 @@ const { panelPosition } = useRegisterMapControl(mapId, {
 const { state, control } = useToolbarControl(mapId.value, props, {
   id: 'mapLayerControl',
   getState() {
-    return {
-      visible: !show.value,
+    return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.layer-control.title'),
       order: order.value,
-      icon: {
-        type: 'mdi' as const,
-        path: path.icon,
-      },
-    };
+    });
   },
   onClick() {
     setShow();
@@ -131,21 +127,19 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 });
 watch(show, () => control.sync());
 
-const { addDataset } = useMapDataset(mapId.value);
-function onAddGeojsonHere(
-  _props: MapMenuItemProps,
-  payload: AddGeojsonHerePayload,
-) {
-  void addDataset(createGeojsonHereDataset(payload));
-}
-UniversalRegistry.registerMenuHandlerForMap(
-  mapId.value,
-  MAP_CONTEXT_MENU_ID.addGeojsonHere,
-  onAddGeojsonHere,
+const { addDataset, getDatasets, getDatasetIds } = useMapDataset(mapId.value);
+onUnmounted(
+  registerAddGeojsonHereForMap(mapId.value, (dataset) => {
+    void addDataset(dataset);
+  }),
 );
-setAddGeojsonHereItems(mapId.value, getDefaultAddGeojsonHereItems());
-onUnmounted(() => {
-  clearAddGeojsonHereItems(mapId.value);
+
+const datasetIds = computed(() => getDatasetIds().value);
+
+const titleMenuState = computed(() => {
+  void datasetIds.value;
+  const roots = getDatasets().filter(Boolean) as IDataset[];
+  return getLayerControlTitleMenuState(roots);
 });
 </script>
 <template>
@@ -171,6 +165,15 @@ onUnmounted(() => {
             {{ trans('map.layer-control.title') }}
           </span>
         </template>
+        <template v-if="titleMenuState.data" #after-title>
+          <DatasetMenus
+            :menus="titleMenuState.menus"
+            :data="titleMenuState.data"
+            :mapId="mapId"
+            :locations="['title']"
+            :menuContext="menuContext"
+          />
+        </template>
         <div class="layer-control">
           <LayerList
             :mapId="mapId"
@@ -182,9 +185,14 @@ onUnmounted(() => {
           >
             <template #title>
               <slot name="titleList" :mapId="mapId">
-                <BaseButton @click.stop="openAddLayer()" v-if="!disabledCreate">
+                <MapControlButton
+                  data-testid="map-layer-create"
+                  @click.stop="openAddLayer()"
+                  v-if="!disabledCreate"
+                  variant="plain"
+                >
                   <SvgIcon size="14" type="mdi" :path="path.layer.create" />
-                </BaseButton>
+                </MapControlButton>
               </slot>
             </template>
           </LayerList>

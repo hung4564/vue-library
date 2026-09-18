@@ -26,14 +26,23 @@
         :placeholder="trans('map.layer-control.field.crs-placeholder')"
         @update:model-value="onCrsChange"
       />
+      <div
+        v-if="crsMismatch"
+        class="create-control-crs-mismatch"
+        role="status"
+      >
+        {{ trans('map.layer-control.create.crs-mismatch') }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset';
-import { InputCrs, InputSelect, useLang, useMap } from '@hungpvq/vue-map-core';
+import { isCreateControlCrsMismatch } from '@hungpvq/map-dataset/create-control';
+import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
+import { useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputCrs, InputSelect } from '@hungpvq/vue-map-core/fields';
 import { computed } from 'vue';
 
 const form = defineModel();
@@ -59,6 +68,10 @@ if (!form.value.color) {
 if (!form.value.type) {
   form.value.type = 'point';
 }
+
+const crsMismatch = computed(() =>
+  isCreateControlCrsMismatch(form.value.crs, form.value.detectedCrs),
+);
 
 function onCrsChange(crs) {
   form.value.crs = crs;

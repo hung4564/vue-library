@@ -4,7 +4,7 @@ import {
   function as styleFunction,
 } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerSpecification, Map as MapMaplibre } from 'maplibre-gl';
-import type { ExprHandlerFn } from '../types/legend';
+import type { ExprHandlerFn } from './types';
 
 const PROP_MAP: [string, string?][] = [
   ['background'],

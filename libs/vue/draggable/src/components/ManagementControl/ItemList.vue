@@ -3,11 +3,15 @@
     <li
       v-for="item in items"
       :key="item"
+      role="button"
+      tabindex="0"
       :class="[
         'mgmt-row',
         { 'mgmt-row--active': show === item || itemShows?.includes(item) },
       ]"
       @click="$emit('click:item', item)"
+      @keydown.enter.prevent="$emit('click:item', item)"
+      @keydown.space.prevent="$emit('click:item', item)"
     >
       <div class="mgmt-row__label">
         <Item :item="item" :containerId="containerId" />

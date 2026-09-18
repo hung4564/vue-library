@@ -1,0 +1,219 @@
+# Map libraries (`@hungpvq/*`)
+
+Framework-agnostic MapLibre GIS kit with Vue and React adapters.
+
+| Package | Description |
+|---------|-------------|
+| [`@hungpvq/map-core`](./core/) | Engine helpers, store, theme, locale, registry types, workers |
+| [`@hungpvq/map-dataset`](./map-dataset/) | Dataset tree, builders, identify, style, GIS worker |
+| [`@hungpvq/map-draw`](./map-draw/) | DrawService, DrawingType, styles, inspect helpers |
+| [`@hungpvq/vue-map`](../vue/map/) / [`@hungpvq/react-map`](../react/map/) | Meta bag: deps + `installMapApp` + `./style.css` |
+| [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/) | Map container, controls, hooks |
+| [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores |
+| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (shared InspectController) |
+
+**Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Demos:** [Vue](https://hung4564.github.io/demo-map/vue/) · [React](https://hung4564.github.io/demo-map/react/)
+
+---
+
+# Checklist SemVer / Breaking Change
+
+Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**, additive → **minor**, fix within contract → **patch**. Root barrels use **explicit named exports** (see [stable-api.md](./core/docs/core/stable-api.md)); runtime surface is locked by `public-api.spec.ts`.
+
+**Types note (1.0.x):** Identify protocol (`IdentifyFeatureRow.data`, merge payload/response) and `RegistryFn` / toolbar `onAction` use `unknown` instead of `any` (types-only; runtime unchanged). Consumers may need to narrow results.
+
+## 0. Surface map (version together)
+
+| Package | Public entries | Peer lock notes |
+|---------|----------------|-----------------|
+| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec` |
+| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
+| `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
+| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; draggable optional peer (needed for default `Map` shell / panels) |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable optional peer (needed for LayerControl panels) |
+| `@hungpvq/vue-map` / `react-map` | `.` + `./style.css`; facade `installMapApp` (+ Vue `createMapAppPlugin`) | **deps** map stack + draggable + shared; **peer** framework + `maplibre-gl` only |
+| `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
+
+**Monorepo rule:** map release group is **`fixed`** (one version, tag `map@{version}` via Nx `releaseTag.pattern`). Bumping any map package bumps the whole group; in-family peers stay `~` aligned.
+
+## 1. Bump decision — quick flowchart
+
+```
+Can the change break an existing consumer (compile / runtime / CSS / registry key)?
+  ├─ Yes → MAJOR (1.x → 2.0.0)
+  ├─ No, only adds API / keys / themes / controls (old code still works) → MINOR
+  └─ No, only bugfix / docs / perf (documented behavior unchanged) → PATCH
+```
+
+**Exception:** fixing a bug that apps already rely on (accidental public behavior) → prefer **minor** (or major if the dependency is widespread). Document it in CHANGELOG either way.
+
+## 2. BREAKING checklist (→ major)
+
+Any checked item must **not** ship in `1.0.x` / as a `1.x` patch.
+
+### A. Module / package graph
+
+- [ ] Remove or rename a package
+- [ ] Change `exports` so old import paths fail (`./worker`, `./vite`, `./style.css`, `./assets/*`)
+- [ ] Drop dual `import` / `require` while apps still use CJS
+- [ ] Rename npm scope / package name
+- [ ] Raise peer **minimum** outside the old range (e.g. `maplibre-gl` `^5` → `^6`, React 18 → 19 required, turf major mismatch across packages)
+- [ ] Change optional peer → required (`tokml`, `@mapbox/shp-write`, `vite`, GIS parsers `shpjs` / `papaparse` / `jszip` / `topojson-client` / `@tmcw/togeojson` / `@xmldom/xmldom`, color/file-saver / style-spec on core+adapters, draggable on adapters)
+- [ ] Remove a shipped dependency consumers relied on installing themselves only as a peer (e.g. re-introduce `@turf/turf` peer without granular deps) without a migration note
+
+### B. Named exports (TypeScript / ESM)
+
+Treat everything listed in Stable ∪ Experimental `public-api.spec.ts` allowlists as the public runtime surface (named exports on each entry). Vue/React `map-core` Experimental field helpers are on **`./fields`**, not the root.
+
+Examples of public surface:
+
+- **`@hungpvq/map-core`:** `MapInitializer`, `MapStoreManager`, `getMap`, `registerMapAccessor`, `UniversalRegistry`, `MapControlHandle`, `runMapControlAction`, `bootstrapMapTheme`, `MAP_THEME_*`, locale bags, services, measurement/print/legend, utils, `MAP_STORE_KEY`, errors, …
+- **`@hungpvq/map-dataset`:** root `DatasetService` / `IDataset` / tree helpers; domain APIs from subpaths (`createGeoJsonDataset` → `/geojson`, `LayerSimpleMapboxBuild` → `/style`, `LIST_VIEW_MENU_*` → `/menu`, …)
+- **Framework packages:** controls, hooks, `UniversalRegistry`, `createDatasetRegistryPlugin`, and adapter stores. Dataset builders/services/types come directly from `@hungpvq/map-dataset`.
+
+Breaking if you:
+
+- [ ] Remove / rename an export
+- [ ] Change function/class signature incompatibly (new required params, reordered params, incompatible return)
+- [ ] Narrow an exported `interface` / `type` (remove field, optional → required, remove union member)
+- [ ] Change `enum` / `as const` **values** that consumers compare as strings
+- [ ] Tighten generics so inference fails for previous call sites
+
+**Safe alias (minor):** `export { Old as New }` keep `Old` `@deprecated` for ≥1 minor, remove in a later **major**.
+
+### C. Runtime protocol (breaking even if TS still compiles)
+
+#### Control ids (`UniversalRegistry` / `useRegisterMapControl`)
+
+Documented ids include `mapLayerControl`, `mapThemeControl`, `mapIdentifyControl`, `mapNavigationControl`, …
+
+- [ ] Rename a control `id`
+- [ ] Change `defaultActionType` / action `type` (`mapZoomIn`, `distance`, `setScoped`, …)
+- [ ] Change `MapControlHandle` shape (remove `open` / `close` / `runAction` / `actions` / `props`)
+- [ ] Change semantics so `openControl` no longer matches docs (`setShow(true)`, etc.)
+
+#### Registry component keys / menu ids
+
+See `LIST_VIEW_MENU_COMPONENT_KEY` and `LIST_VIEW_MENU_ID` in `@hungpvq/map-dataset/menu` (e.g. `layer-action-toggle-show`, `style-control`, `toggle-show`, `identify-layer`).
+
+- [ ] Change string **values** of keys/ids
+- [ ] Change menu click payload contract `{ layer, mapId, value, event, meta, context }`
+- [ ] Change `location` union (`extra` | `menu` | `bottom` | `prebottom`)
+- [ ] Remove the need for `createDatasetRegistryPlugin()` without an equivalent auto-register — UI disappearing is a **behavioral break**
+
+#### Store / storage / event keys
+
+- [ ] Change `MAP_STORE_KEY.*` values (`registry`, `basemap`, …)
+- [ ] Change `MAP_THEME_STORAGE_KEY` (`hungpvq.map-theme-mode`)
+- [ ] Change theme class names (`map-theme-light`, …) or remove a published `MAP_THEME_IDS` entry
+- [ ] Change mitt / lang event name contracts
+
+#### Dataset tree protocol
+
+- [ ] Change `node.type` strings (`list`, `identify`, …) used by visitors/UI
+- [ ] Change `dependsOn` order/semantics in `DatasetService.addDataset` / `removeDataset`
+- [ ] Change default shape of `createGeoJsonDataset` if docs promise batteries-included parts
+
+### D. CSS / theming
+
+Documented `--map-*` tokens and `style.css` entries:
+
+- [ ] Rename / remove a documented CSS variable
+- [ ] Change stable selectors / classes apps override (`.map-theme-*`, control hooks)
+- [ ] Change meaning of a documented token so custom themes break (documented token semantics → **major**; pure visual polish with same names → **minor** + note)
+
+### E. Workers / Vite
+
+- [ ] Change worker message protocol (`@hungpvq/map-core/worker` or GIS parse worker)
+- [ ] Change `mapDatasetGisWorker()` API or required `assets` layout
+- [ ] Rename worker files under `public/assets` without a migration path
+
+### F. Component props / slots / events (Vue & React)
+
+- [ ] Rename props (`position`, `show`, `menuContext`, …)
+- [ ] Rename Vue `@map-loaded` / React equivalent callbacks
+- [ ] Change slot / children contracts of `Map`, `ModuleContainer`, `LayerControl`
+- [ ] Change defaults that alter documented flow (default `show`, default theme, …)
+
+### G. Cross-package coupling
+
+- [ ] Breaking change in `@hungpvq/map-dataset` can still require coordinated adapter changes through peer APIs
+- [ ] Apps must import builders/services/types from `@hungpvq/map-dataset`, not framework adapters
+
+## 3. NON-BREAKING → minor
+
+- [ ] New exports (functions, components, types, **new** fields on `LIST_VIEW_MENU_*`)
+- [ ] New control ids; new action types (old ones still work)
+- [ ] New theme ids in `MAP_THEME_IDS` (do not remove old ones)
+- [ ] New CSS variables / theme classes
+- [ ] New optional props / optional peers
+- [ ] Widen peer ranges when truly compatible (document)
+- [ ] New subpath exports while keeping the old root barrel
+- [ ] Moving symbols from root onto a subpath **without** a root re-export (breaking → **major**)
+- [ ] Deprecate via JSDoc `@deprecated` without removing
+- [ ] New packages (e.g. React draw) that are additive
+
+## 4. → patch
+
+- [ ] Bugfix within documented contract
+- [ ] Performance / internal logging
+- [ ] Docs / demos only
+- [ ] Types that more accurately describe **existing** runtime behavior — careful: stricter `.d.ts` that fail previous compiles are **major** for TypeScript consumers
+- [ ] Style tweaks that do not touch documented tokens or stable class hooks
+
+## 5. Pre-release process checklist
+
+### Pre-merge
+
+1. [ ] List changed **files/exports** (`src/index.ts`, barrels, `package.json#exports`)
+2. [ ] Scan runtime strings: control `id:`, `LIST_VIEW_MENU_*`, `MAP_STORE_KEY`, `MAP_THEME_*`, `--map-`, worker message types
+3. [ ] Diff props/events against `docs/core/module/*`
+4. [ ] Confirm Vue **and** React keep the same contract
+5. [ ] Peer matrix: `map-core` ↔ `map-dataset` ↔ `vue/react-*` ↔ `vue-map-draw`
+6. [ ] Choose `major` | `minor` | `patch` and write one “why” line for CHANGELOG
+
+### Release
+
+7. [ ] Bump **together** every package pinned by exact/`~` peers
+8. [ ] CHANGELOG: `BREAKING CHANGES` + migration (id/key rename tables)
+9. [ ] On major: short migration guide (imports, registry keys, CSS, peers)
+10. [ ] Verify Vue + React demos build on the new versions
+
+### After release (1.x discipline)
+
+11. [ ] Do not quietly amend contracts in patches
+12. [ ] Keep `@deprecated` for ≥1 minor (or one major cycle) before removal
+
+## 6. Common changes → suggested bump
+
+| Change | Bump |
+|--------|------|
+| Add ThemeControl modes / new themes | minor |
+| Change `hungpvq.map-theme-mode` or `map-theme-*` classes | major |
+| Rename `mapLayerControl` / `layer-action-*` | major |
+| Add `LIST_VIEW_MENU_COMPONENT_KEY.foo` | minor |
+| Change menu click handler args | major |
+| Add optional `LayerControl` prop | minor |
+| Rename `@map-loaded` | major |
+| Remove a util export from `map-core` | major |
+| Internal refactor with identical API | patch |
+| Raise `maplibre-gl` peer to a new major | major (unless dual-range + verified) |
+| Merge UniversalRegistry host but keep facade signatures | patch/minor; if static API changes → major |
+| Align Vue/React `getMethod` behavior (bugfix) | patch/minor — note if apps relied on divergence |
+| Change `DatasetService` add order | major |
+| Docs-only registry updates | patch |
+
+## 7. Reducing “everything is breaking”
+
+1. **Stable API allowlist:** [core/docs/core/stable-api.md](./core/docs/core/stable-api.md) — controls + main hooks, `createGeoJsonDataset` (`@hungpvq/map-dataset/geojson`), `DatasetService`, `UniversalRegistry` control/component APIs, `LIST_VIEW_MENU_*` (`@hungpvq/map-dataset/menu`), CSS tokens, `MapControlHandle`. Runtime locks: `public-api.spec.ts` in map-core, map-dataset, vue/react map-core, vue/react map-dataset.
+2. **Named root barrels** (like draggable): `src/index.ts` exports only allowlisted symbols via direct leaf imports (no `internal-barrel` aggregation). First-party types via explicit `export type { … }` only — do not re-export `geojson` / `maplibre-gl` types from the root.
+3. Mark non-Stable symbols **experimental** in `public-api.spec.ts` — may change in a **minor**; removing them from the root is a **major**.
+4. Feature subpaths (`@hungpvq/map-core/theme`, `./basemap`, …) are **public** entries. Moving symbols off the root onto a subpath without a root re-export is a **major**; adding a new subpath while keeping root is usually a **minor**.
+5. In-family peers use `~1.0.1` (patch drift OK). Prefer widening further (e.g. `^1.0.1`) only when release process is stable and adapters stay compatible across minors.
+
+## 8. Team policy (one line)
+
+> **Major** if compile, registry/CSS/control/menu protocol, peer minimum, or documented behavior breaks.  
+> **Minor** if additive only.  
+> **Patch** if fix within the published contract.  
+> Prefer the [Stable API allowlist](./core/docs/core/stable-api.md) for SemVer promises. Root exports are **named**; unlisted runtime symbols must not appear on `index.ts`. Experimental allowlisted exports (including `./fields` on Vue/React map-core) may change in a minor.

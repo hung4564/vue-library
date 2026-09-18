@@ -6,16 +6,19 @@ import React, {
   useState,
 } from 'react';
 import {
+  logHelper,
+  subscribeMapReady,
+  type MapSimple,
+} from '@hungpvq/map-core';
+import {
   type AnyIEvent,
   EventManager,
-  logHelper,
-  type MapSimple,
   type MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/event';
 import type { MapEventType } from 'maplibre-gl';
 import { getMap } from '../../../store/store';
-import { useMapMittStore } from '../../mitt';
+import { getMapMittStore } from '../../../store/mitt-store';
 import { logger, useMapEventStore } from '../store';
 
 type ReactComponentType = {
@@ -100,7 +103,7 @@ export function useEventMap(
   from?: string,
 ) {
   const store = useMapEventStore(mapId);
-  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
   const detectedName = useComponentName();
   const componentName = from || detectedName;
   const eventRef = useRef(event);
@@ -167,9 +170,14 @@ export function useEventListener<K extends KnownMapEvent>(
   const wrappedCb = useRef<
     Record<string, ((ev: MapEventType[K]) => void) | undefined>
   >({});
+  const unsubscribeReadyRef = useRef<(() => void) | undefined>(undefined);
+  const cancelledRef = useRef(false);
 
   const add = useCallback(() => {
-    getMap(mapId, (map) => {
+    cancelledRef.current = false;
+    unsubscribeReadyRef.current?.();
+    unsubscribeReadyRef.current = subscribeMapReady(mapId, (map) => {
+      if (cancelledRef.current) return;
       const eventHandle = (ev: MapEventType[K]) => cbRef.current(map, ev);
       wrappedCb.current[map.id] = eventHandle;
       map.on(event, eventHandle);
@@ -177,10 +185,16 @@ export function useEventListener<K extends KnownMapEvent>(
   }, [mapId, event]);
 
   const remove = useCallback(() => {
-    getMap(mapId, (map) => {
-      const eventHandle = wrappedCb.current[map.id];
-      if (eventHandle) map.off(event, eventHandle);
-    });
+    cancelledRef.current = true;
+    unsubscribeReadyRef.current?.();
+    unsubscribeReadyRef.current = undefined;
+    const map = getMap(mapId);
+    if (!map) return;
+    const eventHandle = wrappedCb.current[map.id];
+    if (eventHandle) {
+      map.off(event, eventHandle);
+      delete wrappedCb.current[map.id];
+    }
   }, [mapId, event]);
 
   useEffect(() => {

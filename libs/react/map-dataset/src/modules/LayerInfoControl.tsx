@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { LAYER_INFO_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import { DraggableItemFloat } from '@hungpvq/react-draggable';
 import {
@@ -17,8 +18,11 @@ import { LayerList } from './LayerControl/LayerList';
 
 export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLayerInfoControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapLayerInfoControl',
+  });
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLayerInfoControl',
@@ -35,19 +39,18 @@ export function LayerInfoControl(props: WithMapPropType & { show?: boolean }) {
   });
 
   useEffect(() => {
-    setLocaleDefault(LAYER_INFO_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LAYER_INFO_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerInfoControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.layer-info-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiLayers },
-    }),
+    getState: () =>
+      mdiButtonState(mdiLayers, {
+        active: show,
+        title: trans('map.layer-info-control.title'),
+        order,
+      }),
     onClick: () => toggleShow(),
   });
 

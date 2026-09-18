@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type { MapSimple } from '@hungpvq/map-core';
+import type { ButtonInMobile, MapSimple } from '@hungpvq/map-core';
+import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
 import '@hungpvq/map-core';
-import { useBreakpoints } from '@hungpvq/shared-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
-import { computed, provide, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import MapErrorToast from '../components/MapErrorToast.vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
+import { useBreakpoints } from '../hooks/useBreakpoints';
 import { useMapInstance } from '../hooks/useMapInstance';
 
 const breakpoints = useBreakpoints({
@@ -21,6 +23,10 @@ const props = withDefaults(
     initOptions?: Partial<MapOptions>;
     dragId?: string;
     mapId?: string;
+    /** Bind Esc / `/` map shortcuts (default true). */
+    keyboardShortcuts?: boolean;
+    /** On viewports ≤640px: `button` unchanged, `toolbar` merge into ToolbarControl, `menu` cap groups at ½×½ map. */
+    buttonInMobile?: ButtonInMobile;
   }>(),
   {
     mapboxAccessToken: '',
@@ -28,6 +34,8 @@ const props = withDefaults(
       attributionControl: false,
       zoomControl: false,
     }),
+    keyboardShortcuts: true,
+    buttonInMobile: 'button',
   },
 );
 
@@ -38,6 +46,16 @@ const emit = defineEmits<{
 }>();
 
 const { mapContainer, isSupport, loaded, id } = useMapInstance(props, emit);
+
+let unbindShortcuts: (() => void) | undefined;
+onMounted(() => {
+  if (props.keyboardShortcuts === false) return;
+  unbindShortcuts = bindMapKeyboardShortcuts({ mapId: id.value });
+});
+onUnmounted(() => {
+  unbindShortcuts?.();
+  unbindShortcuts = undefined;
+});
 
 const draggableTo = computed(() => {
   return `map-draggable-${id.value}`;
@@ -55,10 +73,13 @@ const leftTopTo = computed(() => {
   return `top-left-${id.value}`;
 });
 
+const isMobile = breakpoints.smallerOrEqual('tablet');
+
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
+provide('$map.buttonInMobile', computed(() => props.buttonInMobile ?? 'button'));
+provide('$map.isMobile', isMobile);
 
-const isMobile = breakpoints.smallerOrEqual('tablet');
 const loadedDrag = ref(false);
 
 function onDragLoadDone() {
@@ -88,7 +109,7 @@ provide('$map.registerModuleOrder', registerModuleOrder);
   <div
     v-else
     class="map-container"
-    :mapId="id"
+    :data-map-id="id"
     :class="{ 'map-mobile-container': isMobile }"
   >
     <div class="map-viewer">
@@ -108,6 +129,7 @@ provide('$map.registerModuleOrder', registerModuleOrder);
       </template>
       <slot v-if="loaded && loadedDrag" />
       <ActionControl v-if="loaded && loadedDrag" />
+      <MapErrorToast />
     </div>
   </div>
 </template>

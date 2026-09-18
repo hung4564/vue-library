@@ -1,13 +1,24 @@
-import { GOTO_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import {
+  applyGotoSetting,
+  GOTO_CONTROL_LOCALE,
+  gotoSettingFromCoordinateText,
+  readGotoSetting,
+  type GotoSetting,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { useToolbarControl } from '../../extra/toolbar';
-import { BaseButton, InputText } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { InputText } from '../../field';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { MapControlButton } from '../../components/MapControlButton';
 
 export interface GotoControlProps extends WithMapPropType {
   show?: boolean;
@@ -16,26 +27,17 @@ export interface GotoControlProps extends WithMapPropType {
 export function GotoControl(props: GotoControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
-  const [setting, setSetting] = useState<{
-    zoom?: number;
-    center: [number, number];
-  }>({ center: [0, 0] });
+  const [setting, setSetting] = useState<GotoSetting>({ center: [0, 0] });
 
   useEffect(() => {
-    setLocaleDefault(GOTO_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', GOTO_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   function loadCurrentView() {
     callMap((map) => {
-      setSetting({
-        zoom: map.getZoom(),
-        center: [
-          +map.getCenter().lng.toFixed(6),
-          +map.getCenter().lat.toFixed(6),
-        ],
-      });
+      setSetting(readGotoSetting(map));
     });
   }
 
@@ -63,22 +65,39 @@ export function GotoControl(props: GotoControlProps) {
 
   function onSetSetting() {
     callMap((map) => {
-      if (setting.zoom != null) map.setZoom(setting.zoom);
-      if (setting.center) map.setCenter(setting.center);
+      applyGotoSetting(map, setting);
     });
+  }
+
+  async function onPasteCoordinates() {
+    try {
+      const text = await navigator.clipboard?.readText?.();
+      const partial = gotoSettingFromCoordinateText(text || '');
+      if (!partial) return;
+      setSetting((prev) => ({ ...prev, ...partial }));
+    } catch {
+      // Clipboard permission denied — ignore.
+    }
   }
 
   const { state, control } = useToolbarControl(mapId, mergedProps, {
     kind: 'single',
     id: 'mapGotoControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.goto-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiMapMarkerOutline },
-    }),
+    getState: () =>
+      mdiButtonState(mdiMapMarkerOutline, {
+        visible: true,
+        active: show,
+        title: trans('map.goto-control.title'),
+        order,
+      }),
     onClick: () => handleToggle(),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer
@@ -152,9 +171,14 @@ export function GotoControl(props: GotoControlProps) {
                   />
                 </div>
               </div>
-              <BaseButton className="map-goto-control__btn" onClick={onSetSetting}>
-                {trans('map.goto-control.btn.apply')}
-              </BaseButton>
+              <div className="map-goto-control__actions">
+                <MapControlButton onClick={() => void onPasteCoordinates()} variant="outlined">
+                  {trans('map.goto-control.btn.paste')}
+                </MapControlButton>
+                <MapControlButton className="map-goto-control__btn" onClick={onSetSetting} variant="filled">
+                  {trans('map.goto-control.btn.apply')}
+                </MapControlButton>
+              </div>
             </div>
           </DraggableItemPopup>
         ) : null

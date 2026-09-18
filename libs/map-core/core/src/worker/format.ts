@@ -35,6 +35,24 @@ export function isWorkerBusy(worker: WorkerSnapshot): boolean {
   return worker.status === 'busy' || worker.pending.length > 0;
 }
 
+/** Worker has committed history, logs, or pending task logs. */
+export function workerHasHistory(worker: WorkerSnapshot): boolean {
+  if (worker.history.length > 0 || worker.logs.length > 0) return true;
+  return worker.pending.some((task) => (task.logs?.length ?? 0) > 0);
+}
+
+export function anyWorkerHasHistory(
+  workers: readonly WorkerSnapshot[],
+): boolean {
+  return workers.some(workerHasHistory);
+}
+
+export function countBusyWorkers(
+  workers: readonly WorkerSnapshot[],
+): number {
+  return workers.filter(isWorkerBusy).length;
+}
+
 function sortWorkerSnapshots(
   workers: readonly WorkerSnapshot[],
 ): WorkerSnapshot[] {

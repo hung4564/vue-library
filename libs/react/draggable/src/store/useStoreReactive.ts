@@ -1,15 +1,17 @@
 /**
- * React hook to make store reactive
- * Forces re-render when store changes
+ * React hooks to make the drag store reactive.
+ * Import `useDragStore` from core (not `./index`) to avoid a circular barrel
+ * with `store/index.ts` — that cycle broke Vite ESM named re-exports
+ * (`DraggableContainer is not exported`).
  */
 
-import { useState, useCallback } from 'react';
+import { useDragStore } from '@hungpvq/draggable';
 import { useStoreSubscribe } from '@hungpvq/shared-store/react';
-import { useDragStore } from './index';
+import { useCallback, useState } from 'react';
 
 /**
- * Hook to force re-render when store changes
- * Use this in components that need to react to store changes
+ * Hook to force re-render when store changes.
+ * Root `@hungpvq/react-draggable` entry runs `configureDragStore` via `./store`.
  */
 export function useStoreReactive() {
   const [, setTick] = useState(0);
@@ -25,7 +27,7 @@ export function useStoreReactive() {
 }
 
 /**
- * Hook to subscribe to specific container changes
+ * Hook to subscribe to specific container changes.
  */
 export function useContainerReactive(containerId: string) {
   const [, setTick] = useState(0);

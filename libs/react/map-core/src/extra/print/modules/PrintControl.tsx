@@ -1,13 +1,15 @@
-import { exportMapbox, PRINT_CONTROL_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { printMapToFile, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 
 export interface PrintControlProps extends WithMapPropType {
   fileName?: string;
@@ -19,14 +21,14 @@ export function PrintControl({
 }: PrintControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapPrintControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
   const controlRef = useRef<{ sync: () => void } | null>(null);
 
   useEffect(() => {
-    setLocaleDefault(PRINT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', PRINT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const onPrint = useMemo(
     () => () => {
@@ -35,8 +37,10 @@ export function PrintControl({
         setLoading(true);
         controlRef.current?.sync();
         try {
-          const image = await exportMapbox(map);
-          saveAs(image, `${fileName}.png`);
+          await printMapToFile(map, {
+            fileName,
+            save: (dataUrl, name) => saveAs(dataUrl, name),
+          });
         } finally {
           loadingRef.current = false;
           setLoading(false);
@@ -68,13 +72,13 @@ export function PrintControl({
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapPrintControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.print.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiPrinterOutline },
-      loading: loadingRef.current,
-    }),
+    getState: () =>
+      mdiButtonState(mdiPrinterOutline, {
+        visible: true,
+        title: trans('map.print.title'),
+        order,
+        loading: loadingRef.current,
+      }),
     onClick: () => {
       onPrint();
     },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IViewSettingField } from '@hungpvq/map-core';
+import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 
 withDefaults(
   defineProps<{

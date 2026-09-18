@@ -1,73 +1,150 @@
-# Extra Lang – How to Use Store & Hook
+# Extra Lang – locale catalogs & `useLang`
 
-## 1. Using the Store (`langStore`)
+Map UI strings live in **per-language catalogs** on the `LANG` store (`MAP_STORE_KEY.LANG`). Controls register English into `messages.en`; apps / `LanguageControl` register other languages (e.g. `vi`) and call `setLanguage`.
 
-The `langStore` provides methods to manage language data for each map instance via `mapId`.
-
-**Import:**
+## Model
 
 ```ts
-import { langStore, type MapLocateStore } from '@hungpvq/vue-map-core';
+type MapLocateStore = {
+  language: string;              // active code
+  fallbackLanguage: string;      // default 'en'
+  messages: Record<string, MapLangLocale>;
+  languageLabels: Record<string, string>;
+  loadingLanguages: Record<string, boolean>;
+  translate?: MapTranslateFunction;
+};
 ```
 
-**API:**
+`trans(key)` resolves: `messages[language]` → `messages[fallbackLanguage]` → raw key.
+
+## Hook (`useLang`)
 
 ```ts
-langStore.getMapLang(mapId: string): MapLocateStore
-langStore.setMapLang(mapId: string, locale: Record<string, string>): void
+import { useLang } from '@hungpvq/vue-map-core'; // or @hungpvq/react-map-core
+
+const {
+  trans,
+  language,
+  fallbackLanguage,
+  languages,
+  registerLocale,
+  registerLocaleFlat,
+  registerLanguage,
+  setLanguage,
+  setFallbackLanguage,
+  loadLocale,
+  setTranslate,
+} = useLang(mapId);
 ```
 
-**Example:**
+### Register (controls)
 
 ```ts
-const store = langStore.getMapLang('map1');
-langStore.setMapLang('map1', {
-  map: {
-    basemap: {
-      title: 'Base Map',
-      setting: 'Settings',
-    },
-  },
+registerLocale('en', HOME_CONTROL_LOCALE);
+```
+
+### Override keys
+
+```ts
+registerLocale('en', MAP_CORE_LOCALE_EN);
+registerLocale('vi', MAP_CORE_LOCALE_VI);
+registerLocale('vi', {
+  map: { home: { title: 'Về trang chính (custom)' } },
 });
 ```
 
-## 2. Using the Hook (`useLang`)
-
-The `useLang` hook provides a reactive way to work with language data for a specific map.
-
-**Import:**
+### Add a language
 
 ```ts
-import { useLang } from '@hungpvq/vue-map-core';
+registerLanguage('fr', { label: 'Français' });
+registerLocale('fr', MY_FR_PACK); // partial OK — missing keys use fallbackLanguage
+setLanguage('fr');
 ```
 
-**Usage:**
+### Default language
+
+Priority: **localStorage** (`hungpvq.map-language`) → `LanguageControl` `defaultLanguage` / `bootstrapMapLanguage` → `'en'`.
 
 ```ts
-const { trans, setLocale } = useLang(mapId.value);
+import { bootstrapMapLanguage } from '@hungpvq/map-core';
 
-// Dynamically update locale
-setLocale({
-  map: {
-    basemap: {
-      title: 'Base Map',
-      setting: 'Settings',
-    },
-  },
+bootstrapMapLanguage('vi'); // persist initial preference
+// or
+<LanguageControl defaultLanguage="vi" />
+```
+
+Change fallback catalog (when active lang misses a key):
+
+```ts
+setFallbackLanguage('en'); // default
+```
+
+### Flat key-value (CMS / API)
+
+```ts
+registerLocaleFlat('vi', {
+  'map.home.title': 'Về mặc định',
+  'map.basemap.title': 'Nền bản đồ',
 });
-
-// Translate a key
-trans('map.basemap.title'); // → 'Base Map'
 ```
 
-**Explanation:**
+Helpers: `unflattenLocaleMessages` / `flattenLocaleMessages` / `isMapLangFlatMessages`.
 
-- `trans(key: string)`: Translates the given key using the current locale.
-- `setLocale(locale: object)`: Updates the locale for the current map instance.
+### Load via API
 
----
+```ts
+await loadLocale('vi', async (lang) => {
+  const res = await fetch(`/api/i18n/${lang}`);
+  return res.json(); // flat KV or nested tree
+});
+setLanguage('vi');
+```
 
-### Summary
+`loadLocale` skips if `messages[lang]` already has keys unless `{ force: true }`.
 
-- Use `langStore` for direct store operations (get/set language data).
-- Use `useLang` for reactive language handling in components (translation, dynamic locale updates).
+### Custom translator (external i18n)
+
+Plug in vue-i18n, i18next, or any library via `setTranslate` / LanguageControl `translate` prop.
+
+The third argument `fallback` resolves built-in catalogs when your library has no string:
+
+```ts
+setTranslate((key, params, fallback) => {
+  const fromLib = i18n.t(key, params);
+  // vue-i18n / i18next often return the key when missing:
+  if (fromLib && fromLib !== key) return String(fromLib);
+  return fallback?.() ?? key;
+});
+```
+
+Or replace catalogs entirely:
+
+```ts
+setTranslate((key, params) => myI18n.t(key, params));
+```
+
+Clear with `setTranslate(null)`.
+
+On the control:
+
+```vue
+<LanguageControl :translate="myTranslate" />
+```
+
+```tsx
+<LanguageControl translate={myTranslate} />
+```
+
+`translateMapLangFromCatalog` is also exported if you need catalog lookup outside the hook.
+
+## Built-in packs
+
+| Export | Package |
+|--------|---------|
+| `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI`, `LANGUAGE_CONTROL_LOCALE` | `@hungpvq/map-core` |
+| `MAP_DATASET_LOCALE_EN`, `MAP_DATASET_LOCALE_VI` | `@hungpvq/map-dataset` |
+| `MAP_DRAW_LOCALE_EN`, `MAP_DRAW_LOCALE_VI` | `@hungpvq/map-draw` |
+
+Pack files: `locale/locale.en.ts` / `locale/locale.vi.ts` (full catalogs). Control slices live in `<domain>/locale/locale.<lang>.ts` (EN compat: `locale/index.ts` → `locale.en`) and are merged into the packs. See skill `map-locale`.
+
+See [LanguageControl](./module/LanguageControl.md) for the toolbar control.

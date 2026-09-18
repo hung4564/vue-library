@@ -11,7 +11,7 @@ Map Basemap is a Vue.js library that provides components for managing and switch
 ### Vue
 
 ```bash
-npm install @hungpvq/vue-map-basemap
+npm install @hungpvq/vue-map-core
 ```
 
 ### React
@@ -27,7 +27,6 @@ npm install @hungpvq/react-map-core
 - ✅ **Custom basemaps** - Add your own custom base maps
 - ✅ **Basemap cards** - Visual base map selection cards
 - ✅ **Basemap tags** - Categorize base maps with tags
-- ✅ **Compare mode** - Side-by-side base map comparison
 - ✅ **Responsive design** - Mobile-friendly interface
 - ✅ **TypeScript support** - Full TypeScript support
 - ✅ **Vue 3 Composition API** - Modern Vue 3 Composition API

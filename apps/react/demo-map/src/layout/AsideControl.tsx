@@ -17,28 +17,38 @@ import './demo-nav.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Home (All Map)' },
   { to: '/map-core', label: 'Map - Core' },
+  { to: '/language', label: 'Language' },
+  { to: '/minimal', label: 'Minimal starter' },
+  { to: '/map-dataset', label: 'Map - Dataset (all)' },
   { to: '/worker-sample', label: 'Worker - Sample' },
   { to: '/toolbar', label: 'Map - Toolbar' },
+  { to: '/mobile-menu', label: 'Map - Mobile menu' },
   { to: '/basemap', label: 'BaseMap' },
   { to: '/measurement', label: 'Measurement' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },
   { to: '/dataset-identify', label: 'Dataset - Identify' },
+  { to: '/dataset-identify-present', label: 'Dataset - Identify present' },
   { to: '/dataset-menu', label: 'Dataset - Menu' },
   { to: '/dataset-list', label: 'Dataset - List' },
   { to: '/registry-control', label: 'UniversalRegistry - Controls' },
   { to: '/dataset-data-management', label: 'Dataset - Data management' },
+  { to: '/dataset-attribute-table', label: 'Dataset - Attribute table' },
+  { to: '/dataset-geo-export', label: 'Dataset - Geo export' },
   { to: '/story-telling', label: 'Story telling' },
+  { to: '/story-telling-gps', label: 'Story telling GPS' },
+  { to: '/legend', label: 'Legend' },
+  { to: '/draw', label: 'Draw' },
 ];
 
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'asideControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
 
   useEffect(() => {
-    setLocaleDefault({ map: { 'aside-control': { title: 'Aside Control' } } });
-  }, [setLocaleDefault]);
+    registerLocale('en', { map: { 'aside-control': { title: 'Aside Control' } } });
+  }, [registerLocale]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',

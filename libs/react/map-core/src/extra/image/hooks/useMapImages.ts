@@ -1,40 +1,62 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
-import { styleImageToDataURL } from '@hungpvq/map-core';
+import { subscribeMapReady } from '@hungpvq/map-core';
+import {
+  listMapStyleImages,
+  styleImageToDataURL,
+  subscribeMapStyleImages,
+} from '@hungpvq/map-core/image';
 import type { StyleImage } from 'maplibre-gl';
-import { getMap } from '../../../store/store';
 
 export function useMapImages(mapId: string) {
   const [images, setImages] = useState<Record<string, StyleImage>>({});
+  const unsubscribeReadyRef = useRef<(() => void) | undefined>(undefined);
+  const unsubscribeImagesRef = useRef<(() => void) | undefined>(undefined);
 
-  const loadImages = (map: MapSimple) => {
-    if (!map) return;
-    const names = map.listImages();
-    const result: Record<string, StyleImage> = {};
-    names.forEach((name) => {
-      const img = map.getImage(name);
-      if (img) result[name] = img;
-    });
-    setImages(result);
-  };
+  const clearImageSubscription = useCallback(() => {
+    unsubscribeImagesRef.current?.();
+    unsubscribeImagesRef.current = undefined;
+  }, []);
+
+  const clearReadySubscription = useCallback(() => {
+    unsubscribeReadyRef.current?.();
+    unsubscribeReadyRef.current = undefined;
+  }, []);
+
+  const attach = useCallback(
+    (map: MapSimple) => {
+      setImages(listMapStyleImages(map));
+      clearImageSubscription();
+      unsubscribeImagesRef.current = subscribeMapStyleImages(map, () => {
+        setImages(listMapStyleImages(map));
+      });
+    },
+    [clearImageSubscription],
+  );
 
   useEffect(() => {
-    let handle: (() => void) | undefined;
-    getMap(mapId, (map) => {
-      loadImages(map);
-      handle = () => loadImages(map);
-      map.on('styledata', handle);
-      map.on('idle', handle);
+    clearReadySubscription();
+    clearImageSubscription();
+    unsubscribeReadyRef.current = subscribeMapReady(mapId, (map) => {
+      attach(map);
     });
     return () => {
-      getMap(mapId, (map) => {
-        if (handle) {
-          map.off('styledata', handle);
-          map.off('idle', handle);
-        }
-      });
+      clearReadySubscription();
+      clearImageSubscription();
     };
-  }, [mapId]);
+  }, [mapId, attach, clearReadySubscription, clearImageSubscription]);
 
-  return { images, toDataURL: styleImageToDataURL, reload: () => getMap(mapId, loadImages) };
+  const reload = useCallback(() => {
+    clearImageSubscription();
+    clearReadySubscription();
+    unsubscribeReadyRef.current = subscribeMapReady(mapId, (map) => {
+      attach(map);
+    });
+  }, [mapId, attach, clearImageSubscription, clearReadySubscription]);
+
+  return {
+    images,
+    toDataURL: styleImageToDataURL,
+    reload,
+  };
 }

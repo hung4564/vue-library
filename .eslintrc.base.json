@@ -37,8 +37,128 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "core",
+                "onlyDependOnLibsWithTags": [
+                  "core",
+                  "share",
+                  "store",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "debug",
+                  "ui",
+                  "draggable"
+                ]
+              },
+              {
+                "sourceTag": "vue",
+                "notDependOnLibsWithTags": ["react"]
+              },
+              {
+                "sourceTag": "vue",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "debug",
+                  "devtools"
+                ]
+              },
+              {
+                "sourceTag": "react",
+                "notDependOnLibsWithTags": ["vue"]
+              },
+              {
+                "sourceTag": "react",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "react",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "debug",
+                  "devtools"
+                ]
+              },
+              {
+                "sourceTag": "demo",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "react",
+                  "demo",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "debug",
+                  "devtools"
+                ]
+              },
+              {
+                "sourceTag": "share",
+                "onlyDependOnLibsWithTags": ["share", "store", "js"]
+              },
+              {
+                "sourceTag": "draggable",
+                "onlyDependOnLibsWithTags": [
+                  "draggable",
+                  "share",
+                  "store",
+                  "core",
+                  "js",
+                  "ui"
+                ]
+              },
+              {
+                "sourceTag": "debug",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "core",
+                  "share",
+                  "store",
+                  "js",
+                  "dataset",
+                  "devtools",
+                  "debug"
+                ]
+              },
+              {
+                "sourceTag": "map",
+                "onlyDependOnLibsWithTags": [
+                  "map",
+                  "share",
+                  "store",
+                  "draggable",
+                  "ui",
+                  "vue",
+                  "react",
+                  "core",
+                  "js",
+                  "dataset",
+                  "draw",
+                  "debug",
+                  "devtools",
+                  "demo"
+                ]
               }
             ]
           }

@@ -1,27 +1,43 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/react-map-core/style.css';
+import '@hungpvq/react-map-dataset/style.css';
+import '@hungpvq/react-map-draw/style.css';
+import '@hungpvq/react-draggable/style.css';
+import '@hungpvq/react-map-devtools/style.css';
+import { installMapApp } from '@hungpvq/react-map-dataset';
 import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
-import { installDatasetRegistry } from './hooks/useDatasetRegistry';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
+import { DatasetAttributeTablePage } from './views/dataset-attribute-table';
+import { DatasetGeoExportPage } from './views/dataset-geo-export';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
 import { DatasetHighlightPage } from './views/dataset-highlight';
 import { DatasetIdentifyPage } from './views/dataset-identify';
+import { DatasetIdentifyPresentPage } from './views/dataset-identify-present';
 import { DatasetListPage } from './views/dataset-list';
 import { DatasetMenuPage } from './views/dataset-menu';
-import { InspectPage } from './views/inspect';
+import { DrawPage } from './views/draw';
 import { MapCorePage } from './views/map-core';
+import { LanguagePage } from './views/language';
+import { MinimalPage } from './views/minimal';
 import { MapDatasetPage } from './views/map-dataset';
 import { MeasurementPage } from './views/measurement';
 import { RegistryControlPage } from './views/registry-control';
 import { StoryTellingPage } from './views/story-telling';
+import { StoryTellingGpsPage } from './views/story-telling-gps';
+import { LegendPage } from './views/legend';
 import { ToolbarPage } from './views/toolbar';
+import { MobileMenuPage } from './views/mobile-menu';
 import { WorkerSamplePage } from './views/worker-sample';
 
-// Match Vue: register legend/menu/style components before any map mounts
-installDatasetRegistry();
+// Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
+installMapApp({ theme: false });
 installDevtools();
 
 const root = ReactDOM.createRoot(
@@ -35,13 +51,20 @@ root.render(
         <Route path="/" element={<App />}>
           <Route index element={<AllMapView />} />
           <Route path="map-core" element={<MapCorePage />} />
+          <Route path="language" element={<LanguagePage />} />
+          <Route path="minimal" element={<MinimalPage />} />
           <Route path="worker-sample" element={<WorkerSamplePage />} />
           <Route path="map-dataset" element={<MapDatasetPage />} />
           <Route path="toolbar" element={<ToolbarPage />} />
+          <Route path="mobile-menu" element={<MobileMenuPage />} />
           <Route path="basemap" element={<BasemapPage />} />
           <Route path="measurement" element={<MeasurementPage />} />
           <Route path="dataset-highlight" element={<DatasetHighlightPage />} />
           <Route path="dataset-identify" element={<DatasetIdentifyPage />} />
+          <Route
+            path="dataset-identify-present"
+            element={<DatasetIdentifyPresentPage />}
+          />
           <Route path="dataset-menu" element={<DatasetMenuPage />} />
           <Route path="dataset-list" element={<DatasetListPage />} />
           <Route path="registry-control" element={<RegistryControlPage />} />
@@ -49,9 +72,18 @@ root.render(
             path="dataset-data-management"
             element={<DatasetDataManagementPage />}
           />
+          <Route
+            path="dataset-attribute-table"
+            element={<DatasetAttributeTablePage />}
+          />
+          <Route
+            path="dataset-geo-export"
+            element={<DatasetGeoExportPage />}
+          />
           <Route path="story-telling" element={<StoryTellingPage />} />
-          <Route path="story-telling-gps" element={<StoryTellingPage />} />
-          <Route path="inspect" element={<InspectPage />} />
+          <Route path="story-telling-gps" element={<StoryTellingGpsPage />} />
+          <Route path="legend" element={<LegendPage />} />
+          <Route path="draw" element={<DrawPage />} />
         </Route>
       </Routes>
     </HashRouter>

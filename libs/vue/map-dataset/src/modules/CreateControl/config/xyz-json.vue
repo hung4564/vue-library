@@ -17,20 +17,22 @@
             :label="trans('map.layer-control.create.sample')"
             @update:model-value="onSelectSample"
           />
-          <div class="create-control-url-row">
+          <InputActionRow>
             <InputText
               v-model="dataUrl"
               :label="trans('map.layer-control.field.url')"
               @update:model-value="onUrlInput"
             />
-            <BaseButton
-              class="create-control-url-load"
-              :disabled="loadingUrl || !dataUrl.trim()"
-              @click="onLoadUrl"
-            >
-              {{ trans('map.layer-control.create.load') }}
-            </BaseButton>
-          </div>
+            <template #action>
+              <MapControlButton
+                :disabled="loadingUrl || !dataUrl.trim()"
+                @click="onLoadUrl"
+                variant="tonal"
+              >
+                {{ trans('map.layer-control.create.load') }}
+              </MapControlButton>
+            </template>
+          </InputActionRow>
           <div v-if="loadingUrl" class="create-control-status">
             {{ trans('map.layer-control.create.loading-url') }}
           </div>
@@ -44,21 +46,20 @@
 </template>
 
 <script setup>
-import {
-  BaseButton,
-  InputSelect,
-  InputText,
-  useLang,
-  useMap,
-} from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputActionRow, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import {
   applyCreateControlSample,
+  applyCreateControlLayerName,
   CREATE_CONTROL_SAMPLE_NONE,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
+  findCreateControlSampleMatchingUrl,
   getCreateControlDataTabs,
-  getCreateControlSampleUrl,
   getCreateControlSamples,
-} from '@hungpvq/map-dataset';
+  layerNameFromUrl,
+  resolveCreateControlSampleIdAfterUrlEdit,
+  resolveCreateControlSampleSelection,
+} from '@hungpvq/map-dataset/create-control';
 import { computed, ref } from 'vue';
 import DataSourceTabs from './DataSourceTabs.vue';
 
@@ -93,24 +94,17 @@ function onSelectSample(id) {
   const nextId = typeof id === 'string' ? id : '';
   sampleId.value = nextId;
   urlError.value = '';
-  if (!nextId) return;
-
-  const sample = getCreateControlSamples('rasterxyz').find(
-    (item) => item.id === nextId,
-  );
-  if (!sample) return;
-  dataUrl.value = getCreateControlSampleUrl(sample);
+  const url = resolveCreateControlSampleSelection('rasterxyz', nextId);
+  if (url != null) dataUrl.value = url;
 }
 
 function onUrlInput() {
   urlError.value = '';
-  const trimmed = dataUrl.value.trim();
-  const sample = getCreateControlSamples('rasterxyz').find(
-    (item) => item.id === sampleId.value,
+  sampleId.value = resolveCreateControlSampleIdAfterUrlEdit(
+    'rasterxyz',
+    sampleId.value,
+    dataUrl.value,
   );
-  if (sample && getCreateControlSampleUrl(sample) !== trimmed) {
-    sampleId.value = '';
-  }
 }
 
 async function onLoadUrl() {
@@ -120,17 +114,27 @@ async function onLoadUrl() {
   loadingUrl.value = true;
   urlError.value = '';
   try {
-    const sample = getCreateControlSamples('rasterxyz').find(
-      (item) =>
-        item.id === sampleId.value && getCreateControlSampleUrl(item) === url,
+    const sample = findCreateControlSampleMatchingUrl(
+      'rasterxyz',
+      sampleId.value,
+      url,
     );
     if (sample) {
       const patch = await applyCreateControlSample(sample);
       Object.assign(form.value, patch);
-      form.value.name = sample.label;
+      form.value.name = applyCreateControlLayerName(
+        form.value.name,
+        sample.label,
+        'rasterxyz',
+      );
     } else {
       form.value.url = url;
       form.value.tiles = [url];
+      form.value.name = applyCreateControlLayerName(
+        form.value.name,
+        layerNameFromUrl(url),
+        'rasterxyz',
+      );
     }
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
   } catch (err) {

@@ -1,0 +1,68 @@
+export const MEASUREMENT_CONTROL_LOCALE = {
+  map: {
+    measurement: {
+      action: {
+        clear: 'Clear',
+        close: 'Close',
+        setting: 'Setting',
+        download: 'Download',
+        'add-point': 'Add point',
+        'fly-to': 'Fill bound',
+        add: 'Add',
+        copy: 'Copy',
+        copied: 'Copied',
+      },
+      title: 'Measurement',
+      result: 'Measurement Result',
+      field: {
+        'unit-distance': 'Unit distance',
+        'unit-area': 'Unit area',
+        'label-vertex': 'Vertex labels',
+        'label-edge': 'Edge labels',
+        'label-result': 'Result label',
+      },
+      section: {
+        settings: 'Settings',
+        result: 'Result',
+        geometry: 'Coordinates',
+      },
+      tools: {
+        point: 'Measure Point',
+        distance: 'Measure Distance',
+        area: 'Measure Area',
+        azimuth: 'Measure azimuth',
+        angle: 'Measure Angle',
+        radius: 'Measure Radius',
+      },
+      unit: {
+        meter: 'Meter',
+        kilometer: 'Kilometer',
+        foot: 'Foot',
+        mile: 'Mile',
+        'square-meter': 'Square Meter',
+        hecta: 'Hectare',
+        'square-kilometer': 'Square Kilometer',
+        acre: 'Acre',
+        auto: 'Auto',
+      },
+      setting: {
+        title: 'Setting',
+        field: {
+          data: 'Data',
+        },
+        point: 'Point',
+        distance: 'Distance',
+        area: 'Area',
+        azimuth: 'Azimuth',
+        angle: 'Angle',
+        'angle-reflex': 'Reflex angle',
+        radius: 'Radius',
+        circumference: 'Circumference',
+      },
+      'no-data': {
+        text: 'Status',
+        value: 'Waiting...',
+      },
+    },
+  },
+};

@@ -1,45 +1,71 @@
-import { getChartRandomColor } from '@hungpvq/map-core';
-import type { IDataset, IHighlightView } from '@hungpvq/map-dataset';
+import { bboxFromGeojson, getChartRandomColor } from '@hungpvq/map-core';
+import type { IDataset } from '@hungpvq/map-dataset';
 import {
-  createDatasetPartChangeColorHighlightComponent,
-  createDatasetPartFeatureStateHighlightComponent,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartHighlightComponent,
+  createDatasetPartBoundComponent,
   createDatasetPartListViewUiComponentBuilder,
-  createDatasetPartShadowHighlightComponent,
   createGroupDataset,
-  createMenuItemToggleShow,
   createMultiMapboxLayerComponent,
   createRootDataset,
-  LayerSimpleMapboxBuild,
 } from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import {
+  createHighlightPart,
+  type IHighlightPart,
+} from '@hungpvq/map-dataset/highlight';
+import {
+  createMenuItemShowDetailForItem,
+  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
+} from '@hungpvq/map-dataset/menu';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
 import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
+import { registerFactoryViewSource } from '../data-management/view-source-registry';
 import { createDatasetCustomHighlightComponent } from './helper';
+
+const logger = loggerFactory
+  .createLogger()
+  .setNamespace('demo:highlight', 2);
+
+const DEMO_DETAIL_FIELDS = [
+  { text: 'Id', value: 'id' },
+  { text: 'Name', value: 'name' },
+];
 
 function createHighlightDemoDataset(config: {
   name: string;
   listName: string;
   color?: string;
   features: Feature[];
-  highlight: IHighlightView;
+  highlight: IHighlightPart;
   promoteId?: string;
 }): IDataset {
   const dataset = createRootDataset(config.name);
+  const geojson = {
+    type: 'FeatureCollection' as const,
+    features: config.features,
+  };
   const source = createDatasetPartGeojsonSourceComponent(
     'source',
-    {
-      type: 'FeatureCollection',
-      features: config.features,
-    },
+    geojson,
     config.promoteId ? { promoteId: config.promoteId } : undefined,
   );
+  const bbox = bboxFromGeojson(geojson);
+  if (bbox) {
+    dataset.add(createDatasetPartBoundComponent(config.name, bbox));
+  }
   const group = createGroupDataset('Group layer 1');
+  const listMenus = [createMenuItemToggleShow()];
+  if (bbox) {
+    listMenus.push(createMenuItemToBoundActionForList());
+  }
+  listMenus.push(createMenuItemShowDetailForItem(DEMO_DETAIL_FIELDS));
   const list = createDatasetPartListViewUiComponentBuilder(config.listName)
     .setColor(config.color || getChartRandomColor())
     .configDisabledOpacity()
     .configInitShowLegend()
-    .addMenus([createMenuItemToggleShow()])
+    .addMenus(listMenus)
     .build();
   const layer = createMultiMapboxLayerComponent('layer', [
     new LayerSimpleMapboxBuild()
@@ -65,24 +91,6 @@ function createHighlightDemoDataset(config: {
   dataset.add(source);
   dataset.add(group);
   return dataset;
-}
-
-export function createAllHighlightDemoDatasets(): IDataset[] {
-  return [
-    createDefaultHighlight(),
-    createShadowHighlight(),
-    createChangeColorHighlight(),
-    createCustomHighlight(),
-    createHighlightWithPropertyName(),
-    createHighlightWithExplicitIdField(),
-    createCustomAnimateWithFilterFunction(),
-    createDefaultHighlightWithFilterFunction(),
-    createCustomAnimateWithFieldName(),
-    createShadowWithPropertyFilter(),
-    createHighlightByClickedCategory(),
-    createFeatureStateHighlight(),
-    createFeatureStateHighlightWithGroup(),
-  ];
 }
 
 function createDefaultHighlight() {
@@ -114,7 +122,10 @@ function createDefaultHighlight() {
         { id: '3' },
       ),
     ],
-    highlight: createDatasetPartHighlightComponent(),
+    highlight: createHighlightPart({
+      // click → MapLibre popup; hover → paint only
+      presentation: { clickAction: 'popup' },
+    }),
   });
 }
 
@@ -145,7 +156,7 @@ function createShadowHighlight() {
         { id: '3' },
       ),
     ],
-    highlight: createDatasetPartShadowHighlightComponent('#FFB703'),
+    highlight: createHighlightPart({ mode: 'outline', color: '#FFB703' }),
   });
 }
 
@@ -177,7 +188,7 @@ function createChangeColorHighlight() {
         { id: '3' },
       ),
     ],
-    highlight: createDatasetPartChangeColorHighlightComponent(),
+    highlight: createHighlightPart({ mode: 'changeColor' }),
   });
 }
 
@@ -241,9 +252,7 @@ function createHighlightWithPropertyName() {
         { code: 'A003', name: 'Area 3' },
       ),
     ],
-    highlight: createDatasetPartHighlightComponent(undefined, {
-      filterCreator: 'code',
-    }),
+    highlight: createHighlightPart({ filterCreator: 'code' }),
   });
 }
 
@@ -273,9 +282,7 @@ function createHighlightWithExplicitIdField() {
         { id: 'id-3', name: 'Area' },
       ),
     ],
-    highlight: createDatasetPartHighlightComponent(undefined, {
-      filterCreator: 'id',
-    }),
+    highlight: createHighlightPart({ filterCreator: 'id' }),
   });
 }
 
@@ -339,7 +346,7 @@ function createCustomAnimateWithFilterFunction() {
         },
       ),
     ],
-    highlight: createDatasetCustomHighlightComponent(undefined, {
+    highlight: createDatasetCustomHighlightComponent({
       filterCreator: () => [
         'all',
         ['==', 'type', 'important'],
@@ -410,7 +417,7 @@ function createDefaultHighlightWithFilterFunction() {
         },
       ),
     ],
-    highlight: createDatasetPartHighlightComponent(undefined, {
+    highlight: createHighlightPart({
       filterCreator: () => [
         'all',
         ['==', 'category', 'building'],
@@ -452,7 +459,7 @@ function createCustomAnimateWithFieldName() {
         { productCode: 'PRD003', name: 'Product C' },
       ),
     ],
-    highlight: createDatasetCustomHighlightComponent(undefined, {
+    highlight: createDatasetCustomHighlightComponent({
       filterCreator: 'productCode',
     }),
   });
@@ -484,7 +491,9 @@ function createShadowWithPropertyFilter() {
         { code: 'SH-3', name: 'Shadow area' },
       ),
     ],
-    highlight: createDatasetPartShadowHighlightComponent('#00B4D8', undefined, {
+    highlight: createHighlightPart({
+      mode: 'outline',
+      color: '#00B4D8',
       filterCreator: 'code',
     }),
   });
@@ -518,7 +527,7 @@ function createHighlightByClickedCategory() {
         { id: '4', category: 'B', name: 'Category B area' },
       ),
     ],
-    highlight: createDatasetPartHighlightComponent(undefined, {
+    highlight: createHighlightPart({
       filterCreator: (feature) => {
         const category = feature?.properties?.category;
         if (typeof category !== 'string') return undefined;
@@ -556,7 +565,8 @@ function createFeatureStateHighlight() {
         { id: 'fs-3', name: 'State area' },
       ),
     ],
-    highlight: createDatasetPartFeatureStateHighlightComponent('#E63946'),
+    // Local GeoJSON: pulse paint (promoteId stays on source)
+    highlight: createHighlightPart({ mode: 'pulse', color: '#E63946' }),
   });
 }
 
@@ -589,24 +599,303 @@ function createFeatureStateHighlightWithGroup() {
         { id: 'g-4', group: 'alpha', name: 'Group A area' },
       ),
     ],
-    highlight: createDatasetPartFeatureStateHighlightComponent('#9B5DE5', undefined, {
+    highlight: createHighlightPart({
+      mode: 'pulse',
+      color: '#9B5DE5',
       filterCreator: 'group',
     }),
   });
 }
 
-export const HIGHLIGHT_DEMO_DATASET_FACTORIES = [
-  createDefaultHighlight,
-  createShadowHighlight,
-  createChangeColorHighlight,
-  createCustomHighlight,
-  createHighlightWithPropertyName,
-  createHighlightWithExplicitIdField,
-  createCustomAnimateWithFilterFunction,
-  createDefaultHighlightWithFilterFunction,
-  createCustomAnimateWithFieldName,
-  createShadowWithPropertyFilter,
-  createHighlightByClickedCategory,
-  createFeatureStateHighlight,
-  createFeatureStateHighlightWithGroup,
+/** #15 — wipe every highlight source when a new feature is shown */
+function createReplaceScopeAllHighlight() {
+  return createHighlightDemoDataset({
+    name: 'Replace scope all',
+    listName: 'Selection replaceScope all (multiple)',
+    color: '#F4A261',
+    features: [
+      demoPoint([105.15, 21.22], { id: 'rs-1', name: 'Replace scope point' }),
+      demoLine(
+        [
+          [105.05, 21.15],
+          [105.25, 21.25],
+        ],
+        { id: 'rs-2', name: 'Replace scope line' },
+      ),
+      demoPolygon(
+        [
+          [
+            [105.08, 21.05],
+            [105.28, 21.05],
+            [105.28, 21.18],
+            [105.08, 21.18],
+            [105.08, 21.05],
+          ],
+        ],
+        { id: 'rs-3', name: 'Replace scope area' },
+      ),
+    ],
+    highlight: createHighlightPart({
+      selection: { policy: 'multiple', replaceScope: 'all' },
+    }),
+  });
+}
+
+/** #16 — presentation lifecycle callbacks (no MapLibre popup) */
+function createPresentationLifecycleHighlight() {
+  return createHighlightDemoDataset({
+    name: 'Presentation lifecycle',
+    listName: 'Presentation onShow / onHide',
+    color: '#264653',
+    features: [
+      demoPoint([106.4, 21.22], { id: 'pr-1', name: 'Lifecycle point' }),
+      demoLine(
+        [
+          [106.3, 21.15],
+          [106.5, 21.25],
+        ],
+        { id: 'pr-2', name: 'Lifecycle line' },
+      ),
+      demoPolygon(
+        [
+          [
+            [106.32, 21.05],
+            [106.52, 21.05],
+            [106.52, 21.18],
+            [106.32, 21.18],
+            [106.32, 21.05],
+          ],
+        ],
+        { id: 'pr-3', name: 'Lifecycle area' },
+      ),
+    ],
+    highlight: createHighlightPart({
+      presentation: {
+        popup: { kind: 'none' },
+        clickAction: 'none',
+        onShow: (entry) => {
+          logger.info('highlight onShow', {
+            id: entry.id,
+            source: entry.source,
+          });
+        },
+        onHide: (entry) => {
+          logger.info('highlight onHide', {
+            id: entry.id,
+            source: entry.source,
+          });
+        },
+      },
+    }),
+  });
+}
+
+/** #17 — click-only / hover-only / both pointer policies */
+function createPointerClickOnlyHighlight() {
+  return createHighlightDemoDataset({
+    name: 'Pointer click-only',
+    listName: 'Pointer click → detail',
+    color: '#E76F51',
+    features: [
+      demoPoint([105.35, 21.35], { id: 'pc-1', name: 'Click-only point' }),
+      demoLine(
+        [
+          [105.25, 21.28],
+          [105.45, 21.38],
+        ],
+        { id: 'pc-2', name: 'Click-only line' },
+      ),
+      demoPolygon(
+        [
+          [
+            [105.28, 21.18],
+            [105.48, 21.18],
+            [105.48, 21.3],
+            [105.28, 21.3],
+            [105.28, 21.18],
+          ],
+        ],
+        { id: 'pc-3', name: 'Click-only area' },
+      ),
+    ],
+    highlight: createHighlightPart({
+      color: '#E76F51',
+      pointer: { click: true, hover: false },
+      // Click opens LayerDetail (needs showDetail menu on the list).
+      presentation: { clickAction: 'detail' },
+    }),
+  });
+}
+
+function createPointerHoverOnlyHighlight() {
+  return createHighlightDemoDataset({
+    name: 'Pointer hover-only',
+    listName: 'Pointer hover-only',
+    color: '#2A9D8F',
+    features: [
+      demoPoint([105.65, 21.35], { id: 'ph-1', name: 'Hover-only point' }),
+      demoLine(
+        [
+          [105.55, 21.28],
+          [105.75, 21.38],
+        ],
+        { id: 'ph-2', name: 'Hover-only line' },
+      ),
+      demoPolygon(
+        [
+          [
+            [105.58, 21.18],
+            [105.78, 21.18],
+            [105.78, 21.3],
+            [105.58, 21.3],
+            [105.58, 21.18],
+          ],
+        ],
+        { id: 'ph-3', name: 'Hover-only area' },
+      ),
+    ],
+    highlight: createHighlightPart({
+      color: '#2A9D8F',
+      pointer: { click: false, hover: true },
+      presentation: { clickAction: 'none' },
+    }),
+  });
+}
+
+function createPointerBothHighlight() {
+  return createHighlightDemoDataset({
+    name: 'Pointer both',
+    listName: 'Pointer both (default)',
+    color: '#457B9D',
+    features: [
+      demoPoint([105.95, 21.35], { id: 'pb-1', name: 'Both point' }),
+      demoLine(
+        [
+          [105.85, 21.28],
+          [106.05, 21.38],
+        ],
+        { id: 'pb-2', name: 'Both line' },
+      ),
+      demoPolygon(
+        [
+          [
+            [105.88, 21.18],
+            [106.08, 21.18],
+            [106.08, 21.3],
+            [105.88, 21.3],
+            [105.88, 21.18],
+          ],
+        ],
+        { id: 'pb-3', name: 'Both area' },
+      ),
+    ],
+    highlight: createHighlightPart({
+      color: '#457B9D',
+      // Hover paints only; click paints + MapLibre popup.
+      presentation: { clickAction: 'popup' },
+    }),
+  });
+}
+
+const HIGHLIGHT_DEMO_ENTRIES = [
+  {
+    listName: 'Default highlight (blink + id)',
+    title: 'Highlight demo — default blink',
+    factory: createDefaultHighlight,
+  },
+  {
+    listName: 'Shadow highlight (static glow)',
+    title: 'Highlight demo — shadow',
+    factory: createShadowHighlight,
+  },
+  {
+    listName: 'Change color highlight',
+    title: 'Highlight demo — change color',
+    factory: createChangeColorHighlight,
+  },
+  {
+    listName: 'Custom animate highlight',
+    title: 'Highlight demo — custom animate',
+    factory: createCustomHighlight,
+  },
+  {
+    listName: 'Default + filterCreator "code"',
+    title: 'Highlight demo — filter by code',
+    factory: createHighlightWithPropertyName,
+  },
+  {
+    listName: 'Default + filterCreator "id"',
+    title: 'Highlight demo — filter by id',
+    factory: createHighlightWithExplicitIdField,
+  },
+  {
+    listName: 'Custom + filterCreator function',
+    title: 'Highlight demo — custom + filter fn',
+    factory: createCustomAnimateWithFilterFunction,
+  },
+  {
+    listName: 'Default + filterCreator function',
+    title: 'Highlight demo — default + filter fn',
+    factory: createDefaultHighlightWithFilterFunction,
+  },
+  {
+    listName: 'Custom + filterCreator "productCode"',
+    title: 'Highlight demo — productCode field',
+    factory: createCustomAnimateWithFieldName,
+  },
+  {
+    listName: 'Shadow + filterCreator "code"',
+    title: 'Highlight demo — shadow + code',
+    factory: createShadowWithPropertyFilter,
+  },
+  {
+    listName: 'Default + filterCreator(feature)',
+    title: 'Highlight demo — filter from clicked feature',
+    factory: createHighlightByClickedCategory,
+  },
+  {
+    listName: 'Feature state highlight',
+    title: 'Highlight demo — feature-state',
+    factory: createFeatureStateHighlight,
+  },
+  {
+    listName: 'Feature state + filterCreator "group"',
+    title: 'Highlight demo — feature-state + group',
+    factory: createFeatureStateHighlightWithGroup,
+  },
+  {
+    listName: 'Selection replaceScope all (multiple)',
+    title: 'Highlight demo — replaceScope all',
+    factory: createReplaceScopeAllHighlight,
+  },
+  {
+    listName: 'Presentation onShow / onHide',
+    title: 'Highlight demo — presentation lifecycle',
+    factory: createPresentationLifecycleHighlight,
+  },
+  {
+    listName: 'Pointer click → detail',
+    title: 'Highlight demo — click opens LayerDetail',
+    factory: createPointerClickOnlyHighlight,
+  },
+  {
+    listName: 'Pointer hover-only',
+    title: 'Highlight demo — pointer hover-only',
+    factory: createPointerHoverOnlyHighlight,
+  },
+  {
+    listName: 'Pointer both (default)',
+    title: 'Highlight demo — pointer both',
+    factory: createPointerBothHighlight,
+  },
 ] as const;
+
+export const HIGHLIGHT_DEMO_DATASET_FACTORIES = HIGHLIGHT_DEMO_ENTRIES.map(
+  (entry) => entry.factory,
+);
+
+export { HIGHLIGHT_DEMO_HELP } from './help';
+
+for (const entry of HIGHLIGHT_DEMO_ENTRIES) {
+  registerFactoryViewSource(entry);
+}

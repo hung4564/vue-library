@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/vue-draggable",
-  "version": "1.0.1",
+  "version": "1.3.1",
   "author": {
     "name": "hung.pv"
   },
@@ -16,8 +16,15 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": [
+    "./index.js",
+    "./index.cjs",
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./index.cjs"
     },
@@ -26,10 +33,10 @@
     }
   },
   "peerDependencies": {
+    "vue": "^3.0.0",
     "vue-material-design-icons": "^5.3.0",
-    "@hungpvq/draggable": "1.0.1",
-    "@hungpvq/shared": ">=0.0.1",
-    "vue-draggable-resizable": "^3.0.0",
-    "lodash": "^4.17.21"
+    "@hungpvq/draggable": "^1.3.0",
+    "@hungpvq/shared": "^0.3.0",
+    "vue-draggable-resizable": "^3.0.0"
   }
 }

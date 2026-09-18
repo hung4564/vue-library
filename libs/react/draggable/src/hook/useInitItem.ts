@@ -2,8 +2,8 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDragItem, useDragStore } from '../store';
-import { useStoreReactive } from '../store/useStoreReactive';
-import { InitOption } from '../types';
+import { useContainerReactive, useStoreReactive } from '../store/useStoreReactive';
+import type { InitOption } from '@hungpvq/draggable';
 
 export function useInitItem(
   containerId: string,
@@ -12,8 +12,11 @@ export function useInitItem(
   optionDefault: InitOption = {
     type: 'item-popup',
   },
+  stableId?: string,
 ) {
-  const [itemId] = useState(`draggable-item-${getUUIDv4()}`);
+  const [itemId] = useState(
+    () => stableId || `draggable-item-${getUUIDv4()}`,
+  );
   const [zIndex, setZIndexState] = useState(10);
 
   function setZIndex(value: number) {
@@ -49,7 +52,7 @@ export function useInitItem(
 }
 
 export function useContainerOrder(containerId: string, itemId: string) {
-  useStoreReactive();
+  useContainerReactive(containerId);
   const store = useDragItem(containerId);
   const dragStore = useDragStore();
   const group = itemTypeToGroup(
@@ -100,16 +103,21 @@ export function useContainerOrder(containerId: string, itemId: string) {
 }
 
 export function useManagement(containerId: string) {
+  // Management lists every panel group — keep root subscription
   useStoreReactive();
   const store = useDragStore();
   const container = store.container[containerId];
   const empty = { items: [] as string[], show: [] as string[] };
+  const emptyBottom = {
+    items: [] as string[],
+    show: undefined as string | undefined,
+  };
   return {
     containerId,
     popup: container?.popup || empty,
     modal: container?.modal || empty,
     float: container?.float || empty,
-    bottom: container?.bottom || empty,
+    bottom: container?.bottom || emptyBottom,
     sideBar: container?.sideBar,
     drawer: container?.drawer,
     width: container?.width || 0,

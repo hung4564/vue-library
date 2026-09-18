@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { CoordinatesNumber, DraftCoordinatesNumber } from '@hungpvq/map-core';
+import type { DraftCoordinatesNumber } from '@hungpvq/map-core';
+import { parseCoordinateListText } from '@hungpvq/map-core';
+import {
+  buildMeasurementGeojsonDownload,
+  draftCoordinatesToFeature,
+} from '@hungpvq/map-core/measurement';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCrosshairsGps,
@@ -8,8 +13,8 @@ import {
   mdiPlus,
   mdiUploadOutline,
 } from '@mdi/js';
-import { lineString, point, polygon } from '@turf/helpers';
 import FileSaver from 'file-saver';
+import type { Feature } from 'geojson';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -35,7 +40,7 @@ const path = {
 
 const emit = defineEmits<{
   (_e: 'click:remove', _index: number): void;
-  (_e: 'click:fillbound', _geometry: any): void; // turf geometry
+  (_e: 'click:fillbound', _geometry: Feature): void;
 }>();
 
 const submit = (value: DraftCoordinatesNumber[] = []) => {
@@ -59,38 +64,43 @@ const onDeleteItem = (index: number) => {
   submit(model.value);
 };
 
-const convertGeometry = (coordinates: DraftCoordinatesNumber[]) => {
-  const validCoords = coordinates.filter(
-    (c): c is CoordinatesNumber => c[0] !== null && c[1] !== null,
+/** Paste one pair or multi-line CSV into the list (from this row). */
+function onPasteCoordinate(event: ClipboardEvent, index: number) {
+  const text = event.clipboardData?.getData('text') ?? '';
+  const parsed = parseCoordinateListText(text);
+  if (!parsed.length) return;
+  event.preventDefault();
+
+  const max = props.maxLength ?? 0;
+  let points = parsed.map(
+    ([lng, lat]) => [lng, lat] as DraftCoordinatesNumber,
   );
-  if (!validCoords || !validCoords.length) {
+  if (max > 0) {
+    const room = Math.max(0, max - index);
+    points = points.slice(0, room);
+  }
+  if (!points.length) return;
+
+  const next = [
+    ...model.value.slice(0, index),
+    ...points,
+    ...model.value.slice(index + points.length),
+  ];
+  if (max > 0 && next.length > max) {
+    submit(next.slice(0, max));
     return;
   }
-  if (validCoords.length === 1) {
-    return point(validCoords[0]);
-  }
-  if (validCoords.length === 2) {
-    return lineString(validCoords);
-  }
-  return polygon([[...validCoords, validCoords[0]]]);
-};
+  submit(next);
+}
 
 const onDownload = () => {
-  const geom = convertGeometry(model.value);
-  if (!geom) return;
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [geom],
-  };
-  const blob = new window.Blob([JSON.stringify(geojson)], {
-    type: 'text/plain;charset=utf-8',
-  });
-
-  FileSaver.saveAs(blob, 'geojson.json');
+  const download = buildMeasurementGeojsonDownload(model.value);
+  if (!download) return;
+  FileSaver.saveAs(download.blob, download.fileName);
 };
 
 const onFlyTo = () => {
-  const geom = convertGeometry(model.value);
+  const geom = draftCoordinatesToFeature(model.value);
   if (geom) {
     emit('click:fillbound', geom);
   }
@@ -103,10 +113,10 @@ const isCanAdd = computed(() => {
 <template>
   <div class="map-measurement-geometry">
     <div class="map-measurement-geometry__header">
-      <div class="map-measurement-geometry__title">
+      <div v-if="title" class="map-measurement-geometry__title">
         {{ title }}
       </div>
-      <div>
+      <div class="map-measurement-geometry__actions">
         <button
           type="button"
           @click="onFlyTo"
@@ -158,6 +168,7 @@ const isCanAdd = computed(() => {
             type="number"
             step="any"
             @change="onUpdatePathItem()"
+            @paste="onPasteCoordinate($event, index)"
           />
         </div>
         <div class="">
@@ -167,6 +178,7 @@ const isCanAdd = computed(() => {
             type="number"
             step="any"
             @change="onUpdatePathItem()"
+            @paste="onPasteCoordinate($event, index)"
           />
         </div>
         <div class="">

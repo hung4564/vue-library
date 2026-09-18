@@ -3,13 +3,9 @@
 How a dataset appears in `LayerControl`. Prefer the builder.
 
 ```ts
-import {
-  createDatasetPartListViewUiComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createMenuBuilder,
-  createMenuItemToggleShow,
-  createMultiLegend,
-} from '@hungpvq/vue-map-dataset';
+import { createMultiLegend } from '@hungpvq/map-dataset/menu';
+import { createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
+import { createMenuBuilder, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { mdiDownload } from '@mdi/js';
 
 // Shortcut (defaults: opacity menu, move up/down, add to group)
@@ -55,8 +51,6 @@ const list = createDatasetPartListViewUiComponentBuilder('My Layer')
 | `configDisabledDelete()` | | Hide row delete |
 | `configDisabledMove()` | | Do not add Move up/down |
 | `configDisabledAddToGroup()` | | Do not add Add to group |
-| `configDisabledExport()` | | Do not add Export (GeoJSON / KML / CSV / Shapefile) |
-| `configDisabledAttributeTable()` | | Do not add Attribute table |
 | `configInitShowLegend()` | | Legend expanded |
 | `addMenu` / `addMenus` | see [Menus](./with-helper-menu.md) | Extra actions |
 
@@ -64,7 +58,38 @@ Each `configDisabled*(true)` is the default when called with no arg. Pass `false
 
 List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **Add to group** unless those flags are set. Sub-items (`list-item`) do not.
 
-**Export** and **Attribute table** are added on list and list-item when a GeoJSON source or data-management node is present. See [Export](./export.md) and [Attribute table](./attribute-table.md).
+**Export** and **Attribute table** are **not** auto-added by the list builder. Add them yourself, or use [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) which attaches both. See [Export](./export.md) and [Attribute table](./attribute-table.md).
+
+## Types for custom list / drag UIs
+
+When building a custom layer list (or mirroring LayerControl drag/group), import types from `@hungpvq/map-dataset`:
+
+```ts
+import type {
+  IListViewUI,
+  LayerListItem,
+  LayerListTreeNode,
+  LayerListGroupTree,
+  ListViewGroupRef,
+} from '@hungpvq/map-dataset';
+import {
+  convertListToTree,
+  convertTreeToList,
+  mergeEmptyGroups,
+  isGroupNode,
+} from '@hungpvq/map-dataset';
+
+const rows: LayerListItem[] = /* … */;
+const tree: LayerListTreeNode[] = convertListToTree(rows);
+```
+
+| Type | Use |
+| --- | --- |
+| `IListViewUI` | Dataset list-part protocol (`group` may be `string \| { id, name, children? }`) |
+| `LayerListItem` | Flat drag-list row: `IListViewUI` ∩ tree `Item` with `group?: ListViewGroupRef` |
+| `LayerListTreeNode` / `LayerListGroupTree` | Tree nodes after `convertListToTree` |
+
+`IListViewUI.group` can be a bare string; `convertListToTree` expects object groups with `.id`. Prefer `setGroup({ id, name })` or normalize before converting.
 
 ## Sub-list and group list
 
@@ -72,7 +97,7 @@ List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **
 import {
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartSubListViewUiComponentBuilder,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 
 const group = createDatasetPartGroupSubListViewUiComponentBuilder('Group')
   .setColor('#00bfff')

@@ -1,26 +1,32 @@
-import { installGlobalErrorCapture } from '@hungpvq/map-core';
-import { ConsoleAdapter, LoggerFactory } from '@hungpvq/shared-log';
-import { errorHandler } from '@hungpvq/vue-map-core';
-import { App, Plugin } from 'vue';
+import { installDevtoolsCore } from '@hungpvq/map-core/devtools';
+import { installMapDebug, uninstallMapDebug } from '@hungpvq/map-debug';
+import {
+  installDatasetDebug,
+  installDatasetDebugMenus,
+  uninstallDatasetDebug,
+} from '@hungpvq/map-debug/dataset';
 import { devtoolLogAdapter } from './store';
-import Devtools from './ui/Devtools.vue';
 
-const logger = LoggerFactory.getInstance();
 let uninstallGlobalErrors: (() => void) | undefined;
 
-export const DevtoolsPlugin: Plugin = {
-  install(app: App) {
-    logger.clearAdapters();
-    logger.addAdapter(new ConsoleAdapter());
-    logger.addAdapter(devtoolLogAdapter);
-    // logger.enableEverything();
-    uninstallGlobalErrors?.();
-    uninstallGlobalErrors = installGlobalErrorCapture(errorHandler);
-    app.component('Devtools', Devtools);
-  },
-};
+/**
+ * Bootstrap map devtools (log + map-debug + dataset F12 bridge).
+ * Dataset bridge needs peer `@hungpvq/map-dataset` (optional in package.json;
+ * apps without it should not mount the Dataset tab / import this package's install).
+ */
+export function installDevtools() {
+  uninstallGlobalErrors?.();
+  uninstallDatasetDebug();
+  uninstallGlobalErrors = installDevtoolsCore(devtoolLogAdapter);
+  installMapDebug();
+  installDatasetDebug();
+  // Ensure global layer/item Debug menus (idempotent; also hooked from dataset barrel).
+  installDatasetDebugMenus();
+}
 
 export function uninstallDevtools() {
+  uninstallDatasetDebug();
+  uninstallMapDebug();
   uninstallGlobalErrors?.();
   uninstallGlobalErrors = undefined;
 }

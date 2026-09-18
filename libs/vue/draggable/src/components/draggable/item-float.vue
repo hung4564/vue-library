@@ -4,7 +4,8 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, Ref, StyleValue } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, ref, Ref, StyleValue, watch } from 'vue';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   useComponent,
   useContainerOrder,
@@ -20,7 +21,7 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import MapButton from '../parts/MapButton.vue';
+import DragButton from '../parts/DragButton.vue';
 const { CloseIcon, ToBackIcon, ToFrontIcon, ExpandedIcon, CloseExpandedIcon } =
   useIcon();
 const props = defineProps({
@@ -48,14 +49,19 @@ const containerId = inject<Ref<string>>(
   ref(props.containerId || ''),
 );
 if (!containerId.value) {
-  throw 'Not set container id';
+  throw new Error('Not set container id');
 }
 const { show, open, close } = useShow(props, emit);
-const { zIndex, itemId } = useInitItem(containerId.value, show, {
-  title: props.title,
-  type: 'item-float',
-});
-const { isHighlight, setHighLight } = useHighlight();
+const { zIndex, itemId } = useInitItem(
+  containerId.value,
+  show,
+  {
+    title: props.title,
+    type: 'item-float',
+  },
+  props.id,
+);
+const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
   setHighLight,
   open,
@@ -70,9 +76,46 @@ const { componentCard, componentCardHeader } = useComponent({
   ...props,
   containerId: containerId.value,
 });
+const panelRoot = ref<HTMLElement>();
+const titleId = `float-title-${itemId.value}`;
+let previousFocus: HTMLElement | null = null;
+
 function onClose() {
-  show.value = false;
+  close();
 }
+
+function onKeydown(event: KeyboardEvent) {
+  if (!show.value || event.key !== 'Escape') return;
+  const root = panelRoot.value;
+  if (!root) return;
+  const target = event.target as Node | null;
+  if (target && !root.contains(target) && document.activeElement !== root) {
+    return;
+  }
+  event.preventDefault();
+  onClose();
+}
+
+watch(
+  show,
+  async (visible) => {
+    document.removeEventListener('keydown', onKeydown);
+    if (!visible) {
+      restoreFocus(previousFocus);
+      previousFocus = null;
+      return;
+    }
+    previousFocus = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', onKeydown);
+    await nextTick();
+    if (panelRoot.value) focusFirst(panelRoot.value);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+});
 const c_style = computed(() => {
   let style: StyleValue = {};
   style.zIndex = zIndex.value;
@@ -108,8 +151,12 @@ const isAutoWidth = computed(() => {
 
 <template>
   <div
+    ref="panelRoot"
     class="float-container"
     v-if="show"
+    role="dialog"
+    :aria-labelledby="titleId"
+    tabindex="-1"
     :class="{
       'auto-float-container': isAutoWidth,
     }"
@@ -120,29 +167,50 @@ const isAutoWidth = computed(() => {
         <template v-if="!disabledHeader && headerLocation === 'top'">
           <component :is="componentCardHeader">
             <template #title>
-              <slot name="title">
-                {{ title }}
-              </slot>
+              <span :id="titleId">
+                <slot name="title">
+                  {{ title }}
+                </slot>
+              </span>
+            </template>
+            <template #after-title>
+              <slot name="after-title"></slot>
             </template>
 
             <template #extra-btn>
               <slot name="extra-btn"></slot>
 
-              <map-button @click="onToggleExpand">
+              <drag-button
+                :aria-label="expand ? 'Collapse panel' : 'Expand panel'"
+                :aria-expanded="expand ? 'true' : 'false'"
+                @click="onToggleExpand"
+              >
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
-              </map-button>
+              </drag-button>
               <template v-if="isHasItems && !disabledOrder">
-                <map-button :disabled="isFirst" @click="onToBack()">
+                <drag-button
+                  aria-label="Send to back"
+                  :disabled="isFirst"
+                  @click="onToBack()"
+                >
                   <ToBackIcon :size="16" />
-                </map-button>
-                <map-button :disabled="isLast" @click="onToFront()">
+                </drag-button>
+                <drag-button
+                  aria-label="Bring to front"
+                  :disabled="isLast"
+                  @click="onToFront()"
+                >
                   <ToFrontIcon :size="16" />
-                </map-button>
+                </drag-button>
               </template>
-              <map-button v-if="!disabledClose" @click="onClose">
+              <drag-button
+                v-if="!disabledClose"
+                aria-label="Close panel"
+                @click="onClose"
+              >
                 <CloseIcon :size="16" />
-              </map-button>
+              </drag-button>
             </template>
           </component>
         </template>
@@ -156,28 +224,49 @@ const isAutoWidth = computed(() => {
         <template v-if="!disabledHeader && headerLocation === 'bottom'">
           <component :is="componentCardHeader">
             <template #title>
-              <slot name="title">
-                {{ title }}
-              </slot>
+              <span :id="titleId">
+                <slot name="title">
+                  {{ title }}
+                </slot>
+              </span>
+            </template>
+            <template #after-title>
+              <slot name="after-title"></slot>
             </template>
 
             <template #extra-btn>
               <slot name="extra-btn"></slot>
-              <map-button @click="onToggleExpand">
+              <drag-button
+                :aria-label="expand ? 'Collapse panel' : 'Expand panel'"
+                :aria-expanded="expand ? 'true' : 'false'"
+                @click="onToggleExpand"
+              >
                 <ExpandedIcon v-if="expand" :size="16" />
                 <CloseExpandedIcon v-else :size="16" />
-              </map-button>
+              </drag-button>
               <template v-if="isHasItems && !disabledOrder">
-                <map-button :disabled="isFirst" @click="onToBack()">
+                <drag-button
+                  aria-label="Send to back"
+                  :disabled="isFirst"
+                  @click="onToBack()"
+                >
                   <ToBackIcon :size="16" />
-                </map-button>
-                <map-button :disabled="isLast" @click="onToFront()">
+                </drag-button>
+                <drag-button
+                  aria-label="Bring to front"
+                  :disabled="isLast"
+                  @click="onToFront()"
+                >
                   <ToFrontIcon :size="16" />
-                </map-button>
+                </drag-button>
               </template>
-              <map-button v-if="!disabledClose" @click="onClose">
+              <drag-button
+                v-if="!disabledClose"
+                aria-label="Close panel"
+                @click="onClose"
+              >
                 <CloseIcon :size="16" />
-              </map-button>
+              </drag-button>
             </template>
           </component>
         </template>

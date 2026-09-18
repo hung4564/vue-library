@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { type MapSimple } from '@hungpvq/map-core';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { getMap, type MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
   FullScreenControl,
   GeoLocateControl,
-  getMap,
   GotoControl,
   HomeControl,
   Map,
-  MapCard,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl,
+  ZoomControl
 } from '@hungpvq/vue-map-core';
+import {
+  MapCard
+} from '@hungpvq/vue-map-core/fields';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { ref } from 'vue';
 import {
@@ -27,6 +29,7 @@ import {
   createZoomAction,
 } from './helper-action';
 import { useMapStorytelling } from './useStorytelling';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 const mapRef = ref();
 const mapId = ref('');
 function onMapLoaded(_map: MapSimple) {
@@ -132,6 +135,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 </script>
 <template>
   <Map ref="mapRef" @map-loaded="onMapLoaded">
+    <DemoLanguageControl />
     <MeasurementControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -150,11 +154,12 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
         <button @click="next">Next</button>
         <div style="padding: 8px">
           <div>Current: {{ currentIndex }}</div>
-          <div v-if="isPlaying">⏯ Playing</div>
+          <div v-if="isPlaying">Playing</div>
           <div id="btn-highlight"></div>
         </div>
       </MapCard>
     </div>
+    <DemoHelpPanel />
   </Map>
 </template>
 

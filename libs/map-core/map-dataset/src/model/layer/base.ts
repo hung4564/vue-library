@@ -1,10 +1,11 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   createWithDataHelper,
-  createWithMenuHelper,
   type WithDataHelper,
-} from '../../extra';
-import type { IDataset, IMapboxLayerView } from '../../interfaces';
+} from '../../extra/data';
+import { createWithMenuHelper } from '../../menu';
+import type { IDataset } from '../../interfaces/dataset.base';
+import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
 import type { ComponentType } from '../../types';
 import { createDatasetLeaf } from '../dataset.base.function';
 
@@ -31,22 +32,22 @@ export function createDatasetPartMapboxLayerComponent<T = any>(
     getAllLayerIds(): string[] {
       throw new Error('Method not implemented.');
     },
-    addToMap(map: MapSimple, beforeId?: string): void {
+    addToMap(_map: MapSimple, _beforeId?: string): void {
       throw new Error('Method not implemented.');
     },
-    removeFromMap(map: MapSimple): void {
+    removeFromMap(_map: MapSimple): void {
       throw new Error('Method not implemented.');
     },
-    moveLayer(map: MapSimple, beforeId: string): void {
+    moveLayer(_map: MapSimple, _beforeId: string): void {
       throw new Error('Method not implemented.');
     },
-    toggleShow(map: MapSimple, show?: boolean): void {
+    toggleShow(_map: MapSimple, _show?: boolean): void {
       throw new Error('Method not implemented.');
     },
-    setOpacity(map: MapSimple, opacity: number): void {
+    setOpacity(_map: MapSimple, _opacity: number): void {
       throw new Error('Method not implemented.');
     },
-    updateValue(map: MapSimple, value: any): void {
+    updateValue(_map: MapSimple, _value: any): void {
       throw new Error('Method not implemented.');
     },
     getComponentUpdate(): ComponentType {

@@ -4,6 +4,12 @@ import type {
   WorkerMonitorProgressMessage,
 } from './types';
 
+export type WorkerMonitorAbortMessage = {
+  __workerMonitor: true;
+  kind: 'abort';
+  taskId: string;
+};
+
 export function isWorkerMonitorProgressMessage(
   data: unknown,
 ): data is WorkerMonitorProgressMessage {
@@ -26,6 +32,18 @@ export function isWorkerMonitorLogMessage(
     value.__workerMonitor === true &&
     value.kind === 'log' &&
     typeof value.message === 'string'
+  );
+}
+
+export function isWorkerMonitorAbortMessage(
+  data: unknown,
+): data is WorkerMonitorAbortMessage {
+  if (!data || typeof data !== 'object') return false;
+  const value = data as Partial<WorkerMonitorAbortMessage>;
+  return (
+    value.__workerMonitor === true &&
+    value.kind === 'abort' &&
+    typeof value.taskId === 'string'
   );
 }
 
@@ -56,5 +74,15 @@ export function createWorkerMonitorLogMessage(
     level: options.level ?? 'info',
     taskId: options.taskId,
     at: Date.now(),
+  };
+}
+
+export function createWorkerMonitorAbortMessage(
+  taskId: string,
+): WorkerMonitorAbortMessage {
+  return {
+    __workerMonitor: true,
+    kind: 'abort',
+    taskId,
   };
 }

@@ -10,21 +10,26 @@ Vue 3 UI for map datasets: layer list, groups, identify, legends, and menus. Log
 npm install @hungpvq/vue-map-dataset @hungpvq/vue-map-core @hungpvq/map-dataset @hungpvq/map-core
 ```
 
+Import the **full** style set (shared cores + adapters + draggable — dataset UI is not covered by map-core CSS alone):
+
 ```ts
+import '@hungpvq/map-core/style.css';
+import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 ```
 
-Register once at app bootstrap:
+Bootstrap once at app entry (`installMapApp` = theme + dataset registry):
 
 ```ts
 import { createApp } from 'vue';
 import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
-import { createDatasetRegistryPlugin } from '@hungpvq/vue-map-dataset';
+import { installMapApp } from '@hungpvq/vue-map-dataset';
 
 const app = createApp(App);
 app.use(createStoreRegistryPlugin());
-app.use(createDatasetRegistryPlugin());
+installMapApp(app);
 ```
 
 Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that install the published package need `mapDatasetGisWorker()` from `@hungpvq/map-dataset/vite`. In this Nx workspace use `worker.format: 'es'` + `nxViteTsPaths()` on `worker.plugins` — see [GIS worker](../../map-core/map-dataset/docs/worker.md).
@@ -45,9 +50,11 @@ import { Map } from '@hungpvq/vue-map-core';
 import {
   LayerControl,
   useMapDataset,
+} from '@hungpvq/vue-map-dataset';
+import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/vue-map-dataset';
+} from '@hungpvq/map-dataset';
 import { ref } from 'vue';
 
 const mapId = ref(getUUIDv4());
@@ -64,16 +71,19 @@ function onMapLoaded(map: MapSimple) {
 ## What is included
 
 - `LayerControl` / `LayerInfoControl` — editable or read-only layer list
-- `IdentifyControl` / `IdentifyShowFirstControl` / `LayerHighlight`
+- `IdentifyControl` / `IdentifyShowFirstControl` / `useMapHighlight` (pointer via app `HighlightPointer` or `bindPointer`)
 - `DatasetControl` / `ComponentManagementControl` (dialogs from menus)
 - **Export** GeoJSON as GeoJSON / KML / CSV / Shapefile
 - **Attribute table** for GeoJSON feature properties
-- Dataset builders (GeoJSON, raster, list UI, highlight, …)
+- Adapter hooks and stores for adding datasets and rendering UI
 - Layer menus: extra / bottom / context menu
 - `setHidden` / `setDisabled` with `menuContext` (Pinia, props, …)
 - `setComponentMenuKey` for custom context-menu UI
 - Built-in **Move up/down** and **Add to group**
 - List-node events: `toggleShow`, `changeOpacity`
+
+Import dataset builders, services, protocols, locale bags, and shared types from
+`@hungpvq/map-dataset`.
 
 ## License
 

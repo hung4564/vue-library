@@ -1,4 +1,4 @@
-import type { CrsItem } from '@hungpvq/map-core';
+import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   buildCrsSearchCatalog,
   buildMapCrsCatalog,
@@ -6,11 +6,11 @@ import {
   getCrsInputSuggestions,
   lookupCrsItem,
   normalizeEpsgCode,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMapCrsItems } from '../extra/crs/useMapCrsItems';
-import { useMap } from '../hooks';
+import { useMap } from '../hooks/useMap';
 
 export interface InputCrsProps {
   label?: string;
@@ -46,6 +46,7 @@ export function InputCrs({
 }: InputCrsProps) {
   const { mapId } = useMap();
   const { items: storeItems } = useMapCrsItems(mapId);
+  const listboxId = `input-crs-listbox-${mapId || 'default'}`;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -227,6 +228,7 @@ export function InputCrs({
           autoComplete="off"
           role="combobox"
           aria-autocomplete="list"
+          aria-controls={listboxId}
           aria-expanded={showList}
           placeholder={placeholder}
           value={query}
@@ -239,6 +241,7 @@ export function InputCrs({
       {showList
         ? createPortal(
             <ul
+              id={listboxId}
               ref={listRef}
               className="input-crs__list input-crs__list--portal"
               style={listStyle}

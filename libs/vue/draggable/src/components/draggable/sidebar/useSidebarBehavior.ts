@@ -1,6 +1,6 @@
 import { Ref } from 'vue';
 import { useExpand, useShow } from '../../../hook';
-import { type LocationSideBar } from '../../../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { useSidebarTransition } from './useSidebarTransition';
 
 export function useSidebarBehavior(
@@ -11,7 +11,7 @@ export function useSidebarBehavior(
 ) {
   const { show } = useShow(props, null);
   const { expand, toggle } = useExpand(props, null, true);
-  const { isVertical, titleTo, contentTo } = useSidebarTransition(
+  const { isVertical, titleTo, afterTitleTo, contentTo } = useSidebarTransition(
     props,
     containerId,
   );
@@ -22,6 +22,7 @@ export function useSidebarBehavior(
     toggleExpand: toggle,
     isVertical,
     titleTo,
+    afterTitleTo,
     contentTo,
   };
 }

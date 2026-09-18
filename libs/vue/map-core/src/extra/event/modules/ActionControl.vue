@@ -5,18 +5,18 @@ export default {
 </script>
 <script setup lang="ts">
 import { logHelper } from '@hungpvq/map-core';
-import { groupBy } from 'lodash';
 
 import {
-  IEvent,
+  createEventActionSync,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
-} from '@hungpvq/map-core';
+  type IEvent,
+} from '@hungpvq/map-core/event';
 import { onMounted } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useMapMittStore } from '../../mitt';
-import { useEventMapItems } from '../hook';
+import { useEventMapItems } from '../hook/useEventMapItems';
 import { logger } from '../logger';
 import { useMapEventStore } from '../store';
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -25,7 +25,22 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 const { callMap, mapId } = useMap(props);
 const store = useMapEventStore(mapId.value);
 const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
-const current_listener: Record<string, Record<string, IEvent | undefined>> = {};
+
+function setCurrentEvent(event_map_type: string, event?: IEvent) {
+  logHelper(logger, mapId.value, 'store').debug(
+    'setCurrentEvent',
+    event_map_type,
+    event,
+  );
+  store.current[event_map_type] = event;
+  emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
+}
+
+const { updateEventMap } = createEventActionSync({
+  callMap,
+  setCurrent: setCurrentEvent,
+});
+
 const { items } = useEventMapItems(mapId.value, {
   onChange: (value) => {
     updateEventMap(value);
@@ -34,60 +49,6 @@ const { items } = useEventMapItems(mapId.value, {
 onMounted(() => {
   updateEventMap(items.value);
 });
-function setCurrentEvent(
-  mapId: string,
-  event_map_type: string,
-  event?: IEvent,
-) {
-  logHelper(logger, mapId, 'store').debug(
-    'setCurrentEvent',
-    event_map_type,
-    event,
-  );
-  store.current[event_map_type] = event;
-  emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
-}
-function updateEventMap(events: IEvent[]) {
-  const listeners = groupBy<IEvent>(events, (event) => {
-    return event.event_map_type;
-  });
-  callMap((map) => {
-    const key_add: string[] = [];
-    if (!current_listener[map.id]) {
-      current_listener[map.id] = {};
-    }
-    for (const key in listeners) {
-      key_add.push(key);
-      if (Object.prototype.hasOwnProperty.call(listeners, key)) {
-        const events = listeners[key];
-        const current = current_listener[map.id][key];
-        const new_current = events[0];
-
-        if (current && current.id === new_current.id) {
-          continue;
-        }
-        if (current) {
-          current.removeFromMap(map);
-        }
-        current_listener[map.id][key] = new_current;
-        if (new_current) {
-          new_current.addToMap(map);
-        }
-        setCurrentEvent(mapId.value, key, new_current);
-      }
-    }
-    for (const key in current_listener[map.id]) {
-      if (Object.prototype.hasOwnProperty.call(current_listener[map.id], key)) {
-        const element = current_listener[map.id][key];
-        if (!key_add.includes(key) && element) {
-          element.removeFromMap(map);
-          setCurrentEvent(mapId.value, key, undefined);
-          current_listener[map.id][key] = undefined;
-        }
-      }
-    }
-  });
-}
 </script>
 <template>
   <div></div>

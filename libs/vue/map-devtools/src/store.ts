@@ -1,43 +1,68 @@
-import { errorHandler } from '@hungpvq/vue-map-core';
-import { reactive } from 'vue';
-import { DevtoolLogAdapter, LogEntry } from './log-adapter';
+import { reactive, toRefs } from 'vue';
+import {
+  clearDevtoolErrors as clearDevtoolErrorsCore,
+  clearDevtoolLogs as clearDevtoolLogsCore,
+  createDevtoolLogAdapter,
+  getDevtoolState as getDevtoolStateCore,
+  initDevtoolStoreCore,
+  openMapDevtoolsErrors as openMapDevtoolsErrorsCore,
+  setDevtoolActiveTab as setDevtoolActiveTabCore,
+  setDevtoolOpen as setDevtoolOpenCore,
+  subscribeDevtoolState,
+  toggleDevtoolOpen as toggleDevtoolOpenCore,
+  type BufferingLogEntry as LogEntry,
+  type DevtoolErrorRecord,
+  type DevtoolTab,
+} from '@hungpvq/map-core/devtools';
 
-export interface ErrorRecord {
-  code: string;
-  message: string;
-  context?: Record<string, any>;
-  stack?: string;
-  recoverable: boolean;
-  timestamp: number;
+export type ErrorRecord = DevtoolErrorRecord;
+
+export type { DevtoolTab, LogEntry };
+
+initDevtoolStoreCore();
+
+const devtoolState = reactive(getDevtoolStateCore());
+
+subscribeDevtoolState(() => {
+  const next = getDevtoolStateCore();
+  devtoolState.isOpen = next.isOpen;
+  devtoolState.activeTab = next.activeTab;
+  devtoolState.errors = next.errors;
+  devtoolState.logs = next.logs;
+});
+
+export { devtoolState, subscribeDevtoolState };
+
+export function getDevtoolState() {
+  return devtoolState;
 }
 
-export const devtoolState = reactive<{
-  isOpen: boolean;
-  activeTab: string;
-  errors: ErrorRecord[];
-  logs: LogEntry[];
-}>({
-  isOpen: false,
-  activeTab: 'store',
-  errors: [],
-  logs: [],
-});
+export function toggleDevtoolOpen() {
+  toggleDevtoolOpenCore();
+}
 
-// Initialize error listener globally
-errorHandler.onError((error) => {
-  devtoolState.errors.unshift({
-    code: error.code,
-    message: error.message,
-    context: error.context,
-    stack: error.stack,
-    recoverable: error.recoverable,
-    timestamp: Date.now(),
-  });
+export function setDevtoolOpen(open: boolean) {
+  setDevtoolOpenCore(open);
+}
 
-  // Keep only last 50 errors
-  if (devtoolState.errors.length > 50) {
-    devtoolState.errors = devtoolState.errors.slice(0, 50);
-  }
-});
+export function setDevtoolActiveTab(activeTab: DevtoolTab) {
+  setDevtoolActiveTabCore(activeTab);
+}
 
-export const devtoolLogAdapter = new DevtoolLogAdapter();
+export function openMapDevtoolsErrors() {
+  openMapDevtoolsErrorsCore();
+}
+
+export function clearDevtoolLogs() {
+  clearDevtoolLogsCore();
+}
+
+export function clearDevtoolErrors() {
+  clearDevtoolErrorsCore();
+}
+
+export function useDevtoolState() {
+  return toRefs(devtoolState);
+}
+
+export const devtoolLogAdapter = createDevtoolLogAdapter();

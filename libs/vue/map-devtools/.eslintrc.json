@@ -1,0 +1,54 @@
+{
+  "extends": [
+    "plugin:vue/vue3-essential",
+    "eslint:recommended",
+    "@vue/eslint-config-typescript",
+    "@vue/eslint-config-prettier/skip-formatting",
+    "../../../.eslintrc.base.json"
+  ],
+  "ignorePatterns": [
+    "!**/*",
+    "**/vite.config.*.timestamp*",
+    "**/vitest.config.*.timestamp*"
+  ],
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "ignoredDependencies": [
+              "@hungpvq/map-core",
+              "@hungpvq/map-debug",
+              "@hungpvq/vue-map-core",
+              "@hungpvq/map-dataset",
+              "@hungpvq/shared-log",
+              "@hungpvq/shared-store"
+            ],
+            "ignoredFiles": [
+              "{projectRoot}/eslint.config.{js,cjs,mjs}",
+              "{projectRoot}/vite.config.{js,ts,mjs,mts}"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.vue"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "vue/multi-word-component-names": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ]
+      }
+    }
+  ]
+}

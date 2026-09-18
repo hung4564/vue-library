@@ -12,22 +12,16 @@ import {
 } from '@hungpvq/vue-map-core';
 
 import { MapSimple } from '@hungpvq/map-core';
-import {
-  ComponentType,
-  findSiblingOrNearestLeaf,
-  IDataset,
-  IMapboxLayerView,
-  isMapboxLayerView,
-  STYLE_CONTROL_LOCALE,
-} from '@hungpvq/map-dataset';
+import { ComponentType, findSiblingOrNearestLeaf, IDataset, IMapboxLayerView, isMapboxLayerView } from '@hungpvq/map-dataset';
+import { STYLE_CONTROL_LOCALE } from '@hungpvq/map-dataset/style';
 import { copyByJson } from '@hungpvq/shared';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();
 const { mapId, callMap } = useMap();
-const { trans, setLocaleDefault } = useLang(mapId.value);
+const { trans, registerLocale } = useLang(mapId.value);
 
-setLocaleDefault(STYLE_CONTROL_LOCALE);
+registerLocale('en', STYLE_CONTROL_LOCALE);
 
 const [show, toggleShow] = useShow(false);
 const { panelPosition } = useRegisterMapControl(mapId, {
@@ -90,7 +84,7 @@ const updateValue = () => {
   <ModuleContainer v-bind="$attrs">
     <template #draggable="p">
       <DraggableItemSideBar
-        v-bind="p"
+        :containerId="p.containerId"
         v-model:show="show"
         v-if="layer_map_component.componentKey"
         @close="onClose"

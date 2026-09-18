@@ -1,15 +1,29 @@
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import type {
+  ControlLayout,
+  ResolvedControlLayout,
+  WithMapPropType,
+} from '@hungpvq/map-core';
+import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContext } from '../context/MapContext';
 import { getMap } from '../store/store';
+
+export function useResolvedControlLayout(
+  controlLayout?: ControlLayout,
+): ResolvedControlLayout {
+  const context = useContext(MapContext);
+  return resolveControlLayout(controlLayout, {
+    isMobile: !!context?.isMobile,
+    buttonInMobile: context?.buttonInMobile ?? 'button',
+  });
+}
 
 export const useMap = (
   props: WithMapPropType = {},
   onInit?: MapFCOnUseMap,
   onDestroy?: MapFCOnUseMap,
 ) => {
-  // Optional like Vue inject — BaseMapCard can run outside <Map> with mapId prop
   const context = useContext(MapContext);
   const mapId = useMemo(() => {
     return props.mapId || context?.mapId || '';
@@ -26,16 +40,15 @@ export const useMap = (
   onInitRef.current = onInit;
   onDestroyRef.current = onDestroy;
 
-  // Register order synchronously during render (matches Vue setup)
+  const controlLayout = useResolvedControlLayout(props.controlLayout);
+
   if (
     autoOrderRef.current === undefined &&
     (props.controlOrder === undefined || props.controlOrder === 0) &&
     registerOrder
   ) {
     const key =
-      props.controlLayout === 'toolbar'
-        ? props.controlLayout
-        : `${props.position}`;
+      controlLayout === 'toolbar' ? 'toolbar' : `${props.position}`;
     autoOrderRef.current = registerOrder(key);
   }
 
@@ -46,22 +59,29 @@ export const useMap = (
 
   useEffect(() => {
     if (!mapId) return;
-    getMap(mapId, async (_map) => {
+    let cancelled = false;
+    const unsubscribe = subscribeMapReady(mapId, async (_map) => {
+      if (cancelled) return;
       setMapInstance(_map);
       const init = onInitRef.current;
       if (init instanceof Function) {
         await init(_map);
       }
     });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, [mapId]);
 
   useEffect(() => {
     return () => {
       const destroy = onDestroyRef.current;
       if (destroy instanceof Function && mapId) {
-        getMap(mapId, async (_map) => {
-          await destroy(_map);
-        });
+        const map = getMap(mapId);
+        if (map) {
+          void destroy(map);
+        }
       }
     };
   }, [mapId]);
@@ -77,13 +97,9 @@ export const useMap = (
       btnWidth: props.btnWidth,
       position: props.position,
       controlVisible: props.controlVisible,
-      controlLayout: props.controlLayout,
+      controlLayout,
       controlId: props.controlId,
-      order: order,
-      top: props.top,
-      bottom: props.bottom,
-      left: props.left,
-      right: props.right,
+      controlOrder: order,
     }),
     [
       props.mapId,
@@ -91,12 +107,8 @@ export const useMap = (
       props.btnWidth,
       props.position,
       props.controlVisible,
-      props.controlLayout,
+      controlLayout,
       props.controlId,
-      props.top,
-      props.bottom,
-      props.left,
-      props.right,
       order,
       context?.dragId,
     ],
@@ -108,6 +120,7 @@ export const useMap = (
     mapInstance,
     moduleContainerProps,
     order,
+    controlLayout,
   };
 };
 

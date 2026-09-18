@@ -1,0 +1,41 @@
+.map-error-toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--map-space-xl, 16px);
+  transform: translateX(-50%);
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  gap: var(--map-space-md, 8px);
+  max-width: min(480px, calc(100vw - 24px));
+  padding: var(--map-space-md, 8px) var(--map-space-lg, 12px);
+  border-radius: var(--map-radius-md, 6px);
+  background: var(--map-color-surface, #1e1e1e);
+  color: var(--map-color-on-surface, #f5f5f5);
+  border: 1px solid var(--map-color-border, rgba(255, 255, 255, 0.16));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  font-size: var(--map-font-size-sm, 13px);
+}
+
+.map-error-toast__message {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-error-toast__action,
+.map-error-toast__dismiss {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 2px 6px;
+}
+
+.map-error-toast__action {
+  text-decoration: underline;
+}

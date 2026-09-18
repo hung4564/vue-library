@@ -1,7 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useRef, useState } from 'react';
 import { useDragItem, useDrawerItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitDrawer(
   containerId: string,
@@ -11,8 +11,11 @@ export function useInitDrawer(
     type: 'item-drawer';
     location: LocationSideBar;
   },
+  stableId?: string,
 ) {
-  const [itemId] = useState(`draggable-item-${getUUIDv4()}`);
+  const [itemId] = useState(
+    () => stableId || `draggable-item-${getUUIDv4()}`,
+  );
   const [, setZIndexState] = useState(0);
 
   function setZIndex(value: number) {

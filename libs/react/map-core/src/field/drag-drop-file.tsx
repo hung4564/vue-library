@@ -4,9 +4,16 @@ export interface DragDropFileProps {
   accept?: string;
   multiple?: boolean;
   onChange?: (file: File | File[]) => void;
+  /** Optional async resolver (e.g. folder walk + GIS filter). */
+  resolveDropFiles?: (dataTransfer: DataTransfer) => Promise<File[]>;
 }
 
-export function DragDropFile({ accept, multiple = false, onChange }: DragDropFileProps) {
+export function DragDropFile({
+  accept,
+  multiple = false,
+  onChange,
+  resolveDropFiles,
+}: DragDropFileProps) {
   const [isOverDropZone, setIsOverDropZone] = useState(false);
   const counterRef = useRef(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -67,7 +74,13 @@ export function DragDropFile({ accept, multiple = false, onChange }: DragDropFil
         event.preventDefault();
         counterRef.current = 0;
         setIsOverDropZone(false);
-        emitFiles(Array.from(event.dataTransfer.files));
+        void (async () => {
+          if (resolveDropFiles && event.dataTransfer) {
+            emitFiles(await resolveDropFiles(event.dataTransfer));
+            return;
+          }
+          emitFiles(Array.from(event.dataTransfer.files));
+        })();
       }}
     >
       <label className="ddf__label">

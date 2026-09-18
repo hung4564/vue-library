@@ -1,18 +1,20 @@
 <script setup lang="ts">
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
 import { loadIdentifyDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 loggerFactory.enable('map:identify');
 const mapId = ref(getUUIDv4());
@@ -23,6 +25,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 <template>
   <Map @map-loaded="onMapLoaded" :mapId="mapId">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <LayerControl position="top-left" show>
@@ -31,9 +34,10 @@ function onMapLoaded(map: MapSimple) {
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <LayerHighlight enableClick />
+    <HighlightPointer enableClick />
     <IdentifyShowFirstControl />
     <ComponentManagementControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 

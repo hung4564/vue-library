@@ -1,3 +1,4 @@
+import { getMapUUIDv4 } from '../utils/uuid';
 import type {
   WorkerEngine,
   WorkerHandle,
@@ -77,10 +78,7 @@ function notify() {
 }
 
 function createTaskId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `worker-task-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return getMapUUIDv4();
 }
 
 function findPending(entry: WorkerEntry, taskId: string) {
@@ -279,6 +277,8 @@ export const WorkerMonitor: {
   subscribe(listener: () => void): () => void;
   /** Wired by `./client` when the worker barrel is loaded. */
   connect: ConnectFn;
+  /** Abort a pending task (wired by `./client`). */
+  abortTask: (workerId: string, taskId: string, reason?: string) => boolean;
 } = {
   register(id: string, options: WorkerRegisterOptions = {}): WorkerHandle {
     const existing = workers.get(id);
@@ -353,4 +353,5 @@ export const WorkerMonitor: {
 
   // Assigned in `./client` to avoid a circular import at module init.
   connect: null as unknown as ConnectFn,
+  abortTask: () => false,
 };

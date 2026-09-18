@@ -4,7 +4,9 @@ import {
   ContainerStoreAction,
   ContainerStoreOtherAction,
   ItemGroupKey,
+  ItemLayoutState,
   LocationSideBar,
+  PanelSnapshot,
   createEmptyContainer,
   createEmptyDrawer,
   itemTypeToGroup,
@@ -14,8 +16,39 @@ export type DragStoreNotify = (path?: string | string[]) => void;
 /** Framework may wrap the object (e.g. Vue `reactive`); return type is intentionally loose. */
 export type DragStoreMakeReactive = <T extends object>(value: T) => T | object;
 
-let notify: DragStoreNotify = () => undefined;
-let makeReactive: DragStoreMakeReactive = (value) => value;
+type DragStoreRuntimeConfig = {
+  notify: DragStoreNotify;
+  makeReactive: DragStoreMakeReactive;
+};
+
+const DRAG_STORE_CONFIG_KEY = '__hungpvq_drag_store_config__';
+
+/**
+ * Keep runtime config on `globalThis` so Vite optimizeDeps / duplicate
+ * `@hungpvq/draggable` module instances still share one configureDragStore.
+ */
+function getDragStoreConfig(): DragStoreRuntimeConfig {
+  const g = globalThis as typeof globalThis & {
+    [DRAG_STORE_CONFIG_KEY]?: DragStoreRuntimeConfig;
+  };
+  let config = g[DRAG_STORE_CONFIG_KEY];
+  if (!config) {
+    config = {
+      notify: () => undefined,
+      makeReactive: (value) => value,
+    };
+    g[DRAG_STORE_CONFIG_KEY] = config;
+  }
+  return config;
+}
+
+function notify(path?: string | string[]) {
+  getDragStoreConfig().notify(path);
+}
+
+function makeReactive<T extends object>(value: T): T | object {
+  return getDragStoreConfig().makeReactive(value);
+}
 
 /**
  * Configure framework-specific store behavior before first use.
@@ -26,8 +59,9 @@ export function configureDragStore(options: {
   notify?: DragStoreNotify;
   makeReactive?: DragStoreMakeReactive;
 }) {
-  if (options.notify) notify = options.notify;
-  if (options.makeReactive) makeReactive = options.makeReactive;
+  const cfg = getDragStoreConfig();
+  if (options.notify) cfg.notify = options.notify;
+  if (options.makeReactive) cfg.makeReactive = options.makeReactive;
 }
 
 export const useDragStore = defineStore('drag:core', () => {
@@ -42,7 +76,7 @@ export const useDragStore = defineStore('drag:core', () => {
   };
 });
 
-function getStoreContainer(containerId: string, id: string) {
+function getStoreContainer(id: string) {
   const store = useDragStore();
   const container = store.container[id];
   if (!container) {
@@ -66,7 +100,7 @@ export const useSidebarItem = (containerId: string) => {
   const container = store.container[containerId];
 
   function setShowSideBarId(itemId: string, show: boolean) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     const action = p_store.actions[itemId];
     if (!action || !('location' in action)) {
       return;
@@ -86,12 +120,13 @@ export const useSidebarItem = (containerId: string) => {
   }
 
   return {
-    getStoreContainer: (id: string) => getStoreContainer(containerId, id),
+    getStoreContainer: (id: string) => getStoreContainer(id),
     registerSideBar(id: string, location: LocationSideBar) {
-      getStoreContainer(containerId, containerId).sideBar[location].items.push(
-        id,
-      );
-      notify(['drag:core', 'container', containerId]);
+      const layer = getStoreContainer(containerId).sideBar[location];
+      if (!layer.items.includes(id)) {
+        layer.items.push(id);
+        notify(['drag:core', 'container', containerId]);
+      }
     },
     registerSideBarShow(id: string, show: boolean) {
       setShowSideBarId(id, show);
@@ -113,7 +148,7 @@ export const useSidebarItem = (containerId: string) => {
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
-      getStoreContainer(containerId, containerId).actions[id] = action;
+      getStoreContainer(containerId).actions[id] = action;
       notify(['drag:core', 'container', containerId]);
     },
     moveSideBarLocation(id: string, next: LocationSideBar) {
@@ -139,9 +174,63 @@ export const useSidebarItem = (containerId: string) => {
   };
 };
 
+/** Exclusive bottom sheet (one active id). */
+export const useBottomItem = (containerId: string) => {
+  function setShowBottomId(itemId: string, show: boolean) {
+    const p_store = getStoreContainer(containerId);
+    const oldId = p_store.bottom.show;
+    if (oldId && !show) {
+      if (oldId !== itemId) return;
+      p_store.bottom.show = undefined;
+      p_store.actions[oldId]?.setShow(false);
+    } else if (show) {
+      if (oldId && itemId !== oldId) {
+        p_store.actions[oldId]?.setShow(false);
+      }
+      p_store.bottom.show = itemId;
+      p_store.actions[itemId]?.setShow(true);
+    }
+    notify(['drag:core', 'container', containerId]);
+  }
+
+  return {
+    getStoreContainer: (id: string) => getStoreContainer(id),
+    registerBottom(id: string) {
+      const layer = getStoreContainer(containerId).bottom;
+      if (!layer.items.includes(id)) {
+        layer.items.push(id);
+        notify(['drag:core', 'container', containerId]);
+      }
+    },
+    registerBottomShow(id: string, show: boolean) {
+      setShowBottomId(id, show);
+    },
+    unRegisterBottom(id: string) {
+      const container = useDragStore().container[containerId];
+      if (!container) return;
+      container.bottom.items = container.bottom.items.filter((x) => x !== id);
+      if (container.bottom.show === id) {
+        container.bottom.show = undefined;
+      }
+      delete container.actions[id];
+      notify(['drag:core', 'container', containerId]);
+    },
+    registerAction(id: string, action: ContainerStoreAction) {
+      getStoreContainer(containerId).actions[id] = action;
+      notify(['drag:core', 'container', containerId]);
+    },
+    getItems() {
+      return useDragStore().container[containerId]?.bottom?.items || [];
+    },
+    getShow() {
+      return useDragStore().container[containerId]?.bottom?.show;
+    },
+  };
+};
+
 export const useDrawerItem = (containerId: string) => {
   function ensureDrawer(location: LocationSideBar) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     if (!p_store.drawer) {
       p_store.drawer = createEmptyDrawer();
     }
@@ -212,7 +301,7 @@ export const useDrawerItem = (containerId: string) => {
       notify(['drag:core', 'container', containerId]);
     },
     getDrawer() {
-      return getStoreContainer(containerId, containerId).drawer;
+      return getStoreContainer(containerId).drawer;
     },
     getDrawerForLocation(location: LocationSideBar) {
       return ensureDrawer(location).layer;
@@ -287,12 +376,12 @@ export const useDragItem = (containerId: string) => {
   }
 
   function getGroup(group: ItemGroupKey) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     return p_store[group];
   }
 
   function updateGroupIndex(group: ItemGroupKey) {
-    const p_store = getStoreContainer(containerId, containerId);
+    const p_store = getStoreContainer(containerId);
     p_store[group].show.forEach((itemId, idx) => {
       const action = p_store.actions[itemId];
       if (action) action.setZIndex(idx + 10);
@@ -301,21 +390,27 @@ export const useDragItem = (containerId: string) => {
   }
 
   return {
-    getStoreContainer: (id: string) => getStoreContainer(containerId, id),
+    getStoreContainer: (id: string) => getStoreContainer(id),
     registerItem(id: string, type?: string) {
+      if (type === 'item-bottom') {
+        throw new Error('Use useBottomItem for item-bottom');
+      }
       const group = itemTypeToGroup(type);
-      getGroup(group).items.push(id);
-      notify(['drag:core', 'container', containerId]);
+      const layer = getGroup(group);
+      if (!layer.items.includes(id)) {
+        layer.items.push(id);
+        notify(['drag:core', 'container', containerId]);
+      }
     },
     registerAction(id: string, action: ContainerStoreAction) {
-      getStoreContainer(containerId, containerId).actions[id] = action;
+      getStoreContainer(containerId).actions[id] = action;
       notify(['drag:core', 'container', containerId]);
     },
     registerOtherAction(
       id: string,
       action: Partial<ContainerStoreOtherAction>,
     ) {
-      const p_store = getStoreContainer(containerId, containerId);
+      const p_store = getStoreContainer(containerId);
       p_store.actions[id] = { ...p_store.actions[id], ...action };
       notify(['drag:core', 'container', containerId]);
     },
@@ -329,7 +424,7 @@ export const useDragItem = (containerId: string) => {
         (p_store.actions[id]
           ? itemTypeToGroup(p_store.actions[id].type)
           : undefined) ||
-        (['popup', 'modal', 'float', 'bottom'] as ItemGroupKey[]).find((g) =>
+        (['popup', 'modal', 'float'] as ItemGroupKey[]).find((g) =>
           p_store[g].items.includes(id),
         ) ||
         'popup';
@@ -343,7 +438,7 @@ export const useDragItem = (containerId: string) => {
       const layer = getGroup(group);
       const index = layer.show.indexOf(id);
       if (show) {
-        // Most recently shown item goes to the end → highest z-index (open order).
+        // Most recently shown item goes to the end â†’ highest z-index (open order).
         if (index !== -1) {
           layer.show.splice(index, 1);
         }
@@ -387,7 +482,7 @@ export const useDragItem = (containerId: string) => {
       return [
         ...c.popup.show,
         ...c.float.show,
-        ...c.bottom.show,
+        ...(c.bottom.show ? [c.bottom.show] : []),
         ...c.modal.show,
       ];
     },
@@ -473,7 +568,7 @@ export const useDragContainer = (containerId: string) => {
       return [
         ...container.popup.show,
         ...container.float.show,
-        ...container.bottom.show,
+        ...(container.bottom.show ? [container.bottom.show] : []),
         ...container.modal.show,
       ];
     },
@@ -498,5 +593,184 @@ export const useDragContainer = (containerId: string) => {
       container.isMobile = props.isMobile;
       notify(['drag:core', 'container', containerId]);
     },
+  };
+};
+
+/** Imperative open/close/z-order by stable item id. */
+export const useDragCommands = (containerId: string) => {
+  const items = useDragItem(containerId);
+  const containerApi = useDragContainer(containerId);
+
+  function getAction(id: string) {
+    return containerApi.getItemAction(id);
+  }
+
+  function open(id: string) {
+    const action = getAction(id);
+    if (!action) return;
+    if (action.open) action.open();
+    else action.setShow(true);
+  }
+
+  function close(id: string) {
+    const action = getAction(id);
+    if (!action) return;
+    if (action.close) action.close();
+    else action.setShow(false);
+  }
+
+  function setFront(id: string) {
+    items.setToFront(id);
+  }
+
+  function setBack(id: string) {
+    items.setToBack(id);
+  }
+
+  return { open, close, setFront, setBack, getAction };
+};
+
+function ensureLayouts(container: ContainerStore) {
+  if (!container.layouts) {
+    container.layouts = {};
+  }
+  return container.layouts;
+}
+
+function isItemShowing(
+  container: ContainerStore,
+  id: string,
+  type?: string,
+): boolean {
+  if (type === 'item-sidebar' && 'location' in (container.actions[id] || {})) {
+    const loc = (container.actions[id] as { location?: LocationSideBar })
+      .location;
+    return !!loc && container.sideBar[loc]?.show === id;
+  }
+  if (type === 'item-drawer') {
+    const edges: LocationSideBar[] = ['left', 'right', 'top', 'bottom'];
+    return edges.some((edge) => container.drawer?.[edge]?.show === id);
+  }
+  if (type === 'item-bottom') {
+    return container.bottom?.show === id;
+  }
+  const group = itemTypeToGroup(type);
+  return container[group]?.show?.includes(id) ?? false;
+}
+
+/** Read / write serializable panel layout for a container. */
+export const useDragLayout = (containerId: string) => {
+  const commands = useDragCommands(containerId);
+  const drawerApi = useDrawerItem(containerId);
+  const sidebarApi = useSidebarItem(containerId);
+  const bottomApi = useBottomItem(containerId);
+
+  function setItemLayout(id: string, partial: Partial<ItemLayoutState>) {
+    const container = getStoreContainer(containerId);
+    const layouts = ensureLayouts(container);
+    layouts[id] = { ...layouts[id], ...partial };
+    notify(['drag:core', 'container', containerId]);
+  }
+
+  function getItemLayout(id: string): ItemLayoutState | undefined {
+    const store = useDragStore();
+    const container = store.container[containerId];
+    if (!container) return undefined;
+    return ensureLayouts(container)[id];
+  }
+
+  function getLayout(): PanelSnapshot[] {
+    const store = useDragStore();
+    const container = store.container[containerId];
+    if (!container) return [];
+    const layouts = ensureLayouts(container);
+    const ids = Object.keys(container.actions);
+    return ids.map((id) => {
+      const action = container.actions[id];
+      const type = action?.type || 'item-popup';
+      const layout = layouts[id] || {};
+      const location =
+        layout.location ||
+        ('location' in (action || {})
+          ? (action as { location?: LocationSideBar }).location
+          : undefined);
+      let size = layout.size;
+      if (type === 'item-drawer' && location && container.drawer?.[location]) {
+        if (size == null && container.drawer[location].show === id) {
+          size = container.drawer[location].size;
+        }
+      }
+      return {
+        id,
+        type,
+        show: isItemShowing(container, id, type),
+        title: action?.title,
+        bounds: layout.bounds,
+        size,
+        location,
+      };
+    });
+  }
+
+  function applyLayout(snapshots: PanelSnapshot[]) {
+    const container = getStoreContainer(containerId);
+    ensureLayouts(container);
+
+    for (const snap of snapshots) {
+      const partial: Partial<ItemLayoutState> = {};
+      if (snap.bounds) partial.bounds = snap.bounds;
+      if (snap.size != null) partial.size = snap.size;
+      if (snap.location) partial.location = snap.location;
+      if (Object.keys(partial).length) {
+        setItemLayout(snap.id, partial);
+      }
+
+      const action = container.actions[snap.id];
+      if (!action) continue;
+
+      if (snap.type === 'item-drawer' && snap.location) {
+        if (
+          'location' in action &&
+          action.location &&
+          action.location !== snap.location
+        ) {
+          drawerApi.moveDrawerLocation(snap.id, snap.location);
+        }
+        drawerApi.registerDrawerShow(
+          snap.id,
+          snap.location,
+          snap.show,
+          snap.size,
+        );
+        continue;
+      }
+
+      if (snap.type === 'item-sidebar' && snap.location) {
+        if (
+          'location' in action &&
+          action.location &&
+          action.location !== snap.location
+        ) {
+          sidebarApi.moveSideBarLocation(snap.id, snap.location);
+        }
+        sidebarApi.registerSideBarShow(snap.id, snap.show);
+        continue;
+      }
+
+      if (snap.type === 'item-bottom') {
+        bottomApi.registerBottomShow(snap.id, snap.show);
+        continue;
+      }
+
+      if (snap.show) commands.open(snap.id);
+      else commands.close(snap.id);
+    }
+  }
+
+  return {
+    setItemLayout,
+    getItemLayout,
+    getLayout,
+    applyLayout,
   };
 };

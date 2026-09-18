@@ -5,25 +5,27 @@ import {
   getLegendName,
   isSupportGenLayerLegend,
   type LegendLayerSpecification,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/legend';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { InputCheckbox } from '../../../field';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useEventListener } from '../../event';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useEventListener } from '../../event/hook/useEvent';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useLayerLegend } from '../lib/useLayerLegend';
 
 export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLegendControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLegendControl',
     panelKind: 'popup',
@@ -46,8 +48,8 @@ export function LegendControl(props: WithMapPropType) {
   onlyRenderRef.current = onlyRender;
 
   useEffect(() => {
-    setLocaleDefault(LEGEND_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', LEGEND_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const updateLegend = useCallback(
     (map: MapSimple) => {
@@ -106,14 +108,21 @@ export function LegendControl(props: WithMapPropType) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLegendControl',
-    getState: () => ({
-      visible: true,
-      title: trans('map.legend-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiMapLegend },
-    }),
+    getState: () =>
+      mdiButtonState(mdiMapLegend, {
+        visible: true,
+        active: show,
+        title: trans('map.legend-control.title'),
+        order,
+      }),
     onClick: () => setShow(!show),
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   return (
     <ModuleContainer

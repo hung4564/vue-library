@@ -4,65 +4,64 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ContextMenu } from '@hungpvq/vue-draggable';
+import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
-  Feature,
-  FeatureCollection,
-  fitBounds,
-  type WithMapPropType,
-} from '@hungpvq/map-core';
-import { DRAW_CONTROL_LOCALE } from '../../locale';
+  DrawingTypeName,
+  createMapDrawControl,
+  type MapDrawConfig,
+  type MapDrawOption,
+  type MapDrawOptions,
+} from '@hungpvq/map-draw';
+import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
   useLang,
   useMap,
+  useToolbarControl,
 } from '@hungpvq/vue-map-core';
-import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw';
-import { computed, nextTick, ref } from 'vue';
-import { DrawingTypeName } from '..';
-import { isDraftOption } from '../../store';
-import { MapDrawConfig, MapDrawOption } from '../../types';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import type { Feature, FeatureCollection } from 'geojson';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
-import StaticMode from './models/static-mode';
-import { getDrawStyles } from './theme';
+import {
+  mdiClose,
+  mdiContentSave,
+  mdiContentSaveCheck,
+  mdiDeleteOutline,
+  mdiPencil,
+  mdiPlus,
+  mdiUndoVariant,
+  mdiViewListOutline,
+} from '@mdi/js';
 
 type DrawControlMapboxDrawControls = Omit<
-  MapboxDrawOptions,
+  MapDrawOptions,
   'displayControlsDefault'
 >;
-const props = withDefaults(
-  defineProps<
-    WithMapPropType & {
-      drawOptions?: MapDrawOption;
-      drawControlOptions?: DrawControlMapboxDrawControls;
-    }
-  >(),
-  {
-    ...defaultMapProps,
-  },
-);
-const drawOptions = ref(props.drawOptions);
-const control = new MapboxDraw({
-  displayControlsDefault: false,
-  boxSelect: false,
-  styles: getDrawStyles(
-    props.drawOptions?.primaryColor,
-    props.drawOptions?.activeColor,
-  ),
-  ...props.drawControlOptions,
-  modes: {
-    ...MapboxDraw.modes,
-    static: StaticMode,
-    ...props.drawControlOptions?.modes,
-  },
+
+interface DrawControlProps extends WithMapPropType {
+  drawOptions?: MapDrawOption;
+  drawControlOptions?: DrawControlMapboxDrawControls;
+}
+
+const props = withDefaults(defineProps<DrawControlProps>(), {
+  ...defaultMapProps,
 });
-const { mapId, moduleContainerProps, callMap } = useMap(props);
-const { setLocaleDefault } = useLang(mapId.value);
-setLocaleDefault(DRAW_CONTROL_LOCALE);
+const drawOptions = ref(props.drawOptions);
+const drawHandle = createMapDrawControl({
+  primaryColor: props.drawOptions?.primaryColor,
+  activeColor: props.drawOptions?.activeColor,
+  drawControlOptions: props.drawControlOptions,
+});
+const control = drawHandle.control;
+const { mapId, moduleContainerProps, callMap, order } = useMap(props);
+const { registerLocale } = useLang(mapId.value);
+registerLocale('en', DRAW_CONTROL_LOCALE);
 const isShow = ref(false);
 function onStart(config: MapDrawOption) {
   isShow.value = true;
@@ -72,7 +71,7 @@ function onStart(config: MapDrawOption) {
     map.on('draw.create', onDrawCreated);
     map.on('draw.update', onDrawUpdated);
     map.on('draw.delete', onDrawDeleted);
-    if (!map.hasControl(control as any)) map.addControl(control as any);
+    drawHandle.addToMap(map);
   });
   onSelectMethod('select');
 }
@@ -84,9 +83,13 @@ function close() {
     map.off('draw.create', onDrawCreated);
     map.off('draw.update', onDrawUpdated);
     map.off('draw.delete', onDrawDeleted);
-    if (map.hasControl(control as any)) map.removeControl(control as any);
+    drawHandle.removeFromMap(map);
   });
 }
+
+onBeforeUnmount(() => {
+  close();
+});
 
 const {
   draftItems,
@@ -107,53 +110,47 @@ const {
   onDrawCreated,
   onDrawUpdated,
   onDrawDeleted,
-  addEventClick,
   removeEventClick,
   current_feature,
   isDraw,
   method,
+  selectMethod,
+  startCreate,
+  prepareSave,
+  finishCancel,
+  redrawNonDraft,
 } = useDrawEvents(mapId.value, control, drawOptions, {
-  onSelectMethod,
   redrawSource,
-  getContext,
 });
 
 function onSelectMethod(value: 'select' | 'delete') {
-  removeEventClick();
-  method.value = value;
-  switch (value) {
-    case 'select':
-    case 'delete':
-      addEventClick();
-      control?.changeMode('static');
-      break;
-    default:
-      break;
-  }
+  selectMethod(value);
 }
 function onDraw(type: string) {
   current_feature.value = undefined;
-  control.changeMode(type);
-  isDraw.value = true;
+  startCreate(type);
 }
 const drawSupport = ref<MapDrawConfig['drawSupports']>([]);
 
 async function onSave() {
-  onSelectMethod('select');
-  isDraw.value = false;
-  current_feature.value = undefined;
+  prepareSave();
   await save(control.getAll() as FeatureCollection, getContext());
-  await clearDraw();
-  await redrawSource();
+  if (drawOptions.value?.cleanAfterDone) {
+    control.deleteAll();
+  }
+  getCountDraftItem();
+  await redrawNonDraft();
 }
 
-function onCancel() {
-  isDraw.value = false;
+async function onCancel() {
   const action = drawOptions.value;
-  action?.cancel && action?.cancel(current_feature.value);
-  clearDraw();
-  redrawSource();
-  current_feature.value = undefined;
+  await finishCancel((feature) => {
+    action?.cancel?.(feature);
+    if (action?.cleanAfterDone) {
+      control.deleteAll();
+    }
+  });
+  getCountDraftItem();
 }
 async function redrawSource() {
   const action = drawOptions.value;
@@ -164,15 +161,6 @@ async function redrawSource() {
   if (!isDraftOption(drawOptions.value)) {
     return action.redraw && action.redraw(mapId.value);
   }
-}
-function clearDraw() {
-  current_feature.value = undefined;
-  if (drawOptions.value?.cleanAfterDone) {
-    control?.deleteAll();
-  }
-  nextTick(() => {
-    onSelectMethod('select');
-  });
 }
 
 function getContext() {
@@ -189,7 +177,10 @@ const contextMenuRef = ref<
 const drawSupportItem = computed(() => {
   return drawSupport.value.map((x) => {
     if (typeof x === 'string') {
-      return { id: x, name: DrawingTypeName[x] || x };
+      return {
+        id: x,
+        name: DrawingTypeName[x as keyof typeof DrawingTypeName] || x,
+      };
     }
     return x;
   });
@@ -211,8 +202,115 @@ function onFlyTo(value: Feature) {
     fitBounds(map, value);
   });
 }
+
+const { control: toolbarControl } = useToolbarControl(mapId.value, props, {
+  kind: 'module',
+  moduleId: 'mapDrawControl',
+  order: order.value,
+  orientation: 'row',
+  buttons: [
+    {
+      id: 'cancel',
+      getState: () =>
+        mdiButtonState(mdiClose, {
+          visible: isShow.value && isDraw.value,
+          title: 'Cancel',
+        }),
+      onClick: () => onCancel(),
+    },
+    {
+      id: 'save',
+      getState: () =>
+        mdiButtonState(mdiContentSave, {
+          visible: isShow.value && isDraw.value,
+          title: 'Save',
+        }),
+      onClick: () => {
+        void onSave();
+      },
+    },
+    {
+      id: 'close',
+      getState: () =>
+        mdiButtonState(mdiClose, {
+          visible: isShow.value && !isDraw.value,
+          title: 'Close',
+        }),
+      onClick: () => close(),
+    },
+    {
+      id: 'add',
+      getState: () =>
+        mdiButtonState(mdiPlus, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'create',
+          title: 'Draw',
+        }),
+      onClick: (e) => onStartDraw(e),
+    },
+    {
+      id: 'select',
+      getState: () =>
+        mdiButtonState(mdiPencil, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'select',
+          title: 'Select',
+        }),
+      onClick: () => onSelectMethod('select'),
+    },
+    {
+      id: 'delete',
+      getState: () =>
+        mdiButtonState(mdiDeleteOutline, {
+          visible: isShow.value && !isDraw.value,
+          active: method.value === 'delete',
+          title: 'Delete',
+        }),
+      onClick: () => onSelectMethod('delete'),
+    },
+    {
+      id: 'commit',
+      getState: () =>
+        mdiButtonState(mdiContentSaveCheck, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: isDraw.value || draftCounts.value === 0,
+          title: 'Commit drafts',
+        }),
+      onClick: () => onCommit(),
+    },
+    {
+      id: 'discard',
+      getState: () =>
+        mdiButtonState(mdiUndoVariant, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: isDraw.value || draftCounts.value === 0,
+          title: 'Discard drafts',
+        }),
+      onClick: () => onDiscard(),
+    },
+    {
+      id: 'list',
+      getState: () =>
+        mdiButtonState(mdiViewListOutline, {
+          visible: !!(
+            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+          ),
+          disabled: draftCounts.value === 0,
+          title: 'Draft list',
+        }),
+      onClick: () => onShowListDraftItem(),
+    },
+  ],
+});
+watch([isShow, isDraw, method, draftCounts, drawOptions], () =>
+  toolbarControl.sync(),
+);
 </script>
-<template setup>
+<template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <DrawToolbar
@@ -243,7 +341,7 @@ function onFlyTo(value: Feature) {
           "
           class="context-menu__item"
         >
-          <span v-html="option.name"></span>
+          <span>{{ option.name }}</span>
         </li>
       </ul>
     </ContextMenu>

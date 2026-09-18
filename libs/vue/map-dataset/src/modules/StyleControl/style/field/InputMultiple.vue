@@ -1,4 +1,5 @@
 <template lang="">
+  import { MapControlButton } from '@hungpvq/vue-map-core';
   <div v-bind="$attrs" class="input-array-index">
     <div
       class="input-array-item"
@@ -11,16 +12,21 @@
         @change="onSetValue(+$event.target.value, index)"
       />
       <div class="input-array-item__action">
-        <base-button @click="onRemove(form, index)" v-if="form.length > 2">
+        <map-control-button
+          @click="onRemove(form, index)"
+          v-if="form.length > 2"
+          variant="text"
+        >
           <SvgIcon size="16" type="mdi" :path="path.delete" />
-        </base-button>
+        </map-control-button>
       </div>
     </div>
-    <base-button @click="onAdd()"> Add</base-button>
+    <map-control-button @click="onAdd()" variant="text">
+      Add</map-control-button
+    >
   </div>
 </template>
 <script setup lang="ts">
-import { BaseButton, InputText } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete } from '@mdi/js';
 const form = defineModel<number[]>({ default: () => [0, 0] });

@@ -1,28 +1,34 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
+import { DATASET_CONTROL_LOCALE, traverseTree } from '@hungpvq/map-dataset';
 import {
-  DATASET_CONTROL_LOCALE,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
   handleMenuActionClick,
-  traverseTree,
-} from '@hungpvq/map-dataset';
-import { DraggableItemSideBar, DraggableItemPopup } from '@hungpvq/react-draggable';
+  LIST_VIEW_MENU_COMPONENT_KEY,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
 import {
-  BaseButton,
-  MapCommonButton,
-  ModuleContainer,
+  DraggableItemPopup,
+  DraggableItemSideBar,
+} from '@hungpvq/react-draggable';
+import {
   defaultMapProps,
+  MapCommonButton,
+  MapControlButton,
+  ModuleContainer,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
+
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import Icon from '@mdi/react';
 import { useEffect, useState } from 'react';
-import { useMapDataset } from '../../store';
+import { useMapDataset } from '../../store/dataset-api';
 
 const ICON_SIZE = 16 / 24;
 
@@ -32,7 +38,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     ...merged,
     controlId: 'mapDatasetControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapDatasetControl',
@@ -52,8 +58,8 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const [views, setViews] = useState<IDataset[]>([]);
 
   useEffect(() => {
-    setLocaleDefault(DATASET_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', DATASET_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   useEffect(() => {
     const next = getDatasets();
@@ -71,13 +77,12 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapDatasetControl',
-    getState: () => ({
-      visible: !show,
-      active: show,
-      title: trans('map.dataset-control.title'),
-      order,
-      icon: { type: 'mdi' as const, path: mdiDatabaseOutline },
-    }),
+    getState: () =>
+      mdiButtonState(mdiDatabaseOutline, {
+        active: show,
+        title: trans('map.dataset-control.title'),
+        order,
+      }),
     onClick: () => setShow(),
   });
 
@@ -88,9 +93,9 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   function onShowDetail(view: IDataset) {
     handleMenuActionClick(
       createMenuClickBuilder()
-        .addTupleStatic('addComponent', {
+        .addTupleStatic(LIST_VIEW_MENU_ID.addComponent, {
           value: createMenuClickAddComponentBuilder()
-            .setComponentKey('dataset-detail')
+            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail)
             .setAttr({ dataset: view })
             .setCheck('detail-dataset')
             .build(),
@@ -127,22 +132,24 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
               <div key={view.id} className="dataset-item">
                 <span className="dataset-item__title">{view.getName()}</span>
                 <div className="dataset-item__title-action">
-                  <BaseButton
+                  <MapControlButton
+                    variant="plain"
                     onClick={(e) => {
                       e.stopPropagation();
                       onShowDetail(view);
                     }}
                   >
                     <Icon path={mdiInformation} size={ICON_SIZE} />
-                  </BaseButton>
-                  <BaseButton
+                  </MapControlButton>
+                  <MapControlButton
+                    variant="plain"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeDataset(view);
                     }}
                   >
                     <Icon path={mdiDelete} size={ICON_SIZE} />
-                  </BaseButton>
+                  </MapControlButton>
                 </div>
               </div>
             ))}

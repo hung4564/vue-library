@@ -1,7 +1,7 @@
 <template>
   <MapControlButton
     :title="option.title"
-    :class="{ active: option.active }"
+    :active="option.active"
     :disabled="option.disabled"
     v-bind="$attrs"
     :loading="option.loading"
@@ -22,6 +22,11 @@
       </svg>
     </template>
 
+    <span
+      v-else-if="option.text"
+      class="map-common-button__text"
+    >{{ option.text }}</span>
+
     <SvgIcon
       v-else-if="option.icon?.type === 'mdi'"
       :size="18"
@@ -32,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { MapControlButtonUIState } from '@hungpvq/map-core';
+import { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import MapControlButton from './MapControlButton.vue';
 defineProps<{ option: MapControlButtonUIState }>();
@@ -40,3 +45,17 @@ defineOptions({
   name: 'map-common-button',
 });
 </script>
+
+<style scoped>
+.map-common-button__text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+</style>

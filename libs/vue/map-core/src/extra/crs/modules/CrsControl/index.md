@@ -9,7 +9,7 @@ package: vue-map
 
 ## Props
 
-<!--@include: ../ModuleContainer/props.md-->
+Shared map control layout props (`position`, `order`, `controlLayout`, …). See [core module props](/map/core/module/props).
 
 ## Events
 

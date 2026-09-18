@@ -1,10 +1,13 @@
 import {
+  anyWorkerHasHistory,
+  countBusyWorkers,
   filterWorkerSnapshots,
   formatWorkerDuration,
   formatWorkerLogTime,
-  isWorkerBusy,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
+  WorkerMonitor,
+  workerHasHistory,
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
@@ -13,6 +16,7 @@ import {
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -25,12 +29,15 @@ import {
   useState,
 } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { useToolbarControl } from '../../extra/toolbar';
-import { useWorkerMonitor } from '../../extra/worker';
-import { BaseButton, BaseCollapse } from '../../field';
-import { defaultMapProps, useMap, useShow } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
+import { BaseCollapse } from '../../field';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import { MapControlButton } from '../../components/MapControlButton';
 
 export interface WorkerControlProps extends WithMapPropType {
   show?: boolean;
@@ -105,15 +112,15 @@ export function WorkerControl(props: WorkerControlProps) {
     ...merged,
     controlId: 'mapWorkerControl',
   });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { workers, now, busy, clearHistory } = useWorkerMonitor();
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(WORKER_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', WORKER_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const filtered = useMemo(
     () => filterWorkerSnapshots(workers, query),
@@ -155,12 +162,12 @@ export function WorkerControl(props: WorkerControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapWorkerControl',
-    getState: () => ({
-      title: trans('map.worker-control.title'),
-      order,
-      active: show || busy,
-      icon: { type: 'mdi' as const, path: mdiCogs },
-    }),
+    getState: () =>
+      mdiButtonState(mdiCogs, {
+        title: trans('map.worker-control.title'),
+        order,
+        active: show || busy,
+      }),
     onClick: () => toggleShow(),
   });
   const controlRef = useRef(control);
@@ -170,20 +177,10 @@ export function WorkerControl(props: WorkerControlProps) {
     controlRef.current.sync();
   }, [show, busy]);
 
-  const busyCount = workers.filter(isWorkerBusy).length;
+  const busyCount = countBusyWorkers(workers);
   const manyWorkers = workers.length > 1;
-  const hasSelectedHistory = Boolean(
-    selected &&
-      (selected.history.length > 0 ||
-        selected.logs.length > 0 ||
-        selected.pending.some((task) => (task.logs?.length ?? 0) > 0)),
-  );
-  const hasAnyHistory = workers.some(
-    (worker) =>
-      worker.history.length > 0 ||
-      worker.logs.length > 0 ||
-      worker.pending.some((task) => (task.logs?.length ?? 0) > 0),
-  );
+  const hasSelectedHistory = Boolean(selected && workerHasHistory(selected));
+  const hasAnyHistory = anyWorkerHasHistory(workers);
 
   const statusLabel = (status: WorkerRuntimeStatus) =>
     trans(`map.worker-control.status.${status}`);
@@ -232,7 +229,7 @@ export function WorkerControl(props: WorkerControlProps) {
                 <span />
               )}
               <div className="map-worker-control__toolbar-actions">
-                <BaseButton
+                <MapControlButton variant="plain"
                   title={trans('map.worker-control.action.clear')}
                   disabled={!hasSelectedHistory}
                   onClick={(e) => {
@@ -241,9 +238,9 @@ export function WorkerControl(props: WorkerControlProps) {
                   }}
                 >
                   <Icon path={mdiEraser} size="16px" />
-                </BaseButton>
+                </MapControlButton>
                 {manyWorkers ? (
-                  <BaseButton
+                  <MapControlButton variant="plain"
                     title={trans('map.worker-control.action.clearAll')}
                     disabled={!hasAnyHistory}
                     onClick={(e) => {
@@ -252,7 +249,7 @@ export function WorkerControl(props: WorkerControlProps) {
                     }}
                   >
                     <Icon path={mdiNotificationClearAll} size="16px" />
-                  </BaseButton>
+                  </MapControlButton>
                 ) : null}
               </div>
             </div>
@@ -301,9 +298,10 @@ export function WorkerControl(props: WorkerControlProps) {
                             selected?.id === worker.id ? ' is-selected' : ''
                           }`}
                         >
-                          <button
-                            type="button"
+                          <MapControlButton
                             className="map-worker-control__pick"
+                            variant="plain"
+                            size="small"
                             onClick={() => setSelectedId(worker.id)}
                           >
                             <span className="map-worker-control__pick-name">
@@ -320,7 +318,7 @@ export function WorkerControl(props: WorkerControlProps) {
                                 {meta}
                               </span>
                             ) : null}
-                          </button>
+                          </MapControlButton>
                         </li>
                       );
                     })}
@@ -390,6 +388,17 @@ function WorkerCard(props: {
                   <span>
                     {engineLabel(task.engine)} · {elapsed(task)}
                   </span>
+                </div>
+                <div className="map-worker-control__task-actions">
+                  <MapControlButton
+                    variant="outlined"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      WorkerMonitor.abortTask(worker.id, task.id);
+                    }}
+                  >
+                    {trans('map.worker-control.action.cancel')}
+                  </MapControlButton>
                 </div>
                 <div
                   className={`map-worker-control__bar${percent == null ? ' is-indeterminate' : ''}`}

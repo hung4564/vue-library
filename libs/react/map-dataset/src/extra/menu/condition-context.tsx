@@ -1,5 +1,5 @@
-import type { MenuContextSource } from '@hungpvq/map-dataset';
-import { resolveMenuContextSource } from '@hungpvq/map-dataset';
+import type { MenuContextSource } from '@hungpvq/map-dataset/menu';
+import { resolveMenuContextSource } from '@hungpvq/map-dataset/menu';
 import {
   createContext,
   useContext,
@@ -27,6 +27,6 @@ export function MenuConditionProvider({
   );
 }
 
-export function useMenuConditionContext(): Record<string, any> {
+export function useMenuConditionContext(): Record<string, unknown> {
   return resolveMenuContextSource(useContext(MenuConditionContext));
 }

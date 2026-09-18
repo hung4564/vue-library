@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useDragItem } from '../store';
-import { ContainerStoreOtherAction } from '../types';
+import type { ContainerStoreOtherAction } from '@hungpvq/draggable';
 
 export function useInitAction(
   containerId: string,

@@ -1,6 +1,7 @@
 import {
   createWorkerMonitorLogMessage,
   createWorkerMonitorProgressMessage,
+  isWorkerMonitorAbortMessage,
 } from './protocol';
 import type { WorkerLogLevel } from './types';
 
@@ -25,6 +26,9 @@ export type WorkerTaskContext = {
   ) => void;
   /** Throttled progress (~80ms, always sends when current >= total). */
   report: (current: number, total?: number, message?: string) => void;
+  /** Throws AbortError when this task was cancelled from the main thread. */
+  throwIfAborted: () => void;
+  readonly aborted: boolean;
 };
 
 export type WorkerMonitorHandler<TRequest extends WorkerTaskRequest> = (
@@ -114,13 +118,31 @@ function createProgressPoster(
 function createTaskContext(
   taskId: string,
   throttleMs: number,
+  abortedIds: Set<string>,
 ): WorkerTaskContext {
+  const report = createProgressPoster(taskId, throttleMs);
+  const throwIfAborted = () => {
+    if (!abortedIds.has(taskId)) return;
+    if (typeof DOMException !== 'undefined') {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+    const err = new Error('Aborted');
+    err.name = 'AbortError';
+    throw err;
+  };
   return {
     taskId,
+    get aborted() {
+      return abortedIds.has(taskId);
+    },
+    throwIfAborted,
     log(message, options = {}) {
       postLog(message, { level: options.level, taskId });
     },
-    report: createProgressPoster(taskId, throttleMs),
+    report(current, total, message) {
+      throwIfAborted();
+      report(current, total, message);
+    },
   };
 }
 
@@ -133,13 +155,23 @@ export function runWorkerMonitor<TRequest extends WorkerTaskRequest>(
   options: RunWorkerMonitorOptions = {},
 ): void {
   const throttleMs = options.progressThrottleMs ?? 80;
+  const abortedIds = new Set<string>();
   installConsoleForwarding();
   if (options.readyMessage) {
     postLog(options.readyMessage);
   }
 
-  self.onmessage = (event: MessageEvent<TRequest>) => {
-    void handleMessage(event.data, handler, throttleMs);
+  self.onmessage = (event: MessageEvent<unknown>) => {
+    if (isWorkerMonitorAbortMessage(event.data)) {
+      abortedIds.add(event.data.taskId);
+      return;
+    }
+    void handleMessage(
+      event.data as TRequest,
+      handler,
+      throttleMs,
+      abortedIds,
+    );
   };
 }
 
@@ -147,12 +179,15 @@ async function handleMessage<TRequest extends WorkerTaskRequest>(
   message: TRequest,
   handler: WorkerMonitorHandler<TRequest>,
   throttleMs: number,
+  abortedIds: Set<string>,
 ) {
   const started = Date.now();
-  const ctx = createTaskContext(message.id, throttleMs);
+  const ctx = createTaskContext(message.id, throttleMs, abortedIds);
   try {
+    ctx.throwIfAborted();
     ctx.log(`${message.type} start`);
     const result = (await handler(message, ctx)) ?? {};
+    ctx.throwIfAborted();
     ctx.log(`${message.type} done in ${Date.now() - started}ms`);
     const response: WorkerTaskResponse = {
       ...result,
@@ -169,5 +204,7 @@ async function handleMessage<TRequest extends WorkerTaskRequest>(
       error: text,
     };
     self.postMessage(response);
+  } finally {
+    abortedIds.delete(message.id);
   }
 }

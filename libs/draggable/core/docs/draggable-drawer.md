@@ -22,6 +22,7 @@ Only one drawer is visible per edge. If several drawers share the same `location
 
 | Prop             | Description                                         | Type      | Required | Default Value |
 | ---------------- | --------------------------------------------------- | --------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.        | `string`  | false    | auto UUID     |
 | `show`           | Controls the visibility of the drawer layer.        | `boolean` | false    | false         |
 | `location`       | Drawer edge: `left`, `right`, `top`, `bottom`.      | `string`  | false    | `'right'`     |
 | `size`           | Drawer length in pixels.                            | `number`  | false    | 360           |
@@ -43,6 +44,17 @@ Only one drawer is visible per edge. If several drawers share the same `location
 | `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)`   |
 
 React: use `onUpdateSize` / `onUpdateShow` / `onClose` instead of Vue `update:*` / `close` events.
+
+## Slots
+
+Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
+
+| Vue             | React        | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `default`       | `children`   | Content of the drawer.                           |
+| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
 
 ## Usage
 
@@ -102,3 +114,7 @@ export function Example() {
   );
 }
 ```
+
+## Accessibility
+
+Non-modal `role="dialog"` + `aria-labelledby`; Escape closes when focus is inside (skipped while switcher menu open); focus restore on close. Switcher: `aria-haspopup` / `aria-expanded`. See [a11y.md](./a11y.md).

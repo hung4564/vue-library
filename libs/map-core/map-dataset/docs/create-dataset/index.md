@@ -93,14 +93,15 @@ Leaf datasets represent specific functionalities. The main types are:
 - **Source**: Represents a data source (GeoJSON, raster, vector, etc.).
 - **Identify**: Handles feature identification when clicking on the map.
 - **Data Management**: Handles data fetching, detail display, and CRUD operations.
-- **Highlight**: Handles highlighting features on the map when selected.
+- **Highlight**: `createHighlightPart` from `@hungpvq/map-dataset/highlight` — paint via controller / `useMapHighlight` (see [highlight](./highlight)).
+- **Menu**: Shared default menus (`for: 'layer' | 'item'`) consumed by list, identify, and attribute table.
 
 Each type has its own API and usage. See the corresponding documentation files in this folder for details and advanced usage.
 
 ## Example: Adding a Source Leaf
 
 ```typescript
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 
 const source = createDatasetPartGeojsonSourceComponent('my-source', {
   type: 'FeatureCollection',
@@ -120,7 +121,8 @@ const source = createDatasetPartGeojsonSourceComponent('my-source', {
 ## Example: Adding a Layer Leaf
 
 ```typescript
-import { createMultiMapboxLayerComponent, LayerSimpleMapboxBuild } from '@hungpvq/vue-map-dataset';
+import { createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 
 const singleLayer = createMultiMapboxLayerComponent('single-layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build()]);
 ```
@@ -128,7 +130,7 @@ const singleLayer = createMultiMapboxLayerComponent('single-layer', [new LayerSi
 ## Example: Adding a List UI Leaf
 
 ```typescript
-import { createDatasetPartListViewUiComponent } from '@hungpvq/vue-map-dataset';
+import { createDatasetPartListViewUiComponent } from '@hungpvq/map-dataset';
 
 const listView = createDatasetPartListViewUiComponent('My Layer');
 listView.color = '#ff6b6b';
@@ -149,5 +151,5 @@ For each node type:
 - [Attribute table](./attribute-table) — Feature properties table, click to zoom
 - [Menus](./with-helper-menu) — Locations, hidden/disabled, custom menu components
 - [Events](./with-helper-event) — `on` / `off` / `emit` on nodes
-- [Data helper](./with-helper-data) — `getData` / `setData`
+- [Data helper](./with-helper-data) — `getData` / `setData`, bound, shared menu
 - [Custom leaf](./custom-leaf)

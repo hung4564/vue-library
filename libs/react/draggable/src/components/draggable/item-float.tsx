@@ -1,4 +1,11 @@
-import { CSSProperties, ReactNode, useMemo } from 'react';
+import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -12,8 +19,9 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
-import { MapButton } from '../parts/MapButton';
+import { DragButton } from '../parts/DragButton';
 export interface DraggableItemFloatProps {
+  id?: string;
   show?: boolean;
   expand?: boolean;
   title?: string;
@@ -24,6 +32,7 @@ export interface DraggableItemFloatProps {
   disabledHeader?: boolean;
   disabledClose?: boolean;
   disabledOrder?: boolean;
+  highlightMs?: number;
   top?: number;
   left?: number;
   bottom?: number;
@@ -36,19 +45,22 @@ export interface DraggableItemFloatProps {
   onUpdateExpand?: (value: boolean) => void;
   children?: ReactNode;
   extraBtn?: ReactNode;
+  afterTitle?: ReactNode;
 }
 
 export function DraggableItemFloat({
+  id: stableId,
   show: propShow,
   expand: propExpand,
   title = '',
   containerId: propContainerId,
   componentCard,
   componentCardHeader,
-  disabledExpand,
+  disabledExpand: _disabledExpand,
   disabledHeader,
   disabledClose,
   disabledOrder,
+  highlightMs,
   top,
   left,
   bottom,
@@ -61,6 +73,7 @@ export function DraggableItemFloat({
   onUpdateExpand,
   children,
   extraBtn,
+  afterTitle,
 }: DraggableItemFloatProps) {
   const containerId = useContainerId(propContainerId);
   const { show, setShow, open, close } = useShow(
@@ -70,11 +83,17 @@ export function DraggableItemFloat({
       close: onClose,
     },
   );
-  const { zIndex, itemId } = useInitItem(containerId, show, setShow, {
-    title,
-    type: 'item-float',
-  });
-  const { isHighlight, setHighLight } = useHighlight();
+  const { zIndex, itemId } = useInitItem(
+    containerId,
+    show,
+    setShow,
+    {
+      title,
+      type: 'item-float',
+    },
+    stableId,
+  );
+  const { isHighlight, setHighLight } = useHighlight(highlightMs);
   useInitAction(containerId, itemId, {
     setHighLight,
     open,
@@ -103,9 +122,41 @@ export function DraggableItemFloat({
     CloseExpandedIcon,
   } = useIcon();
 
+  const panelRootRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = `float-title-${itemId}`;
+
   function handleClose() {
-    setShow(false);
+    close();
   }
+
+  useEffect(() => {
+    if (!show) {
+      restoreFocus(previousFocusRef.current);
+      previousFocusRef.current = null;
+      return;
+    }
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusTimer = window.setTimeout(() => {
+      if (panelRootRef.current) focusFirst(panelRootRef.current);
+    }, 0);
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      const root = panelRootRef.current;
+      if (!root) return;
+      const target = event.target as Node | null;
+      if (target && !root.contains(target) && document.activeElement !== root) {
+        return;
+      }
+      event.preventDefault();
+      close();
+    }
+    document.addEventListener('keydown', onKeydown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKeydown);
+    };
+  }, [show, close]);
 
   const style = useMemo(() => {
     const s: CSSProperties = { zIndex };
@@ -133,38 +184,55 @@ export function DraggableItemFloat({
 
   return (
     <div
+      ref={panelRootRef}
       className={`float-container ${isAutoWidth ? 'auto-float-container' : ''}`}
       style={style}
+      role="dialog"
+      aria-labelledby={titleId}
+      tabIndex={-1}
     >
       <Card highlight={isHighlight}>
         <div className="draggable-float">
           {!disabledHeader && headerLocation === 'top' && (
             <Header
-              title={title}
+              title={<span id={titleId}>{title}</span>}
+              afterTitle={afterTitle}
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton onClick={onToggleExpand}>
+                  <DragButton
+                    aria-label={expand ? 'Collapse panel' : 'Expand panel'}
+                    aria-expanded={expand}
+                    onClick={onToggleExpand}
+                  >
                     {expand ? (
                       <ExpandedIcon size={'16px'} />
                     ) : (
                       <CloseExpandedIcon size={'16px'} />
                     )}
-                  </MapButton>
+                  </DragButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton disabled={isFirst} onClick={onToBack}>
+                      <DragButton
+                        aria-label="Send to back"
+                        disabled={isFirst}
+                        onClick={onToBack}
+                      >
                         <ToBackIcon size={'16px'} />
-                      </MapButton>
-                      <MapButton disabled={isLast} onClick={onToFront}>
+                      </DragButton>
+                      <DragButton
+                        aria-label="Bring to front"
+                        disabled={isLast}
+                        onClick={onToFront}
+                      >
                         <ToFrontIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton onClick={handleClose}>
+                    <DragButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
                 </>
               }
@@ -177,31 +245,44 @@ export function DraggableItemFloat({
           )}
           {!disabledHeader && headerLocation === 'bottom' && (
             <Header
-              title={title}
+              title={<span id={titleId}>{title}</span>}
+              afterTitle={afterTitle}
               extraBtn={
                 <>
                   {extraBtn}
-                  <MapButton onClick={onToggleExpand}>
+                  <DragButton
+                    aria-label={expand ? 'Collapse panel' : 'Expand panel'}
+                    aria-expanded={expand}
+                    onClick={onToggleExpand}
+                  >
                     {expand ? (
                       <ExpandedIcon size={'16px'} />
                     ) : (
                       <CloseExpandedIcon size={'16px'} />
                     )}
-                  </MapButton>
+                  </DragButton>
                   {isHasItems && !disabledOrder && (
                     <>
-                      <MapButton disabled={isFirst} onClick={onToBack}>
+                      <DragButton
+                        aria-label="Send to back"
+                        disabled={isFirst}
+                        onClick={onToBack}
+                      >
                         <ToBackIcon size={'16px'} />
-                      </MapButton>
-                      <MapButton disabled={isLast} onClick={onToFront}>
+                      </DragButton>
+                      <DragButton
+                        aria-label="Bring to front"
+                        disabled={isLast}
+                        onClick={onToFront}
+                      >
                         <ToFrontIcon size={'16px'} />
-                      </MapButton>
+                      </DragButton>
                     </>
                   )}
                   {!disabledClose && (
-                    <MapButton onClick={handleClose}>
+                    <DragButton aria-label="Close panel" onClick={handleClose}>
                       <CloseIcon size={'16px'} />
-                    </MapButton>
+                    </DragButton>
                   )}
                 </>
               }

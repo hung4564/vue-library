@@ -28,28 +28,34 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        index: 'src/index.ts',
+        // CSS-only graph so `./style.css` includes dataset styles (not a JS export).
+        css: 'src/style.ts',
+      },
       name: 'dataset',
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        const ext = format === 'cjs' ? 'cjs' : 'js';
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
+      },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: [
         'vue',
         '@hungpvq/map-core',
+        /^@hungpvq\/map-core\//,
         '@hungpvq/map-dataset',
+        /^@hungpvq\/map-dataset\//,
         '@hungpvq/vue-map-core',
         '@hungpvq/shared',
-        '@hungpvq/shared-core',
         '@hungpvq/vue-draggable',
         'vuedraggable',
-        '@hungpvq/shared-file',
-        'lodash',
         'mitt',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         '@mdi/js',
-        '@turf/turf',
+        /^@turf\//,
         'maplibre-gl',
       ],
       output: {
@@ -58,6 +64,18 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../../coverage/libs/vue/map-dataset',
+      provider: 'v8' as const,
     },
   },
 });

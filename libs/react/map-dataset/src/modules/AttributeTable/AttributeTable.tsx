@@ -1,402 +1,384 @@
-import { fitBounds, getMap, type WithMapPropType } from '@hungpvq/map-core';
-import type { IDataset, MenuAction } from '@hungpvq/map-dataset';
+import { fitBounds, getMap } from '@hungpvq/map-core';
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_LOCALE,
-  attributeTableRowsToFeatureCollection,
-  buildAttributeTable,
-  createExportGeoSubmenu,
-  createMenuItemExportGeo,
-  filterAttributeTableRows,
-  getDatasetFeatureCollection,
-  getExportGeoMenuOptions,
-  handleMenuAction,
-  type AttributeTableColumn,
-  type AttributeTableColumnsOption,
+  ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  clearPendingAttributeTableSelectRows,
+  createAttributeTableController,
+  resolveAttributeTableUi,
+  resolveAttributeTableUiOption,
+  takePendingAttributeTableSelectRows,
+  type AttributeTableController,
+  type AttributeTableProps,
   type AttributeTableRow,
-} from '@hungpvq/map-dataset';
+  type AttributeTableSelectRowsPayload,
+  type AttributeTableViewLabels,
+  type AttributeTableViewProps,
+} from '@hungpvq/map-dataset/attribute-table';
 import {
-  ContextMenu,
-  DraggableItemPopup,
-  type ContextMenuRef,
-} from '@hungpvq/react-draggable';
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
 import {
-  BaseButton,
-  InputCheckbox,
-  InputSelect,
-  InputText,
-  ModuleContainer,
+  clearGeoExportActiveSource,
+  openGeoExportModalFromAttributeTable,
+  resolveAttributeTableGeoExport,
+  runGeoExportClickFromAttributeTable,
+  runGeoExportFormatFromAttributeTable,
+  setGeoExportActiveSource,
+  type GeoExportFormat,
+} from '@hungpvq/map-dataset/geo-export';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import {
   defaultMapProps,
+  ModuleContainer,
+  RegistryItem,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
-import { mdiChevronDown, mdiDownload } from '@mdi/js';
-import Icon from '@mdi/react';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useMapDatasetHighlight } from '../../store';
-
-type AttributeTableProps = WithMapPropType & {
-  layer: IDataset;
-  columns?: AttributeTableColumnsOption;
-  onClose?: () => void;
-};
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { useMapHighlight } from '../../store/highlight';
+import { AttributeTableView } from './AttributeTableView';
 
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({
     ...merged,
-    controlId: 'mapAttributeTable',
+    controlId: ATTRIBUTE_TABLE_CONTROL.id,
   });
-  const { setFeatureHighlight, getHighlightSource } =
-    useMapDatasetHighlight(mapId);
-  const setFeatureHighlightRef = useRef(setFeatureHighlight);
-  const getHighlightSourceRef = useRef(getHighlightSource);
-  setFeatureHighlightRef.current = setFeatureHighlight;
-  getHighlightSourceRef.current = getHighlightSource;
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const hl = useMapHighlight(mapId);
+  const hlRef = useRef(hl);
+  hlRef.current = hl;
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
-  const [columns, setColumns] = useState<AttributeTableColumn[]>([]);
-  const [rows, setRows] = useState<AttributeTableRow[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [zoomToSelection, setZoomToSelection] = useState(false);
-  const [rowFilter, setRowFilter] = useState<'all' | 'selected'>('all');
-  const zoomToSelectionRef = useRef(zoomToSelection);
-  zoomToSelectionRef.current = zoomToSelection;
-  const selectedIdsRef = useRef(selectedIds);
-  selectedIdsRef.current = selectedIds;
-  const rowsRef = useRef(rows);
-  rowsRef.current = rows;
+  const toggleShowRef = useRef(toggleShow);
+  toggleShowRef.current = toggleShow;
+  const [tick, setTick] = useState(0);
 
-  useEffect(() => {
-    setLocaleDefault(ATTRIBUTE_TABLE_LOCALE);
-  }, [setLocaleDefault]);
+  const localeReady = useRef(false);
+  if (!localeReady.current) {
+    registerLocale('en', ATTRIBUTE_TABLE_LOCALE);
+    localeReady.current = true;
+  }
 
   const clearHighlight = useCallback(() => {
-    if (getHighlightSourceRef.current() === 'attribute-table') {
-      setFeatureHighlightRef.current(undefined, 'attribute-table');
-    }
+    hlRef.current.hideIfSource('attribute-table');
   }, []);
+  const clearHighlightRef = useRef(clearHighlight);
+  clearHighlightRef.current = clearHighlight;
+
+  const controllerRef = useRef<AttributeTableController | null>(null);
+  const [controller, setController] = useState<AttributeTableController | null>(
+    null,
+  );
 
   const applySelection = useCallback(
-    (ids: string[], focus?: AttributeTableRow) => {
-      const selected = rowsRef.current.filter((row) => ids.includes(row.id));
-      if (selected.length === 0) {
+    (ctrl: AttributeTableController, focus?: AttributeTableRow) => {
+      const s = ctrl.getState();
+      const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
+      if (selected.length !== 1) {
         clearHighlight();
         return;
       }
-      const current = focus ?? selected[selected.length - 1];
-      setFeatureHighlightRef.current(
-        current.feature as Feature,
-        'attribute-table',
-        props.layer,
-      );
-      if (!zoomToSelectionRef.current) return;
-      const boundsValue: Feature | FeatureCollection =
-        selected.length === 1
-          ? (current.feature as Feature)
-          : {
-              type: 'FeatureCollection',
-              features: selected.map((row) => row.feature),
-            };
+      const current = focus ?? selected[0];
+      void hlRef.current.show(current.feature as Feature, {
+        source: 'attribute-table',
+        dataset: props.layer,
+      });
+      if (!s.zoomToSelection) return;
       getMap(mapId, (map) => {
-        fitBounds(map, boundsValue);
+        fitBounds(map, current.feature as Feature);
       });
     },
     [clearHighlight, mapId, props.layer],
   );
+  const applySelectionRef = useRef(applySelection);
+  applySelectionRef.current = applySelection;
 
   useEffect(() => {
-    let cancelled = false;
+    const ui = resolveAttributeTableUiOption(props.layer, props.ui);
+    const next = createAttributeTableController(props.layer, {
+      columns: props.columns,
+      store: props.store,
+      rowFilter: props.rowFilter,
+      sortable: resolveAttributeTableUi(ui).sort,
+    });
+    controllerRef.current = next;
+    setController(next);
+
+    setGeoExportActiveSource(mapId, {
+      layerId: props.layer.id,
+      getSearch: () => next.getState().search,
+      getSort: () => next.getState().sortStates,
+      getSelectedIds: () => next.getState().selectedIds,
+      resolveSelectedCollection: async (ids) => {
+        const rows = await next.resolveFeaturesForSelection(ids);
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+      resolveFilteredCollection: async () => {
+        const rows = await next.resolveFilteredFeatures();
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+    });
+
+    const unsub = next.subscribe(() => {
+      setTick((v) => v + 1);
+      applySelectionRef.current(next);
+    });
+
+    // Re-open when addComponent updates the same `check` while hidden via toggle.
+    toggleShowRef.current(true);
+
     void (async () => {
-      try {
-        const collection = await getDatasetFeatureCollection(props.layer);
-        if (cancelled) return;
-        if (!collection) {
-          setColumns([]);
-          setRows([]);
-          return;
-        }
-        const table = buildAttributeTable(collection, props.columns);
-        setColumns(table.columns);
-        setRows(table.rows);
-      } finally {
-        if (!cancelled) setLoading(false);
+      const queued = takePendingAttributeTableSelectRows(mapId);
+      await next.load('initial');
+      if (queued) {
+        toggleShowRef.current(true);
+        await next.selectIds(queued);
       }
     })();
+
     return () => {
-      cancelled = true;
-      clearHighlight();
+      unsub();
+      clearGeoExportActiveSource(mapId, props.layer.id);
+      next.dispose();
+      clearHighlightRef.current();
     };
-  }, [props.layer, props.columns, clearHighlight]);
+  }, [
+    props.layer,
+    props.columns,
+    props.store,
+    props.rowFilter,
+    props.ui,
+    mapId,
+  ]);
 
-  const searchedRows = useMemo(
-    () => filterAttributeTableRows(rows, query),
-    [rows, query],
+  useEffect(() => {
+    if (props.revision == null) return;
+    toggleShowRef.current(true);
+  }, [props.revision]);
+
+  const state = useMemo(() => {
+    void tick;
+    return controller?.getState() ?? null;
+  }, [controller, tick]);
+
+  const labels = useMemo(
+    (): AttributeTableViewLabels => ({
+      search: trans('map.attribute-table.search'),
+      zoomToSelection: trans('map.attribute-table.zoomToSelection'),
+      showAll: trans('map.attribute-table.showAll'),
+      showSelected: trans('map.attribute-table.showSelected'),
+      clear: trans('map.attribute-table.clear'),
+      loading: trans('map.attribute-table.loading'),
+      empty: trans('map.attribute-table.empty'),
+      page: trans('map.attribute-table.page'),
+      of: trans('map.attribute-table.of'),
+      prev: trans('map.attribute-table.prev'),
+      next: trans('map.attribute-table.next'),
+      rowsPerPage: trans('map.attribute-table.rowsPerPage'),
+      table: trans('map.attribute-table.table'),
+      gridRegion: trans('map.attribute-table.gridRegion'),
+      selectAll: trans('map.attribute-table.selectAll'),
+      selectRow: trans('map.attribute-table.selectRow'),
+      actionsColumn: trans('map.attribute-table.actionsColumn'),
+      rowFilter: trans('map.attribute-table.rowFilter'),
+      sortedAsc: trans('map.attribute-table.sortedAsc'),
+      sortedDesc: trans('map.attribute-table.sortedDesc'),
+      notSorted: trans('map.attribute-table.notSorted'),
+      selectionStatus: trans('map.attribute-table.selectionStatus'),
+      export: trans('map.attribute-table.export'),
+    }),
+    [trans],
   );
-
-  const visibleRows = useMemo(() => {
-    if (rowFilter !== 'selected') return searchedRows;
-    const selected = new Set(selectedIds);
-    return searchedRows.filter((row) => selected.has(row.id));
-  }, [searchedRows, rowFilter, selectedIds]);
-
-  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
-
-  const allVisibleSelected =
-    visibleRows.length > 0 &&
-    visibleRows.every((row) => selectedSet.has(row.id));
 
   const title = useMemo(() => {
     const name = props.layer?.getName?.() || trans('map.attribute-table.title');
-    if (!rows.length) return trans('map.attribute-table.title');
-    return selectedIds.length
-      ? `${name} (${rows.length}, ${selectedIds.length} selected)`
-      : `${name} (${rows.length})`;
-  }, [props.layer, rows.length, selectedIds.length, trans]);
+    const count = state?.total ?? 0;
+    if (!count && !state?.loading) return trans('map.attribute-table.title');
+    if (!count) return name;
+    const selected = state?.selectedIds.length ?? 0;
+    return selected
+      ? `${name} (${count}, ${selected} selected)`
+      : `${name} (${count})`;
+  }, [props.layer, state, trans]);
 
+  /**
+   * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
+   * stays registered and toggle show / selectRows keep working.
+   * Removal from ComponentManagement is via `onClose` from parent if needed.
+   */
   function handleClose() {
     clearHighlight();
     toggleShow(false);
-    props.onClose?.();
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapAttributeTable',
+    id: ATTRIBUTE_TABLE_CONTROL.id,
     panelKind: 'popup',
     title,
     buttonPosition: merged.position,
     show,
     setShow: (v) => {
+      // Hide/show only — do not call onClose (that unmounts via ComponentManagement).
       toggleShow(v);
-      if (!v) {
-        clearHighlight();
-        props.onClose?.();
-      }
+      if (!v) clearHighlight();
     },
     getProps: () => ({
       position: merged.position,
       controlLayout: merged.controlLayout,
     }),
-    actions: [{ type: 'mapAttributeTable', run: () => toggleShow() }],
+    actions: [
+      {
+        type: ATTRIBUTE_TABLE_CONTROL.id,
+        run: () => {
+          toggleShow();
+        },
+      },
+      {
+        type: ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
+        run: (event) => {
+          const ids = (
+            (event as AttributeTableSelectRowsPayload | undefined)?.ids ?? []
+          ).map(String);
+          clearPendingAttributeTableSelectRows(mapId);
+          toggleShow(true);
+          void controllerRef.current?.selectIds(ids);
+        },
+      },
+    ],
   });
 
-  function toggleRow(row: AttributeTableRow) {
-    const exists = selectedIds.includes(row.id);
-    const next = exists
-      ? selectedIds.filter((id) => id !== row.id)
-      : [...selectedIds, row.id];
-    setSelectedIds(next);
-    applySelection(next, exists ? undefined : row);
-  }
-
-  function toggleSelectAll() {
-    if (allVisibleSelected) {
-      const visible = new Set(visibleRows.map((row) => row.id));
-      const next = selectedIds.filter((id) => !visible.has(id));
-      setSelectedIds(next);
-      applySelection(next);
-      return;
-    }
-    const next = Array.from(
-      new Set([...selectedIds, ...visibleRows.map((row) => row.id)]),
-    );
-    setSelectedIds(next);
-    applySelection(next);
-  }
-
-  function clearSelection() {
-    setSelectedIds([]);
-    clearHighlight();
-  }
-
-  const exportMenuRef = useRef<ContextMenuRef>(null);
-  const exportMenuItem = useMemo(
-    () =>
-      createMenuItemExportGeo({
-        filename: (layer) => `${layer.getName?.() || 'layer'}-table`,
-        getCollection: () =>
-          visibleRows.length
-            ? attributeTableRowsToFeatureCollection(visibleRows)
-            : null,
-      }),
-    [visibleRows],
-  );
-  const exportChildren = useMemo(
-    () => createExportGeoSubmenu(getExportGeoMenuOptions(exportMenuItem)),
-    [exportMenuItem],
-  );
-
-  function onExportClick(event: React.MouseEvent) {
-    event.stopPropagation();
-    if (visibleRows.length === 0) return;
-    exportMenuRef.current?.open(event);
-  }
-
-  function onExportChild(action: MenuAction, event: React.MouseEvent) {
-    event.stopPropagation();
-    handleMenuAction(action, {
-      event: event.nativeEvent,
-      layer: props.layer,
-      mapId,
-      value: props.layer,
-    });
-    exportMenuRef.current?.close();
-  }
-
   useEffect(() => {
-    if (zoomToSelection) applySelection(selectedIdsRef.current);
-  }, [zoomToSelection, applySelection]);
+    if (!show) clearHighlight();
+  }, [show, clearHighlight]);
 
-  const filterItems = [
-    { value: 'all', text: trans('map.attribute-table.showAll') },
-    { value: 'selected', text: trans('map.attribute-table.showSelected') },
-  ];
+  const itemMenuHost = getItemMenuHost(props.layer);
+  const itemMenuConditionCtx = createMenuConditionContext(itemMenuHost, {
+    mapId,
+  });
+  const resolvedUi = resolveAttributeTableUiOption(props.layer, props.ui);
+  const itemMenus =
+    resolvedUi?.rowMenus === false
+      ? []
+      : getResolvedMenus(props.layer, 'item').filter(
+          (menu) =>
+            menu.type !== 'divider' &&
+            !isMenuItemHidden(menu, itemMenuConditionCtx),
+        );
+  const layerTitleMenus = getResolvedMenus(props.layer, 'layer');
+
+  if (!controller) return null;
+
+  const geo = resolveAttributeTableGeoExport(props.layer);
+  const menuMode = geo.uiMode === 'menu';
+  const clickMode = geo.uiMode === 'click';
+
+  const viewProps: AttributeTableViewProps = {
+    mapId,
+    layer: props.layer,
+    controller,
+    pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+    labels,
+    ui: resolvedUi,
+    itemMenus,
+    itemMenuHost,
+    isMenuDisabled: (menu) => isMenuItemDisabled(menu, itemMenuConditionCtx),
+    onRowMenuAction: (row, menu, event) => {
+      if (isMenuItemDisabled(menu, itemMenuConditionCtx)) return;
+      handleMenuAction(menu, {
+        event,
+        layer: itemMenuHost,
+        mapId,
+        value: convertFeatureToItem(row.feature),
+        context: { control: MENU_CONTROL_ID.attributeTable },
+      });
+    },
+    onExport: menuMode
+      ? undefined
+      : (event) => {
+          if (clickMode) {
+            void runGeoExportClickFromAttributeTable({
+              layer: props.layer,
+              mapId,
+              event,
+            });
+            return;
+          }
+          openGeoExportModalFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            event,
+          });
+        },
+    exportFormats: menuMode ? geo.formats : undefined,
+    onExportFormat: menuMode
+      ? (format, event) => {
+          void runGeoExportFormatFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            format: format as GeoExportFormat,
+            event,
+          });
+        }
+      : undefined,
+  };
 
   return (
+    <MenuConditionProvider
+      value={{ control: MENU_CONTROL_ID.attributeTable }}
+    >
     <ModuleContainer
       {...moduleContainerProps}
       draggable={(bind) => (
-        <>
-          <DraggableItemPopup
-            show={show}
-            width={760}
-            height={460}
-            title={title}
-            onClose={handleClose}
-            onUpdateShow={(v) => {
-              if (!v) handleClose();
-            }}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="attribute-table">
-              <div className="attribute-table__toolbar">
-                <div className="attribute-table__toolbar-row">
-                  <InputText
-                    value={query}
-                    placeholder={trans('map.attribute-table.search')}
-                    onChange={setQuery}
-                  />
-                  <BaseButton
-                    className="attribute-table__export"
-                    disabled={visibleRows.length === 0}
-                    onClick={onExportClick}
-                  >
-                    <Icon path={mdiDownload} size="16px" />
-                    {trans('map.attribute-table.export')}
-                    <Icon path={mdiChevronDown} size="16px" />
-                  </BaseButton>
-                </div>
-                <div className="attribute-table__toolbar-row">
-                  <InputCheckbox
-                    checked={zoomToSelection}
-                    label={trans('map.attribute-table.zoomToSelection')}
-                    onChange={setZoomToSelection}
-                  />
-                  <InputSelect
-                    value={rowFilter}
-                    items={filterItems}
-                    onChange={(value) =>
-                      setRowFilter(value === 'selected' ? 'selected' : 'all')
-                    }
-                  />
-                  <BaseButton
-                    className="attribute-table__clear"
-                    disabled={selectedIds.length === 0}
-                    onClick={clearSelection}
-                  >
-                    {trans('map.attribute-table.clear')}
-                  </BaseButton>
-                </div>
-              </div>
-              {loading ? (
-                <div className="attribute-table__status">
-                  {trans('map.attribute-table.loading')}
-                </div>
-              ) : visibleRows.length === 0 ? (
-                <div className="attribute-table__status">
-                  {trans('map.attribute-table.empty')}
-                </div>
-              ) : (
-                <div className="attribute-table__scroll">
-                  <table className="attribute-table__table">
-                    <thead>
-                      <tr>
-                        <th className="attribute-table__check">
-                          <input
-                            type="checkbox"
-                            checked={allVisibleSelected}
-                            onChange={toggleSelectAll}
-                          />
-                        </th>
-                        {columns.map((column) => (
-                          <th key={column.key}>{column.label}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleRows.map((row) => (
-                        <tr
-                          key={row.id}
-                          className={
-                            selectedSet.has(row.id) ? 'is-selected' : ''
-                          }
-                          onClick={() => toggleRow(row)}
-                        >
-                          <td
-                            className="attribute-table__check"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedSet.has(row.id)}
-                              onChange={() => toggleRow(row)}
-                            />
-                          </td>
-                          {columns.map((column) => {
-                            const value = row.cells[column.key] ?? '';
-                            return (
-                              <td
-                                key={column.key}
-                                title={value.length > 80 ? value : undefined}
-                              >
-                                {value}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </DraggableItemPopup>
-          <ContextMenu ref={exportMenuRef}>
-            <ul className="context-menu layer-context-menu">
-              {exportChildren.map((child, index) => (
-                <li
-                  key={child.id || String(index)}
-                  className="layer-context-menu__item"
-                  onClick={(event) => onExportChild(child, event)}
-                >
-                  <div className="layer-context-menu__item-icon">
-                    <Icon
-                      path={('icon' in child && child.icon) || mdiDownload}
-                      size="16px"
-                    />
-                  </div>
-                  <span>{('name' in child && child.name) || ''}</span>
-                </li>
-              ))}
-            </ul>
-          </ContextMenu>
-        </>
+        <DraggableItemPopup
+          show={show}
+          width={760}
+          height={460}
+          title={title}
+          onClose={handleClose}
+          onUpdateShow={(v) => {
+            toggleShow(v);
+            if (!v) clearHighlight();
+          }}
+          afterTitle={
+            <DatasetMenus
+              menus={layerTitleMenus}
+              data={props.layer}
+              mapId={mapId}
+              locations={['title']}
+            />
+          }
+          {...bind}
+          {...panelBind}
+        >
+          <RegistryItem
+            componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
+            defaultComponent={AttributeTableView}
+            mapId={mapId}
+            {...viewProps}
+          />
+        </DraggableItemPopup>
       )}
     />
+    </MenuConditionProvider>
   );
 }

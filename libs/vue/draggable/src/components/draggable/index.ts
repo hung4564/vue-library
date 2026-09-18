@@ -18,10 +18,7 @@ const DraggableItemFloat = WithMobileHandle(
   DraggableItemFloatOrigin,
   DraggableItemBottom,
 );
-const DraggableModal = WithMobileHandle(
-  DraggableModalOrigin,
-  DraggableItemBottom,
-);
+const DraggableModal = DraggableModalOrigin;
 const DraggableDrawer = WithMobileHandle(
   DraggableDrawerOrigin,
   DraggableItemBottom,

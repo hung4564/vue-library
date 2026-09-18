@@ -1,5 +1,6 @@
 <template>
   <Map ref="mapRef">
+    <DemoLanguageControl />
     <AsideControl position="top-left" />
     <GotoControl position="top-right" />
     <InfoControl position="top-right" />
@@ -7,6 +8,7 @@
     <CrsControl />
     <GlobeControl />
     <SettingControl />
+    <ThemeControl />
     <FullScreenControl />
     <EventManagementControl />
     <ZoomControl />
@@ -15,9 +17,11 @@
     <GeoLocateControl position="top-right" />
     <MouseCoordinatesControl />
     <MapContextMenuControl />
+    <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
@@ -32,10 +36,12 @@ import {
   MapContextMenuControl,
   MouseCoordinatesControl,
   SettingControl,
+  ThemeControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 </script>
 <style>
 * {

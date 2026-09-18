@@ -8,10 +8,10 @@
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk",
       "preserveLocalDependencyProtocols": false,
-      "manifestRootsToUpdate": ["dist/{projectRoot}"]
+      "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
     }
   },
-  "tags": ["share", "store"],
+  "tags": ["share", "store", "shared-store"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -21,6 +21,15 @@
         "main": "libs/share/store/src/index.ts",
         "tsConfig": "libs/share/store/tsconfig.lib.json",
         "assets": ["libs/share/store/*.md"]
+      }
+    },
+    "ts-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["tsc -p tsconfig.lib.json --noEmit"],
+        "forwardAllArgs": false,
+        "description": "Type check with tsc"
       }
     },
     "nx-release-publish": {

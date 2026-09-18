@@ -78,11 +78,13 @@ export function useFileDialog(
       ...options,
       ...localOptions,
     };
-    input.multiple = _options.multiple!;
-    input.accept = _options.accept!;
+    input.multiple = _options.multiple ?? true;
+    input.accept = _options.accept ?? '*';
     // webkitdirectory key is not stabled, maybe replaced in the future.
-    input.webkitdirectory = _options.directory!;
-    if (hasOwn(_options, 'capture')) input.capture = _options.capture!;
+    input.webkitdirectory = _options.directory ?? false;
+    if (hasOwn(_options, 'capture') && _options.capture != null) {
+      input.capture = _options.capture;
+    }
     if (_options.reset) reset();
     input.click();
   };

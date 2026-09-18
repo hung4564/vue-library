@@ -1,21 +1,24 @@
-import type { CrsItem, WithMapPropType } from '@hungpvq/map-core';
+import type { WithMapPropType } from '@hungpvq/map-core';
+import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
-} from '@hungpvq/map-core';
+} from '@hungpvq/map-core/crs';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { useLang } from '../../lang';
+import { useLang } from '../../lang/hook';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
-import { defaultMapProps, useMap, useShow } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
 export interface CrsControlProps extends WithMapPropType {
@@ -30,7 +33,7 @@ const UNIT_ITEMS = [
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapCrsControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCrsControl',
@@ -50,8 +53,8 @@ export function CrsControl(props: CrsControlProps) {
   const [filterQuery, setFilterQuery] = useState('');
 
   useEffect(() => {
-    setLocaleDefault(CRS_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+    registerLocale('en', CRS_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const catalogItems = useMemo(
     () => buildMapCrsCatalog(crsItems),
@@ -75,15 +78,21 @@ export function CrsControl(props: CrsControlProps) {
     kind: 'single',
     id: 'mapCrsControl',
     getState() {
-      return {
+      return mdiButtonState(mdiInboxOutline, {
         visible: true,
+        active: show,
         title: trans('map.crs-control.title'),
         order,
-        icon: { type: 'mdi' as const, path: mdiInboxOutline },
-      };
+      });
     },
     onClick: handleToggle,
   });
+  const controlRef = useRef(control);
+  controlRef.current = control;
+
+  useEffect(() => {
+    controlRef.current.sync();
+  }, [show]);
 
   const updateCrsItem = useCallback(
     (index: number, patch: Partial<CrsItem>) => {

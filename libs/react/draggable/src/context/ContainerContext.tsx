@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 
 const ContainerContext = createContext<string | undefined>(undefined);
 

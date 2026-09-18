@@ -1,12 +1,12 @@
-import { WorkerMonitor } from '@hungpvq/map-core';
+import { connectWorkerMonitor } from '@hungpvq/map-core';
 import type {
   SampleWorkerRequest,
   SampleWorkerResponse,
 } from './sample.worker';
 
-export const SAMPLE_WORKER_ID = 'sample';
+const SAMPLE_WORKER_ID = 'sample';
 
-const sampleWorker = WorkerMonitor.connect<
+const sampleWorker = connectWorkerMonitor<
   SampleWorkerRequest,
   SampleWorkerResponse
 >({

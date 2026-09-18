@@ -1,12 +1,11 @@
+import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
-  logHelper,
-  MapSimple,
-  MAP_STORE_KEY,
-  addImageForMap,
   createDefaultImageStore,
+  createMapImageStoreApi,
   type MapImageStore,
-} from '@hungpvq/map-core';
-import { createMapScopedStore, useMapStore } from '../../store';
+} from '@hungpvq/map-core/image';
+import { createMapScopedStore } from '../../store/store-utils';
+import { useMapStore } from '../../store/store';
 import { loggerFactory } from '@hungpvq/shared-log';
 
 const logger = loggerFactory.createLogger().setNamespace('map:image', 2);
@@ -22,23 +21,5 @@ export const useMapImageStore = (mapId: string) =>
 export const useMapImage = (mapId: string) => {
   const store = useMapImageStore(mapId);
   const storeMap = useMapStore(mapId);
-  return {
-    async addImage(
-      mapId: string,
-      key: string,
-      image_url: string,
-      option: Parameters<typeof addImageForMap>[3] = {},
-    ) {
-      store.images[key] = {
-        path: image_url,
-        id: key,
-        name: key,
-        is_sprite: false,
-        category: 'custom',
-      };
-      return storeMap.getMap(async (map: MapSimple) =>
-        addImageForMap(map, key, image_url, option),
-      );
-    },
-  };
+  return createMapImageStoreApi(store, (fn) => storeMap.getMap(fn));
 };

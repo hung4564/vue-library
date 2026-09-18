@@ -1,110 +1,72 @@
-import type { EventBboxRangerHandle, MapMenuItemProps, WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType } from '@hungpvq/map-core';
+import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
+import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
+import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
+import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
-  EventBboxRanger,
-  EventClick,
-  logHelper,
-  MAP_CONTEXT_MENU_ID,
-} from '@hungpvq/map-core';
-import type {
-  IDataset,
-  IdentifyMultiResult,
-  IdentifyResult,
-  IIdentifyView,
-  MenuAction,
-} from '@hungpvq/map-dataset';
-import {
+  createIdentifySession,
+  IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
-  convertFeatureToItem,
-  handleMenuAction,
-  handleMultiIdentify,
-  handleMultiIdentifyGetFirst,
-} from '@hungpvq/map-dataset';
-import { DraggableItemPopup } from '@hungpvq/react-draggable';
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyLayerFilterPayload,
+  type IdentifyResultUpdatePayload,
+  type IdentifyScopeToggleResult,
+} from '@hungpvq/map-dataset/identify';
 import {
-  BaseButton,
+  defaultMapProps,
   MapCommonButton,
   ModuleContainer,
-  defaultMapProps,
-  useCoordinate,
+  UniversalRegistry,
   useEventMap,
   useLang,
   useMap,
   useRegisterMapControl,
   useShow,
   useToolbarControl,
-  UniversalRegistry,
 } from '@hungpvq/react-map-core';
-import { mdiCursorPointer, mdiHandPointingUp, mdiSelect } from '@mdi/js';
-import Icon from '@mdi/react';
-import type { MapMouseEvent, PointLike } from 'maplibre-gl';
+import { mdiHandPointingUp } from '@mdi/js';
+import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { loggerIdentify } from '../../logger';
-import { useMapDataset, useMapDatasetHighlight } from '../../store';
-import { IdentifyMenuItem } from './IdentifyMenuItem';
+import { useMapDataset } from '../../store/dataset-api';
+import { useMapHighlight } from '../../store/highlight';
+import { IdentifyResultControl } from './IdentifyResultControl';
 
-const ICON_SIZE = 16 / 24;
-
-interface Grouped {
-  id: string;
-  name: string;
-  items: ({ id: string | number; name?: string; data: unknown } & {
-    identify: IIdentifyView;
-  })[];
-}
-
-function groupItems(items: IdentifyMultiResult[]): Grouped[] {
-  const groups: Grouped[] = [];
-  const groupExistingIds = new Map<string, Set<string | number>>();
-
-  for (const item of items) {
-    let group: Grouped | undefined;
-    const groupIdentify = item.identify.group;
-    if (groupIdentify) {
-      group = groups.find((g) => g.id === groupIdentify.id);
-      if (!group) {
-        group = { id: groupIdentify.id, name: groupIdentify.name, items: [] };
-        groups.push(group);
-      }
-    } else {
-      group = {
-        id: item.identify.id,
-        name: item.identify.getName(),
-        items: [],
-      };
-      groups.push(group);
-    }
-    let existingIds = groupExistingIds.get(group.id);
-    if (!existingIds) {
-      existingIds = new Set<string | number>();
-      groupExistingIds.set(group.id, existingIds);
-    }
-
-    for (const f of item.features) {
-      const fid = f.id;
-      if (!existingIds.has(fid)) {
-        group.items.push({ ...f, identify: item.identify });
-        existingIds.add(fid);
-      }
-    }
-  }
-  return groups;
+function updateResultPanel(
+  mapId: string,
+  payload: IdentifyResultUpdatePayload,
+) {
+  UniversalRegistry.runControlAction(
+    mapId,
+    IDENTIFY_RESULT_CONTROL.id,
+    IDENTIFY_RESULT_CONTROL.actionUpdate,
+    payload,
+  );
 }
 
 export function IdentifyControl(
-  props: WithMapPropType & { show?: boolean; immediately?: boolean },
+  props: WithMapPropType & {
+    show?: boolean;
+    immediately?: boolean;
+    /**
+     * Always open Identify Result panel (skip auto show-detail / attribute-table),
+     * even when those menus are registered.
+     */
+    preferResultControl?: boolean;
+  },
 ) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order, callMap } = useMap({ ...merged, controlId: 'mapIdentifyControl' });
+  const { mapId, moduleContainerProps, order, callMap } = useMap({
+    ...merged,
+    controlId: IDENTIFY_CONTROL.id,
+  });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
-  const { setFeatureHighlight } = useMapDatasetHighlight(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
-  const { format: formatCoordinate } = useCoordinate(mapId);
+  const hl = useMapHighlight(mapId);
+  const { trans, registerLocale } = useLang(mapId);
+
   const [show, toggleShow] = useShow(!!props.show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
-  const [isUseClick, setIsUseClick] = useState(false);
-  const [isSelectBbox, setIsSelectBbox] = useState(false);
-  const [origin, setOrigin] = useState({ latitude: 0, longitude: 0 });
-  const [resultItems, setResultItems] = useState<Grouped[]>([]);
   const [loading, setLoading] = useState(false);
 
   const viewsRef = useRef(views);
@@ -113,29 +75,20 @@ export function IdentifyControl(
   showRef.current = show;
   const immediatelyRef = useRef(!!props.immediately);
   immediatelyRef.current = !!props.immediately;
-  const isUseClickRef = useRef(isUseClick);
-  isUseClickRef.current = isUseClick;
-  const isSelectBboxRef = useRef(isSelectBbox);
-  isSelectBboxRef.current = isSelectBbox;
-
-  useEffect(() => {
-    setLocaleDefault(IDENTIFY_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
-
-  useEffect(() => {
-    const next = (
-      getAllComponentsByType<IIdentifyView>('identify') || []
-    ).reverse();
-    setViews((prev) => {
-      if (
-        prev.length === next.length &&
-        prev.every((view, index) => view === next[index])
-      ) {
-        return prev;
-      }
-      return next;
-    });
-  }, [datasetVersion, mapId, getAllComponentsByType]);
+  const loadingRef = useRef(loading);
+  loadingRef.current = loading;
+  const transRef = useRef(trans);
+  transRef.current = trans;
+  const callMapRef = useRef(callMap);
+  callMapRef.current = callMap;
+  const toggleShowStateRef = useRef(toggleShow);
+  toggleShowStateRef.current = toggleShow;
+  const controlSyncRef = useRef<() => void>(() => undefined);
+  const syncResultPanelRef = useRef<(extra?: IdentifyResultUpdatePayload) => void>(
+    () => undefined,
+  );
+  const hlRef = useRef(hl);
+  hlRef.current = hl;
 
   const onMapClickRef = useRef<(e: MapMouseEvent) => void>(() => undefined);
   const onBboxSelectRef = useRef<EventBboxRangerHandle>(() => undefined);
@@ -175,422 +128,75 @@ export function IdentifyControl(
   const removeEventBboxRef = useRef(removeEventBbox);
   removeEventBboxRef.current = removeEventBbox;
 
-  const onSelectFeatures = useCallback(
-    (event?: MapMouseEvent, features: IdentifyMultiResult[] = []) => {
-      logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-        'onSelectFeatures',
-        features,
-      );
-      setResultItems(groupItems(features));
-      if (
-        immediatelyRef.current &&
-        features[0]?.features?.[0]
-      ) {
-        const menu = features[0].identify.getMenu('show-detail');
-        if (menu) {
-          handleMenuAction(menu, {
-            event,
-            layer: features[0].identify,
-            mapId,
-            value: features[0].features[0].data,
-          });
-        }
-      }
-    },
-    [mapId],
+  const sessionRef = useRef<ReturnType<typeof createIdentifySession> | null>(
+    null,
   );
-
-  const onGetFeatures = useCallback(
-    async (
-      pointOrBox: PointLike | [PointLike, PointLike],
-      event?: MapMouseEvent,
-    ) => {
-      setLoading(true);
-      try {
-        // Always read latest identify views (datasets may load after first mount)
-        const identifies = (
-          getAllComponentsByType<IIdentifyView>('identify') || []
-        ).reverse();
-        viewsRef.current = identifies;
-        setViews(identifies);
-        logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-          'onGetFeatures',
-          { pointOrBox, identifies },
-        );
-        const startTime = Date.now();
-        const features = await handleMultiIdentify(
-          identifies,
-          mapId,
-          pointOrBox,
-        );
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime < 500) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, 500 - elapsedTime),
-          );
-        }
-        logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-          'onGetFeatures',
-          { features },
-        );
-        onSelectFeatures(
-          event,
-          features.filter(
-            (item): item is IdentifyMultiResult =>
-              'features' in item && item.features.length > 0,
-          ),
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [mapId, onSelectFeatures, getAllComponentsByType],
-  );
-
-  const onGetFeaturesRef = useRef(onGetFeatures);
-  onGetFeaturesRef.current = onGetFeatures;
-  const toggleShowRef = useRef(toggleShow);
-  toggleShowRef.current = toggleShow;
-  const callMapRef = useRef(callMap);
-  callMapRef.current = callMap;
-
-  useEffect(() => {
-    UniversalRegistry.registerMenuHandlerForMap(
+  if (!sessionRef.current) {
+    sessionRef.current = createIdentifySession({
       mapId,
-      MAP_CONTEXT_MENU_ID.identifyHere,
-      (props: MapMenuItemProps) => {
-        const { lng, lat } = props.layer.lngLat;
-        const run = (point: PointLike) => {
-          setOrigin({ latitude: lat, longitude: lng });
-          toggleShowRef.current(true);
-          void onGetFeaturesRef.current(point);
-        };
-        if (props.layer.point) {
-          run(props.layer.point);
-          return;
-        }
+      getIdentifies: () => viewsRef.current,
+      preferResultControl: !!props.preferResultControl,
+      immediately: () => immediatelyRef.current,
+      callMap: (fn) => callMapRef.current(fn),
+      translateAllLayers: () =>
+        transRef.current('map.identify.all_layers'),
+      onStateChange: () => {
+        const s = sessionRef.current!.getState();
+        toggleShowStateRef.current(s.show);
+        showRef.current = s.show;
+        setLoading(s.loading);
+        loadingRef.current = s.loading;
+        controlSyncRef.current();
+      },
+      setCursor: (cursor) => {
         callMapRef.current((map) => {
-          run(map.project([lng, lat]));
+          map.getCanvas().style.cursor = cursor;
         });
       },
-    );
-  }, [mapId]);
-
-  const onStartMapClick = useCallback(() => {
-    setIsUseClick(true);
-    addEventClickRef.current();
-  }, []);
-
-  const onRemoveMapClick = useCallback(() => {
-    setIsUseClick(false);
-    removeEventClickRef.current();
-  }, []);
-
-  const onStartBox = useCallback(() => {
-    setIsSelectBbox(true);
-    addEventBboxRef.current();
-  }, []);
-
-  const onRemoveBox = useCallback(() => {
-    setIsSelectBbox(false);
-    window.setTimeout(() => {
-      removeEventBboxRef.current();
-    }, 500);
-  }, []);
-
-  const onUseMapClick = useCallback(() => {
-    if (!isUseClickRef.current) onStartMapClick();
-    else onRemoveMapClick();
-  }, [onStartMapClick, onRemoveMapClick]);
-
-  const onUseBoxSelect = useCallback(() => {
-    if (!isSelectBboxRef.current) onStartBox();
-    else onRemoveBox();
-  }, [onStartBox, onRemoveBox]);
-
-  const onRemoveIdentify = useCallback(() => {
-    if (immediatelyRef.current) return;
-    onRemoveMapClick();
-    onRemoveBox();
-  }, [onRemoveMapClick, onRemoveBox]);
-
-  const close = useCallback(() => {
-    onRemoveIdentify();
-    setFeatureHighlight(undefined, 'identify');
-    onSelectFeatures(undefined, []);
-  }, [onRemoveIdentify, setFeatureHighlight, onSelectFeatures]);
-
-  onMapClickRef.current = (e: MapMouseEvent) => {
-    if (isEventClickBox) return;
-    logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-      'onMapClick',
-      { event: e },
-    );
-    setOrigin({ latitude: e.lngLat.lat, longitude: e.lngLat.lng });
-    onGetFeatures(e.point, e);
-  };
-
-  onBboxSelectRef.current = (bbox) => {
-    if (isEventClickActive) return;
-    logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl').debug(
-      'onBboxSelect',
-      bbox,
-    );
-    onRemoveBox();
-    if (!bbox) return;
-    onGetFeatures([
-      [bbox[0].x, bbox[0].y],
-      [bbox[1].x, bbox[1].y],
-    ]);
-  };
-
-  useEffect(() => {
-    if (props.immediately) onUseMapClick();
-    // start click-to-identify once when immediately is set
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function handleToggle() {
-    toggleShow();
-    onUseMapClick();
-  }
-
-  function onMenuAction(
-    identify: IIdentifyView,
-    menu: MenuAction,
-    item: unknown,
-    event?: MapMouseEvent | React.MouseEvent,
-  ) {
-    const nativeEvent =
-      event && 'nativeEvent' in event ? event.nativeEvent : event;
-    handleMenuAction(menu, {
-      event: nativeEvent,
-      layer: identify,
-      mapId,
-      value: item,
+      syncResultPanel: (extra) => syncResultPanelRef.current(extra),
+      onEventClickActive: (active) => {
+        if (active) addEventClickRef.current();
+        else removeEventClickRef.current();
+      },
+      onEventBoxSelectActive: (active) => {
+        if (active) addEventBboxRef.current();
+        else removeEventBboxRef.current();
+      },
+      onCloseSideEffects: () => {
+        hlRef.current.hideIfSource('identify');
+      },
     });
+    if (props.show) sessionRef.current.getModel().setShow(true);
   }
+  const session = sessionRef.current;
 
-  function onFeatureClick(
-    identify: IIdentifyView,
-    item: unknown,
-    event?: React.MouseEvent,
-  ) {
-    const menu = identify.getMenu?.('show-detail');
-    if (menu) {
-      onMenuAction(identify, menu, item, event);
-      return;
-    }
-    if (identify.showDetail) {
-      identify.showDetail(mapId, item as never);
-    }
-  }
+  onMapClickRef.current = (e) => session.onMapClick(e);
+  onBboxSelectRef.current = (bbox) => session.onBboxSelected(bbox);
 
-  const currentPoint = useMemo(() => {
-    const point = formatCoordinate(origin);
-    return `${point.longitude}, &nbsp;${point.latitude}`;
-  }, [origin, formatCoordinate]);
-
-  const hasSelectedPoint = origin.latitude !== 0 || origin.longitude !== 0;
-
-  const toolbarConfig = useMemo(
-    () => ({
-      kind: 'single' as const,
-      id: 'mapIdentifyControl',
-      getState: () => ({
-        visible: viewsRef.current.length > 0,
-        active: showRef.current,
-        title: trans('map.identify.title'),
-        order,
-        icon: { type: 'mdi' as const, path: mdiHandPointingUp },
-      }),
-      onClick: () => handleToggle(),
-    }),
-    // handleToggle is stable enough via refs; sync toolbar when show/views change separately.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [trans, order],
-  );
-
-  const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
+  const syncFromModel = useCallback(() => {
+    const s = session.getState();
+    toggleShow(s.show);
+    showRef.current = s.show;
+    setLoading(s.loading);
+    loadingRef.current = s.loading;
+  }, [session, toggleShow]);
 
   useEffect(() => {
-    control.sync();
-  }, [show, views.length, control]);
+    registerLocale('en', IDENTIFY_CONTROL_LOCALE);
+  }, [registerLocale]);
 
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapIdentifyControl',
-    panelKind: 'popup',
-    title: trans('map.identify.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow: toggleShow,
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-      immediately: props.immediately,
-    }),
-    actions: [{ type: 'mapIdentifyControl', run: () => handleToggle() }],
-  });
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => {
-              // Only sync visibility — do not clear results here.
-              // Clearing is handled by onClose when the user dismisses the popup.
-              if (!v) toggleShow(false);
-              else toggleShow(true);
-            }}
-            onClose={close}
-            title={trans('map.identify.title')}
-            width={400}
-            height={300}
-            extraBtn={
-              <>
-                <BaseButton
-                  active={isEventClickActive}
-                  disabled={isEventClickActive}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUseMapClick();
-                  }}
-                >
-                  <Icon path={mdiCursorPointer} size={ICON_SIZE} />
-                </BaseButton>
-                <BaseButton
-                  active={isEventClickBox}
-                  disabled={isEventClickBox}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUseBoxSelect();
-                  }}
-                >
-                  <Icon path={mdiSelect} size={ICON_SIZE} />
-                </BaseButton>
-              </>
-            }
-            {...bind}
-            {...panelBind}
-          >
-            <div className="identify-control-container">
-              <div className="identify-control-header">
-                <b>{trans('map.identify.point')}:</b>
-                <span dangerouslySetInnerHTML={{ __html: currentPoint }} />
-              </div>
-              <hr className="identify-control-separator" />
-              <div className="identify-control-body">
-                {loading ? (
-                  <div className="identify-control-state">
-                    <div className="identify-control-state__content">
-                      <div className="identify-control-state__loading" />
-                      <span>{trans('map.identify.loading')}</span>
-                    </div>
-                  </div>
-                ) : !hasSelectedPoint ? (
-                  <div className="identify-control-state">
-                    <div className="identify-control-state__content">
-                      <span>{trans('map.identify.no_selection')}</span>
-                    </div>
-                  </div>
-                ) : resultItems.length === 0 ? (
-                  <div className="identify-control-state">
-                    <div className="identify-control-state__content">
-                      <span>{trans('map.identify.no_data')}</span>
-                    </div>
-                  </div>
-                ) : (
-                  resultItems.map((item) => (
-                    <div key={item.id} className="identify-control-list-item">
-                      <div className="identify-control-list-item__container">
-                        <div
-                          className="identify-control-list-item__header"
-                          title={item.name}
-                        >
-                          {item.name || '---'}
-                        </div>
-                        <div className="identify-control-list-item__child-container">
-                          {item.items.map((child) => (
-                            <div
-                              key={String(child.id)}
-                              className="identify-control-child-item"
-                              title={child.name || String(child.id)}
-                              role="button"
-                              tabIndex={0}
-                              onClick={(event) =>
-                                onFeatureClick(child.identify, child.data, event)
-                              }
-                              onKeyDown={(event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
-                                  event.preventDefault();
-                                  onFeatureClick(child.identify, child.data);
-                                }
-                              }}
-                            >
-                              <span className="identify-control-child-item__name">
-                                {child.name || String(child.id) || '---'}
-                              </span>
-                              <div className="identify-control-child-item__spacer" />
-                              <div
-                                className="identify-control-child-item__action"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {child.identify.getMenus().map((menu, i) => (
-                                  <IdentifyMenuItem
-                                    key={i}
-                                    item={menu}
-                                    onClick={(event) =>
-                                      onMenuAction(
-                                        child.identify,
-                                        menu,
-                                        child.data,
-                                        event,
-                                      )
-                                    }
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
-    />
+  const syncResultPanel = useCallback(
+    (extra?: IdentifyResultUpdatePayload) => {
+      updateResultPanel(mapId, session.buildResultPanelPayload(extra));
+    },
+    [mapId, session],
   );
-}
-
-export function IdentifyShowFirstControl(props: WithMapPropType) {
-  const merged = { ...defaultMapProps, ...props };
-  const { mapId } = useMap({ ...merged, controlId: 'mapIdentifyControl' });
-  const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
-  const [views, setViews] = useState<Array<IIdentifyView & IDataset>>([]);
-  const viewsRef = useRef(views);
-  viewsRef.current = views;
+  syncResultPanelRef.current = syncResultPanel;
 
   useEffect(() => {
-    const next =
-      getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
+    const next = (
+      getAllComponentsByType<IIdentifyView>('identify') || []
+    ).reverse();
     setViews((prev) => {
       if (
         prev.length === next.length &&
@@ -602,87 +208,165 @@ export function IdentifyShowFirstControl(props: WithMapPropType) {
     });
   }, [datasetVersion, mapId, getAllComponentsByType]);
 
-  const onMapClickRef = useRef<(e: MapMouseEvent) => void>(() => undefined);
-
-  const clickEvent = useMemo(
-    () =>
-      new EventClick().setHandler((e: MapMouseEvent) => {
-        onMapClickRef.current(e);
-      }),
-    [],
-  );
-
-  const { add: addEventClick, remove: removeEventClick } = useEventMap(
-    mapId,
-    clickEvent,
-    false,
-  );
-
-  onMapClickRef.current = (e: MapMouseEvent) => {
-    logHelper(
-      loggerIdentify,
-      mapId,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onMapClick', { event: e });
-    void onGetFeatures(e);
-  };
-
-  async function onGetFeatures(e: MapMouseEvent) {
-    const pointOrBox = e.point;
-    logHelper(
-      loggerIdentify,
-      mapId,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onGetFeatures', { pointOrBox });
-    try {
-      const feature = await handleMultiIdentifyGetFirst(
-        viewsRef.current,
-        mapId,
-        pointOrBox,
-      );
-      logHelper(
-        loggerIdentify,
-        mapId,
-        'FIRST',
-        'IdentifyShowFirstControl',
-      ).debug('onGetFeatures', { feature });
-      onSelectFeatures(feature, e);
-    } catch {
-      // no feature under cursor
-    }
-  }
-
-  function onSelectFeatures(
-    feature: IdentifyResult | undefined,
-    event?: MapMouseEvent,
-  ) {
-    logHelper(
-      loggerIdentify,
-      mapId,
-      'FIRST',
-      'IdentifyShowFirstControl',
-    ).debug('onSelectFeatures', { feature });
-    if (feature && 'feature' in feature && feature.feature) {
-      const menu = feature.identify.getMenu('show-detail');
-      if (menu) {
-        handleMenuAction(menu, {
-          event,
-          layer: feature.identify,
-          mapId,
-          value: convertFeatureToItem(feature.feature.data),
-        });
-      } else if (feature.identify.showDetail) {
-        feature.identify.showDetail(mapId, feature.feature.data);
-      }
-    }
-  }
+  useEffect(() => {
+    syncResultPanel();
+  }, [
+    views,
+    show,
+    loading,
+    isEventClickActive,
+    isEventClickBox,
+    syncResultPanel,
+  ]);
 
   useEffect(() => {
-    addEventClick();
-    return () => removeEventClick();
-  }, [addEventClick, removeEventClick]);
+    UniversalRegistry.registerMenuHandlerForMap(
+      mapId,
+      MAP_CONTEXT_MENU_ID.identifyHere,
+      (menuProps: MapMenuItemProps) => {
+        const { lng, lat } = menuProps.layer.lngLat;
+        const point = menuProps.layer.point;
+        session.onIdentifyHere(
+          lng,
+          lat,
+          point ? [point.x, point.y] : undefined,
+        );
+      },
+    );
+    return () => {
+      UniversalRegistry.unregisterMenuHandlerForMap(
+        mapId,
+        MAP_CONTEXT_MENU_ID.identifyHere,
+      );
+    };
+  }, [mapId, session]);
 
-  return null;
+  useEffect(() => {
+    return () => {
+      sessionRef.current?.teardownInputModes({ immediate: true });
+      sessionRef.current?.destroy();
+      sessionRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (props.immediately) session.toggleMapClickMode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleToggle() {
+    const resolved = session.toggleShow();
+    syncFromModel();
+    session.applyToggleShowEffects(resolved);
+  }
+
+  const toolbarConfig = useMemo(
+    () => ({
+      kind: 'single' as const,
+      id: IDENTIFY_CONTROL.id,
+      getState: () =>
+        mdiButtonState(mdiHandPointingUp, {
+          visible: viewsRef.current.length > 0,
+          active: showRef.current,
+          loading: loadingRef.current,
+          title: trans('map.identify.title'),
+          order,
+        }),
+      onClick: () => handleToggle(),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [trans, order],
+  );
+
+  const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
+  controlSyncRef.current = () => control.sync();
+
+  useEffect(() => {
+    control.sync();
+  }, [show, loading, views.length, control]);
+
+  useRegisterMapControl(mapId, {
+    id: IDENTIFY_CONTROL.id,
+    panelKind: 'button',
+    title: trans('map.identify.title'),
+    buttonPosition: merged.position,
+    show,
+    setShow: (value) => {
+      session.setShow(value);
+      syncFromModel();
+      updateResultPanel(mapId, { show: value });
+    },
+    getProps: () => ({
+      position: merged.position,
+      controlLayout: merged.controlLayout,
+      immediately: props.immediately,
+      preferResultControl: props.preferResultControl,
+    }),
+    actions: [
+      { type: IDENTIFY_CONTROL.id, run: () => handleToggle() },
+      {
+        type: IDENTIFY_CONTROL.actionSetScoped,
+        run: (event) => {
+          const resolved = session.applyScopedSession(
+            event as IdentifyScopeToggleResult | undefined,
+          );
+          syncFromModel();
+          session.finishScopedSession(resolved);
+        },
+      },
+      {
+        type: IDENTIFY_CONTROL.actionUseMapClick,
+        run: () => session.toggleMapClickMode(),
+      },
+      {
+        type: IDENTIFY_CONTROL.actionUseBoxSelect,
+        run: () => session.toggleBoxSelectMode(),
+      },
+      {
+        type: IDENTIFY_CONTROL.actionSetLayerFilter,
+        run: (event) => {
+          const payload = event as IdentifyLayerFilterPayload | undefined;
+          void session.applyLayerFilter(payload?.identifyId ?? '');
+        },
+      },
+      {
+        type: IDENTIFY_CONTROL.actionClose,
+        run: () => {
+          session.closeAndCleanup();
+          syncFromModel();
+        },
+      },
+      {
+        type: IDENTIFY_CONTROL.actionSetLoading,
+        run: (event) => {
+          session.setLoading(!!event);
+          syncFromModel();
+          control.sync();
+        },
+      },
+    ],
+  });
+
+  return (
+    <>
+      <ModuleContainer
+        {...moduleContainerProps}
+        btn={
+          state ? (
+            <MapCommonButton
+              option={state}
+              onClick={(e) => {
+                e.stopPropagation();
+                control.onAction(e.nativeEvent);
+              }}
+            />
+          ) : null
+        }
+      />
+      <IdentifyResultControl
+        position={merged.position}
+        controlLayout={merged.controlLayout}
+      />
+    </>
+  );
 }

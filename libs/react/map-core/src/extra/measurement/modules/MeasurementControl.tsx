@@ -1,34 +1,36 @@
 import {
-  EventClick,
-  FormView,
-  MapMarkerView,
-  MapView,
-  MeasureArea,
-  MeasureAzimuth,
-  MeasureDistance,
-  MeasurePoint,
-  MEASUREMENT_CONTROL_LOCALE,
-  MeasurementHandle,
-  buildMapCrsCatalog,
-  convertGeometry,
-  fitBounds,
   logHelper,
-  resolveCrsDisplayItems,
-  type CoordinatesNumber,
-  type IViewSettingField,
   type MapSimple,
-  type MeasureActionItem,
-  type MapControlButtonUIState,
-  type MeasurementHandleType,
-  type ToolbarButtonConfig,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import {
+  buildMapCrsCatalog,
+  resolveCrsDisplayItems,
+} from '@hungpvq/map-core/crs';
+import { EventClick } from '@hungpvq/map-core/event';
+import {
+  MEASUREMENT_CONTROL_LOCALE,
+  MEASUREMENT_MAP_VIEW_IMAGE,
+  createMeasurementSession,
+  resolveMeasurementToolbarStatus,
+  type MeasureActionItem,
+  type MeasurementHandleType,
+  type MeasurementModeType,
+  type MeasurementUiState,
+} from '@hungpvq/map-core/measurement';
+import {
+  mdiIcon,
+  type MapControlButtonUIState,
+  type ToolbarButtonConfig,
+} from '@hungpvq/map-core/toolbar';
+import {
+  mdiAngleAcute,
   mdiClose,
   mdiCogOutline,
   mdiCrosshairsGps,
   mdiDeleteOutline,
   mdiMapMarkerOutline,
+  mdiRadiusOutline,
   mdiRuler,
   mdiRulerSquareCompass,
   mdiTableHeadersEye,
@@ -37,25 +39,25 @@ import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
-import { defaultMapProps, useMap } from '../../../hooks';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems';
-import { useEventMap } from '../../event';
-import { useMapImage } from '../../image';
-import { useLang } from '../../lang';
-import { useRegisterMapControl } from '../../registry';
-import { useToolbarControl } from '../../toolbar';
+import { useEventMap } from '../../event/hook/useEvent';
+import { useMapImage } from '../../image/store';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { logger } from '../logger';
 import { MeasurementSettingPopup } from './MeasurementSettingPopup';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 
-const DEFAULT_COLOR_HIGHLIGHT = '#004E98';
-
 const PATH = {
   distance: mdiRuler,
   area: mdiRulerSquareCompass,
   azimuth: mdiTableHeadersEye,
+  angle: mdiAngleAcute,
+  radius: mdiRadiusOutline,
   point: mdiMapMarkerOutline,
   clear: mdiDeleteOutline,
   close: mdiClose,
@@ -67,27 +69,30 @@ export interface MeasurementControlProps extends WithMapPropType {
   actions?: MeasureActionItem[];
 }
 
+const INITIAL_UI: MeasurementUiState = {
+  measurementType: undefined,
+  coordinates: [],
+  setting: { show: true, fields: [], maxLength: 0 },
+};
+
 export function MeasurementControl(props: MeasurementControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const handler = useRef(MeasurementHandle());
-  const [measurementType, setMeasurementType] = useState<string | undefined>();
-  const [coordinates, setCoordinates] = useState<CoordinatesNumber[]>([]);
-  const [setting, setSetting] = useState<{
-    show: boolean;
-    fields: IViewSettingField[];
-    maxLength?: number;
-  }>({
-    show: true,
-    fields: [],
-    maxLength: 0,
-  });
+  const [ui, setUi] = useState<MeasurementUiState>(INITIAL_UI);
+  const uiRef = useRef(ui);
+  uiRef.current = ui;
 
-  const measurementTypeRef = useRef(measurementType);
-  const coordinatesRef = useRef(coordinates);
-  const settingRef = useRef(setting);
-  measurementTypeRef.current = measurementType;
-  coordinatesRef.current = coordinates;
-  settingRef.current = setting;
+  const sessionRef = useRef<ReturnType<typeof createMeasurementSession> | null>(
+    null,
+  );
+  const addEventClickRef = useRef<() => void>(() => undefined);
+  const removeEventClickRef = useRef<() => void>(() => undefined);
+  const controlRef = useRef<{ sync: () => void } | null>(null);
+  const getMeasurePointCrsItemsRef = useRef<() => ReturnType<typeof resolveCrsDisplayItems>>(
+    () => [],
+  );
+  const translateRef = useRef<(key: string, params?: Record<string, string | number>) => string>(
+    (key) => key,
+  );
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
     { ...merged, controlId: 'mapMeasurementControl' },
@@ -96,6 +101,12 @@ export function MeasurementControl(props: MeasurementControlProps) {
   );
   const crsHandle = useMapCrsItems(mapId);
   const displayCrsHandle = useMapCrsDisplayEpsgs(mapId);
+  const imageHandle = useMapImage(mapId);
+  const { trans, registerLocale } = useLang(mapId);
+
+  useEffect(() => {
+    registerLocale('en', MEASUREMENT_CONTROL_LOCALE);
+  }, [registerLocale]);
 
   const getMeasurePointCrsItems = useCallback(() => {
     return resolveCrsDisplayItems(
@@ -103,15 +114,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
       buildMapCrsCatalog(crsHandle.items),
     );
   }, [crsHandle.items, displayCrsHandle.displayEpsgs]);
-  const imageHandle = useMapImage(mapId);
-  const { trans, setLocaleDefault } = useLang(mapId);
-  const controlRef = useRef<{ sync: () => void } | null>(null);
-  const addEventClickRef = useRef<() => void>(() => undefined);
-  const removeEventClickRef = useRef<() => void>(() => undefined);
-
-  useEffect(() => {
-    setLocaleDefault(MEASUREMENT_CONTROL_LOCALE);
-  }, [setLocaleDefault]);
+  getMeasurePointCrsItemsRef.current = getMeasurePointCrsItems;
+  translateRef.current = (key, params) => trans(key, params);
 
   const clickEvent = useRef(
     new EventClick().setHandler((event: MapMouseEvent) => {
@@ -119,11 +123,10 @@ export function MeasurementControl(props: MeasurementControlProps) {
         'onMapClick',
         event,
       );
-      const newCoordinate: CoordinatesNumber = [
+      sessionRef.current?.addMapClick(
         event.lngLat.lng ?? 0,
         event.lngLat.lat ?? 0,
-      ];
-      if (handler.current.action) handler.current.add(newCoordinate);
+      );
     }),
   );
 
@@ -135,115 +138,47 @@ export function MeasurementControl(props: MeasurementControlProps) {
   addEventClickRef.current = addEventClick;
   removeEventClickRef.current = removeEventClick;
 
-  function reset(restart = true) {
-    handler.current.reset();
-    if (restart) {
-      // Defer like Vue nextTick so views finish reset before start
-      queueMicrotask(() => handler.current.start());
-    }
+  if (!sessionRef.current) {
+    sessionRef.current = createMeasurementSession({
+      callMap,
+      getMeasurePointCrsItems: () => getMeasurePointCrsItemsRef.current(),
+      translate: (key, params) => translateRef.current(key, params),
+      onEventClickActive: (active) => {
+        if (active) addEventClickRef.current();
+        else removeEventClickRef.current();
+      },
+      onStateChange: (next) => {
+        uiRef.current = next;
+        setUi(next);
+      },
+    });
   }
-
-  function clear() {
-    reset(false);
-    setMeasurementType(undefined);
-    handler.current.setAction(null);
-  }
-
-  function checkMeasureRun(type: string) {
-    reset(false);
-    if (measurementTypeRef.current === type) {
-      setMeasurementType(undefined);
-      handler.current.setAction(null);
-      return false;
-    }
-    setMeasurementType(type);
-    measurementTypeRef.current = type;
-    return true;
-  }
-
-  function onMeasureDistance() {
-    if (!checkMeasureRun('distance')) return;
-    handler.current.setAction(new MeasureDistance());
-    handler.current.start();
-  }
-
-  function onMeasureArea() {
-    if (!checkMeasureRun('area')) return;
-    handler.current.setAction(new MeasureArea());
-    handler.current.start();
-  }
-
-  function onMeasureAzimuth() {
-    if (!checkMeasureRun('azimuth')) return;
-    handler.current.setAction(new MeasureAzimuth());
-    handler.current.start();
-  }
-
-  function onMeasureMarker() {
-    if (!checkMeasureRun('point')) return;
-    handler.current.setAction(new MeasurePoint(() => getMeasurePointCrsItems()));
-    handler.current.start();
-  }
+  const session = sessionRef.current;
+  const handler = session.getHandler();
 
   useEffect(() => {
-    if (measurementType !== 'point') return;
-    const action = handler.current.action;
-    if (action instanceof MeasurePoint) {
-      action.setCrsItems(getMeasurePointCrsItems());
-      if (coordinatesRef.current.length) {
-        handler.current.init(coordinatesRef.current);
-      }
-    }
-  }, [crsHandle.items, displayCrsHandle.displayEpsgs, getMeasurePointCrsItems, measurementType]);
+    session.refreshPointCrs();
+  }, [crsHandle.items, displayCrsHandle.displayEpsgs, session]);
 
-  function toggleSetting() {
-    setSetting((prev) => {
-      const next = { ...prev, show: !prev.show };
-      settingRef.current = next;
-      return next;
-    });
+  function startMode(type: MeasurementModeType) {
+    session.startMode(type);
   }
 
-  function onFlyTo() {
-    callMap((map) => {
-      const geometry = convertGeometry(coordinatesRef.current);
-      if (geometry) fitBounds(map, geometry);
-    });
-  }
-
-  function setValue(coords: CoordinatesNumber[] = []) {
-    handler.current.init(coords);
-  }
-
-  const clearRef = useRef(clear);
-  const onFlyToRef = useRef(onFlyTo);
-  const onMeasureDistanceRef = useRef(onMeasureDistance);
-  const onMeasureAreaRef = useRef(onMeasureArea);
-  const onMeasureAzimuthRef = useRef(onMeasureAzimuth);
-  const onMeasureMarkerRef = useRef(onMeasureMarker);
-  const resetRef = useRef(reset);
-  const toggleSettingRef = useRef(toggleSetting);
-  clearRef.current = clear;
-  onFlyToRef.current = onFlyTo;
-  onMeasureDistanceRef.current = onMeasureDistance;
-  onMeasureAreaRef.current = onMeasureArea;
-  onMeasureAzimuthRef.current = onMeasureAzimuth;
-  onMeasureMarkerRef.current = onMeasureMarker;
-  resetRef.current = reset;
-  toggleSettingRef.current = toggleSetting;
+  const startModeRef = useRef(startMode);
+  startModeRef.current = startMode;
 
   const toToolbarButton = useCallback(
     (action: MeasureActionItem): ToolbarButtonConfig => ({
       id: action.type,
       order: action.index,
       getState: () => {
-        const status: 'select' | 'handle' = measurementTypeRef.current
-          ? 'handle'
-          : 'select';
+        const status = resolveMeasurementToolbarStatus(
+          uiRef.current.measurementType,
+        );
         const visible = action.show
           ? action.show({
-              handler: handler.current as unknown as MeasurementHandleType,
-              measurementType: measurementTypeRef.current,
+              handler: handler as unknown as MeasurementHandleType,
+              measurementType: uiRef.current.measurementType,
               status,
             })
           : status === 'select';
@@ -252,13 +187,10 @@ export function MeasurementControl(props: MeasurementControlProps) {
           visible,
           active: action.isActive?.() ?? false,
           disabled: action.disabled
-            ? action.disabled({ coordinates: coordinatesRef.current })
+            ? action.disabled({ coordinates: uiRef.current.coordinates })
             : false,
           title: trans(action.title),
-          icon: {
-            type: 'mdi' as const,
-            path: action.icon,
-          },
+          icon: mdiIcon(action.icon),
         };
       },
       onClick: async () => {
@@ -267,17 +199,17 @@ export function MeasurementControl(props: MeasurementControlProps) {
           action,
         );
         action.handle({
-          handler: handler.current as unknown as MeasurementHandleType,
-          measurementType: measurementTypeRef.current,
-          coordinates: coordinatesRef.current,
-          clear: () => clearRef.current(),
-          reset: (...args) => resetRef.current(...args),
-          onFlyTo: () => onFlyToRef.current(),
+          handler: handler as unknown as MeasurementHandleType,
+          measurementType: uiRef.current.measurementType,
+          coordinates: uiRef.current.coordinates,
+          clear: () => session.clear(),
+          reset: (...args) => session.reset(...args),
+          onFlyTo: () => session.flyTo(),
         });
         controlRef.current?.sync();
       },
     }),
-    [mapId, trans],
+    [handler, mapId, session, trans],
   );
 
   const buttonShow: MeasureActionItem[] = useMemo(
@@ -287,32 +219,48 @@ export function MeasurementControl(props: MeasurementControlProps) {
         type: 'distance',
         title: 'map.measurement.tools.distance',
         icon: PATH.distance,
-        handle: () => onMeasureDistanceRef.current(),
-        isActive: () => measurementTypeRef.current === 'distance',
+        handle: () => startModeRef.current('distance'),
+        isActive: () => uiRef.current.measurementType === 'distance',
       },
       {
         index: 2,
         type: 'area',
         title: 'map.measurement.tools.area',
         icon: PATH.area,
-        handle: () => onMeasureAreaRef.current(),
-        isActive: () => measurementTypeRef.current === 'area',
+        handle: () => startModeRef.current('area'),
+        isActive: () => uiRef.current.measurementType === 'area',
       },
       {
         index: 3,
         type: 'azimuth',
         title: 'map.measurement.tools.azimuth',
         icon: PATH.azimuth,
-        handle: () => onMeasureAzimuthRef.current(),
-        isActive: () => measurementTypeRef.current === 'azimuth',
+        handle: () => startModeRef.current('azimuth'),
+        isActive: () => uiRef.current.measurementType === 'azimuth',
       },
       {
         index: 4,
+        type: 'angle',
+        title: 'map.measurement.tools.angle',
+        icon: PATH.angle,
+        handle: () => startModeRef.current('angle'),
+        isActive: () => uiRef.current.measurementType === 'angle',
+      },
+      {
+        index: 5,
+        type: 'radius',
+        title: 'map.measurement.tools.radius',
+        icon: PATH.radius,
+        handle: () => startModeRef.current('radius'),
+        isActive: () => uiRef.current.measurementType === 'radius',
+      },
+      {
+        index: 6,
         type: 'point',
         title: 'map.measurement.tools.point',
         icon: PATH.point,
-        handle: () => onMeasureMarkerRef.current(),
-        isActive: () => measurementTypeRef.current === 'point',
+        handle: () => startModeRef.current('point'),
+        isActive: () => uiRef.current.measurementType === 'point',
       },
     ],
     [],
@@ -325,8 +273,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
         type: 'setting',
         title: 'map.measurement.action.setting',
         icon: PATH.setting,
-        handle: () => toggleSettingRef.current(),
-        isActive: () => settingRef.current.show,
+        handle: () => session.toggleSetting(),
+        isActive: () => uiRef.current.setting.show,
         show: ({ status }) => status === 'handle',
       },
       {
@@ -334,7 +282,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
         type: 'fly-to',
         title: 'map.measurement.action.fly-to',
         icon: PATH.fillBound,
-        handle: () => onFlyToRef.current(),
+        handle: () => session.flyTo(),
         disabled: ({ coordinates: coords }) => !coords || coords.length < 1,
         show: ({ status }) => status === 'handle',
       },
@@ -343,7 +291,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
         type: 'clear',
         title: 'map.measurement.action.clear',
         icon: PATH.clear,
-        handle: () => resetRef.current(),
+        handle: () => session.reset(),
         show: ({ status }) => status === 'handle',
       },
       {
@@ -351,18 +299,19 @@ export function MeasurementControl(props: MeasurementControlProps) {
         type: 'close',
         title: 'map.measurement.action.close',
         icon: PATH.close,
-        handle: () => clearRef.current(),
+        handle: () => session.clear(),
         show: ({ status }) => status === 'handle',
       },
     ],
-    [],
+    [session],
   );
 
   const toolbarConfig = useMemo(
     () => ({
       kind: 'module' as const,
       moduleId: 'mapMeasurementControl',
-      moduleOrder: order,
+      order: order,
+      orientation: 'row' as const,
       buttons: [
         ...buttonShow,
         ...buttonHandle,
@@ -403,153 +352,36 @@ export function MeasurementControl(props: MeasurementControlProps) {
 
   useEffect(() => {
     control.sync();
-  }, [measurementType, coordinates, setting.show, control]);
+  }, [ui.measurementType, ui.coordinates, ui.setting.show, control]);
 
   function onInit(map: MapSimple) {
     const mapIdForInit = map.id;
     if (!mapIdForInit) return;
-    handler.current.setMapId(mapIdForInit);
-    imageHandle.addImage(mapIdForInit, 'azimuth-arrow', imageArrow, {
-      sdf: true,
-    });
-    imageHandle.addImage(mapIdForInit, 'measurment-round', imageRounded, {
-      content: [4, 4, 12, 12],
-      stretchX: [[6, 10]],
-      stretchY: [[6, 10]],
-    });
-
-    const mapView = new MapView(map);
-    mapView.init(
-      [
-        {
-          type: 'line',
-          paint: {
-            'line-color': DEFAULT_COLOR_HIGHLIGHT,
-            'line-width': 2,
-          },
-        },
-        {
-          type: 'fill',
-          filter: ['==', '$type', 'Polygon'],
-          paint: {
-            'fill-color': DEFAULT_COLOR_HIGHLIGHT,
-            'fill-opacity': 0.3,
-          },
-        },
-        {
-          type: 'symbol',
-          filter: ['has', 'rotation'],
-          paint: { 'icon-color': DEFAULT_COLOR_HIGHLIGHT },
-          layout: {
-            'icon-size': 1.2,
-            'icon-rotate': {
-              type: 'identity',
-              property: 'rotation',
-            },
-            'icon-rotation-alignment': 'map',
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true,
-            'icon-image': 'azimuth-arrow',
-            visibility: 'visible',
-          },
-        },
-        {
-          type: 'symbol',
-          filter: ['all', ['has', 'is_label'], ['==', '$type', 'Point']],
-          layout: {
-            'text-field': '{text}',
-            'text-offset': [
-              'case',
-              ['to-boolean', ['get', 'is_center']],
-              ['literal', [0, 0]],
-              ['literal', [0, 2]],
-            ],
-            'text-size': 14,
-            'text-allow-overlap': true,
-            'icon-allow-overlap': true,
-            'icon-image': 'measurment-round',
-            'icon-text-fit': 'both',
-          },
-          paint: {
-            'text-color': '#fff',
-            'text-halo-color': DEFAULT_COLOR_HIGHLIGHT,
-            'text-halo-width': 2,
-          },
-        },
-      ],
+    imageHandle.addImage(
+      mapIdForInit,
+      MEASUREMENT_MAP_VIEW_IMAGE.azimuthArrow,
+      imageArrow,
+      { sdf: true },
+    );
+    imageHandle.addImage(
+      mapIdForInit,
+      MEASUREMENT_MAP_VIEW_IMAGE.round,
+      imageRounded,
       {
-        data: {
-          type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: [],
-          },
-        },
+        content: [4, 4, 12, 12],
+        stretchX: [[6, 10]],
+        stretchY: [[6, 10]],
       },
     );
-    mapView.onStart = () => {
-      addEventClickRef.current();
-    };
-    mapView.onReset = () => {
-      removeEventClickRef.current();
-    };
-
-    const markerView = new MapMarkerView(map);
-    markerView.setColor(DEFAULT_COLOR_HIGHLIGHT);
-    markerView.onDragMarker = (p_coordinates) => {
-      handler.current.init(p_coordinates);
-    };
-    markerView.onRightClickMarker = (_p_coordinate, index) => {
-      const next = coordinatesRef.current.slice();
-      next.splice(index, 1);
-      setCoordinates(next);
-      coordinatesRef.current = next;
-      handler.current.init(next);
-    };
-
-    const formView = new FormView();
-    formView.onChangeValue = (value_coordinates) => {
-      const next = (value_coordinates || []).slice();
-      coordinatesRef.current = next;
-      setCoordinates(next);
-    };
-    formView.onChangeSetting = (_setting = {}) => {
-      let fields = _setting.fields;
-      if (!fields || fields.length === 0) {
-        fields = [
-          {
-            text: trans('map.measurement.no-data.text'),
-            value: trans('map.measurement.no-data.value'),
-          },
-        ];
-      }
-      setSetting((prev) => {
-        const next = {
-          ...prev,
-          maxLength: _setting.maxLength || 0,
-          fields: (fields ?? []).map((x) => ({
-            ...x,
-            text: x.trans ? trans(x.trans) : x.text,
-          })),
-        };
-        settingRef.current = next;
-        return next;
-      });
-    };
-
-    handler.current.addView(mapView);
-    handler.current.addView(markerView);
-    handler.current.addView(formView);
-
+    session.attachToMap(map);
     logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
       'init',
-      handler.current,
+      handler,
     );
   }
 
   function onDestroy() {
-    handler.current.destroy();
-    clear();
+    session.destroy();
   }
 
   const moduleState = state as
@@ -563,7 +395,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
         <MapControlGroupButton row className="map-measurement-control">
           {moduleState &&
             Object.entries(moduleState).map(([id, btn]) =>
-              btn?.visible ? (
+              btn && btn.visible !== false ? (
                 <MapCommonButton
                   key={id}
                   option={btn}
@@ -577,22 +409,17 @@ export function MeasurementControl(props: MeasurementControlProps) {
         </MapControlGroupButton>
       }
     >
-      {measurementType ? (
+      {ui.measurementType ? (
         <MeasurementSettingPopup
           mapId={mapId}
-          show={setting.show}
-          onUpdateShow={(v) =>
-            setSetting((prev) => {
-              const next = { ...prev, show: v };
-              settingRef.current = next;
-              return next;
-            })
-          }
-          value={coordinates}
-          onChange={setValue}
-          maxLength={setting.maxLength}
-          fields={setting.fields}
-          measurementType={measurementType}
+          show={ui.setting.show}
+          onUpdateShow={(v) => session.setSettingShow(v)}
+          value={ui.coordinates}
+          onChange={(coords) => session.setCoordinates(coords)}
+          maxLength={ui.setting.maxLength}
+          fields={ui.setting.fields}
+          measurementType={ui.measurementType}
+          onRefresh={() => session.setCoordinates(uiRef.current.coordinates)}
         />
       ) : null}
     </ModuleContainer>

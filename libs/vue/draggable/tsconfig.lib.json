@@ -22,6 +22,8 @@
     "src/**/*.jsx",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "src/**/*.d.ts",
+    "../../../types/shims/vue-deps.d.ts"
   ]
 }

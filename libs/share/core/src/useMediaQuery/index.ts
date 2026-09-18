@@ -34,24 +34,16 @@ export function useMediaQuery(
 
   const cleanup = () => {
     if (!mediaQuery) return;
-    if ('removeEventListener' in mediaQuery)
-      mediaQuery.removeEventListener('change', handler);
-    // @ts-expect-error deprecated API
-    else mediaQuery.removeListener(handler);
+    mediaQuery.removeEventListener('change', handler);
   };
 
   const stopWatch = watchEffect(() => {
-    if (!isSupported.value) return;
+    if (!isSupported.value || !window) return;
 
     cleanup();
 
-    mediaQuery = window!.matchMedia(toValue(query));
-
-    if ('addEventListener' in mediaQuery)
-      mediaQuery.addEventListener('change', handler);
-    // @ts-expect-error deprecated API
-    else mediaQuery.addListener(handler);
-
+    mediaQuery = window.matchMedia(toValue(query));
+    mediaQuery.addEventListener('change', handler);
     matches.value = mediaQuery.matches;
   });
 

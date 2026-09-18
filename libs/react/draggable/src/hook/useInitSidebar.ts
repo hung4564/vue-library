@@ -1,7 +1,7 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSidebarItem } from '../store';
-import { LocationSideBar } from '../types';
+import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitSidebar(
   containerId: string,
@@ -12,8 +12,11 @@ export function useInitSidebar(
     type: 'item-sidebar';
     location: LocationSideBar;
   },
+  stableId?: string,
 ) {
-  const [itemId] = useState(`draggable-item-${getUUIDv4()}`);
+  const [itemId] = useState(
+    () => stableId || `draggable-item-${getUUIDv4()}`,
+  );
   const [zIndex, setZIndexState] = useState(0);
 
   function setZIndex(value: number) {
@@ -61,6 +64,16 @@ export function useInitSidebar(
       storeRef.current.registerSideBarShow(itemId, true);
     }
   }, [optionDefault.location, itemId, show]);
+
+  // Keep switcher menu labels in sync when locale / title prop updates.
+  useEffect(() => {
+    storeRef.current.registerAction(itemId, {
+      ...optionDefaultRef.current,
+      location: locationRef.current,
+      setZIndex,
+      setShow: (value: boolean) => setShowRef.current(value),
+    });
+  }, [optionDefault.title, itemId]);
 
   useEffect(() => {
     if (show) {

@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/react-draggable",
-  "version": "1.0.1",
+  "version": "1.3.1",
   "author": {
     "name": "hung.pv"
   },
@@ -16,8 +16,15 @@
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "sideEffects": [
+    "./index.js",
+    "./index.cjs",
+    "**/*.css",
+    "**/*.scss"
+  ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./index.cjs"
     },
@@ -26,16 +33,14 @@
     }
   },
   "peerDependencies": {
-    "@hungpvq/draggable": "1.0.1",
-    "@hungpvq/shared": ">=0.0.1",
-    "@hungpvq/shared-store": ">=0.0.1",
+    "@hungpvq/draggable": "^1.3.0",
+    "@hungpvq/shared": "^0.3.0",
+    "@hungpvq/shared-store": "^0.3.0",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.2.0",
-    "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-rnd": "^10.0.0",
-    "@vitejs/plugin-react": "^4.2.0"
+    "react-rnd": "^10.0.0"
   },
   "peerDependenciesMeta": {
     "react": {

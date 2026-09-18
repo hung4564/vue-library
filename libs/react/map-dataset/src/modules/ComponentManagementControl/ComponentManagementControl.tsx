@@ -1,6 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/react-map-core';
-import { useMapDatasetComponent } from '../../store';
+import { useMapDatasetComponent } from '../../store/component';
 
 export function ComponentManagementControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
@@ -19,6 +19,7 @@ export function ComponentManagementControl(props: WithMapPropType) {
           mapId={mapId}
           componentKey={item.componentKey}
           {...item.attr}
+          revision={item.revision}
           onClose={() => {
             removeComponent(item.id);
           }}

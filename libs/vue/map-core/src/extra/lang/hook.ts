@@ -1,123 +1,107 @@
-import { computed, onMounted, onUnmounted, shallowRef } from 'vue';
-import { useMapMittStore } from '../mitt';
-import { useMapLocale } from './store';
+import { computed, onMounted, onUnmounted, shallowRef, triggerRef } from 'vue';
 import {
-  MapLangLocale,
-  MapTranslateFunction,
+  translateMapLang,
+  type MapLangLocale,
+  type MapTranslateFunction,
+  type MapLanguageCode,
+  type MapLocaleLoader,
+  type MapLoadLocaleOptions,
+  type MapLanguageRegisterOptions,
+  type MapLangFlatMessages,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
 } from '@hungpvq/map-core';
-
-const propCache = new Map<object, Map<string, string | undefined>>();
+import { useMapMittStore } from '../mitt';
+import { useMapLocale } from './store';
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
-  const { getMapLang, setMapLang, setMapLocaleDefault, setMapTranslate } =
-    useMapLocale(mapId);
-  const storeLang = shallowRef(getMapLang());
+  const api = useMapLocale(mapId);
+  const storeLang = shallowRef(api.getMapLang());
   const emitter = useMapMittStore<MittTypeMapLang>(mapId);
 
   onMounted(() => {
-    emitter.on(MittTypeMapLangEventKey.setLocale, update);
-    emitter.on(MittTypeMapLangEventKey.setTranslate, update);
+    emitter.on(MittTypeMapLangEventKey.changed, update);
     update();
   });
 
   onUnmounted(() => {
-    emitter.off(MittTypeMapLangEventKey.setLocale, update);
-    emitter.off(MittTypeMapLangEventKey.setTranslate, update);
+    emitter.off(MittTypeMapLangEventKey.changed, update);
   });
 
   function update() {
-    storeLang.value = getMapLang();
-  }
-
-  function transLocal(key: string, params?: MapLangLocale) {
-    // If custom translate function exists, use it
-    if (storeLang.value?.translate) {
-      return storeLang.value.translate(key, params);
-    }
-
-    // Otherwise use default translation logic
-    // Try to get from map-specific locale first
-    const fromLocale = getProp(storeLang.value?.locale, key);
-    if (fromLocale !== undefined) {
-      return interpolate(fromLocale, params);
-    }
-
-    // If not found, try to get from default locale
-    const fromDefault = getProp(storeLang.value?.localeDefault, key);
-    if (fromDefault !== undefined) {
-      return interpolate(fromDefault, params);
-    }
-
-    // If still not found, return the key itself
-    return key;
+    // Store is mutated in place — force shallowRef subscribers to re-run.
+    storeLang.value = api.getMapLang();
+    triggerRef(storeLang);
   }
 
   const trans = computed(() => {
     storeLang.value;
-    return transLocal;
+    return (key: string, params?: MapLangLocale) =>
+      translateMapLang(storeLang.value, key, params);
   });
 
-  function setLocale(locale: MapLangLocale) {
-    setMapLang(locale);
+  const language = computed(
+    () => storeLang.value?.language ?? api.getLanguage(),
+  );
+  const fallbackLanguage = computed(
+    () => storeLang.value?.fallbackLanguage ?? api.getFallbackLanguage(),
+  );
+  const languages = computed(() => api.getLanguages());
+  const loadingLanguages = computed(
+    () => storeLang.value?.loadingLanguages ?? {},
+  );
+
+  function registerLocale(lang: MapLanguageCode, tree: MapLangLocale) {
+    api.registerLocale(lang, tree);
   }
 
-  function setLocaleDefault(locale: MapLangLocale) {
-    setMapLocaleDefault(locale);
+  function registerLocaleFlat(
+    lang: MapLanguageCode,
+    flat: MapLangFlatMessages,
+  ) {
+    api.registerLocaleFlat(lang, flat);
   }
 
-  function setTranslate(translate: MapTranslateFunction) {
-    setMapTranslate(translate);
+  function registerLanguage(
+    lang: MapLanguageCode,
+    options?: MapLanguageRegisterOptions,
+  ) {
+    api.registerLanguage(lang, options);
   }
 
-  return { trans, setLocale, setLocaleDefault, setTranslate };
-}
-
-function getProp(
-  object: object | undefined,
-  path: string | string[],
-  defaultVal?: string,
-): string | undefined {
-  if (!object) return defaultVal;
-  if (!path) return defaultVal;
-
-  const pathStr = Array.isArray(path) ? path.join('.') : path;
-
-  let objCache = propCache.get(object);
-  if (!objCache) {
-    objCache = new Map();
-    propCache.set(object, objCache);
+  function setLanguage(lang: MapLanguageCode, persist = true) {
+    api.setLanguage(lang, persist);
   }
 
-  if (objCache.has(pathStr)) {
-    return objCache.get(pathStr);
+  function setFallbackLanguage(lang: MapLanguageCode) {
+    api.setFallbackLanguage(lang);
   }
 
-  const _path = Array.isArray(path) ? path : path.split('.').filter(Boolean);
-  let current: any = object;
-  for (const segment of _path) {
-    if (current && typeof current === 'object' && segment in current) {
-      current = current[segment];
-    } else {
-      return defaultVal;
-    }
+  function setTranslate(translate?: MapTranslateFunction | null) {
+    api.setMapTranslate(translate);
   }
 
-  const result = typeof current === 'string' ? current : defaultVal;
-  if (result !== undefined) {
-    objCache.set(pathStr, result);
+  function loadLocale(
+    lang: MapLanguageCode,
+    loader: MapLocaleLoader,
+    options?: MapLoadLocaleOptions,
+  ) {
+    return api.loadLocale(lang, loader, options);
   }
-  return result;
-}
 
-function interpolate(text: string, params?: MapLangLocale): string {
-  if (!text) return '';
-  if (!params) return text;
-
-  return text.replace(/\{(\w+)\}/g, (match, key) => {
-    const value = params[key];
-    return value !== undefined ? String(value) : match;
-  });
+  return {
+    trans,
+    language,
+    fallbackLanguage,
+    languages,
+    loadingLanguages,
+    registerLocale,
+    registerLocaleFlat,
+    registerLanguage,
+    setLanguage,
+    setFallbackLanguage,
+    setTranslate,
+    loadLocale,
+  };
 }

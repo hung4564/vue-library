@@ -1,6 +1,25 @@
 <script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
+import type {
+  MeasureActionItem,
+  MeasurementHandleType,
+} from '@hungpvq/map-core/measurement';
+import {
+  createDatasetPartListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
+import {
+  createMenuItemToggleShow,
+  createMultiLegend,
+} from '@hungpvq/map-dataset/menu';
+import {
+  LayerSimpleMapboxBuild,
+  LayerStyleType,
+} from '@hungpvq/map-dataset/style';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -16,38 +35,30 @@ import {
   LegendControl,
   Map,
   MapContextMenuControl,
-  type MeasureActionItem,
   MeasurementControl,
-  type MeasurementHandleType,
   MouseCoordinatesControl,
   PrintAdvancedControl,
   PrintControl,
   RegistryControl,
   SettingControl,
+  ThemeControl,
+  ToolbarControl,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  createDatasetPartGeojsonSourceComponent,
-  createDatasetPartListViewUiComponentBuilder,
-  createGroupDataset,
-  createMenuItemToggleShow,
-  createMultiLegend,
-  createMultiMapboxLayerComponent,
-  createRootDataset,
   DatasetControl,
+  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
-  LayerHighlight,
-  LayerSimpleMapboxBuild,
-  LayerStyleType,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 
 const mapRef = ref();
@@ -144,8 +155,14 @@ function createDatasetMeasure(
 }
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    ref="mapRef"
+    @map-loaded="onMapLoaded"
+    :mapId="mapId"
+    button-in-mobile="toolbar"
+  >
     <AsideControl position="top-left" />
+    <ToolbarControl position="top-left" />
     <ComponentManagementControl />
     <MeasurementControl position="top-right" :actions="actionMeasures" />
     <DrawControl position="top-right" />
@@ -166,6 +183,8 @@ function createDatasetMeasure(
     <LegendControl />
     <CrsControl />
     <SettingControl />
+    <ThemeControl />
+    <DemoLanguageControl />
     <GeoLocateControl />
     <FullScreenControl />
     <ZoomControl />
@@ -174,7 +193,7 @@ function createDatasetMeasure(
     <MapContextMenuControl />
     <BaseMapControl position="bottom-left" />
     <IdentifyShowFirstControl />
-    <LayerHighlight />
+    <HighlightPointer enableClick />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>

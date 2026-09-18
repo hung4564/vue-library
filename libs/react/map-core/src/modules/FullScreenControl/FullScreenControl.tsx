@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { MAP_ACTION_LOCALE, type WithMapPropType } from '@hungpvq/map-core';
+import React, { useEffect, useState } from 'react';
+import {
+  MAP_ACTION_LOCALE,
+  isDocumentFullscreen,
+  resolveMapFullscreenTarget,
+  subscribeFullscreenChange,
+  toggleElementFullscreen,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { MapCommonButton } from '../../components/MapCommonButton';
-import { useLang, useRegisterMapControl } from '../../extra';
-import { defaultMapProps, useMap } from '../../hooks';
+import { useLang } from '../../extra/lang/hook';
+import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
+import { useToolbarControl } from '../../extra/toolbar/helper';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import type { MapControlButtonUIState } from '@hungpvq/map-core';
 
 export interface FullScreenControlProps extends WithMapPropType {
   type?: string;
@@ -18,37 +27,38 @@ export function FullScreenControl(props: FullScreenControlProps) {
     type: props.type || 'body',
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapFullscreenControl' });
-  const { trans, setLocaleDefault } = useLang(mapId);
+  const { mapId, callMap, moduleContainerProps, order } = useMap({
+    ...mergedProps,
+    controlId: 'mapFullscreenControl',
+  });
+  const { trans, registerLocale } = useLang(mapId);
 
   useEffect(() => {
-    setLocaleDefault(MAP_ACTION_LOCALE);
+    registerLocale('en', MAP_ACTION_LOCALE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
+    setIsFullscreen(isDocumentFullscreen());
+    return subscribeFullscreenChange(() => {
+      setIsFullscreen(isDocumentFullscreen());
+    });
   }, []);
 
-  async function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      const element =
-        mergedProps.type === 'body'
-          ? document.body
-          : document.querySelector('.map-container');
-      if (element) {
-        await element.requestFullscreen();
-      }
-    } else {
-      await document.exitFullscreen();
+  function resolveTarget(): HTMLElement | null {
+    if (mergedProps.type === 'body') {
+      return document.body;
     }
+    let el: HTMLElement | null = null;
+    callMap((map) => {
+      el = resolveMapFullscreenTarget(map.getContainer());
+    });
+    return el;
+  }
+
+  async function toggleFullscreen() {
+    await toggleElementFullscreen(resolveTarget());
+    setIsFullscreen(isDocumentFullscreen());
   }
 
   useRegisterMapControl(mapId, {
@@ -69,30 +79,40 @@ export function FullScreenControl(props: FullScreenControlProps) {
     ],
   });
 
-  const buttonState: MapControlButtonUIState = {
-    visible: true,
-    active: isFullscreen,
-    order: order,
-    title: isFullscreen
-      ? trans('map.action.fullscreen-control-exit')
-      : trans('map.action.fullscreen-control-enter'),
-    icon: {
-      type: 'mdi',
-      path: isFullscreen ? mdiFullscreenExit : mdiFullscreen,
+  const { state, control } = useToolbarControl(mapId, mergedProps, {
+    kind: 'single',
+    id: 'mapFullscreenControl',
+    getState: () =>
+      mdiButtonState(isFullscreen ? mdiFullscreenExit : mdiFullscreen, {
+        visible: true,
+        active: isFullscreen,
+        order,
+        title: isFullscreen
+          ? trans('map.action.fullscreen-control-exit')
+          : trans('map.action.fullscreen-control-enter'),
+      }),
+    onClick: () => {
+      void toggleFullscreen();
     },
-  };
+  });
+
+  useEffect(() => {
+    control.sync();
+  }, [isFullscreen, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapCommonButton
-          option={buttonState}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFullscreen();
-          }}
-        />
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              void control.onAction(e);
+            }}
+          />
+        ) : null
       }
     />
   );

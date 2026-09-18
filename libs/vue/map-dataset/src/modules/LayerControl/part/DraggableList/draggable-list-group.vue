@@ -5,24 +5,35 @@
         {{ layerGroup.name }}
       </span>
       <div class="draggable-group__action">
-        <BaseButton
+        <MapControlButton
           v-if="
             !readonly && layerGroup.children && layerGroup.children.length > 0
           "
+          variant="plain"
+          size="small"
           @click="unGroup()"
         >
           <SvgIcon size="14" type="mdi" :path="path.group.unGroup" />
-        </BaseButton>
-        <BaseButton v-if="!readonly" @click="deleteGroup()">
+        </MapControlButton>
+        <MapControlButton
+          v-if="!readonly"
+          @click="deleteGroup()"
+          variant="plain"
+          size="small"
+        >
           <SvgIcon size="14" type="mdi" :path="path.group.delete" />
-        </BaseButton>
-        <BaseButton @click="toggleShowChildrenGroup()">
+        </MapControlButton>
+        <MapControlButton
+          @click="toggleShowChildrenGroup()"
+          variant="plain"
+          size="small"
+        >
           <SvgIcon
             size="14"
             type="mdi"
             :path="isGroupShow ? path.group.close : path.group.open"
           />
-        </BaseButton>
+        </MapControlButton>
       </div>
     </div>
     <div v-if="isGroupShow" class="draggable-group__divider"></div>
@@ -46,14 +57,10 @@
   </DraggableListItem>
 </template>
 <script setup lang="ts">
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiChevronDown,
-  mdiChevronUp,
-  mdiDelete,
-  mdiUngroup,
-} from '@mdi/js';
-import { BaseButton } from '@hungpvq/vue-map-core';
+import { mdiChevronDown, mdiChevronUp, mdiDelete, mdiUngroup } from '@mdi/js';
+
 import { ref } from 'vue';
 import DraggableListItem from './draggable-list-item.vue';
 
