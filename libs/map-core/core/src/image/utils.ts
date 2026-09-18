@@ -61,8 +61,16 @@ export async function addImageForMap(
 ): Promise<boolean> {
   const image = await map.loadImage(url);
 
-  if (!map.hasImage(key)) map.addImage(key, image.data, option);
-  return true;
+  try {
+    // Style may have been torn down while the image was loading (setStyle / remount).
+    if (!(map as MapSimple & { style?: unknown }).style) {
+      return false;
+    }
+    if (!map.hasImage(key)) map.addImage(key, image.data, option);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

@@ -119,6 +119,11 @@ describe('dataset debug bridge', () => {
     api.pin('layer');
     expect(api.vars['layer']).toBe(layer);
     expect(getDatasetDebugApi()).toBe(api);
+    expect(
+      GlobalStoreService.getInstance().get<{ dataset?: typeof api }>(
+        'map:debug',
+      )?.dataset,
+    ).toBe(api);
 
     const guide = api.help();
     expect(guide.quickStart.length).toBeGreaterThan(0);

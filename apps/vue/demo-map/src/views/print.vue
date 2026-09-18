@@ -1,5 +1,5 @@
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />

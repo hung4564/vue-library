@@ -30,18 +30,15 @@ const props = withDefaults(
   }>(),
   {
     mapboxAccessToken: '',
-    initOptions: () => ({
-      attributionControl: false,
-      zoomControl: false,
-    }),
+    initOptions: () => ({}),
     keyboardShortcuts: true,
     buttonInMobile: 'button',
   },
 );
 
 const emit = defineEmits<{
-  (_e: 'map-loaded', _map: MapSimple): void;
-  (_e: 'map-destroy', _map: MapSimple): void;
+  (_e: 'mapLoaded', _map: MapSimple): void;
+  (_e: 'mapDestroy', _map: MapSimple): void;
   (_e: 'error', _error: Error): void;
 }>();
 

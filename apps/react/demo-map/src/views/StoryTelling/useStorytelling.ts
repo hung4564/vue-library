@@ -119,9 +119,9 @@ function useStorytelling(options: UseStorytellingOptions) {
     [clearTimer, resolveAction],
   );
 
-  const runCurrentChapterRef = useRef<() => void>(() => {});
+  const runCurrentChapterRef = useRef<() => void>(() => undefined);
 
-  const nextRef = useRef<() => void>(() => {});
+  const nextRef = useRef<() => void>(() => undefined);
 
   const runCurrentChapter = useCallback(() => {
     const chapter = chaptersRef.current[currentIndexRef.current];

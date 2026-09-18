@@ -10,14 +10,14 @@ import {
   MittTypeMapLangEventKey,
 } from '@hungpvq/map-core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { getMapMittStore } from '../../store/mitt-store';
+import { useMapMittStore } from '../../store/mitt-store';
 import { useMapLocale } from './store';
 
 export function useLang(mapId: string) {
   if (!mapId) throw new Error('mapId is required');
   const api = useMapLocale(mapId);
   const [tick, setTick] = useState(0);
-  const emitter = getMapMittStore<MittTypeMapLang>(mapId);
+  const emitter = useMapMittStore<MittTypeMapLang>(mapId);
 
   useEffect(() => {
     const update = () => setTick((t) => t + 1);

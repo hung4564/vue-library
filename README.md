@@ -143,7 +143,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <LayerControl position="top-left" show />
     <BaseMapControl position="bottom-left" />
     <MeasurementControl position="top-right" />

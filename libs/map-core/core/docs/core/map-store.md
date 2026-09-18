@@ -84,16 +84,28 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 
 | Key / export | Kind | Purpose |
 |--------------|------|---------|
-| `__hungpvq_map_errorHandler__` (`errorHandler`) | `getOrCreateStore` | Centralized map error handler singleton |
 | `__hungpvq_gis_worker__` | `getOrCreateStore` | GIS Web Worker URL override (`configureGisWorker`) |
 | `map:registry:global` | `getOrCreateStore` | UniversalRegistry global methods / components / menu handlers |
 | `map:registry:maps` | `getOrCreateStore` | Per-`mapId` registry bags |
 | `map:registry:controls` | `getOrCreateStore` | Control handle registry |
 | `hungpvq.map-theme-mode` (+ optional `:<mapId>`) | `localStorage` (`MAP_THEME_STORAGE_KEY` / `getMapThemeStorageKey(mapId)`) | Theme preference. Default **process-global**; `ThemeControl scope="map"` uses per-map key. |
 | `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups) |
-| `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones after `removeMap` |
+| `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones; `errorCapture` install slot; `errorHandler` singleton (`errorHandler` export) |
+| `map:debug` | `getOrCreateStore` | Optional `@hungpvq/map-debug`: `dataset` = Dataset Inspector API (`installDatasetDebug`). Console alias: `window.__hungpvqDatasetDebug` |
 
-Related process pins outside this table: `__hungpvq_map_errorCapture__`, React `__hungpvq_react_map_storeManager__`, and `LoggerFactory` on `@hungpvq/shared-log`’s own `globalThis` key.
+Related process pins outside this table: `LoggerFactory` on `@hungpvq/shared-log`’s own `globalThis` key.
+
+## Empty / deferred `mapId`
+
+- **Never** create scoped stores under `mapId === ''` — `MapStoreManager` rejects empty ids and scrubs legacy `map:core[""]`.
+- Use Stable `isUsableMapId(mapId)` before `createMapScopedStore` / dataset mutations.
+- **`useMapDataset`:** apps may call the hook before the map exists, then `setMapId(map.id)` on `@mapLoaded` / `onMapLoaded`.
+  - Vue: does not allocate a dataset bag until `mapId` is usable.
+  - React: uses an inert in-memory stand-in until `setMapId` (never writes `map:core[""]`).
+
+## Shell `initOptions` defaults
+
+`MapInitializer.createDefaultOptions` is the single source for shell defaults (`attributionControl: false`, center/zoom, …). Vue/React `Map` should pass app overrides only — do not fork defaults in the adapters. MapLibre has no `zoomControl` option; use `ZoomControl` / `NavigationControl` for zoom chrome.
 
 ## Multi-map DOM notes
 

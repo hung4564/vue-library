@@ -5,6 +5,7 @@ export type {
   MapFCOnUseMap,
 } from './interface';
 export { MAP_CORE_EVENT, MapStoreManager } from './store-manager';
+export { isUsableMapId } from './is-usable-map-id';
 export type {
   AddStoreOptions,
   DefaultValue,

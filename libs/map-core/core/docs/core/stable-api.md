@@ -170,14 +170,14 @@ Shared root highlights:
 
 | Area | Stable surface |
 |------|----------------|
-| Shell | `Map` container, `@map-loaded` / `onMapLoaded` (and destroy equivalents); optional `keyboardShortcuts` (default true); mounts `MapErrorToast` internally from `./fields` |
+| Shell | `Map` container; dual events **`mapLoaded` / `mapDestroy` / `error`** — Vue `@mapLoaded` / `@mapDestroy` / `@error`, React `onMapLoaded` / `onMapDestroy` / `onError`; optional `keyboardShortcuts` (default true); mounts `MapErrorToast` internally from `./fields`. Shell MapLibre defaults from `MapInitializer.createDefaultOptions` (`attributionControl: false`, …) |
 | Hooks | `useMap`, `useMapInstance`, `useShow`, `useRegisterMapControl`, `useUniversalRegistry` |
-| Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore` (not `getMap`) — [map-store](./map-store.md) |
+| Store helpers | `createMapScopedStore`, `destroyMapScopedStore`, `getStore`, `addStore`, `isUsableMapId` (not `getMap`) — [map-store](./map-store.md) |
 | Registry | Framework `UniversalRegistry`, `RegistryItem` |
 | Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl`; action UI uses `MapControlButton` (`variant`: `icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`; `size`: `small` \| `medium` \| `large` \| number px — see [css-variables](./css-variables.md#core---mapcontrolbutton--mapbutton)) / `MapCommonButton` / **`MapCopyButton`** (clipboard + icon feedback; see [css-variables](./css-variables.md#core---mapcopybutton)) |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
-Framework idioms (Stable): Vue `makeShowProps` / `withMapProps`; React `MapContext*` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `useBreakpoints` / …
+Framework idioms (Stable, **not** dual-export parity): Vue `makeShowProps` / `withMapProps`; React `MapContext` / `MapContextProvider` / `useMapContext` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `MapControlButtonGroupContext`. Do not expect these on the other adapter. React also exports imperative `getMapMittStore` / `getMapGlobalStore` (same as `use*` aliases) for non-hook call sites — rules-of-hooks.
 
 Package entries: `.` + `./style.css` + **`./fields`**.
 

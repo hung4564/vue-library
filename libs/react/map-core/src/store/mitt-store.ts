@@ -6,12 +6,13 @@
 import { createMapMitt, logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
 import { logger } from './logger';
-import { createMapScopedStore } from './store-utils';
+import { createMapScopedStore } from './store';
 
 const loggerEvent = logger.setNamespace('map:' + MAP_STORE_KEY.MITT, 2);
 
 /**
- * Get or create mitt event emitter for a map ID
+ * Get or create mitt event emitter for a map ID.
+ * Prefer this name outside React components/hooks (avoids rules-of-hooks lint).
  */
 export function getMapMittStore<
   T extends Record<EventType, unknown> = Record<EventType, unknown>,
@@ -23,3 +24,6 @@ export function getMapMittStore<
     });
   });
 }
+
+/** Parity alias with Vue `useMapMittStore` — use only in components / custom hooks. */
+export const useMapMittStore = getMapMittStore;

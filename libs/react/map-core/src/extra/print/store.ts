@@ -4,7 +4,7 @@ import {
   createDefaultPrintStore,
   createPrintStoreApi,
 } from '@hungpvq/map-core/print';
-import { createMapScopedStore } from '../../store/store-utils';
+import { createMapScopedStore } from '../../store/store';
 import { loggerFactory } from '@hungpvq/shared-log';
 
 const logger = loggerFactory.createLogger().setNamespace('map:print', 2);

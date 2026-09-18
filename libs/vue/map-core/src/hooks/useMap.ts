@@ -78,7 +78,9 @@ export const useMap = (
   let unsubscribeReady: (() => void) | undefined;
   onMounted(() => {
     cancelled = false;
-    unsubscribeReady = subscribeMapReady(c_mapId.value, async (_map) => {
+    const id = c_mapId.value;
+    if (!id) return;
+    unsubscribeReady = subscribeMapReady(id, async (_map) => {
       if (cancelled) return;
       mapInstance.value = _map;
       if (onInit instanceof Function) {
@@ -98,7 +100,9 @@ export const useMap = (
     }
   });
   function callMap(cb: MapFCOnUseMap) {
-    return getMap(c_mapId.value, cb);
+    const id = c_mapId.value;
+    if (!id) return undefined;
+    return getMap(id, cb);
   }
   const moduleContainerProps = computed(() => ({
     mapId: props.mapId,

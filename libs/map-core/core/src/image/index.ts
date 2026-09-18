@@ -9,6 +9,7 @@ export {
   listMapStyleImages,
   subscribeMapStyleImages,
 } from './map-images';
+export { patchMapStyleImageAccessors } from './patch-map-style-image-accessors';
 export {
   addImageForMap,
   loadImage,

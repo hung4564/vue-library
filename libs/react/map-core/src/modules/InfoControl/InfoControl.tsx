@@ -19,7 +19,7 @@ import {
   mdiContentCopy,
   mdiInformationOutline,
 } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';

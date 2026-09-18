@@ -3,7 +3,7 @@
 Experimental shared debug toolkit for map packages.
 
 - **Root** (`@hungpvq/map-debug`): viewer helpers + store peek. No `map-dataset` dependency.
-- **`./dataset`**: optional Dataset Inspector + `window.__hungpvqDatasetDebug`. Requires peer `@hungpvq/map-dataset`.
+- **`./dataset`**: optional Dataset Inspector + pin on shared-store `map:debug.dataset` (F12 alias `window.__hungpvqDatasetDebug`). Requires peer `@hungpvq/map-dataset`.
 
 ```ts
 import { installMapDebug } from '@hungpvq/map-debug';
@@ -27,6 +27,8 @@ Framework adapters render a **Dataset** tab on top of this package:
 
 Shared CSS lives in `@hungpvq/map-debug` (`style.css`) and is imported by both Vue and React map-devtools packages.
 
+Panel drag / open-close positioning for the floating overlay is implemented in `viewers/panel-drag.ts` (`syncDevtoolsShellPos`). See [Devtools — Overlay drag](../core/docs/core/devtools.md#overlay-drag-fab--panel).
+
 ### Anonymous menu ids
 
 Menus without a real `menu.id` get a **debug-only** key via `menuDebugKey`:
@@ -39,7 +41,7 @@ anon:<type>-<name>-…:<resolvedIndex>
 - Does **not** mutate the live `MenuAction`.
 - Selection uses `MenuSummary` / `findMenuInResolved` (by real id, then `anon:…:index`, then fingerprint key). Prefer selecting by summary object from the UI rather than a bare id string.
 
-Console helpers on `window.__hungpvqDatasetDebug` after `installDatasetDebug()`:
+Console helpers after `installDatasetDebug()` — prefer F12 `window.__hungpvqDatasetDebug` (same object as `map:debug.dataset`):
 
 | Method | Notes |
 | --- | --- |

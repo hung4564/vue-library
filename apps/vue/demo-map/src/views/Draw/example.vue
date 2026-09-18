@@ -124,7 +124,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map map-id="draw-demo" @map-loaded="onMapLoaded">
+  <Map map-id="draw-demo" @mapLoaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />

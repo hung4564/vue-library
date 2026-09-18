@@ -26,7 +26,7 @@ import {
 } from '@hungpvq/react-map-core';
 
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useEffect, useState } from 'react';
 import { useMapDataset } from '../../store/dataset-api';
 

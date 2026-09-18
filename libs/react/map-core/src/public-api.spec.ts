@@ -81,6 +81,7 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'useMapImage',
   'useMapImages',
   'useMapInstance',
+  'useMapMittStore',
   'useMapPrint',
   'useMapPrintStore',
   'useMapState',

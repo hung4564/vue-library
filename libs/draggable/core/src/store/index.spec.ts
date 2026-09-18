@@ -56,26 +56,25 @@ describe('configureDragStore', () => {
     expect(notify).toHaveBeenCalledWith(['drag:core', 'container', CID]);
   });
 
-  it('wraps container map with makeReactive when store factory runs', async () => {
-    // Pinia store is a singleton — force a fresh module so makeReactive runs again.
+  it('wraps container map with makeReactive via configureDragStore', async () => {
     vi.resetModules();
     const makeReactive = vi.fn(<T extends object>(value: T) => {
       Object.defineProperty(value, '__wrapped', { value: true });
       return value;
     });
     const mod = await import('./index');
+    // configureDragStore creates/loads drag:core and re-wraps container.
     mod.configureDragStore({
       makeReactive,
       notify: () => undefined,
     });
-    // First useDragStore() after resetModules invokes the factory.
     const store = mod.useDragStore();
     expect(makeReactive).toHaveBeenCalled();
     expect((store.container as { __wrapped?: boolean }).__wrapped).toBe(true);
+    expect(store.__config.makeReactive).toBe(makeReactive);
     mod.useDragContainer('make-reactive-c').initContainer();
     expect(store.container['make-reactive-c']).toBeTruthy();
     delete store.container['make-reactive-c'];
-    // Restore default hooks for the rest of the suite (re-import shared module).
     vi.resetModules();
     const restored = await import('./index');
     restored.configureDragStore({

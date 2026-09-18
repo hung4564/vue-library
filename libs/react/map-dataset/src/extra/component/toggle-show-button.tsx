@@ -1,6 +1,6 @@
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 
 export type ToggleShowButtonProps = {
   show: boolean;

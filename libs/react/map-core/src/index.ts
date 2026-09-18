@@ -255,7 +255,7 @@ export {
   useMapGlobalStore,
 } from './store/global-store';
 
-export { getMapMittStore } from './store/mitt-store';
+export { getMapMittStore, useMapMittStore } from './store/mitt-store';
 
 export {
   ReactMapStoreAdapter,
@@ -263,14 +263,11 @@ export {
 
 export {
   addStore,
+  createMapScopedStore,
   destroyMapScopedStore,
   getStore,
   useMapContainer,
   useMapStore,
 } from './store/store';
-
-export {
-  createMapScopedStore,
-} from './store/store-utils';
 
 export type { WithShowProps } from './hooks/useShow';

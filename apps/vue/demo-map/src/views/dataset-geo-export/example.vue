@@ -64,7 +64,7 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />

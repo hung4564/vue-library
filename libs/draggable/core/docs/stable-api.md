@@ -125,6 +125,7 @@ Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `D
 
 - Vue: `configureDragStore({ makeReactive: reactive })` in `libs/vue/draggable/src/store`.
 - React: `configureDragStore({ notify })` in `libs/react/draggable/src/store/index.ts`.
+- Runtime wiring lives on `drag:core.__config` (internal; shared via GlobalStoreService with the store).
 - React `useStoreReactive` / `useContainerReactive` live in `store/useStoreReactive.ts` and must **not** be re-exported from `store/index.ts` (circular barrel breaks Vite named exports). Root entry imports `./store` for side-effect configure, then exports reactive hooks from `useStoreReactive.ts`.
 
 ## Vite Fast Refresh + path aliases

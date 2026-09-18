@@ -56,7 +56,7 @@ yarn add @hungpvq/react-map-core
 
 ```vue
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <PrintControl />
   </Map>
 </template>

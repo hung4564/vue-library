@@ -1,4 +1,4 @@
-import { getMap, logHelper } from '@hungpvq/map-core';
+import { getMap, isUsableMapId, logHelper } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
   DatasetService,
@@ -50,6 +50,9 @@ async function clearDatasetsOnRemoveMap(
 
 /** Imperative store accessor (safe outside React render). */
 export function getMapDatasetStore(mapId: string): MapLayerStore {
+  if (!isUsableMapId(mapId)) {
+    throw new Error('mapId is required');
+  }
   return createMapScopedStore<MapLayerStore>(
     mapId,
     MAP_DATASET_STORE_KEY as string & object,
@@ -73,6 +76,16 @@ export function getMapDatasetStore(mapId: string): MapLayerStore {
   );
 }
 
+/** Inert stand-in when mapId is not set yet (matches Vue: defer store until setMapId). */
+const EMPTY_MAP_LAYER_STORE: MapLayerStore = {
+  datasets: {},
+  datasetIds: { value: [] },
+  version: 0,
+  listeners: new Set(),
+  allLayerShow: true,
+};
+
 export function useMapDatasetStore(mapId: string): MapLayerStore {
+  if (!isUsableMapId(mapId)) return EMPTY_MAP_LAYER_STORE;
   return getMapDatasetStore(mapId);
 }

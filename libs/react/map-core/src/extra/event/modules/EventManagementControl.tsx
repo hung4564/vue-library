@@ -16,7 +16,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { getMapMittStore } from '../../../store/mitt-store';
+import { useMapMittStore } from '../../../store/mitt-store';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
@@ -47,7 +47,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
     ],
   });
   const [events, setEvents] = useState<IEvent[]>([]);
-  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   const { getCurrent } = useEventMapItems(mapId, {
     onChange: (p) => setEvents(p.slice()),
   });

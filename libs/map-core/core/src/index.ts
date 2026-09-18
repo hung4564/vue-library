@@ -68,6 +68,8 @@ export {
   MapStoreManager,
 } from './store/store-manager';
 
+export { isUsableMapId } from './store/is-usable-map-id';
+
 export {
   MAP_STORE_KEY,
 } from './types/constants';

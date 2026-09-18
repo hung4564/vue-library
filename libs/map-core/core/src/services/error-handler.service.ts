@@ -1,6 +1,6 @@
 import { loggerFactory } from '@hungpvq/shared-log';
-import { getOrCreateStore } from '@hungpvq/shared-store';
 import { MapError } from '../errors';
+import { getMapCoreMetaStore } from '../store/map-core-meta';
 import { logHelper } from '../utils/log';
 
 const errorLogger = loggerFactory.createLogger().setNamespace('map:core', 2);
@@ -177,9 +177,12 @@ export class MapErrorHandler implements ErrorHandler {
 
 /**
  * Default singleton instance of the error handler.
- * Backed by shared-store (`globalThis.$_hungpv_store`) so duplicate package copies share one handler.
+ * Lives on `map:core:meta.errorHandler` so duplicate package copies share one handler.
  */
-export const errorHandler = getOrCreateStore(
-  '__hungpvq_map_errorHandler__',
-  () => new MapErrorHandler(),
-);
+export const errorHandler: MapErrorHandler = (() => {
+  const meta = getMapCoreMetaStore();
+  if (!meta.errorHandler) {
+    meta.errorHandler = new MapErrorHandler();
+  }
+  return meta.errorHandler;
+})();

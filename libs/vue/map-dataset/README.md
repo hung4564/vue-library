@@ -38,7 +38,7 @@ Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that insta
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <LayerControl position="top-left" show />
   </Map>
 </template>

@@ -1,6 +1,6 @@
 import { createCopyFeedback, type MapButtonSize, type MapButtonVariant } from '@hungpvq/map-core';
 import { mdiCheck, mdiContentCopy } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import React, { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { MapControlButton } from './MapControlButton';
 

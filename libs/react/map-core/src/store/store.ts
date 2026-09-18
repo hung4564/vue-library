@@ -4,7 +4,9 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  isUsableMapId,
   MAP_PLATFORM_HOST,
+  MAP_STORE_KEY,
   MapStoreManager,
   registerMapAccessor,
   registerMapReadySubscriber,
@@ -13,16 +15,11 @@ import {
   type MapStore,
 } from '@hungpvq/map-core';
 import { ReactMapStoreAdapter } from './react-adapter';
-import { setStoreManager, type MapScopedKey } from './store-utils';
 export {
-  getMapGlobalStore,
   useMapGlobalStore,
+  getMapGlobalStore,
   MapGlobalStoreProvider,
 } from './global-store';
-export {
-  createMapScopedStore,
-  type MapScopedStoreOptions,
-} from './store-utils';
 
 /**
  * Store adapter instance
@@ -34,8 +31,6 @@ const storeAdapter = new ReactMapStoreAdapter();
  */
 const storeManager = new MapStoreManager(storeAdapter);
 
-// Set store manager reference for store-utils
-setStoreManager(storeManager);
 const platformHost = { hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE } as const;
 registerMapAccessor((id, cb) => storeManager.getMap(id, cb), platformHost);
 registerMapReadySubscriber(
@@ -81,6 +76,27 @@ export function getMap(
   cb?: MapFCOnUseMap,
 ): MapSimple | undefined {
   return storeManager.getMap(id, cb);
+}
+
+export type MapScopedStoreOptions = AddStoreOptions;
+
+type MapStoreKey = (typeof MAP_STORE_KEY)[keyof typeof MAP_STORE_KEY];
+type MapScopedKey = MapStoreKey | (string & object);
+
+export function createMapScopedStore<T>(
+  mapId: string,
+  key: MapScopedKey,
+  factory: () => T,
+  options?: MapScopedStoreOptions,
+): T {
+  if (!isUsableMapId(mapId)) {
+    throw new Error('mapId is required');
+  }
+  const existing = storeManager.peekStore<T>(mapId, key as string);
+  if (existing !== undefined) {
+    return existing;
+  }
+  return storeManager.addStore(mapId, key as string, factory, options);
 }
 
 /**

@@ -8,7 +8,7 @@ import {
   type GeoExportOptions,
 } from '@hungpvq/map-dataset/geo-export';
 import { mdiChevronRight, mdiDownload } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useMemo, useState, type MouseEvent } from 'react';
 
 export function ExportGeoFormatMenu(props: WithLayerItemMenuComponentType) {

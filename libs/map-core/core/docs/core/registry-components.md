@@ -34,7 +34,7 @@ UniversalRegistry.registerComponentForMap(
 
 Map-scoped components / methods / controls live in the shared registry maps bag (`map:registry:maps` / `map:registry:controls`). When the map unmounts, `removeMap()` → `UniversalRegistry.clearMap(mapId)` clears that map’s entries (React StrictMode remounts the map once in development).
 
-**Prefer registering in `onMapLoaded` / `@map-loaded`**, so entries are written after each mount:
+**Prefer registering in `onMapLoaded` / `@mapLoaded`**, so entries are written after each mount:
 
 ```ts
 function onMapLoaded(map: MapSimple) {

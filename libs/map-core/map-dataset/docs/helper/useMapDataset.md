@@ -1,6 +1,8 @@
 # useMapDataset
 
-Store for datasets on one map. Call it with the map id from `@map-loaded`.
+Store for datasets on one map. Prefer calling with a real map id, or call with no id then `setMapId(map.id)` from `@mapLoaded` / `onMapLoaded`.
+
+**Contract:** never allocate under empty `mapId` (`isUsableMapId`). Vue defers store creation; React uses an inert stand-in until `setMapId`.
 
 ## Vue
 

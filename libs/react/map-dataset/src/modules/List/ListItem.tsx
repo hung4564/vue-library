@@ -1,5 +1,5 @@
 import { mdiArrowUpDown } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 
 const ICON_SIZE = '14px';
 

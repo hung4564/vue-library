@@ -5,13 +5,13 @@ import {
   subscribeBasemapMirror,
 } from '@hungpvq/map-core/basemap';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getMapMittStore } from '../../../store/mitt-store';
+import { useMapMittStore } from '../../../store/mitt-store';
 import { logger } from '../logger';
 import { useMapBaseMapStore } from '../store';
 
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
-  const emitter = getMapMittStore<MittTypeBaseMap>(mapId);
+  const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
 
   const managerRef = useRef<BasemapManager | null>(null);
   if (!managerRef.current) {

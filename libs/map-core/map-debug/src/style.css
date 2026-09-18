@@ -1,3 +1,27 @@
+/* Self-contained box model (hosts may lack a global border-box reset). */
+.devtools-container,
+.devtools-container *,
+.devtools-container *::before,
+.devtools-container *::after,
+.store-viewer,
+.store-viewer *,
+.store-viewer *::before,
+.store-viewer *::after,
+.log-viewer,
+.log-viewer *,
+.log-viewer *::before,
+.log-viewer *::after,
+.error-viewer,
+.error-viewer *,
+.error-viewer *::before,
+.error-viewer *::after,
+.dataset-viewer,
+.dataset-viewer *,
+.dataset-viewer *::before,
+.dataset-viewer *::after {
+  box-sizing: border-box;
+}
+
 .tree-item {
   font-family: monospace;
   font-size: 12px;

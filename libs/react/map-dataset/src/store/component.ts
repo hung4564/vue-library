@@ -1,4 +1,4 @@
-import { logHelper } from '@hungpvq/map-core';
+import { isUsableMapId, logHelper } from '@hungpvq/map-core';
 import {
   removeDatasetComponent,
   upsertDatasetComponent,
@@ -24,7 +24,15 @@ function notify(store: MapDatasetComponentStore) {
   store.listeners.forEach((listener) => listener());
 }
 
+const EMPTY_COMPONENT_STORE: MapDatasetComponentStore = {
+  components: [],
+  componentIds: { value: [] },
+  version: 0,
+  listeners: new Set(),
+};
+
 export function useMapDatasetComponentStore(mapId: string) {
+  if (!isUsableMapId(mapId)) return EMPTY_COMPONENT_STORE;
   return createMapScopedStore<MapDatasetComponentStore>(
     mapId,
     KEY as string & object,
@@ -45,30 +53,31 @@ export function useMapDatasetComponent(mapId: string) {
   const [, setTick] = useState(0);
 
   useEffect(() => {
+    if (!isUsableMapId(mapId)) return;
     const listener = () => setTick((v) => v + 1);
     store.listeners.add(listener);
     return () => {
       store.listeners.delete(listener);
     };
-  }, [store]);
+  }, [store, mapId]);
 
   const addComponent = useCallback(
     (component: Omit<ComponentItem, 'id'>) => {
-      if (!store) return;
+      if (!isUsableMapId(mapId)) return;
       const id = upsertDatasetComponent(store, component);
       notify(store);
       return id;
     },
-    [store],
+    [store, mapId],
   );
 
   const removeComponent = useCallback(
     (id: string) => {
-      if (!store) return;
+      if (!isUsableMapId(mapId)) return;
       removeDatasetComponent(store, id);
       notify(store);
     },
-    [store],
+    [store, mapId],
   );
 
   return {

@@ -7,7 +7,7 @@ import {
   type MittTypeMapEvent,
 } from '@hungpvq/map-core/event';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { getMapMittStore } from '../../../store/mitt-store';
+import { useMapMittStore } from '../../../store/mitt-store';
 import { useEventMapItems } from '../hook/useEventMapItems';
 import { useMapEventStore } from '../store';
 
@@ -15,7 +15,7 @@ export function ActionControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { callMap, mapId } = useMap(merged);
   const store = useMapEventStore(mapId);
-  const emitter = getMapMittStore<MittTypeMapEvent>(mapId);
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
 
   const setCurrentEvent = useCallback(
     (event_map_type: string, event?: IEvent) => {

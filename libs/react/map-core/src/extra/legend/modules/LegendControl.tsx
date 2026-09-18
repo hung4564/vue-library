@@ -53,12 +53,22 @@ export function LegendControl(props: WithMapPropType) {
 
   const updateLegend = useCallback(
     (map: MapSimple) => {
-      const layers = map?.getStyle().layers || [];
+      if (!map) return;
+      let layers: ReturnType<MapSimple['getStyle']>['layers'] = [];
+      try {
+        layers = map.getStyle()?.layers || [];
+      } catch {
+        return;
+      }
       let visibleLayers: Set<string> | null = null;
       if (onlyRenderRef.current) {
         visibleLayers = new Set();
-        for (const feature of map.queryRenderedFeatures()) {
-          visibleLayers.add(feature.layer.id);
+        try {
+          for (const feature of map.queryRenderedFeatures()) {
+            visibleLayers.add(feature.layer.id);
+          }
+        } catch {
+          visibleLayers = null;
         }
       }
       setLegends(
@@ -70,10 +80,16 @@ export function LegendControl(props: WithMapPropType) {
               (!visibleLayers || visibleLayers.has(layer.id)) &&
               isSupportGenLayerLegend(layer),
           )
-          .map((layer) => ({
-            icon: getLayerLegendNode(map, layer),
-            name: getLegendName(layer),
-          })),
+          .map((layer) => {
+            try {
+              return {
+                icon: getLayerLegendNode(map, layer),
+                name: getLegendName(layer),
+              };
+            } catch {
+              return { icon: null, name: getLegendName(layer) };
+            }
+          }),
       );
     },
     [getLayerLegendNode],

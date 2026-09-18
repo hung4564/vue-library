@@ -98,7 +98,7 @@ installMapApp();
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />

@@ -13,8 +13,8 @@
 
 | Name          | Description                |
 | ------------- | -------------------------- |
-| `map-loaded`  | `(map: MapSimple) => void` |
-| `map-destroy` | `(map: MapSimple) => void` |
+| `mapLoaded`  | `(map: MapSimple) => void` |
+| `mapDestroy` | `(map: MapSimple) => void` |
 
 ## Slots
 
@@ -102,7 +102,7 @@ function onMapDestroy(map) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded" @map-destroy="onMapDestroy" />
+  <Map @mapLoaded="onMapLoaded" @mapDestroy="onMapDestroy" />
 </template>
 ```
 

@@ -157,7 +157,7 @@ function createDatasetMeasure(
 <template>
   <Map
     ref="mapRef"
-    @map-loaded="onMapLoaded"
+    @mapLoaded="onMapLoaded"
     :mapId="mapId"
     button-in-mobile="toolbar"
   >

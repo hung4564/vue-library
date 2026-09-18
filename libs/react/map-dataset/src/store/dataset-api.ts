@@ -1,4 +1,4 @@
-import { getMap, type MapSimple } from '@hungpvq/map-core';
+import { getMap, isUsableMapId, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { DatasetService } from '@hungpvq/map-dataset';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -17,14 +17,14 @@ export function useMapDataset(initialMapId?: string) {
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
-    if (initialMapId) {
+    if (isUsableMapId(initialMapId)) {
       mapIdRef.current = initialMapId;
       setMapIdState(initialMapId);
     }
   }, [initialMapId]);
 
   useEffect(() => {
-    if (!mapId) return;
+    if (!isUsableMapId(mapId)) return;
     const listener = () => bump();
     store.listeners.add(listener);
     return () => {
@@ -39,7 +39,7 @@ export function useMapDataset(initialMapId?: string) {
 
   const addDataset = useCallback(async (layer: IDataset) => {
     const id = mapIdRef.current;
-    if (!id) return;
+    if (!isUsableMapId(id)) return;
     const layerStore = getMapDatasetStore(id);
     getMap(id, async (map: MapSimple) => {
       await DatasetService.addDataset(layerStore, map, layer);
@@ -49,7 +49,7 @@ export function useMapDataset(initialMapId?: string) {
 
   const removeDataset = useCallback(async (layer: IDataset) => {
     const id = mapIdRef.current;
-    if (!id) return;
+    if (!isUsableMapId(id)) return;
     const layerStore = getMapDatasetStore(id);
     getMap(id, async (map: MapSimple) => {
       await DatasetService.removeDataset(layerStore, map, layer);
@@ -59,7 +59,7 @@ export function useMapDataset(initialMapId?: string) {
 
   const removeComponent = useCallback((component: IDataset) => {
     const id = mapIdRef.current;
-    if (!id) return;
+    if (!isUsableMapId(id)) return;
     getMap(id, async (map: MapSimple) => {
       DatasetService.removeComponent(map, component);
       notify(getMapDatasetStore(id));
@@ -69,7 +69,7 @@ export function useMapDataset(initialMapId?: string) {
   const getAllComponentsByType = useCallback(
     <T extends IDataset>(targetType: string) => {
       const id = mapIdRef.current;
-      if (!id) return [];
+      if (!isUsableMapId(id)) return [];
       return DatasetService.getAllComponentsByType<T>(
         getMapDatasetStore(id),
         targetType,
@@ -80,13 +80,13 @@ export function useMapDataset(initialMapId?: string) {
 
   const getDatasetIds = useCallback(() => {
     const id = mapIdRef.current;
-    if (!id) return { value: [] as string[] };
+    if (!isUsableMapId(id)) return { value: [] as string[] };
     return getMapDatasetStore(id).datasetIds;
   }, []);
 
   const getDatasets = useCallback(() => {
     const id = mapIdRef.current;
-    if (!id) return [];
+    if (!isUsableMapId(id)) return [];
     const layerStore = getMapDatasetStore(id);
     return layerStore.datasetIds.value.map(
       (did: string) => layerStore.datasets[did],
@@ -105,7 +105,9 @@ export function useMapDataset(initialMapId?: string) {
     removeComponent,
     removeDataset,
     getStoreDataset: () =>
-      mapIdRef.current ? getMapDatasetStore(mapIdRef.current) : undefined,
+      isUsableMapId(mapIdRef.current)
+        ? getMapDatasetStore(mapIdRef.current)
+        : undefined,
     getAllComponentsByType,
     datasetVersion: version,
   };

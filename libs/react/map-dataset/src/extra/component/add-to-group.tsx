@@ -2,7 +2,7 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { createAddToGroupSubmenu, handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { getListViewGroupInfo } from '@hungpvq/map-dataset';
 import { mdiChevronRight, mdiCircleSmall, mdiFolderPlusOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useState } from 'react';
 import type { WithLayerItemMenuComponentType } from '@hungpvq/map-dataset/menu';
 

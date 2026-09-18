@@ -4,7 +4,7 @@
 
 ```vue
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <BaseMapControl position="bottom-left" :customBasemaps="customBasemaps" />
   </Map>
 </template>

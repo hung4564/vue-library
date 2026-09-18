@@ -1,3 +1,43 @@
+/* Self-contained box model (hosts may lack a global border-box reset). */
+.draggable-root,
+.draggable-root *,
+.draggable-root *::before,
+.draggable-root *::after,
+.draggable-modal-root,
+.draggable-modal-root *,
+.draggable-modal-root *::before,
+.draggable-modal-root *::after,
+.draggable-drawer,
+.draggable-drawer *,
+.draggable-drawer *::before,
+.draggable-drawer *::after,
+.draggable-popup-wrapper,
+.draggable-popup-wrapper *,
+.draggable-popup-wrapper *::before,
+.draggable-popup-wrapper *::after,
+.float-container,
+.float-container *,
+.float-container *::before,
+.float-container *::after,
+.sidebar-container,
+.sidebar-container *,
+.sidebar-container *::before,
+.sidebar-container *::after,
+.popup-mobile-container,
+.popup-mobile-container *,
+.popup-mobile-container *::before,
+.popup-mobile-container *::after,
+.hungpvq-draggable-card,
+.hungpvq-draggable-card *,
+.hungpvq-draggable-card *::before,
+.hungpvq-draggable-card *::after,
+.context-menu-container,
+.context-menu-container *,
+.context-menu-container *::before,
+.context-menu-container *::after {
+  box-sizing: border-box;
+}
+
 /* ===== DragButton ===== */
 .hungpvq-draggable-button {
   cursor: pointer;

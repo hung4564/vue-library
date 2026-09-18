@@ -2,7 +2,7 @@ import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useState } from 'react';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);

@@ -6,12 +6,17 @@ export function listMapStyleImages(
   map: MapSimple,
 ): Record<string, StyleImage> {
   if (!map) return {};
-  const result: Record<string, StyleImage> = {};
-  for (const name of map.listImages()) {
-    const img = map.getImage(name);
-    if (img) result[name] = img;
+  try {
+    // listImages/getImage require an active Style; mid-swap throws or NPE
+    const result: Record<string, StyleImage> = {};
+    for (const name of map.listImages()) {
+      const img = map.getImage(name);
+      if (img) result[name] = img;
+    }
+    return result;
+  } catch {
+    return {};
   }
-  return result;
 }
 
 /**

@@ -13,7 +13,7 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,

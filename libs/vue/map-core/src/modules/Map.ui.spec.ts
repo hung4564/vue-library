@@ -33,7 +33,7 @@ describe('Map UI smoke', () => {
         return { onLoaded, onError, mapId: MAP_ID };
       },
       template: `
-        <MapShell :map-id="mapId" @map-loaded="onLoaded" @error="onError">
+        <MapShell :map-id="mapId" @mapLoaded="onLoaded" @error="onError">
           <div data-testid="map-child">child</div>
         </MapShell>
       `,

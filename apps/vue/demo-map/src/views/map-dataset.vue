@@ -34,7 +34,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <GlobeControl />

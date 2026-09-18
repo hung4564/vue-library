@@ -216,6 +216,24 @@ bootstrapMapTheme('auto');
 <div class="map-theme-dark">...</div>
 ```
 
+## 📦 Box model (`box-sizing`)
+
+Map UI packages set `box-sizing: border-box` on their own roots so host apps **do not** need a Tailwind-style global:
+
+```css
+*, *::before, *::after { box-sizing: border-box; border-width: 0; … }
+```
+
+| Package CSS | Covers |
+|-------------|--------|
+| `@hungpvq/map-core/style.css` | `.map-container` (+ descendants), `.module__container`, `.map-context-menu`, `.map-error-toast` |
+| `@hungpvq/draggable` / `*-draggable/style.css` | Popup / modal / drawer / float / sidebar / card / context-menu portals |
+| `@hungpvq/map-debug/style.css` | Floating Devtools shell + viewers |
+
+Without border-box, patterns like `width: 100%` + horizontal padding (e.g. layer-detail rows in `.table-show-info`) overflow parents with `overflow: auto` and show an unwanted scrollbar.
+
+Do **not** rely on `border-width: 0` from a host reset — map components set borders explicitly.
+
 ## 🚀 Manual Customization
 
 ```css

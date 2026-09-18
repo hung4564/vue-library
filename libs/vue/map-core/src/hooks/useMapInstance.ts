@@ -1,4 +1,3 @@
-import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   errorHandler,
@@ -6,6 +5,8 @@ import {
   MapInitializer,
   type MapEventCallbacks,
 } from '@hungpvq/map-core';
+import { patchMapStyleImageAccessors } from '@hungpvq/map-core/image';
+import { getUUIDv4 } from '@hungpvq/shared';
 import type { Map as MaplibreMap, MapOptions } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { useMapContainer } from '../store/store';
@@ -17,8 +18,10 @@ export interface UseMapInstanceProps {
 }
 
 export interface UseMapInstanceEmits {
-  (e: 'map-loaded', map: MapSimple): void;
-  (e: 'map-destroy', map: MapSimple): void;
+  /** Fired when the map finishes loading (parity with React `onMapLoaded`). */
+  (e: 'mapLoaded', map: MapSimple): void;
+  /** Fired when the map is destroyed (parity with React `onMapDestroy`). */
+  (e: 'mapDestroy', map: MapSimple): void;
   (e: 'error', error: Error): void;
 }
 
@@ -51,6 +54,8 @@ export function useMapInstance(
           throw new Error('maplibre-gl is not installed.');
         }
         if (cancelled) return;
+
+        patchMapStyleImageAccessors(mapboxgl.Map);
 
         MapInitializer.validateWebglSupport(id.value);
         isSupport.value = true;
@@ -91,7 +96,7 @@ export function useMapInstance(
 
         const callbacks: MapEventCallbacks = {
           onLoad: (m) => {
-            emit('map-loaded', m);
+            emit('mapLoaded', m);
             loaded.value = true;
           },
           onError: (error) => {
@@ -99,7 +104,7 @@ export function useMapInstance(
             emit('error', error);
           },
           onDestroy: (m) => {
-            emit('map-destroy', m);
+            emit('mapDestroy', m);
           },
         };
 
@@ -135,7 +140,7 @@ export function useMapInstance(
     if (map.value) {
       const mapInstance = map.value as MapSimple;
       MapInitializer.cleanupMap(mapInstance, {
-        onDestroy: (m) => emit('map-destroy', m),
+        onDestroy: (m) => emit('mapDestroy', m),
       });
     }
     map.value = undefined;

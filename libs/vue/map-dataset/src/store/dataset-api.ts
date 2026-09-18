@@ -1,4 +1,4 @@
-import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
+import { getMap, isUsableMapId, logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
   DatasetService,
@@ -41,6 +41,9 @@ async function clearDatasetsOnRemoveMap(
 }
 
 export function useMapDatasetStore(mapId: string): MapLayerStore {
+  if (!isUsableMapId(mapId)) {
+    throw new Error('mapId is required');
+  }
   return createMapScopedStore<MapLayerStore>(
     mapId,
     MAP_DATASET_STORE_KEY as string & object,
@@ -66,12 +69,12 @@ export const useMapDataset = (initialMapId?: string) => {
   const mapId = ref(initialMapId ?? '');
 
   function getStore() {
-    if (!mapId.value) return undefined;
+    if (!isUsableMapId(mapId.value)) return undefined;
     return useMapDatasetStore(mapId.value);
   }
 
   function getMapHelper() {
-    if (!mapId.value) return undefined;
+    if (!isUsableMapId(mapId.value)) return undefined;
     return useMapStore(mapId.value).getMap;
   }
 

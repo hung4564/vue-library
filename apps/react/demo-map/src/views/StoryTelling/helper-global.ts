@@ -67,9 +67,10 @@ export function createSimpleMapAction(mapId: MutableRefObject<string>) {
         | string;
     }) => ({
       add: () => {
-        if (payload?.geojson == null) return;
+        const geojson = payload?.geojson;
+        if (geojson == null) return;
         withMapReady(mapId.current, (map) => {
-          (map.getSource('route') as GeoJSONSource)?.setData(payload.geojson!);
+          (map.getSource('route') as GeoJSONSource)?.setData(geojson);
         });
       },
       remove: () => {
@@ -83,25 +84,29 @@ export function createSimpleMapAction(mapId: MutableRefObject<string>) {
     }),
     zoomTo: (payload?: { center?: [number, number]; zoom?: number }) => ({
       add: () => {
-        if (!payload?.center || payload.zoom == null) return;
+        const center = payload?.center;
+        const zoom = payload?.zoom;
+        if (!center || zoom == null) return;
         withMapReady(mapId.current, (map) => {
-          map.flyTo({ center: payload.center!, zoom: payload.zoom! });
+          map.flyTo({ center, zoom });
         });
       },
     }),
     panTo: (payload?: { center?: [number, number] }) => ({
       add: () => {
-        if (!payload?.center) return;
+        const center = payload?.center;
+        if (!center) return;
         withMapReady(mapId.current, (map) => {
-          map.panTo(payload.center!);
+          map.panTo(center);
         });
       },
     }),
     rotateTo: (payload?: { angle?: number }) => ({
       add: () => {
-        if (payload?.angle == null) return;
+        const angle = payload?.angle;
+        if (angle == null) return;
         withMapReady(mapId.current, (map) => {
-          map.rotateTo(payload.angle!);
+          map.rotateTo(angle);
         });
       },
     }),

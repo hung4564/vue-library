@@ -36,7 +36,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';

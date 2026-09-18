@@ -16,8 +16,9 @@ See [control props](./props.md) and [ToolbarControl](./ToolbarControl.md) for `b
 
 | Name          | Description                |
 | ------------- | -------------------------- |
-| `map-loaded`  | `(map: MapSimple) => void` |
-| `map-destroy` | `(map: MapSimple) => void` |
+| `mapLoaded`   | `(map: MapSimple) => void` — React: `onMapLoaded` |
+| `mapDestroy`  | `(map: MapSimple) => void` — React: `onMapDestroy` |
+| `error`       | `(error: Error) => void` — React: `onError` |
 
 ## Slots
 
@@ -105,7 +106,7 @@ function onMapDestroy(map) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded" @map-destroy="onMapDestroy" />
+  <Map @mapLoaded="onMapLoaded" @mapDestroy="onMapDestroy" />
 </template>
 ```
 

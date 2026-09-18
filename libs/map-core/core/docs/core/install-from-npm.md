@@ -2,7 +2,7 @@
 
 Guide for **apps outside this monorepo** that install `@hungpvq/*` from the npm registry (greenfield).
 
-Related: [Getting started](../index.md) · [Minimal starter](./minimal-starter.md) · [Peers and bundle](./peers-and-bundle.md) · [Stable API](./stable-api.md)
+Related: [Getting started](../index.md) · [Minimal starter](./minimal-starter.md) · [Peers and bundle](./peers-and-bundle.md) · [Stable API](./stable-api.md) · [Try local consumers](./try-local-consumers.md) (`file:` → sibling `vue-3-test-map` / `react-demo-map`)
 
 ## What to install
 
@@ -94,7 +94,7 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
     <LayerControl position="top-left" show />
   </Map>
 </template>
@@ -192,14 +192,20 @@ For independent multi-map chrome themes use `ThemeControl` / `applyMapTheme` wit
 | Symptom | Check |
 |---------|--------|
 | Unstyled UI | Import `@hungpvq/vue-map/style.css` (or `react-map`) once; or the full a-la-carte CSS set |
+| Horizontal scrollbar in popups / layer detail | Import map + draggable `style.css` (packages self-contain `box-sizing: border-box`) — [CSS variables → Box model](./css-variables.md#box-model-box-sizing) |
 | Empty layer menus / no style editor | Call `installMapApp` before mounting maps |
 | Two MapLibre instances / broken GL | Only one `maplibre-gl` in the app (peer); avoid bundling a second copy |
 | Peer warnings for turf / proj4 | Expected to come **with** `@hungpvq/map-core` — do not install `@turf/turf` for the library |
 | CreateControl missing format | Install the optional GIS peer for that format |
 | Types / exports missing | Import Stable symbols from documented packages — [Stable API](./stable-api.md) |
 
+## Local consumers (`file:` dist)
+
+To try a freshly built map stack without publishing, use sibling apps that point `file:` at `../vue-library/dist/libs/...` after `npm run map:build`. Guides: [Try local consumers](./try-local-consumers.md) · `g:\code\0-library\vue-3-test-map\TRY-LOCAL.md` · `g:\code\0-library\react-demo-map\TRY-LOCAL.md`.
+
 ## Next
 
 - Full a-la-carte peer table: [Peers and bundle](./peers-and-bundle.md)
 - Copy-paste map + layer only: [Minimal starter](./minimal-starter.md)
 - Hub overview: [Getting started](../index.md)
+- Local `file:` try: [Try local consumers](./try-local-consumers.md)

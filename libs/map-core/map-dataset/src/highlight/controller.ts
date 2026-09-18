@@ -1,6 +1,7 @@
 import {
   getMap,
   getMapPointerProfile,
+  isUsableMapId,
   registerMapStoreCleanup,
   subscribeMapReady,
 } from '@hungpvq/map-core';
@@ -545,7 +546,40 @@ function createController(mapId: string): HighlightController {
   };
 }
 
+const noop = (): void => undefined;
+
+const noopHighlightController: HighlightController = {
+  entries: [],
+  setDefaultStyle: noop,
+  setDefaultData: noop,
+  setDefaultSelection: noop,
+  setDefaultPresentation: noop,
+  setPickDatasets: noop,
+  async show() {
+    return undefined;
+  },
+  async showMany() {
+    return undefined;
+  },
+  hide: noop,
+  hideIfSource: noop,
+  hideEntry: noop,
+  async pickAt() {
+    return false;
+  },
+  bindPointer() {
+    return noop;
+  },
+  subscribe() {
+    return noop;
+  },
+  destroy: noop,
+};
+
 export function getHighlightController(mapId: string): HighlightController {
+  if (!isUsableMapId(mapId)) {
+    return noopHighlightController;
+  }
   let ctrl = controllers.get(mapId);
   if (!ctrl) {
     ctrl = createController(mapId);

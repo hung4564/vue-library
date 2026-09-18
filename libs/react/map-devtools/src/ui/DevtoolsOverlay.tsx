@@ -1,15 +1,20 @@
 import { isDevtoolsMobileViewport } from '@hungpvq/map-core/devtools';
 import {
   beginPanelDrag,
+  clampPanelPos,
   panelPosStyle,
+  samePanelPos,
+  syncDevtoolsShellPos,
+  type DevtoolsShellLayout,
   type PanelPos,
 } from '@hungpvq/map-debug';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { mdiClose, mdiTools } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -20,6 +25,13 @@ import { setDevtoolOpen } from '../store';
 import '../style.css';
 import { useDevtoolState } from '../useDevtoolState';
 import { DevtoolsPanelBody } from './DevtoolsPanelBody';
+
+const emptyLayout = (): DevtoolsShellLayout => ({
+  lastSize: { width: 0, height: 0 },
+  savedTogglePos: null,
+  wasOpen: false,
+  draggedWhileOpen: false,
+});
 
 export function DevtoolsOverlay({
   containerId: _containerId,
@@ -35,12 +47,21 @@ export function DevtoolsOverlay({
   const [pos, setPos] = useState<PanelPos | null>(null);
   const [dragging, setDragging] = useState(false);
   const shellRef = useRef<HTMLDivElement | null>(null);
+  const layoutRef = useRef<DevtoolsShellLayout>(emptyLayout());
   const dragMovedRef = useRef(false);
   const disposeDragRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(isDevtoolsMobileViewport());
-    onResize();
+    const onResize = () => {
+      setIsMobile(isDevtoolsMobileViewport());
+      const el = shellRef.current;
+      if (!el) return;
+      setPos((prev) => {
+        if (!prev) return prev;
+        const next = clampPanelPos(prev.left, prev.top, el);
+        return samePanelPos(next, prev) ? prev : next;
+      });
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
@@ -52,22 +73,42 @@ export function DevtoolsOverlay({
     [],
   );
 
-  const onShellPointerDown = useCallback((e: ReactPointerEvent) => {
-    if (!shellRef.current) return;
-    dragMovedRef.current = false;
-    disposeDragRef.current?.();
-    disposeDragRef.current = beginPanelDrag(shellRef.current, e.nativeEvent, {
-      onMove: setPos,
-      onDraggingChange: setDragging,
-      onEnd: (moved) => {
-        dragMovedRef.current = moved;
-        disposeDragRef.current = undefined;
-      },
+  useLayoutEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+    const synced = syncDevtoolsShellPos({
+      pos,
+      el,
+      isOpen,
+      layout: layoutRef.current,
     });
-  }, []);
+    layoutRef.current = synced.layout;
+    if (synced.pos && (!pos || !samePanelPos(synced.pos, pos))) {
+      setPos(synced.pos);
+    } else if (!synced.pos && pos) {
+      setPos(null);
+    }
+  }, [isOpen, isMobile, pos]);
 
-  const open = () => setDevtoolOpen(true);
-  const close = () => setDevtoolOpen(false);
+  const onShellPointerDown = useCallback(
+    (e: ReactPointerEvent) => {
+      if (!shellRef.current) return;
+      dragMovedRef.current = false;
+      disposeDragRef.current?.();
+      disposeDragRef.current = beginPanelDrag(shellRef.current, e.nativeEvent, {
+        onMove: (next) => {
+          if (isOpen) layoutRef.current.draggedWhileOpen = true;
+          setPos(next);
+        },
+        onDraggingChange: setDragging,
+        onEnd: (moved) => {
+          dragMovedRef.current = moved;
+          disposeDragRef.current = undefined;
+        },
+      });
+    },
+    [isOpen],
+  );
 
   const onToggleClick = (e: ReactMouseEvent) => {
     if (dragMovedRef.current) {
@@ -76,10 +117,8 @@ export function DevtoolsOverlay({
       dragMovedRef.current = false;
       return;
     }
-    open();
+    setDevtoolOpen(true);
   };
-
-  const shellStyle = panelPosStyle(pos) as CSSProperties | undefined;
 
   const className = [
     'devtools-container',
@@ -92,7 +131,11 @@ export function DevtoolsOverlay({
     .join(' ');
 
   return (
-    <div ref={shellRef} className={className} style={shellStyle}>
+    <div
+      ref={shellRef}
+      className={className}
+      style={panelPosStyle(pos) as CSSProperties | undefined}
+    >
       {!isOpen ? (
         <MapControlButton
           className="devtools-toggle"
@@ -128,7 +171,7 @@ export function DevtoolsOverlay({
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
-                  close();
+                  setDevtoolOpen(false);
                 }}
               >
                 <Icon path={mdiClose} size="16px" />

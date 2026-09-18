@@ -19,7 +19,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import {
   memo,
   useEffect,

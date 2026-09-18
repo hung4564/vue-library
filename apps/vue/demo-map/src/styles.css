@@ -1,5 +1,7 @@
+/* Demo shell — map/draggable packages self-contain border-box on UI roots. */
 html {
   -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
   font-family: var(
     --map-font-family,
     system-ui,
@@ -17,6 +19,13 @@ html {
   tab-size: 4;
   scroll-behavior: smooth;
 }
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
 body {
   font-family: inherit;
   font-size: inherit;
@@ -25,30 +34,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 h1,
 h2,
 p,
 pre {
   margin: 0;
 }
-*,
-::before,
-::after {
-  box-sizing: border-box;
-  border-width: 0;
-  border-style: solid;
-  border-color: currentColor;
-}
+
 h1,
 h2 {
   font-size: inherit;
   font-weight: inherit;
   font-family: inherit;
 }
+
 a {
   color: inherit;
   text-decoration: inherit;
 }
+
 pre {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',

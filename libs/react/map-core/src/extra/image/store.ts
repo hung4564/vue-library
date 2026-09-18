@@ -4,7 +4,7 @@ import {
   createMapImageStoreApi,
   type MapImageStore,
 } from '@hungpvq/map-core/image';
-import { createMapScopedStore } from '../../store/store-utils';
+import { createMapScopedStore } from '../../store/store';
 import { useMapStore } from '../../store/store';
 import { loggerFactory } from '@hungpvq/shared-log';
 

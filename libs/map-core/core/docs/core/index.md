@@ -53,7 +53,7 @@ Dataset apps need the full set (`map-core` + `map-dataset` + framework adapters 
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
     <FullScreenControl position="top-right" />

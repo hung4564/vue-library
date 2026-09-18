@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { getMapMittStore } from '../../store/mitt-store';
+import { useMapMittStore } from '../../store/mitt-store';
 import { useMapCrsStore } from './store';
 import {
   type CrsItem,
@@ -20,7 +20,7 @@ export const useMapCrsItems = (
     onChange?: (p_item: CrsItem[]) => void;
   } = {},
 ) => {
-  const emitter = getMapMittStore<MittTypeMapCrs>(mapId);
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
   const store = useMapCrsStore(mapId);
   const [items, setItemsState] = useState<CrsItem[]>(store.items);
   const onChangeRef = useRef(onChange);
@@ -55,7 +55,7 @@ export const useMapCrsCurrent = (
     onChange?: (p_item: CrsItem | undefined | null) => void;
   } = {},
 ) => {
-  const emitter = getMapMittStore<MittTypeMapCrs>(mapId);
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
   const store = useMapCrsStore(mapId);
   const [item, setItemState] = useState<CrsItem | undefined | null>(store.item);
   const onChangeRef = useRef(onChange);
@@ -95,7 +95,7 @@ export const useMapCrsDisplayEpsgs = (
     onChange?: (epsgs: string[]) => void;
   } = {},
 ) => {
-  const emitter = getMapMittStore<MittTypeMapCrs>(mapId);
+  const emitter = useMapMittStore<MittTypeMapCrs>(mapId);
   const store = useMapCrsStore(mapId);
   const [displayEpsgs, setDisplayEpsgsState] = useState<string[]>(
     store.displayEpsgs ?? ['4326'],

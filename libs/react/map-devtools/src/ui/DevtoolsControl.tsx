@@ -8,7 +8,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiTools } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
 import { setDevtoolOpen, toggleDevtoolOpen } from '../store';
 import { useDevtoolState } from '../useDevtoolState';

@@ -27,10 +27,19 @@ export {
   PANEL_DRAG_THRESHOLD_PX,
   beginPanelDrag,
   clampPanelPos,
+  fitMovedPanelPos,
   offsetParentRect,
   panelPosStyle,
+  reanchorPanelPos,
+  samePanelPos,
+  syncDevtoolsShellPos,
 } from './viewers/panel-drag';
-export type { PanelDragHandlers, PanelPos } from './viewers/panel-drag';
+export type {
+  DevtoolsShellLayout,
+  PanelDragHandlers,
+  PanelPos,
+  PanelSize,
+} from './viewers/panel-drag';
 
 export {
   errorMapId,

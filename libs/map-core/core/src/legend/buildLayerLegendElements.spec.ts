@@ -28,19 +28,23 @@ describe('buildLayerLegendElements', () => {
     expect(content?.children).toHaveLength(2);
   });
 
-  it('wraps a real line legend in the same container shape', () => {
-    const map = { getZoom: () => 10, getImage: () => undefined } as any;
+  it('does not throw when getImage fails because style is missing', () => {
+    const map = {
+      getZoom: () => 10,
+      getImage: () => {
+        throw new TypeError(
+          "Cannot read properties of undefined (reading 'getImage')",
+        );
+      },
+    } as any;
     const layer = {
-      id: 'roads',
-      type: 'line',
-      paint: { 'line-color': '#ff0000', 'line-width': 2 },
+      id: 'poi',
+      type: 'symbol',
+      layout: { 'icon-image': 'marker' },
     } as any;
 
+    expect(() => buildLayerLegendElements(map, layer)).not.toThrow();
     const tree = buildLayerLegendElements(map, layer);
-    expect(tree.attributes.class).toBe('legend-item-container');
-    const content = tree.children?.[0]?.children?.[0];
-    expect(content?.element).toBe('svg');
-    expect(content?.attributes.style).toBe('height: 17px;');
-    expect(content?.attributes.version).toBe('1.1');
+    expect(tree.element).toBe('div');
   });
 });

@@ -43,14 +43,19 @@ export function MapLegend({
   const handler = TYPE_MAP[layer.type];
   const expr = exprHandler({ zoom });
   const image = (id: string) => {
-    if (!id) {
+    if (!id || !map) {
       return '';
     }
-    const imageData = map.getImage(id);
-    if (!imageData) {
+    try {
+      // Map.getImage → this.style.getImage; style is null mid-swap / before load
+      const imageData = map.getImage(id);
+      if (!imageData) {
+        return '';
+      }
+      return styleImageToDataURL(id, imageData);
+    } catch {
       return '';
     }
-    return styleImageToDataURL(id, imageData);
   };
 
   if (handler) {

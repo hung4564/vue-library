@@ -3,7 +3,7 @@
     <div class="multi-map-page__maps">
       <div class="multi-map-page__pane">
         <h2 class="multi-map-page__label">Map A (<code>demo-map-a</code>)</h2>
-        <Map map-id="demo-map-a" @map-loaded="onLoadedA">
+        <Map map-id="demo-map-a" @mapLoaded="onLoadedA">
           <DemoLanguageControl />
           <AsideControl position="top-left" />
           <BaseMapControl position="bottom-left" />
@@ -13,7 +13,7 @@
       </div>
       <div class="multi-map-page__pane">
         <h2 class="multi-map-page__label">Map B (<code>demo-map-b</code>)</h2>
-        <Map map-id="demo-map-b" @map-loaded="onLoadedB">
+        <Map map-id="demo-map-b" @mapLoaded="onLoadedB">
           <BaseMapControl position="bottom-left" />
           <LayerControl position="top-left" show />
         </Map>

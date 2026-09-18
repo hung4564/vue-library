@@ -131,7 +131,7 @@ Documented `--map-*` tokens and `style.css` entries:
 ### F. Component props / slots / events (Vue & React)
 
 - [ ] Rename props (`position`, `show`, `menuContext`, …)
-- [ ] Rename Vue `@map-loaded` / React equivalent callbacks
+- [ ] Rename Vue `@mapLoaded` / React equivalent callbacks
 - [ ] Change slot / children contracts of `Map`, `ModuleContainer`, `LayerControl`
 - [ ] Change defaults that alter documented flow (default `show`, default theme, …)
 
@@ -194,7 +194,7 @@ Documented `--map-*` tokens and `style.css` entries:
 | Add `LIST_VIEW_MENU_COMPONENT_KEY.foo` | minor |
 | Change menu click handler args | major |
 | Add optional `LayerControl` prop | minor |
-| Rename `@map-loaded` | major |
+| Rename `@mapLoaded` | major |
 | Remove a util export from `map-core` | major |
 | Internal refactor with identical API | patch |
 | Raise `maplibre-gl` peer to a new major | major (unless dual-range + verified) |

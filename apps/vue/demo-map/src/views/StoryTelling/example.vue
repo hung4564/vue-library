@@ -137,7 +137,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 );
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <Map ref="mapRef" @mapLoaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />

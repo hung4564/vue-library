@@ -52,15 +52,22 @@ const { panelBind } = useRegisterMapControl(mapId, {
 const onlyRender = ref(false);
 const legends = shallowRef<{ icon: any; name: string }[]>([]);
 function updateLegend(map: MapSimple) {
-  let layers = map?.getStyle().layers;
+  if (!map) return;
+  let layers: ReturnType<MapSimple['getStyle']>['layers'] = [];
+  try {
+    layers = map.getStyle()?.layers || [];
+  } catch {
+    return;
+  }
   let visibleLayers: Set<string> | null = null;
   if (onlyRender.value) {
-    visibleLayers = new Set(); // Dùng Set để tránh trùng lặp
-
-    // Lấy các feature đang render trong viewport
-    const features = map.queryRenderedFeatures();
-    for (const feature of features) {
-      visibleLayers.add(feature.layer.id);
+    visibleLayers = new Set();
+    try {
+      for (const feature of map.queryRenderedFeatures()) {
+        visibleLayers.add(feature.layer.id);
+      }
+    } catch {
+      visibleLayers = null;
     }
   }
   legends.value = layers
@@ -68,13 +75,19 @@ function updateLegend(map: MapSimple) {
     .reverse()
     .filter(
       (layer) =>
-        (!visibleLayers || (visibleLayers && visibleLayers.has(layer.id))) &&
+        (!visibleLayers || visibleLayers.has(layer.id)) &&
         isSupportGenLayerLegend(layer),
     )
-    .map((layer) => ({
-      icon: getLayerLegendVNode(map, layer as any),
-      name: getLegendName(layer as any),
-    }));
+    .map((layer) => {
+      try {
+        return {
+          icon: getLayerLegendVNode(map, layer as any),
+          name: getLegendName(layer as any),
+        };
+      } catch {
+        return { icon: null, name: getLegendName(layer as any) };
+      }
+    });
 }
 useEventListener(mapId.value, 'styledata', updateLegend);
 const { add, remove } = useEventListener(

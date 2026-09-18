@@ -173,11 +173,7 @@ export class GlobalStoreService {
     }
 
     const lastKey = keys[keys.length - 1];
-    if (
-      typeof current === 'object' &&
-      current !== null &&
-      lastKey in current
-    ) {
+    if (typeof current === 'object' && current !== null && lastKey in current) {
       const result = delete (current as Record<string, unknown>)[lastKey];
       this.syncHostStore();
       this.notifyListeners(path);
@@ -202,11 +198,7 @@ function setValueByPath(
       current[key] = value;
     } else {
       const next = current[key];
-      if (
-        !(key in current) ||
-        typeof next !== 'object' ||
-        next === null
-      ) {
+      if (!(key in current) || typeof next !== 'object' || next === null) {
         current[key] = {};
       }
       current = current[key] as Record<string, unknown>;

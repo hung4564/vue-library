@@ -55,6 +55,8 @@ Rules:
 - Do **not** fold `vue-map-core` ↔ `react-map-core` into one package.
 - Do **not** put SFC/JSX, provide/inject, or React Context into `@hungpvq/map-core`.
 - Prefer `subscribeMapReady(mapId, cb)` over fire-and-forget `getMap(id, cb)` when the host can unmount before READY.
+- Map shell events (dual names): Vue `@mapLoaded` / `@mapDestroy` / `@error` ↔ React `onMapLoaded` / `onMapDestroy` / `onError`.
+- Empty `mapId`: never write `map:core[""]`; use `isUsableMapId` — see `map-store.md` § Empty / deferred mapId.
 - Parity lock: `MAP_DUAL_CONTROL_IDS` in `libs/map-core/core/src/dual/parity-catalog.ts` + adapter `vue-react-parity.spec.ts`.
 - MapLibre `MapSimple` stays a public Stable type — do not abstract/hide the engine behind a custom map facade.
 
@@ -81,7 +83,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 
 - **Host:** `UniversalRegistry` in map-core — methods, menu handlers, **components**, control handles. Bags on `@hungpvq/shared-store` (`map:registry:global` / `maps` / `controls`); never class-static `new Map`.
 - **Platform fn wiring:** `registerMapAccessor` / Ready / Cleanup = UniversalRegistry **global** methods under `MAP_PLATFORM_REGISTRY_METHOD.*` (`__platform.*`). `clearMap` does not remove them.
-- **Process instances:** `errorHandler`, GIS worker URL, React `storeManager` → `getOrCreateStore` on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`). `LoggerFactory` pins on its own `globalThis` key inside `@hungpvq/shared-log`. Never RegistryFn for these. Full key table (registry global, theme storage, `map:core`, `map:core:meta` tombstones): `libs/map-core/core/docs/core/map-store.md` § Process-wide singletons.
+- **Process instances:** GIS worker URL → `getOrCreateStore` on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`). `errorHandler` / error capture live on `map:core:meta`. `LoggerFactory` pins on its own `globalThis` key inside `@hungpvq/shared-log`. Never RegistryFn for these. Full key table (registry global, theme storage, `map:core`, `map:core:meta`): `libs/map-core/core/docs/core/map-store.md` § Process-wide singletons.
 - **App state:** `defineStore` / `getOrCreateStore` / `map:core` / domain scoped stores on `$_hungpv_store` only — do **not** use `@hungpvq/shared` for stores.
 - **Adapters:** vue/react `map-core` extend the class and only add typed `registerComponent` / `getComponent` (Vue: `markRaw`). Do **not** create a parallel store outside shared-store.
 - Dataset UI must keep `createDatasetRegistryPlugin()` (or equivalent) so menus/components resolve.

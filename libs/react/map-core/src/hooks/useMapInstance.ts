@@ -6,6 +6,7 @@ import {
   MapInitializer,
   type MapEventCallbacks,
 } from '@hungpvq/map-core';
+import { patchMapStyleImageAccessors } from '@hungpvq/map-core/image';
 import type { Map as MaplibreMap, MapOptions } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { useMapContainer } from '../store/store';
@@ -60,6 +61,8 @@ export function useMapInstance(
           throw new Error('maplibre-gl is not installed.');
         }
         if (cancelled || !mapContainerRef.current) return;
+
+        patchMapStyleImageAccessors(mapboxgl.Map);
 
         MapInitializer.validateWebglSupport(id.current);
         setIsSupport(true);

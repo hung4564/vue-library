@@ -19,7 +19,7 @@ import {
   type ContextMenuRef,
 } from '@hungpvq/react-draggable';
 import { mdiCircleSmall, mdiDotsVertical } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useMemo, useRef } from 'react';
 import { useMenuConditionContext } from './condition-context';
 import { DatasetMenuButton } from './dataset-menu-button';

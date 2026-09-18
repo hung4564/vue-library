@@ -262,7 +262,7 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl

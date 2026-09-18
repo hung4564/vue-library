@@ -13,7 +13,7 @@ import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-data
 import { MapControlButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
 
 import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMenuConditionContext } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';

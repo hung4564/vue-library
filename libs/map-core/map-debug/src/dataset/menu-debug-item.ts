@@ -53,7 +53,7 @@ export function openDatasetDevtools(): void {
 
 /**
  * Capture the dataset (and optional row `value`) from a menu click into
- * `window.__hungpvqDatasetDebug` — session + pins — then open Dataset Devtools.
+ * Pins session on `map:debug.dataset` / `window.__hungpvqDatasetDebug`, then open Dataset Devtools.
  */
 export function captureDatasetFromMenu(
   props: MenuItemProps,

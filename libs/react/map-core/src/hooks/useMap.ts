@@ -87,6 +87,7 @@ export const useMap = (
   }, [mapId]);
 
   function callMap(cb: MapFCOnUseMap) {
+    if (!mapId) return undefined;
     return getMap(mapId, cb);
   }
 

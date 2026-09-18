@@ -5,7 +5,7 @@ import {
   mdiDelete,
   mdiUngroup,
 } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useEffect, useRef, useState } from 'react';
 import type Sortable from 'sortablejs';
 import { ListItem } from '../../List/ListItem';

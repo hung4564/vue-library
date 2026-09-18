@@ -33,7 +33,7 @@ yarn add @hungpvq/vue-map-core
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <!-- Navigation controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -62,7 +62,7 @@ function onMapLoaded(map: any) {
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <!-- Navigation controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -107,7 +107,7 @@ function onMapLoaded(map: any) {
 | Prop                | Type         | Default                                             | Description                        |
 | ------------------- | ------------ | --------------------------------------------------- | ---------------------------------- |
 | `mapboxAccessToken` | `string`     | `''`                                                | Mapbox access token                |
-| `initOptions`       | `MapOptions` | `{ attributionControl: false, zoomControl: false }` | MapLibre GL initialization options |
+| `initOptions`       | `MapOptions` | `{}` (merged with `MapInitializer.createDefaultOptions`) | MapLibre GL initialization options |
 | `dragId`            | `string`     | `undefined`                                         | ID of draggable element            |
 | `mapId`             | `string`     | `undefined`                                         | Unique map identifier              |
 
@@ -115,8 +115,8 @@ function onMapLoaded(map: any) {
 
 | Event         | Payload     | Description                 |
 | ------------- | ----------- | --------------------------- |
-| `map-loaded`  | `MapSimple` | Fired when map is loaded    |
-| `map-destroy` | `MapSimple` | Fired when map is destroyed |
+| `mapLoaded`  | `MapSimple` | Fired when map is loaded    |
+| `mapDestroy` | `MapSimple` | Fired when map is destroyed |
 
 #### Slots
 
@@ -213,7 +213,7 @@ interface WithMapPropType {
 
 ```vue
 <template>
-  <Map :mapId="mapId" :initOptions="initOptions" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" :initOptions="initOptions" @mapLoaded="onMapLoaded">
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
     <FullScreenControl position="top-right" />

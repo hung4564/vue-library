@@ -27,9 +27,7 @@ export interface MapProps {
 
 export function Map({
   mapboxAccessToken = '',
-  initOptions = {
-    attributionControl: false,
-  },
+  initOptions = {},
   dragId,
   mapId,
   keyboardShortcuts = true,
@@ -132,7 +130,7 @@ export function Map({
           )}
           {/* Render children after map is loaded */}
           {loaded && loadedDrag && children}
-          {loaded && loadedDrag && <ActionControl mapId={id} />}
+          {loaded && loadedDrag && <ActionControl />}
           <MapErrorToast />
         </div>
       </div>

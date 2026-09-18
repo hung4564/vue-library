@@ -7,7 +7,7 @@ import {
   MittTypeMapLang,
 } from '@hungpvq/map-core';
 import { useMemo } from 'react';
-import { createMapScopedStore } from '../../store/store-utils';
+import { createMapScopedStore } from '../../store/store';
 import { getMapMittStore } from '../../store/mitt-store';
 import { loggerFactory } from '@hungpvq/shared-log';
 

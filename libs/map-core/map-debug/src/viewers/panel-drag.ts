@@ -1,6 +1,15 @@
-/** Shared pointer-drag positioning (same pattern as demo DemoHelpPanel). */
+/** Shared pointer-drag positioning (devtools overlay + similar FABs). */
 
 export type PanelPos = { left: number; top: number };
+
+export type PanelSize = { width: number; height: number };
+
+export type DevtoolsShellLayout = {
+  lastSize: PanelSize;
+  savedTogglePos: PanelPos | null;
+  wasOpen: boolean;
+  draggedWhileOpen: boolean;
+};
 
 export const PANEL_DRAG_THRESHOLD_PX = 4;
 
@@ -36,6 +45,100 @@ export function clampPanelPos(
   return {
     left: Math.min(Math.max(0, left), maxL),
     top: Math.min(Math.max(0, top), maxT),
+  };
+}
+
+export function samePanelPos(a: PanelPos, b: PanelPos): boolean {
+  return a.left === b.left && a.top === b.top;
+}
+
+/**
+ * When the shell grows/shrinks (toggle ↔ panel), keep the bottom-right
+ * corner fixed (matches default `right`/`bottom` CSS anchors) then clamp.
+ */
+export function reanchorPanelPos(
+  prev: PanelPos,
+  prevWidth: number,
+  prevHeight: number,
+  el: HTMLElement,
+): PanelPos {
+  const left = prev.left + prevWidth - el.offsetWidth;
+  const top = prev.top + prevHeight - el.offsetHeight;
+  return clampPanelPos(left, top, el);
+}
+
+/** Reanchor when size changed; otherwise clamp into the offset parent. */
+export function fitMovedPanelPos(
+  pos: PanelPos,
+  el: HTMLElement,
+  prevSize: PanelSize,
+): PanelPos {
+  const w = el.offsetWidth;
+  const h = el.offsetHeight;
+  if (
+    prevSize.width > 0 &&
+    prevSize.height > 0 &&
+    (Math.abs(prevSize.width - w) > 1 || Math.abs(prevSize.height - h) > 1)
+  ) {
+    return reanchorPanelPos(pos, prevSize.width, prevSize.height, el);
+  }
+  return clampPanelPos(pos.left, pos.top, el);
+}
+
+/**
+ * Open/close/resize for the floating Devtools FAB↔panel shell.
+ * - Open: save toggle pos, expand from bottom-right, clamp into view.
+ * - Close: restore saved toggle pos unless the open panel was dragged.
+ */
+export function syncDevtoolsShellPos(input: {
+  pos: PanelPos | null;
+  el: HTMLElement;
+  isOpen: boolean;
+  layout: DevtoolsShellLayout;
+}): { pos: PanelPos | null; layout: DevtoolsShellLayout } {
+  const { el, isOpen } = input;
+  const width = el.offsetWidth;
+  const height = el.offsetHeight;
+  const wasOpen = input.layout.wasOpen;
+
+  let pos = input.pos;
+  let savedTogglePos = input.layout.savedTogglePos;
+  let draggedWhileOpen = input.layout.draggedWhileOpen;
+
+  if (!pos) {
+    return {
+      pos: null,
+      layout: {
+        lastSize: { width, height },
+        savedTogglePos,
+        wasOpen: isOpen,
+        draggedWhileOpen,
+      },
+    };
+  }
+
+  if (!wasOpen && isOpen) {
+    savedTogglePos = { ...pos };
+    draggedWhileOpen = false;
+    pos = fitMovedPanelPos(pos, el, input.layout.lastSize);
+  } else if (wasOpen && !isOpen) {
+    pos = draggedWhileOpen
+      ? fitMovedPanelPos(pos, el, input.layout.lastSize)
+      : savedTogglePos
+        ? clampPanelPos(savedTogglePos.left, savedTogglePos.top, el)
+        : clampPanelPos(pos.left, pos.top, el);
+  } else {
+    pos = clampPanelPos(pos.left, pos.top, el);
+  }
+
+  return {
+    pos,
+    layout: {
+      lastSize: { width, height },
+      savedTogglePos,
+      wasOpen: isOpen,
+      draggedWhileOpen,
+    },
   };
 }
 

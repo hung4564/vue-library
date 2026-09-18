@@ -7,7 +7,7 @@ Debug panel for map apps: **Store**, **Logs**, **Errors**, and **Dataset** (Insp
 | `@hungpvq/vue-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
 
-Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (`window.__hungpvqDatasetDebug`).
+Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (canonical pin `map:debug.dataset`; F12 alias `window.__hungpvqDatasetDebug`).
 
 ## Dataset tab
 
@@ -27,6 +27,16 @@ See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API 
 |--------|----------|----------------|
 | `overlay` (default) | Fixed FAB + floating panel; mobile uses `DraggableItemBottom` when a map drag container exists | Anywhere (e.g. app shell) |
 | `control` | Map corner control (`DEVTOOLS_CONTROL.id` = `mapDevtools`) + **`DraggableItemPopup`** | Inside `<Map>` |
+
+### Overlay drag (FAB ↔ panel)
+
+Default CSS anchors the shell with `bottom` / `right`. After the user drags:
+
+1. Position switches to `left` / `top` (`devtools-container--moved`).
+2. **Open:** expand from the FAB’s bottom-right corner, then clamp into the viewport (large panel near a corner stays on-screen).
+3. **Close:** restore the FAB to the position saved at open — unless the open panel was dragged, in which case the FAB follows the panel’s bottom-right.
+
+Shared helpers live on `@hungpvq/map-debug` (`syncDevtoolsShellPos`, `beginPanelDrag`, …). Vue/React overlays are thin hosts.
 
 ```vue
 <!-- App shell -->

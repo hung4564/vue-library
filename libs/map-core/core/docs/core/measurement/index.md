@@ -41,7 +41,7 @@ npm install @hungpvq/react-map-core
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <!-- Core controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -76,7 +76,7 @@ import '@hungpvq/react-map-core/style.css';
 
 ```vue
 <template>
-  <Map :mapId="mapId" @map-loaded="onMapLoaded">
+  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
         <MeasurementControl :mapId="mapId" />

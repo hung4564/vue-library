@@ -69,7 +69,7 @@ function onMapLoaded(_map: MapSimple) {
 </script>
 
 <template>
-  <Map map-id="demo" @map-loaded="onMapLoaded">
+  <Map map-id="demo" @mapLoaded="onMapLoaded">
     <DrawControl position="top-right" />
   </Map>
 </template>

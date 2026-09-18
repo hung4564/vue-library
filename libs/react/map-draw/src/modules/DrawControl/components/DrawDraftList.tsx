@@ -6,7 +6,7 @@ import {
   useRegisterMapControl,
 } from '@hungpvq/react-map-core';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import type { Feature } from 'geojson';
 
 export interface DrawDraftListProps {

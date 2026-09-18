@@ -140,6 +140,7 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'useMapImage',
   'useMapImages',
   'useMapInstance',
+  'useMapMittStore',
   'useMapPrint',
   'useMapPrintStore',
   'useMapState',

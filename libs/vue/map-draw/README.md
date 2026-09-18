@@ -19,7 +19,7 @@ Prefer `useMapDraw(mapId).start(config)` with **`MapDrawOption`** from `@hungpvq
 
 ```vue
 <template>
-  <Map map-id="demo" @map-loaded="onMapLoaded">
+  <Map map-id="demo" @mapLoaded="onMapLoaded">
     <DrawControl position="top-right" />
   </Map>
 </template>

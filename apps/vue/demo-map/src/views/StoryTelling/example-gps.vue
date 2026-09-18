@@ -219,7 +219,7 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
 </script>
 
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <Map ref="mapRef" @mapLoaded="onMapLoaded">
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />

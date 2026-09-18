@@ -7,7 +7,7 @@ import {
 import { MapControlButton, UniversalRegistry } from '@hungpvq/react-map-core';
 
 import { mdiCursorPointer } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
 
 const ICON_SIZE_EXTRA = '14px';
