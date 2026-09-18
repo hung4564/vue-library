@@ -10,11 +10,13 @@ import {
 } from '@hungpvq/map-draw';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
 import AsideControl from '../../layout/aside-control.vue';
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
+const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
 const MAP_ID = 'demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
@@ -115,7 +117,7 @@ function onMapLoaded(map: MapSimple) {
     },
     redraw: (mapId) => paintResult(mapId),
     callback(result) {
-      console.info('draw save', result);
+      logger.info('draw save', result);
     },
   } satisfies MapDrawOption);
 }

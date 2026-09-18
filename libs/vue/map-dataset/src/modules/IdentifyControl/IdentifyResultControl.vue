@@ -313,6 +313,7 @@ function onResultKeydown(event: KeyboardEvent) {
             tabindex="0"
             role="region"
             :aria-label="trans('map.identify.title')"
+            aria-live="polite"
             @keydown="onResultKeydown"
           >
             <div
@@ -341,12 +342,17 @@ function onResultKeydown(event: KeyboardEvent) {
             <div
               v-else-if="items.length === 0 && !hasSelectedPoint"
               class="identify-control-state"
+              role="status"
             >
               <div class="identify-control-state__content">
                 <span>{{ trans('map.identify.no_selection') }}</span>
               </div>
             </div>
-            <div v-else-if="items.length === 0" class="identify-control-state">
+            <div
+              v-else-if="items.length === 0"
+              class="identify-control-state"
+              role="status"
+            >
               <div class="identify-control-state__content">
                 <span>{{
                   selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
@@ -355,7 +361,7 @@ function onResultKeydown(event: KeyboardEvent) {
                 }}</span>
               </div>
             </div>
-            <template v-else>
+            <div v-else class="identify-control-results" role="status">
               <div
                 v-for="item in items"
                 :key="item.id"
@@ -374,6 +380,8 @@ function onResultKeydown(event: KeyboardEvent) {
                       v-for="child in item.items"
                       :key="child.id"
                       :title="child.name"
+                      role="button"
+                      tabindex="0"
                       :class="{
                         'is-focused':
                           focusedChildKey === `${item.id}:${child.id}`,
@@ -400,7 +408,7 @@ function onResultKeydown(event: KeyboardEvent) {
                   </div>
                 </div>
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </DraggableItemPopup>

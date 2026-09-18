@@ -412,6 +412,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
       {ui.measurementType ? (
         <MeasurementSettingPopup
           mapId={mapId}
+          position={merged.position}
+          controlLayout={merged.controlLayout}
           show={ui.setting.show}
           onUpdateShow={(v) => session.setSettingShow(v)}
           value={ui.coordinates}

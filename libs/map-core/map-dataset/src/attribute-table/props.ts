@@ -65,6 +65,14 @@ export type AttributeTableViewLabels = {
   selectRow: string;
   actionsColumn: string;
   rowFilter: string;
+  /** Toolbar: column picker for text filter. */
+  columnFilter: string;
+  /** Placeholder for column filter text (contains). */
+  columnFilterQuery: string;
+  /** Clear all column text filters. */
+  clearColumnFilter: string;
+  /** Per-column filter input aria (template with `{column}`). */
+  columnFilterFor: string;
   sortedAsc: string;
   sortedDesc: string;
   notSorted: string;
@@ -80,6 +88,8 @@ export type AttributeTableUiOptions = {
   zoomToSelection?: boolean;
   clearSelection?: boolean;
   rowFilter?: boolean;
+  /** Column text contains filter (toolbar + grid). Default true. */
+  columnFilter?: boolean;
   pager?: boolean;
   checkbox?: boolean;
   rowMenus?: boolean;
@@ -97,6 +107,7 @@ export const ATTRIBUTE_TABLE_UI_DEFAULTS: Required<AttributeTableUiOptions> = {
   zoomToSelection: true,
   clearSelection: true,
   rowFilter: true,
+  columnFilter: true,
   pager: true,
   checkbox: true,
   rowMenus: true,
@@ -163,6 +174,8 @@ export type AttributeTableViewProps = {
     menu: MenuAction,
     event: MouseEvent,
   ) => void;
+  /** Fit the map to the current attribute-table selection. */
+  onZoomToSelection?: () => void;
   /** Open ExportGeo modal (when geo-export `uiMode` is modal). */
   onExport?: (event: MouseEvent) => void;
   /**
@@ -179,19 +192,31 @@ export type AttributeTableToolbarProps = {
   searchPlaceholder: string;
   /** Explicit accessible name for the search field (not placeholder-only). */
   searchLabel: string;
-  zoomToSelection: boolean;
+  /** Disable Zoom to selection when nothing is selected. */
+  zoomDisabled: boolean;
   zoomLabel: string;
   rowFilter: AttributeTableRowFilter;
   filterItems: AttributeTableSelectItem[];
   rowFilterLabel: string;
+  /** Column keys available for the toolbar column text filter. */
+  columnFilterItems: AttributeTableSelectItem[];
+  columnFilterKey: string;
+  columnFilterQuery: string;
+  columnFilterLabel: string;
+  columnFilterQueryPlaceholder: string;
+  clearColumnFilterLabel: string;
   clearLabel: string;
   clearDisabled: boolean;
   exportLabel?: string;
   exportFormats?: string[];
   ui?: AttributeTableUiOptions;
   onQueryChange: (value: string) => void;
-  onZoomToSelectionChange: (value: boolean) => void;
+  /** Fit the map to the current row selection. */
+  onZoomToSelection: () => void;
   onRowFilterChange: (value: AttributeTableRowFilter) => void;
+  onColumnFilterKeyChange: (key: string) => void;
+  onColumnFilterQueryChange: (value: string) => void;
+  onClearColumnFilters: () => void;
   onClearSelection: () => void;
   onExport?: (event: MouseEvent) => void;
   onExportFormat?: (format: string, event: MouseEvent) => void;
@@ -232,12 +257,18 @@ export type AttributeTableGridProps = {
   sortedAscLabel: string;
   sortedDescLabel: string;
   notSortedLabel: string;
+  /** Aria template with `{column}` for per-column filter inputs. */
+  columnFilterForLabel: string;
   columns: AttributeTableColumn[];
   windowedRows: AttributeTableRow[];
   sortStates: AttributeTableSortState[];
+  /** Active per-column contains queries. */
+  columnFilters: Record<string, string>;
   selectedIds: ReadonlySet<string>;
   allVisibleSelected: boolean;
   checkbox?: boolean;
+  /** When false, hide per-column filter row. Default true. */
+  columnFilter?: boolean;
   /** When false, no column headers are sortable (from `ui.sort`). Default true. */
   sort?: boolean;
   rowHeight: number;
@@ -248,6 +279,7 @@ export type AttributeTableGridProps = {
   isMenuDisabled: (menu: MenuAction) => boolean;
   onScrollMetrics: (scrollTop: number, viewportHeight: number) => void;
   onSortColumn: (key: string, shiftKey: boolean) => void;
+  onColumnFilterChange: (key: string, query: string) => void;
   onToggleSelectAll: () => void;
   onToggleRow: (row: AttributeTableRow) => void;
   onRowMenuAction: (

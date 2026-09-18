@@ -1,60 +1,71 @@
 <template>
-  <DraggableListItem :disabledDrag="disabledDrag" class="draggable-group__item">
-    <div class="draggable-group__info">
-      <span class="draggable-group__title" :title="layerGroup.name">
-        {{ layerGroup.name }}
-      </span>
-      <div class="draggable-group__action">
-        <MapControlButton
-          v-if="
-            !readonly && layerGroup.children && layerGroup.children.length > 0
-          "
-          variant="plain"
-          size="small"
-          @click="unGroup()"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.group.unGroup" />
-        </MapControlButton>
-        <MapControlButton
-          v-if="!readonly"
-          @click="deleteGroup()"
-          variant="plain"
-          size="small"
-        >
-          <SvgIcon size="14" type="mdi" :path="path.group.delete" />
-        </MapControlButton>
-        <MapControlButton
-          @click="toggleShowChildrenGroup()"
-          variant="plain"
-          size="small"
-        >
-          <SvgIcon
-            size="14"
-            type="mdi"
-            :path="isGroupShow ? path.group.close : path.group.open"
-          />
-        </MapControlButton>
+  <div
+    class="draggable-group__treeitem"
+    role="treeitem"
+    tabindex="0"
+    :aria-expanded="isGroupShow"
+    :aria-label="layerGroup.name"
+  >
+    <DraggableListItem :disabledDrag="disabledDrag" class="draggable-group__item">
+      <div class="draggable-group__info">
+        <span class="draggable-group__title" :title="layerGroup.name">
+          {{ layerGroup.name }}
+        </span>
+        <div class="draggable-group__action">
+          <MapControlButton
+            v-if="
+              !readonly && layerGroup.children && layerGroup.children.length > 0
+            "
+            variant="plain"
+            size="small"
+            title="Ungroup"
+            @click="unGroup()"
+          >
+            <SvgIcon size="14" type="mdi" :path="path.group.unGroup" />
+          </MapControlButton>
+          <MapControlButton
+            v-if="!readonly"
+            @click="deleteGroup()"
+            variant="plain"
+            size="small"
+            title="Delete group"
+          >
+            <SvgIcon size="14" type="mdi" :path="path.group.delete" />
+          </MapControlButton>
+          <MapControlButton
+            data-map-layer-group-toggle
+            @click="toggleShowChildrenGroup()"
+            variant="plain"
+            size="small"
+            title="Toggle group"
+            :aria-expanded="isGroupShow"
+          >
+            <SvgIcon
+              size="14"
+              type="mdi"
+              :path="isGroupShow ? path.group.close : path.group.open"
+            />
+          </MapControlButton>
+        </div>
       </div>
-    </div>
-    <div v-if="isGroupShow" class="draggable-group__divider"></div>
-    <div
-      class="draggable-group__children-container"
-      :class="{ _show: isGroupShow }"
-    >
-      <div class="draggable-group__children">
-        <slot :group="layerGroup" name="item" />
-      </div>
+      <div v-if="isGroupShow" class="draggable-group__divider"></div>
       <div
-        v-if="
-          isGroupShow &&
-          (!layerGroup.children || layerGroup.children.length < 1)
-        "
-        class="draggable-group__nodata"
+        class="draggable-group__children-container"
+        :class="{ _show: isGroupShow }"
       >
-        Drag layer inside this group
+        <slot :group="layerGroup" name="item" />
+        <div
+          v-if="
+            isGroupShow &&
+            (!layerGroup.children || layerGroup.children.length < 1)
+          "
+          class="draggable-group__nodata"
+        >
+          Drag layer inside this group
+        </div>
       </div>
-    </div>
-  </DraggableListItem>
+    </DraggableListItem>
+  </div>
 </template>
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';

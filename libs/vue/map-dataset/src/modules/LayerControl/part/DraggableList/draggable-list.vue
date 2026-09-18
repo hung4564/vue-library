@@ -10,9 +10,8 @@
     @end="onEnd"
   >
     <template #item="{ element, index }">
-      <div class="draggable__item item">
+      <div v-if="element.isGroup" class="draggable__item item">
         <DraggableListGroupItem
-          v-if="element.isGroup"
           :key="element.id"
           :layer-group="element"
           @update:layer-group="onUpdateGroup($event, index)"
@@ -32,9 +31,15 @@
               :animation="200"
               :move="checkMove"
               class="draggable-group__children"
+              role="group"
             >
               <template #item="{ element: child, index: indexChild }">
-                <div class="draggable__item">
+                <div
+                  class="draggable__item"
+                  role="treeitem"
+                  tabindex="0"
+                  :aria-label="child.name || child.id"
+                >
                   <DraggableListItem
                     :disabledDrag="disabledDrag"
                     :isSelected="currentSelectId.includes(child.id)"
@@ -54,12 +59,19 @@
             </draggable>
           </template>
         </DraggableListGroupItem>
+      </div>
+      <div
+        v-else
+        class="draggable__item item"
+        role="treeitem"
+        tabindex="0"
+        :aria-label="element.name || element.id"
+      >
         <DraggableListItem
           :disabledDrag="disabledDrag"
           :isSelected="currentSelectId.includes(element.id)"
           :item="element"
           :key="element.id + '-child'"
-          v-else
         >
           <slot
             :isSelected="currentSelectId.includes(element.id)"

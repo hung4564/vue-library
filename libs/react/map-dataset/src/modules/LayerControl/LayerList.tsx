@@ -5,7 +5,7 @@ import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent as ReactKeyboardEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { useMapDataset } from '../../store/dataset-api';
 import { ButtonToggleShowAll } from './ButtonToggleShowAll';
@@ -97,6 +97,66 @@ export function LayerList({
   }
   const isEmpty = views.length === 0;
   const showCreate = Boolean(onCreate) && !disabledCreate && !readonly;
+  function isInteractiveTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return (
+      tag === 'BUTTON' ||
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
+      tag === 'A' ||
+      target.isContentEditable
+    );
+  }
+  function onTreeKeydown(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (isInteractiveTarget(event.target)) return;
+    const tree = event.currentTarget;
+    const items = Array.from(
+      tree.querySelectorAll<HTMLElement>('[role="treeitem"]'),
+    );
+    if (!items.length) return;
+    const active = document.activeElement;
+    const currentIndex = items.findIndex(
+      (el) => el === active || el.contains(active),
+    );
+    const current = currentIndex >= 0 ? items[currentIndex] : null;
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const delta = event.key === 'ArrowDown' ? 1 : -1;
+      const nextIndex =
+        currentIndex < 0
+          ? event.key === 'ArrowDown'
+            ? 0
+            : items.length - 1
+          : Math.max(0, Math.min(items.length - 1, currentIndex + delta));
+      items[nextIndex]?.focus();
+      return;
+    }
+
+    if (!current) return;
+    const expanded = current.getAttribute('aria-expanded');
+    if (expanded == null) return;
+
+    if (
+      event.key === 'ArrowRight' ||
+      event.key === 'Enter' ||
+      event.key === ' '
+    ) {
+      if (expanded === 'false') {
+        event.preventDefault();
+        current
+          .querySelector<HTMLButtonElement>('[data-map-layer-group-toggle]')
+          ?.click();
+      }
+    } else if (event.key === 'ArrowLeft' && expanded === 'true') {
+      event.preventDefault();
+      current
+        .querySelector<HTMLButtonElement>('[data-map-layer-group-toggle]')
+        ?.click();
+    }
+  }
   return (
     <MenuConditionProvider
       value={{
@@ -119,7 +179,7 @@ export function LayerList({
           {layerSearch.trim() ? (
             <MapControlButton variant="plain"
               className="layer-control__search-clear"
-              aria-label="Clear search"
+              title="Clear search"
               onClick={() => setLayerSearch('')}
             >
               <Icon path={mdiClose} size="14px" />
@@ -132,20 +192,25 @@ export function LayerList({
             <div className="v-spacer" />
             <ButtonToggleShowAll mapId={mapId} items={views} />
             {!disabledCreateGroup && (
-              <MapControlButton onClick={addNewGroup} aria-label="Create group" variant="plain">
+              <MapControlButton onClick={addNewGroup} title="Create group" variant="plain">
                 <Icon path={mdiGroup} size={HEADER_ICON} />
               </MapControlButton>
             )}
             {!disabledDeleteAll && (
               <MapControlButton
                 onClick={onRemoveAllLayer}
-                aria-label="Delete all layers" variant="plain">
+                title="Delete all layers" variant="plain">
                 <Icon path={mdiDelete} size={HEADER_ICON} />
               </MapControlButton>
             )}
           </div>
         )}
-        <div className="layer-control__list">
+        <div
+          className="layer-control__list"
+          role="tree"
+          aria-label={trans('map.layer-control.title')}
+          onKeyDown={onTreeKeydown}
+        >
           {isEmpty && (
             <div className="layer-control__empty">
               <Icon

@@ -11,6 +11,7 @@ import {
 } from '@hungpvq/map-dataset/attribute-table';
 import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-map-core/fields';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import {
   nextTick,
@@ -223,12 +224,20 @@ function onRegionKeydown(event: KeyboardEvent) {
 }
 
 const showCheckbox = computed(() => props.checkbox !== false);
+const showColumnFilter = computed(() => props.columnFilter !== false);
 const colSpan = computed(
   () =>
     props.columns.length +
     (showCheckbox.value ? 1 : 0) +
     (props.itemMenus.length ? 1 : 0),
 );
+
+function columnFilterAria(column: AttributeTableColumn) {
+  return (props.columnFilterForLabel || 'Filter {column}').replace(
+    /\{column\}/g,
+    column.label,
+  );
+}
 </script>
 <template>
   <div
@@ -324,6 +333,37 @@ const colSpan = computed(
                 props.actionsColumnLabel
               }}</span>
             </th>
+          </tr>
+          <tr v-if="showColumnFilter" class="attribute-table__filter-row">
+            <th v-if="showCheckbox" class="attribute-table__check" scope="col">
+              <span class="attribute-table__sr-only">{{
+                props.columnFilterForLabel
+              }}</span>
+            </th>
+            <th
+              v-for="column in props.columns"
+              :key="'filter-' + column.key"
+              scope="col"
+              :class="{
+                'is-column-filtered': !!(props.columnFilters[column.key] ?? '')
+                  .trim(),
+              }"
+            >
+              <InputText
+                :model-value="props.columnFilters[column.key] ?? ''"
+                :aria-label="columnFilterAria(column)"
+                :placeholder="column.label"
+                @update:model-value="
+                  props.onColumnFilterChange(column.key, String($event ?? ''))
+                "
+                @click.stop
+              />
+            </th>
+            <th
+              v-if="props.itemMenus.length"
+              class="attribute-table__actions"
+              scope="col"
+            />
           </tr>
         </thead>
         <tbody>

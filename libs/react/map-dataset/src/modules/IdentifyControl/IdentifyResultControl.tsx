@@ -317,6 +317,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
                 tabIndex={0}
                 role="region"
                 aria-label={trans('map.identify.title')}
+                aria-live="polite"
                 onKeyDown={onResultKeydown}
               >
                 {loading ? (
@@ -342,13 +343,13 @@ export function IdentifyResultControl(props: WithMapPropType) {
                     </div>
                   </div>
                 ) : items.length === 0 && !hasSelectedPoint ? (
-                  <div className="identify-control-state">
+                  <div className="identify-control-state" role="status">
                     <div className="identify-control-state__content">
                       <span>{trans('map.identify.no_selection')}</span>
                     </div>
                   </div>
                 ) : items.length === 0 ? (
-                  <div className="identify-control-state">
+                  <div className="identify-control-state" role="status">
                     <div className="identify-control-state__content">
                       <span>
                         {selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
@@ -358,7 +359,8 @@ export function IdentifyResultControl(props: WithMapPropType) {
                     </div>
                   </div>
                 ) : (
-                  items.map((item) => (
+                  <div className="identify-control-results" role="status">
+                  {items.map((item) => (
                     <div key={item.id} className="identify-control-list-item">
                       <div className="identify-control-list-item__container">
                         <div
@@ -405,7 +407,8 @@ export function IdentifyResultControl(props: WithMapPropType) {
                         </div>
                       </div>
                     </div>
-                  ))
+                  ))}
+                  </div>
                 )}
               </div>
             </div>

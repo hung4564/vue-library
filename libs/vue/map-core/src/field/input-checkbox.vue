@@ -1,15 +1,23 @@
 <template lang="">
   <div class="form-group">
     <div class="form-control form-checkbox">
-      <input type="checkbox" v-model="form" :disabled="disabled" />
-      <label> {{ label }} </label>
+      <input
+        :id="inputId"
+        type="checkbox"
+        v-model="form"
+        :disabled="disabled"
+      />
+      <label :for="inputId"> {{ label }} </label>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-const form = defineModel({});
+import { useId } from 'vue';
+
+const form = defineModel<boolean>({ type: Boolean });
 defineProps({
   label: String,
   disabled: Boolean,
 });
+const inputId = useId();
 </script>

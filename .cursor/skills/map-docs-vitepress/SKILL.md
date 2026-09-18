@@ -12,7 +12,7 @@ description: >-
 
 | Surface | How to run | Notes |
 |---------|------------|--------|
-| Main docs | `npm run docs:dev` / `docs:build` | `vitepress` on `docs/`; `docs:pre-link` → `scripts/link-docs.js` |
+| Main docs | `npm run docs:dev` / `docs:build` | Runs `docs:pre-link` (`scripts/link-docs.js`) then VitePress on `docs/` |
 | Map demo site | `npm run map:site:dev` / `map:site:build` / `map:site:push` | links docs + VitePress; output `deploy/demo-map` |
 | Draggable demo site | `npm run draggable:site:dev` / `draggable:site:build` / `draggable:site:push` | VitePress + demos; `deploy/demo-draggable` |
 | Preview | `map:site:preview` / `draggable:site:preview` | serve deploy folders |
@@ -79,3 +79,7 @@ Same isolation applies to VitePress routes after `link-docs.js` (`/map/dataset/`
 4. Update registry/CSS docs if ids or tokens change.
 5. Optionally refresh demo snippets under vitepress demo scripts / linked md.
 6. Run `map:site:dev` or `docs:dev` only when verifying docs (user may not need a full site build every time).
+
+## Windows junctions / `git reset --hard`
+
+`link-docs.js` creates junctions under `docs/pages/*` (and historically under `core/docs/{dataset,draw}`). If `git reset --hard` fails with “unable to create file …/docs/draw”, detach junctions first (`cmd /c rmdir path\\to\\junction`) then reset. Prefer `docs/pages/map/{dataset,draw}` junctions only; do not leave stale junctions under `libs/map-core/core/docs/`.

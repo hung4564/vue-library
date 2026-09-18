@@ -1,6 +1,10 @@
 import { isDataManagementView } from '../utils/check';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import {
+  filterAttributeTableRowsByColumnText,
+  type AttributeTableColumnTextFilters,
+} from './filter';
+import {
   buildAttributeTable,
   filterAttributeTableRows,
   type AttributeTableColumn,
@@ -34,6 +38,8 @@ export type AttributeTableStoreQuery = {
   page?: number;
   pageSize?: number | 'all';
   search?: string;
+  /** Per-column text contains filters (ANDed after global search). */
+  columnFilters?: AttributeTableColumnTextFilters;
   sort?: AttributeTableSortState[];
   /** Required when intent === 'select' */
   ids?: string[];
@@ -160,6 +166,10 @@ export function createLocalAttributeTableStore(
       }
 
       let rows = filterAttributeTableRows(allRows, query.search ?? '');
+      rows = filterAttributeTableRowsByColumnText(
+        rows,
+        query.columnFilters ?? null,
+      );
       rows = sortAttributeTableRows(rows, query.sort ?? null);
       const total = rows.length;
       const pageSize = normalizePageSize(query.pageSize);
@@ -222,10 +232,16 @@ export function createDataManagementAttributeTableStore(
       const table = buildAttributeTable(fc, options.columns, {
         indexOffset: (result.page - 1) * result.pageSize,
       });
+      const rows = filterAttributeTableRowsByColumnText(
+        table.rows,
+        query.columnFilters ?? null,
+      );
       return {
         columns: table.columns,
-        rows: table.rows,
-        total: result.total,
+        rows,
+        total: query.columnFilters && Object.keys(query.columnFilters).length
+          ? rows.length
+          : result.total,
       };
     },
   };

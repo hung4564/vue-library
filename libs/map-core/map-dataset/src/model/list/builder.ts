@@ -1,15 +1,15 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { createWithEventHelper } from '../../extra/event/model';
+import { addMenuBuilder } from '../../menu/builder';
 import {
-  addMenuBuilder,
   createMenuItemAddToGroup,
   createMenuItemMoveDown,
   createMenuItemMoveUp,
   createMenuItemSetOpacity,
   createWithMenuHelper,
   LIST_VIEW_MENU_COMPONENT_KEY,
-  type WithMenuBuilder,
-} from '../../menu';
+} from '../../menu/items';
+import type { WithMenuBuilder } from '../../menu/types';
 import type { WithChildren } from '../../interfaces/dataset.base';
 import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';

@@ -22,3 +22,32 @@
   background: var(--map-draw-badge-bg, var(--map-primary-color, #004e98));
   color: var(--map-draw-badge-text, var(--map-text-inverse, white));
 }
+
+.draft-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.draft-items-table th,
+.draft-items-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ffffff30;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft-items-table thead th {
+  font-weight: bold;
+}
+
+.draft-items-table .table-col-action {
+  width: 64px;
+}
+
+.draft-items-table .menu-item {
+  cursor: pointer;
+}
+

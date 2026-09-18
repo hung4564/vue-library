@@ -55,5 +55,3 @@ onUnmounted(() => {
   destroyHighlightController(mapId.value);
 });
 </script>
-
-<template><span style="display: none" /></template>

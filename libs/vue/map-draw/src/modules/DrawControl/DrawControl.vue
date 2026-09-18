@@ -1,16 +1,17 @@
 <script lang="ts">
+export type { DrawControlProps } from './DrawControl.props';
+
 export default {
   name: 'draw-control',
 };
 </script>
 <script setup lang="ts">
-import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
+import { fitBounds } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
   createMapDrawControl,
   type MapDrawConfig,
   type MapDrawOption,
-  type MapDrawOptions,
 } from '@hungpvq/map-draw';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
@@ -28,6 +29,7 @@ import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
+import type { DrawControlProps } from './DrawControl.props';
 import {
   mdiClose,
   mdiContentSave,
@@ -38,16 +40,6 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
-
-type DrawControlMapboxDrawControls = Omit<
-  MapDrawOptions,
-  'displayControlsDefault'
->;
-
-interface DrawControlProps extends WithMapPropType {
-  drawOptions?: MapDrawOption;
-  drawControlOptions?: DrawControlMapboxDrawControls;
-}
 
 const props = withDefaults(defineProps<DrawControlProps>(), {
   ...defaultMapProps,

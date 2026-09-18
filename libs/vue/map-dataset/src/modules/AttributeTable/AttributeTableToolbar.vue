@@ -6,9 +6,12 @@ import {
   resolveAttributeTableUi,
   type AttributeTableToolbarProps,
 } from '@hungpvq/map-dataset/attribute-table';
-import { GEO_EXPORT_FORMAT_META, type GeoExportFormat } from '@hungpvq/map-dataset/geo-export';
+import {
+  GEO_EXPORT_FORMAT_META,
+  type GeoExportFormat,
+} from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import { InputCheckbox, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { computed, ref } from 'vue';
 
 const props = defineProps<AttributeTableToolbarProps>();
@@ -18,9 +21,13 @@ const menuOpen = ref(false);
 const formatItems = computed(() =>
   (props.exportFormats ?? []).map((fmt) => ({
     value: fmt,
-    text:
-      GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
+    text: GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
   })),
+);
+
+const hasColumnFilter = computed(
+  () =>
+    !!props.columnFilterKey || !!String(props.columnFilterQuery ?? '').trim(),
 );
 
 function onExportClick(event: MouseEvent) {
@@ -38,7 +45,9 @@ function onFormatPick(fmt: string, event: MouseEvent) {
 </script>
 <template>
   <div class="attribute-table__toolbar">
-    <div class="attribute-table__toolbar-row attribute-table__toolbar-row--primary">
+    <div
+      class="attribute-table__toolbar-row attribute-table__toolbar-row--primary"
+    >
       <InputText
         v-if="ui.search"
         :model-value="props.query"
@@ -74,15 +83,49 @@ function onFormatPick(fmt: string, event: MouseEvent) {
       </div>
     </div>
     <div
+      v-if="ui.columnFilter && props.columnFilterItems.length"
+      class="attribute-table__toolbar-row attribute-table__toolbar-row--column-filter"
+    >
+      <InputSelect
+        :model-value="props.columnFilterKey"
+        :items="props.columnFilterItems"
+        item-value="value"
+        item-text="text"
+        :aria-label="props.columnFilterLabel"
+        @update:model-value="
+          props.onColumnFilterKeyChange(String($event ?? ''))
+        "
+      />
+      <InputText
+        :model-value="props.columnFilterQuery"
+        :placeholder="props.columnFilterQueryPlaceholder"
+        :aria-label="props.columnFilterQueryPlaceholder"
+        :disabled="!props.columnFilterKey"
+        @update:model-value="
+          props.onColumnFilterQueryChange(String($event ?? ''))
+        "
+      />
+      <MapControlButton
+        variant="outlined"
+        size="small"
+        :disabled="!hasColumnFilter"
+        @click="props.onClearColumnFilters()"
+      >
+        {{ props.clearColumnFilterLabel }}
+      </MapControlButton>
+    </div>
+    <div
       v-if="ui.zoomToSelection || ui.rowFilter || ui.clearSelection"
       class="attribute-table__toolbar-row attribute-table__toolbar-row--meta"
     >
-      <InputCheckbox
+      <MapControlButton
         v-if="ui.zoomToSelection"
-        :model-value="props.zoomToSelection"
-        :label="props.zoomLabel"
-        @update:model-value="props.onZoomToSelectionChange(!!$event)"
-      />
+        variant="outlined"
+        :disabled="props.zoomDisabled"
+        @click="props.onZoomToSelection()"
+      >
+        {{ props.zoomLabel }}
+      </MapControlButton>
       <InputSelect
         v-if="ui.rowFilter"
         :model-value="props.rowFilter"
@@ -91,9 +134,7 @@ function onFormatPick(fmt: string, event: MouseEvent) {
         item-text="text"
         :aria-label="props.rowFilterLabel"
         @update:model-value="
-          props.onRowFilterChange(
-            $event === 'selected' ? 'selected' : 'all',
-          )
+          props.onRowFilterChange($event === 'selected' ? 'selected' : 'all')
         "
       />
       <MapControlButton

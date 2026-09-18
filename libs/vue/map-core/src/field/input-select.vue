@@ -1,35 +1,39 @@
-<script setup lang="ts" generic="T">
-const model = defineModel<T | (T extends object ? T[keyof T] : T)>();
+<script
+  setup
+  lang="ts"
+  generic="TItem = { value: string | number; text: string }, TValue = string | number"
+>
+const model = defineModel<TValue>();
 
 const props = withDefaults(
   defineProps<{
     label?: string;
-    items?: T[];
-    itemValue?: T extends object ? keyof T : string;
-    itemText?: T extends object ? keyof T : string;
+    items?: TItem[];
+    itemValue?: TItem extends object ? keyof TItem : string;
+    itemText?: TItem extends object ? keyof TItem : string;
     returnObject?: boolean;
   }>(),
   {
-    items: () => [] as T[],
+    items: () => [] as TItem[],
     itemValue: 'value' as any,
     itemText: 'text' as any,
     returnObject: false,
   },
 );
 
-function getValue(item: T): T | (T extends object ? T[keyof T] : T) {
-  if (typeof item === 'string' || props.returnObject) {
-    return item as any;
+function getValue(item: TItem): TValue {
+  if (typeof item === 'string' || typeof item === 'number' || props.returnObject) {
+    return item as unknown as TValue;
   }
   if (item && typeof item === 'object' && props.itemValue) {
-    return (item as any)[props.itemValue];
+    return (item as any)[props.itemValue] as TValue;
   }
-  return item as any;
+  return item as unknown as TValue;
 }
 
-function getText(item: T): string {
-  if (typeof item === 'string') {
-    return item;
+function getText(item: TItem): string {
+  if (typeof item === 'string' || typeof item === 'number') {
+    return String(item);
   }
   if (item && typeof item === 'object' && props.itemText) {
     return String((item as any)[props.itemText]);
@@ -37,7 +41,7 @@ function getText(item: T): string {
   return String(item);
 }
 
-function getKey(item: T): string | number {
+function getKey(item: TItem): string | number {
   if (typeof item === 'string' || typeof item === 'number') {
     return item;
   }

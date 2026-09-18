@@ -362,6 +362,9 @@ export const DraggableGroupList = forwardRef<
                     key={child.id}
                     className="draggable__item"
                     data-node-id={child.id}
+                    role="treeitem"
+                    tabIndex={0}
+                    aria-label={String(child.name || child.id)}
                   >
                     <ListItem
                       item={child}
@@ -386,6 +389,9 @@ export const DraggableGroupList = forwardRef<
             key={node.id}
             className="draggable__item item"
             data-node-id={node.id}
+            role="treeitem"
+            tabIndex={0}
+            aria-label={String(node.name || node.id)}
           >
             <ListItem
               item={node}

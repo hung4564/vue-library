@@ -7,6 +7,7 @@ import {
 } from '@hungpvq/map-dataset/attribute-table';
 import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/react-map-core';
+import { InputText } from '@hungpvq/react-map-core/fields';
 import type { ComponentType, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
@@ -68,6 +69,7 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
   const onScrollMetricsRef = useRef(props.onScrollMetrics);
   onScrollMetricsRef.current = props.onScrollMetrics;
   const showCheckbox = props.checkbox !== false;
+  const showColumnFilter = props.columnFilter !== false;
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
   const syncScrollMetrics = () => {
@@ -110,6 +112,13 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
     return name
       ? `${props.selectRowLabel}: ${name}`
       : `${props.selectRowLabel} ${row.id}`;
+  }
+
+  function columnFilterAria(column: AttributeTableColumn) {
+    return (props.columnFilterForLabel || 'Filter {column}').replace(
+      /\{column\}/g,
+      column.label,
+    );
   }
 
   function sortButtonLabel(column: AttributeTableColumn) {
@@ -310,6 +319,40 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
                 </th>
               ) : null}
             </tr>
+            {showColumnFilter ? (
+              <tr className="attribute-table__filter-row">
+                {showCheckbox ? (
+                  <th className="attribute-table__check" scope="col">
+                    <span className="attribute-table__sr-only">
+                      {props.columnFilterForLabel}
+                    </span>
+                  </th>
+                ) : null}
+                {props.columns.map((column) => {
+                  const active = !!(props.columnFilters[column.key] ?? '').trim();
+                  return (
+                    <th
+                      key={`filter-${column.key}`}
+                      scope="col"
+                      className={active ? 'is-column-filtered' : undefined}
+                    >
+                      <InputText
+                        value={props.columnFilters[column.key] ?? ''}
+                        aria-label={columnFilterAria(column)}
+                        placeholder={column.label}
+                        onChange={(value) =>
+                          props.onColumnFilterChange(column.key, value)
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </th>
+                  );
+                })}
+                {props.itemMenus.length > 0 ? (
+                  <th className="attribute-table__actions" scope="col" />
+                ) : null}
+              </tr>
+            ) : null}
           </thead>
           <tbody>
             {props.virtualWindow.offsetY > 0 ? (

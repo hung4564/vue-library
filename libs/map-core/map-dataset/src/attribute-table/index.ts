@@ -79,6 +79,16 @@ export type {
 } from './props';
 
 export {
+  filterAttributeTableRowsByColumnText,
+  matchAttributeTableColumnText,
+} from './filter';
+export type {
+  AttributeTableColumnTextFilter,
+  AttributeTableColumnTextFilterMode,
+  AttributeTableColumnTextFilters,
+} from './filter';
+
+export {
   sortAttributeTableRows,
   toggleAttributeTableMultiSort,
   toggleAttributeTableSort,

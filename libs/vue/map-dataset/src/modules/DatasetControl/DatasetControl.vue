@@ -144,9 +144,8 @@ watch(show, () => control.sync());
         :title="trans('map.dataset-control.title')"
         :location="panelPosition.location || 'left'"
       >
-        <template #title> {{ trans('map.dataset-control.title') }} </template>
         <div class="dataset-control">
-          <div v-for="view in views" :key="view.id">
+          <template v-for="view in views" :key="view.id">
             <slot name="item" :item="view">
               <div class="dataset-item">
                 <span class="dataset-item__title">{{ view.getName() }}</span>
@@ -167,7 +166,7 @@ watch(show, () => control.sync());
                 </div>
               </div>
             </slot>
-          </div>
+          </template>
         </div>
       </DraggableItemSideBar>
     </template>

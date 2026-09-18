@@ -162,6 +162,66 @@ function getMenuGroups() {
   const treeGroups = groupRef.value?.getGroups?.() ?? [];
   return treeGroups.length > 0 ? treeGroups : listListViewGroups(views.value);
 }
+function isInteractiveTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return (
+    tag === 'BUTTON' ||
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    tag === 'A' ||
+    target.isContentEditable
+  );
+}
+function onTreeKeydown(event: KeyboardEvent) {
+  if (isInteractiveTarget(event.target)) return;
+  const tree = event.currentTarget as HTMLElement;
+  const items = Array.from(
+    tree.querySelectorAll<HTMLElement>('[role="treeitem"]'),
+  );
+  if (!items.length) return;
+  const active = document.activeElement;
+  const currentIndex = items.findIndex(
+    (el) => el === active || el.contains(active),
+  );
+  const current = currentIndex >= 0 ? items[currentIndex] : null;
+
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    event.preventDefault();
+    const delta = event.key === 'ArrowDown' ? 1 : -1;
+    const nextIndex =
+      currentIndex < 0
+        ? event.key === 'ArrowDown'
+          ? 0
+          : items.length - 1
+        : Math.max(0, Math.min(items.length - 1, currentIndex + delta));
+    items[nextIndex]?.focus();
+    return;
+  }
+
+  if (!current) return;
+  const expanded = current.getAttribute('aria-expanded');
+  if (expanded == null) return;
+
+  if (
+    event.key === 'ArrowRight' ||
+    event.key === 'Enter' ||
+    event.key === ' '
+  ) {
+    if (expanded === 'false') {
+      event.preventDefault();
+      current
+        .querySelector<HTMLButtonElement>('[data-map-layer-group-toggle]')
+        ?.click();
+    }
+  } else if (event.key === 'ArrowLeft' && expanded === 'true') {
+    event.preventDefault();
+    current
+      .querySelector<HTMLButtonElement>('[data-map-layer-group-toggle]')
+      ?.click();
+  }
+}
 </script>
 <template>
   <div class="layer-control-container">
@@ -176,7 +236,7 @@ function getMenuGroups() {
       <MapControlButton
         v-if="layerSearch.trim()"
         class="layer-control__search-clear"
-        aria-label="Clear search"
+        title="Clear search"
         @click="layerSearch = ''" variant="plain">
         <SvgIcon size="14" type="mdi" :path="mdiClose" />
       </MapControlButton>
@@ -185,14 +245,29 @@ function getMenuGroups() {
       <slot name="title"></slot>
       <div class="v-spacer"></div>
       <ButtonToggleShowALl :items="views" />
-      <MapControlButton @click="addNewGroup()" v-if="!disabledCreateGroup" variant="plain">
+      <MapControlButton
+        @click="addNewGroup()"
+        v-if="!disabledCreateGroup"
+        title="Create group"
+        variant="plain"
+      >
         <SvgIcon size="16" type="mdi" :path="path.group.create" />
       </MapControlButton>
-      <MapControlButton @click="onRemoveAllLayer" v-if="!disabledDeleteAll" variant="plain">
+      <MapControlButton
+        @click="onRemoveAllLayer"
+        v-if="!disabledDeleteAll"
+        title="Delete all layers"
+        variant="plain"
+      >
         <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
       </MapControlButton>
     </div>
-    <div class="layer-control__list">
+    <div
+      class="layer-control__list"
+      role="tree"
+      :aria-label="trans('map.layer-control.title')"
+      @keydown="onTreeKeydown"
+    >
       <div v-if="!views.length" class="layer-control__empty">
         <SvgIcon
           class="layer-control__empty-icon"

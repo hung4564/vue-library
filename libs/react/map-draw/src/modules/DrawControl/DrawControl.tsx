@@ -1,4 +1,4 @@
-import type { WithMapPropType } from '@hungpvq/map-core';
+import { fitBounds, type WithMapPropType } from '@hungpvq/map-core';
 import {
   DrawingTypeName,
   createMapDrawControl,
@@ -27,7 +27,7 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
-import type { FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import {
   useCallback,
   useEffect,
@@ -38,7 +38,7 @@ import {
 } from 'react';
 import { DRAW_CONTROL_LOCALE } from '@hungpvq/map-draw';
 import '../../style.css';
-import { DrawDraftList, DrawDraftListPanel } from './components/DrawDraftList';
+import { DrawDraftList } from './components/DrawDraftList';
 import { DrawToolbar } from './components/DrawToolbar';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
 import { useDrawEvents } from './hooks/useDrawEvents';
@@ -303,46 +303,47 @@ export function DrawControl(props: DrawControlProps) {
     toolbarControl.sync();
   }, [isShow, isDraw, method, draftCounts, drawOptions, toolbarControl]);
 
+  const onFlyTo = useCallback(
+    (feature: Feature) => {
+      callMap((map) => {
+        fitBounds(map, feature);
+      });
+    },
+    [callMap],
+  );
+
   return (
-    <>
-      <DrawDraftList
-        show={showList}
-        setShow={setShowList}
-        draftCounts={draftCounts}
-        mapId={mapId}
-      />
-      <ModuleContainer
-        {...moduleContainerProps}
-        btn={
-          <DrawToolbar
-            drawOptions={drawOptions}
-            isShow={isShow}
-            isDraw={isDraw}
-            method={method}
-            draftCounts={draftCounts}
-            onCancel={onCancel}
-            onSave={() => void onSave()}
-            onClose={close}
-            onStartDraw={onStartDraw}
-            onSelectMethod={onSelectMethod}
-            onCommit={() => void onCommit()}
-            onDiscard={() => onDiscard()}
-            onShowList={onShowListDraftItem}
-          />
-        }
-        draggable={
-          showList
-            ? () => (
-                <DrawDraftListPanel
-                  draftItems={draftItems}
-                  draftCounts={draftCounts}
-                  onDiscardItem={(item) => onDiscard(item)}
-                  onClose={() => setShowList(false)}
-                />
-              )
-            : undefined
-        }
-      />
+    <ModuleContainer
+      {...moduleContainerProps}
+      btn={
+        <DrawToolbar
+          drawOptions={drawOptions}
+          isShow={isShow}
+          isDraw={isDraw}
+          method={method}
+          draftCounts={draftCounts}
+          onCancel={onCancel}
+          onSave={() => void onSave()}
+          onClose={close}
+          onStartDraw={onStartDraw}
+          onSelectMethod={onSelectMethod}
+          onCommit={() => void onCommit()}
+          onDiscard={() => onDiscard()}
+          onShowList={onShowListDraftItem}
+        />
+      }
+      draggable={(bindDrag) => (
+        <DrawDraftList
+          show={showList}
+          setShow={setShowList}
+          draftItems={draftItems}
+          mapId={mapId}
+          onFlyTo={onFlyTo}
+          onDiscardItem={(item) => onDiscard(item)}
+          bindDrag={bindDrag}
+        />
+      )}
+    >
       <ContextMenu ref={contextMenuRef}>
         <ul className="context-menu">
           {supportItems.map((option) => (
@@ -360,6 +361,6 @@ export function DrawControl(props: DrawControlProps) {
           ))}
         </ul>
       </ContextMenu>
-    </>
+    </ModuleContainer>
   );
 }

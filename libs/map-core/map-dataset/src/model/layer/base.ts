@@ -3,7 +3,7 @@ import {
   createWithDataHelper,
   type WithDataHelper,
 } from '../../extra/data';
-import { createWithMenuHelper } from '../../menu';
+import { createWithMenuHelper } from '../../menu/items';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
 import type { ComponentType } from '../../types';

@@ -68,7 +68,11 @@ function getMenuGroups() {
     <div v-if="views.length" class="layer-control__header">
       <div class="v-spacer"></div>
     </div>
-    <div class="layer-control__list">
+    <div
+      class="layer-control__list"
+      role="tree"
+      :aria-label="trans('map.layer-control.title')"
+    >
       <div v-if="!views.length" class="layer-control__empty">
         <div class="layer-control__empty-title">
           {{ trans('map.layer-control.empty') }}

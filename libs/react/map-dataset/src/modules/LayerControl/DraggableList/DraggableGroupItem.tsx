@@ -44,57 +44,68 @@ export function DraggableGroupItem({
   }, [layerGroup.id, disabledDrag, createSortable]);
 
   return (
-    <ListItem disabledDrag={disabledDrag} className="draggable-group__item">
-      <div className="draggable-group__info">
-        <span className="draggable-group__title" title={layerGroup.name}>
-          {layerGroup.name}
-        </span>
-        <div className="draggable-group__action">
-          {!readonly && hasChildren && (
+    <div
+      className="draggable-group__treeitem"
+      role="treeitem"
+      tabIndex={0}
+      aria-expanded={isGroupShow}
+      aria-label={layerGroup.name}
+    >
+      <ListItem disabledDrag={disabledDrag} className="draggable-group__item">
+        <div className="draggable-group__info">
+          <span className="draggable-group__title" title={layerGroup.name}>
+            {layerGroup.name}
+          </span>
+          <div className="draggable-group__action">
+            {!readonly && hasChildren && (
+              <MapControlButton
+                onClick={onUngroup}
+                title="Ungroup"
+                variant="plain"
+                size="small"
+              >
+                <Icon path={mdiUngroup} size={ICON_SIZE} />
+              </MapControlButton>
+            )}
+            {!readonly && (
+              <MapControlButton
+                onClick={onDelete}
+                title="Delete group"
+                variant="plain"
+                size="small"
+              >
+                <Icon path={mdiDelete} size={ICON_SIZE} />
+              </MapControlButton>
+            )}
             <MapControlButton
-              onClick={onUngroup}
-              aria-label="Ungroup"
+              data-map-layer-group-toggle
               variant="plain"
               size="small"
+              title="Toggle group"
+              aria-expanded={isGroupShow}
+              onClick={() => setIsGroupShow((prev) => !prev)}
             >
-              <Icon path={mdiUngroup} size={ICON_SIZE} />
+              <Icon path={isGroupShow ? mdiChevronDown : mdiChevronUp} size={ICON_SIZE} />
             </MapControlButton>
-          )}
-          {!readonly && (
-            <MapControlButton
-              onClick={onDelete}
-              aria-label="Delete group"
-              variant="plain"
-              size="small"
-            >
-              <Icon path={mdiDelete} size={ICON_SIZE} />
-            </MapControlButton>
-          )}
-          <MapControlButton
-            variant="plain"
-            size="small"
-            onClick={() => setIsGroupShow((prev) => !prev)}
-            aria-label="Toggle group"
-          >
-            <Icon path={isGroupShow ? mdiChevronDown : mdiChevronUp} size={ICON_SIZE} />
-          </MapControlButton>
+          </div>
         </div>
-      </div>
-      {isGroupShow && <div className="draggable-group__divider" />}
-      <div
-        className={`draggable-group__children-container ${isGroupShow ? '_show' : ''}`}
-      >
+        {isGroupShow && <div className="draggable-group__divider" />}
         <div
-          ref={childrenElRef}
-          className="draggable-group__children"
-          data-list-id={childrenListId}
+          className={`draggable-group__children-container ${isGroupShow ? '_show' : ''}`}
         >
-          {children}
+          <div
+            ref={childrenElRef}
+            className="draggable-group__children"
+            role="group"
+            data-list-id={childrenListId}
+          >
+            {children}
+          </div>
+          {isGroupShow && !hasChildren && (
+            <div className="draggable-group__nodata">Drag layer inside this group</div>
+          )}
         </div>
-        {isGroupShow && !hasChildren && (
-          <div className="draggable-group__nodata">Drag layer inside this group</div>
-        )}
-      </div>
-    </ListItem>
+      </ListItem>
+    </div>
   );
 }

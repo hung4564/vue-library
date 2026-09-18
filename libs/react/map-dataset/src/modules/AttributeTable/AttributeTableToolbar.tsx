@@ -7,7 +7,7 @@ import {
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { InputCheckbox, InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { useState, type MouseEvent } from 'react';
 
 export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
@@ -17,6 +17,8 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
     value: fmt,
     text: GEO_EXPORT_FORMAT_META[fmt as GeoExportFormat]?.name ?? String(fmt),
   }));
+  const hasColumnFilter =
+    !!props.columnFilterKey || !!String(props.columnFilterQuery ?? '').trim();
 
   function onExportClick(event: MouseEvent) {
     if (props.exportFormats?.length && props.onExportFormat) {
@@ -68,14 +70,43 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
           </div>
         ) : null}
       </div>
+      {ui.columnFilter && props.columnFilterItems.length ? (
+        <div className="attribute-table__toolbar-row attribute-table__toolbar-row--column-filter">
+          <InputSelect
+            value={props.columnFilterKey}
+            items={props.columnFilterItems}
+            aria-label={props.columnFilterLabel}
+            onChange={(value) =>
+              props.onColumnFilterKeyChange(String(value ?? ''))
+            }
+          />
+          <InputText
+            value={props.columnFilterQuery}
+            placeholder={props.columnFilterQueryPlaceholder}
+            aria-label={props.columnFilterQueryPlaceholder}
+            disabled={!props.columnFilterKey}
+            onChange={props.onColumnFilterQueryChange}
+          />
+          <MapControlButton
+            variant="outlined"
+            size="small"
+            disabled={!hasColumnFilter}
+            onClick={props.onClearColumnFilters}
+          >
+            {props.clearColumnFilterLabel}
+          </MapControlButton>
+        </div>
+      ) : null}
       {ui.zoomToSelection || ui.rowFilter || ui.clearSelection ? (
         <div className="attribute-table__toolbar-row attribute-table__toolbar-row--meta">
           {ui.zoomToSelection ? (
-            <InputCheckbox
-              checked={props.zoomToSelection}
-              label={props.zoomLabel}
-              onChange={props.onZoomToSelectionChange}
-            />
+            <MapControlButton
+              variant="outlined"
+              disabled={props.zoomDisabled}
+              onClick={() => props.onZoomToSelection()}
+            >
+              {props.zoomLabel}
+            </MapControlButton>
           ) : null}
           {ui.rowFilter ? (
             <InputSelect

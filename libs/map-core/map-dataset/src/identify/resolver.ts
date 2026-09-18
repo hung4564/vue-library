@@ -5,7 +5,8 @@ import type { IListViewUI } from '../model/list/types';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isListView } from '../utils/check';
 import { queueAttributeTableSelectRows } from '../attribute-table';
-import { handleMenuAction, LIST_VIEW_MENU_ID } from '../menu';
+import { handleMenuAction } from '../menu/handle';
+import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { groupIdentifyResults, IDENTIFY_RESULT_CONTROL } from './result';
 
 export type IdentifyContext = {

@@ -147,11 +147,7 @@ export function BaseMapControl({
           {c_baseMaps.map((baseMap) => (
             <div
               key={baseMap.id}
-              className={`clickable base-map-control-setting-item ${
-                current_baseMaps && baseMap.id === current_baseMaps.id
-                  ? 'base-map-control-setting-item__active'
-                  : ''
-              }`}
+              className="clickable base-map-control-setting-item"
               style={{ width: SIZE_BASE_MAP + 'px' }}
               title={baseMap.title}
               onClick={() => onClick(baseMap)}
@@ -164,7 +160,13 @@ export function BaseMapControl({
               >
                 <MapImage src={baseMap.thumbnail} />
               </div>
-              <div className="base-map-control-setting-item__title">
+              <div
+                className={`base-map-control-setting-item__title${
+                  current_baseMaps && baseMap.id === current_baseMaps.id
+                    ? ' base-map-control-setting-item__active'
+                    : ''
+                }`}
+              >
                 {baseMap.title}
               </div>
             </div>

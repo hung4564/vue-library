@@ -49,7 +49,6 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
-        'maplibre-gl',
         '@mdi/js',
         'randomcolor',
       ],

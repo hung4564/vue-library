@@ -139,6 +139,10 @@ const labels = computed((): AttributeTableViewLabels => ({
   selectRow: trans.value('map.attribute-table.selectRow'),
   actionsColumn: trans.value('map.attribute-table.actionsColumn'),
   rowFilter: trans.value('map.attribute-table.rowFilter'),
+  columnFilter: trans.value('map.attribute-table.columnFilter'),
+  columnFilterQuery: trans.value('map.attribute-table.columnFilterQuery'),
+  clearColumnFilter: trans.value('map.attribute-table.clearColumnFilter'),
+  columnFilterFor: trans.value('map.attribute-table.columnFilterFor'),
   sortedAsc: trans.value('map.attribute-table.sortedAsc'),
   sortedDesc: trans.value('map.attribute-table.sortedDesc'),
   notSorted: trans.value('map.attribute-table.notSorted'),
@@ -217,7 +221,7 @@ function onUpdateShow(val: boolean) {
 function applySelection(focus?: AttributeTableRow) {
   const s = controller.value.getState();
   const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-  if (selected.length !== 1) {
+  if (selected.length === 0) {
     clearAttributeTableHighlight();
     return;
   }
@@ -227,8 +231,21 @@ function applySelection(focus?: AttributeTableRow) {
     dataset: props.layer,
   });
   if (!s.zoomToSelection) return;
+  void zoomMapToSelection();
+}
+
+async function zoomMapToSelection() {
+  const rows = await controller.value.resolveFeaturesForSelection();
+  const features = rows
+    .map((row) => row.feature as Feature)
+    .filter((feature): feature is Feature => !!feature?.geometry);
+  if (!features.length) return;
+  const target =
+    features.length === 1
+      ? features[0]!
+      : ({ type: 'FeatureCollection', features } as const);
   callMap((map) => {
-    fitBounds(map, current.feature as Feature);
+    fitBounds(map, target);
   });
 }
 
@@ -271,6 +288,9 @@ const viewProps = computed((): AttributeTableViewProps => {
         value: convertFeatureToItem(row.feature),
         context: { control: MENU_CONTROL_ID.attributeTable },
       });
+    },
+    onZoomToSelection: () => {
+      void zoomMapToSelection();
     },
     onExport: menuMode
       ? undefined

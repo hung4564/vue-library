@@ -14,6 +14,7 @@ import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
+import { BasemapErrorPage } from './views/basemap-error';
 import { DatasetAttributeTablePage } from './views/dataset-attribute-table';
 import { DatasetGeoExportPage } from './views/dataset-geo-export';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
@@ -28,6 +29,7 @@ import { LanguagePage } from './views/language';
 import { MinimalPage } from './views/minimal';
 import { MapDatasetPage } from './views/map-dataset';
 import { MeasurementPage } from './views/measurement';
+import { MultiMapPage } from './views/multi-map';
 import { RegistryControlPage } from './views/registry-control';
 import { StoryTellingPage } from './views/story-telling';
 import { StoryTellingGpsPage } from './views/story-telling-gps';
@@ -58,6 +60,8 @@ root.render(
           <Route path="toolbar" element={<ToolbarPage />} />
           <Route path="mobile-menu" element={<MobileMenuPage />} />
           <Route path="basemap" element={<BasemapPage />} />
+          <Route path="basemap-error" element={<BasemapErrorPage />} />
+          <Route path="multi-map" element={<MultiMapPage />} />
           <Route path="measurement" element={<MeasurementPage />} />
           <Route path="dataset-highlight" element={<DatasetHighlightPage />} />
           <Route path="dataset-identify" element={<DatasetIdentifyPage />} />

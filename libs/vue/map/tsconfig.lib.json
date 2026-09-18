@@ -4,7 +4,12 @@
     "outDir": "../../../dist/out-tsc",
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "../../../types/shims/turf-turf.d.ts",
+    "../../../types/shims/vue-deps.d.ts"
+  ],
   "exclude": [
     "src/**/*.spec.ts",
     "src/**/*.test.ts",

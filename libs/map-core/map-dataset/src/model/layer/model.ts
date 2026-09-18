@@ -5,7 +5,7 @@ import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
 import type { MapSimple } from '@hungpvq/map-core';
 import type { LayerSpecification } from 'maplibre-gl';
 import type { WithDataHelper } from '../../extra/data';
-import { LIST_VIEW_MENU_COMPONENT_KEY } from '../../menu';
+import { LIST_VIEW_MENU_COMPONENT_KEY } from '../../menu/items';
 import { createNamedComponent } from '../base';
 import { findPartByType } from '../visitors/helpers';
 import { createDatasetPartMapboxLayerComponent } from './base';

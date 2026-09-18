@@ -17,7 +17,7 @@ import { resolveDatasetBbox } from '../utils/bbox';
 import { getDatasetDetailInfo } from '../extra/detail/info';
 import type { FieldFeaturesDef } from '../extra/field';
 import { GEO_EXPORT_COMPONENT_KEY } from '../geo-export/options';
-import { isIdentifyForListMenuHidden } from '../identify';
+import { isIdentifyForListMenuHidden } from '../identify/scope';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,

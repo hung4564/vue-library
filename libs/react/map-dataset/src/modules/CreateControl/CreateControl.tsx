@@ -171,7 +171,7 @@ export function CreateControl(props: CreateControlProps) {
             height={420}
           >
             <div className="create-control-container">
-              <div className="create-control-form map-row">
+              <div className="form-container create-control-form map-row">
                 <div className="map-col-12">
                   <InputSelect
                     label={trans('map.layer-control.field.layer-type')}
@@ -189,8 +189,10 @@ export function CreateControl(props: CreateControlProps) {
                   />
                 </div>
 
-                <div className="map-col-12 create-control-section-label">
-                  {trans('map.layer-control.create.data-source')}
+                <div className="map-col-12">
+                  <div className="create-control-section-label">
+                    {trans('map.layer-control.create.data-source')}
+                  </div>
                 </div>
 
                 <CreateConfigForm
@@ -206,8 +208,10 @@ export function CreateControl(props: CreateControlProps) {
 
                 {hasCreateConfigSettings(componentKey) ? (
                   <>
-                    <div className="map-col-12 create-control-section-label">
-                      {trans('map.layer-control.create.layer-setting')}
+                    <div className="map-col-12">
+                      <div className="create-control-section-label">
+                        {trans('map.layer-control.create.layer-setting')}
+                      </div>
                     </div>
 
                     <CreateConfigForm

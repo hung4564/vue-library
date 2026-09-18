@@ -55,6 +55,12 @@
             <RouterLink to="/basemap">BaseMap </RouterLink>
           </v-list-item>
           <v-list-item>
+            <RouterLink to="/basemap-error">Basemap error </RouterLink>
+          </v-list-item>
+          <v-list-item>
+            <RouterLink to="/multi-map">Multi-map </RouterLink>
+          </v-list-item>
+          <v-list-item>
             <RouterLink to="/measurement">Measurement </RouterLink>
           </v-list-item>
           <v-list-item>

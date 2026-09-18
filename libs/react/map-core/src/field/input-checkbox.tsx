@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export interface InputCheckboxProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'checked'> {
@@ -14,8 +14,11 @@ export function InputCheckbox({
   checked = false,
   onChange,
   className = '',
+  id,
   ...props
 }: InputCheckboxProps) {
+  const autoId = useId();
+  const inputId = id ?? autoId;
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.checked);
   };
@@ -24,6 +27,7 @@ export function InputCheckbox({
     <div className="form-group">
       <div className="form-control form-checkbox">
         <input
+          id={inputId}
           type="checkbox"
           checked={checked}
           onChange={handleChange}
@@ -31,7 +35,7 @@ export function InputCheckbox({
           className={className}
           {...props}
         />
-        {label && <label>{label}</label>}
+        {label ? <label htmlFor={inputId}>{label}</label> : null}
       </div>
     </div>
   );

@@ -136,6 +136,18 @@ Right-click **Quick analysis → Identify features** (`MapContextMenuControl`) r
 
 `IdentifyResultControl` is mounted by `IdentifyControl` (no separate install required).
 
+## Accessibility
+
+| Surface | Contract |
+|---------|----------|
+| Result panel body | `role="region"` + `aria-label` (identify title); `aria-live="polite"` so loading / empty / result updates announce |
+| Loading | `role="status"` + `aria-live="polite"` |
+| Empty / no selection | `role="status"` |
+| Errors | `role="alert"` |
+| Result list | `role="status"` wrapper; ArrowUp / ArrowDown move focus among hits; Enter activates the focused hit |
+
+Panel Escape / focus trap stay on the draggable popup shell.
+
 **Highlight ownership (Identify vs pointer):**
 
 - Identify result highlight is painted when menu items use `.setKey('identify')` (e.g. identify-for-list menus). `LayerMenuDefaultHandle` handles `LIST_VIEW_MENU_ID.highlight` and calls `hl.show(…, { source: value.key })`, so identify menus pass `source: 'identify'`.

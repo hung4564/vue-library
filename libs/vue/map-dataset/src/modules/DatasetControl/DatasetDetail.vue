@@ -68,12 +68,10 @@ watch(
         v-bind="{ ...slotProps, ...panelBind }"
         :show="show"
         @update:show="onUpdateShow"
+        :title="dataset.getName()"
         :width="400"
         :height="400"
       >
-        <template #title>
-          {{ dataset.getName() }}
-        </template>
         <ul class="dataset-list">
           <li
             v-for="(item, index) in items"

@@ -5,11 +5,11 @@ import type { IdentifyFeatureRow, IdentifyMultiResult, IIdentifyView, IIdentifyV
 import { convertFeatureToItem } from '../utils/convert';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import { createNamedComponent } from '../model/base';
-import { createWithMenuHelper } from '../menu';
 import {
   createMenuItemShowDetailForItem,
+  createWithMenuHelper,
   LIST_VIEW_MENU_ID,
-} from '../menu';
+} from '../menu/items';
 import { isIdentifyMergeView, isMapboxLayerView } from '../utils/check';
 import { runAllComponentsWithCheck } from '../model/visitors/helpers';
 import { loggerIdentify } from '../logger';

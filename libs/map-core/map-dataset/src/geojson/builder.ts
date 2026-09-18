@@ -14,7 +14,7 @@ import {
   type GeojsonStyleMode,
 } from './geojson-parse';
 import type { FieldFeaturesDef } from '../extra/field';
-import { createMenuItemAttributeTable } from '../attribute-table';
+import { createMenuItemAttributeTable } from '../attribute-table/menu';
 import { createMenuItemExportGeo } from '../geo-export';
 import {
   createMenuItemIdentifyForList,

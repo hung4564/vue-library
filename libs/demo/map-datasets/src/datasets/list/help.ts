@@ -59,7 +59,7 @@ export const LIST_DEMO_HELP = helpI18n(
     {
       id: 'custom-simple',
       title: 'Custom simple list',
-      body: 'List-only row with custom color and opacity. Try: compare swatch / opacity with Default list.',
+      body: 'List-only row with custom color and opacity. Try: open ⋮ → Set opacity (createMenuItemSetOpacity); compare swatch with Default list.',
     },
     {
       id: 'default-list',
@@ -121,7 +121,7 @@ export const LIST_DEMO_HELP = helpI18n(
     {
       id: 'custom-simple',
       title: 'List đơn giản tùy chỉnh',
-      body: 'Dòng chỉ list với màu và độ mờ tùy chỉnh. Thử: so swatch / opacity với Default list.',
+      body: 'Dòng chỉ list với màu và độ mờ tùy chỉnh. Thử: mở ⋮ → Set opacity (createMenuItemSetOpacity); so swatch với Default list.',
     },
     {
       id: 'default-list',

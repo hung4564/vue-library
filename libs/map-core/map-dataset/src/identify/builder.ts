@@ -3,7 +3,8 @@ import {
   addFieldBuilder,
   type WithFieldBuilder,
 } from '../extra/field';
-import { addMenuBuilder, type WithMenuBuilder } from '../menu';
+import { addMenuBuilder } from '../menu/builder';
+import type { WithMenuBuilder } from '../menu/types';
 import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,

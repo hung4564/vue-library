@@ -73,11 +73,13 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
   '/': guideI18n(
     guide('Kitchen-sink map. Open ☰ AsideControl (top-left) to jump to focused demos.', [
       ['explore', 'Explore', 'Toolbar, measurement, draw, identify, layers, registry, workers, print, and more are mounted together.'],
-      ['aside', 'Navigation', 'Use AsideControl to open Minimal, Menu, Identify, Draw, etc.'],
+      ['controls', 'Key controls', 'LayerControl, Identify, Draw, Inspect, Measurement, Basemap, Theme, CRS, Print, Registry, Workers.'],
+      ['aside', 'Navigation', 'Use AsideControl to open Minimal, Menu, Identify, Draw, Geo-export, etc.'],
     ]),
     guide('Bản đồ tổng hợp. Mở ☰ AsideControl (góc trên-trái) để chuyển tới các demo chuyên sâu.', [
       ['explore', 'Khám phá', 'Toolbar, đo đạc, vẽ, identify, lớp, registry, worker, in ấn… được gắn cùng lúc.'],
-      ['aside', 'Điều hướng', 'Dùng AsideControl để mở Minimal, Menu, Identify, Draw, v.v.'],
+      ['controls', 'Control chính', 'LayerControl, Identify, Draw, Inspect, Measurement, Basemap, Theme, CRS, Print, Registry, Workers.'],
+      ['aside', 'Điều hướng', 'Dùng AsideControl để mở Minimal, Menu, Identify, Draw, Geo-export, v.v.'],
     ]),
   ),
 
@@ -173,6 +175,28 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
     guide('Đổi nền bản đồ và thẻ xem trước.', [
       ['switch', 'Đổi', 'Dùng BaseMapControl (dưới-trái) và BaseMapTagControl để đổi nền.'],
       ['card', 'Xem trước', 'Xem BaseMapCard sau khi tải (trên-phải / slot danh sách).'],
+    ]),
+  ),
+
+  '/basemap-error': guideI18n(
+    guide('Forces a bad MapLibre style URL so errors go through errorHandler → MapErrorToast.', [
+      ['toast', 'Toast', 'Watch the bottom-center MapErrorToast after load (invalid style / tiles).'],
+      ['handler', 'errorHandler', 'Map shell already calls errorHandler.handle on map errors; open Devtools Errors tab if installed.'],
+    ]),
+    guide('Ép URL style MapLibre sai để lỗi đi qua errorHandler → MapErrorToast.', [
+      ['toast', 'Toast', 'Xem MapErrorToast giữa đáy sau khi tải (style / tile lỗi).'],
+      ['handler', 'errorHandler', 'Shell Map đã gọi errorHandler.handle khi lỗi; mở tab Errors trong Devtools nếu có.'],
+    ]),
+  ),
+
+  '/multi-map': guideI18n(
+    guide('Two Map instances with different mapIds on one page.', [
+      ['ids', 'mapIds', 'Left = demo-map-a, right = demo-map-b — stores and controls are scoped per id.'],
+      ['teardown', 'Teardown', 'Leaving the route unmounts both Maps; each Map removes its instance from the map store (removeMap / destroy). Prefer explicit mapId when hosting multiple maps.'],
+    ]),
+    guide('Hai instance Map với mapId khác nhau trên một trang.', [
+      ['ids', 'mapIds', 'Trái = demo-map-a, phải = demo-map-b — store và control theo từng id.'],
+      ['teardown', 'Gỡ', 'Rời route sẽ unmount cả hai Map; mỗi Map gỡ instance khỏi map store (removeMap / destroy). Nên truyền mapId rõ khi có nhiều bản đồ.'],
     ]),
   ),
 
@@ -282,14 +306,14 @@ const DATASET_GUIDES: Record<string, BilingualDemoPageGuide> = {
       {
         id: 'open-table',
         title: 'Open table (bottom panel)',
-        body: 'Pick layer + override, then Open / Open+columns / Open+ui / Open+cell-header. Try queueSelectRows, actionSelectRows, and toggleShow.',
+        body: 'Pick layer + override, then Open / Open+columns / Open+ui / Open+cell-header. Try queueSelectRows, actionSelectRows, and toggleShow. Column text filter: toolbar column + Contains, or per-column inputs under headers.',
       },
     ],
     [
       {
         id: 'open-table',
         title: 'Mở bảng (panel dưới)',
-        body: 'Chọn lớp + override, rồi Open / Open+columns / Open+ui / Open+cell-header. Thử queueSelectRows, actionSelectRows và toggleShow.',
+        body: 'Chọn lớp + override, rồi Open / Open+columns / Open+ui / Open+cell-header. Thử queueSelectRows, actionSelectRows và toggleShow. Lọc cột (contains): toolbar chọn cột + Contains, hoặc ô lọc dưới header từng cột.',
       },
     ],
   ),

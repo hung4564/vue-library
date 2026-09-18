@@ -43,11 +43,32 @@ const state = computed(() => {
 
 const scrollTop = ref(0);
 const viewportHeight = ref(320);
+/** Toolbar column picker (which column the contains box edits). */
+const toolbarColumnKey = ref('');
 
 const filterItems = computed(() => [
   { value: 'all', text: props.labels.showAll },
   { value: 'selected', text: props.labels.showSelected },
 ]);
+
+const columnFilterItems = computed(() =>
+  state.value.columns.map((c) => ({ value: c.key, text: c.label })),
+);
+
+watch(
+  () => state.value.columns.map((c) => c.key).join('\0'),
+  () => {
+    const keys = state.value.columns.map((c) => c.key);
+    if (!keys.length) {
+      toolbarColumnKey.value = '';
+      return;
+    }
+    if (!toolbarColumnKey.value || !keys.includes(toolbarColumnKey.value)) {
+      toolbarColumnKey.value = keys[0] ?? '';
+    }
+  },
+  { immediate: true },
+);
 
 const visibleRows = computed(() => {
   const rows = state.value.rows;
@@ -99,20 +120,35 @@ const toolbarProps = computed(
     query: state.value.search,
     searchPlaceholder: props.labels.search,
     searchLabel: props.labels.search,
-    zoomToSelection: state.value.zoomToSelection,
+    zoomDisabled: state.value.selectedIds.length === 0,
     zoomLabel: props.labels.zoomToSelection,
     rowFilter: state.value.rowFilter,
     filterItems: filterItems.value,
     rowFilterLabel: props.labels.rowFilter,
+    columnFilterItems: columnFilterItems.value,
+    columnFilterKey: toolbarColumnKey.value,
+    columnFilterQuery:
+      state.value.columnFilters[toolbarColumnKey.value] ?? '',
+    columnFilterLabel: props.labels.columnFilter,
+    columnFilterQueryPlaceholder: props.labels.columnFilterQuery,
+    clearColumnFilterLabel: props.labels.clearColumnFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.value.selectedIds.length === 0,
     exportLabel: props.labels.export,
     exportFormats: props.exportFormats,
     ui: ui.value,
     onQueryChange: (value) => props.controller.setSearch(value),
-    onZoomToSelectionChange: (value) =>
-      props.controller.setZoomToSelection(value),
+    onZoomToSelection: () => props.onZoomToSelection?.(),
     onRowFilterChange: (value) => props.controller.setRowFilter(value),
+    onColumnFilterKeyChange: (key) => {
+      toolbarColumnKey.value = key;
+    },
+    onColumnFilterQueryChange: (value) => {
+      const key = toolbarColumnKey.value;
+      if (!key) return;
+      props.controller.setColumnFilter(key, value);
+    },
+    onClearColumnFilters: () => props.controller.clearColumnFilters(),
     onClearSelection: () => props.controller.clearSelection(),
     onExport: props.onExport,
     onExportFormat: props.onExportFormat,
@@ -164,12 +200,15 @@ const gridProps = computed(
     sortedAscLabel: props.labels.sortedAsc,
     sortedDescLabel: props.labels.sortedDesc,
     notSortedLabel: props.labels.notSorted,
+    columnFilterForLabel: props.labels.columnFilterFor,
     columns: state.value.columns,
     windowedRows: windowedRows.value,
     sortStates: state.value.sortStates,
+    columnFilters: state.value.columnFilters,
     selectedIds: selectedSet.value,
     allVisibleSelected: allVisibleSelected.value,
     checkbox: ui.value.checkbox,
+    columnFilter: ui.value.columnFilter,
     sort: ui.value.sort,
     rowHeight: ATTRIBUTE_TABLE_ROW_HEIGHT,
     virtualWindow: virtualWindow.value,
@@ -183,6 +222,8 @@ const gridProps = computed(
     },
     onSortColumn: (key, shiftKey) =>
       props.controller.toggleSort(key, shiftKey),
+    onColumnFilterChange: (key, query) =>
+      props.controller.setColumnFilter(key, query),
     onToggleSelectAll: () => {
       void props.controller.toggleSelectAll(visibleRows.value);
     },

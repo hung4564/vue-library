@@ -18,14 +18,12 @@ export function useDrawDrafts(
 ) {
   const [draftCounts, setDraftCounts] = useState(0);
   const [showList, setShowList] = useShow(false);
-  const [draftItems, setDraftItems] = useState<
-    { id: string | number; status: string }[]
-  >([]);
+  const [draftItems, setDraftItems] = useState<IDraftRecord[]>([]);
 
   const refreshDrafts = useCallback(() => {
     const snap = getDraftListSnapshot(drawOptions);
     if (!snap) return;
-    setDraftItems(snap.items.map((i) => ({ id: i.id, status: i.status })));
+    setDraftItems(snap.items);
     setDraftCounts(snap.count);
   }, [drawOptions]);
 

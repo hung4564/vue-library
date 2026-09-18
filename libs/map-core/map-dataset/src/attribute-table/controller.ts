@@ -1,4 +1,5 @@
 import type { IDataset } from '../interfaces/dataset.base';
+import type { AttributeTableColumnTextFilters } from './filter';
 import {
   resolveAttributeTableSelectedRowIds,
   type AttributeTableColumn,
@@ -22,6 +23,7 @@ export type AttributeTableControllerReason =
   | 'page-change'
   | 'page-size'
   | 'search'
+  | 'column-filter'
   | 'sort'
   | 'selection';
 
@@ -38,6 +40,8 @@ export type AttributeTableControllerState = {
   columns: AttributeTableColumn[];
   rows: AttributeTableRow[];
   search: string;
+  /** Per-column contains filters (key → query). */
+  columnFilters: AttributeTableColumnTextFilters;
   sortStates: AttributeTableSortState[];
   selectedIds: string[];
   rowFilter: AttributeTableRowFilter;
@@ -55,6 +59,9 @@ export type AttributeTableController = {
   goNext(): Promise<void>;
   setPageSize(pageSize: number | string): Promise<void>;
   setSearch(value: string): void;
+  /** Set or clear one column text filter (`query` empty clears that key). */
+  setColumnFilter(key: string, query: string): void;
+  clearColumnFilters(): void;
   toggleSort(key: string, append?: boolean): void;
   setRowFilter(value: AttributeTableRowFilter): void;
   setZoomToSelection(value: boolean): void;
@@ -106,6 +113,7 @@ export function createAttributeTableController(
     columns: [],
     rows: [],
     search: '',
+    columnFilters: {},
     sortStates: [],
     selectedIds: [],
     rowFilter: options.rowFilter === 'selected' ? 'selected' : 'all',
@@ -116,6 +124,7 @@ export function createAttributeTableController(
     (event: AttributeTableControllerEvent) => void
   >();
   let searchTimer: ReturnType<typeof setTimeout> | null = null;
+  let columnFilterTimer: ReturnType<typeof setTimeout> | null = null;
   let loadSeq = 0;
 
   function notify(reason: AttributeTableControllerReason) {
@@ -141,7 +150,8 @@ export function createAttributeTableController(
     if (disposed) return;
     const seq = ++loadSeq;
     // Keep rows visible while re-sorting / searching so header clicks feel instant.
-    const quiet = reason === 'sort' || reason === 'search';
+    const quiet =
+      reason === 'sort' || reason === 'search' || reason === 'column-filter';
     if (!quiet) {
       store.invalidate?.();
       state.loading = true;
@@ -153,6 +163,7 @@ export function createAttributeTableController(
         page: state.page,
         pageSize: state.pageSize,
         search: state.search,
+        columnFilters: state.columnFilters,
         sort: state.sortStates,
       });
       if (disposed || seq !== loadSeq) return;
@@ -202,6 +213,35 @@ export function createAttributeTableController(
       state.page = 1;
       void load('search');
     }, 200);
+  }
+
+  function scheduleColumnFilterLoad() {
+    notify('column-filter');
+    if (columnFilterTimer) clearTimeout(columnFilterTimer);
+    columnFilterTimer = setTimeout(() => {
+      columnFilterTimer = null;
+      if (disposed) return;
+      state.page = 1;
+      void load('column-filter');
+    }, 200);
+  }
+
+  function setColumnFilter(key: string, query: string) {
+    const next = { ...state.columnFilters };
+    const trimmed = query.trim();
+    if (!trimmed) {
+      delete next[key];
+    } else {
+      next[key] = query;
+    }
+    state.columnFilters = next;
+    scheduleColumnFilterLoad();
+  }
+
+  function clearColumnFilters() {
+    if (!Object.keys(state.columnFilters).length) return;
+    state.columnFilters = {};
+    scheduleColumnFilterLoad();
   }
 
   function toggleSort(key: string, append = false) {
@@ -278,6 +318,7 @@ export function createAttributeTableController(
       page: 1,
       pageSize: 'all',
       search: state.search,
+      columnFilters: state.columnFilters,
       sort: state.sortStates,
     });
     return result.rows;
@@ -329,6 +370,7 @@ export function createAttributeTableController(
       ...state,
       columns: state.columns,
       rows: state.rows,
+      columnFilters: { ...state.columnFilters },
       sortStates: state.sortStates.slice(),
       selectedIds: state.selectedIds.slice(),
     }),
@@ -346,6 +388,8 @@ export function createAttributeTableController(
     goNext,
     setPageSize,
     setSearch,
+    setColumnFilter,
+    clearColumnFilters,
     toggleSort,
     setRowFilter,
     setZoomToSelection,
@@ -358,6 +402,7 @@ export function createAttributeTableController(
     dispose() {
       disposed = true;
       if (searchTimer) clearTimeout(searchTimer);
+      if (columnFilterTimer) clearTimeout(columnFilterTimer);
       listeners.clear();
     },
   };

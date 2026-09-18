@@ -114,7 +114,6 @@ function onClose() {
         @close="onClose"
         @update:show="onUpdateShow"
       >
-        <template #title>Map Devtools</template>
         <div class="devtools-popup-body">
           <DevtoolsPanelBody />
         </div>

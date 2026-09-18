@@ -1,15 +1,16 @@
 import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
-import { type MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
+  INSPECT_CONTROL_LOCALE,
   InspectController,
   brightColor,
-  generateInspectStyle,
   renderPopup as defaultRenderPopup,
+  generateInspectStyle,
   type InspectControllerOptions,
 } from '@hungpvq/map-draw';
 import {
-  MapControlButton,
+  MapCommonButton,
   ModuleContainer,
   defaultMapProps,
   useEventMap,
@@ -20,10 +21,8 @@ import {
   useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
-import Icon from '@mdi/react';
 import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';
 
 /** Same icon pair as Vue InspectControl: map when idle, map-search when inspecting. */
 const INSPECT_ICONS = {
@@ -71,7 +70,6 @@ export function InspectControl(props: InspectControlProps) {
   };
 
   const [active, setActive] = useShow(merged.showInspectDefault);
-  const iconPath = active ? INSPECT_ICONS.inspect : INSPECT_ICONS.map;
   const controlSyncRef = useRef<() => void>(() => undefined);
   const syncPointerEventsRef = useRef<() => void>(() => undefined);
 
@@ -186,13 +184,12 @@ export function InspectControl(props: InspectControlProps) {
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapInspectControl',
-    getState: (): MapControlButtonUIState => ({
-      visible: true,
-      active,
-      title: trans('map.inspect-control.button'),
-      order,
-      icon: { type: 'mdi', path: iconPath },
-    }),
+    getState: () =>
+      mdiButtonState(!active ? INSPECT_ICONS.map : INSPECT_ICONS.inspect, {
+        visible: true,
+        title: trans('map.inspect-control.button'),
+        order,
+      }),
     onClick: () => toggle(),
   });
 
@@ -206,13 +203,15 @@ export function InspectControl(props: InspectControlProps) {
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlButton
-          active={active}
-          title={trans('map.inspect-control.button')}
-          onClick={() => (state ? control.onAction() : toggle())}
-        >
-          <Icon path={iconPath} size={0.75} />
-        </MapControlButton>
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction();
+            }}
+          />
+        ) : null
       }
     />
   );

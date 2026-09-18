@@ -46,6 +46,14 @@ const router = createRouter({
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
+      path: '/basemap-error/',
+      component: () => import('../views/basemap-error.vue'),
+    },
+    {
+      path: '/multi-map/',
+      component: () => import('../views/multi-map.vue'),
+    },
+    {
       path: '/dataset-highlight/',
       component: () => import('../views/dataset-highlight/example.vue'),
     },

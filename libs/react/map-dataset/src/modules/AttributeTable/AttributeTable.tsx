@@ -84,11 +84,33 @@ export function AttributeTable(props: AttributeTableProps) {
     null,
   );
 
+  const zoomMapToSelection = useCallback(
+    async (ctrl?: AttributeTableController | null) => {
+      const targetCtrl = ctrl ?? controllerRef.current;
+      if (!targetCtrl) return;
+      const rows = await targetCtrl.resolveFeaturesForSelection();
+      const features = rows
+        .map((row) => row.feature as Feature)
+        .filter((feature): feature is Feature => !!feature?.geometry);
+      if (!features.length) return;
+      const target =
+        features.length === 1
+          ? features[0]!
+          : ({ type: 'FeatureCollection', features } as const);
+      getMap(mapId, (map) => {
+        fitBounds(map, target);
+      });
+    },
+    [mapId],
+  );
+  const zoomMapToSelectionRef = useRef(zoomMapToSelection);
+  zoomMapToSelectionRef.current = zoomMapToSelection;
+
   const applySelection = useCallback(
     (ctrl: AttributeTableController, focus?: AttributeTableRow) => {
       const s = ctrl.getState();
       const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-      if (selected.length !== 1) {
+      if (selected.length === 0) {
         clearHighlight();
         return;
       }
@@ -98,11 +120,9 @@ export function AttributeTable(props: AttributeTableProps) {
         dataset: props.layer,
       });
       if (!s.zoomToSelection) return;
-      getMap(mapId, (map) => {
-        fitBounds(map, current.feature as Feature);
-      });
+      void zoomMapToSelectionRef.current(ctrl);
     },
-    [clearHighlight, mapId, props.layer],
+    [clearHighlight, props.layer],
   );
   const applySelectionRef = useRef(applySelection);
   applySelectionRef.current = applySelection;
@@ -201,6 +221,10 @@ export function AttributeTable(props: AttributeTableProps) {
       selectRow: trans('map.attribute-table.selectRow'),
       actionsColumn: trans('map.attribute-table.actionsColumn'),
       rowFilter: trans('map.attribute-table.rowFilter'),
+      columnFilter: trans('map.attribute-table.columnFilter'),
+      columnFilterQuery: trans('map.attribute-table.columnFilterQuery'),
+      clearColumnFilter: trans('map.attribute-table.clearColumnFilter'),
+      columnFilterFor: trans('map.attribute-table.columnFilterFor'),
       sortedAsc: trans('map.attribute-table.sortedAsc'),
       sortedDesc: trans('map.attribute-table.sortedDesc'),
       notSorted: trans('map.attribute-table.notSorted'),
@@ -311,6 +335,9 @@ export function AttributeTable(props: AttributeTableProps) {
         value: convertFeatureToItem(row.feature),
         context: { control: MENU_CONTROL_ID.attributeTable },
       });
+    },
+    onZoomToSelection: () => {
+      void zoomMapToSelection();
     },
     onExport: menuMode
       ? undefined

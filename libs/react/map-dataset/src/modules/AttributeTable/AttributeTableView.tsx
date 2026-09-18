@@ -20,6 +20,7 @@ export function AttributeTableView(props: AttributeTableViewProps) {
   const [, setTick] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(320);
+  const [toolbarColumnKey, setToolbarColumnKey] = useState('');
   const ui = resolveAttributeTableUi(props.ui);
 
   useEffect(() => {
@@ -27,6 +28,18 @@ export function AttributeTableView(props: AttributeTableViewProps) {
   }, [props.controller]);
 
   const state = props.controller.getState();
+
+  useEffect(() => {
+    const keys = state.columns.map((c) => c.key);
+    if (!keys.length) {
+      setToolbarColumnKey('');
+      return;
+    }
+    setToolbarColumnKey((prev) =>
+      prev && keys.includes(prev) ? prev : (keys[0] ?? ''),
+    );
+  }, [state.columns]);
+
   const visibleRows = useMemo(() => {
     if (state.rowFilter !== 'selected') return state.rows;
     const selected = new Set(state.selectedIds);
@@ -68,12 +81,17 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     state.total,
   );
 
+  const columnFilterItems = state.columns.map((c) => ({
+    value: c.key,
+    text: c.label,
+  }));
+
   const toolbarProps: AttributeTableToolbarProps = {
     mapId: props.mapId,
     query: state.search,
     searchPlaceholder: props.labels.search,
     searchLabel: props.labels.search,
-    zoomToSelection: state.zoomToSelection,
+    zoomDisabled: state.selectedIds.length === 0,
     zoomLabel: props.labels.zoomToSelection,
     rowFilter: state.rowFilter,
     filterItems: [
@@ -81,15 +99,26 @@ export function AttributeTableView(props: AttributeTableViewProps) {
       { value: 'selected', text: props.labels.showSelected },
     ],
     rowFilterLabel: props.labels.rowFilter,
+    columnFilterItems,
+    columnFilterKey: toolbarColumnKey,
+    columnFilterQuery: state.columnFilters[toolbarColumnKey] ?? '',
+    columnFilterLabel: props.labels.columnFilter,
+    columnFilterQueryPlaceholder: props.labels.columnFilterQuery,
+    clearColumnFilterLabel: props.labels.clearColumnFilter,
     clearLabel: props.labels.clear,
     clearDisabled: state.selectedIds.length === 0,
     exportLabel: props.labels.export,
     exportFormats: props.exportFormats,
     ui,
     onQueryChange: (value) => props.controller.setSearch(value),
-    onZoomToSelectionChange: (value) =>
-      props.controller.setZoomToSelection(value),
+    onZoomToSelection: () => props.onZoomToSelection?.(),
     onRowFilterChange: (value) => props.controller.setRowFilter(value),
+    onColumnFilterKeyChange: setToolbarColumnKey,
+    onColumnFilterQueryChange: (value) => {
+      if (!toolbarColumnKey) return;
+      props.controller.setColumnFilter(toolbarColumnKey, value);
+    },
+    onClearColumnFilters: () => props.controller.clearColumnFilters(),
     onClearSelection: () => props.controller.clearSelection(),
     onExport: props.onExport,
     onExportFormat: props.onExportFormat,
@@ -137,12 +166,15 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     sortedAscLabel: props.labels.sortedAsc,
     sortedDescLabel: props.labels.sortedDesc,
     notSortedLabel: props.labels.notSorted,
+    columnFilterForLabel: props.labels.columnFilterFor,
     columns: state.columns,
     windowedRows,
     sortStates: state.sortStates,
+    columnFilters: state.columnFilters,
     selectedIds: selectedSet,
     allVisibleSelected,
     checkbox: ui.checkbox,
+    columnFilter: ui.columnFilter,
     sort: ui.sort,
     rowHeight: ATTRIBUTE_TABLE_ROW_HEIGHT,
     virtualWindow,
@@ -156,6 +188,8 @@ export function AttributeTableView(props: AttributeTableViewProps) {
     },
     onSortColumn: (key, shiftKey) =>
       props.controller.toggleSort(key, shiftKey),
+    onColumnFilterChange: (key, query) =>
+      props.controller.setColumnFilter(key, query),
     onToggleSelectAll: () => {
       void props.controller.toggleSelectAll(visibleRows);
     },

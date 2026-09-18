@@ -13,7 +13,7 @@ Tabular view of GeoJSON feature properties. The **Attribute table** item is **no
 
 Default store: DM sibling → wrap `part.list`; else local GeoJSON; or inject `store`.
 
-Select rows to highlight. **Zoom to selection** is off by default.
+Select rows to highlight. Use **Zoom to selection** to fit the map to the selected row(s).
 
 **Export** lives in [`@hungpvq/map-dataset/geo-export`](./export.md). The Attribute Table toolbar **Export** button (`ui.export`, default `true`) opens the same controller / `onExport` / scopes. While the table is open, filtered/selected export reuses the AT store via the geo-export active-source bridge.
 

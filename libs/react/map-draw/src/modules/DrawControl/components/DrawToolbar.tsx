@@ -14,7 +14,10 @@ import {
   mdiViewListOutline,
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+} from 'react';
 
 export interface DrawToolbarProps {
   drawOptions?: MapDrawOption;
@@ -49,8 +52,20 @@ export function DrawToolbar({
 }: DrawToolbarProps) {
   if (!drawOptions) return null;
 
+  function onToolbarKeydown(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (event.key !== 'Escape') return;
+    if (!isShow || !isDraw) return;
+    event.preventDefault();
+    onCancel();
+  }
+
   return (
-    <div className="d-flex button-custom-container button-draw-container">
+    <div
+      className="d-flex button-custom-container button-draw-container"
+      role="toolbar"
+      aria-label="Draw tools"
+      onKeyDown={onToolbarKeydown}
+    >
       {isShow ? (
         isDraw ? (
           <MapControlGroupButton row>

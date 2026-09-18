@@ -18,7 +18,7 @@ vi.mock('../menu', async (importOriginal) => {
   };
 });
 
-import { LIST_VIEW_MENU_ID } from '../menu';
+import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { IDENTIFY_RESULT_CONTROL } from './result';
 import { identifyResolver } from './resolver';
 

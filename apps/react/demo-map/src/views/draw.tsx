@@ -7,6 +7,7 @@ import {
   type MapDrawOption,
 } from '@hungpvq/map-draw';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { DrawControl, useMapDraw } from '@hungpvq/react-map-draw';
@@ -16,6 +17,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
+const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
 const MAP_ID = 'react-draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
@@ -121,7 +123,7 @@ export function DrawPage() {
       },
       redraw: (mapId) => paintResult(mapId),
       callback(result) {
-        console.info('draw save', result);
+        logger.info('draw save', result);
       },
     };
     start(config);

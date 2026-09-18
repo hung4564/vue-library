@@ -15,7 +15,7 @@ import {
 } from '@mdi/js';
 import { isDraftOption } from '@hungpvq/map-draw';
 
-defineProps<{
+const props = defineProps<{
   drawOptions?: MapDrawOption;
   isShow: boolean;
   isDraw: boolean;
@@ -46,39 +46,52 @@ const path = {
   draftDiscard: mdiUndoVariant,
   draftList: mdiViewListOutline,
 };
+
+function onToolbarKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape') return;
+  if (!props.isShow || !props.isDraw) return;
+  event.preventDefault();
+  emit('cancel');
+}
 </script>
 
 <template>
   <div
     class="d-flex button-custom-container button-draw-container"
+    role="toolbar"
+    aria-label="Draw tools"
     v-if="drawOptions"
+    @keydown="onToolbarKeydown"
   >
     <template v-if="isShow">
       <MapControlGroupButton row v-if="isDraw">
-        <MapControlButton @click="emit('cancel')">
+        <MapControlButton title="Cancel" @click="emit('cancel')">
           <SvgIcon :size="18" type="mdi" :path="path.discard" />
         </MapControlButton>
-        <MapControlButton @click="emit('save')">
+        <MapControlButton title="Save" @click="emit('save')">
           <SvgIcon :size="18" type="mdi" :path="path.save" />
         </MapControlButton>
       </MapControlGroupButton>
       <MapControlGroupButton row v-else>
-        <MapControlButton @click="emit('close')">
+        <MapControlButton title="Close" @click="emit('close')">
           <SvgIcon :size="18" type="mdi" :path="path.close" />
         </MapControlButton>
         <MapControlButton
+          title="Draw"
           :active="method === 'create'"
           @click="emit('start-draw', $event)"
         >
           <SvgIcon :size="18" type="mdi" :path="path.add" />
         </MapControlButton>
         <MapControlButton
+          title="Select"
           :active="method === 'select'"
           @click="emit('select-method', 'select')"
         >
           <SvgIcon :size="18" type="mdi" :path="path.update" />
         </MapControlButton>
         <MapControlButton
+          title="Delete"
           :active="method === 'delete'"
           @click="emit('select-method', 'delete')"
         >
@@ -91,18 +104,24 @@ const path = {
       v-if="isDraftOption(drawOptions) && drawOptions.draft.show"
     >
       <MapControlButton
+        title="Commit drafts"
         @click="emit('commit')"
         :disabled="isDraw || draftCounts == 0"
       >
         <SvgIcon :size="18" type="mdi" :path="path.draftCommit" />
       </MapControlButton>
       <MapControlButton
+        title="Discard drafts"
         @click="emit('discard')"
         :disabled="isDraw || draftCounts == 0"
       >
         <SvgIcon :size="18" type="mdi" :path="path.draftDiscard" />
       </MapControlButton>
-      <MapControlButton @click="emit('show-list')" :disabled="draftCounts == 0">
+      <MapControlButton
+        title="Draft list"
+        @click="emit('show-list')"
+        :disabled="draftCounts == 0"
+      >
         <SvgIcon
           :size="18"
           type="mdi"

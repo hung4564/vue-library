@@ -112,3 +112,13 @@ export function Example() {
 ## Inspect (same package)
 
 Export `InspectControl` from vue/react-map-draw with control id **`mapInspectControl`**. Both use shared `InspectController` from `@hungpvq/map-draw` (style toggle + popup/hover). See hub [Inspect](../index.md#inspect).
+
+## Accessibility
+
+| Surface | Contract |
+|---------|----------|
+| Draw toolbar | `role="toolbar"` + `aria-label="Draw tools"` |
+| Mode / action buttons | `MapControlButton` `title` → accessible name (Cancel, Save, Close, Draw, Select, Delete, draft actions) |
+| Escape | When focus is inside the draw toolbar and a draw is in progress (`isDraw`), Escape emits cancel (same as Cancel) |
+
+Document-level Escape for open panels remains on `bindMapKeyboardShortcuts` / the draggable shell; toolbar Escape only cancels an active draw when the toolbar chrome has focus.

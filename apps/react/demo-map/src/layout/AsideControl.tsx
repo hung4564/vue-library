@@ -24,6 +24,8 @@ const NAV_ITEMS = [
   { to: '/toolbar', label: 'Map - Toolbar' },
   { to: '/mobile-menu', label: 'Map - Mobile menu' },
   { to: '/basemap', label: 'BaseMap' },
+  { to: '/basemap-error', label: 'Basemap error' },
+  { to: '/multi-map', label: 'Multi-map' },
   { to: '/measurement', label: 'Measurement' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },
   { to: '/dataset-identify', label: 'Dataset - Identify' },

@@ -1,18 +1,20 @@
 <script lang="ts">
+export type { InspectControlProps } from './InspectControl.props';
+
 export default {
   name: 'inspect-control',
 };
 </script>
 <script setup lang="ts">
-import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
+import { type MapSimple } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  InspectController,
+  renderPopup as _renderPopup,
   brightColor,
   generateInspectStyle,
-  renderPopup as _renderPopup,
-  type InspectControllerOptions,
+  INSPECT_CONTROL_LOCALE,
+  InspectController,
 } from '@hungpvq/map-draw';
 import {
   defaultMapProps,
@@ -25,32 +27,8 @@ import {
   useToolbarControl,
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
-import type { QueryRenderedFeaturesOptions } from 'maplibre-gl';
 import { ref } from 'vue';
-import { INSPECT_CONTROL_LOCALE } from '@hungpvq/map-draw';
-
-/** Local interface so Vue resolve props used in withDefaults / defaultMapProps. */
-interface InspectControlProps extends WithMapPropType {
-  // Keys present in defaultMapProps (Vue needs them declared on this SFC type)
-  mapId?: string;
-  dragId?: string;
-  btnWidth?: number;
-  position?: WithMapPropType['position'];
-  controlVisible?: boolean;
-  showInspectDefault?: boolean;
-  useInspectStyle?: boolean;
-  showInspectMapPopup?: boolean;
-  showInspectMapPopupOnHover?: boolean;
-  showMapPopup?: boolean;
-  showMapPopupOnHover?: boolean;
-  blockHoverPopupOnClick?: boolean;
-  buildInspectStyle?: InspectControllerOptions['buildInspectStyle'];
-  backgroundColor?: string;
-  assignLayerColor?: InspectControllerOptions['assignLayerColor'];
-  renderPopup?: InspectControllerOptions['renderPopup'];
-  selectThreshold?: number;
-  queryParameters?: QueryRenderedFeaturesOptions;
-}
+import type { InspectControlProps } from './InspectControl.props';
 
 const props = withDefaults(defineProps<InspectControlProps>(), {
   ...defaultMapProps,
@@ -101,11 +79,7 @@ const moveEvent = new EventMouseMove().setHandler(
   controller.handlePointerEvent,
 );
 
-const { mapId, moduleContainerProps, order } = useMap(
-  props,
-  onInit,
-  onDestroy,
-);
+const { mapId, moduleContainerProps, order } = useMap(props, onInit, onDestroy);
 const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', INSPECT_CONTROL_LOCALE);
 

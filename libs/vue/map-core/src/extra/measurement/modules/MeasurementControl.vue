@@ -30,6 +30,8 @@
 </template>
 
 <script lang="ts">
+export type { MeasurementControlProps } from './MeasurementControl.props';
+
 export default {
   name: 'measurement-control',
 };
@@ -41,7 +43,6 @@ import { computed, nextTick, reactive, watch } from 'vue';
 
 import {
   MapSimple,
-  WithMapPropType,
   logHelper,
 } from '@hungpvq/map-core';
 import {
@@ -87,6 +88,7 @@ import {
 
 import { logger } from '../logger';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
+import type { MeasurementControlProps } from './MeasurementControl.props';
 
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
@@ -104,11 +106,7 @@ const path = {
   fillBound: mdiCrosshairsGps,
 };
 
-interface Props extends WithMapPropType {
-  actions?: MeasureActionItem[];
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<MeasurementControlProps>(), {
   ...defaultMapProps,
   actions: () => [],
 });
