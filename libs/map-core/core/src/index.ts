@@ -128,6 +128,10 @@ export {
 } from './controls/home';
 export type { CaptureHomeViewOptions, HomeView } from './controls/home';
 
+// Side-effect: wire WorkerMonitor.connect / abortTask before re-export.
+// Without this, tree-shaken imports of only `WorkerMonitor` leave `.connect` null.
+import './worker/client';
+
 export {
   WorkerMonitor,
 } from './worker/monitor';

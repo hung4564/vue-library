@@ -94,6 +94,102 @@ function readVersion(relPkg) {
   return JSON.parse(fs.readFileSync(path.join(root, relPkg), 'utf8')).version;
 }
 
+/** Latest `## x.y.z` section from lead package CHANGELOG (for one group GitHub Release). */
+function readLatestChangelogSection(relPkg) {
+  const changelogPath = path.join(root, path.dirname(relPkg), 'CHANGELOG.md');
+  if (!fs.existsSync(changelogPath)) return null;
+  const text = fs.readFileSync(changelogPath, 'utf8');
+  const match = text.match(/^## .+$/m);
+  if (!match) return null;
+  const start = match.index;
+  const rest = text.slice(start + 1);
+  const next = rest.search(/^## /m);
+  const section = next === -1 ? text.slice(start) : text.slice(start, start + 1 + next);
+  return section.trim();
+}
+
+function resolveGithubRepo() {
+  try {
+    const url = execSync('git remote get-url origin', {
+      cwd: root,
+      encoding: 'utf8',
+    }).trim();
+    const m = url.match(/github\.com[:/](.+?)(?:\.git)?$/i);
+    return m ? m[1].replace(/\\/g, '/') : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One GitHub Release per group tag (Nx project createRelease would POST once per package).
+ * Needs GH_TOKEN or GITHUB_TOKEN with `repo` / contents:write.
+ */
+async function createOrUpdateGroupGithubRelease(tag, body) {
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  if (!token) {
+    console.warn(
+      `\nSkip GitHub Release (${tag}): set GH_TOKEN or GITHUB_TOKEN.\n` +
+        `  PowerShell: $env:GH_TOKEN = "ghp_..."\n` +
+        `  Or install GitHub CLI and run: gh auth login\n` +
+        `Manual: https://github.com/${resolveGithubRepo() || 'OWNER/REPO'}/releases/new?tag=${encodeURIComponent(tag)}\n`,
+    );
+    return;
+  }
+  const repo = resolveGithubRepo();
+  if (!repo) {
+    console.warn('Skip GitHub Release: could not parse origin remote.');
+    return;
+  }
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'vue-library-release-group',
+  };
+  const base = `https://api.github.com/repos/${repo}/releases`;
+  const payload = {
+    tag_name: tag,
+    name: tag,
+    body: body || `Release ${tag}`,
+    prerelease: false,
+  };
+
+  console.log(`\n> GitHub Release ${tag} (single group release)\n`);
+  const existingRes = await fetch(`${base}/tags/${encodeURIComponent(tag)}`, {
+    headers,
+  });
+  if (existingRes.status === 200) {
+    const existing = await existingRes.json();
+    const upd = await fetch(`${base}/${existing.id}`, {
+      method: 'PATCH',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: payload.name, body: payload.body }),
+    });
+    if (!upd.ok) {
+      throw new Error(`GitHub update release failed: ${upd.status} ${await upd.text()}`);
+    }
+    const data = await upd.json();
+    console.log(`Updated ${data.html_url}`);
+    return;
+  }
+  if (existingRes.status !== 404) {
+    throw new Error(
+      `GitHub get release failed: ${existingRes.status} ${await existingRes.text()}`,
+    );
+  }
+  const created = await fetch(base, {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!created.ok) {
+    throw new Error(`GitHub create release failed: ${created.status} ${await created.text()}`);
+  }
+  const data = await created.json();
+  console.log(`Created ${data.html_url}`);
+}
+
 function latestGroupTag(group) {
   try {
     const out = execSync(`git tag -l "${group}@*" --sort=-v:refname`, {

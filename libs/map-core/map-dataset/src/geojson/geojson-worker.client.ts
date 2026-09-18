@@ -1,11 +1,11 @@
 import type { GeoJSON } from 'geojson';
 import {
   bboxFromGeojson,
+  connectWorkerMonitor,
   isCallStackOverflow,
   MapError,
   reprojectGeojson,
   toPlainJson,
-  WorkerMonitor,
   type GeojsonBbox,
 } from '@hungpvq/map-core';
 import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
@@ -117,7 +117,7 @@ function errorFromWorkerMessage(raw?: string): Error {
   return new Error(text);
 }
 
-const gisWorker = WorkerMonitor.connect<
+const gisWorker = connectWorkerMonitor<
   GeojsonWorkerRequest,
   GeojsonWorkerResponse
 >({

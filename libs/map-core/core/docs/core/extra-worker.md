@@ -10,12 +10,14 @@ Live demo (sum-range task + `WorkerControl`): Vue `#/worker-sample/`, React `#/w
 
 ## Connect a worker (main thread)
 
+Prefer Stable `connectWorkerMonitor` (do not rely on `WorkerMonitor.connect` alone — it is wired by a side-effect that tree-shaking can drop):
+
 ```ts
-import { WorkerMonitor } from '@hungpvq/map-core';
+import { connectWorkerMonitor } from '@hungpvq/map-core';
 
 export const MY_WORKER_ID = 'my-worker';
 
-const client = WorkerMonitor.connect({
+const client = connectWorkerMonitor({
   id: MY_WORKER_ID,
   name: 'My worker',
   createWorker: () =>
@@ -45,7 +47,7 @@ export async function runHeavyTask(payload: unknown) {
 }
 ```
 
-`WorkerMonitor.connect` registers the worker, lazily creates the `Worker`, applies monitor envelopes from `postMessage`, tracks pending tasks, and wraps `runMonitoredTask` (optional main-thread fallback).
+`connectWorkerMonitor` registers the worker, lazily creates the `Worker`, applies monitor envelopes from `postMessage`, tracks pending tasks, and wraps `runMonitoredTask` (optional main-thread fallback). `WorkerMonitor.connect` is an alias assigned when the client module loads.
 
 You can still call `runMonitoredTask` / `handle.startTask` manually if you need a custom client.
 
@@ -122,7 +124,7 @@ const stop = WorkerMonitor.subscribe(() => {
 
 | API | Role |
 | --- | --- |
-| `WorkerMonitor.connect({ id, name, createWorker, … })` | Register + wire a Worker instance |
+| `connectWorkerMonitor({ id, name, createWorker, … })` | Register + wire a Worker instance (`WorkerMonitor.connect` alias) |
 | `client.post` / `client.runTask` / `client.terminate` | Talk to the worker |
 | `runWorkerMonitor(handler, options?)` | Bind inside the worker thread |
 | `register(id, { name })` | Create or reuse a handle only |

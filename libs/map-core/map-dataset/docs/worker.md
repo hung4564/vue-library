@@ -194,7 +194,7 @@ await parseGisTextAsync(csvText, { name: 'sample.csv' });
 | `detectGeojsonStyleTypesAsync(geojson)` | Style types; worker when file is large |
 | `terminateGeojsonWorker()` | Optional cleanup (tests / HMR) |
 
-The client registers with `WorkerMonitor.connect` as `geojson`. Progress and logs show on `WorkerControl`: **task-scoped** lines (`ctx.log` / `taskId`) appear under the running task, then flush into the **Worker log** when the task finishes. Worker-level `console.*` (no `taskId`) go straight to the Worker log.
+The client registers with `connectWorkerMonitor` as `geojson`. Progress and logs show on `WorkerControl`: **task-scoped** lines (`ctx.log` / `taskId`) appear under the running task, then flush into the **Worker log** when the task finishes. Worker-level `console.*` (no `taskId`) go straight to the Worker log.
 
 ## Vue: do not make GeoJSON reactive
 

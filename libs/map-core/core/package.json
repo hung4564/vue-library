@@ -18,7 +18,11 @@
   "types": "./index.d.ts",
   "sideEffects": [
     "**/*.css",
-    "**/*.scss"
+    "**/*.scss",
+    "./index.js",
+    "./index.cjs",
+    "./worker/client.js",
+    "./worker/client.cjs"
   ],
   "exports": {
     ".": {
