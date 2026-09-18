@@ -14,4 +14,4 @@
 - `'toolbar'` — move declared control buttons into a single `ToolbarControl` host (except `controlLayout="button"`). Mount one `ToolbarControl` in the map slot
 - `'menu'` — hide per-control corner buttons; fan out intact clusters by `position` into corner stacks with outside-in More. Mount one `ToolbarControl`.
 
-See [ToolbarControl](./ToolbarControl.md).
+See [ToolbarControl](/map/core/module/ToolbarControl).
