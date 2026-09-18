@@ -175,7 +175,7 @@
           "versionPrefix": "^",
           "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo --target=build"
+          "preVersionCommand": "npx nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=build"
         },
         "changelog": {
           "file": "{projectRoot}/CHANGELOG.md",

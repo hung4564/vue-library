@@ -22,7 +22,7 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 | Share / UI | `libs/share/*`, `libs/ui/core`, `libs/router` | `@hungpvq/shared*`, UI kit |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*` | VitePress sites |
 
-Nx tags: `map`, `draggable`, `share`, `demo`, plus `core` / framework tags. Release groups: `map`, `draggable`, `shared-store` (see root `nx.json`).
+Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store` (see root `nx.json`).
 
 ## Where to change code
 

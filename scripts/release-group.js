@@ -29,6 +29,7 @@
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { loadGhToken } = require('./load-gh-token');
 
 const root = path.resolve(__dirname, '..');
 
@@ -95,18 +96,39 @@ function readVersion(relPkg) {
   return JSON.parse(fs.readFileSync(path.join(root, relPkg), 'utf8')).version;
 }
 
-/** Latest `## x.y.z` section from lead package CHANGELOG (for one group GitHub Release). */
-function readLatestChangelogSection(relPkg) {
+/** Changelog section for `version` (e.g. `1.1.0`) from lead package CHANGELOG.md. */
+function readChangelogSectionForVersion(relPkg, version) {
   const changelogPath = path.join(root, path.dirname(relPkg), 'CHANGELOG.md');
   if (!fs.existsSync(changelogPath)) return null;
   const text = fs.readFileSync(changelogPath, 'utf8');
-  const match = text.match(/^## .+$/m);
-  if (!match) return null;
+  const esc = version.replace(/\./g, '\\.');
+  // Prefer `## 1.1.0` / `## 1.1.0 (date)`; also allow `# 1.1.0` (Nx first release style)
+  const re = new RegExp(`^#{1,2} ${esc}(?:\\s|\\(|$)`, 'm');
+  const match = text.match(re);
+  if (!match || match.index == null) {
+    // Fallback: latest ## section
+    const any = text.match(/^## .+$/m);
+    if (!any || any.index == null) return null;
+    const start = any.index;
+    const rest = text.slice(start + any[0].length);
+    const next = rest.search(/^## /m);
+    return (next === -1 ? text.slice(start) : text.slice(start, start + any[0].length + next)).trim();
+  }
   const start = match.index;
-  const rest = text.slice(start + 1);
-  const next = rest.search(/^## /m);
-  const section = next === -1 ? text.slice(start) : text.slice(start, start + 1 + next);
+  const heading = match[0];
+  const rest = text.slice(start + heading.length);
+  const next = rest.search(/^#{1,2} /m);
+  const section =
+    next === -1
+      ? text.slice(start)
+      : text.slice(start, start + heading.length + next);
   return section.trim();
+}
+
+/** @deprecated use readChangelogSectionForVersion */
+function readLatestChangelogSection(relPkg) {
+  const version = readVersion(relPkg);
+  return readChangelogSectionForVersion(relPkg, version);
 }
 
 function resolveGithubRepo() {
@@ -127,12 +149,12 @@ function resolveGithubRepo() {
  * Needs GH_TOKEN or GITHUB_TOKEN with `repo` / contents:write.
  */
 async function createOrUpdateGroupGithubRelease(tag, body) {
-  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  const token = loadGhToken();
   if (!token) {
     console.warn(
-      `\nSkip GitHub Release (${tag}): set GH_TOKEN or GITHUB_TOKEN.\n` +
-        `  PowerShell: $env:GH_TOKEN = "ghp_..."\n` +
-        `  Or install GitHub CLI and run: gh auth login\n` +
+      `\nSkip GitHub Release (${tag}): set GH_TOKEN in .env / .env.local or env.\n` +
+        `  copy .env.example → .env\n` +
+        `  Or: $env:GH_TOKEN = "ghp_..."\n` +
         `Manual: https://github.com/${resolveGithubRepo() || 'OWNER/REPO'}/releases/new?tag=${encodeURIComponent(tag)}\n`,
     );
     return;
@@ -154,6 +176,7 @@ async function createOrUpdateGroupGithubRelease(tag, body) {
     name: tag,
     body: body || `Release ${tag}`,
     prerelease: false,
+    make_latest: 'true',
   };
 
   console.log(`\n> GitHub Release ${tag} (single group release)\n`);
@@ -325,10 +348,20 @@ dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localP
     `\nNx should have created tag ${expectedTag} (see nx.json releaseTagPattern).\n`,
   );
 
-  // 6) One GitHub Release for the group tag
+  // 6) One GitHub Release for the group tag (body = lead CHANGELOG section)
   if (!opts.skipPush) {
     const body =
-      readLatestChangelogSection(cfg.leadPkg) || `Release ${expectedTag}`;
+      readChangelogSectionForVersion(cfg.leadPkg, version) ||
+      `Release ${expectedTag}`;
+    if (!body || body === `Release ${expectedTag}`) {
+      console.warn(
+        `Warning: CHANGELOG section for ${version} missing/empty — release body will be minimal.`,
+      );
+    } else {
+      console.log(
+        `GitHub Release body: ${body.split(/\r?\n/).length} lines from ${path.dirname(cfg.leadPkg)}/CHANGELOG.md`,
+      );
+    }
     await createOrUpdateGroupGithubRelease(expectedTag, body);
   } else {
     console.warn(

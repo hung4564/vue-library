@@ -61,8 +61,18 @@ jobs:
         shell: bash
 
       - name: Build release group (no cache — dist must match tag version)
-        run: npx nx run-many --projects=tag:${{ steps.meta.outputs.group }} --exclude=tag:demo,tag:e2e --target=build --skip-nx-cache
         shell: bash
+        run: |
+          GROUP="${{ steps.meta.outputs.group }}"
+          # Resolve only projects that actually have `build` (avoids Nx noise for
+          # demos/e2e that share tags but have no build target).
+          PROJECTS="$(npx nx show projects --projects="tag:${GROUP}" --exclude=tag:demo,tag:e2e --with-target=build | paste -sd, -)"
+          if [ -z "$PROJECTS" ]; then
+            echo "::error::No buildable projects for tag:${GROUP}"
+            exit 1
+          fi
+          echo "Building: $PROJECTS"
+          npx nx run-many --projects="$PROJECTS" --target=build --skip-nx-cache
 
       - name: Verify dist versions match tag
         shell: bash
@@ -78,7 +88,7 @@ jobs:
           const ver = tag.split('@')[1];
           const group = process.env.GROUP;
           const projects = execSync(
-            `npx nx show projects --projects=tag:${group} --exclude=tag:demo,tag:e2e`,
+            `npx nx show projects --projects=tag:${group} --exclude=tag:demo,tag:e2e --with-target=build`,
             { encoding: 'utf8' },
           )
             .trim()

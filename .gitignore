@@ -50,6 +50,11 @@ libs/map-core/core/docs/dataset
 libs/map-core/core/docs/draw
 .npmrc
 
+# Local secrets (GitHub release scripts, etc.)
+.env
+.env.local
+.env.*.local
+
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 .cursor/rules/nx-rules.mdc
