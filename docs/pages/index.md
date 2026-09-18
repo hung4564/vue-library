@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /map
+      link: https://hung4564.github.io/demo-map/
     - theme: alt
       text: View on GitHub
       link: https://github.com/hung4564/vue-library
@@ -20,10 +20,10 @@ features:
     link: /shared
   - title: Draggable
     details: Draggable package
-    link: /draggable
+    link: https://hung4564.github.io/demo-draggable/
   - title: Map
     details: Map package
-    link: /map
+    link: https://hung4564.github.io/demo-map/
 ---
 
 <script setup>

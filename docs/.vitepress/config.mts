@@ -59,6 +59,8 @@ const mainDocsConfig: UserConfig = {
   base: '/docs/',
   outDir: '../deploy/docs',
   lastUpdated: true,
+  // Package READMEs (SemVer checklists, map-debug) live outside VitePress srcDir.
+  ignoreDeadLinks: [/README(\.md)?(#|$)/],
   themeConfig: {
     search: { provider: 'local' },
     nav: [
@@ -70,13 +72,15 @@ const mainDocsConfig: UserConfig = {
       },
       {
         text: navLabel('Draggable', '@hungpvq/draggable'),
-        link: '/draggable/',
-        activeMatch: '/draggable/',
+        link: `${demoSiteOrigin}/demo-draggable/`,
+        target: '_self',
+        rel: 'noopener',
       },
       {
         text: navLabel('Map', '@hungpvq/vue-map-core'),
-        link: '/map/',
-        activeMatch: '/map/',
+        link: `${demoSiteOrigin}/demo-map/`,
+        target: '_self',
+        rel: 'noopener',
       },
     ],
     sidebar: {
