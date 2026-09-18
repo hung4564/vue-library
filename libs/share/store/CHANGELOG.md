@@ -1,3 +1,16 @@
+## 0.3.0 (2026-09-18)
+
+### 🚀 Features
+
+- integrate shared-store group into Nx release workflow ([f2803252](https://github.com/hung4564/vue-library/commit/f2803252))
+- update TypeScript configuration and add orphan scan scripts ([d7674ea9](https://github.com/hung4564/vue-library/commit/d7674ea9))
+- enhance ESLint rules and improve package configurations ([6a30edfc](https://github.com/hung4564/vue-library/commit/6a30edfc))
+- enhance package configurations and improve type safety ([1945262a](https://github.com/hung4564/vue-library/commit/1945262a))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.2.1 (2026-09-05)
 
 ### 🩹 Fixes
