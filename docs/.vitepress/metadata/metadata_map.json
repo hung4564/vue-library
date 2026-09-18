@@ -6,6 +6,13 @@
       "docs": "/map/"
     },
     {
+      "name": "Install from npm",
+      "package": "Map - Core",
+      "docs": "/map/core/install-from-npm",
+      "category": "Core",
+      "order": 1.05
+    },
+    {
       "name": "Minimal starter",
       "package": "Map - Core",
       "docs": "/map/core/minimal-starter",

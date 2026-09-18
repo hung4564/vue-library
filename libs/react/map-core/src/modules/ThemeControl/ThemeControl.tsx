@@ -1,9 +1,9 @@
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
   THEME_CONTROL_LOCALE,
-  applyMapThemeClass,
+  applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
   getStoredMapThemeMode,
@@ -13,6 +13,7 @@ import {
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
   type MapThemeMode,
+  type MapThemeScope,
 } from '@hungpvq/map-core/theme';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
@@ -47,17 +48,27 @@ const MODE_ICONS: Record<MapThemeMode, string> = {
 
 export type ThemeControlProps = WithMapPropType & {
   themes?: MapThemeMode[];
+  /**
+   * `document` (default): `html` + mirror on this map shell (page-wide chrome).
+   * `map`: only `.map-container[data-map-id]` + per-map localStorage.
+   */
+  scope?: MapThemeScope;
 };
 
-export function ThemeControl({ themes, ...props }: ThemeControlProps) {
+export function ThemeControl({
+  themes,
+  scope = 'document',
+  ...props
+}: ThemeControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({
     ...mergedProps,
     controlId: 'mapThemeControl',
   });
   const { trans, registerLocale } = useLang(mapId);
+  const storageOpts = scope === 'map' ? { mapId } : undefined;
   const [mode, setMode] = useState<MapThemeMode>(() =>
-    getStoredMapThemeMode('auto'),
+    getStoredMapThemeMode('auto', storageOpts),
   );
   const [prefersDark, setPrefersDark] = useState(() => getPrefersDark());
 
@@ -85,8 +96,20 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
   }, []);
 
   useEffect(() => {
-    applyMapThemeClass(resolveMapTheme(mode, prefersDark));
-  }, [mode, prefersDark]);
+    setMode(getStoredMapThemeMode('auto', storageOpts));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scope, mapId]);
+
+  useEffect(() => {
+    applyMapTheme(resolveMapTheme(mode, prefersDark), { scope, mapId });
+  }, [mode, prefersDark, scope, mapId]);
+
+  useEffect(() => {
+    if (scope !== 'map') return;
+    return subscribeMapReady(mapId, () => {
+      applyMapTheme(resolveMapTheme(mode, prefersDark), { scope, mapId });
+    });
+  }, [scope, mapId, mode, prefersDark]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
@@ -99,13 +122,17 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
     return () => mediaQuery.removeEventListener('change', onChange);
   }, []);
 
-  useEffect(() => subscribePrefersContrastMore(() => {
-    applyMapThemeClass(resolveMapTheme(mode, prefersDark));
-  }), [mode, prefersDark]);
+  useEffect(
+    () =>
+      subscribePrefersContrastMore(() => {
+        applyMapTheme(resolveMapTheme(mode, prefersDark), { scope, mapId });
+      }),
+    [mode, prefersDark, scope, mapId],
+  );
 
   function applyMode(next: MapThemeMode) {
     setMode(next);
-    setStoredMapThemeMode(next);
+    setStoredMapThemeMode(next, storageOpts);
   }
 
   function toggleTheme() {
@@ -120,6 +147,7 @@ export function ThemeControl({ themes, ...props }: ThemeControlProps) {
       position: mergedProps.position,
       controlLayout: mergedProps.controlLayout,
       themes: themeModes,
+      scope,
     }),
     actions: [
       {

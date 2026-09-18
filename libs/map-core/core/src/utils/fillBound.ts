@@ -1,5 +1,5 @@
 import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
-import { bbox as turfBbox } from '@turf/turf';
+import turfBbox from '@turf/bbox';
 import { isValidBbox } from './bbox';
 import type {
   CoordinatesNumber,

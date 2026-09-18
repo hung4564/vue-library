@@ -153,6 +153,12 @@
       "@hungpvq/react-map-draw/style.css": [
         "./libs/react/map-draw/src/style.css"
       ],
+      "@hungpvq/react-map": [
+        "./libs/react/map/src/index.ts"
+      ],
+      "@hungpvq/react-map/style.css": [
+        "./libs/react/map/style.css"
+      ],
       "@hungpvq/router": [
         "./libs/router/src/index.ts"
       ],
@@ -209,6 +215,12 @@
       ],
       "@hungpvq/vue-map-draw/style.css": [
         "./libs/vue/map-draw/src/style.css"
+      ],
+      "@hungpvq/vue-map": [
+        "./libs/vue/map/src/index.ts"
+      ],
+      "@hungpvq/vue-map/style.css": [
+        "./libs/vue/map/style.css"
       ]
     }
   },

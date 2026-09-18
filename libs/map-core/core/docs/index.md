@@ -6,6 +6,7 @@ Vue / React map libraries built on MapLibre GL.
 
 | Package | Description |
 |---------|-------------|
+| [`@hungpvq/vue-map`](https://www.npmjs.com/package/@hungpvq/vue-map) / [`@hungpvq/react-map`](https://www.npmjs.com/package/@hungpvq/react-map) | **Meta** — one install + `installMapApp` + `./style.css` |
 | [`@hungpvq/vue-map-core`](./core/) / [`@hungpvq/react-map-core`](./core/) | Map container, controls, hooks |
 | [`@hungpvq/vue-map-dataset`](./dataset/) / [`@hungpvq/react-map-dataset`](./dataset/) | Layers, identify, create dataset |
 | [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/) | Draw / edit (Inspect documented under draw) |
@@ -29,27 +30,38 @@ Feature APIs (basemap, theme, …): import from `@hungpvq/map-core/<domain>` —
 
 ## Getting started in 5 minutes
 
-Prefer the focused walkthrough: **[Minimal starter](./core/minimal-starter.md)** (Map + one GeoJSON, no GIS worker). Peers: [Peers and bundle](./core/peers-and-bundle.md).
+- **External npm apps (recommended path):** **[Install from npm](./core/install-from-npm.md)** — meta package, import split, optional peers, copy-paste.
+- **Minimal map walkthrough:** **[Minimal starter](./core/minimal-starter.md)** (Map + one GeoJSON, no GIS worker).
+- Peers / lite vs full: [Peers and bundle](./core/peers-and-bundle.md).
 
 ### 1. Install
 
-**Vue**
+**Vue (meta — recommended)**
 
 ```bash
-npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/map-core @hungpvq/map-dataset @hungpvq/vue-draggable maplibre-gl
+npm install @hungpvq/vue-map maplibre-gl vue
 ```
 
-**React**
+**React (meta — recommended)**
 
 ```bash
-npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/map-core @hungpvq/map-dataset @hungpvq/react-draggable maplibre-gl
+npm install @hungpvq/react-map maplibre-gl react react-dom
 ```
+
+A-la-carte (same stack without the meta bag): `@hungpvq/vue-map-core` + `vue-map-dataset` + `map-core` + `map-dataset` + `vue-draggable` + `maplibre-gl` (React equivalents similarly).
 
 Draw / edit is optional — add `@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw` + `@hungpvq/map-draw` when you need [Draw](/map/draw/).
 
 ### 2. Import CSS (once)
 
-Root JS barrels do **not** pull CSS. Import the **full** set at the app entry (shared cores + framework adapters + draggable). Missing any line leaves map chrome, dataset UI, or panels unstyled.
+**With meta package (recommended)**
+
+```ts
+import '@hungpvq/vue-map/style.css';
+// React: import '@hungpvq/react-map/style.css';
+```
+
+**A-la-carte** — import the full set at the app entry (shared cores + framework adapters + draggable). Missing any line leaves map chrome, dataset UI, or panels unstyled.
 
 **Vue**
 
@@ -78,15 +90,16 @@ Draw apps also need `@hungpvq/vue-map-draw/style.css` or `@hungpvq/react-map-dra
 Theme + dataset registry UI. Without this step, layer menus / style / export / attribute table **do not render**.
 
 ```ts
-// Vue
-import { installMapApp } from '@hungpvq/vue-map-dataset';
-// or app.use(createMapAppPlugin())
+// Vue (meta or dataset)
+import { installMapApp } from '@hungpvq/vue-map';
+// or: import { installMapApp } from '@hungpvq/vue-map-dataset';
 installMapApp(app);
 ```
 
 ```ts
-// React
-import { installMapApp } from '@hungpvq/react-map-dataset';
+// React (meta or dataset)
+import { installMapApp } from '@hungpvq/react-map';
+// or: import { installMapApp } from '@hungpvq/react-map-dataset';
 installMapApp();
 ```
 
@@ -106,14 +119,14 @@ Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungp
 
 | Symptom | Check |
 |---------|--------|
-| Unstyled / broken layout | Incomplete CSS imports — need `map-core` + `map-dataset` + framework `*-map-core` / `*-map-dataset` + `*-draggable` `style.css` (see §2) |
+| Unstyled / broken layout | Missing `@hungpvq/vue-map/style.css` (or `react-map`) — or incomplete a-la-carte CSS set (see §2) |
 | Empty layer menus, missing style / export / attribute UI | Forgot `installMapApp` (or `createDatasetRegistryPlugin`) |
 | Dialogs / management panels missing | Need `ComponentManagementControl` (or equivalent) on the map |
 | File parse hangs / blocks UI; worker never runs | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker) |
 | CreateControl fails on CSV/KML/Shapefile with missing peer | Install optional GIS peers — [CreateControl](./dataset/module/CreateControl) |
-| Install / peer errors | Align `@hungpvq/map-core` + dataset + vue/react peers; use documented import paths |
+| Install / peer errors | Prefer meta (`@hungpvq/vue-map` / `react-map`) — [Install from npm](./core/install-from-npm.md); align map family versions |
 
-More detail: [Map Dataset setup](./dataset/) · [Map Core](./core/) · [Stable API](./core/stable-api.md)
+More detail: [Install from npm](./core/install-from-npm.md) · [Map Dataset setup](./dataset/) · [Map Core](./core/) · [Stable API](./core/stable-api.md)
 
 ## E2E smoke
 

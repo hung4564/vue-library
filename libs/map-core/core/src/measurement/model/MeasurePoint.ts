@@ -2,7 +2,7 @@
  * Framework-agnostic point measurement class
  */
 
-import { point } from '@turf/turf';
+import { point } from '@turf/helpers';
 import type { Feature } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 

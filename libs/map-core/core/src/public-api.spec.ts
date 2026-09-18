@@ -426,6 +426,7 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
     'waitMapIdleAndTiles',
   ],
   theme: [
+    'applyMapTheme',
     'applyMapThemeClass',
     'applyMapThemeClassToElement',
     'applyMapThemeContrastClass',
@@ -433,6 +434,7 @@ export const MAP_CORE_SUBPATH_RUNTIME_EXPORTS = {
     'bootstrapMapTheme',
     'cycleMapThemeMode',
     'getMapThemeLocaleKey',
+    'getMapThemeStorageKey',
     'getPrefersContrastMore',
     'getPrefersDark',
     'getStoredMapThemeMode',

@@ -12,7 +12,7 @@ export function listMapIds(): string[] {
   return Object.keys(root ?? {}).sort();
 }
 
-/** Peek a map-scoped store bag (e.g. key `'dataset'`). */
+/** Peek a map-scoped store bag by key. */
 export function getMapScopedStore<T = unknown>(
   mapId: string,
   key: string,
@@ -30,6 +30,13 @@ export type DatasetStoreLike = {
   datasetIds: { value: string[] };
 };
 
+/**
+ * Dataset list bag under each mapId.
+ * Value must stay equal to `MAP_DATASET_STORE_KEY` from `@hungpvq/map-dataset`
+ * (not imported here — map-dataset is an optional peer of map-debug root).
+ */
+const DATASET_STORE_KEY = 'dataset' as const;
+
 export function getDatasetStore(mapId: string): DatasetStoreLike | undefined {
-  return getMapScopedStore<DatasetStoreLike>(mapId, 'dataset');
+  return getMapScopedStore<DatasetStoreLike>(mapId, DATASET_STORE_KEY);
 }

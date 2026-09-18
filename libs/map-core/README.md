@@ -7,6 +7,7 @@ Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 | [`@hungpvq/map-core`](./core/) | Engine helpers, store, theme, locale, registry types, workers |
 | [`@hungpvq/map-dataset`](./map-dataset/) | Dataset tree, builders, identify, style, GIS worker |
 | [`@hungpvq/map-draw`](./map-draw/) | DrawService, DrawingType, styles, inspect helpers |
+| [`@hungpvq/vue-map`](../vue/map/) / [`@hungpvq/react-map`](../react/map/) | Meta bag: deps + `installMapApp` + `./style.css` |
 | [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/) | Map container, controls, hooks |
 | [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores |
 | [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (shared InspectController) |
@@ -25,11 +26,12 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
-| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | maplibre `^5`, turf `^6` |
+| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec` |
 | `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
-| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; `@turf/helpers` `^6 \|\| ^7` |
-| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable `~1.1.0` |
+| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; draggable optional peer (needed for default `Map` shell / panels) |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable optional peer (needed for LayerControl panels) |
+| `@hungpvq/vue-map` / `react-map` | `.` + `./style.css`; facade `installMapApp` (+ Vue `createMapAppPlugin`) | **deps** map stack + draggable + shared; **peer** framework + `maplibre-gl` only |
 | `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
 
 **Monorepo rule:** map release group is **`fixed`** (one version, tag `map@{version}` via Nx `releaseTag.pattern`). Bumping any map package bumps the whole group; in-family peers stay `~` aligned.
@@ -56,7 +58,8 @@ Any checked item must **not** ship in `1.0.x` / as a `1.x` patch.
 - [ ] Drop dual `import` / `require` while apps still use CJS
 - [ ] Rename npm scope / package name
 - [ ] Raise peer **minimum** outside the old range (e.g. `maplibre-gl` `^5` → `^6`, React 18 → 19 required, turf major mismatch across packages)
-- [ ] Change optional peer → required (`tokml`, `@mapbox/shp-write`, `vite`, GIS parsers `shpjs` / `papaparse` / `jszip` / `topojson-client` / `@tmcw/togeojson` / `@xmldom/xmldom`, color/file-saver on adapters)
+- [ ] Change optional peer → required (`tokml`, `@mapbox/shp-write`, `vite`, GIS parsers `shpjs` / `papaparse` / `jszip` / `topojson-client` / `@tmcw/togeojson` / `@xmldom/xmldom`, color/file-saver / style-spec on core+adapters, draggable on adapters)
+- [ ] Remove a shipped dependency consumers relied on installing themselves only as a peer (e.g. re-introduce `@turf/turf` peer without granular deps) without a migration note
 
 ### B. Named exports (TypeScript / ESM)
 

@@ -55,7 +55,7 @@ export default defineConfig({
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
         '@mdi/js',
-        '@turf/turf',
+        /^@turf\//,
         'maplibre-gl',
       ],
       output: {

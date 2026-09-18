@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { type WithMapPropType } from '@hungpvq/map-core';
+import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
   THEME_CONTROL_LOCALE,
-  applyMapThemeClass,
+  applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
   getStoredMapThemeMode,
@@ -14,6 +14,7 @@ import {
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
   type MapThemeMode,
+  type MapThemeScope,
 } from '@hungpvq/map-core/theme';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
@@ -50,11 +51,17 @@ const props = withDefaults(
   defineProps<
     WithMapPropType & {
       themes?: MapThemeMode[];
+      /**
+       * `document` (default): `html` + mirror on this map shell (page-wide chrome).
+       * `map`: only `.map-container[data-map-id]` + per-map localStorage.
+       */
+      scope?: MapThemeScope;
     }
   >(),
   {
     ...defaultMapProps,
     themes: () => [...MAP_THEME_MODES],
+    scope: 'document',
   },
 );
 
@@ -62,7 +69,13 @@ const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', THEME_CONTROL_LOCALE);
 
-const mode = ref<MapThemeMode>(getStoredMapThemeMode('auto'));
+const storageOpts = computed(() =>
+  props.scope === 'map' ? { mapId: mapId.value } : undefined,
+);
+
+const mode = ref<MapThemeMode>(
+  getStoredMapThemeMode('auto', storageOpts.value),
+);
 const prefersDark = ref(getPrefersDark());
 
 const themeModes = computed(() => normalizeMapThemeModes(props.themes));
@@ -80,12 +93,15 @@ const toggleIcon = computed(() =>
 );
 
 function applyCurrentTheme() {
-  applyMapThemeClass(resolveMapTheme(mode.value, prefersDark.value));
+  applyMapTheme(resolveMapTheme(mode.value, prefersDark.value), {
+    scope: props.scope,
+    mapId: mapId.value,
+  });
 }
 
 function setMode(next: MapThemeMode) {
   mode.value = next;
-  setStoredMapThemeMode(next);
+  setStoredMapThemeMode(next, storageOpts.value);
   applyCurrentTheme();
 }
 
@@ -103,6 +119,7 @@ useRegisterMapControl(mapId, {
     position: props.position,
     controlLayout: props.controlLayout,
     themes: themeModes.value,
+    scope: props.scope,
   }),
   actions: [
     {
@@ -134,15 +151,28 @@ watch(prefersDark, () => {
   }
 });
 watch(toggleIcon, () => control.sync());
+watch(
+  () => [props.scope, mapId.value] as const,
+  () => {
+    mode.value = getStoredMapThemeMode('auto', storageOpts.value);
+    applyCurrentTheme();
+  },
+);
 
 let mediaQuery: MediaQueryList | undefined;
 let unsubContrast: (() => void) | undefined;
+let unsubReady: (() => void) | undefined;
 function onMediaChange(event: MediaQueryListEvent) {
   prefersDark.value = event.matches;
 }
 
 onMounted(() => {
   applyCurrentTheme();
+  if (props.scope === 'map') {
+    unsubReady = subscribeMapReady(mapId.value, () => {
+      applyCurrentTheme();
+    });
+  }
   if (typeof window !== 'undefined' && window.matchMedia) {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     prefersDark.value = mediaQuery.matches;
@@ -156,6 +186,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (mediaQuery) mediaQuery.removeEventListener('change', onMediaChange);
   unsubContrast?.();
+  unsubReady?.();
 });
 </script>
 

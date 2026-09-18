@@ -8,12 +8,17 @@ This is the core vanilla JavaScript/TypeScript library extracted from `@hungpvq/
 
 ## 📦 Installation
 
-```bash
-npm install @hungpvq/map-core
-```
+For a full Vue/React app shell, prefer the meta packages — [Install from npm](./docs/core/install-from-npm.md):
 
 ```bash
-yarn add @hungpvq/map-core
+npm install @hungpvq/vue-map maplibre-gl vue
+# or: npm install @hungpvq/react-map maplibre-gl react react-dom
+```
+
+Core-only (protocol / services; no UI):
+
+```bash
+npm install @hungpvq/map-core
 ```
 
 ## 🎯 Features

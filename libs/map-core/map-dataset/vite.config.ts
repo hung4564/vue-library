@@ -153,7 +153,7 @@ export default defineConfig(() => ({
         'mitt',
         '@turf/boolean-intersects',
         '@turf/helpers',
-        '@turf/turf',
+        /^@turf\//,
         '@tmcw/togeojson',
         '@xmldom/xmldom',
         'jszip',

@@ -44,6 +44,9 @@
     "@hungpvq/map-dataset": {
       "optional": true
     },
+    "@hungpvq/react-draggable": {
+      "optional": true
+    },
     "react": {
       "optional": false
     },

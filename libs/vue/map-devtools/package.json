@@ -41,6 +41,9 @@
   "peerDependenciesMeta": {
     "@hungpvq/map-dataset": {
       "optional": true
+    },
+    "@hungpvq/vue-draggable": {
+      "optional": true
     }
   }
 }

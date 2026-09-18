@@ -18,6 +18,23 @@ export type MapThemeResolved = MapThemeId;
 
 export const MAP_THEME_STORAGE_KEY = 'hungpvq.map-theme-mode';
 
+/** Where theme classes are applied. */
+export type MapThemeScope = 'document' | 'map';
+
+export type MapThemeStorageOptions = {
+  /** Per-map preference (`${MAP_THEME_STORAGE_KEY}:${mapId}`). */
+  mapId?: string;
+};
+
+export type ApplyMapThemeOptions = {
+  /**
+   * `document` → `html` (process-global chrome; default).
+   * `map` → `.map-container[data-map-id]` only (requires `mapId`).
+   */
+  scope?: MapThemeScope;
+  mapId?: string;
+};
+
 export const MAP_THEME_CLASS: Record<MapThemeId, string> = {
   light: 'map-theme-light',
   dark: 'map-theme-dark',
@@ -100,22 +117,32 @@ export function subscribePrefersContrastMore(
   return () => mq.removeEventListener('change', handler);
 }
 
+export function getMapThemeStorageKey(mapId?: string): string {
+  const id = mapId?.trim();
+  if (id) return `${MAP_THEME_STORAGE_KEY}:${id}`;
+  return MAP_THEME_STORAGE_KEY;
+}
+
 export function getStoredMapThemeMode(
   fallback: MapThemeMode = 'auto',
+  options?: MapThemeStorageOptions,
 ): MapThemeMode {
   if (typeof localStorage === 'undefined') return fallback;
   try {
-    const raw = localStorage.getItem(MAP_THEME_STORAGE_KEY);
+    const raw = localStorage.getItem(getMapThemeStorageKey(options?.mapId));
     return isMapThemeMode(raw) ? raw : fallback;
   } catch {
     return fallback;
   }
 }
 
-export function setStoredMapThemeMode(mode: MapThemeMode): void {
+export function setStoredMapThemeMode(
+  mode: MapThemeMode,
+  options?: MapThemeStorageOptions,
+): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(MAP_THEME_STORAGE_KEY, mode);
+    localStorage.setItem(getMapThemeStorageKey(options?.mapId), mode);
   } catch {
     // ignore quota / private mode
   }
@@ -207,13 +234,40 @@ export function applyMapThemeClass(resolved: MapThemeResolved): void {
   applyMapThemeClassToElement(document.documentElement, resolved);
 }
 
-/** Read stored mode (or fallback), resolve, and apply to html. */
-export function bootstrapMapTheme(fallback: MapThemeMode = 'auto'): {
+/**
+ * Apply a resolved theme for the given scope.
+ * - `document` (default): `html` + optional mirror onto `.map-container[data-map-id]` when `mapId` is set.
+ * - `map`: only the map shell (returns false if not mounted yet).
+ */
+export function applyMapTheme(
+  resolved: MapThemeResolved,
+  options?: ApplyMapThemeOptions,
+): boolean {
+  const scope = options?.scope ?? 'document';
+  const mapId = options?.mapId?.trim();
+  if (scope === 'map') {
+    if (!mapId) return false;
+    return applyMapThemeForMap(mapId, resolved);
+  }
+  applyMapThemeClass(resolved);
+  if (mapId) {
+    applyMapThemeForMap(mapId, resolved);
+  }
+  return true;
+}
+
+/** Read stored mode (or fallback), resolve, and apply. */
+export function bootstrapMapTheme(
+  fallback: MapThemeMode = 'auto',
+  options?: ApplyMapThemeOptions & MapThemeStorageOptions,
+): {
   mode: MapThemeMode;
   resolved: MapThemeResolved;
 } {
-  const mode = getStoredMapThemeMode(fallback);
+  const modeOpts: MapThemeStorageOptions | undefined =
+    options?.scope === 'map' ? { mapId: options.mapId } : undefined;
+  const mode = getStoredMapThemeMode(fallback, modeOpts);
   const resolved = resolveMapTheme(mode);
-  applyMapThemeClass(resolved);
+  applyMapTheme(resolved, options);
   return { mode, resolved };
 }

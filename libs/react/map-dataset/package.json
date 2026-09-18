@@ -36,5 +36,13 @@
     "maplibre-gl": "^5.4.0",
     "react": "^18.0.0",
     "sortablejs": "^1.15.2"
+  },
+  "peerDependenciesMeta": {
+    "@hungpvq/react-draggable": {
+      "optional": true
+    },
+    "sortablejs": {
+      "optional": true
+    }
   }
 }

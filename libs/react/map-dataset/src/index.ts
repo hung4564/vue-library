@@ -143,6 +143,8 @@ export {
   installMapApp,
 } from './plugin/index';
 
+export type { InstallMapAppOptions } from './plugin/index';
+
 export {
   useMapDatasetComponent,
   useMapDatasetComponentStore,

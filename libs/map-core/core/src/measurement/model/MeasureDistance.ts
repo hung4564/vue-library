@@ -2,7 +2,9 @@
  * Framework-agnostic distance measurement class
  */
 
-import { length, lineString, midpoint, point } from '@turf/turf';
+import { lineString, point } from '@turf/helpers';
+import length from '@turf/length';
+import midpoint from '@turf/midpoint';
 import { Feature } from 'geojson';
 import {
   formatDistanceText,

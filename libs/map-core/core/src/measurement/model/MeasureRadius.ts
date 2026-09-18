@@ -2,7 +2,9 @@
  * Framework-agnostic radius measurement (center + edge point).
  */
 
-import { circle, distance, lineString, point } from '@turf/turf';
+import circle from '@turf/circle';
+import distance from '@turf/distance';
+import { lineString, point } from '@turf/helpers';
 import type { Feature } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 import {

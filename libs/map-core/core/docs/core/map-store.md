@@ -54,7 +54,14 @@ Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
 | `REGISTRY` | `registry` | Control registry scope |
 | `BASEMAP` | `basemap` | Basemap selection |
 
-Adapter domains may also use **string** scoped keys outside `MAP_STORE_KEY` (e.g. vue/react `map-draw` uses `'draw'` for session config). Prefer `MAP_STORE_KEY` when adding new core-owned stores; document any new string key in the owning package docs.
+Adapter domains may also use **string** scoped keys outside `MAP_STORE_KEY`:
+
+| Key | Owner | Constant |
+|-----|-------|----------|
+| `'dataset'` | vue/react `map-dataset` store bag | `MAP_DATASET_STORE_KEY` from `@hungpvq/map-dataset` |
+| `'draw'` | vue/react `map-draw` session config | (adapter-local; prefer a named constant when touching) |
+
+Prefer `MAP_STORE_KEY` when adding new **core-owned** stores; domain keys live in the owning package. Changing a documented store key **string value** is a SemVer **major**.
 
 ```ts
 import { MAP_STORE_KEY } from '@hungpvq/map-core';
@@ -82,7 +89,7 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 | `map:registry:global` | `getOrCreateStore` | UniversalRegistry global methods / components / menu handlers |
 | `map:registry:maps` | `getOrCreateStore` | Per-`mapId` registry bags |
 | `map:registry:controls` | `getOrCreateStore` | Control handle registry |
-| `hungpvq.map-theme-mode` | `localStorage` (`MAP_THEME_STORAGE_KEY`) | Persisted theme mode (not a shared-store bag). **Process-global** — one theme for the whole page / all maps. |
+| `hungpvq.map-theme-mode` (+ optional `:<mapId>`) | `localStorage` (`MAP_THEME_STORAGE_KEY` / `getMapThemeStorageKey(mapId)`) | Theme preference. Default **process-global**; `ThemeControl scope="map"` uses per-map key. |
 | `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups) |
 | `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones after `removeMap` |
 
@@ -92,18 +99,17 @@ Related process pins outside this table: `__hungpvq_map_errorCapture__`, React `
 
 | Surface | Scope |
 |---------|--------|
-| Theme (`applyMapThemeClass` → `html`) | Process-global (documented; not per `mapId`) |
+| Theme (`applyMapTheme` → `html` and/or map shell) | `document` (default) = process-global; `map` = per-`mapId` |
 | Layer search (`/` shortcut) | Per `mapId` via `[data-map-layer-search][data-map-id]` |
 | Devtools drag host | `containerId` and/or `mapId` — no first-match in document |
 
 ### Multi-map caveats (apps with Map A + Map B)
 
 - **Per-map state is safe** when keyed by `mapId` (`MapStoreManager`, scoped stores, registry maps bag).
-- **Not per-map (default):** theme class on `html`, `MAP_THEME_STORAGE_KEY` in `localStorage`. Platform accessors are **multi-host** (`hostId`); Vue/React register separately and composite `getMap` resolves across hosts.
-- Do not expect ThemeControl on Map A to leave Map B on a different chrome theme — one document theme applies to all maps by default.
-- **Optional override:** `applyMapThemeForMap(mapId, resolved)` puts `.map-theme-*` on `.map-container[data-map-id]` only (see [ThemeControl — per-map override](./module/ThemeControl.md#optional-per-map-theme-override-advanced)). Document theme from `bootstrapMapTheme` / ThemeControl remains global.
+- **Theme:** default `ThemeControl` / `bootstrapMapTheme` use `scope: 'document'` (one `html` chrome theme). For independent themes use `<ThemeControl scope="map" />` or `applyMapTheme(resolved, { scope: 'map', mapId })` / `bootstrapMapTheme(mode, { scope: 'map', mapId })`.
+- Platform accessors are **multi-host** (`hostId`); Vue/React register separately and composite `getMap` resolves across hosts.
 - Prefer `subscribeMapReady(mapId, cb)` over fire-and-forget `getMap(id, cb)` so each shell can unsubscribe on unmount without racing another map’s READY.
-- **Consumer rule:** do not assume per-map theme unless you opt into `applyMapThemeForMap`. Call `bootstrapMapTheme` once; adapters register platform accessors with distinct `MAP_PLATFORM_HOST.*` ids.
+- **Consumer rule:** call `bootstrapMapTheme` once for document chrome (or omit and let ThemeControl apply); use `scope="map"` when maps must differ.
 
 ## Lifecycle (engine)
 

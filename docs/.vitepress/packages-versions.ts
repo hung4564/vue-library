@@ -41,10 +41,12 @@ function buildDocVersionGroups(
 
   const mapPackages = pkgs(
     versions,
+    '@hungpvq/vue-map',
     '@hungpvq/vue-map-core',
     '@hungpvq/vue-map-dataset',
     '@hungpvq/vue-map-draw',
     '@hungpvq/map-draw',
+    '@hungpvq/react-map',
     '@hungpvq/react-map-core',
     '@hungpvq/react-map-dataset',
     '@hungpvq/react-map-draw',

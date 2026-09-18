@@ -1,15 +1,16 @@
 import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { DatasetService } from '@hungpvq/map-dataset';
+import {
+  DatasetService,
+  logger,
+  MAP_DATASET_STORE_KEY,
+} from '@hungpvq/map-dataset';
 import {
   createMapScopedStore,
   getStore,
   useMapStore,
 } from '@hungpvq/vue-map-core';
 import { type Ref, ref } from 'vue';
-import { logger } from '@hungpvq/map-dataset';
-
-const KEY = 'dataset' as const;
 
 export type MapLayerStore = {
   datasets: Record<string, IDataset>;
@@ -42,7 +43,7 @@ async function clearDatasetsOnRemoveMap(
 export function useMapDatasetStore(mapId: string): MapLayerStore {
   return createMapScopedStore<MapLayerStore>(
     mapId,
-    KEY as any,
+    MAP_DATASET_STORE_KEY as string & object,
     () => {
       logHelper(logger, mapId, 'store').debug('init');
       return {
@@ -53,7 +54,7 @@ export function useMapDatasetStore(mapId: string): MapLayerStore {
     },
     {
       cleanup: (): void | Promise<void> => {
-        const store = getStore<MapLayerStore>(mapId, KEY);
+        const store = getStore<MapLayerStore>(mapId, MAP_DATASET_STORE_KEY);
         if (!store) return;
         return clearDatasetsOnRemoveMap(mapId, store);
       },

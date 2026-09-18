@@ -23,6 +23,7 @@ description: >-
 Prefer editing package-local markdown that the sites consume:
 
 - Hub: `libs/map-core/core/docs/index.md`
+- Install from npm (external apps): `libs/map-core/core/docs/core/install-from-npm.md`
 - Minimal starter: `libs/map-core/core/docs/core/minimal-starter.md`
 - Stable API: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
 - SemVer checklist: `libs/map-core/README.md`

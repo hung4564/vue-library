@@ -28,9 +28,11 @@ export function loadPackageVersions(): Record<string, string> {
   const vueDraggable = readPkg('libs/vue/draggable/package.json');
   const vueMapCore = readPkg('libs/vue/map-core/package.json');
   const vueMapDataset = readPkg('libs/vue/map-dataset/package.json');
+  const vueMap = readPkg('libs/vue/map/package.json');
   const mapDraw = readPkg('libs/map-core/map-draw/package.json');
   const reactMapDraw = readPkg('libs/react/map-draw/package.json');
   const vueMapDraw = readPkg('libs/vue/map-draw/package.json');
+  const reactMap = readPkg('libs/react/map/package.json');
 
   return {
     [draggable.name]: draggable.version,
@@ -39,11 +41,13 @@ export function loadPackageVersions(): Record<string, string> {
     [shared.name]: shared.version,
     [sharedCore.name]: sharedCore.version,
     [sharedFile.name]: sharedFile.version,
+    [vueMap.name]: vueMap.version,
     [vueMapCore.name]: vueMapCore.version,
     [vueMapDataset.name]: vueMapDataset.version,
     [vueMapDraw.name]: vueMapDraw.version,
     [mapDraw.name]: mapDraw.version,
     [reactMapDraw.name]: reactMapDraw.version,
+    [reactMap.name]: reactMap.version,
     [reactMapCore.name]: reactMapCore.version,
     [reactMapDataset.name]: reactMapDataset.version,
   };

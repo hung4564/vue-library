@@ -55,6 +55,9 @@
     },
     "file-saver": {
       "optional": true
+    },
+    "@hungpvq/vue-draggable": {
+      "optional": true
     }
   }
 }

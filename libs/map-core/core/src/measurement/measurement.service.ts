@@ -2,7 +2,8 @@
  * Framework-agnostic measurement service
  */
 
-import { area, length } from '@turf/turf';
+import area from '@turf/area';
+import length from '@turf/length';
 import type { Feature } from 'geojson';
 import { MapError } from '../errors';
 import { formatAreaText, formatDistanceText } from './utils';

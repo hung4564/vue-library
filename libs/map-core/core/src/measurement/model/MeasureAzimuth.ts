@@ -2,7 +2,8 @@
  * Framework-agnostic azimuth measurement class
  */
 
-import { bearing, bearingToAzimuth, lineString, point } from '@turf/turf';
+import bearing from '@turf/bearing';
+import { bearingToAzimuth, lineString, point } from '@turf/helpers';
 import type { Feature } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 

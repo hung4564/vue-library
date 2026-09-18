@@ -45,6 +45,7 @@ const MAP_VUE = [
   'libs/vue/map-dataset',
   'libs/vue/map-draw',
   'libs/vue/map-devtools',
+  'libs/vue/map',
 ];
 
 const MAP_REACT = [
@@ -52,6 +53,7 @@ const MAP_REACT = [
   'libs/react/map-dataset',
   'libs/react/map-draw',
   'libs/react/map-devtools',
+  'libs/react/map',
 ];
 
 /** @type {Record<string, string[]>} relative to dist/ */

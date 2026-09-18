@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   MAP_THEME_CLASS,
   MAP_THEME_STORAGE_KEY,
+  applyMapTheme,
   applyMapThemeClass,
   applyMapThemeForMap,
   bootstrapMapTheme,
   cycleMapThemeMode,
   getMapThemeLocaleKey,
+  getMapThemeStorageKey,
   getPrefersDark,
   getStoredMapThemeMode,
   isMapThemeId,
@@ -85,10 +87,21 @@ describe('theme helpers', () => {
     memory.set(MAP_THEME_STORAGE_KEY, 'not-a-theme');
     expect(getStoredMapThemeMode('ocean')).toBe('ocean');
 
+    setStoredMapThemeMode('dark', { mapId: 'map-a' });
+    expect(memory.get(`${MAP_THEME_STORAGE_KEY}:map-a`)).toBe('dark');
+    expect(getStoredMapThemeMode('auto', { mapId: 'map-a' })).toBe('dark');
+    // global key still invalid → fallback
+    expect(getStoredMapThemeMode('auto')).toBe('auto');
+
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
       value: original,
     });
+  });
+
+  it('getMapThemeStorageKey scopes by mapId', () => {
+    expect(getMapThemeStorageKey()).toBe(MAP_THEME_STORAGE_KEY);
+    expect(getMapThemeStorageKey('m1')).toBe(`${MAP_THEME_STORAGE_KEY}:m1`);
   });
 
   it('applyMapThemeClass updates documentElement when document exists', () => {
@@ -250,6 +263,70 @@ describe('theme helpers', () => {
     expect(htmlClasses.has(MAP_THEME_CLASS.dark)).toBe(false);
     expect(mapStyle.colorScheme).toBe('dark');
     expect(htmlStyle.colorScheme).toBe('light');
+
+    Object.defineProperty(globalThis, 'document', {
+      configurable: true,
+      value: originalDocument,
+    });
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: originalWindow,
+    });
+  });
+
+  it('applyMapTheme scope=map leaves html alone; document mirrors map shell', () => {
+    const mapClasses = new Set<string>();
+    const htmlClasses = new Set<string>([MAP_THEME_CLASS.light]);
+    const mapStyle = { colorScheme: '' };
+    const htmlStyle = { colorScheme: 'light' };
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+
+    const mapEl = {
+      classList: {
+        remove: (...names: string[]) => {
+          names.forEach((name) => mapClasses.delete(name));
+        },
+        add: (name: string) => {
+          mapClasses.add(name);
+        },
+      },
+      style: mapStyle,
+    };
+
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { matchMedia: () => ({ matches: false }) },
+    });
+    Object.defineProperty(globalThis, 'document', {
+      configurable: true,
+      value: {
+        documentElement: {
+          classList: {
+            remove: (...names: string[]) => {
+              names.forEach((name) => htmlClasses.delete(name));
+            },
+            add: (name: string) => {
+              htmlClasses.add(name);
+            },
+          },
+          style: htmlStyle,
+        },
+        querySelector: (sel: string) =>
+          sel.includes('data-map-id') ? mapEl : null,
+      },
+    });
+
+    expect(applyMapTheme('ocean', { scope: 'map', mapId: 'm1' })).toBe(true);
+    expect(mapClasses.has(MAP_THEME_CLASS.ocean)).toBe(true);
+    expect(htmlClasses.has(MAP_THEME_CLASS.light)).toBe(true);
+    expect(htmlClasses.has(MAP_THEME_CLASS.ocean)).toBe(false);
+
+    expect(applyMapTheme('dark', { scope: 'document', mapId: 'm1' })).toBe(
+      true,
+    );
+    expect(htmlClasses.has(MAP_THEME_CLASS.dark)).toBe(true);
+    expect(mapClasses.has(MAP_THEME_CLASS.dark)).toBe(true);
 
     Object.defineProperty(globalThis, 'document', {
       configurable: true,

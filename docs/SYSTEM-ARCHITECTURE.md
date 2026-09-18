@@ -63,8 +63,8 @@ MapLibre GL + @mapbox/mapbox-gl-draw
 | Layer | Packages / projects |
 |-------|---------------------|
 | Map core | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
-| Map Vue | `vue-map-core`, `vue-map-dataset`, `vue-map-draw`, `vue-map-devtools` |
-| Map React | `react-map-core`, `react-map-dataset`, `react-map-draw`, `react-map-devtools` |
+| Map Vue | `vue-map` (meta), `vue-map-core`, `vue-map-dataset`, `vue-map-draw`, `vue-map-devtools` |
+| Map React | `react-map` (meta), `react-map-core`, `react-map-dataset`, `react-map-draw`, `react-map-devtools` |
 | Draggable | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
 | Share | `shared`, `shared-core`, `shared-store`, `shared-log`, `shared-file`, `router` |
 | UI | `ui-core` |
@@ -89,6 +89,8 @@ vue-map-core    react-map-core   ← peer vue/react-draggable
 vue-map-dataset  react-map-dataset
 vue-map-draw     react-map-draw
 vue-map-devtools react-map-devtools  ← import map-debug CSS + Dataset UI
+
+vue-map / react-map  ← meta bag (deps → stack above; peer framework + maplibre)
 
 draggable ← vue-draggable | react-draggable
 ```
@@ -532,7 +534,6 @@ No circular package deps in intended graph (**VERIFIED** from package.json direc
 | Status | Finding |
 |--------|---------|
 | **INCOMPLETE (by design)** | Identify click → results; highlight needs menu path |
-| **ORPHAN API (callable, unused in-repo)** | `applyMapThemeForMap` not used by ThemeControl |
 | **THICK HOST (reduced)** | DrawControl uses `createMapDrawControl` for construct/mount; hosts still own save/draft UI |
 | **NO BACKEND** | No server implementation in workspace |
 
@@ -542,9 +543,9 @@ No verified “function called but missing implementation” in core session pat
 
 # 15. Potential Problems
 
-1. Process-global theme surprise multi-map apps (platform accessors are multi-host).  
+1. Theme default remains document-global; use `ThemeControl scope="map"` for per-map chrome.  
 2. Adapter peer surface large (install DX).  
-3. String store keys `'dataset'` / `'draw'` outside `MAP_STORE_KEY` table (documented note).  
+3. String store keys `'draw'` outside named constants (dataset uses `MAP_DATASET_STORE_KEY`).  
 4. Draw hosts still own save/draft UI (construct/mount moved to `createMapDrawControl`).
 
 ---

@@ -5,24 +5,19 @@
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Direct leaf imports (no internal-barrel).
  */
-export {
-  DatasetError,
-} from './errors/index';
+export { DatasetError } from './errors/index';
 
-export {
-  createWithDataHelper,
-} from './extra/data/index';
+export { MAP_DATASET_STORE_KEY } from './store-key';
+export type { MapDatasetStoreKey } from './store-key';
 
-export {
-  DATASET_CONTROL_LOCALE,
-} from './extra/dataset-control/locale';
+export { createWithDataHelper } from './extra/data/index';
+
+export { DATASET_CONTROL_LOCALE } from './extra/dataset-control/locale';
 
 export { MAP_DATASET_LOCALE_EN } from './locale/locale.en';
 export { MAP_DATASET_LOCALE_VI } from './locale/locale.vi';
 
-export {
-  getDatasetDetailInfo,
-} from './extra/detail/info';
+export { getDatasetDetailInfo } from './extra/detail/info';
 
 export {
   LAYER_DETAIL_FIELD_LOCALE,
@@ -34,9 +29,7 @@ export {
   createWithEventHelper,
 } from './extra/event/model';
 
-export {
-  addFieldBuilder,
-} from './extra/field/index';
+export { addFieldBuilder } from './extra/field/index';
 
 export {
   LAYER_CONTROL_CREATE_LOCALE,
@@ -66,32 +59,26 @@ export {
 } from './extra/layer-control/visibility';
 
 export {
-  TOGGLE_SHOW_LAYER_EVENT,
   applyToggleShowIntent,
   bindToggleShowAction,
   getToggleShowTitleKey,
   nextToggleShowValue,
   performToggleShowAction,
   readToggleShowEvent,
+  TOGGLE_SHOW_LAYER_EVENT,
 } from './extra/layer-control/toggle-show-action';
 export type { ToggleShowLayerEvent } from './extra/layer-control/toggle-show-action';
 
-export {
-  setOpacity,
-  toggleShow,
-} from './interfaces/dataset.extra';
+export { setOpacity, toggleShow } from './interfaces/dataset.extra';
+
+export { createBase, createNamedComponent } from './model/base';
 
 export {
-  createBase,
-  createNamedComponent,
-} from './model/base';
-
-export {
-  DatasetComposite,
-  DatasetLeaf,
   createDataset,
   createGroupDataset,
   createRootDataset,
+  DatasetComposite,
+  DatasetLeaf,
 } from './model/dataset.base';
 
 export {
@@ -100,13 +87,9 @@ export {
   createDatasetLeaf,
 } from './model/dataset.base.function';
 
-export {
-  createDatasetPartMapboxLayerComponent,
-} from './model/layer/base';
+export { createDatasetPartMapboxLayerComponent } from './model/layer/base';
 
-export {
-  createMultiMapboxLayerComponent,
-} from './model/layer/model';
+export { createMultiMapboxLayerComponent } from './model/layer/model';
 
 export {
   createDatasetPartGroupSubListViewUiComponentBuilder,
@@ -131,17 +114,11 @@ export {
   syncListViewLayerOrder,
 } from './model/list/order';
 
-export {
-  createDatasetPartBoundComponent,
-} from './model/part-bound.model';
+export { createDatasetPartBoundComponent } from './model/part-bound.model';
 
-export {
-  createDatasetPartMetadataComponent,
-} from './model/part-metadata.model';
+export { createDatasetPartMetadataComponent } from './model/part-metadata.model';
 
-export {
-  createDatasetPartMapboxSourceComponent,
-} from './model/source/base';
+export { createDatasetPartMapboxSourceComponent } from './model/source/base';
 
 export {
   findAllComponentsByType,
@@ -157,13 +134,9 @@ export {
   traverseTreeDFS,
 } from './model/visitors/traverse';
 
-export {
-  DatasetService,
-} from './services/dataset.service';
+export { DatasetService } from './services/dataset.service';
 
-export {
-  resolveDatasetBbox,
-} from './utils/bbox';
+export { resolveDatasetBbox } from './utils/bbox';
 
 export {
   hasMoveLayer,
@@ -179,14 +152,9 @@ export {
   isMapboxLayerView,
 } from './utils/check';
 
-export {
-  convertFeatureToItem,
-  convertItemToFeature,
-} from './utils/convert';
+export { convertFeatureToItem, convertItemToFeature } from './utils/convert';
 
-export {
-  getDatasetSourceKind,
-} from './utils/source-kind';
+export { getDatasetSourceKind } from './utils/source-kind';
 
 export {
   convertListToTree,
@@ -196,10 +164,7 @@ export {
   mergeEmptyGroups,
 } from './utils/tree';
 
-export {
-  createDataManagement,
-  isDataManagementView,
-} from './data-management';
+export { createDataManagement, isDataManagementView } from './data-management';
 
 export {
   removeDatasetComponent,
@@ -216,16 +181,25 @@ export {
 } from './utils/warn-registry';
 
 /** @experimental Root logger namespaces — may change in a minor. */
-export { logger, loggerIdentify, loggerHighlight } from './logger';
+export { logger, loggerHighlight, loggerIdentify } from './logger';
 
 /** First-party types only — import geojson / maplibre types from their packages. */
+export type {
+  CreateDataManagementOptions,
+  DataManagementPart,
+  DataRecord,
+  DataStore,
+  PageQuery,
+  PageResult,
+} from './data-management';
+export type { FieldFeaturesDef } from './extra/field';
 export type { IDataset } from './interfaces/dataset.base';
 export type { WithSetOpacity } from './interfaces/dataset.extra';
 export type {
-  IMapboxLayerView,
   IdentifyFeatureRow,
   IdentifyMultiResult,
   IIdentifyView,
+  IMapboxLayerView,
 } from './interfaces/dataset.parts';
 export type {
   IGroupListViewUI,
@@ -235,16 +209,7 @@ export type {
   LayerListTreeNode,
   ListViewGroupRef,
 } from './model/list/types';
-export type { FieldFeaturesDef } from './extra/field';
+export type { DatasetStoreLike } from './services/dataset.service';
 export type { ComponentType } from './types';
 export type { DatasetSourceKind } from './utils/source-kind';
 export type { GroupTree, Item, TreeItem } from './utils/tree';
-export type { DatasetStoreLike } from './services/dataset.service';
-export type {
-  CreateDataManagementOptions,
-  DataManagementPart,
-  DataRecord,
-  DataStore,
-  PageQuery,
-  PageResult,
-} from './data-management';

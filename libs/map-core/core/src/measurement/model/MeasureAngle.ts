@@ -2,14 +2,11 @@
  * Framework-agnostic angle measurement (3 points: arm → vertex → arm).
  */
 
-import {
-  bearing,
-  destination,
-  distance,
-  lineArc,
-  lineString,
-  point,
-} from '@turf/turf';
+import bearing from '@turf/bearing';
+import destination from '@turf/destination';
+import distance from '@turf/distance';
+import { lineString, point } from '@turf/helpers';
+import lineArc from '@turf/line-arc';
 import type { Feature, LineString, Point } from 'geojson';
 import type { CoordinatesNumber } from '../../types';
 import { getMeasurementLabelPrefs } from '../utils';

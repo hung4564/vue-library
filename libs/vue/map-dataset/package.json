@@ -41,5 +41,13 @@
     "@hungpvq/map-dataset": "^1.0.0",
     "maplibre-gl": "^5.4.0",
     "vuedraggable": "^4.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@hungpvq/vue-draggable": {
+      "optional": true
+    },
+    "vuedraggable": {
+      "optional": true
+    }
   }
 }
