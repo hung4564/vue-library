@@ -23,6 +23,7 @@ function clearSharedTombstones() {
   getOrCreateStore('map:core:meta', () => ({
     removedMapIds: new Set<string>(),
     errorCapture: { installed: false, uninstall: undefined },
+    registries: new Map(),
   })).removedMapIds.clear();
 }
 

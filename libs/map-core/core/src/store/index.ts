@@ -38,3 +38,19 @@ export {
   resetMapPlatformHostsForTests,
   subscribeMapReady,
 } from './map-platform-registry';
+
+export {
+  MAP_CORE_META_STORE_KEY,
+  MAP_CORE_ROOT_STORE_KEY,
+  createMapCoreMetaRegistry,
+  getMapCoreMetaStore,
+  getMapCoreRootStore,
+} from './map-core-meta';
+export type {
+  CreateMapCoreMetaRegistryOptions,
+  MapCoreErrorCaptureSlot,
+  MapCoreMetaRegistry,
+  MapCoreMetaRegistryBag,
+  MapCoreMetaStore,
+  MapResolverStore,
+} from './map-core-meta';

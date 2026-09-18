@@ -21,18 +21,19 @@ describe('identify model', () => {
   it('createIdentifyMapboxMergedComponent uses merge group id', () => {
     const identify = createIdentifyMapboxMergedComponent(
       'Merged',
-      { preferResultControl: true },
+      { onSingle: 'result', onMultiple: 'result' },
       'mapbox-group',
     );
     expect(identify.type).toBe('identify');
-    expect(identify.config.preferResultControl).toBe(true);
+    expect(identify.config.onSingle).toBe('result');
   });
 
   it('builder wires fields and show-detail menu', () => {
     const identify = createDatasetPartIdentifyComponentBuilder('Builder id')
       .configFieldId('fid')
       .configFieldName('fname')
-      .preferResultControl()
+      .onSingle('result')
+      .onMultiple('result')
       .setConfigFields([
         { text: 'Name', value: 'name' },
         { text: 'Id', value: 'fid' },
@@ -41,7 +42,8 @@ describe('identify model', () => {
 
     expect(identify.type).toBe('identify');
     expect(identify.config.field_id).toBe('fid');
-    expect(identify.config.preferResultControl).toBe(true);
+    expect(identify.config.onSingle).toBe('result');
+    expect(identify.config.onMultiple).toBe('result');
     expect(identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail)).toBe(true);
   });
 
@@ -49,6 +51,15 @@ describe('identify model', () => {
     const identify = createIdentifyMapboxComponent('Empty', {});
     ensureIdentifyShowDetailMenu(identify);
     expect(identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail)).toBe(false);
+  });
+
+  it('builder wires onSingle / onMultiple hit policies', () => {
+    const identify = createDatasetPartIdentifyComponentBuilder('Policy')
+      .onSingle('detail')
+      .onMultiple('table')
+      .build();
+    expect(identify.config.onSingle).toBe('detail');
+    expect(identify.config.onMultiple).toBe('table');
   });
 
   it('builder isUseMerge creates merged identify node', () => {

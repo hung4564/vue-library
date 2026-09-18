@@ -105,7 +105,6 @@ installMapApp();
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <HighlightPointer enable-click />
     <ComponentManagementControl />
   </Map>
 </template>
@@ -119,13 +118,13 @@ import {
   IdentifyControl,
   ComponentManagementControl,
   useMapDataset,
+  useMapHighlight,
 } from '@hungpvq/vue-map-dataset';
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder, createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
-import { ref } from 'vue';
-import HighlightPointer from './HighlightPointer.vue'; // app-local shell (bindPointer)
+import { onUnmounted, ref } from 'vue';
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
@@ -133,6 +132,9 @@ import '@hungpvq/vue-map-dataset/style.css';
 import '@hungpvq/vue-draggable/style.css';
 
 const mapId = ref(getUUIDv4());
+const hl = useMapHighlight(mapId.value);
+const unbind = hl.bindPointer({ click: false, hover: true });
+onUnmounted(() => unbind());
 
 function onMapLoaded(map: MapSimple) {
   const { addDataset } = useMapDataset(map.id);
@@ -174,20 +176,27 @@ import {
   IdentifyControl,
   ComponentManagementControl,
   useMapDataset,
+  useMapHighlight,
 } from '@hungpvq/react-map-dataset';
 import {
   createRootDataset,
   createDatasetPartListViewUiComponentBuilder,
 } from '@hungpvq/map-dataset';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
-import { HighlightPointer } from './HighlightPointer'; // app-local shell
+import { useEffect } from 'react';
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 import '@hungpvq/react-draggable/style.css';
 
-function Page() {
+function Page({ mapId }: { mapId: string }) {
+  const hl = useMapHighlight(mapId);
+  useEffect(() => {
+    const unbind = hl.bindPointer({ click: false, hover: true });
+    return unbind;
+  }, [hl]);
+
   function onMapLoaded(map: MapSimple) {
     const { addDataset } = useMapDataset(map.id);
     const dataset = createRootDataset('Sample');
@@ -206,7 +215,6 @@ function Page() {
         endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
       />
       <IdentifyControl position="top-right" />
-      <HighlightPointer enableClick />
       <ComponentManagementControl />
     </Map>
   );

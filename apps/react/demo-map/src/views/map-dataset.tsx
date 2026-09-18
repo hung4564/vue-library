@@ -2,7 +2,6 @@ import type { MapSimple } from '@hungpvq/map-core';
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
@@ -60,7 +59,6 @@ export function MapDatasetPage() {
         <DatasetControl position="top-left" />
         <IdentifyControl position="top-right" />
         <EventManagementControl position="top-left" />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

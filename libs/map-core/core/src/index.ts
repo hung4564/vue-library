@@ -303,12 +303,23 @@ export {
   registerMapStoreCleanup,
   registerMapStoreCleanupRegistrar,
   subscribeMapReady,
+  MAP_CORE_META_STORE_KEY,
+  MAP_CORE_ROOT_STORE_KEY,
+  createMapCoreMetaRegistry,
+  getMapCoreMetaStore,
+  getMapCoreRootStore,
 } from './store/index';
 export type {
   MapPlatformHostId,
   MapPlatformRegistration,
   MapPlatformRegistryMethod,
   RegisterMapPlatformOptions,
+  CreateMapCoreMetaRegistryOptions,
+  MapCoreErrorCaptureSlot,
+  MapCoreMetaRegistry,
+  MapCoreMetaRegistryBag,
+  MapCoreMetaStore,
+  MapResolverStore,
 } from './store/index';
 
 export {

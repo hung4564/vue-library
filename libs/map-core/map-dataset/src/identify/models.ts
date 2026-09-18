@@ -63,106 +63,119 @@ export function createIdentifyMapboxComponent(
 ) {
   const datasetPartIdentify = createDatasetPartIdentifyComponent(name, config);
 
-  const getFeatures = async (
-    mapId: string,
-    pointOrBox?: PointLike | [PointLike, PointLike],
-  ): Promise<IdentifyFeatureRow[]> => {
-    return new Promise<IdentifyFeatureRow[]>((resolve) => {
-      const results = runAllComponentsWithCheck(
-        datasetPartIdentify.getParent() || datasetPartIdentify,
-        (dataset): dataset is IDataset & IMapboxLayerView =>
-          isMapboxLayerView(dataset),
-        [
-          (dataset) => {
-            return dataset.getAllLayerIds();
-          },
-        ],
-      );
+  const self = createNamedComponent('IdentifyMapboxComponent', {
+    ...datasetPartIdentify,
+    getFeatures(
+      mapId: string,
+      pointOrBox?: PointLike | [PointLike, PointLike],
+    ): Promise<IdentifyFeatureRow[]> {
+      return new Promise<IdentifyFeatureRow[]>((resolve) => {
+        const results = runAllComponentsWithCheck(
+          self.getParent() || self,
+          (dataset): dataset is IDataset & IMapboxLayerView =>
+            isMapboxLayerView(dataset),
+          [
+            (dataset) => {
+              return dataset.getAllLayerIds();
+            },
+          ],
+        );
 
-      const allLayerIds: string[] = Array.from(results.values()).flat(2);
-      logHelper(loggerIdentify, mapId, 'dataset', datasetPartIdentify.id).debug(
-        'start',
-        {
+        const allLayerIds: string[] = Array.from(results.values()).flat(2);
+        logHelper(loggerIdentify, mapId, 'dataset', self.id).debug('start', {
           allLayerIds,
           pointOrBox,
-        },
-      );
-      getMap(mapId, (map: MapSimple) => {
-        const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
-          pointOrBox,
-          {
-            layers: allLayerIds.filter((id) => map.getLayer(id)),
-          },
-        );
-        const ids = new Set<string>();
-
-        features.forEach((x) => {
-          const id =
-            x.properties?.[datasetPartIdentify.config.field_id || 'id'] ?? x.id;
-          if (!ids.has(id)) {
-            ids.add(id);
-          }
         });
+        getMap(mapId, (map: MapSimple) => {
+          const features: MapGeoJSONFeature[] = map.queryRenderedFeatures(
+            pointOrBox,
+            {
+              layers: allLayerIds.filter((id) => map.getLayer(id)),
+            },
+          );
+          const ids = new Set<string>();
 
-        const idsGet = [...ids];
-        logHelper(
-          loggerIdentify,
-          mapId,
-          'dataset',
-          datasetPartIdentify.id,
-        ).debug('getFeatureFormMap', {
-          features,
-          idsGet,
-        });
-        if (!idsGet || idsGet.length < 1) {
-          resolve([]);
-          return;
-        }
-        let handle: (() => Promise<Record<string, unknown>[]>) | undefined;
-        if (datasetPartIdentify.getList) {
-          logHelper(
-            loggerIdentify,
-            mapId,
-            'dataset',
-            datasetPartIdentify.id,
-          ).debug('use get list of identify', datasetPartIdentify);
-          handle = () =>
-            datasetPartIdentify.getList!(
-              mapId,
+          features.forEach((x) => {
+            const id =
+              x.properties?.[self.config.field_id || 'id'] ?? x.id;
+            if (!ids.has(id)) {
+              ids.add(id);
+            }
+          });
+
+          const idsGet = [...ids];
+          logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+            'getFeatureFormMap',
+            {
               features,
-            ) as Promise<Record<string, unknown>[]>;
-        }
-        if (handle)
-          handle().then((unique) => {
-            const result: IdentifyFeatureRow[] = unique.map((x, i) => ({
+              idsGet,
+            },
+          );
+          if (!idsGet || idsGet.length < 1) {
+            resolve([]);
+            return;
+          }
+
+          const fieldId = self.config.field_id || 'id';
+          const fieldName = self.config.field_name || 'name';
+
+          const toRows = (
+            unique: Record<string, unknown>[],
+          ): IdentifyFeatureRow[] =>
+            unique.map((x, i) => ({
               id:
-                (x[datasetPartIdentify.config.field_id || 'id'] as
-                  | string
-                  | number
-                  | undefined) ??
+                (x[fieldId] as string | number | undefined) ??
                 (x['id'] as string | number | undefined) ??
                 i,
-              name: String(
-                x[datasetPartIdentify.config.field_name || 'name'] ?? '',
-              ),
+              name: String(x[fieldName] ?? ''),
               data: x,
             }));
-            logHelper(
-              loggerIdentify,
-              mapId,
-              'dataset',
-              datasetPartIdentify.id,
-            ).debug('end', { results });
-            resolve(result);
-          });
-      });
-    });
-  };
 
-  return createNamedComponent('IdentifyMapboxComponent', {
-    ...datasetPartIdentify,
-    getFeatures,
+          if (self.getList) {
+            logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+              'use get list of identify',
+              self,
+            );
+            void self.getList(mapId, features).then((unique) => {
+              const result = toRows(unique as Record<string, unknown>[]);
+              logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+                'end',
+                { results: result },
+              );
+              resolve(result);
+            });
+            return;
+          }
+
+          // No getList: map rendered features to rows (dedupe by field id).
+          const seen = new Set<string>();
+          const rows: IdentifyFeatureRow[] = [];
+          for (const feature of features) {
+            const flat = convertFeatureToItem<Record<string, unknown>>(feature);
+            const id =
+              (flat[fieldId] as string | number | undefined) ??
+              (flat['id'] as string | number | undefined) ??
+              feature.id ??
+              rows.length;
+            const key = String(id);
+            if (seen.has(key)) continue;
+            seen.add(key);
+            rows.push({
+              id,
+              name: String(flat[fieldName] ?? ''),
+              data: flat,
+            });
+          }
+          logHelper(loggerIdentify, mapId, 'dataset', self.id).debug('end', {
+            results: rows,
+          });
+          resolve(rows);
+        });
+      });
+    },
   });
+
+  return self;
 }
 export function createIdentifyMapboxMergedComponent(
   name: string,
@@ -292,7 +305,13 @@ export async function handleMultiIdentifyGetFirst(
   mapId: string,
   pointOrBox?: PointLike | [PointLike, PointLike],
   props = { selectThreshold: 5 },
+  signal?: AbortSignal,
 ): Promise<IdentifyMultiResult | undefined> {
+  if (signal?.aborted) {
+    const err = new Error('Identify aborted');
+    err.name = 'AbortError';
+    throw err;
+  }
   const allLayerIds: string[] = [];
   const cache: Record<string, IIdentifyView> = {};
   identifies.forEach((identify) => {
@@ -324,8 +343,20 @@ export async function handleMultiIdentifyGetFirst(
     config: props,
   });
 
-  const features = await new Promise<MapGeoJSONFeature[]>((resolve) => {
+  const features = await new Promise<MapGeoJSONFeature[]>((resolve, reject) => {
+    if (signal?.aborted) {
+      const err = new Error('Identify aborted');
+      err.name = 'AbortError';
+      reject(err);
+      return;
+    }
     getMap(mapId, (map: MapSimple) => {
+      if (signal?.aborted) {
+        const err = new Error('Identify aborted');
+        err.name = 'AbortError';
+        reject(err);
+        return;
+      }
       let queryBox = pointOrBox;
       if (queryBox && isPointLike(queryBox)) {
         const point = getXY(queryBox);
@@ -363,6 +394,12 @@ export async function handleMultiIdentifyGetFirst(
     });
   });
 
+  if (signal?.aborted) {
+    const err = new Error('Identify aborted');
+    err.name = 'AbortError';
+    throw err;
+  }
+
   if (features.length < 1) {
     logHelper(
       loggerIdentify,
@@ -381,6 +418,12 @@ export async function handleMultiIdentifyGetFirst(
     if (list?.[0]) {
       flat = list[0] as Record<string, any>;
     }
+  }
+
+  if (signal?.aborted) {
+    const err = new Error('Identify aborted');
+    err.name = 'AbortError';
+    throw err;
   }
 
   const id =

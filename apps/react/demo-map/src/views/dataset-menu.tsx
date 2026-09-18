@@ -12,7 +12,6 @@ import {
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
@@ -65,7 +64,6 @@ export function DatasetMenuPage() {
           show
           endList={({ mapId: id }) => <BaseMapCard mapId={id} />}
         />
-        <HighlightPointer enableClick />
         <IdentifyControl position="top-right" />
         <ComponentManagementControl />
         <ThemeControl />

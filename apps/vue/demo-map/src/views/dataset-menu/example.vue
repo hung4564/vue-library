@@ -14,7 +14,6 @@ import {
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
@@ -62,7 +61,6 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <HighlightPointer enableClick />
     <IdentifyControl position="top-right" />
     <ComponentManagementControl />
     <DemoHelpPanel />

@@ -6,7 +6,9 @@ Click or box-select features. Presentation uses menus on the identify dataset no
 
 Orchestration is owned by Experimental **`createIdentifySession`** (`@hungpvq/map-dataset/identify`): control model state, `runIdentifyMulti` query pipeline, and map-click / bbox mode flags. Vue and React `IdentifyControl` stay thin hosts — they wire EventClick / EventBbox, registry, highlight store, and toolbar UI, then sync from `session.getState()` after `applyScopedSession` / `toggleShow` / `closeAndCleanup` / setters.
 
-Identify painting uses the highlight controller with `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer highlight can double-fire on the same click — disable `pointer.click` on parts or skip `HighlightPointer` when Identify owns the click.
+**IdentifyControl highlight:** after each query, `getHighlightResolver(mapId).execute` paints when the (global / per-map) HighlightResolver matches — default: exactly one feature (`source: 'identify'`); multi-hit clears that source. On close the control still calls `hideIfSource('identify')`. Menu-driven paint can also use `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer click can double-fire — disable `pointer.click` on parts or bind hover-only when Identify owns the click.
+
+**Concurrency:** each map click / box query aborts the previous in-flight run (`AbortController`) and bumps a monotonic `requestId` (session `queryGeneration`). The result panel ignores updates with an older `requestId`.
 
 **Touch / coarse pointer:** hover highlight is skipped when `(hover: hover)` is false; box-select supports touch; on coarse pointers, a **long-press** (~500ms) runs the same identify click path. Map clicks use the `click` event only (no duplicate touchstart identify).
 
@@ -18,7 +20,6 @@ Identify painting uses the highlight controller with `source: 'identify'` (see [
 | --- | --- | --- | --- |
 | `show` | `boolean` | — | Identify session active (toolbar) |
 | `immediately` | `boolean` | `false` | Start click-identify on mount |
-| `preferResultControl` | `boolean` | `false` | Always open the Identify Result panel; skip auto show-detail / attribute-table even when those menus exist. Same flag can be set per identify via `.preferResultControl()` on the builder. |
 
 ## Slots
 
@@ -32,25 +33,65 @@ None. Feature actions are identify-node menus. Mount [`ComponentManagementContro
 
 - While `getFeatures` / `getList` / `getMergedFeatures` runs, the **Identify toolbar button** shows `loading` (spinner). Map cursor may switch to `wait`.
 - **Empty hits do not open** the result panel — loading simply ends (stale items are cleared).
-- The result panel opens only when the resolver needs it (e.g. all layers / multiple hits / `preferResultControl`), or when no exclusive detail/table path ran. If that panel is already open, its in-panel loading state stays in sync.
+- The result panel opens only when the resolved hit action is **result** (or `auto` falls through to result). If that panel is already open, its in-panel loading state stays in sync.
 
 Turning on identify from a **layer menu** starts click mode and sets the layer filter; it does **not** auto-open the result panel.
 
 ## Resolver (short)
 
-1. Unless `preferResultControl`: single layer + exactly one feature + show-detail menu → open detail  
-2. Else unless `preferResultControl`: single layer + attribute-table menu → open table and select rows  
-3. Always update result-panel items (even if the panel stays closed)  
-4. If there are hits and no exclusive UI handled them → open result panel  
+Hit UI is driven by `resolveIdentifyHitAction` (then the default `identifyResolver`):
 
-Force result panel (menus still available on each row in the panel):
+1. Builder `onSingle` / `onMultiple` (`detail` | `table` | `result` | `auto`) from the **first** hit record  
+2. `auto` (default): single layer + one feature + show-detail → **detail**; else single layer + attribute-table menu → **table**; else **result**  
+3. Always sync result-panel items (even if the panel stays closed). Exclusive detail/table does **not** auto-open the result panel, and does **not** force-close it if the user already opened it.  
+4. When the resolved action is **result** and there are hits → auto-open result panel  
 
-```vue
-<IdentifyControl position="top-right" prefer-result-control />
+Each resolve first **closes** any open LayerDetail / AttributeTable (and their highlight sources) so a multi-hit table does not stack on top of a previous single-hit detail.
+
+**Highlight (map FX):** after UI resolve, `runHighlight` / `getHighlightResolver(mapId).execute` paints only when exactly **one** feature is hit; multi-hit clears identify highlight (no paint). AttributeTable selection uses the same helper (`source: 'attribute-table'`). Override via `setGlobalHighlightResolver` / `setHighlightResolver`.
+
+IdentifyControl toolbar **active** follows the result panel open state (not layer-item scoped identify). Layer-item Identify enables click + layer filter without lighting the toolbar.
+
+### Builder hit policies
+
+```ts
+createDatasetPartIdentifyComponentBuilder('Buildings')
+  .onSingle('detail')
+  .onMultiple('table')
+  .build();
 ```
 
-```tsx
-<IdentifyControl position="top-right" preferResultControl />
+Force result panel via builder (`onSingle`/`onMultiple` = `'result'`):
+
+```ts
+createDatasetPartIdentifyComponentBuilder('Buildings')
+  .onSingle('result')
+  .onMultiple('result')
+  .build();
+```
+
+### Override identify resolver (global or per map)
+
+```ts
+import {
+  createDefaultIdentifyResolver,
+  setGlobalIdentifyResolver,
+  setIdentifyResolver,
+  createDefaultHighlightResolver,
+  setGlobalHighlightResolver,
+  setHighlightResolver,
+} from '@hungpvq/map-dataset/identify';
+
+// Compose on a fresh default (process default on `map:core:meta.registries`)
+const custom = createDefaultIdentifyResolver();
+setGlobalIdentifyResolver(custom);
+// Per-map override on `map:core[mapId].resolver['identify-resolver']`
+setIdentifyResolver(mapId, custom); // pass null to clear
+
+// Highlight map-FX uses the same registry pattern
+setHighlightResolver(mapId, createDefaultHighlightResolver());
+// Or replace the package-wide default:
+// setGlobalHighlightResolver(createDefaultHighlightResolver());
 ```
 
 See [Identify](../create-dataset/identify.md) for `getList` / merge APIs and `singleLayer`.
@@ -75,7 +116,7 @@ import '@hungpvq/vue-draggable/style.css';
 
 // Optional: pointer highlight in addition to Identify (watch dual-click).
 const hl = useMapHighlight(mapId);
-const unbind = hl.bindPointer({ click: true, hover: false });
+const unbind = hl.bindPointer({ click: false, hover: true });
 onUnmounted(() => {
   unbind();
   destroyHighlightController(mapId);
@@ -85,7 +126,6 @@ onUnmounted(() => {
 <template>
   <Map>
     <IdentifyControl position="top-right" show />
-    <!-- Or demo shell: <HighlightPointer enable-click /> -->
     <ComponentManagementControl />
   </Map>
 </template>
@@ -111,7 +151,7 @@ import { useEffect } from 'react';
 function Page({ mapId }: { mapId: string }) {
   const hl = useMapHighlight(mapId);
   useEffect(() => {
-    const unbind = hl.bindPointer({ click: true, hover: false });
+    const unbind = hl.bindPointer({ click: false, hover: true });
     return () => {
       unbind();
       destroyHighlightController(mapId);
@@ -121,7 +161,6 @@ function Page({ mapId }: { mapId: string }) {
   return (
     <>
       <IdentifyControl position="top-right" show />
-      {/* Or demo shell: <HighlightPointer enableClick /> */}
       <ComponentManagementControl />
     </>
   );
@@ -150,8 +189,9 @@ Panel Escape / focus trap stay on the draggable popup shell.
 
 **Highlight ownership (Identify vs pointer):**
 
-- Identify result highlight is painted when menu items use `.setKey('identify')` (e.g. identify-for-list menus). `LayerMenuDefaultHandle` handles `LIST_VIEW_MENU_ID.highlight` and calls `hl.show(…, { source: value.key })`, so identify menus pass `source: 'identify'`.
-- `IdentifyControl` itself does **not** call `show()`. On close it clears identify paint with `hideIfSource('identify')`.
-- `HighlightPointer` / `bindPointer` use sources `pointer` / `hover` and are optional for pointer-picking demos. They are not required for Identify’s own highlight path.
+- After each Identify query, **HighlightResolver** paints map FX (`getHighlightResolver(mapId).execute` — default single-hit `source: 'identify'`). Override with `setGlobalHighlightResolver` / `setHighlightResolver` (see [Highlight](../create-dataset/highlight.md#highlightresolver-identify--attributetable-map-fx)).
+- Menu items with `.setKey('identify')` can also call `hl.show(…, { source: 'identify' })` via `LayerMenuDefaultHandle` / `LIST_VIEW_MENU_ID.highlight`.
+- On close, Identify clears identify paint with `hideIfSource('identify')`.
+- `bindPointer` uses sources `pointer` / `hover` and is optional for pointer-picking demos. Not required for Identify’s HighlightResolver path.
 
-There is no `LayerHighlight` component anymore.
+There is no `LayerHighlight` / adapter `HighlightPointer` component anymore — use `useMapHighlight().bindPointer` or Identify + HighlightResolver.

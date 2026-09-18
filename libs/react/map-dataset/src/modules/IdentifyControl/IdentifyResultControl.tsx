@@ -19,6 +19,7 @@ import {
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
+  shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
   type IdentifyResultUpdatePayload,
@@ -37,7 +38,7 @@ import {
 import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDataset } from '../../store/dataset-api';
@@ -71,6 +72,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
   const [isEventClickActive, setIsEventClickActive] = useState(false);
   const [isEventClickBox, setIsEventClickBox] = useState(false);
   const [focusedChildKey, setFocusedChildKey] = useState<string | null>(null);
+  const lastRequestIdRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     registerLocale('en', IDENTIFY_CONTROL_LOCALE);
@@ -92,7 +94,25 @@ export function IdentifyResultControl(props: WithMapPropType) {
   const applyUpdate = useCallback(
     (payload?: IdentifyResultUpdatePayload) => {
       if (!payload) return;
-      if (payload.show != null) toggleShow(payload.show);
+      if (
+        !shouldApplyIdentifyRequest(
+          lastRequestIdRef.current,
+          payload.requestId,
+        )
+      ) {
+        return;
+      }
+      if (payload.requestId != null) {
+        lastRequestIdRef.current = payload.requestId;
+      }
+      if (payload.show != null) {
+        toggleShow(payload.show);
+        runIdentifyAction(
+          mapId,
+          IDENTIFY_CONTROL.actionSyncToolbarShow,
+          payload.show,
+        );
+      }
       if (payload.loading != null) setLoading(payload.loading);
       if (payload.error !== undefined) setErrorMessage(payload.error);
       if (payload.items !== undefined) {
@@ -118,7 +138,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
         setIsEventClickBox(payload.isEventClickBox);
       }
     },
-    [toggleShow],
+    [mapId, toggleShow],
   );
 
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -227,7 +247,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
           <DraggableItemPopup
             show={show}
             onUpdateShow={(v) => {
-              if (!v) toggleShow(false);
+              if (!v) onClose();
               else toggleShow(true);
             }}
             onClose={onClose}

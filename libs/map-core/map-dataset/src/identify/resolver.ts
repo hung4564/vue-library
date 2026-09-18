@@ -1,12 +1,16 @@
 import { FallbackResolver, runMapControlAction } from '@hungpvq/map-core';
 import { MapMouseEvent } from 'maplibre-gl';
-import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
-import type { IListViewUI } from '../model/list/types';
-import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
-import { isListView } from '../utils/check';
 import { queueAttributeTableSelectRows } from '../attribute-table';
+import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
 import { handleMenuAction } from '../menu/handle';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
+import { closeIdentifyExclusiveUi } from './close-exclusive-ui';
+import {
+  countIdentifyMultiFeatures,
+  getAttributeTableTarget,
+  getFirstIdentifyMultiFeature,
+  resolveIdentifyHitAction,
+} from './hit-action';
 import { groupIdentifyResults, IDENTIFY_RESULT_CONTROL } from './result';
 
 export type IdentifyContext = {
@@ -19,114 +23,105 @@ export type IdentifyContext = {
    * False / omitted = all layers → only IdentifyResult popup.
    */
   singleLayer?: boolean;
-  /**
-   * When true, skip auto show-detail / attribute-table and always use
-   * IdentifyResult popup (menus on items still work when opened from the panel).
-   */
-  preferResultControl?: boolean;
+  /** Abort superseded identify before mutating the result panel. */
+  signal?: AbortSignal;
+  /** Forwarded on panel updates so UI can drop stale writes. */
+  requestId?: number;
 };
 
-function countIdentifyMultiFeatures(results: IdentifyMultiResult[]): number {
-  let total = 0;
-  for (const result of results) {
-    total += result.features?.length ?? 0;
-  }
-  return total;
+function isIdentifyContextAborted(ctx: IdentifyContext): boolean {
+  return !!ctx.signal?.aborted;
 }
 
-function getFirstIdentifyMultiFeature(results: IdentifyMultiResult[]) {
-  for (const result of results) {
-    const feature = result.features?.[0];
-    if (feature) {
-      return { identify: result.identify, feature };
-    }
-  }
-  return undefined;
-}
-
-function getAttributeTableTarget(records: IdentifyMultiResult[]) {
-  const first = records[0];
-  if (!first) return undefined;
-  const list = findSiblingOrNearestLeaf<IListViewUI>(
-    first.identify,
-    isListView,
-  );
-  if (!list) return undefined;
-  const menu = list.getMenu(LIST_VIEW_MENU_ID.layer.attributeTable);
-  if (!menu) return undefined;
-  return { list, features: first.features, menu };
-}
-
-function prefersResultPanel(ctx: IdentifyContext): boolean {
-  if (ctx.preferResultControl) return true;
-  return ctx.records.some(
-    (record) => !!record.identify.config?.preferResultControl,
+function updateResultPanel(
+  ctx: IdentifyContext,
+  payload: Record<string, unknown>,
+) {
+  if (isIdentifyContextAborted(ctx)) return;
+  runMapControlAction(
+    ctx.mapId,
+    IDENTIFY_RESULT_CONTROL.id,
+    IDENTIFY_RESULT_CONTROL.actionUpdate,
+    {
+      ...payload,
+      ...(ctx.requestId != null ? { requestId: ctx.requestId } : {}),
+    },
   );
 }
 
-export const identifyResolver = new FallbackResolver<IdentifyContext>([
-  {
-    when: (ctx) => {
-      const { total, records, singleLayer } = ctx;
-      if (prefersResultPanel(ctx) || !singleLayer || total !== 1) return false;
-      const first = getFirstIdentifyMultiFeature(records);
-      return !!first?.identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail);
-    },
-    prepare: ({ records }) => {
-      const first = getFirstIdentifyMultiFeature(records)!;
-      const menu = first.identify.getMenu(LIST_VIEW_MENU_ID.item.showDetail)!;
-      return { identify: first.identify, value: first.feature.data, menu };
-    },
-    execute: ({ identify, value, event, mapId, menu }) => {
-      handleMenuAction(menu, {
-        event: event as never,
-        layer: identify,
-        mapId,
+function createDefaultIdentifyResolverActions() {
+  return [
+    {
+      when: (ctx: IdentifyContext) =>
+        resolveIdentifyHitAction(ctx) === 'detail',
+      prepare: ({ records }: IdentifyContext) => {
+        const first = getFirstIdentifyMultiFeature(records)!;
+        const menu = first.identify.getMenu(LIST_VIEW_MENU_ID.item.showDetail)!;
+        return { identify: first.identify, value: first.feature.data, menu };
+      },
+      execute: ({
+        identify,
         value,
-      });
-    },
-  },
-  {
-    when: (ctx) => {
-      const { total, records, singleLayer } = ctx;
-      return (
-        !prefersResultPanel(ctx) &&
-        !!singleLayer &&
-        records.length === 1 &&
-        !!total &&
-        !!getAttributeTableTarget(records)
-      );
-    },
-    prepare: ({ records }) => getAttributeTableTarget(records)!,
-    execute: ({ list, features, event, mapId, menu }) => {
-      handleMenuAction(menu, {
-        event: event as never,
-        layer: list,
+        event,
         mapId,
-      });
-      queueAttributeTableSelectRows(
-        mapId,
-        features.map((feature: { id: string | number }) => String(feature.id)),
-      );
+        menu,
+        signal,
+      }: IdentifyContext & {
+        identify: IdentifyMultiResult['identify'];
+        value: unknown;
+        menu: unknown;
+      }) => {
+        if (signal?.aborted) return;
+        handleMenuAction(menu as never, {
+          event: event as never,
+          layer: identify,
+          mapId,
+          value,
+        });
+      },
     },
-  },
-  {
-    always: true,
-    execute: ({ mapId, records, event }) => {
-      const lngLat =
-        event &&
-        typeof event === 'object' &&
-        'lngLat' in event &&
-        event.lngLat &&
-        typeof (event as MapMouseEvent).lngLat?.lng === 'number'
-          ? (event as MapMouseEvent).lngLat
-          : undefined;
-      runMapControlAction(
+    {
+      when: (ctx: IdentifyContext) => resolveIdentifyHitAction(ctx) === 'table',
+      prepare: ({ records }: IdentifyContext) =>
+        getAttributeTableTarget(records)!,
+      execute: ({
+        list,
+        features,
+        event,
         mapId,
-        IDENTIFY_RESULT_CONTROL.id,
-        IDENTIFY_RESULT_CONTROL.actionUpdate,
-        {
-          // Empty records clear stale items from a previous identify.
+        menu,
+        signal,
+      }: IdentifyContext & {
+        list: { id: string };
+        features: { id: string | number }[];
+        menu: unknown;
+      }) => {
+        if (signal?.aborted) return;
+        handleMenuAction(menu as never, {
+          event: event as never,
+          layer: list as never,
+          mapId,
+        });
+        queueAttributeTableSelectRows(
+          mapId,
+          features.map((feature) => String(feature.id)),
+          list.id,
+        );
+      },
+    },
+    {
+      always: true as const,
+      execute: (ctx: IdentifyContext) => {
+        const { records, event } = ctx;
+        const lngLat =
+          event &&
+          typeof event === 'object' &&
+          'lngLat' in event &&
+          event.lngLat &&
+          typeof (event as MapMouseEvent).lngLat?.lng === 'number'
+            ? (event as MapMouseEvent).lngLat
+            : undefined;
+        updateResultPanel(ctx, {
           items: groupIdentifyResults(records),
           loading: false,
           ...(lngLat
@@ -137,28 +132,38 @@ export const identifyResolver = new FallbackResolver<IdentifyContext>([
                 },
               }
             : {}),
-        },
-      );
+        });
+      },
     },
-  },
-  {
-    /** Keep opening the result panel even when exclusive show-detail also ran. */
-    always: true,
-    when: ({ total }) => !!total && total > 0,
-    execute: ({ mapId }) => {
-      runMapControlAction(
-        mapId,
-        IDENTIFY_RESULT_CONTROL.id,
-        IDENTIFY_RESULT_CONTROL.actionUpdate,
-        {
+    {
+      always: true as const,
+      when: (ctx: IdentifyContext) =>
+        !isIdentifyContextAborted(ctx) &&
+        !!ctx.total &&
+        ctx.total > 0 &&
+        resolveIdentifyHitAction(ctx) === 'result',
+      execute: (ctx: IdentifyContext) => {
+        updateResultPanel(ctx, {
           show: true,
           loading: false,
-        },
-      );
+        });
+      },
     },
-  },
-]);
+  ];
+}
 
-identifyResolver.setPrepare(({ records }) => ({
-  total: countIdentifyMultiFeatures(records),
-}));
+/** Build a fresh default identify UI resolver (for compose / override). */
+export function createDefaultIdentifyResolver() {
+  const resolver = new FallbackResolver<IdentifyContext>(
+    createDefaultIdentifyResolverActions() as never,
+  );
+  resolver.setPrepare(({ records, mapId, signal }) => {
+    if (!signal?.aborted) {
+      closeIdentifyExclusiveUi(mapId);
+    }
+    return { total: countIdentifyMultiFeatures(records) };
+  });
+  return resolver;
+}
+
+export const identifyResolver = createDefaultIdentifyResolver();

@@ -6,7 +6,6 @@ import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
@@ -34,7 +33,6 @@ function onMapLoaded(map: MapSimple) {
       </template>
     </LayerControl>
     <IdentifyControl position="top-right" />
-    <HighlightPointer enableClick />
     <IdentifyShowFirstControl />
     <ComponentManagementControl />
     <DemoHelpPanel />

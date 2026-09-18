@@ -628,7 +628,7 @@ Identify / feature row action: fly to the feature geometry and highlight it.
 | **Id** | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`) |
 | **Default name** | `Fly to` |
 | **Click** | `fitBounds` on `value.geometry` + `highlight` (`key: 'identify'`) |
-| **Needs** | Identify UI + highlight controller / `HighlightPointer`; `value` must look like a feature |
+| **Needs** | Identify UI + highlight controller (`useMapHighlight` / `getHighlightController`); `value` must look like a feature |
 
 ```ts
 identify.addMenus([createMenuItemToBoundActionForItem()]);

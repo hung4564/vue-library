@@ -214,7 +214,8 @@ export function createSharedDatasetMenuDataset() {
   const identify = createDatasetPartIdentifyComponentBuilder(name)
     .configFieldId('id')
     .configFieldName('name')
-    .preferResultControl()
+    .onSingle('result')
+    .onMultiple('result')
     .build();
   groupLayer.add(layerArea);
   groupLayer.add(layerPoint);
@@ -348,7 +349,8 @@ export function createByControlPlacementDataset() {
   const identify = createDatasetPartIdentifyComponentBuilder(name)
     .configFieldId('id')
     .configFieldName('name')
-    .preferResultControl()
+    .onSingle('result')
+    .onMultiple('result')
     .build();
   groupLayer.add(layerArea);
   groupLayer.add(layerPoint);

@@ -8,7 +8,6 @@ import {
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
@@ -38,7 +37,6 @@ export function DatasetIdentifyPage() {
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
         <IdentifyControl position="top-right" />
-        <HighlightPointer enableClick />
         <IdentifyShowFirstControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />

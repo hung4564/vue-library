@@ -39,6 +39,7 @@ export type { AttributeTableMenuOptions } from './menu';
 export {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_GEOMETRY_KEY,
+  attributeTableControlId,
   buildAttributeTable,
   clearPendingAttributeTableSelectRows,
   filterAttributeTableRows,

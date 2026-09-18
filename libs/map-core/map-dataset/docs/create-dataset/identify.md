@@ -4,6 +4,8 @@ Click / box-select features. Attach menus with `createMenuBuilder` (see [Menus](
 
 Mount [`IdentifyControl`](../module/IdentifyControl.md) (or [`IdentifyShowFirstControl`](../module/IdentifyShowFirstControl.md)) on the map. Dialogs from identify menus need [`ComponentManagementControl`](../module/ComponentManagementControl.md).
 
+**IdentifyControl** paints highlight after each query via `getHighlightResolver(mapId).execute` (`runHighlight` / `source: 'identify'`); default policy: single hit → paint, multi → clear. Close still uses `hideIfSource('identify')`. **ShowFirst** and the Identify session abort superseded clicks the same way (`AbortController` + `requestId`).
+
 **Events:** none on the identify node. Menu `setClick` receives `{ layer, mapId, value, event, meta, context }` (`value` is the feature).
 
 Each hit is a flat `{ id, name, data }` feature under an identify node (`IdentifyMultiResult`).
@@ -15,7 +17,8 @@ Each hit is a flat `{ id, name, data }` feature under an identify node (`Identif
   field_id?: string;   // default 'id'
   field_name?: string; // default 'name'
   fields?: { text: string; value: string }[];
-  preferResultControl?: boolean; // skip auto detail/table → result popup
+  onSingle?: 'detail' | 'table' | 'result' | 'auto';  // one feature hit
+  onMultiple?: 'detail' | 'table' | 'result' | 'auto'; // many hits (`detail` = first)
 }
 ```
 
@@ -69,43 +72,86 @@ createDatasetPartIdentifyComponentBuilder('merged').isUseMerge('mapbox-group').b
 | `setConfigFields` | Columns for show-detail |
 | `setGroup` | Group in the identify panel |
 | `isUseMerge(id?)` | Merged query (`id` default `'mapbox-group'`) |
-| `preferResultControl(value?)` | Skip auto detail/table for this node; use result popup (`true` if omitted) |
+| `onSingle(action)` | UI when exactly one feature is hit (`detail` \| `table` \| `result` \| `auto`) |
+| `onMultiple(action)` | UI when multiple features are hit (`detail` = first/top feature) |
 | `addMenu` / `addMenus` | Actions on each result |
 
 ```ts
 createDatasetPartIdentifyComponentBuilder('API identify')
   .setConfigFields([{ text: 'Id', value: 'id' }])
-  .preferResultControl()
+  .onSingle('detail')
+  .onMultiple('result')
   .build();
 ```
 
-## Presentation (`singleLayer` / `preferResultControl`)
+```ts
+createDatasetPartIdentifyComponentBuilder('API identify')
+  .setConfigFields([{ text: 'Id', value: 'id' }])
+  .onSingle('result')
+  .onMultiple('result')
+  .build();
+```
 
-IdentifyControl passes `singleLayer: true` when the layer filter (InputSelect / layer-item) scopes to one identify node:
+## Presentation (`onSingle` / `onMultiple`)
+
+IdentifyControl passes `singleLayer: true` when the layer filter (InputSelect / layer-item) scopes to one identify node. Hit UI uses `resolveIdentifyHitAction`:
 
 | Mode | Typical UI |
 | --- | --- |
-| Single layer | Show-detail (1 feature) or attribute table; result panel only if neither applies |
-| All layers | Identify result panel with grouped hits |
-| `preferResultControl` (control **or** identify node) | Always result panel (skip auto detail/table even if those menus exist) |
+| `onSingle` / `onMultiple` = `auto` (default) | Legacy: show-detail (1 feature, single layer) or attribute table; else result panel |
+| Explicit `detail` / `table` / `result` | Force that UI when menus exist (`detail` on multi opens first feature) |
+| All layers (no single-layer scope) | Usually result panel unless node policy forces detail/table |
+
+Policy when several identify nodes hit: use the **first** non-empty record’s config.
 
 Per identify (builder):
 
 ```ts
 createDatasetPartIdentifyComponentBuilder('My layer')
-  .preferResultControl()
+  .onSingle('table')
+  .onMultiple('result')
   .build();
 ```
 
-Control-wide:
+### Resolver override (UI)
 
-```vue
-<IdentifyControl prefer-result-control />
+```ts
+import {
+  createDefaultIdentifyResolver,
+  setGlobalIdentifyResolver,
+  setIdentifyResolver,
+} from '@hungpvq/map-dataset/identify';
+
+setGlobalIdentifyResolver(createDefaultIdentifyResolver());
+setIdentifyResolver(mapId, createDefaultIdentifyResolver());
 ```
 
-```tsx
-<IdentifyControl preferResultControl />
+### HighlightResolver (map FX)
+
+After UI resolve, Identify runs:
+
+```ts
+await getHighlightResolver(mapId).execute({ mapId, records, signal });
 ```
+
+Default: one feature → paint (`source: 'identify'`); multi / empty → clear. AttributeTable uses `runHighlight` with `source: 'attribute-table'`.
+
+```ts
+import {
+  createDefaultHighlightResolver,
+  setGlobalHighlightResolver,
+  setHighlightResolver,
+  getHighlightResolver,
+  runHighlight,
+  highlightResolver,
+} from '@hungpvq/map-dataset/identify';
+
+setGlobalHighlightResolver(createDefaultHighlightResolver());
+setHighlightResolver(mapId, createDefaultHighlightResolver()); // null clears
+// restore: setGlobalHighlightResolver(highlightResolver);
+```
+
+Registry keys: global `map:core:meta.registries['highlight-resolver']`; per-map `map:core[mapId].resolver['highlight-resolver']`. See [Highlight](./highlight.md#highlightresolver-identify--attributetable-map-fx).
 
 ## Async detail API (`getList`)
 

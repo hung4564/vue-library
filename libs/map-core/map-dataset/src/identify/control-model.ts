@@ -56,7 +56,8 @@ export type IdentifyScopedSessionResult =
     };
 
 /**
- * Layer-item one-way scoped identify session (do not open result popup).
+ * Layer-item one-way scoped identify session (do not open result popup /
+ * do not light IdentifyControl toolbar — toolbar tracks result panel only).
  */
 export function resolveIdentifyScopedSession(
   result: IdentifyScopeToggleResult | undefined,
@@ -177,7 +178,8 @@ export function createIdentifyControlModel(
       });
       if (resolved.kind === 'activate') {
         state.filterIdentifyId = resolved.filterIdentifyId;
-        state.show = true;
+        // Keep toolbar inactive: scoped mode enables click/filter only.
+        // IdentifyControl `active` follows result-panel open state.
         state.origin = clearedOrigin();
       } else if (resolved.kind === 'clear-matching') {
         state.filterIdentifyId = undefined;

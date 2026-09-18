@@ -114,10 +114,6 @@ export { default as DatasetDetail } from './modules/DatasetControl/DatasetDetail
 
 
 
-export { default as HighlightPointer } from './modules/HighlightPointer/HighlightPointer.vue';
-
-
-
 export { default as IdentifyControl } from './modules/IdentifyControl/IdentifyControl.vue';
 
 

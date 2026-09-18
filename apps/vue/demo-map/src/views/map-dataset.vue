@@ -18,7 +18,6 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
@@ -55,7 +54,6 @@ function onMapLoaded(map: MapSimple) {
     <DatasetControl position="top-left" />
     <IdentifyControl position="top-right" />
     <EventManagementControl position="top-left" />
-    <HighlightPointer enable-click />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>

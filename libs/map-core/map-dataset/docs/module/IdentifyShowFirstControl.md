@@ -2,13 +2,15 @@
 
 On map click, identifies the first hit and runs the identify resolver (default: show-detail / attribute-table when available). No toolbar button. Needs identify nodes on the dataset (see [Identify](../create-dataset/identify.md)).
 
+**Abort policy (same as Identify session):** each click aborts the previous in-flight `runIdentifyShowFirst` via `AbortController` and passes a new `requestId`. A newer click wins; aborted runs do not update the result panel. Unmount aborts and clears loading.
+
+Hit UI follows each identify node’s `onSingle` / `onMultiple` (see [IdentifyControl](./IdentifyControl.md) resolver). Mount [`IdentifyControl`](./IdentifyControl.md) / result panel when the policy opens the result panel.
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->
 
-| Prop | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `preferResultControl` | `boolean` | `false` | Use Identify Result panel instead of auto detail/table (requires [`IdentifyControl`](./IdentifyControl.md) / result panel on the map) |
+No control-specific props beyond shared map props.
 
 **Events:** none.
 
@@ -29,13 +31,6 @@ import {
     <ComponentManagementControl />
   </Map>
 </template>
-```
-
-Prefer result panel:
-
-```vue
-<IdentifyControl position="top-right" prefer-result-control />
-<!-- or with ShowFirst + IdentifyControl mounted together -->
 ```
 
 ## React

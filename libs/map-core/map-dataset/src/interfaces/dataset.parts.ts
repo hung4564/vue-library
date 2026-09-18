@@ -159,10 +159,13 @@ export type IIdentifyViewBase = IDataset &
       field_id?: string;
       fields?: FieldFeaturesDef;
       /**
-       * When true, identify resolver skips auto show-detail / attribute-table
-       * for this node and uses the Identify Result panel instead.
+       * UI when exactly one feature is hit (`auto` = legacy detail→table→result).
        */
-      preferResultControl?: boolean;
+      onSingle?: 'detail' | 'table' | 'result' | 'auto';
+      /**
+       * UI when multiple features are hit (`detail` = first/top feature).
+       */
+      onMultiple?: 'detail' | 'table' | 'result' | 'auto';
     };
     group?: {
       name: string;

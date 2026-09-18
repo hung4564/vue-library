@@ -311,8 +311,8 @@ function datasetGuide(
 
 const DATASET_GUIDES: Record<string, BilingualDemoPageGuide> = {
   '/dataset-highlight': datasetGuide(
-    'Each LayerControl row is a different highlight strategy. Hover / click features on that layer to compare.',
-    'Mỗi dòng LayerControl là một chiến lược highlight khác nhau. Hover / click đối tượng trên lớp để so sánh.',
+    'Each LayerControl row is a different highlight strategy. Open Identify (on by default): click paints via setGlobalHighlightResolver (demo paints first hit even when multi). Hover still uses pointer bind.',
+    'Mỗi dòng LayerControl là một chiến lược highlight. Identify bật sẵn: click tô qua setGlobalHighlightResolver (demo tô feature đầu kể cả multi). Hover vẫn dùng pointer bind.',
     HIGHLIGHT_DEMO_HELP,
   ),
   '/dataset-identify': datasetGuide(
@@ -321,8 +321,8 @@ const DATASET_GUIDES: Record<string, BilingualDemoPageGuide> = {
     IDENTIFY_DEMO_HELP,
   ),
   '/dataset-identify-present': datasetGuide(
-    'Four zones with different present menus after identify. Open Identify, click features in each zone / layer.',
-    'Bốn vùng với menu present khác nhau sau identify. Mở Identify, click đối tượng ở từng vùng / lớp.',
+    'Zones with present menus, onSingle/onMultiple policies, and a layer that toggles setGlobalIdentifyResolver. Open Identify, click features; use the Resolver layer ⋮ menu to switch custom ↔ default.',
+    'Các vùng với menu present, policy onSingle/onMultiple, và lớp bật/tắt setGlobalIdentifyResolver. Mở Identify, click đối tượng; dùng menu ⋮ lớp Resolver để đổi custom ↔ mặc định.',
     IDENTIFY_PRESENT_DEMO_HELP,
   ),
   '/dataset-menu': datasetGuide(

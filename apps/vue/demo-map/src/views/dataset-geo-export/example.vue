@@ -12,7 +12,6 @@ import {
 import {
   ComponentManagementControl,
   ExportGeoForm,
-  HighlightPointer,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
 import { defineComponent, h, ref } from 'vue';
@@ -77,7 +76,6 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mid" />
       </template>
     </LayerControl>
-    <HighlightPointer enableClick />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>

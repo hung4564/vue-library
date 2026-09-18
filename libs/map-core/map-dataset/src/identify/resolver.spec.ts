@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const runMapControlAction = vi.fn();
+const closeIdentifyExclusiveUi = vi.fn();
+const handleMenuAction = vi.fn();
+const findSiblingOrNearestLeaf = vi.fn();
 
 vi.mock('@hungpvq/map-core', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@hungpvq/map-core')>();
@@ -10,11 +13,22 @@ vi.mock('@hungpvq/map-core', async (importOriginal) => {
   };
 });
 
-vi.mock('../menu', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../menu')>();
+vi.mock('./close-exclusive-ui', () => ({
+  closeIdentifyExclusiveUi: (...args: unknown[]) =>
+    closeIdentifyExclusiveUi(...args),
+}));
+
+vi.mock('../menu/handle', () => ({
+  handleMenuAction: (...args: unknown[]) => handleMenuAction(...args),
+}));
+
+vi.mock('../model/visitors/helpers', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../model/visitors/helpers')>();
   return {
     ...actual,
-    handleMenuAction: vi.fn(),
+    findSiblingOrNearestLeaf: (...args: unknown[]) =>
+      findSiblingOrNearestLeaf(...args),
   };
 });
 
@@ -22,12 +36,31 @@ import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { IDENTIFY_RESULT_CONTROL } from './result';
 import { identifyResolver } from './resolver';
 
+function resultUpdates() {
+  return runMapControlAction.mock.calls.filter(
+    (call) =>
+      call[1] === IDENTIFY_RESULT_CONTROL.id &&
+      call[2] === IDENTIFY_RESULT_CONTROL.actionUpdate,
+  );
+}
+
 describe('identifyResolver', () => {
   beforeEach(() => {
     runMapControlAction.mockClear();
+    closeIdentifyExclusiveUi.mockClear();
+    handleMenuAction.mockClear();
+    findSiblingOrNearestLeaf.mockReset();
   });
 
-  it('updates items + opens result panel even when exclusive show-detail runs', async () => {
+  it('dismisses exclusive UI before resolving a new identify', async () => {
+    await identifyResolver.execute({
+      records: [],
+      mapId: 'map-1',
+    });
+    expect(closeIdentifyExclusiveUi).toHaveBeenCalledWith('map-1');
+  });
+
+  it('opens show-detail without auto-opening the result panel', async () => {
     const feature = {
       id: '1',
       name: 'A',
@@ -50,17 +83,10 @@ describe('identifyResolver', () => {
       } as never,
     });
 
-    const updates = runMapControlAction.mock.calls.filter(
-      (call) =>
-        call[1] === IDENTIFY_RESULT_CONTROL.id &&
-        call[2] === IDENTIFY_RESULT_CONTROL.actionUpdate,
-    );
-    expect(updates.length).toBeGreaterThanOrEqual(2);
+    expect(handleMenuAction).toHaveBeenCalledOnce();
 
-    const withItems = updates.find(
-      (call) => Array.isArray((call[3] as { items?: unknown }).items),
-    );
-    expect(withItems?.[3]).toMatchObject({
+    const updates = resultUpdates();
+    expect(updates.find((c) => Array.isArray((c[3] as { items?: unknown }).items))?.[3]).toMatchObject({
       items: [
         {
           id: 'id-1',
@@ -69,10 +95,76 @@ describe('identifyResolver', () => {
       ],
       origin: { latitude: 21.1, longitude: 105.5 },
     });
+    expect(
+      updates.some((call) => (call[3] as { show?: boolean }).show === true),
+    ).toBe(false);
+    expect(
+      updates.some((call) => (call[3] as { show?: boolean }).show === false),
+    ).toBe(false);
+  });
 
-    const withShow = updates.find(
-      (call) => (call[3] as { show?: boolean }).show === true,
-    );
-    expect(withShow).toBeTruthy();
+  it('opens attribute table without auto-opening the result panel', async () => {
+    const features = [
+      { id: '1', name: 'A', data: {} },
+      { id: '2', name: 'B', data: {} },
+    ];
+    const list = {
+      id: 'list-1',
+      getMenu: (key: string) =>
+        key === LIST_VIEW_MENU_ID.layer.attributeTable
+          ? { id: 'attribute-table' }
+          : undefined,
+    };
+    findSiblingOrNearestLeaf.mockReturnValue(list);
+
+    const identify = {
+      id: 'id-1',
+      getName: () => 'Layer',
+      hasMenu: () => false,
+      config: {},
+    };
+
+    await identifyResolver.execute({
+      records: [{ identify: identify as never, features: features as never }],
+      mapId: 'map-1',
+      singleLayer: true,
+    });
+
+    expect(handleMenuAction).toHaveBeenCalled();
+    const updates = resultUpdates();
+    expect(
+      updates.some((call) => (call[3] as { show?: boolean }).show === true),
+    ).toBe(false);
+    expect(
+      updates.some((call) => (call[3] as { show?: boolean }).show === false),
+    ).toBe(false);
+  });
+
+  it('auto-opens result panel when no exclusive detail/table applies', async () => {
+    const feature = {
+      id: '1',
+      name: 'A',
+      data: { id: '1', name: 'A' },
+    };
+    const identify = {
+      id: 'id-1',
+      getName: () => 'Layer',
+      hasMenu: () => false,
+      config: {},
+    };
+    findSiblingOrNearestLeaf.mockReturnValue(undefined);
+
+    await identifyResolver.execute({
+      records: [{ identify: identify as never, features: [feature as never] }],
+      mapId: 'map-1',
+      singleLayer: false,
+    });
+
+    expect(handleMenuAction).not.toHaveBeenCalled();
+    expect(
+      resultUpdates().some(
+        (call) => (call[3] as { show?: boolean }).show === true,
+      ),
+    ).toBe(true);
   });
 });

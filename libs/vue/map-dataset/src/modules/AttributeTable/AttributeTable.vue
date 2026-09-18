@@ -11,6 +11,7 @@ import {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_LOCALE,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  attributeTableControlId,
   clearPendingAttributeTableSelectRows,
   createAttributeTableController,
   resolveAttributeTableUi,
@@ -24,15 +25,6 @@ import {
   type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import {
-  createMenuConditionContext,
-  getItemMenuHost,
-  getResolvedMenus,
-  handleMenuAction,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-  MENU_CONTROL_ID,
-} from '@hungpvq/map-dataset/menu';
-import {
   clearGeoExportActiveSource,
   openGeoExportModalFromAttributeTable,
   resolveAttributeTableGeoExport,
@@ -41,6 +33,16 @@ import {
   setGeoExportActiveSource,
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
+import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import {
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
@@ -57,10 +59,12 @@ import { useMapHighlight } from '../../store/highlight';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
+const emit = defineEmits<{ close: [] }>();
 provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.attributeTable,
 }));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
+const controlId = attributeTableControlId(props.layer.id);
 const hl = useMapHighlight(mapId.value);
 const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', ATTRIBUTE_TABLE_LOCALE);
@@ -95,7 +99,13 @@ function bindController(next: AttributeTableController) {
 
 watch(
   () =>
-    [props.layer, props.columns, props.store, props.rowFilter, props.ui] as const,
+    [
+      props.layer,
+      props.columns,
+      props.store,
+      props.rowFilter,
+      props.ui,
+    ] as const,
   () => {
     // Re-open when addComponent updates the same `check` while hidden via toggle.
     show.value = true;
@@ -207,14 +217,14 @@ const title = computed(() => {
 });
 
 const { panelBind } = useRegisterMapControl(mapId, {
-  id: ATTRIBUTE_TABLE_CONTROL.id,
+  id: controlId,
   panelKind: 'popup',
   title: () => title.value,
   buttonPosition: () => props.position,
   show,
   setShow: (value) => {
     show.value = value;
-    if (!value) clearAttributeTableHighlight();
+    if (!value) handleClose();
   },
   getProps: () => ({
     position: props.position,
@@ -224,9 +234,8 @@ const { panelBind } = useRegisterMapControl(mapId, {
     {
       type: ATTRIBUTE_TABLE_CONTROL.id,
       run: () => {
-        // Toggle visibility only — do not emit close (that unmounts via ComponentManagement).
         show.value = !show.value;
-        if (!show.value) clearAttributeTableHighlight();
+        if (!show.value) handleClose();
       },
     },
     {
@@ -239,8 +248,11 @@ const { panelBind } = useRegisterMapControl(mapId, {
 });
 
 function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
+  if (payload?.layerId != null && payload.layerId !== props.layer.id) {
+    return;
+  }
   const ids = (payload?.ids ?? []).map(String);
-  clearPendingAttributeTableSelectRows(mapId.value);
+  clearPendingAttributeTableSelectRows(mapId.value, props.layer.id);
   show.value = true;
   void controller.value.selectIds(ids);
 }
@@ -248,31 +260,30 @@ function clearAttributeTableHighlight() {
   hl.hideIfSource('attribute-table');
 }
 /**
- * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
- * stays registered and toggle show / selectRows keep working.
- * Removal from ComponentManagement is via `onClose` from parent if needed.
+ * X / Escape: remove from ComponentManagement (same as LayerDetail).
+ * Re-open via menu / identify `addComponent` + pending selectRows.
  */
 function handleClose() {
   show.value = false;
   clearAttributeTableHighlight();
+  emit('close');
 }
 function onUpdateShow(val: boolean) {
   show.value = val;
-  if (!val) clearAttributeTableHighlight();
+  if (!val) handleClose();
 }
 function applySelection(focus?: AttributeTableRow) {
   const s = controller.value.getState();
   const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-  if (selected.length === 0) {
-    clearAttributeTableHighlight();
-    return;
-  }
   const current = focus ?? selected[0];
-  void hl.show(current.feature as Feature, {
-    source: 'attribute-table',
+  void getHighlightResolver(mapId.value).execute({
+    mapId: mapId.value,
+    count: selected.length,
+    features: current ? [current.feature as Feature] : [],
     dataset: props.layer,
+    sources: ['attribute-table'],
   });
-  if (!s.zoomToSelection) return;
+  if (selected.length === 0 || !s.zoomToSelection) return;
   void zoomMapToSelection();
 }
 
@@ -300,9 +311,7 @@ const itemMenus = computed(() => {
     (menu) => menu.type !== 'divider' && !isMenuItemHidden(menu, ctx),
   );
 });
-const layerTitleMenus = computed(() =>
-  getResolvedMenus(props.layer, 'layer'),
-);
+const layerTitleMenus = computed(() => getResolvedMenus(props.layer, 'layer'));
 const itemMenuConditionCtx = computed(() =>
   createMenuConditionContext(itemMenuHost.value, { mapId: mapId.value }),
 );
@@ -391,8 +400,12 @@ function syncGeoExportBridge() {
 onMounted(async () => {
   bindController(controller.value);
   syncGeoExportBridge();
-  const queued = takePendingAttributeTableSelectRows(mapId.value);
+  const queued = takePendingAttributeTableSelectRows(
+    mapId.value,
+    props.layer.id,
+  );
   if (queued) {
+    clearPendingAttributeTableSelectRows(mapId.value, props.layer.id);
     show.value = true;
     await controller.value.load('initial');
     await controller.value.selectIds(queued);

@@ -11,4 +11,5 @@ export const MAP_STORE_KEY = {
   PRINT: 'print',
   REGISTRY: 'registry',
   BASEMAP: 'basemap',
+  RESOLVER: 'resolver',
 } as const;

@@ -5,23 +5,25 @@ import {
 } from '../extra/field';
 import { addMenuBuilder } from '../menu/builder';
 import type { WithMenuBuilder } from '../menu/types';
+import type { IdentifyHitAction } from './hit-action';
 import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   ensureIdentifyShowDetailMenu,
 } from './models';
+
 interface BaseBuilder {
   configFieldId(field_id: string): this;
   setGroup(group: IIdentifyView['group']): this;
   configFieldName(field_name: string): this;
   isUseMerge(id?: string): this;
-  /**
-   * Prefer Identify Result panel over auto show-detail / attribute-table
-   * for this identify node (default true when called without args).
-   */
-  preferResultControl(value?: boolean): this;
+  /** UI policy when exactly one feature is hit. */
+  onSingle(action: IdentifyHitAction): this;
+  /** UI policy when multiple features are hit (`detail` = first/top feature). */
+  onMultiple(action: IdentifyHitAction): this;
   build(): IIdentifyView;
 }
+
 export function createDatasetPartIdentifyComponentBuilder(name: string) {
   const _config: Partial<IIdentifyView['config']> = {};
   let _identifyGroupId: string | undefined = undefined;
@@ -43,8 +45,12 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
       _identifyGroupId = id;
       return this;
     },
-    preferResultControl(value = true) {
-      _config.preferResultControl = value;
+    onSingle(action: IdentifyHitAction) {
+      _config.onSingle = action;
+      return this;
+    },
+    onMultiple(action: IdentifyHitAction) {
+      _config.onMultiple = action;
       return this;
     },
     build(): IIdentifyView {
@@ -61,7 +67,6 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
   const originBuild = composed.build.bind(composed);
   composed.build = function build() {
     const dataset = originBuild();
-    // setConfigFields applies after create; ensure menu once fields exist.
     ensureIdentifyShowDetailMenu(dataset);
     return dataset;
   };

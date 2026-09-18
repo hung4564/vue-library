@@ -1,12 +1,12 @@
 import { logHelper } from '@hungpvq/map-core';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
-import type { IdentifyMultiResult, IIdentifyView } from '../interfaces/dataset.parts';
+import type {
+  IdentifyMultiResult,
+  IIdentifyView,
+} from '../interfaces/dataset.parts';
 import { loggerIdentify } from '../logger';
-import {
-  handleMultiIdentify,
-  handleMultiIdentifyGetFirst,
-} from './models';
-import { identifyResolver } from './resolver';
+import { handleMultiIdentify, handleMultiIdentifyGetFirst } from './models';
+import { getIdentifyResolver } from './resolver-registry';
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
   type IdentifyResultLayerItem,
@@ -74,8 +74,7 @@ export function buildIdentifyResultPanelBase(options: {
     loading: options.loading,
     origin: options.origin,
     layerItems: buildIdentifyLayerItems(options.views, options.allLayersText),
-    selectedLayerId:
-      options.selectedLayerId ?? IDENTIFY_ALL_LAYERS_VALUE,
+    selectedLayerId: options.selectedLayerId ?? IDENTIFY_ALL_LAYERS_VALUE,
     isEventClickActive: options.isEventClickActive,
     isEventClickBox: options.isEventClickBox,
   };
@@ -87,9 +86,10 @@ export type RunIdentifyMultiOptions = {
   pointOrBox: PointLike | [PointLike, PointLike];
   event?: MapMouseEvent;
   filterIdentifyId?: string;
-  preferResultControl?: boolean;
   /** Abort in-flight identify (superseded click / destroy). */
   signal?: AbortSignal;
+  /** Forwarded to result panel updates for stale-write guards. */
+  requestId?: number;
 };
 
 export type RunIdentifyResult = {
@@ -129,8 +129,8 @@ export async function runIdentifyMulti(
     pointOrBox,
     event,
     filterIdentifyId,
-    preferResultControl,
     signal,
+    requestId,
   } = options;
   throwIfAborted(signal);
   const log = logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl');
@@ -164,15 +164,22 @@ export async function runIdentifyMulti(
 
   log.debug('onSelectFeatures', nonEmpty);
   throwIfAborted(signal);
-  const res = await identifyResolver.execute({
+  const res = await getIdentifyResolver(mapId).execute({
     records: nonEmpty,
     mapId,
     event,
     singleLayer: !!filterIdentifyId,
-    preferResultControl: !!preferResultControl,
+    signal,
+    requestId,
   });
   throwIfAborted(signal);
   log.debug('onSelectFeaturesResult', res);
+  await getHighlightResolver(mapId).execute({
+    mapId,
+    records: nonEmpty,
+    signal,
+  });
+  throwIfAborted(signal);
 
   const durationMs = Math.round(performance.now() - loadStartedAt);
   log.info(IDENTIFY_LOADING_LOG.done, {
@@ -196,7 +203,8 @@ export type RunIdentifyShowFirstOptions = {
   mapId: string;
   pointOrBox: PointLike | [PointLike, PointLike];
   event?: MapMouseEvent;
-  preferResultControl?: boolean;
+  signal?: AbortSignal;
+  requestId?: number;
 };
 
 /**
@@ -205,8 +213,8 @@ export type RunIdentifyShowFirstOptions = {
 export async function runIdentifyShowFirst(
   options: RunIdentifyShowFirstOptions,
 ): Promise<RunIdentifyResult> {
-  const { identifies, mapId, pointOrBox, event, preferResultControl } =
-    options;
+  const { identifies, mapId, pointOrBox, event, signal, requestId } = options;
+  throwIfAborted(signal);
   const log = logHelper(
     loggerIdentify,
     mapId,
@@ -221,22 +229,35 @@ export async function runIdentifyShowFirst(
     identifies,
     mapId,
     pointOrBox,
+    { selectThreshold: 5 },
+    signal,
   );
+  throwIfAborted(signal);
   log.debug('onGetFeatures', { record });
 
-  const records =
-    record?.features?.length ? [record] : ([] as IdentifyMultiResult[]);
+  const records = record?.features?.length
+    ? [record]
+    : ([] as IdentifyMultiResult[]);
   const featureCount = record?.features?.length ?? 0;
 
   log.debug('onSelectFeatures', { record });
-  const res = await identifyResolver.execute({
+  throwIfAborted(signal);
+  const res = await getIdentifyResolver(mapId).execute({
     records,
     mapId,
     event,
     singleLayer: true,
-    preferResultControl: !!preferResultControl,
+    signal,
+    requestId,
   });
+  throwIfAborted(signal);
   log.debug('onSelectFeaturesResult', res);
+  await getHighlightResolver(mapId).execute({
+    mapId,
+    records,
+    signal,
+  });
+  throwIfAborted(signal);
 
   const durationMs = Math.round(performance.now() - loadStartedAt);
   log.info(IDENTIFY_LOADING_LOG.done, {

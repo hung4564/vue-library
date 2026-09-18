@@ -37,6 +37,30 @@ describe('createIdentifySession', () => {
     session.destroy();
   });
 
+  it('runAtPoint surfaces non-abort errors on the result panel', async () => {
+    const syncPanels: unknown[] = [];
+    const spy = vi
+      .spyOn(runIdentify, 'runIdentifyMulti')
+      .mockRejectedValue(new Error('boom'));
+
+    const session = createIdentifySession({
+      mapId: 'm1',
+      getIdentifies: () => [],
+      syncResultPanel: (p) => syncPanels.push(p),
+    });
+
+    await expect(session.runAtPoint(105, 21, [10, 20])).resolves.toBeUndefined();
+    expect(session.getState().loading).toBe(false);
+    expect(syncPanels).toEqual(
+      expect.arrayContaining([
+        { loading: true },
+        { error: 'boom', loading: false },
+      ]),
+    );
+    spy.mockRestore();
+    session.destroy();
+  });
+
   it('toggleShow and close update session flags', () => {
     const session = createIdentifySession({
       mapId: 'm1',

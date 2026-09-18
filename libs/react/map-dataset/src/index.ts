@@ -91,10 +91,6 @@ export {
 } from './modules/DatasetControl/DatasetControl';
 
 export {
-  HighlightPointer,
-} from './modules/HighlightPointer/HighlightPointer';
-
-export {
   IdentifyControl,
 } from './modules/IdentifyControl/IdentifyControl';
 

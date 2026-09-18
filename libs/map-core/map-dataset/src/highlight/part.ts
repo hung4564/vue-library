@@ -25,6 +25,11 @@ export type IHighlightPart = IDataset & {
   getHighlightPresentation: () => HighlightPresentation;
   getHighlightPointer: () => Required<HighlightPointerPolicy>;
   getFilterCreator?: () => HighlightStyle['filterCreator'];
+  setHighlightStyle: (partial: Partial<HighlightStyle>) => void;
+  setHighlightDataSource: (next: HighlightDataSource) => void;
+  setHighlightSelection: (partial: HighlightSelectionOptions) => void;
+  setHighlightPresentation: (partial: HighlightPresentation) => void;
+  setHighlightPointer: (partial: HighlightPointerPolicy) => void;
 };
 
 /**

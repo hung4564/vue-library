@@ -16,6 +16,11 @@ export const IDENTIFY_CONTROL = {
   actionClose: 'close',
   /** Sync toolbar / panel loading (e.g. from IdentifyShowFirstControl). */
   actionSetLoading: 'setLoading',
+  /**
+   * Sync IdentifyControl toolbar `active` with result-panel visibility only
+   * (does not open/close the panel or tear down map click).
+   */
+  actionSyncToolbarShow: 'syncToolbarShow',
 } as const;
 
 /** Payload for `IDENTIFY_CONTROL.actionSetLayerFilter`. */

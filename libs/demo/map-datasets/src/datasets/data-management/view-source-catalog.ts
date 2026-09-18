@@ -24,7 +24,11 @@ import {
 import {
   createIdentifyPresentDetailAndTableDataset,
   createIdentifyPresentDetailOnlyDataset,
+  createIdentifyPresentHitAlwaysDetailDataset,
+  createIdentifyPresentHitAlwaysTableDataset,
+  createIdentifyPresentHitDetailResultDataset,
   createIdentifyPresentNeitherDataset,
+  createIdentifyPresentResolverToggleDataset,
   createIdentifyPresentTableOnlyDataset,
 } from '../identify-present';
 import {
@@ -197,6 +201,26 @@ reg(
   'No detail / no table',
   'Identify present — neither presenters',
   createIdentifyPresentNeitherDataset,
+);
+reg(
+  'Hit: single→detail, multi→result',
+  'Identify present — onSingle detail / onMultiple result',
+  createIdentifyPresentHitDetailResultDataset,
+);
+reg(
+  'Hit: always table',
+  'Identify present — onSingle/onMultiple table',
+  createIdentifyPresentHitAlwaysTableDataset,
+);
+reg(
+  'Hit: always detail (first)',
+  'Identify present — onSingle/onMultiple detail',
+  createIdentifyPresentHitAlwaysDetailDataset,
+);
+reg(
+  'Resolver: toggle global',
+  'Identify present — setGlobalIdentifyResolver toggle',
+  createIdentifyPresentResolverToggleDataset,
 );
 
 // —— all-map ——

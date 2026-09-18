@@ -37,7 +37,19 @@ export type IdentifyResultUpdatePayload = {
   selectedLayerId?: string;
   isEventClickActive?: boolean;
   isEventClickBox?: boolean;
+  /** Monotonic id; ResultControl ignores updates older than the last applied. */
+  requestId?: number;
 };
+
+/** True when this panel update should replace prior UI (stale-request guard). */
+export function shouldApplyIdentifyRequest(
+  lastRequestId: number | undefined,
+  requestId: number | undefined,
+): boolean {
+  if (requestId == null) return true;
+  if (lastRequestId == null) return true;
+  return requestId >= lastRequestId;
+}
 
 export function groupIdentifyResults(
   items: IdentifyMultiResult[],

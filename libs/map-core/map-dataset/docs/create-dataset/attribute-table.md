@@ -15,6 +15,8 @@ Default store: DM sibling → wrap `part.list`; else local GeoJSON; or inject `s
 
 Select rows to highlight. Use **Zoom to selection** to fit the map to the selected row(s).
 
+Closing the table (X / Escape) **removes** it from ComponentManagement (same as LayerDetail). Re-open from the layer menu or Identify. Each open table registers as `mapAttributeTable:<layerId>` so `queueAttributeTableSelectRows(mapId, ids, layerId)` targets the correct instance.
+
 **Export** lives in [`@hungpvq/map-dataset/geo-export`](./export.md). The Attribute Table toolbar **Export** button (`ui.export`, default `true`) opens the same controller / `onExport` / scopes. While the table is open, filtered/selected export reuses the AT store via the geo-export active-source bridge.
 
 Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Row selection paints via the highlight controller (`source: 'attribute-table'`); clear with `hideIfSource('attribute-table')`. Import parts / controller from `@hungpvq/map-dataset/highlight` — no `LayerHighlight` mount.

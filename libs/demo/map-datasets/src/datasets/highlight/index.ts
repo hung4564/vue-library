@@ -10,8 +10,16 @@ import {
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import {
   createHighlightPart,
+  getHighlightController,
   type IHighlightPart,
 } from '@hungpvq/map-dataset/highlight';
+import {
+  createDefaultHighlightResolver,
+  createDatasetPartIdentifyComponentBuilder,
+  highlightResolver,
+  setGlobalHighlightResolver,
+  type HighlightContext,
+} from '@hungpvq/map-dataset/identify';
 import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForList,
@@ -88,7 +96,17 @@ function createHighlightDemoDataset(config: {
   group.add(layer);
   group.add(config.highlight);
   group.add(list);
+  // Identify owns map click → HighlightResolver paints (see applyHighlightDemoGlobalResolver).
+  // Pointer click disabled so Identify + hover bind do not double-fire.
+  config.highlight.setHighlightPointer({ click: false });
+  const identify = createDatasetPartIdentifyComponentBuilder(config.listName)
+    .configFieldId('id')
+    .configFieldName('name')
+    .onSingle('result')
+    .onMultiple('result')
+    .build();
   dataset.add(source);
+  dataset.add(identify);
   dataset.add(group);
   return dataset;
 }
@@ -893,6 +911,52 @@ const HIGHLIGHT_DEMO_ENTRIES = [
 export const HIGHLIGHT_DEMO_DATASET_FACTORIES = HIGHLIGHT_DEMO_ENTRIES.map(
   (entry) => entry.factory,
 );
+
+/**
+ * Demo override: paint first hit even when multi (default clears on count ≠ 1).
+ * Call from dataset-highlight page; restore on leave.
+ */
+export function createHighlightDemoGlobalResolver() {
+  const resolver = createDefaultHighlightResolver();
+  resolver.clear();
+  resolver.add({
+    when: (ctx: HighlightContext) =>
+      (ctx.count ?? 0) >= 1 && !!ctx.features?.[0],
+    execute: async (ctx: HighlightContext) => {
+      if (ctx.signal?.aborted) return;
+      const feature = ctx.features![0]!;
+      const sources = ctx.sources?.length ? ctx.sources : ['identify'];
+      await getHighlightController(ctx.mapId).show(feature, {
+        source: sources[0]!,
+        dataset: ctx.dataset,
+      });
+    },
+  });
+  resolver.add({
+    always: true as const,
+    when: (ctx: HighlightContext) =>
+      !((ctx.count ?? 0) >= 1 && !!ctx.features?.[0]),
+    execute: (ctx: HighlightContext) => {
+      if (ctx.signal?.aborted) return;
+      const sources = ctx.sources?.length ? ctx.sources : ['identify'];
+      const hl = getHighlightController(ctx.mapId);
+      for (const source of sources) {
+        hl.hideIfSource(source);
+      }
+    },
+  });
+  return resolver;
+}
+
+export function applyHighlightDemoGlobalResolver(): void {
+  setGlobalHighlightResolver(createHighlightDemoGlobalResolver());
+  logger.info('setGlobalHighlightResolver → demo (paint first when count ≥ 1)');
+}
+
+export function restoreHighlightDemoGlobalResolver(): void {
+  setGlobalHighlightResolver(highlightResolver);
+  logger.info('setGlobalHighlightResolver → highlightResolver (default)');
+}
 
 export { HIGHLIGHT_DEMO_HELP } from './help';
 

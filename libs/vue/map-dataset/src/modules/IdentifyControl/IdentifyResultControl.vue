@@ -26,6 +26,7 @@ import {
   IDENTIFY_CONTROL,
   IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
+  shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
   type IdentifyResultUpdatePayload,
@@ -78,6 +79,7 @@ const selectedLayerId = ref(IDENTIFY_ALL_LAYERS_VALUE);
 const isEventClickActive = ref(false);
 const isEventClickBox = ref(false);
 const focusedChildKey = ref<string | null>(null);
+let lastRequestId: number | undefined;
 
 const flatChildren = computed(() => {
   const out: Array<{
@@ -122,7 +124,16 @@ function setShow(value: boolean) {
 
 function applyUpdate(payload?: IdentifyResultUpdatePayload) {
   if (!payload) return;
-  if (payload.show != null) show.value = payload.show;
+  if (!shouldApplyIdentifyRequest(lastRequestId, payload.requestId)) {
+    return;
+  }
+  if (payload.requestId != null) {
+    lastRequestId = payload.requestId;
+  }
+  if (payload.show != null) {
+    show.value = payload.show;
+    runIdentifyAction(IDENTIFY_CONTROL.actionSyncToolbarShow, payload.show);
+  }
   if (payload.loading != null) loading.value = payload.loading;
   if (payload.error !== undefined) errorMessage.value = payload.error;
   if (payload.items !== undefined) {

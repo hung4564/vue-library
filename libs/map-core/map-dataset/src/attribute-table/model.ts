@@ -9,39 +9,68 @@ export const ATTRIBUTE_TABLE_CONTROL = {
   actionSelectRows: 'mapAttributeTable.selectRows',
 } as const;
 
+/** Per-layer control id so multiple tables do not overwrite each other. */
+export function attributeTableControlId(layerId: string): string {
+  return `${ATTRIBUTE_TABLE_CONTROL.id}:${layerId}`;
+}
+
 export type AttributeTableSelectRowsPayload = {
   ids: string[];
+  /** Target table layer; required when multiple AttributeTables may be mounted. */
+  layerId?: string;
 };
 
 /**
  * Selection requested before AttributeTable control is registered (e.g. identify
  * opens the table via addComponent). Flushed on mount / after selectRows runs.
+ * Keyed by mapId + layerId so a stale table cannot steal another layer's queue.
  */
-const pendingSelectRowsByMapId = new Map<string, string[]>();
+const pendingSelectRowsByKey = new Map<string, string[]>();
+
+function pendingSelectRowsKey(mapId: string, layerId?: string): string {
+  return layerId ? `${mapId}::${layerId}` : mapId;
+}
 
 export function queueAttributeTableSelectRows(
   mapId: string,
   ids: string[],
+  layerId?: string,
 ): void {
   const normalized = ids.map(String);
-  pendingSelectRowsByMapId.set(mapId, normalized);
+  const key = pendingSelectRowsKey(mapId, layerId);
+  pendingSelectRowsByKey.set(key, normalized);
+  const controlId = layerId
+    ? attributeTableControlId(layerId)
+    : ATTRIBUTE_TABLE_CONTROL.id;
   runMapControlAction(
     mapId,
-    ATTRIBUTE_TABLE_CONTROL.id,
+    controlId,
     ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
-    { ids: normalized } satisfies AttributeTableSelectRowsPayload,
+    {
+      ids: normalized,
+      ...(layerId ? { layerId } : {}),
+    } satisfies AttributeTableSelectRowsPayload,
   );
 }
 
 /** Peek pending ids (cleared only via clearPending / successful apply). */
 export function takePendingAttributeTableSelectRows(
   mapId: string,
+  layerId?: string,
 ): string[] | null {
-  return pendingSelectRowsByMapId.get(mapId) ?? null;
+  const keyed = pendingSelectRowsByKey.get(pendingSelectRowsKey(mapId, layerId));
+  if (keyed) return keyed;
+  // Legacy queue without layerId (pre-per-layer key).
+  if (layerId) return pendingSelectRowsByKey.get(mapId) ?? null;
+  return null;
 }
 
-export function clearPendingAttributeTableSelectRows(mapId: string): void {
-  pendingSelectRowsByMapId.delete(mapId);
+export function clearPendingAttributeTableSelectRows(
+  mapId: string,
+  layerId?: string,
+): void {
+  pendingSelectRowsByKey.delete(pendingSelectRowsKey(mapId, layerId));
+  if (layerId) pendingSelectRowsByKey.delete(mapId);
 }
 
 export type AttributeTableCellFormatContext = {

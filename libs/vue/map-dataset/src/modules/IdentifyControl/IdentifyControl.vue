@@ -52,14 +52,9 @@ const props = withDefaults(
     WithMapPropType &
       WithShowProps & {
         immediately?: boolean;
-        /**
-         * Always open Identify Result panel (skip auto show-detail / attribute-table),
-         * even when those menus are registered.
-         */
-        preferResultControl?: boolean;
       }
   >(),
-  { ...defaultMapProps, preferResultControl: false },
+  { ...defaultMapProps },
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
@@ -105,7 +100,6 @@ function updateResultPanel(payload: IdentifyResultUpdatePayload) {
 session = createIdentifySession({
   mapId: mapId.value,
   getIdentifies: () => views.value,
-  preferResultControl: !!props.preferResultControl,
   immediately: () => !!props.immediately,
   callMap,
   translateAllLayers: () => trans.value('map.identify.all_layers'),
@@ -172,7 +166,6 @@ useRegisterMapControl(mapId, {
     position: props.position,
     controlLayout: props.controlLayout,
     immediately: props.immediately,
-    preferResultControl: props.preferResultControl,
   }),
   actions: [
     {
@@ -219,6 +212,16 @@ useRegisterMapControl(mapId, {
       type: IDENTIFY_CONTROL.actionSetLoading,
       run: (event) => {
         session.setLoading(!!event);
+        syncFromModel();
+        control.sync();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSyncToolbarShow,
+      run: (event) => {
+        const next = !!event;
+        if (session.getState().show === next) return;
+        session.setShow(next);
         syncFromModel();
         control.sync();
       },

@@ -5,6 +5,7 @@ import {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_LOCALE,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  attributeTableControlId,
   clearPendingAttributeTableSelectRows,
   createAttributeTableController,
   resolveAttributeTableUi,
@@ -18,15 +19,6 @@ import {
   type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import {
-  createMenuConditionContext,
-  getItemMenuHost,
-  getResolvedMenus,
-  handleMenuAction,
-  isMenuItemDisabled,
-  isMenuItemHidden,
-  MENU_CONTROL_ID,
-} from '@hungpvq/map-dataset/menu';
-import {
   clearGeoExportActiveSource,
   openGeoExportModalFromAttributeTable,
   resolveAttributeTableGeoExport,
@@ -35,6 +27,16 @@ import {
   setGeoExportActiveSource,
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
+import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import {
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -54,9 +56,10 @@ import { AttributeTableView } from './AttributeTableView';
 
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
+  const controlId = attributeTableControlId(props.layer.id);
   const { mapId, moduleContainerProps } = useMap({
     ...merged,
-    controlId: ATTRIBUTE_TABLE_CONTROL.id,
+    controlId,
   });
   const hl = useMapHighlight(mapId);
   const hlRef = useRef(hl);
@@ -110,19 +113,18 @@ export function AttributeTable(props: AttributeTableProps) {
     (ctrl: AttributeTableController, focus?: AttributeTableRow) => {
       const s = ctrl.getState();
       const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-      if (selected.length === 0) {
-        clearHighlight();
-        return;
-      }
       const current = focus ?? selected[0];
-      void hlRef.current.show(current.feature as Feature, {
-        source: 'attribute-table',
+      void getHighlightResolver(mapId).execute({
+        mapId,
+        count: selected.length,
+        features: current ? [current.feature as Feature] : [],
         dataset: props.layer,
+        sources: ['attribute-table'],
       });
-      if (!s.zoomToSelection) return;
+      if (selected.length === 0 || !s.zoomToSelection) return;
       void zoomMapToSelectionRef.current(ctrl);
     },
-    [clearHighlight, props.layer],
+    [mapId, props.layer],
   );
   const applySelectionRef = useRef(applySelection);
   applySelectionRef.current = applySelection;
@@ -168,9 +170,10 @@ export function AttributeTable(props: AttributeTableProps) {
     toggleShowRef.current(true);
 
     void (async () => {
-      const queued = takePendingAttributeTableSelectRows(mapId);
+      const queued = takePendingAttributeTableSelectRows(mapId, props.layer.id);
       await next.load('initial');
       if (queued) {
+        clearPendingAttributeTableSelectRows(mapId, props.layer.id);
         toggleShowRef.current(true);
         await next.selectIds(queued);
       }
@@ -286,25 +289,27 @@ export function AttributeTable(props: AttributeTableProps) {
   }, [props.layer, state, trans]);
 
   /**
-   * X / Escape: hide only. Keep the table mounted so `mapAttributeTable`
-   * stays registered and toggle show / selectRows keep working.
-   * Removal from ComponentManagement is via `onClose` from parent if needed.
+   * X / Escape: remove from ComponentManagement (same as LayerDetail).
+   * Re-open via menu / identify `addComponent` + pending selectRows.
    */
   function handleClose() {
     clearHighlight();
     toggleShow(false);
+    props.onClose?.();
   }
 
   const { panelBind } = useRegisterMapControl(mapId, {
-    id: ATTRIBUTE_TABLE_CONTROL.id,
+    id: controlId,
     panelKind: 'popup',
     title,
     buttonPosition: merged.position,
     show,
     setShow: (v) => {
-      // Hide/show only — do not call onClose (that unmounts via ComponentManagement).
-      toggleShow(v);
-      if (!v) clearHighlight();
+      if (!v) {
+        handleClose();
+        return;
+      }
+      toggleShow(true);
     },
     getProps: () => ({
       position: merged.position,
@@ -314,16 +319,22 @@ export function AttributeTable(props: AttributeTableProps) {
       {
         type: ATTRIBUTE_TABLE_CONTROL.id,
         run: () => {
-          toggleShow();
+          if (show) {
+            handleClose();
+          } else {
+            toggleShow(true);
+          }
         },
       },
       {
         type: ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
         run: (event) => {
-          const ids = (
-            (event as AttributeTableSelectRowsPayload | undefined)?.ids ?? []
-          ).map(String);
-          clearPendingAttributeTableSelectRows(mapId);
+          const payload = event as AttributeTableSelectRowsPayload | undefined;
+          if (payload?.layerId != null && payload.layerId !== props.layer.id) {
+            return;
+          }
+          const ids = (payload?.ids ?? []).map(String);
+          clearPendingAttributeTableSelectRows(mapId, props.layer.id);
           toggleShow(true);
           void controllerRef.current?.selectIds(ids);
         },
@@ -410,42 +421,43 @@ export function AttributeTable(props: AttributeTableProps) {
   };
 
   return (
-    <MenuConditionProvider
-      value={{ control: MENU_CONTROL_ID.attributeTable }}
-    >
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={show}
-          width={760}
-          height={460}
-          title={title}
-          onClose={handleClose}
-          onUpdateShow={(v) => {
-            toggleShow(v);
-            if (!v) clearHighlight();
-          }}
-          afterTitle={
-            <DatasetMenus
-              menus={layerTitleMenus}
-              data={props.layer}
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.attributeTable }}>
+      <ModuleContainer
+        {...moduleContainerProps}
+        draggable={(bind) => (
+          <DraggableItemPopup
+            show={show}
+            width={760}
+            height={460}
+            title={title}
+            onClose={handleClose}
+            onUpdateShow={(v) => {
+              if (!v) {
+                handleClose();
+                return;
+              }
+              toggleShow(true);
+            }}
+            afterTitle={
+              <DatasetMenus
+                menus={layerTitleMenus}
+                data={props.layer}
+                mapId={mapId}
+                locations={['title']}
+              />
+            }
+            {...bind}
+            {...panelBind}
+          >
+            <RegistryItem
+              componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
+              defaultComponent={AttributeTableView}
               mapId={mapId}
-              locations={['title']}
+              {...viewProps}
             />
-          }
-          {...bind}
-          {...panelBind}
-        >
-          <RegistryItem
-            componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
-            defaultComponent={AttributeTableView}
-            mapId={mapId}
-            {...viewProps}
-          />
-        </DraggableItemPopup>
-      )}
-    />
+          </DraggableItemPopup>
+        )}
+      />
     </MenuConditionProvider>
   );
 }

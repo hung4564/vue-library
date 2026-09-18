@@ -53,6 +53,7 @@ Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
 | `PRINT` | `print` | Print options |
 | `REGISTRY` | `registry` | Control registry scope |
 | `BASEMAP` | `basemap` | Basemap selection |
+| `RESOLVER` | `resolver` | Per-map FallbackResolver overrides (`identify-resolver`, `highlight-resolver`, …); process defaults live on `map:core:meta.registries` |
 
 Adapter domains may also use **string** scoped keys outside `MAP_STORE_KEY`:
 
@@ -89,8 +90,8 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 | `map:registry:maps` | `getOrCreateStore` | Per-`mapId` registry bags |
 | `map:registry:controls` | `getOrCreateStore` | Control handle registry |
 | `hungpvq.map-theme-mode` (+ optional `:<mapId>`) | `localStorage` (`MAP_THEME_STORAGE_KEY` / `getMapThemeStorageKey(mapId)`) | Theme preference. Default **process-global**; `ThemeControl scope="map"` uses per-map key. |
-| `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups) |
-| `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones; `errorCapture` install slot; `errorHandler` singleton (`errorHandler` export) |
+| `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups); per-map resolver overrides at `[mapId].resolver` |
+| `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones; `errorCapture` install slot; `errorHandler` singleton; `registries` process defaults (`createMapCoreMetaRegistry`) |
 | `map:debug` | `getOrCreateStore` | Optional `@hungpvq/map-debug`: `dataset` = Dataset Inspector API (`installDatasetDebug`). Console alias: `window.__hungpvqDatasetDebug` |
 
 Related process pins outside this table: `LoggerFactory` on `@hungpvq/shared-log`’s own `globalThis` key.

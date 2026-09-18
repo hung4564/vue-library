@@ -35,7 +35,6 @@
       <BaseMapControl position="bottom-left" />
 
       <IdentifyShowFirstControl />
-      <HighlightPointer enableClick />
 
       <RegistryControl position="top-right" show />
       <DemoHelpPanel />
@@ -71,7 +70,6 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,

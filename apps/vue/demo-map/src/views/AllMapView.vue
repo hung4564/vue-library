@@ -49,9 +49,7 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
-  IdentifyShowFirstControl,
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
@@ -192,8 +190,6 @@ function createDatasetMeasure(
     <MouseCoordinatesControl />
     <MapContextMenuControl />
     <BaseMapControl position="bottom-left" />
-    <IdentifyShowFirstControl />
-    <HighlightPointer enableClick />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>

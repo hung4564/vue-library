@@ -5,6 +5,7 @@ import { type IDataset } from '@hungpvq/map-dataset';
 import {
   ATTRIBUTE_TABLE_COMPONENT_KEY,
   ATTRIBUTE_TABLE_CONTROL,
+  attributeTableControlId,
   createAttributeTableStoreFromDataset,
   queueAttributeTableSelectRows,
 } from '@hungpvq/map-dataset/attribute-table';
@@ -214,21 +215,26 @@ function queueSelectRows() {
   openAttributeTable();
   const ids =
     selectedKey.value === 'httpCustom' ? ['L1', 'L2'] : ['1', '2'];
-  queueAttributeTableSelectRows(mapId.value, ids);
+  queueAttributeTableSelectRows(mapId.value, ids, selectedLayer.value.id);
 }
 
 function selectRowsAction() {
+  if (!selectedLayer.value) return;
   const ids = selectedKey.value === 'httpCustom' ? ['L3'] : ['3'];
   runMapControlAction(
     mapId.value,
-    ATTRIBUTE_TABLE_CONTROL.id,
+    attributeTableControlId(selectedLayer.value.id),
     ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
-    { ids },
+    { ids, layerId: selectedLayer.value.id },
   );
 }
 
 function toggleShow() {
-  runMapControlAction(mapId.value, ATTRIBUTE_TABLE_CONTROL.id);
+  if (!selectedLayer.value) return;
+  runMapControlAction(
+    mapId.value,
+    attributeTableControlId(selectedLayer.value.id),
+  );
 }
 
 async function loadPage() {

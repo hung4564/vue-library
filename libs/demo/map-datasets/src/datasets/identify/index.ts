@@ -63,10 +63,13 @@ export function createIdentifyWithMenuDataset() {
       createMenuItemStyleEdit(),
     ],
     configureIdentify: (b) =>
-      b.addMenus([
-        createMenuItemToBoundActionForItem(),
-        createMenuItemShowDetailForItem(DEMO_ID_NAME_FIELDS),
-      ]),
+      b
+        .onSingle('detail')
+        .onMultiple('result')
+        .addMenus([
+          createMenuItemToBoundActionForItem(),
+          createMenuItemShowDetailForItem(DEMO_ID_NAME_FIELDS),
+        ]),
   });
 }
 
@@ -264,7 +267,8 @@ export function createIdentifyApiDetailDataset() {
     listMenus: [createMenuItemToggleShow(), createMenuItemIdentifyForList()],
     configureIdentify: (b) =>
       b
-        .preferResultControl()
+        .onSingle('result')
+        .onMultiple('result')
         .setConfigFields(DEMO_API_FIELDS)
         .addMenus([createMenuItemToBoundActionForItem()]),
     onIdentifyBuilt: (identify) => {

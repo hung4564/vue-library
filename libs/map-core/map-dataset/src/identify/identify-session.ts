@@ -44,7 +44,6 @@ export type IdentifyBboxCorners = [
 export type IdentifySessionOptions = {
   getIdentifies: () => IIdentifyView[];
   mapId: string;
-  preferResultControl?: boolean;
   /** Sticky map-click (toolbar immediately mode). */
   immediately?: boolean | (() => boolean);
   callMap?: (fn: (map: MapSimple) => void) => void;
@@ -210,20 +209,29 @@ export function createIdentifySession(
         pointOrBox,
         event,
         filterIdentifyId: model.getState().filterIdentifyId,
-        preferResultControl: !!options.preferResultControl,
         signal: ac.signal,
+        requestId: generation,
       });
     } catch (error) {
       if (isIdentifyAbortError(error) || ac.signal.aborted) {
         return undefined;
       }
-      throw error;
+      if (!destroyed && generation === queryGeneration) {
+        const message =
+          error instanceof Error ? error.message : String(error ?? 'Identify failed');
+        options.syncResultPanel?.({ error: message, loading: false });
+        clearLoadingUi();
+      }
+      return undefined;
     } finally {
       if (queryAbort === ac) {
         queryAbort = null;
       }
       if (!destroyed && generation === queryGeneration) {
-        clearLoadingUi();
+        // clearLoadingUi may already have run on error path; safe to call again.
+        if (model.getState().loading) {
+          clearLoadingUi();
+        }
       }
     }
   }

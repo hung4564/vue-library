@@ -11,7 +11,6 @@ import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   ExportGeoForm,
-  HighlightPointer,
   type ExportGeoFormProps,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
@@ -122,7 +121,6 @@ export function DatasetGeoExportPage() {
           }
           endList={({ mapId: mid }) => <BaseMapCard mapId={mid} />}
         />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

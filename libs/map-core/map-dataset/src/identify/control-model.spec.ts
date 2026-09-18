@@ -68,8 +68,9 @@ describe('identify control-model', () => {
     });
     expect(activated.kind).toBe('activate');
     expect(model.getState().filterIdentifyId).toBe('x');
-    expect(model.getState().show).toBe(true);
+    expect(model.getState().show).toBe(false);
 
+    model.setShow(true);
     const toggled = model.toggleShow();
     expect(toggled.show).toBe(false);
     expect(toggled.removeIdentify).toBe(true);

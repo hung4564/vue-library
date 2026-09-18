@@ -49,11 +49,6 @@ export function IdentifyControl(
   props: WithMapPropType & {
     show?: boolean;
     immediately?: boolean;
-    /**
-     * Always open Identify Result panel (skip auto show-detail / attribute-table),
-     * even when those menus are registered.
-     */
-    preferResultControl?: boolean;
   },
 ) {
   const merged = { ...defaultMapProps, ...props };
@@ -135,7 +130,6 @@ export function IdentifyControl(
     sessionRef.current = createIdentifySession({
       mapId,
       getIdentifies: () => viewsRef.current,
-      preferResultControl: !!props.preferResultControl,
       immediately: () => immediatelyRef.current,
       callMap: (fn) => callMapRef.current(fn),
       translateAllLayers: () =>
@@ -300,7 +294,6 @@ export function IdentifyControl(
       position: merged.position,
       controlLayout: merged.controlLayout,
       immediately: props.immediately,
-      preferResultControl: props.preferResultControl,
     }),
     actions: [
       { type: IDENTIFY_CONTROL.id, run: () => handleToggle() },
@@ -340,6 +333,16 @@ export function IdentifyControl(
         type: IDENTIFY_CONTROL.actionSetLoading,
         run: (event) => {
           session.setLoading(!!event);
+          syncFromModel();
+          control.sync();
+        },
+      },
+      {
+        type: IDENTIFY_CONTROL.actionSyncToolbarShow,
+        run: (event) => {
+          const next = !!event;
+          if (session.getState().show === next) return;
+          session.setShow(next);
           syncFromModel();
           control.sync();
         },

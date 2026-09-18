@@ -10,7 +10,6 @@ import {
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
 import { useState } from 'react';
@@ -78,7 +77,6 @@ export function DatasetListPage() {
           }
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

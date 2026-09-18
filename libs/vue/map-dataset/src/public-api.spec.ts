@@ -26,7 +26,6 @@ export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'ExportGeoForm',
   'ExportGeoFormatMenu',
   'ExportGeoLoading',
-  'HighlightPointer',
   'IdentifyControl',
   'IdentifyLayerAction',
   'IdentifyResultControl',

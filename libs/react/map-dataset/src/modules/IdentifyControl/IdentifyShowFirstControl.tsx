@@ -5,6 +5,7 @@ import type { IDataset } from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   IDENTIFY_CONTROL,
+  isIdentifyAbortError,
   runIdentifyShowFirst,
 } from '@hungpvq/map-dataset/identify';
 import {
@@ -16,14 +17,7 @@ import type { MapMouseEvent } from 'maplibre-gl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDataset } from '../../store/dataset-api';
 
-export function IdentifyShowFirstControl(
-  props: WithMapPropType & {
-    /**
-     * Always open Identify Result panel (skip auto show-detail / attribute-table).
-     */
-    preferResultControl?: boolean;
-  },
-) {
+export function IdentifyShowFirstControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, callMap } = useMap({
     ...merged,
@@ -33,11 +27,10 @@ export function IdentifyShowFirstControl(
   const [views, setViews] = useState<Array<IIdentifyView & IDataset>>([]);
   const viewsRef = useRef(views);
   viewsRef.current = views;
-  const loadingRef = useRef(false);
-  const preferResultControlRef = useRef(!!props.preferResultControl);
-  preferResultControlRef.current = !!props.preferResultControl;
   const callMapRef = useRef(callMap);
   callMapRef.current = callMap;
+  const queryAbortRef = useRef<AbortController | null>(null);
+  const queryGenerationRef = useRef(0);
 
   useEffect(() => {
     const next =
@@ -54,7 +47,6 @@ export function IdentifyShowFirstControl(
   }, [datasetVersion, mapId, getAllComponentsByType]);
 
   const setLoading = (value: boolean) => {
-    loadingRef.current = value;
     callMapRef.current((map) => {
       map.getCanvas().style.cursor = value ? 'wait' : '';
     });
@@ -83,7 +75,11 @@ export function IdentifyShowFirstControl(
   );
 
   async function onGetFeatures(e: MapMouseEvent) {
-    if (loadingRef.current) return;
+    queryAbortRef.current?.abort();
+    const ac = new AbortController();
+    queryAbortRef.current = ac;
+    const generation = ++queryGenerationRef.current;
+
     setLoading(true);
     try {
       await runIdentifyShowFirst({
@@ -91,10 +87,21 @@ export function IdentifyShowFirstControl(
         mapId,
         pointOrBox: e.point,
         event: e,
-        preferResultControl: preferResultControlRef.current,
+        signal: ac.signal,
+        requestId: generation,
       });
+    } catch (error) {
+      if (isIdentifyAbortError(error) || ac.signal.aborted) {
+        return;
+      }
+      // Loading cleared in finally; avoid unhandled rejection from void click handler.
     } finally {
-      setLoading(false);
+      if (queryAbortRef.current === ac) {
+        queryAbortRef.current = null;
+      }
+      if (generation === queryGenerationRef.current) {
+        setLoading(false);
+      }
     }
   }
 
@@ -105,11 +112,11 @@ export function IdentifyShowFirstControl(
   useEffect(() => {
     addEventClick();
     return () => {
+      queryAbortRef.current?.abort();
       removeEventClick();
-      if (loadingRef.current) setLoading(false);
+      setLoading(false);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addEventClick, removeEventClick]);
+  }, [mapId]);
 
   return null;
 }

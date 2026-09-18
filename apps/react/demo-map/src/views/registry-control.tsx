@@ -26,7 +26,6 @@ import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
@@ -78,7 +77,6 @@ export function RegistryControlPage() {
         <BaseMapControl position="bottom-left" />
 
         <IdentifyShowFirstControl />
-        <HighlightPointer enableClick />
 
         <RegistryControl position="top-right" show />
         <DemoHelpPanel />

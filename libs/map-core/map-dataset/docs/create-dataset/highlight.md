@@ -2,9 +2,9 @@
 
 Paint selected / identified / pointer-picked features via **`@hungpvq/map-dataset/highlight`**.
 
-Dataset parts hold configuration only. Painting and pointer binding run through **`getHighlightController(mapId)`** (or adapter **`useMapHighlight(mapId)`**). Demo apps mount a thin **`HighlightPointer`** shell that calls `bindPointer` — there is no `LayerHighlight` control.
+Dataset parts hold configuration only. Painting and pointer binding run through **`getHighlightController(mapId)`** (or adapter **`useMapHighlight(mapId)`**). There is no `LayerHighlight` control and no adapter-exported `HighlightPointer` — apps call `bindPointer` themselves (or rely on Identify → **HighlightResolver** for click paint).
 
-**Import:** always from `@hungpvq/map-dataset/highlight` (not the package root).
+**Import:** always from `@hungpvq/map-dataset/highlight` (not the package root). Highlight **map-FX policy** after Identify / AttributeTable lives on `@hungpvq/map-dataset/identify` (`HighlightResolver` APIs below).
 
 ## Attach a part
 
@@ -52,20 +52,82 @@ createHighlightPart({ pointer: { click: false, hover: true } }); // hover-only
 createHighlightPart(); // both (default)
 ```
 
-Shell must enable the matching events:
+Shell must enable the matching events via `bindPointer`:
 
-```vue
-<!-- Vue demo shell -->
-<HighlightPointer enable-click enable-hover />
+```ts
+import { useMapHighlight } from '@hungpvq/vue-map-dataset';
+// or: import { useMapHighlight } from '@hungpvq/react-map-dataset';
+
+const hl = useMapHighlight(mapId);
+const unbind = hl.bindPointer({ click: true, hover: true });
+// on unmount:
+unbind();
 ```
 
-```tsx
-<HighlightPointer enableClick enableHover />
-```
-
-Adapters: `useMapHighlight(mapId).bindPointer({ click, hover })`. Core: `getHighlightController(mapId).bindPointer(…)`. Destroy with `destroyHighlightController(mapId)` from `@hungpvq/map-dataset/highlight` (do not re-export from Vue/React adapters).
+Core: `getHighlightController(mapId).bindPointer(…)`. Destroy with `destroyHighlightController(mapId)` from `@hungpvq/map-dataset/highlight` (do not re-export from Vue/React adapters).
 
 **Lifecycle:** `getHighlightController` registers `registerMapStoreCleanup(mapId, 'highlight', …)`. On `removeMap`, that cleanup unbinds pointer listeners and destroys the controller — apps should still call `unbind()` / `destroyHighlightController` on component unmount when the map shell stays alive.
+
+When **IdentifyControl** owns the click, disable part `pointer.click` (and do not `bindPointer({ click: true })`) so Identify + pointer do not double-fire. Hover-only bind is fine: `bindPointer({ click: false, hover: true })`.
+
+## HighlightResolver (Identify / AttributeTable map FX)
+
+After each Identify run (and AttributeTable row selection), map paint goes through a **FallbackResolver** — same registry pattern as the Identify UI resolver.
+
+**Import:** `@hungpvq/map-dataset/identify`
+
+| API | Role |
+| --- | --- |
+| `createDefaultHighlightResolver()` | Fresh default (compose / override) |
+| `highlightResolver` | Package default instance |
+| `setGlobalHighlightResolver` / `getGlobalHighlightResolver` | Process default on `map:core:meta.registries['highlight-resolver']` |
+| `setHighlightResolver(mapId, resolver \| null)` / `getHighlightResolver(mapId)` | Per-map override on `map:core[mapId].resolver['highlight-resolver']` |
+| `runHighlight(ctx)` | `getHighlightResolver(mapId).execute(ctx)` |
+| `runHighlightFromRecords({ mapId, records, … })` | Identify path helper (`records` → features in prepare) |
+| `HighlightContext` | `{ mapId, records?, features?, count?, dataset?, sources?, signal? }` |
+
+**Default policy:** exactly **one** feature → `show` (`source: 'identify'` or caller); otherwise clear those sources (no paint).
+
+```ts
+import {
+  createDefaultHighlightResolver,
+  setGlobalHighlightResolver,
+  setHighlightResolver,
+  getHighlightResolver,
+  highlightResolver,
+} from '@hungpvq/map-dataset/identify';
+import { getHighlightController } from '@hungpvq/map-dataset/highlight';
+
+// Global override (demo / app-wide)
+const custom = createDefaultHighlightResolver();
+custom.clear().add({
+  when: (ctx) => (ctx.count ?? 0) >= 1 && !!ctx.features?.[0],
+  execute: async (ctx) => {
+    await getHighlightController(ctx.mapId).show(ctx.features![0]!, {
+      source: ctx.sources?.[0] ?? 'identify',
+      dataset: ctx.dataset,
+    });
+  },
+});
+setGlobalHighlightResolver(custom);
+
+// Per-map (null clears override → falls back to global / package default)
+setHighlightResolver(mapId, createDefaultHighlightResolver());
+
+// Same call shape as getIdentifyResolver(mapId).execute({ records, mapId })
+await getHighlightResolver(mapId).execute({
+  mapId,
+  records: nonEmptyIdentifyResults,
+  signal,
+});
+
+// Restore package default
+setGlobalHighlightResolver(highlightResolver);
+```
+
+IdentifyControl path: after UI resolve, `runIdentifyMulti` / `runIdentifyShowFirst` call `getHighlightResolver(mapId).execute({ mapId, records, signal })`. AttributeTable calls `runHighlight({ mapId, count, features, sources: ['attribute-table'], … })`.
+
+Demo: `/#/dataset-highlight` applies a global override (paint first hit even when multi) and uses Identify for click + hover `bindPointer`.
 
 ## Controller
 
@@ -160,6 +222,7 @@ Hover never shows a MapLibre popup. Imperative `show(..., { source: 'attribute-t
 
 1. Replace `createDatasetPart*Highlight*` → `createHighlightPart` from `/highlight`.
 2. Remove `IHighlightView` / `HighlightHandle` / `useHighlightAnimation` usage.
-3. Replace `<LayerHighlight …>` with app shell **`HighlightPointer`** (or `useMapHighlight().bindPointer`).
-4. Attribute-table / identify / menu call `show` / `hideIfSource` with `source: 'attribute-table' | 'identify' | …` — no mount requirement beyond the controller existing when you call it.
-5. Do not import highlight APIs from `@hungpvq/map-dataset` root.
+3. Replace `<LayerHighlight …>` / adapter `HighlightPointer` with `useMapHighlight().bindPointer` (or Identify + `HighlightResolver` for click paint).
+4. Rename former Identify highlight APIs: `*IdentifyHighlight*` → `*Highlight*` (`createDefaultHighlightResolver`, `setGlobalHighlightResolver`, `runHighlight`, `HighlightContext`, …). **Major** SemVer.
+5. Attribute-table / identify / menu call `show` / `hideIfSource` with `source: 'attribute-table' | 'identify' | …` — or go through `runHighlight` / `getHighlightResolver`.
+6. Do not import highlight APIs from `@hungpvq/map-dataset` root.

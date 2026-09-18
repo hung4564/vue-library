@@ -10,6 +10,7 @@ import type { IDataset } from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   IDENTIFY_CONTROL,
+  isIdentifyAbortError,
   runIdentifyShowFirst,
 } from '@hungpvq/map-dataset/identify';
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
@@ -18,23 +19,18 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 
 const props = withDefaults(
-  defineProps<
-    WithMapPropType & {
-      /**
-       * Always open Identify Result panel (skip auto show-detail / attribute-table).
-       */
-      preferResultControl?: boolean;
-    }
-  >(),
+  defineProps<WithMapPropType>(),
   {
     ...defaultMapProps,
-    preferResultControl: false,
   },
 );
 const { mapId, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const views = ref<Array<IIdentifyView & IDataset>>([]);
 const loading = ref(false);
+
+let queryAbort: AbortController | null = null;
+let queryGeneration = 0;
 
 function refreshViews() {
   views.value =
@@ -67,7 +63,11 @@ function onMapClick(e: MapMouseEvent) {
 }
 
 async function onGetFeatures(e: MapMouseEvent) {
-  if (loading.value) return;
+  queryAbort?.abort();
+  const ac = new AbortController();
+  queryAbort = ac;
+  const generation = ++queryGeneration;
+
   setLoading(true);
   try {
     await runIdentifyShowFirst({
@@ -75,10 +75,21 @@ async function onGetFeatures(e: MapMouseEvent) {
       mapId: mapId.value,
       pointOrBox: e.point,
       event: e,
-      preferResultControl: !!props.preferResultControl,
+      signal: ac.signal,
+      requestId: generation,
     });
+  } catch (error) {
+    if (isIdentifyAbortError(error) || ac.signal.aborted) {
+      return;
+    }
+    // Loading cleared in finally; avoid unhandled rejection from void click handler.
   } finally {
-    setLoading(false);
+    if (queryAbort === ac) {
+      queryAbort = null;
+    }
+    if (generation === queryGeneration) {
+      setLoading(false);
+    }
   }
 }
 
@@ -87,6 +98,8 @@ onMounted(() => {
 });
 onUnmounted(() => {
   removeEventClick();
+  queryAbort?.abort();
+  queryAbort = null;
   if (loading.value) setLoading(false);
 });
 </script>
