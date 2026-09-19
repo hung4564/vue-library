@@ -2,7 +2,6 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   getLayerControlTitleMenuState,
-  LAYER_CONTROL_LOCALE,
   registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
   type IDataset,
@@ -31,6 +30,7 @@ import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
@@ -63,7 +63,8 @@ export function LayerControl(props: LayerControlProps) {
     ...merged,
     controlId: 'mapLayerControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
+  useEnsureDatasetBuiltinLocales(mapId);
   const [show, setShow] = useShow(props.show);
   const [showCreate, toggleShowCreate] = useShow(false);
 
@@ -101,11 +102,7 @@ export function LayerControl(props: LayerControlProps) {
     actions: [{ type: 'mapLayerControl', run: () => setShow() }],
   });
 
-  useEffect(() => {
-    registerLocale('en', LAYER_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const { state, control } = useToolbarControl(mapId, merged, {
+const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerControl',
     getState: () =>

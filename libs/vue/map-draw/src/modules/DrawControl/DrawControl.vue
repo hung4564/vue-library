@@ -17,14 +17,14 @@ import { ContextMenu } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
-  useLang,
   useMap,
   useToolbarControl,
 } from '@hungpvq/vue-map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { Feature, FeatureCollection } from 'geojson';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { DRAW_CONTROL_LOCALE, isDraftOption } from '@hungpvq/map-draw';
+import { isDraftOption } from '@hungpvq/map-draw';
+import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
@@ -52,8 +52,7 @@ const drawHandle = createMapDrawControl({
 });
 const control = drawHandle.control;
 const { mapId, moduleContainerProps, callMap, order } = useMap(props);
-const { registerLocale } = useLang(mapId.value);
-registerLocale('en', DRAW_CONTROL_LOCALE);
+useEnsureDrawBuiltinLocales(mapId.value);
 const isShow = ref(false);
 function onStart(config: MapDrawOption) {
   isShow.value = true;

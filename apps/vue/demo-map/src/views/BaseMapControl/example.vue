@@ -33,19 +33,8 @@ function onMapLoaded(map: MapSimple) {
   </Map>
 </template>
 
-<style></style>
-
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
 
-body,
-html,
-#root {
-  height: 100%;
-}
 .base-map-card {
   position: fixed;
   top: 10px;

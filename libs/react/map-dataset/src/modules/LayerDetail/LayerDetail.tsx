@@ -1,5 +1,4 @@
 import {
-  LAYER_DETAIL_LOCALE,
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
@@ -99,16 +98,12 @@ export function LayerDetail({
     controlId: 'mapLayerDetail',
   });
   const hl = useMapHighlight(mapId);
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
   const closedRef = useRef(false);
 
-  useEffect(() => {
-    registerLocale('en', LAYER_DETAIL_LOCALE);
-  }, [registerLocale]);
-
-  const itemMenuHost = useMemo(
+const itemMenuHost = useMemo(
     () => (view ? getItemMenuHost(view) : undefined),
     [view],
   );

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <Map>
     <DevtoolsControl position="bottom-right" />
     <AsideControl position="top-left" />
@@ -26,13 +26,11 @@
 <script setup lang="ts">
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import {
-  deepMergeLocale,
+  MAP_CORE_LOCALE_VI,
   type MapLangFlatMessages,
   type MapLangLocale,
   type MapLanguageCode,
 } from '@hungpvq/map-core';
-import { MAP_DATASET_LOCALE_EN, MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
-import { MAP_DRAW_LOCALE_EN, MAP_DRAW_LOCALE_VI } from '@hungpvq/map-draw';
 import {
   BaseMapControl,
   GotoControl,
@@ -73,8 +71,7 @@ const FR_LOCALE: MapLangLocale = {
 };
 
 const extraLocales = {
-  en: deepMergeLocale(MAP_DATASET_LOCALE_EN, MAP_DRAW_LOCALE_EN),
-  vi: deepMergeLocale(MAP_DATASET_LOCALE_VI, MAP_DRAW_LOCALE_VI),
+  vi: MAP_CORE_LOCALE_VI,
   fr: FR_LOCALE,
 };
 
@@ -94,14 +91,4 @@ async function localeLoader(
 }
 </script>
 
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>
+

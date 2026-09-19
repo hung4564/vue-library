@@ -24,6 +24,7 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'INSPECT_CONTROL_LOCALE',
   'MAP_DRAW_LOCALE_EN',
   'MAP_DRAW_LOCALE_VI',
+  'registerMapDrawBuiltinLocales',
   'InspectController',
   'isDraftOption',
   'isInspectStyle',

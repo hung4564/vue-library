@@ -2,7 +2,7 @@ import { logHelper } from '@hungpvq/map-core';
 import {
   type BaseMapItem,
   MittTypeBaseMap,
-  BasemapManager,
+  getOrCreateBasemapManager,
   subscribeBasemapMirror,
   logger,
 } from '@hungpvq/map-core/basemap';
@@ -10,27 +10,31 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useMapBaseMapStore } from '../store';
 
+function basemapHookLogger(
+  mapIdParam: string,
+  level: 'debug' | 'info' | 'warn' | 'error',
+  message: string,
+  data?: unknown,
+) {
+  const fn =
+    typeof message === 'string' && message.length > 0 ? message : 'useBaseMap';
+  logHelper(logger, mapIdParam, 'hook', 'useBaseMap').with({
+    fn,
+    span: `hook.${fn}`,
+  })[level](message, data);
+}
+
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
   const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
+  const manager = getOrCreateBasemapManager(
+    mapId,
+    state,
+    emitter,
+    basemapHookLogger,
+  );
 
-  const managerRef = useRef<BasemapManager | null>(null);
-  if (!managerRef.current) {
-    managerRef.current = new BasemapManager(
-      mapId,
-      state,
-      state.adapter,
-      emitter,
-      (mapIdParam, level, message, data) => {
-        logHelper(logger, mapIdParam, 'hook', 'useBaseMap')
-          .with({ fn: 'useBaseMap', span: 'hook.add' })
-          [level](message, data);
-      },
-    );
-  }
-  const manager = managerRef.current;
-  const unsubscribeRef = useRef<(() => void) | null>(null);
-
+  const unsubRef = useRef<(() => void) | null>(null);
   const [baseMaps, setBaseMapsState] = useState<BaseMapItem[]>(
     manager.getBaseMaps(),
   );
@@ -41,14 +45,14 @@ export function useBaseMap(mapId: string) {
   useEffect(() => {
     setBaseMapsState(manager.getBaseMaps());
     setCurrentBaseMapState(manager.getCurrent());
-
-    unsubscribeRef.current = subscribeBasemapMirror(emitter, {
+    const unsub = subscribeBasemapMirror(emitter, {
       onBaseMaps: setBaseMapsState,
       onCurrent: setCurrentBaseMapState,
     });
+    unsubRef.current = unsub;
     return () => {
-      unsubscribeRef.current?.();
-      unsubscribeRef.current = null;
+      unsub();
+      unsubRef.current = null;
     };
   }, [emitter, manager]);
 
@@ -70,8 +74,8 @@ export function useBaseMap(mapId: string) {
     [manager],
   );
   const remove = useCallback(() => {
-    unsubscribeRef.current?.();
-    unsubscribeRef.current = null;
+    unsubRef.current?.();
+    unsubRef.current = null;
   }, []);
 
   return {

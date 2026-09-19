@@ -1,7 +1,6 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   createPrintAdvancedSession,
-  PRINT_CONTROL_LOCALE,
   type PrintAdvancedSession,
   type PrintAdvancedUiState,
   type PrintOption,
@@ -55,7 +54,7 @@ export function PrintAdvancedControl({
     { ...merged, controlId: 'mapPrintAdvancedControl' },
     onInit,
   );
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { initPrint } = useMapPrint(mapId);
 
   const [print, setPrint] = useState<PrintAdvancedUiState>({
@@ -98,11 +97,7 @@ export function PrintAdvancedControl({
   }
   const session = sessionRef.current;
 
-  useEffect(() => {
-    registerLocale('en', PRINT_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(() => {
+useEffect(() => {
     return () => {
       session.destroy();
     };

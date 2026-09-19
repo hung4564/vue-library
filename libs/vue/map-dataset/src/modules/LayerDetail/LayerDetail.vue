@@ -6,7 +6,6 @@ export default {
 
 <script setup lang="ts">
 import {
-  LAYER_DETAIL_LOCALE,
   type FieldFeaturesDef,
   type IDataset,
 } from '@hungpvq/map-dataset';
@@ -45,9 +44,7 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
 const hl = useMapHighlight(mapId.value);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', LAYER_DETAIL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const show = ref(true);
 /** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
 let closed = false;

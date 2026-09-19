@@ -8,6 +8,11 @@ import {
   type LogEventPayload,
 } from '@hungpvq/shared-log';
 import mitt, { Emitter, EventType, Handler, WildcardHandler } from 'mitt';
+import {
+  ensureMapDomainStore,
+  registerMapDomainStoreFactory,
+} from '../store/map-domain-store';
+import { MAP_STORE_KEY } from '../types/constants';
 import { logHelper } from '../utils/log';
 
 const mittLogger = () =>
@@ -155,4 +160,15 @@ export function createMapMitt<
     off,
     emit,
   };
+}
+
+registerMapDomainStoreFactory(MAP_STORE_KEY.MITT, {
+  create: (mapId) => createMapMitt({ mapId }),
+});
+
+/** Get or create the map mitt emitter (framework-agnostic). */
+export function ensureMapMitt<
+  T extends Record<EventType, unknown> = Record<EventType, unknown>,
+>(mapId: string): Emitter<T> {
+  return ensureMapDomainStore<Emitter<T>>(mapId, MAP_STORE_KEY.MITT);
 }

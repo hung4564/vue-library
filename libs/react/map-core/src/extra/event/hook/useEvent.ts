@@ -177,6 +177,9 @@ export function useEventListener<K extends KnownMapEvent>(
   const cancelledRef = useRef(false);
 
   const add = useCallback(() => {
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'add', span: 'hook.add' })
+      .debug(`add map listener: ${event}`, { event });
     cancelledRef.current = false;
     unsubscribeReadyRef.current?.();
     unsubscribeReadyRef.current = subscribeMapReady(mapId, (map) => {
@@ -188,6 +191,9 @@ export function useEventListener<K extends KnownMapEvent>(
   }, [mapId, event]);
 
   const remove = useCallback(() => {
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'remove', span: 'hook.remove' })
+      .debug(`remove map listener: ${event}`, { event });
     cancelledRef.current = true;
     unsubscribeReadyRef.current?.();
     unsubscribeReadyRef.current = undefined;

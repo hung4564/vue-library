@@ -104,12 +104,37 @@ describe('createMapLocaleApi', () => {
     });
     const pack = { map: { home: { title: 'Home' } } };
     expect(api.registerLocale('en', pack)).toBe(true);
+    api.flushLocaleRegistrations();
     expect(emitted).toHaveLength(1);
     expect(api.registerLocale('en', pack)).toBe(false);
+    api.flushLocaleRegistrations();
     expect(emitted).toHaveLength(1);
     expect(api.registerLocale('en', { map: { home: { title: 'Home' } } })).toBe(
       false,
     );
+    api.flushLocaleRegistrations();
+    expect(emitted).toHaveLength(1);
+  });
+
+  it('batches registerLocale emits into one flush', () => {
+    const store = createDefaultLangStore();
+    const emitted: string[] = [];
+    const api = createMapLocaleApi({
+      getStore: () => store,
+      getEmitter: () => ({
+        emit: (e) => {
+          emitted.push(e);
+        },
+      }),
+    });
+    expect(api.registerLocale('en', { map: { home: { title: 'A' } } })).toBe(
+      true,
+    );
+    expect(api.registerLocale('en', { map: { basemap: { title: 'B' } } })).toBe(
+      true,
+    );
+    expect(emitted).toHaveLength(0);
+    api.flushLocaleRegistrations();
     expect(emitted).toHaveLength(1);
   });
 
@@ -132,27 +157,37 @@ describe('createMapLocaleApi', () => {
     expect(store.loadingLanguages['vi']).toBeUndefined();
   });
 
-  it('loadLocale skips when catalog exists unless force', async () => {
+  it('loadLocale merges overlay on top of built-in catalog', async () => {
     const store = createDefaultLangStore();
     const api = createMapLocaleApi({ getStore: () => store });
-    api.registerLocale('vi', { map: { home: { title: 'First' } } });
+    api.registerLocale('vi', { map: { home: { title: 'Built-in' } } });
     let calls = 0;
     await api.loadLocale('vi', async () => {
       calls += 1;
-      return { 'map.home.title': 'Second' };
+      return { 'map.home.title': 'From API' };
     });
-    expect(calls).toBe(0);
+    expect(calls).toBe(1);
+    api.setLanguage('vi', false);
+    expect(translateMapLang(store, 'map.home.title')).toBe('From API');
+
+    // Second call without force skips re-fetch (already loaded via loader).
+    await api.loadLocale('vi', async () => {
+      calls += 1;
+      return { 'map.home.title': 'Again' };
+    });
+    expect(calls).toBe(1);
+    expect(translateMapLang(store, 'map.home.title')).toBe('From API');
+
     await api.loadLocale(
       'vi',
       async () => {
         calls += 1;
-        return { 'map.home.title': 'Second' };
+        return { 'map.home.title': 'Forced' };
       },
       { force: true },
     );
-    expect(calls).toBe(1);
-    api.setLanguage('vi', false);
-    expect(translateMapLang(store, 'map.home.title')).toBe('Second');
+    expect(calls).toBe(2);
+    expect(translateMapLang(store, 'map.home.title')).toBe('Forced');
   });
 
   it('setMapTranslate can fall back to catalogs', () => {
@@ -175,6 +210,25 @@ describe('createMapLocaleApi', () => {
     expect(translateMapLang(store, 'map.home.title')).toBe('X');
     api.setMapTranslate(null);
     expect(translateMapLang(store, 'map.home.title')).toBe('Home');
+  });
+
+  it('setMapTranslate(null) does not emit when already cleared', () => {
+    const store = createDefaultLangStore();
+    const emitted: string[] = [];
+    const api = createMapLocaleApi({
+      getStore: () => store,
+      getEmitter: () => ({
+        emit: (key) => emitted.push(key),
+      }),
+    });
+    api.setMapTranslate(null);
+    expect(emitted).toHaveLength(0);
+    api.setMapTranslate(() => 'x');
+    expect(emitted).toHaveLength(1);
+    api.setMapTranslate(null);
+    expect(emitted).toHaveLength(2);
+    api.setMapTranslate(null);
+    expect(emitted).toHaveLength(2);
   });
 
   it('setMapTranslate bypasses catalogs when no fallback used', () => {
@@ -249,29 +303,43 @@ describe('LanguageControl bootstrap helpers', () => {
     });
   });
 
-  it('registers EN/VI packs and extra locales', () => {
-    const registered: Record<string, unknown> = {};
+  it('registers locale packs only for codes listed in languages', () => {
+    const registered: Array<{ code: string; tree: unknown }> = [];
     const labels: Record<string, string> = {};
     registerLanguageControlPacks({
       registerLocale: (code, tree) => {
-        registered[code] = tree;
+        registered.push({ code, tree });
       },
       registerLanguage: (code, opts) => {
         labels[code] = opts?.label ?? code;
       },
-      coreLocaleEn: { map: { home: { title: 'Home' } } },
-      coreLocaleVi: { map: { home: { title: 'Nhà' } } },
       locales: {
         en: { map: { basemap: { title: 'Basemap' } } },
         fr: { map: { home: { title: 'Accueil' } } },
+        // Not in languages → must not register
+        de: { map: { home: { title: 'Start' } } },
       },
       labels: { fr: 'Français' },
       languages: ['en', 'vi', 'fr'],
     });
-    expect(registered['en']).toBeTruthy();
-    expect(registered['vi']).toBeTruthy();
-    expect(registered['fr']).toEqual({ map: { home: { title: 'Accueil' } } });
+    expect(registered.map((r) => r.code)).toEqual(['en', 'fr']);
+    expect(registered[0].tree).toEqual({
+      map: { basemap: { title: 'Basemap' } },
+    });
+    expect(registered[1].tree).toEqual({ map: { home: { title: 'Accueil' } } });
     expect(labels['fr']).toBe('Français');
     expect(labels['en']).toBe('EN');
+    expect(labels['vi']).toBe('VI');
+    expect(labels['de']).toBeUndefined();
+  });
+});
+
+describe('ensureMapLocaleApi', () => {
+  it('returns a stable API instance per map store', async () => {
+    const { ensureMapLocaleApi } = await import('./lang-register-domain-store');
+    const a = ensureMapLocaleApi('map-locale-stable');
+    const b = ensureMapLocaleApi('map-locale-stable');
+    expect(a).toBe(b);
+    expect(a.registerLocale).toBe(b.registerLocale);
   });
 });

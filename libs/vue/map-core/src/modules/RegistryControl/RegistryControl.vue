@@ -6,7 +6,6 @@ export default {
 <script setup lang="ts">
 import {
   filterMapControls,
-  REGISTRY_CONTROL_LOCALE,
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -37,9 +36,7 @@ const { mapId, moduleContainerProps, order } = useMap({
   ...props,
   controlId: CONTROL_ID,
 });
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', REGISTRY_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const controls = ref<MapControlHandle[]>([]);
 const query = ref('');
 const selectedId = ref('');

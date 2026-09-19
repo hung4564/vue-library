@@ -24,7 +24,6 @@ export { default as BaseMapControl } from './extra/basemap/modules/BaseMapContro
 export { default as BaseMapTagControl } from './extra/basemap/modules/BaseMapTagControl.vue';
 
 export {
-  useBaseMapAdapter,
   useMapBaseMapStore,
 } from './extra/basemap/store';
 

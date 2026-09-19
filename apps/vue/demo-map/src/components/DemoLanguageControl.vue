@@ -1,15 +1,18 @@
 <script setup lang="ts">
 /**
- * Shared LanguageControl for all demo maps: default VI, EN+VI packs (core+dataset+draw).
+ * Shared LanguageControl: default VI.
+ * Package default catalogs (EN) seed once per lib; extra langs via `locales`.
  */
-import { deepMergeLocale } from '@hungpvq/map-core';
-import { MAP_DATASET_LOCALE_EN, MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
-import { MAP_DRAW_LOCALE_EN, MAP_DRAW_LOCALE_VI } from '@hungpvq/map-draw';
+import { deepMergeLocale, MAP_CORE_LOCALE_VI } from '@hungpvq/map-core';
+import { MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
+import { MAP_DRAW_LOCALE_VI } from '@hungpvq/map-draw';
 import { LanguageControl } from '@hungpvq/vue-map-core';
 
 const locales = {
-  en: deepMergeLocale(MAP_DATASET_LOCALE_EN, MAP_DRAW_LOCALE_EN),
-  vi: deepMergeLocale(MAP_DATASET_LOCALE_VI, MAP_DRAW_LOCALE_VI),
+  vi: deepMergeLocale(
+    deepMergeLocale(MAP_CORE_LOCALE_VI, MAP_DATASET_LOCALE_VI),
+    MAP_DRAW_LOCALE_VI,
+  ),
 };
 </script>
 

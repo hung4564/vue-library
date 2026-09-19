@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { onMounted, Ref, ref, shallowRef } from 'vue';
 
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
@@ -13,16 +14,13 @@ import {
 
 import { MapSimple } from '@hungpvq/map-core';
 import { ComponentType, findSiblingOrNearestLeaf, IDataset, IMapboxLayerView, isMapboxLayerView } from '@hungpvq/map-dataset';
-import { STYLE_CONTROL_LOCALE } from '@hungpvq/map-dataset/style';
+
 import { copyByJson } from '@hungpvq/shared';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();
 const { mapId, callMap } = useMap();
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', STYLE_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const [show, toggleShow] = useShow(false);
 const { panelPosition } = useRegisterMapControl(mapId, {
   id: 'mapStyleControl',

@@ -114,16 +114,6 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
 .legend-control {
   position: fixed;
   top: 10px;

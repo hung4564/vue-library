@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   captureHomeView,
   goHome,
-  HOME_CONTROL_LOCALE,
   type HomeView,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -44,12 +43,7 @@ export function HomeControl(props: HomeControlProps) {
     { ...mergedProps, controlId: 'mapHomeControl' },
     onInit,
   );
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', HOME_CONTROL_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { trans } = useLang(mapId);
 
   function onGoHome() {
     callMap((map) => {

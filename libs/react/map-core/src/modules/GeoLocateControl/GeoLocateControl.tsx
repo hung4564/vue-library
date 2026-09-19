@@ -1,6 +1,5 @@
 import {
   GeoLocateSession,
-  MAP_ACTION_LOCALE,
   type GeoLocateControlOptions,
   type GeoLocateUiState,
   type MapSimple,
@@ -66,12 +65,7 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
       sessionRef.current = undefined;
     },
   );
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', MAP_ACTION_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { trans } = useLang(mapId);
 
   useEffect(() => {
     setUi(INITIAL_UI);

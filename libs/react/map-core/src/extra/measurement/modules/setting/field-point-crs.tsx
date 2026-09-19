@@ -1,6 +1,6 @@
 import type { IViewSettingField } from '@hungpvq/map-core/measurement';
+
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   resolveCrsDisplayItems,
@@ -27,15 +27,11 @@ export function FieldPointCrs({
   onChange,
 }: FieldPointCrsProps) {
   const { mapId } = useMap();
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { items: crsItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
 
-  useEffect(() => {
-    registerLocale('en', CRS_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const catalog = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
+const catalog = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
   const displayItems = useMemo(
     () => resolveCrsDisplayItems(displayEpsgs, catalog),
     [displayEpsgs, catalog],

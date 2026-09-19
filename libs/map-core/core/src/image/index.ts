@@ -7,6 +7,10 @@ export { createDefaultImageStore } from './types';
 export { createMapImageStoreApi } from './store-api';
 export type { MapImageGetMapFn } from './store-api';
 export {
+  ensureMapImageApi,
+  ensureMapImageStore,
+} from './register-domain-store';
+export {
   listMapStyleImages,
   subscribeMapStyleImages,
 } from './map-images';

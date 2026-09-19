@@ -4,7 +4,6 @@ import {
   filterWorkerSnapshots,
   formatWorkerDuration,
   resolveSelectedWorkerId,
-  WORKER_CONTROL_LOCALE,
   WorkerMonitor,
   workerHasHistory,
   workerLogsForDisplay,
@@ -59,17 +58,13 @@ export function WorkerControl(props: WorkerControlProps) {
     ...merged,
     controlId: 'mapWorkerControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { workers, now, busy, clearHistory } = useWorkerMonitor();
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
 
-  useEffect(() => {
-    registerLocale('en', WORKER_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const filtered = useMemo(
+const filtered = useMemo(
     () => filterWorkerSnapshots(workers, query),
     [workers, query],
   );

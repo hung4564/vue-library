@@ -52,7 +52,6 @@ import {
 import { EventClick } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  MEASUREMENT_CONTROL_LOCALE,
   MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementSession,
   resolveMeasurementToolbarStatus,
@@ -126,9 +125,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
 const crsHandle = useMapCrsItems(mapId.value);
 const displayCrsHandle = useMapCrsDisplayEpsgs(mapId.value);
 const imageHandle = useMapImage(mapId.value);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', MEASUREMENT_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 function getMeasurePointCrsItems() {
   return resolveCrsDisplayItems(
     displayCrsHandle.displayEpsgs.value,

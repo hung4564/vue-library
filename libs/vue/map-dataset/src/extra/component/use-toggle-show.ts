@@ -1,9 +1,9 @@
 import {
   bindToggleShowAction,
   getToggleShowTitleKey,
-  LAYER_CONTROL_LOCALE,
   performToggleShowAction,
 } from '@hungpvq/map-dataset';
+
 import { useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
 import { useMapDatasetStore } from '../../store/dataset-store';
@@ -13,8 +13,7 @@ import type { WithLayerItemActionType } from './types';
 export function useToggleShowAction(props: WithLayerItemActionType) {
   const showValue = ref(props.data.show);
   const { callMap, mapId } = useMap(props);
-  const { trans, registerLocale } = useLang(mapId.value);
-  registerLocale('en', LAYER_CONTROL_LOCALE);
+  const { trans } = useLang(mapId.value);
   const store = useMapDatasetStore(mapId.value);
 
   const title = computed(() =>

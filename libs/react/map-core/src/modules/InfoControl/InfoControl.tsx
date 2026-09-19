@@ -3,7 +3,6 @@ import {
   copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
-  INFO_CONTROL_LOCALE,
   latDMS,
   lngDMS,
   parseCoordinateText,
@@ -44,7 +43,7 @@ export function InfoControl(props: InfoControlProps) {
     ...mergedProps,
     controlId: 'mapInfoControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_MAP_VIEW_INFO);
   const [centerDms, setCenterDms] = useState('');
@@ -52,11 +51,7 @@ export function InfoControl(props: InfoControlProps) {
   const [capturing, setCapturing] = useState(false);
   const detachInfoRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    registerLocale('en', INFO_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const syncInfo = useCallback(() => {
+const syncInfo = useCallback(() => {
     callMap((map) => {
       setInfo(readMapViewInfo(map));
       const c = map.getCenter();

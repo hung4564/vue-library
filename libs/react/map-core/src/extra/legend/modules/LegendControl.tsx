@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
-  LEGEND_CONTROL_LOCALE,
   getLegendName,
   isSupportGenLayerLegend,
   type LegendLayerSpecification,
@@ -25,7 +25,7 @@ export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLegendControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLegendControl',
     panelKind: 'popup',
@@ -47,11 +47,7 @@ export function LegendControl(props: WithMapPropType) {
   const onlyRenderRef = useRef(onlyRender);
   onlyRenderRef.current = onlyRender;
 
-  useEffect(() => {
-    registerLocale('en', LEGEND_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const updateLegend = useCallback(
+const updateLegend = useCallback(
     (map: MapSimple) => {
       if (!map) return;
       let layers: ReturnType<MapSimple['getStyle']>['layers'] = [];

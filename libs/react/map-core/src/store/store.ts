@@ -4,6 +4,8 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  ensureMapDomainStore,
+  hasMapDomainStoreFactory,
   isUsableMapId,
   MAP_PLATFORM_HOST,
   MAP_STORE_KEY,
@@ -87,11 +89,15 @@ export function createMapScopedStore<T>(
   if (!isUsableMapId(mapId)) {
     throw new Error('mapId is required');
   }
-  const existing = storeManager.peekStore<T>(mapId, key as string);
+  const keyStr = key as string;
+  if (hasMapDomainStoreFactory(keyStr)) {
+    return ensureMapDomainStore<T>(mapId, keyStr);
+  }
+  const existing = storeManager.peekStore<T>(mapId, keyStr);
   if (existing !== undefined) {
     return existing;
   }
-  return storeManager.addStore(mapId, key as string, factory, options);
+  return storeManager.addStore(mapId, keyStr, factory, options);
 }
 
 /**

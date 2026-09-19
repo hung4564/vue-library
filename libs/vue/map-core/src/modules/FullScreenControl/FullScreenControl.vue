@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  MAP_ACTION_LOCALE,
   isDocumentFullscreen,
   resolveMapFullscreenTarget,
   subscribeFullscreenChange,
@@ -27,9 +26,7 @@ const props = withDefaults(defineProps<WithMapPropType & { type?: string }>(), {
   type: 'body',
 });
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', MAP_ACTION_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const isFullscreen = ref(false);
 let stopFullscreen: (() => void) | undefined;
 

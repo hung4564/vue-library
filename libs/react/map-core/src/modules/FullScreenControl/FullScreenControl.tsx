@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  MAP_ACTION_LOCALE,
   isDocumentFullscreen,
   resolveMapFullscreenTarget,
   subscribeFullscreenChange,
@@ -31,12 +30,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
     ...mergedProps,
     controlId: 'mapFullscreenControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', MAP_ACTION_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { trans } = useLang(mapId);
 
   useEffect(() => {
     setIsFullscreen(isDocumentFullscreen());

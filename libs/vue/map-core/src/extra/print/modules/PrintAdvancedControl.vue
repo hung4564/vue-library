@@ -2,7 +2,6 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   createPrintAdvancedSession,
-  PRINT_CONTROL_LOCALE,
   type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
@@ -49,9 +48,7 @@ const path = {
   setting: mdiCogOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', PRINT_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const print = ref<PrintAdvancedUiState>({
   show: false,
   loading: false,

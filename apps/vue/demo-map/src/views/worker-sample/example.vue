@@ -148,17 +148,6 @@ onBeforeUnmount(() => {
   color: #c62828;
 }
 
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-
 .map-page {
   width: 100%;
   height: 100%;

@@ -42,17 +42,6 @@ function onMapError(error: Error) {
 </script>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-
 .basemap-error-note {
   position: fixed;
   top: 12px;

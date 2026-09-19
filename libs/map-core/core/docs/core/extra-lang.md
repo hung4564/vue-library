@@ -100,7 +100,9 @@ await loadLocale('vi', async (lang) => {
 setLanguage('vi');
 ```
 
-`loadLocale` skips if `messages[lang]` already has keys unless `{ force: true }`.
+`loadLocale` merges on top of built-in `registerLocale` packs. It skips a
+second fetch for the same language unless `{ force: true }` (e.g. LanguageControl
+`reloadOnSelect`).
 
 ### Custom translator (external i18n)
 

@@ -1,7 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+
 import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
@@ -33,7 +33,7 @@ const UNIT_ITEMS = [
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapCrsControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCrsControl',
@@ -52,11 +52,7 @@ export function CrsControl(props: CrsControlProps) {
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [filterQuery, setFilterQuery] = useState('');
 
-  useEffect(() => {
-    registerLocale('en', CRS_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const catalogItems = useMemo(
+const catalogItems = useMemo(
     () => buildMapCrsCatalog(crsItems),
     [crsItems],
   );

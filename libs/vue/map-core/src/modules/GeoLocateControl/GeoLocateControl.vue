@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   GeoLocateSession,
-  MAP_ACTION_LOCALE,
   type GeoLocateControlOptions,
   type GeoLocateUiState,
   type MapSimple,
@@ -41,10 +40,7 @@ const { mapId, callMap, moduleContainerProps, order } = useMap(
   undefined,
   onDestroy,
 );
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', MAP_ACTION_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const ui = ref<GeoLocateUiState>({
   watchState: 'OFF',
   active: false,

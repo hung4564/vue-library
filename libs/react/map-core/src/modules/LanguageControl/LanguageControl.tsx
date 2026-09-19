@@ -1,7 +1,5 @@
 import {
   MAP_BUILTIN_LANGUAGES,
-  MAP_CORE_LOCALE_EN,
-  MAP_CORE_LOCALE_VI,
   mapLanguageCodeLabel,
   nextMapLanguageInList,
   registerLanguageControlPacks,
@@ -59,6 +57,7 @@ export function LanguageControl({
     setFallbackLanguage,
     setTranslate,
     loadLocale,
+    whenLocaleIdle,
   } = useLang(mapId);
   const applySeq = useRef(0);
 
@@ -84,8 +83,6 @@ export function LanguageControl({
     registerLanguageControlPacks({
       registerLocale,
       registerLanguage,
-      coreLocaleEn: MAP_CORE_LOCALE_EN,
-      coreLocaleVi: MAP_CORE_LOCALE_VI,
       locales,
       labels,
       languages: languageList,
@@ -100,16 +97,28 @@ export function LanguageControl({
   }, [setTranslate, translateProp]);
 
   useEffect(() => {
-    const initial = resolveInitialMapLanguage(
-      languageList,
-      defaultLanguage ?? 'vi',
-    );
-    setLanguage(initial);
-    if (localeLoader) {
-      void loadLocale(initial, localeLoader).catch(() => {
-        /* ignore */
-      });
-    }
+    let cancelled = false;
+    void (async () => {
+      await whenLocaleIdle();
+      if (cancelled) return;
+      const initial = resolveInitialMapLanguage(
+        languageList,
+        defaultLanguage ?? 'vi',
+      );
+      // Load overlays (e.g. demo-i18n) before activating language so UI sees merges.
+      if (localeLoader) {
+        try {
+          await loadLocale(initial, localeLoader);
+        } catch {
+          /* ignore */
+        }
+      }
+      if (cancelled) return;
+      setLanguage(initial);
+    })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -177,7 +186,7 @@ export function LanguageControl({
       btn={
         <MapControlGroupButton
           row
-          className="map-language-control-group button-group-hover-expand"
+          className="button-group-hover-expand"
         >
           {/* DOM: current first (collapsed face), then all chips. Click current → cycle. */}
           {state ? (

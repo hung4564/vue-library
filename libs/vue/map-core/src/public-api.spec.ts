@@ -54,7 +54,6 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'ToolbarControl',
   'UniversalRegistry',
   'useBaseMap',
-  'useBaseMapAdapter',
   'useBreakpoints',
   'useComponentName',
   'useEventListener',

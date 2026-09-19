@@ -3,7 +3,6 @@ import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import {
   ATTRIBUTE_TABLE_COMPONENT_KEY,
   ATTRIBUTE_TABLE_CONTROL,
-  ATTRIBUTE_TABLE_LOCALE,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   attributeTableControlId,
   clearPendingAttributeTableSelectRows,
@@ -65,7 +64,7 @@ export function AttributeTable(props: AttributeTableProps) {
   const hl = useMapHighlight(mapId);
   const hlRef = useRef(hl);
   hlRef.current = hl;
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   const toggleShowRef = useRef(toggleShow);
   /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
@@ -75,7 +74,6 @@ export function AttributeTable(props: AttributeTableProps) {
 
   const localeReady = useRef(false);
   if (!localeReady.current) {
-    registerLocale('en', ATTRIBUTE_TABLE_LOCALE);
     localeReady.current = true;
   }
 

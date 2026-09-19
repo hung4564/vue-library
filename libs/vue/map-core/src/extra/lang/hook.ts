@@ -90,6 +90,14 @@ export function useLang(mapId: string) {
     return api.loadLocale(lang, loader, options);
   }
 
+  function whenLocaleIdle() {
+    return api.whenLocaleIdle();
+  }
+
+  function flushLocaleRegistrations() {
+    api.flushLocaleRegistrations();
+  }
+
   return {
     trans,
     language,
@@ -103,5 +111,7 @@ export function useLang(mapId: string) {
     setFallbackLanguage,
     setTranslate,
     loadLocale,
+    whenLocaleIdle,
+    flushLocaleRegistrations,
   };
 }

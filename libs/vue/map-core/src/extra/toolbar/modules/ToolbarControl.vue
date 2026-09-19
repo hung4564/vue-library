@@ -6,7 +6,6 @@ import {
 } from '@hungpvq/map-core';
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  TOOLBAR_CONTROL_LOCALE,
   mdiButtonState,
   measureCornerMenuUsedPx,
   measureCornerStandaloneReserved,
@@ -52,9 +51,7 @@ const { moduleContainerProps, mapId } = useMap({
   ...props,
   controlLayout: 'button',
 });
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', TOOLBAR_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const isMobile = inject<ComputedRef<boolean> | boolean | undefined>(
   '$map.isMobile',
   undefined,

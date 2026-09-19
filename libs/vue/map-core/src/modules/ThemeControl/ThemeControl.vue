@@ -3,7 +3,6 @@ import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
-  THEME_CONTROL_LOCALE,
   applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
@@ -66,9 +65,7 @@ const props = withDefaults(
 );
 
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', THEME_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const storageOpts = computed(() =>
   props.scope === 'map' ? { mapId: mapId.value } : undefined,
 );
@@ -195,7 +192,7 @@ onUnmounted(() => {
     <template #btn>
       <MapControlGroupButton
         row
-        class="map-theme-control-group button-group-hover-expand"
+        class="button-group-hover-expand"
       >
         <MapCommonButton
           v-if="state"

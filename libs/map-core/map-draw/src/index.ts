@@ -46,6 +46,7 @@ export {
 
 export { MAP_DRAW_LOCALE_EN } from './locale/locale.en';
 export { MAP_DRAW_LOCALE_VI } from './locale/locale.vi';
+export { registerMapDrawBuiltinLocales } from './locale/register-builtin-locales';
 
 export {
   DRAW_MODES,

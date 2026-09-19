@@ -63,17 +63,6 @@ const buttonInMobile = ref<ButtonInMobile>('menu');
 </script>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-
 .mobile-menu-demo {
   display: flex;
   flex-direction: column;

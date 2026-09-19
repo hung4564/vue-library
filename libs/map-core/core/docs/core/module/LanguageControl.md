@@ -8,7 +8,10 @@
 - **Click a chip** to select that language; **click `<current>`** to cycle the next code in `languages`.
 - Optional **API loader** merges flat or nested JSON into the active catalog.
 
-Built-in packs: `MAP_CORE_LOCALE_EN` / `MAP_CORE_LOCALE_VI`. Pass dataset/draw packs via `locales.en` / `locales.vi`. Preference is stored under `localStorage` key `hungpvq.map-language`.
+Built-in default catalog: `MAP_CORE_LOCALE_EN` (seeded once per map). Extra languages
+are app-owned — pass packs via `locales[code]` for each code in `languages`
+(e.g. `locales.vi = MAP_CORE_LOCALE_VI`, plus dataset/draw VI). Preference is stored
+under `localStorage` key `hungpvq.map-language`.
 
 ## Props
 
@@ -30,7 +33,7 @@ Built-in packs: `MAP_CORE_LOCALE_EN` / `MAP_CORE_LOCALE_VI`. Pass dataset/draw p
 
 ```vue
 <script setup lang="ts">
-import { deepMergeLocale } from '@hungpvq/map-core';
+import { deepMergeLocale, MAP_CORE_LOCALE_VI } from '@hungpvq/map-core';
 import { MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
 import { LanguageControl, Map, HomeControl } from '@hungpvq/vue-map-core';
 
@@ -44,7 +47,8 @@ async function localeLoader(lang: string) {
   <Map>
     <LanguageControl
       default-language="vi"
-      :locales="{ vi: MAP_DATASET_LOCALE_VI }"
+      :languages="['en', 'vi']"
+      :locales="{ vi: deepMergeLocale(MAP_CORE_LOCALE_VI, MAP_DATASET_LOCALE_VI) }"
       :locale-loader="localeLoader"
     />
     <HomeControl />
@@ -56,12 +60,14 @@ async function localeLoader(lang: string) {
 
 ```tsx
 import { LanguageControl, Map, HomeControl } from '@hungpvq/react-map-core';
+import { deepMergeLocale, MAP_CORE_LOCALE_VI } from '@hungpvq/map-core';
 import { MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
 
 <Map>
   <LanguageControl
     defaultLanguage="vi"
-    locales={{ vi: MAP_DATASET_LOCALE_VI }}
+    languages={['en', 'vi']}
+    locales={{ vi: deepMergeLocale(MAP_CORE_LOCALE_VI, MAP_DATASET_LOCALE_VI) }}
     localeLoader={async (lang) => {
       const res = await fetch(`/demo-i18n/${lang}.json`);
       return res.ok ? res.json() : null;

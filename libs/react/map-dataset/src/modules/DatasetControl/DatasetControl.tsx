@@ -1,7 +1,8 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { DATASET_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+
 import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
@@ -35,7 +36,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     ...merged,
     controlId: 'mapDatasetControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapDatasetControl',
@@ -54,11 +55,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
   const [views, setViews] = useState<IDataset[]>([]);
 
-  useEffect(() => {
-    registerLocale('en', DATASET_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(() => {
+useEffect(() => {
     const next = getDatasets();
     setViews((prev) => {
       if (

@@ -197,17 +197,3 @@ function createDatasetMeasure(
   </Map>
 </template>
 
-<style></style>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

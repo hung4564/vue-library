@@ -84,7 +84,6 @@ import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
 } from '@hungpvq/map-core/basemap';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -120,7 +119,7 @@ const props = withDefaults(
   },
 );
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -142,7 +141,6 @@ watch(
     setDefaultBaseMap(value);
   },
 );
-registerLocale('en', BASEMAP_CONTROL_LOCALE);
 const sizeBaseMap = computed(() => {
   return 70;
 });

@@ -70,17 +70,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-
 .demo-theme-tokens {
   position: absolute;
   z-index: 5;

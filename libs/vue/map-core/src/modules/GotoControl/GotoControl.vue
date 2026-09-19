@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   applyGotoSetting,
-  GOTO_CONTROL_LOCALE,
   gotoSettingFromCoordinateText,
   readGotoSetting,
   type GotoSetting,
@@ -25,9 +24,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', GOTO_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {

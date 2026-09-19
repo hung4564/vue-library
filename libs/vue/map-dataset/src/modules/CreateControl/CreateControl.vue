@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
 import {
-  CREATE_CONTROL_LOCALE,
   LAYER_TYPES,
   LayerHelper,
   loadCreateControlDraft,
@@ -32,8 +31,7 @@ const props = defineProps<
 >();
 
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', CREATE_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const { addDataset } = useMapDataset(mapId.value);
 const emit = defineEmits(['update:show']);
 

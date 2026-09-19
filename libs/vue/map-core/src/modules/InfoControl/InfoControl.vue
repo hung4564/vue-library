@@ -9,7 +9,6 @@ import {
   copyImageDataUrl,
   downloadDataUrl,
   EMPTY_MAP_VIEW_INFO,
-  INFO_CONTROL_LOCALE,
   latDMS,
   lngDMS,
   parseCoordinateText,
@@ -54,9 +53,7 @@ const props = withDefaults(
 
 const [show, setShow] = useShow(props.show ?? false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', INFO_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapInfoControl',
   panelKind: 'popup',

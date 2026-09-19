@@ -9,7 +9,6 @@ import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import {
   ATTRIBUTE_TABLE_COMPONENT_KEY,
   ATTRIBUTE_TABLE_CONTROL,
-  ATTRIBUTE_TABLE_LOCALE,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   attributeTableControlId,
   clearPendingAttributeTableSelectRows,
@@ -67,9 +66,7 @@ provideMenuConditionContext(() => ({
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const controlId = attributeTableControlId(props.layer.id);
 const hl = useMapHighlight(mapId.value);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', ATTRIBUTE_TABLE_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const show = ref(true);
 const tick = ref(0);
 const resolvedUi = computed(() =>

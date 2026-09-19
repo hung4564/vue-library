@@ -5,7 +5,6 @@ import {
 } from '@hungpvq/map-core';
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  TOOLBAR_CONTROL_LOCALE,
   createToolbarStoreApi,
   mdiButtonState,
   measureCornerMenuUsedPx,
@@ -53,7 +52,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
   const menuMode =
     !!mapContext?.isMobile && mapContext?.buttonInMobile === 'menu';
 
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [buttons, setButtons] = useState<MapControlButtonState[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreOpenCorner, setMoreOpenCorner] = useState<Position | null>(null);
@@ -114,11 +113,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
     setMenuUsedByCorner(nextUsed);
   }, [findMapContainer, mapId, menuMode]);
 
-  useEffect(() => {
-    registerLocale('en', TOOLBAR_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(() => {
+useEffect(() => {
     const store = createToolbarStoreApi(toolbarStore);
     const syncButtons = () => {
       setButtons(store.getAll().map((btn) => ({ ...btn })));

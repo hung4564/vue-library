@@ -1,13 +1,25 @@
 /**
- * Framework-agnostic default adapter for basemap operations
+ * Default MapLibre basemap adapter: swap a single prefixed layer under overlays.
  */
-
-import type { BaseMapItem, IBaseMapLayer } from '../types';
 
 import type { MapSimple } from '../../types';
 import type { MapAccessor } from '../../store';
+import type { BaseMapItem, IBaseMapLayer } from '../types';
+import { BASEMAP_PREFIX, BaseMapLayer } from '../model/BaseMapLayer';
 import { BaseMapAdapter } from './BaseMapAdapter';
-import { BaseMapLayer } from '../model/BaseMapLayer';
+
+function awaitMap(getMap: MapAccessor, mapId: string): Promise<MapSimple> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (map: MapSimple) => {
+      if (settled) return;
+      settled = true;
+      resolve(map);
+    };
+    const map = getMap(mapId, finish);
+    if (map) finish(map);
+  });
+}
 
 export class DefaultBaseMapAdapter extends BaseMapAdapter {
   protected layer?: IBaseMapLayer;
@@ -18,45 +30,28 @@ export class DefaultBaseMapAdapter extends BaseMapAdapter {
 
   protected async onApplyBaseMap(mapId: string, item: BaseMapItem) {
     if (!item) return;
-    let layer = this.layer;
-    if (layer) {
-      this.getMap(mapId, (map: MapSimple) => {
-        if (layer) {
-          layer.removeFromMap(map);
-        }
-      });
-    }
-    if (!layer) {
-      layer = new BaseMapLayer();
-    }
-    this.getMap(mapId, (map: MapSimple) => {
-      layer.removeFromMap(map);
-    });
+    const map = await awaitMap(this.getMap, mapId);
+    const layer = this.layer ?? new BaseMapLayer();
+    layer.removeFromMap(map);
     await layer.setBaseMap(item);
-    this.getMap(mapId, (map: MapSimple) => {
-      layer.addToMap(map, getLowestLayerId(map));
-    });
+    layer.addToMap(map, getLowestLayerId(map));
     this.layer = layer;
   }
 }
 
+/** First non-basemap style layer id (insert basemap before it). */
 export function getLowestLayerId(map: MapSimple) {
-  const layers = map.getStyle().layers;
-  return layers.length > 0 ? layers[0].id : undefined;
+  const layers = map.getStyle()?.layers ?? [];
+  return layers.find((l) => !l.id.startsWith(BASEMAP_PREFIX))?.id;
 }
 
-/** Create a {@link DefaultBaseMapAdapter} with a fixed map accessor. */
 export function createDefaultBaseMapAdapter(getMap: MapAccessor) {
   return new DefaultBaseMapAdapter(getMap);
 }
 
-/** Zero-arg constructor that produces {@link DefaultBaseMapAdapter} instances. */
 export type DefaultBaseMapAdapterConstructor = new () => DefaultBaseMapAdapter;
 
-/**
- * Returns a zero-arg constructor for adapter packages that inject `getMap` once
- * at module scope while keeping the public export name `DefaultBaseMapAdapter`.
- */
+/** Zero-arg class for Vue/React packages that inject `getMap` at module scope. */
 export function createDefaultBaseMapAdapterClass(
   getMap: MapAccessor,
 ): DefaultBaseMapAdapterConstructor {

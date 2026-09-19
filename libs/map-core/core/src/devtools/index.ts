@@ -14,7 +14,9 @@ export type {
 } from './map-debug-store';
 export {
   clearDevtoolErrors,
+  clearDevtoolErrorsForMapId,
   clearDevtoolLogs,
+  clearDevtoolLogsForMapId,
   configureDevtoolLogStore,
   createDevtoolLogAdapter,
   getDevtoolLogDataStore,

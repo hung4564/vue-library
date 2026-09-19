@@ -10,9 +10,10 @@
   />
 </template>
 <script setup lang="ts">
+
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import { applyGlobalLayerVisibility, LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import { applyGlobalLayerVisibility } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, watch } from 'vue';
@@ -26,8 +27,7 @@ const props = defineProps<{
   items: IListViewUI[];
 }>();
 const { callMap, mapId } = useMap();
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', LAYER_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const store = useMapDatasetStore(mapId.value);
 const allLayerShow = store.allLayerShow;
 

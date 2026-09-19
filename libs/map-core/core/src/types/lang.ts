@@ -10,6 +10,12 @@ export const MAP_LANGUAGE_STORAGE_KEY = 'hungpvq.map-language';
 /** BCP-47-ish language code (not limited to built-ins). */
 export type MapLanguageCode = string;
 
+/**
+ * Language code used for built-in control/package message catalogs.
+ * Other languages are app-owned (`locales` / `loadLocale` / `registerLocale`).
+ */
+export const MAP_DEFAULT_CATALOG_LANGUAGE: MapLanguageCode = 'en';
+
 export type MapLangLocale = Record<string, unknown>;
 
 /** Flat dotted keys from API / CMS, e.g. `{ "map.home.title": "…" }`. */
@@ -37,7 +43,11 @@ export type MapLanguageRegisterOptions = {
 };
 
 export type MapLoadLocaleOptions = {
-  /** Re-fetch and merge even if `messages[lang]` already exists. */
+  /**
+   * Re-fetch and merge even if this language was already loaded via `loadLocale`.
+   * Built-in `registerLocale` packs do not block the loader — overlays always
+   * merge on first load (e.g. demo-i18n on top of MAP_*_LOCALE_*).
+   */
   force?: boolean;
 };
 
@@ -130,10 +140,6 @@ export type RegisterLanguageControlPacksOptions = {
     code: MapLanguageCode,
     options?: MapLanguageRegisterOptions,
   ) => void;
-  /** Built-in EN pack (typically MAP_CORE_LOCALE_EN). */
-  coreLocaleEn: MapLangLocale;
-  /** Built-in VI pack (typically MAP_CORE_LOCALE_VI). */
-  coreLocaleVi: MapLangLocale;
   locales?: Record<string, MapLangLocale>;
   labels?: Record<string, string>;
   languages: MapLanguageCode[];
@@ -142,8 +148,10 @@ export type RegisterLanguageControlPacksOptions = {
 };
 
 /**
- * Register EN/VI core packs (deep-merged with `locales`), extra locale trees,
- * and language metadata for LanguageControl.
+ * Register LanguageControl metadata + optional app `locales` overlays.
+ * Locale trees are registered only for codes listed in `languages`
+ * (pass pack via `locales[code]` when enabling that language).
+ * Built-in default catalog (EN) is owned by each package once per map.
  */
 export function registerLanguageControlPacks(
   options: RegisterLanguageControlPacksOptions,
@@ -151,21 +159,15 @@ export function registerLanguageControlPacks(
   const {
     registerLocale,
     registerLanguage,
-    coreLocaleEn,
-    coreLocaleVi,
     locales,
     labels,
     languages,
     resolveLabel,
   } = options;
 
-  registerLocale('en', deepMergeLocale(coreLocaleEn, locales?.['en'] ?? {}));
-  registerLocale('vi', deepMergeLocale(coreLocaleVi, locales?.['vi'] ?? {}));
-  for (const [code, tree] of Object.entries(locales ?? {})) {
-    if (code === 'en' || code === 'vi') continue;
-    registerLocale(code, tree);
-  }
   for (const code of languages.map(String)) {
+    const tree = locales?.[code];
+    if (tree) registerLocale(code, tree);
     registerLanguage(code, {
       label:
         labels?.[code] ??
@@ -414,15 +416,71 @@ export type MapLocaleEmitter = {
 export type MapLocaleApiOptions = {
   getStore: () => MapLocateStore | undefined;
   getEmitter?: () => MapLocaleEmitter | undefined;
+  /** Called once per debounced registration flush (after emit). */
+  onRegistrationFlush?: (info: {
+    langs: MapLanguageCode[];
+    merged: boolean;
+  }) => void;
 };
 
 function emitChanged(getEmitter?: () => MapLocaleEmitter | undefined) {
   getEmitter?.()?.emit(MittTypeMapLangEventKey.changed);
 }
 
+/** Debounce window so mount-time registerLocale waves flush as one emit. */
+export const MAP_LOCALE_REGISTER_DEBOUNCE_MS = 32;
+
 /** Framework-agnostic locale store mutations (Vue/React adapters wrap with scoped store + mitt). */
 export function createMapLocaleApi(options: MapLocaleApiOptions) {
-  const { getStore, getEmitter } = options;
+  const { getStore, getEmitter, onRegistrationFlush } = options;
+
+  let pendingEmit = false;
+  let flushTimer: ReturnType<typeof setTimeout> | null = null;
+  let flushResolvers: Array<() => void> = [];
+  const pendingLangs = new Set<MapLanguageCode>();
+  /** Languages successfully fetched via `loadLocale` (not built-in registerLocale). */
+  const loadedViaLoader = new Set<MapLanguageCode>();
+
+  function flushLocaleRegistrations(): void {
+    if (flushTimer != null) {
+      clearTimeout(flushTimer);
+      flushTimer = null;
+    }
+    const langs = [...pendingLangs];
+    pendingLangs.clear();
+    const shouldEmit = pendingEmit;
+    pendingEmit = false;
+    if (shouldEmit) {
+      emitChanged(getEmitter);
+      onRegistrationFlush?.({ langs, merged: true });
+    }
+    const resolvers = flushResolvers;
+    flushResolvers = [];
+    for (const resolve of resolvers) resolve();
+  }
+
+  function scheduleFlush(): void {
+    if (flushTimer != null) return;
+    flushTimer = setTimeout(() => {
+      flushTimer = null;
+      flushLocaleRegistrations();
+    }, MAP_LOCALE_REGISTER_DEBOUNCE_MS);
+  }
+
+  function markPending(lang?: MapLanguageCode): void {
+    pendingEmit = true;
+    if (lang) pendingLangs.add(lang);
+    scheduleFlush();
+  }
+
+  /** Resolves after the current registration debounce flush (no pending work → immediate). */
+  function whenLocaleIdle(): Promise<void> {
+    if (!pendingEmit && flushTimer == null) return Promise.resolve();
+    return new Promise((resolve) => {
+      flushResolvers.push(resolve);
+      scheduleFlush();
+    });
+  }
 
   function getMapLang() {
     return getStore();
@@ -458,7 +516,7 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
       ...store.messages,
       [lang]: next,
     };
-    emitChanged(getEmitter);
+    markPending(lang);
     return true;
   }
 
@@ -488,7 +546,7 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
       store.languageLabels = { ...store.languageLabels, [lang]: lang };
       changed = true;
     }
-    if (changed) emitChanged(getEmitter);
+    if (changed) markPending(lang);
     return changed;
   }
 
@@ -507,18 +565,21 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
   function setFallbackLanguage(lang: MapLanguageCode) {
     const store = getStore();
     if (!store) return;
+    if (store.fallbackLanguage === lang) return;
     store.fallbackLanguage = lang;
     emitChanged(getEmitter);
   }
 
   function setMapTranslate(translate?: MapTranslateFunction | null) {
     const store = getStore();
-    if (store) {
-      if (translate) {
-        store.translate = translate;
-      } else {
-        delete store.translate;
-      }
+    if (!store) return;
+    const next = translate || undefined;
+    const prev = store.translate;
+    if (prev === next || (!prev && !next)) return;
+    if (next) {
+      store.translate = next;
+    } else {
+      delete store.translate;
     }
     emitChanged(getEmitter);
   }
@@ -531,8 +592,8 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
     const store = getStore();
     if (!store) return false;
 
-    const existing = store.messages[lang];
-    if (!options.force && existing && Object.keys(existing).length > 0) {
+    // Skip only if this loader already ran for `lang` (builtins must not block overlays).
+    if (!options.force && loadedViaLoader.has(lang)) {
       return true;
     }
 
@@ -547,6 +608,8 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
         } else {
           registerLocale(lang, payload as MapLangLocale);
         }
+        loadedViaLoader.add(lang);
+        await whenLocaleIdle();
         return true;
       }
       return false;
@@ -573,5 +636,7 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
     setFallbackLanguage,
     setMapTranslate,
     loadLocale,
+    flushLocaleRegistrations,
+    whenLocaleIdle,
   };
 }

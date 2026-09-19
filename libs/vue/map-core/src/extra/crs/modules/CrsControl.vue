@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   searchCrsCatalog,
@@ -26,9 +25,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', CRS_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {

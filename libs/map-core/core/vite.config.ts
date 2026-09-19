@@ -1,31 +1,82 @@
 /// <reference types='vitest' />
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import * as fs from 'node:fs';
 import * as path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import dts from 'vite-plugin-dts';
+
+/**
+ * Source thumbnails resolve `../../assets/basemap/*` from `src/basemap/`.
+ * Published `basemap.js` sits at package root — rewrite to `./assets/basemap/*`.
+ */
+function relativeBasemapAssetUrls(): Plugin {
+  const rewrite = (code: string): string | null => {
+    if (!code.includes('assets/basemap')) return null;
+    const next = code.replace(
+      /\.\.\/\.\.\/assets\/basemap\//g,
+      './assets/basemap/',
+    );
+    return next === code ? null : next;
+  };
+
+  return {
+    name: 'map-core-relative-basemap-asset-urls',
+    apply: 'build',
+    generateBundle(_opts, bundle) {
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type !== 'chunk' || !chunk.fileName.includes('basemap')) {
+          continue;
+        }
+        const next = rewrite(chunk.code);
+        if (next) chunk.code = next;
+      }
+    },
+    writeBundle(outputOptions) {
+      const root =
+        typeof outputOptions.dir === 'string'
+          ? outputOptions.dir
+          : path.resolve(__dirname, '../../../dist/libs/map-core/core');
+      if (!fs.existsSync(root)) return;
+      for (const name of fs.readdirSync(root)) {
+        if (!name.startsWith('basemap.') || (!name.endsWith('.js') && !name.endsWith('.cjs'))) {
+          continue;
+        }
+        const file = path.join(root, name);
+        if (!fs.statSync(file).isFile()) continue;
+        const code = fs.readFileSync(file, 'utf8');
+        const next = rewrite(code);
+        if (next) fs.writeFileSync(file, next);
+      }
+    },
+  };
+}
 
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../../node_modules/.vite/libs/map-core/core',
   plugins: [
     nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md', 'package.json']),
+    nxCopyAssetsPlugin([
+      '*.md',
+      'package.json',
+      {
+        input: 'assets',
+        output: 'assets',
+        glob: '**/*',
+      },
+    ]),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
+    relativeBasemapAssetUrls(),
   ],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-  // Configuration for building your library.
-  // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     outDir: '../../../dist/libs/map-core/core',
     emptyOutDir: true,
     reportCompressedSize: true,
+    assetsInlineLimit: 0,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
@@ -70,7 +121,11 @@ export default defineConfig(() => ({
         'file-saver',
       ],
       output: {
-        assetFileNames: 'style.css',
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name ?? '';
+          if (name.endsWith('.css')) return 'style.css';
+          return 'assets/[name][extname]';
+        },
       },
     },
   },

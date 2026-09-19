@@ -5,13 +5,10 @@ export default {
 </script>
 
 <script setup lang="ts">
+
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
-import {
-  findSiblingOrNearestLeaf,
-  isListView,
-  type IListViewUI,
-} from '@hungpvq/map-dataset';
+import { findSiblingOrNearestLeaf, isListView, type IListViewUI } from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
@@ -24,7 +21,6 @@ import {
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
@@ -64,11 +60,9 @@ provideMenuConditionContext(() => ({
 }));
 
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const formatCoordinate = createMapDisplayCoordinateFormatter();
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
-registerLocale('en', IDENTIFY_CONTROL_LOCALE);
-
 const show = ref(false);
 const loading = ref(false);
 const errorMessage = ref<string | null>(null);

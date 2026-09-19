@@ -84,15 +84,6 @@ function onMapLoaded(map: MapSimple) {
 </template>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-body,
-html,
-#root {
-  height: 100%;
-}
 .geo-export-demo-legend {
   margin: 0;
   padding: 4px 0;

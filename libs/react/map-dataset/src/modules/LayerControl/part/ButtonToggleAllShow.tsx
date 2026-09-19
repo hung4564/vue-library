@@ -1,6 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
+
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import { applyGlobalLayerVisibility, LAYER_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+import { applyGlobalLayerVisibility } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { useEffect } from 'react';
@@ -19,16 +20,12 @@ export function ButtonToggleAllShow({
   items: IListViewUI[];
 }) {
   const { callMap } = useMap({ mapId });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   useMapDataset(mapId);
   const store = useMapDatasetStore(mapId);
   const allLayerShow = store.allLayerShow;
 
-  useEffect(() => {
-    registerLocale('en', LAYER_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(() => {
+useEffect(() => {
     if (!store.allLayerShow) {
       callMap((map: MapSimple) => {
         applyGlobalLayerVisibility(items, map, false);

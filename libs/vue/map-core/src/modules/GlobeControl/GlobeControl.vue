@@ -2,7 +2,6 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   attachGlobeProjectionListener,
-  GLOBE_CONTROL_LOCALE,
   isGlobeProjection,
   toggleGlobeProjection,
 } from '@hungpvq/map-core';
@@ -25,8 +24,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', GLOBE_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 function toggle() {
   callMap((map) => {
     currentProjection.value = toggleGlobeProjection(

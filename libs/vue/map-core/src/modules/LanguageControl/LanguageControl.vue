@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import {
   MAP_BUILTIN_LANGUAGES,
-  MAP_CORE_LOCALE_EN,
-  MAP_CORE_LOCALE_VI,
   mapLanguageCodeLabel,
   nextMapLanguageInList,
   registerLanguageControlPacks,
@@ -55,6 +53,7 @@ const {
   setFallbackLanguage,
   setTranslate,
   loadLocale,
+  whenLocaleIdle,
 } = useLang(mapId.value);
 
 const languageList = computed(() =>
@@ -77,8 +76,6 @@ function registerStaticPacks() {
   registerLanguageControlPacks({
     registerLocale,
     registerLanguage,
-    coreLocaleEn: MAP_CORE_LOCALE_EN,
-    coreLocaleVi: MAP_CORE_LOCALE_VI,
     locales: props.locales,
     labels: props.labels,
     languages: languageList.value,
@@ -159,16 +156,23 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 watch(language, () => control.sync());
 
 onMounted(() => {
-  const initial = resolveInitialMapLanguage(
-    languageList.value,
-    props.defaultLanguage ?? 'vi',
-  );
-  setLanguage(initial);
-  if (props.localeLoader) {
-    void loadLocale(initial, props.localeLoader).catch(() => {
-      /* ignore */
-    });
-  }
+  void (async () => {
+    // Wait for package/control registerLocale waves to flush (one emit).
+    await whenLocaleIdle();
+    const initial = resolveInitialMapLanguage(
+      languageList.value,
+      props.defaultLanguage ?? 'vi',
+    );
+    // Load overlays (e.g. demo-i18n) before activating language so UI sees merges.
+    if (props.localeLoader) {
+      try {
+        await loadLocale(initial, props.localeLoader);
+      } catch {
+        /* ignore */
+      }
+    }
+    setLanguage(initial);
+  })();
 });
 </script>
 
@@ -180,10 +184,7 @@ onMounted(() => {
         then all language chips. Visual expand ≈ fr | vi | en | <current>.
         Click chip → select; click current → cycle.
       -->
-      <MapControlGroupButton
-        row
-        class="map-language-control-group button-group-hover-expand"
-      >
+      <MapControlGroupButton row class="button-group-hover-expand">
         <MapCommonButton
           v-if="state"
           :option="state"

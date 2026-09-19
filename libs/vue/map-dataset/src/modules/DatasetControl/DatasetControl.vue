@@ -5,9 +5,10 @@ export default {
 </script>
 
 <script setup lang="ts">
+
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { DATASET_CONTROL_LOCALE } from '@hungpvq/map-dataset';
+
 import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
@@ -38,8 +39,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', DATASET_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const path = {
   icon: mdiDatabaseOutline,
   detail: mdiInformation,

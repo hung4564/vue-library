@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
-  EVENT_CONTROL_LOCALE,
   groupEventsByMapType,
   isEventActive,
   MittTypeMapEventEventKey,
@@ -31,7 +30,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const { mapId, moduleContainerProps } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const events = shallowRef<MapEventStore['items']>([]);
 const current = shallowRef<MapEventStore['current']>({});
 const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
@@ -49,7 +48,6 @@ const { getCurrent } = useEventMapItems(mapId.value, {
 function updateCurrent() {
   current.value = getCurrent();
 }
-registerLocale('en', EVENT_CONTROL_LOCALE);
 const path = {
   icon: mdiCalendarSearch,
 };

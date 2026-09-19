@@ -103,7 +103,7 @@ export function useEventListener<K extends KnownMapEvent>(
   const add = () => {
     logHelper(logger, mapId, 'hook', 'useEventListener')
       .with({ fn: 'add', span: 'hook.add' })
-      .debug('add', event);
+      .debug(`add map listener: ${event}`, { event });
     cancelled = false;
     unsubscribeReady?.();
     unsubscribeReady = subscribeMapReady(mapId, (map) => {
@@ -116,7 +116,7 @@ export function useEventListener<K extends KnownMapEvent>(
   const remove = () => {
     logHelper(logger, mapId, 'hook', 'useEventListener')
       .with({ fn: 'remove', span: 'hook.remove' })
-      .debug('remove', event);
+      .debug(`remove map listener: ${event}`, { event });
     cancelled = true;
     unsubscribeReady?.();
     unsubscribeReady = undefined;

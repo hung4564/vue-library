@@ -1,5 +1,5 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
-import { printMapToFile, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { printMapToFile } from '@hungpvq/map-core/print';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
@@ -21,16 +21,12 @@ export function PrintControl({
 }: PrintControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapPrintControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
   const controlRef = useRef<{ sync: () => void } | null>(null);
 
-  useEffect(() => {
-    registerLocale('en', PRINT_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const onPrint = useMemo(
+const onPrint = useMemo(
     () => () => {
       callMap(async (map) => {
         loadingRef.current = true;

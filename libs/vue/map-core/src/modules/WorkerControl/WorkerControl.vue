@@ -10,7 +10,6 @@ import {
   filterWorkerSnapshots,
   formatWorkerDuration,
   resolveSelectedWorkerId,
-  WORKER_CONTROL_LOCALE,
   WorkerMonitor,
   workerHasHistory,
   workerLogsForDisplay,
@@ -42,9 +41,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', WORKER_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
 const { workers, now, busy, clearHistory } = useWorkerMonitor();
 const [show, toggleShow] = useShow(props.show);
 const query = ref('');

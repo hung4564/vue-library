@@ -2,7 +2,7 @@ import { logHelper } from '@hungpvq/map-core';
 import {
   type BaseMapItem,
   MittTypeBaseMap,
-  BasemapManager,
+  getOrCreateBasemapManager,
   subscribeBasemapMirror,
   logger,
 } from '@hungpvq/map-core/basemap';
@@ -10,21 +10,28 @@ import { useMapMittStore } from '../../../store/mitt-store';
 import { onUnmounted, ref } from 'vue';
 import { useMapBaseMapStore } from '../store';
 
+function basemapHookLogger(
+  mapIdParam: string,
+  level: 'debug' | 'info' | 'warn' | 'error',
+  message: string,
+  data?: unknown,
+) {
+  const fn =
+    typeof message === 'string' && message.length > 0 ? message : 'useBaseMap';
+  logHelper(logger, mapIdParam, 'hook', 'useBaseMap').with({
+    fn,
+    span: `hook.${fn}`,
+  })[level](message, data);
+}
+
 export function useBaseMap(mapId: string) {
   const state = useMapBaseMapStore(mapId);
   const emitter = useMapMittStore<MittTypeBaseMap>(mapId);
-
-  const manager = new BasemapManager(
+  const manager = getOrCreateBasemapManager(
     mapId,
     state,
-    state.adapter,
     emitter,
-    (mapIdParam, level, message, data) => {
-      logHelper(logger, mapIdParam, 'hook', 'useBaseMap').with({
-        fn: 'useBaseMap',
-        span: 'hook.add',
-      })[level](message, data);
-    },
+    basemapHookLogger,
   );
 
   const baseMaps = ref<BaseMapItem[]>(manager.getBaseMaps());
@@ -39,9 +46,7 @@ export function useBaseMap(mapId: string) {
     },
   });
 
-  onUnmounted(() => {
-    remove();
-  });
+  onUnmounted(remove);
 
   return {
     baseMaps,

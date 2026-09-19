@@ -18,7 +18,6 @@ import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createIdentifySession,
   IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
@@ -42,6 +41,7 @@ import { mdiHandPointingUp } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 import { useMapHighlight } from '../../store/highlight';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import IdentifyResultControl from './IdentifyResultControl.vue';
 
 const path = {
@@ -59,9 +59,8 @@ const props = withDefaults(
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
 const hl = useMapHighlight(mapId.value);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', IDENTIFY_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
+useEnsureDatasetBuiltinLocales(mapId.value);
 const views = ref<Array<IIdentifyView>>([]);
 const show = ref(!!props.show);
 const loading = ref(false);

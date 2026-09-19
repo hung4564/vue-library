@@ -15,6 +15,11 @@ export {
 } from './toolbar';
 
 export {
+  ensureMapToolbarApi,
+  ensureMapToolbarStore,
+} from './register-domain-store';
+
+export {
   BUTTON_GROUP_OVERFLOW_FRACTION,
   TOOLBAR_EDGE_INSET_PX,
   TOOLBAR_STACK_GAP_PX,

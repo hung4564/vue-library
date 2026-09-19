@@ -3,7 +3,6 @@ import type { MapSimple } from '@hungpvq/map-core';
 import {
   captureHomeView,
   goHome,
-  HOME_CONTROL_LOCALE,
   type HomeView,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -33,8 +32,7 @@ const homeView = ref<HomeView>({
 });
 
 const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', HOME_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 function onGoHome() {
   callMap((map) => {
     goHome(map, homeView.value);

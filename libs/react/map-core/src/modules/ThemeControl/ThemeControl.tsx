@@ -2,7 +2,6 @@ import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
 import {
   MAP_THEME_COLOR_SCHEME,
   MAP_THEME_MODES,
-  THEME_CONTROL_LOCALE,
   applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
@@ -65,7 +64,7 @@ export function ThemeControl({
     ...mergedProps,
     controlId: 'mapThemeControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const storageOpts = scope === 'map' ? { mapId } : undefined;
   const [mode, setMode] = useState<MapThemeMode>(() =>
     getStoredMapThemeMode('auto', storageOpts),
@@ -90,12 +89,7 @@ export function ThemeControl({
       ? mdiWeatherSunny
       : mdiWeatherNight;
 
-  useEffect(() => {
-    registerLocale('en', THEME_CONTROL_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
+useEffect(() => {
     setMode(getStoredMapThemeMode('auto', storageOpts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope, mapId]);
@@ -181,7 +175,7 @@ export function ThemeControl({
       btn={
         <MapControlGroupButton
           row
-          className="map-theme-control-group button-group-hover-expand"
+          className="button-group-hover-expand"
         >
           {state ? (
             <MapCommonButton

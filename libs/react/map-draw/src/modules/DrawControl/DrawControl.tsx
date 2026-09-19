@@ -13,7 +13,6 @@ import {
 import {
   ModuleContainer,
   defaultMapProps,
-  useLang,
   useMap,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
@@ -36,8 +35,9 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { DRAW_CONTROL_LOCALE } from '@hungpvq/map-draw';
+
 import '../../style.css';
+import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { DrawDraftList } from './components/DrawDraftList';
 import { DrawToolbar } from './components/DrawToolbar';
 import { useDrawDrafts } from './hooks/useDrawDrafts';
@@ -51,11 +51,7 @@ export interface DrawControlProps extends WithMapPropType {
 export function DrawControl(props: DrawControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps, callMap, order } = useMap(merged);
-  const { registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', DRAW_CONTROL_LOCALE);
-  }, [registerLocale]);
+  useEnsureDrawBuiltinLocales(mapId);
 
   const [isShow, setIsShow] = useState(false);
   const [drawOptions, setDrawOptions] = useState<MapDrawOption | undefined>(

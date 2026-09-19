@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import {
   attachRotateListener,
-  MAP_ACTION_LOCALE,
   MapSimple,
   resetBearing,
   type WithMapPropType,
@@ -64,10 +63,7 @@ const { callMap, mapId, moduleContainerProps, order } = useMap(
   onInit,
   onDestroy,
 );
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', MAP_ACTION_LOCALE);
-
+const { trans } = useLang(mapId.value);
 let detachRotate: (() => void) | null = null;
 
 function onInit(_map: MapSimple) {

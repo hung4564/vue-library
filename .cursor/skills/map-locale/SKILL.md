@@ -66,11 +66,14 @@ Do **not** put a new language’s strings only inside a Vue/React component.
 
 | Concern | API |
 |---------|-----|
-| Built-in catalogs | `locale/locale.<lang>.ts` → `registerLocale` / LanguageControl `locales` |
-| App override / extra lang | `registerLocale`, `loadLocale`, `setLanguage`, `setTranslate` |
+| Built-in **default** catalog (EN) | Each package once per `mapId`: `registerMapCoreBuiltinLocales` / `registerMapDatasetBuiltinLocales` / `registerMapDrawBuiltinLocales` |
+| Extra languages (VI, FR, …) | LanguageControl `locales[code]` for each code in `languages` / `loadLocale` / `registerLocale` |
+| Batching | `registerLocale` debounces emit (`MAP_LOCALE_REGISTER_DEBOUNCE_MS`); `whenLocaleIdle()` before `setLanguage` |
 | Key helpers | `deepMergeLocale`, `flattenLocaleMessages`, `diffLocaleKeys`, `localeTreesEqual` |
 
-`registerLocale` / `registerLanguage` are **idempotent**: re-registering an already-merged pack does **not** mutate or emit `map:lang:changed`. Pack registration is bootstrap (components may call it in `setup`); user language changes go through `setLanguage` (action + emit).
+`MAP_DEFAULT_CATALOG_LANGUAGE` (`en`) is the catalog language for library packs. Apps choose UI language via `setLanguage` / LanguageControl.
+
+`registerLocale` merges immediately but **emits once per debounce flush** — LanguageControl should `await whenLocaleIdle()` before the first `setLanguage`.
 
 Apps may load extra languages at runtime; **library-owned** strings still land in
 `locale/locale.<lang>.ts` (+ `<domain>/locale/locale.<lang>.ts`) first.
@@ -87,7 +90,7 @@ Apps may load extra languages at runtime; **library-owned** strings still land i
 ## Docs / demos
 
 - Stable API / `extra-lang` docs list `MAP_*_LOCALE_EN` / `MAP_*_LOCALE_VI`.
-- Demo LanguageControl: pass dataset/draw packs via `locales.en` / `locales.vi`.
+- Demo LanguageControl: pass packs via `locales.vi` (`MAP_CORE_LOCALE_VI` + dataset/draw).
 - See also: `map-dual-framework`, `map-semver-api`, `map-testing`.
 
 ## Demo apps (required)

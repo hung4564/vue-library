@@ -9,7 +9,6 @@ import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   attachRotateListener,
-  MAP_ACTION_LOCALE,
   resetBearing,
   zoomIn,
   zoomOut,
@@ -55,12 +54,7 @@ export function ZoomControl({
     onInit,
     onDestroy,
   );
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', MAP_ACTION_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { trans } = useLang(mapId);
 
   const onZoomIn = useCallback(
     (e?: unknown) => {

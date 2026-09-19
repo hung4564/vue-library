@@ -9,7 +9,6 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   getLayerControlTitleMenuState,
-  LAYER_CONTROL_LOCALE,
   registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
   type IDataset,
@@ -39,6 +38,7 @@ import { mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, onUnmounted, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
@@ -73,8 +73,8 @@ defineSlots<{
   default(): any;
 }>();
 const { mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', LAYER_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
+useEnsureDatasetBuiltinLocales(mapId.value);
 warnIfDatasetRegistryMissing(
   (key) => UniversalRegistry.getComponent(key),
   'vue-map-dataset',

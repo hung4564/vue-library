@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   attachGlobeProjectionListener,
-  GLOBE_CONTROL_LOCALE,
   isGlobeProjection,
   toggleGlobeProjection,
   type WithMapPropType,
@@ -40,12 +39,7 @@ export function GlobeControl(props: WithMapPropType) {
     onInit,
     onDestroy,
   );
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', GLOBE_CONTROL_LOCALE);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { trans } = useLang(mapId);
 
   function toggle() {
     callMap((map) => {

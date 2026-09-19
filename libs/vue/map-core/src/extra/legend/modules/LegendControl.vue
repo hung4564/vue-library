@@ -1,9 +1,9 @@
 <script setup lang="ts">
+
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   getLegendName,
   isSupportGenLayerLegend,
-  LEGEND_CONTROL_LOCALE,
 } from '@hungpvq/map-core/legend';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
@@ -24,10 +24,9 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const [show, setShow] = useShow(false);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
-registerLocale('en', LEGEND_CONTROL_LOCALE);
 function onToggleShow() {
   setShow(!show.value);
 }

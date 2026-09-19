@@ -8,7 +8,6 @@ import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createIdentifySession,
   IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
@@ -31,6 +30,7 @@ import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDataset } from '../../store/dataset-api';
 import { useMapHighlight } from '../../store/highlight';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { IdentifyResultControl } from './IdentifyResultControl';
 
 function updateResultPanel(
@@ -58,7 +58,8 @@ export function IdentifyControl(
   });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const hl = useMapHighlight(mapId);
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
+  useEnsureDatasetBuiltinLocales(mapId);
 
   const [show, toggleShow] = useShow(!!props.show);
   const [views, setViews] = useState<IIdentifyView[]>([]);
@@ -175,11 +176,7 @@ export function IdentifyControl(
     loadingRef.current = s.loading;
   }, [session, toggleShow]);
 
-  useEffect(() => {
-    registerLocale('en', IDENTIFY_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const syncResultPanel = useCallback(
+const syncResultPanel = useCallback(
     (extra?: IdentifyResultUpdatePayload) => {
       updateResultPanel(mapId, session.buildResultPanelPayload(extra));
     },

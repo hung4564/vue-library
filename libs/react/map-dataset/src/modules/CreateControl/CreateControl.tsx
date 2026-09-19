@@ -1,7 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
-  CREATE_CONTROL_LOCALE,
   LAYER_TYPES,
   LayerHelper,
   loadCreateControlDraft,
@@ -65,7 +65,7 @@ export function CreateControl(props: CreateControlProps) {
     ...merged,
     controlId: 'mapCreateControl',
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCreateControl',
     panelKind: 'popup',
@@ -86,7 +86,6 @@ export function CreateControl(props: CreateControlProps) {
   });
   const localeInitialized = useRef(false);
   if (!localeInitialized.current) {
-    registerLocale('en', CREATE_CONTROL_LOCALE);
     localeInitialized.current = true;
   }
 

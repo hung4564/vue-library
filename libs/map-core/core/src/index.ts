@@ -33,6 +33,7 @@ export {
 
 export { MAP_CORE_LOCALE_EN } from './locale/locale.en';
 export { MAP_CORE_LOCALE_VI } from './locale/locale.vi';
+export { registerMapCoreBuiltinLocales } from './locale/register-builtin-locales';
 
 export { Base } from './model/Base';
 
@@ -119,7 +120,7 @@ export {
 
 export { GeoLocateSession } from './geolocate/session';
 
-export { createMapMitt } from './mitt/index';
+export { createMapMitt, ensureMapMitt } from './mitt/index';
 export type { CreateMapMittOptions } from './mitt/index';
 
 export { filterMapControls } from './registry/control';
@@ -141,6 +142,8 @@ export {
   isMapLangFlatMessages,
   localeTreesEqual,
   MAP_BUILTIN_LANGUAGES,
+  MAP_DEFAULT_CATALOG_LANGUAGE,
+  MAP_LOCALE_REGISTER_DEBOUNCE_MS,
   MAP_LANGUAGE_STORAGE_KEY,
   mapLanguageCodeLabel,
   MittTypeMapLangEventKey,
@@ -154,6 +157,11 @@ export {
 } from './types/lang';
 
 export { mapLangLogger } from './types/lang-logger';
+
+export {
+  ensureMapLangStore,
+  ensureMapLocaleApi,
+} from './types/lang-register-domain-store';
 
 export { BUTTON_IN_MOBILE_VALUES } from './utils/control-layout';
 
@@ -238,16 +246,20 @@ export { runMapControlAction } from './registry/control-action';
 export { installGlobalErrorCapture } from './services/global-error-capture';
 
 export {
+  clearMapDomainStoreFactories,
   createMapCoreMetaRegistry,
+  ensureMapDomainStore,
   getMap,
   getMapCoreMetaStore,
   getMapCoreRootStore,
+  hasMapDomainStoreFactory,
   listMapPlatformHosts,
   MAP_CORE_META_STORE_KEY,
   MAP_CORE_ROOT_STORE_KEY,
   MAP_PLATFORM_HOST,
   MAP_PLATFORM_REGISTRY_METHOD,
   registerMapAccessor,
+  registerMapDomainStoreFactory,
   registerMapReadySubscriber,
   registerMapStoreCleanup,
   registerMapStoreCleanupRegistrar,
@@ -259,6 +271,7 @@ export type {
   MapCoreMetaRegistry,
   MapCoreMetaRegistryBag,
   MapCoreMetaStore,
+  MapDomainStoreFactory,
   MapPlatformHostId,
   MapPlatformRegistration,
   MapPlatformRegistryMethod,

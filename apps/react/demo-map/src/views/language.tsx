@@ -1,11 +1,9 @@
-﻿import {
-  deepMergeLocale,
+import {
+  MAP_CORE_LOCALE_VI,
   type MapLangFlatMessages,
   type MapLangLocale,
   type MapLanguageCode,
 } from '@hungpvq/map-core';
-import { MAP_DATASET_LOCALE_EN, MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
-import { MAP_DRAW_LOCALE_EN, MAP_DRAW_LOCALE_VI } from '@hungpvq/map-draw';
 import {
   BaseMapControl,
   GotoControl,
@@ -83,8 +81,7 @@ export function LanguagePage() {
   const [reloadOnSelect, setReloadOnSelect] = useState(false);
   const locales = useMemo(
     () => ({
-      en: deepMergeLocale(MAP_DATASET_LOCALE_EN, MAP_DRAW_LOCALE_EN),
-      vi: deepMergeLocale(MAP_DATASET_LOCALE_VI, MAP_DRAW_LOCALE_VI),
+      vi: MAP_CORE_LOCALE_VI,
       fr: FR_LOCALE,
     }),
     [],

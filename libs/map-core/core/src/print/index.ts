@@ -12,6 +12,10 @@ export {
   DEFAULT_PRINT_ADVANCED_SETTING,
 } from './print-advanced-session';
 export { PrintService } from './print.service';
+export {
+  ensureMapPrintApi,
+  ensureMapPrintStore,
+} from './register-domain-store';
 export { createDefaultPrintStore, createPrintStoreApi, PRINT_PAPER_PRESETS } from './types';
 export {
   clipCanvasRegion,

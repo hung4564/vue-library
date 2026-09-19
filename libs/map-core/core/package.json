@@ -33,6 +33,7 @@
     "./style.css": {
       "default": "./style.css"
     },
+    "./assets/*": "./assets/*",
     "./worker": {
       "types": "./worker-entry.d.ts",
       "import": "./worker.js",

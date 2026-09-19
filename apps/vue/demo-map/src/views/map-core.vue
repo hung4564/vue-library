@@ -45,15 +45,4 @@ import {
 import AsideControl from '../layout/aside-control.vue';
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 </script>
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
 
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

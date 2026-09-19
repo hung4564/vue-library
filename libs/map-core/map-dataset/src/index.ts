@@ -16,6 +16,7 @@ export { DATASET_CONTROL_LOCALE } from './extra/dataset-control/locale';
 
 export { MAP_DATASET_LOCALE_EN } from './locale/locale.en';
 export { MAP_DATASET_LOCALE_VI } from './locale/locale.vi';
+export { registerMapDatasetBuiltinLocales } from './locale/register-builtin-locales';
 
 export { getDatasetDetailInfo } from './extra/detail/info';
 

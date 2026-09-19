@@ -3,7 +3,6 @@ import {
   applyMapStyleSettings,
   inputToSprite,
   readMapStyleSettings,
-  SETTING_CONTROL_LOCALE,
   spriteToInput,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -25,9 +24,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
 });
 const [show, setShow] = useShow(props.show);
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-
-registerLocale('en', SETTING_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 function onToggleShow() {
   setShow(!show.value);
   if (show.value) {

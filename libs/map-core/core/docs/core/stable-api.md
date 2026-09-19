@@ -95,10 +95,11 @@ Hosts own UI, registry actions, and framework lifecycle only.
 |-------|------|
 | `.` | Platform shell: store/`getMap`/`subscribeMapReady`, registry, errors, mitt, shared GIS utils, shell locales, host `WorkerMonitor`, thin-host control helpers (`captureHomeView`, `goHome`, navigation/globe/goto/setting/mouse-coordinates/info) |
 | `./style.css` | Shared map CSS |
+| `./assets/*` | Static assets (basemap thumbnails under `assets/basemap/`) |
 | `./worker` | CSS/DOM-free worker helpers |
-| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError`, domain `logger` (`map:basemap`) |
+| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `createDefaultBaseMapStore`, `BasemapManager` / `getOrCreateBasemapManager` (on `MAP_STORE_KEY.BASEMAP`), `BasemapError`, domain `logger` (`map:basemap`) |
 | `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs`, domain `logger` (`map:crs`) |
-| `./devtools` | Devtools store core: `getMapDebugStore` / `configureDevtoolLogStore` / `createDevtoolLogAdapter` / `getDevtoolLogDataStore` / `refreshDevtoolLogsFromStore` (default uncapped IndexedDB; custom `LogDataStore` allowed), `installDevtoolsCore` (Experimental) |
+| `./devtools` | Devtools store core: `getMapDebugStore` / `configureDevtoolLogStore` / `createDevtoolLogAdapter` / `getDevtoolLogDataStore` / `refreshDevtoolLogsFromStore` / `clearDevtoolLogsForMapId` / `clearDevtoolErrorsForMapId` (default uncapped IndexedDB; custom `LogDataStore` allowed; `removeMap` clears that map’s logs/errors), `installDevtoolsCore` (Experimental) |
 | `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive`, domain `logger` (`map:event`) |
 | `./image` | Map image load/store helpers, domain `logger` (`map:image`) |
 | `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
@@ -114,7 +115,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 
 | Area | Stable surface |
 |------|----------------|
-| Map access | `getMap` → `MapSimple \| undefined`, `subscribeMapReady` → unsubscribe, `registerMapAccessor` (+ `{ hostId }`, returns unregister), `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_HOST`, `listMapPlatformHosts`, `MAP_PLATFORM_REGISTRY_METHOD` (reserved UniversalRegistry global keys), `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance` — [map-store](./map-store.md). **Theme bootstrap is process-global** (one `html` theme); platform accessors are **multi-host**. |
+| Map access | `getMap` → `MapSimple \| undefined`, `subscribeMapReady` → unsubscribe, `registerMapAccessor` (+ `{ hostId }`, returns unregister), `registerMapReadySubscriber`, `registerMapStoreCleanup`, `MAP_PLATFORM_HOST`, `listMapPlatformHosts`, `MAP_PLATFORM_REGISTRY_METHOD` (reserved UniversalRegistry global keys), `MapStoreManager`, `MAP_STORE_KEY`, `hasMapInstance`, `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `hasMapDomainStoreFactory` (domain bags on `map:core[mapId]`; not `meta.registries`), `ensureMapMitt` / `ensureMapLangStore` / `ensureMapLocaleApi` — [map-store](./map-store.md). Domain subpaths also export `ensureMap*Store` / `ensureMap*Api` (event, image, toolbar, crs, print, basemap). **Theme bootstrap is process-global** (one `html` theme); platform accessors are **multi-host**. |
 | Thin-host control helpers | Home (`captureHomeView` / `goHome`), navigation (`zoomIn` / `zoomOut` / `resetBearing` / `attachRotateListener` / …), globe (`toggleGlobeProjection` / …), goto / setting / mouse-coordinates / info attach helpers |
 | Registry | `UniversalRegistry`, `runMapControlAction`, `buildMapControlHandle`, `MapControlHandle`, `REGISTRY_*` (incl. `REGISTRY_GLOBAL_STORE_KEY` / `REGISTRY_MAPS_STORE_KEY` / `REGISTRY_CONTROLS_STORE_KEY`), `filterMapControls` (`RegistryFn` = `(...args: unknown[]) => unknown`) — backed by `@hungpvq/shared-store` |
 | Init / errors | `MapInitializer`, `MapError` family, `errorHandler` / `MapErrorHandler` — [error-handling](./error-handling.md) |
@@ -126,8 +127,8 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | Button chrome helpers | `MAP_BUTTON_VARIANTS` / `MAP_BUTTON_SIZES` / `MAP_BUTTON_SIZE_PX`, `resolveMapButtonSizePx`, `mapButtonVariantClass`, `mapButtonSizeClass`, … (used by Vue/React `MapControlButton`) |
 | ModuleContainer helpers | `moduleCornerHostSelector` / `moduleDraggableHostSelector` (+ id variants), `buildModuleBindPosition`, `moduleBtnContainerClassName`, `isModuleCornerChromeVisible`, `queryModuleHostElement` (Vue/React `ModuleContainer`) |
 | Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, `workerHasHistory` / `anyWorkerHasHistory` / `countBusyWorkers`, … (in-worker: `./worker`) |
-| Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*`, `LANGUAGE_*`, `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI` |
-| Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports); domain logger `mapLangLogger` (`map:lang`) |
+| Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*`, `LANGUAGE_*`, `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI`, `registerMapCoreBuiltinLocales` |
+| Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports); domain logger `mapLangLogger` (`map:lang`); built-in packs auto-register on first `ensureMapLocaleApi` |
 | Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.

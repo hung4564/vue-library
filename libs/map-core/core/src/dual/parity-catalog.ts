@@ -120,7 +120,6 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'getStore',
   'langStore',
   'useBaseMap',
-  'useBaseMapAdapter',
   'useBreakpoints',
   'useComponentName',
   'useEventListener',

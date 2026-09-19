@@ -5,6 +5,10 @@
 
 import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
+import {
+  clearDevtoolErrorsForMapId,
+  clearDevtoolLogsForMapId,
+} from '../devtools/store-core';
 import { hasMapInstance, type MapSimple } from '../types';
 import type { IMapStoreAdapter, MapFCOnUseMap } from './interface';
 import { getMapCoreMetaStore } from './map-core-meta';
@@ -290,6 +294,8 @@ export class MapStoreManager {
     const root = this.getRoot();
     delete root[mapId];
     getRemovedMapIds().add(mapId);
+    clearDevtoolLogsForMapId(mapId);
+    clearDevtoolErrorsForMapId(mapId);
   }
 
   /**

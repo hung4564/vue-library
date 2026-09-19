@@ -2,7 +2,6 @@ import {
   applyMapStyleSettings,
   inputToSprite,
   readMapStyleSettings,
-  SETTING_CONTROL_LOCALE,
   spriteToInput,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -34,7 +33,7 @@ type SettingState = {
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
     zoom: undefined,
@@ -43,11 +42,7 @@ export function SettingControl(props: SettingControlProps) {
     glyphs: undefined,
   });
 
-  useEffect(() => {
-    registerLocale('en', SETTING_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  function loadCurrentView() {
+function loadCurrentView() {
     callMap((map) => {
       const next = readMapStyleSettings(map);
       setSetting({

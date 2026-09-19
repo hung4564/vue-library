@@ -1,6 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
+
 import type { IListViewUI, LayerListGroupTree, LayerListItem } from '@hungpvq/map-dataset';
-import { LAYER_CONTROL_LOCALE, layerMatchesSearch, listListViewGroups, syncListViewLayerOrder } from '@hungpvq/map-dataset';
+import { layerMatchesSearch, listListViewGroups, syncListViewLayerOrder } from '@hungpvq/map-dataset';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
@@ -38,7 +39,7 @@ export function LayerList({
   onCreate?: () => void;
 }) {
   const { callMap } = useMap({ mapId });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { getAllComponentsByType, removeComponent, datasetVersion } =
     useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
@@ -56,10 +57,7 @@ export function LayerList({
   const listDisabledDrag =
     Boolean(disabledDrag) || Boolean(debouncedSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
-  useEffect(() => {
-    registerLocale('en', LAYER_CONTROL_LOCALE);
-  }, [registerLocale]);
-  function refresh() {
+function refresh() {
     const viewSource = getAllComponentsByType<IListViewUI>('list');
     const next = (viewSource.sort((a, b) => b.index - a.index) ||
       []) as LayerListItem[];

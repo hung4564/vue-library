@@ -1,8 +1,9 @@
 import {
   DataStoreLogAdapter,
   IndexedDBLogDataStore,
-  MemoryLogDataStore,
   loggerFactory,
+  logMapId,
+  MemoryLogDataStore,
   resolveMaybePromise,
   type LogDataStore,
   type LogRecord,
@@ -44,9 +45,7 @@ export type DevtoolLogStoreOptions = MapDebugLogStoreOptions;
  * built-in kind, options bag, or any custom {@link LogDataStore} instance.
  */
 export type DevtoolLogStoreConfig =
-  | DevtoolLogStoreKind
-  | LogDataStore
-  | DevtoolLogStoreOptions;
+  DevtoolLogStoreKind | LogDataStore | DevtoolLogStoreOptions;
 
 let state: DevtoolState = {
   isOpen: false,
@@ -103,9 +102,7 @@ function normalizeStoreConfig(
   return config;
 }
 
-function createDevtoolLogStore(
-  options: DevtoolLogStoreOptions,
-): LogDataStore {
+function createDevtoolLogStore(options: DevtoolLogStoreOptions): LogDataStore {
   if (options.store) return options.store;
   if (options.kind === 'memory') {
     return new MemoryLogDataStore({
@@ -134,7 +131,7 @@ export function configureDevtoolLogStore(
   const bag = getMapDebugStore();
   if (bag.logDataStore) return;
   bag.logStoreOptions = {
-    kind: 'indexeddb',
+    kind: 'memory',
     ...bag.logStoreOptions,
     ...normalizeStoreConfig(config),
   };
@@ -144,7 +141,7 @@ export function getDevtoolLogDataStore(): LogDataStore {
   const bag = getMapDebugStore();
   if (!bag.logDataStore) {
     const options: DevtoolLogStoreOptions = {
-      kind: 'indexeddb',
+      kind: 'memory',
       ...bag.logStoreOptions,
     };
     bag.logStoreOptions = options;
@@ -206,6 +203,27 @@ export function clearDevtoolLogs() {
   void resolveMaybePromise(getDevtoolLogDataStore().clear());
 }
 
+/**
+ * Drop Devtools log records for one mapId (no-op if the log store was never
+ * created — does not spin up IndexedDB just to clear).
+ */
+export function clearDevtoolLogsForMapId(mapId: string): void {
+  if (!mapId) return;
+  const bag = getMapDebugStore();
+  const store = bag.logDataStore;
+  if (!store) return;
+  void (async () => {
+    const all = await resolveMaybePromise(store.getAll());
+    const kept = all.filter((r) => logMapId(r) !== mapId);
+    if (kept.length === all.length) return;
+    await resolveMaybePromise(store.clear());
+    for (const r of [...kept].reverse()) {
+      await resolveMaybePromise(store.append(r));
+    }
+    patchState({ logs: [...kept] });
+  })();
+}
+
 /** Re-read the log store into Devtools UI state (Logs tab / badge count). */
 export async function refreshDevtoolLogsFromStore(): Promise<void> {
   const store = getDevtoolLogDataStore();
@@ -215,6 +233,14 @@ export async function refreshDevtoolLogsFromStore(): Promise<void> {
 
 export function clearDevtoolErrors() {
   patchState({ errors: [] });
+}
+
+/** Drop in-memory Devtools error rows whose context.mapId matches. */
+export function clearDevtoolErrorsForMapId(mapId: string): void {
+  if (!mapId) return;
+  const next = state.errors.filter((e) => e.context?.mapId !== mapId);
+  if (next.length === state.errors.length) return;
+  patchState({ errors: next });
 }
 
 export function replaceDevtoolLogs(logs: LogRecord[]) {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+
 import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   resolveCrsDisplayItems,
@@ -32,11 +32,9 @@ const emit = defineEmits<{
 }>();
 
 const { mapId } = useMap();
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const { items: crsItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
-
-registerLocale('en', CRS_CONTROL_LOCALE);
 
 const catalog = computed(() => buildMapCrsCatalog(crsItems.value));
 const displayItems = computed(() =>

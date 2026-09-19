@@ -2,7 +2,6 @@ import { type MapSimple, type WithMapPropType } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  INSPECT_CONTROL_LOCALE,
   InspectController,
   brightColor,
   renderPopup as defaultRenderPopup,
@@ -22,6 +21,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 
 /** Same icon pair as Vue InspectControl: map when idle, map-search when inspecting. */
 const INSPECT_ICONS = {
@@ -126,7 +126,8 @@ export function InspectControl(props: InspectControlProps) {
     onInit,
     onDestroy,
   );
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
+  useEnsureDrawBuiltinLocales(mapId);
 
   const { add: addEventClick, remove: removeEventClick } = useEventMap(
     mapId,
@@ -159,11 +160,7 @@ export function InspectControl(props: InspectControlProps) {
     };
   }, [removeEventClick, removeEventMouseMove]);
 
-  useEffect(() => {
-    registerLocale('en', INSPECT_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const toggle = useCallback(() => {
+const toggle = useCallback(() => {
     controller.toggle();
   }, [controller]);
 

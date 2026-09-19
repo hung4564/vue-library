@@ -1,10 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+
 import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
-import {
-  findSiblingOrNearestLeaf,
-  isListView,
-  type IListViewUI,
-} from '@hungpvq/map-dataset';
+import { findSiblingOrNearestLeaf, isListView, type IListViewUI } from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
@@ -17,7 +14,6 @@ import {
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
-  IDENTIFY_CONTROL_LOCALE,
   IDENTIFY_RESULT_CONTROL,
   shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
@@ -54,7 +50,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
     ...merged,
     controlId: IDENTIFY_RESULT_CONTROL.id,
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const formatCoordinate = useMemo(
     () => createMapDisplayCoordinateFormatter(),
     [],
@@ -74,11 +70,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
   const [focusedChildKey, setFocusedChildKey] = useState<string | null>(null);
   const lastRequestIdRef = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    registerLocale('en', IDENTIFY_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const flatChildren = useMemo(() => {
+const flatChildren = useMemo(() => {
     const out: Array<{
       key: string;
       child: IdentifyResultGrouped['items'][number];

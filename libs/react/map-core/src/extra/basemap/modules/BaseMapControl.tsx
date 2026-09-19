@@ -1,6 +1,5 @@
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
-  BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
   type BaseMapItem,
   logger,
@@ -47,7 +46,7 @@ export function BaseMapControl({
     controlIcon,
   };
   const { mapId, moduleContainerProps, order, mapInstance } = useMap({ ...props, controlId: 'mapBaseMapControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const {
     setBaseMaps,
     baseMaps: c_baseMaps,
@@ -57,18 +56,6 @@ export function BaseMapControl({
     remove,
     init,
   } = useBaseMap(mapId);
-
-  useEffect(() => {
-    setBaseMaps(props.baseMaps as BaseMapItem[]);
-  }, [props.baseMaps, setBaseMaps]);
-
-  useEffect(() => {
-    setDefaultBaseMap(props.defaultBaseMap);
-  }, [props.defaultBaseMap, setDefaultBaseMap]);
-
-  useEffect(() => {
-    registerLocale('en', BASEMAP_CONTROL_LOCALE);
-  }, [registerLocale]);
 
   const [show, setShow] = useState(false);
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -100,13 +87,23 @@ export function BaseMapControl({
     setShow((s) => !s);
   }, []);
 
-  // Init once when map is ready (matches Vue onMounted); do not re-init on every render
+  // Init once when map is ready; prop updates go through setBaseMaps/setDefault (no-op if unchanged).
   useEffect(() => {
     if (!mapInstance) return;
     init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
     return () => remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
   }, [mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance) return;
+    setBaseMaps(props.baseMaps as BaseMapItem[]);
+  }, [mapInstance, props.baseMaps, setBaseMaps]);
+
+  useEffect(() => {
+    if (!mapInstance) return;
+    setDefaultBaseMap(props.defaultBaseMap);
+  }, [mapInstance, props.defaultBaseMap, setDefaultBaseMap]);
 
   const { control } = useToolbarControl(mapId, props, {
     kind: 'single',

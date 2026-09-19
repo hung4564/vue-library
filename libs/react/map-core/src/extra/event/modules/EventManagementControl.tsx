@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
-  EVENT_CONTROL_LOCALE,
   groupEventsByMapType,
   isEventActive,
   MittTypeMapEventEventKey,
@@ -28,7 +28,7 @@ export interface EventManagementControlProps extends WithMapPropType {
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapEventManagementControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
     id: 'mapEventManagementControl',
@@ -53,11 +53,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
   });
   const [current, setCurrent] = useState(getCurrent);
 
-  useEffect(() => {
-    registerLocale('en', EVENT_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(() => {
+useEffect(() => {
     const update = () => setCurrent(getCurrent());
     emitter.on(MittTypeMapEventEventKey.setCurrent, update);
     update();

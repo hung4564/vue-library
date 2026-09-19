@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
-import { printMapToFile, PRINT_CONTROL_LOCALE } from '@hungpvq/map-core/print';
+import { printMapToFile } from '@hungpvq/map-core/print';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
@@ -26,8 +26,7 @@ const path = {
   print: mdiPrinterOutline,
 };
 const { callMap, mapId, moduleContainerProps, order } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', PRINT_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const print = ref({ show: false, loading: false });
 function onPrint() {
   callMap(async (map) => {

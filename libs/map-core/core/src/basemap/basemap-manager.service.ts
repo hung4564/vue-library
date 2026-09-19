@@ -1,160 +1,157 @@
 /**
- * Framework-agnostic basemap management service
- * Handles basemap operations, state management, and events
+ * Framework-agnostic basemap management (store + mitt + latest-wins apply).
  */
 
-import type { BaseMapItem, BaseMapStore, MittTypeBaseMap } from './types';
-import { MittTypeBaseMapEventKey } from './types';
-import { BaseMapAdapter } from './adapter/BaseMapAdapter';
-import { BasemapService } from './basemap.service';
 import type { Emitter } from 'mitt';
 import type { LoggerFunction } from '../store/interface';
+import { BasemapService } from './basemap.service';
+import type { BaseMapItem, BaseMapStore, MittTypeBaseMap } from './types';
+import { MittTypeBaseMapEventKey } from './types';
 
-/**
- * Basemap manager service
- * Provides framework-agnostic basemap management
- * Core is single source of truth for state
- */
+/** Attach or reuse {@link BasemapManager} on `store` (`MAP_STORE_KEY.BASEMAP`). */
+export function getOrCreateBasemapManager(
+  mapId: string,
+  store: BaseMapStore,
+  emitter: Emitter<MittTypeBaseMap>,
+  logger?: LoggerFunction,
+): BasemapManager {
+  if (store.manager) return store.manager;
+  const manager = new BasemapManager(mapId, store, emitter, logger);
+  store.manager = manager;
+  return manager;
+}
+
 export class BasemapManager {
+  private pending?: BaseMapItem;
+  private flight?: Promise<void>;
+  private committed?: BaseMapItem;
+
   constructor(
     private mapId: string,
     private store: BaseMapStore,
-    private adapter: BaseMapAdapter,
     private emitter: Emitter<MittTypeBaseMap>,
     private logger?: LoggerFunction,
   ) {}
 
-  /**
-   * Get current basemaps list
-   * Core is single source of truth
-   */
   getBaseMaps(): BaseMapItem[] {
     return this.store.baseMaps;
   }
 
-  /**
-   * Get current basemap
-   * Core is single source of truth
-   */
   getCurrent(): BaseMapItem | undefined {
     return this.store.current;
   }
 
-  /**
-   * Get default basemap ID
-   */
   getDefaultBaseMapId(): string {
     return this.store.defaultBaseMap;
   }
 
-  /**
-   * Check if basemap is loading
-   */
   isLoading(): boolean {
     return this.store.loading;
   }
 
-  /**
-   * Set basemaps list
-   * Updates core state and emits event
-   *
-   * @param baseMaps - Array of basemap items
-   */
   setBaseMaps(baseMaps: BaseMapItem[]): void {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'setBaseMaps', { baseMaps });
-    }
-
-    // Update core state (single source of truth)
+    if (sameBaseMapList(this.store.baseMaps, baseMaps)) return;
+    this.logger?.(this.mapId, 'debug', 'setBaseMaps', { baseMaps });
     this.store.baseMaps = baseMaps;
-
-    // Emit event for subscribers
     this.emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);
   }
 
-  /**
-   * Set default basemap ID
-   * Automatically sets current basemap if not set
-   *
-   * @param defaultBaseMap - Default basemap ID
-   */
   setDefaultBaseMap(defaultBaseMap?: string): void {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'setDefaultBaseMap', { defaultBaseMap });
-    }
-
-    // Update core state
-    this.store.defaultBaseMap = defaultBaseMap || '';
-
-    // Get default basemap using service
-    const baseMap = BasemapService.getDefaultBasemap(
+    const next = defaultBaseMap || '';
+    const baseMap = this.store.adapter.getIndexDefault(
       this.store.baseMaps,
-      this.store.defaultBaseMap,
-      this.adapter,
+      next,
     );
 
-    if (!baseMap) return;
-
+    const sameDefault = this.store.defaultBaseMap === next;
     const shouldApply =
-      !this.store.current ||
-      (!!defaultBaseMap &&
-        (this.store.current.id !== baseMap.id ||
-          this.store.current.title !== baseMap.title));
+      !!baseMap &&
+      (!this.store.current ||
+        (!!defaultBaseMap &&
+          String(this.store.current.id) !== String(baseMap.id)));
 
-    if (shouldApply) {
-      this.setCurrent(baseMap);
+    if (sameDefault && !shouldApply) return;
+
+    this.logger?.(this.mapId, 'debug', 'setDefaultBaseMap', { defaultBaseMap });
+    this.store.defaultBaseMap = next;
+
+    if (shouldApply && baseMap) {
+      void this.setCurrent(baseMap);
     }
   }
 
   /**
-   * Set current basemap
-   * Updates core state, switches basemap, and emits events
-   *
-   * @param baseMap - Basemap item to set as current
+   * Optimistic UI + single-flight apply; concurrent calls coalesce to latest.
    */
   async setCurrent(baseMap: BaseMapItem): Promise<void> {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'setCurrent', { baseMap });
+    this.logger?.(this.mapId, 'debug', 'setCurrent', { baseMap });
+
+    if (!this.flight) {
+      this.committed = this.store.current;
     }
 
-    // Prevent concurrent operations
-    if (this.store.loading) {
-      return;
-    }
+    this.pending = baseMap;
+    this.emitCurrent(baseMap);
 
+    if (this.flight) return this.flight;
+
+    this.flight = this.runApplyLoop();
     try {
-      // Update core state immediately
-      this.store.current = baseMap;
-      this.store.loading = true;
-
-      // Emit current change event
-      this.emitter.emit(MittTypeBaseMapEventKey.setCurrent, this.store.current);
-
-      // Switch basemap using service
-      await BasemapService.switchBasemap(this.mapId, this.adapter, baseMap);
-
-      this.store.loading = false;
-    } catch (error) {
-      this.store.loading = false;
-      throw error;
+      await this.flight;
+    } finally {
+      this.flight = undefined;
     }
   }
 
-  /**
-   * Initialize basemap manager
-   * Sets default basemap and base maps list
-   *
-   * @param baseMaps - Array of basemap items
-   * @param defaultBaseMap - Default basemap ID
-   */
   init(baseMaps: BaseMapItem[], defaultBaseMap?: string): void {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'init', { baseMaps, defaultBaseMap });
-    }
-
-    // 1. Đặt baseMaps trước - cần có baseMaps để tìm map thỏa mãn defaultBaseMap
+    this.logger?.(this.mapId, 'debug', 'init', { baseMaps, defaultBaseMap });
     this.setBaseMaps(baseMaps);
-    // 2. setDefaultBaseMap phải gọi sau setBaseMaps - dùng store.baseMaps đã có
     this.setDefaultBaseMap(defaultBaseMap);
   }
+
+  private emitCurrent(baseMap: BaseMapItem | undefined): void {
+    this.store.current = baseMap;
+    this.emitter.emit(MittTypeBaseMapEventKey.setCurrent, baseMap);
+  }
+
+  private async runApplyLoop(): Promise<void> {
+    this.store.loading = true;
+    let lastError: unknown;
+
+    while (this.pending) {
+      const next = this.pending;
+      this.pending = undefined;
+      // Optimistic emit already happened in setCurrent; only re-emit on coalesce.
+      if (this.store.current?.id !== next.id) {
+        this.emitCurrent(next);
+      }
+
+      try {
+        await BasemapService.switchBasemap(
+          this.mapId,
+          this.store.adapter,
+          next,
+        );
+        this.committed = next;
+        lastError = undefined;
+      } catch (error) {
+        lastError = error;
+        if (!this.pending) {
+          this.emitCurrent(this.committed);
+        }
+      }
+    }
+
+    this.store.loading = false;
+    if (lastError) throw lastError;
+  }
+}
+
+function sameBaseMapList(a: BaseMapItem[], b: BaseMapItem[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (String(a[i]?.id) !== String(b[i]?.id)) return false;
+  }
+  return true;
 }

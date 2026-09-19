@@ -1,6 +1,6 @@
 <script setup lang="ts">
+
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   normalizeEpsgCode,
@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>();
 
 const { mapId } = useMap();
-const { trans, registerLocale } = useLang(mapId.value);
+const { trans } = useLang(mapId.value);
 const { items: crsItems, setItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 const draftEpsg = ref('');
@@ -45,8 +45,6 @@ const displayItems = computed(() =>
 const availableItems = computed(() =>
   catalog.value.filter((item) => !displayEpsgs.value.includes(item.epsg)),
 );
-
-registerLocale('en', CRS_CONTROL_LOCALE);
 
 function tryAdd(raw: string) {
   const epsg = normalizeEpsgCode(raw);

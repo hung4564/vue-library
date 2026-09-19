@@ -9,7 +9,6 @@ import {
 } from '@hungpvq/map-core/crs';
 import { EventClick } from '@hungpvq/map-core/event';
 import {
-  MEASUREMENT_CONTROL_LOCALE,
   MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementSession,
   resolveMeasurementToolbarStatus,
@@ -102,13 +101,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
   const crsHandle = useMapCrsItems(mapId);
   const displayCrsHandle = useMapCrsDisplayEpsgs(mapId);
   const imageHandle = useMapImage(mapId);
-  const { trans, registerLocale } = useLang(mapId);
-
-  useEffect(() => {
-    registerLocale('en', MEASUREMENT_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const getMeasurePointCrsItems = useCallback(() => {
+  const { trans } = useLang(mapId);
+const getMeasurePointCrsItems = useCallback(() => {
     return resolveCrsDisplayItems(
       displayCrsHandle.displayEpsgs,
       buildMapCrsCatalog(crsHandle.items),

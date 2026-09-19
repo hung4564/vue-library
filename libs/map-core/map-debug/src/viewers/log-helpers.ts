@@ -1,9 +1,5 @@
 import type { LogRecord } from '@hungpvq/shared-log';
-import {
-  compareLogOrder,
-  logSpanId,
-  rootNamespace,
-} from '@hungpvq/shared-log';
+import { compareLogOrder, logSpanId, rootNamespace } from '@hungpvq/shared-log';
 
 export type LevelFilter = 'all' | 'error' | 'warn' | 'info' | 'debug';
 
@@ -37,7 +33,10 @@ export function formatLogTime(ts: number): string {
 }
 
 export function textMessage(log: LogRecord): string {
-  return log.args.filter((arg) => !isObject(arg)).map(formatArg).join(' ');
+  return log.args
+    .filter((arg) => !isObject(arg))
+    .map(formatArg)
+    .join(' ');
 }
 
 export function objectArgs(log: LogRecord): unknown[] {
@@ -92,18 +91,13 @@ export type RequestFlowStep = {
   phase?: string;
 };
 
-export function buildRequestFlowSteps(
-  logs: LogRecord[],
-): RequestFlowStep[] {
+export function buildRequestFlowSteps(logs: LogRecord[]): RequestFlowStep[] {
   if (logs.length === 0) return [];
   const t0 = logs[0]!.header.ts;
   return logs.map((log) => toRequestFlowStep(log, t0));
 }
 
-function toRequestFlowStep(
-  log: LogRecord,
-  t0: number,
-): RequestFlowStep {
+function toRequestFlowStep(log: LogRecord, t0: number): RequestFlowStep {
   const message = textMessage(log);
   const namespace = rootNamespace(log) || namespaceKey(log);
   const menu = log.header.menuName || log.header.menuId;
@@ -127,8 +121,9 @@ function toRequestFlowStep(
 
   let label: string;
   if (flowKind === 'emit' || phase === 'EMIT') {
-    const fromMsg =
-      message.startsWith('EMIT ') ? message.slice(5).trim() : undefined;
+    const fromMsg = message.startsWith('EMIT ')
+      ? message.slice(5).trim()
+      : undefined;
     label = `emit ${eventName || fromMsg || '?'}`;
   } else if (phase === 'START' || phase === 'END' || phase === 'ERROR') {
     label = fn ? `${fn} · ${phase}` : phase;
@@ -183,9 +178,7 @@ export type RequestFlowTreeNode = RequestFlowStep & {
  *
  * Never reorders children — timeline follows {@link compareLogOrder}.
  */
-export function buildRequestFlowTree(
-  logs: LogRecord[],
-): RequestFlowTreeNode[] {
+export function buildRequestFlowTree(logs: LogRecord[]): RequestFlowTreeNode[] {
   if (logs.length === 0) return [];
   const ordered = logs.slice().sort(compareLogOrder);
   const t0 = ordered[0]!.header.ts;
@@ -219,9 +212,7 @@ export function buildRequestFlowTree(
     return topFn();
   };
 
-  const resolveFnFrame = (
-    spanId?: string,
-  ): RequestFlowTreeNode | undefined => {
+  const resolveFnFrame = (spanId?: string): RequestFlowTreeNode | undefined => {
     if (spanId && framesBySpanId.has(spanId)) {
       return framesBySpanId.get(spanId);
     }

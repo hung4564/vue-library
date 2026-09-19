@@ -13,7 +13,6 @@ import {
   renderPopup as _renderPopup,
   brightColor,
   generateInspectStyle,
-  INSPECT_CONTROL_LOCALE,
   InspectController,
 } from '@hungpvq/map-draw';
 import {
@@ -28,6 +27,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { ref } from 'vue';
+import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import type { InspectControlProps } from './InspectControl.props';
 
 const props = withDefaults(defineProps<InspectControlProps>(), {
@@ -80,9 +80,8 @@ const moveEvent = new EventMouseMove().setHandler(
 );
 
 const { mapId, moduleContainerProps, order } = useMap(props, onInit, onDestroy);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', INSPECT_CONTROL_LOCALE);
-
+const { trans } = useLang(mapId.value);
+useEnsureDrawBuiltinLocales(mapId.value);
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,
   clickEvent,

@@ -1,9 +1,9 @@
 import {
   bindToggleShowAction,
   getToggleShowTitleKey,
-  LAYER_CONTROL_LOCALE,
   performToggleShowAction,
 } from '@hungpvq/map-dataset';
+
 import { LIST_VIEW_MENU_COMPONENT_KEY, type WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -16,16 +16,12 @@ import {
 /** Shared toggle-show logic for default and custom menu components. */
 export function useToggleShowAction(props: WithLayerItemActionType) {
   const { callMap, mapId } = useMap(props);
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { getStoreDataset } = useMapDataset(mapId);
   const store = getStoreDataset();
   const [showValue, setShowValue] = useState(!!props.data.show);
 
-  useEffect(() => {
-    registerLocale('en', LAYER_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  useEffect(
+useEffect(
     () =>
       bindToggleShowAction(props.data, (show) => {
         setShowValue(show);

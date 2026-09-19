@@ -26,7 +26,7 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 
 | Package | Public entries | Peer lock notes |
 |---------|----------------|-----------------|
-| `@hungpvq/map-core` | `.` + `./style.css` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec` |
+| `@hungpvq/map-core` | `.` + `./style.css` + `./assets/*` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec` |
 | `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
 | `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
 | `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; draggable optional peer (needed for default `Map` shell / panels) |

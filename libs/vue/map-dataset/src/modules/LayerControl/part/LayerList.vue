@@ -1,6 +1,7 @@
 <script setup lang="ts">
+
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { LAYER_CONTROL_LOCALE, layerMatchesSearch, listListViewGroups, syncListViewLayerOrder, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
+import { layerMatchesSearch, listListViewGroups, syncListViewLayerOrder, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
@@ -71,8 +72,7 @@ const path = {
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
-const { trans, registerLocale } = useLang(mapId.value);
-registerLocale('en', LAYER_CONTROL_LOCALE);
+const { trans } = useLang(mapId.value);
 const { getAllComponentsByType, getDatasetIds, removeComponent } =
   useMapDataset(mapId.value);
 const views = ref<Array<LayerListItem>>([]);

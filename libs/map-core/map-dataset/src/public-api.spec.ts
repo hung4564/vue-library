@@ -29,6 +29,7 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'DATASET_CONTROL_LOCALE',
   'MAP_DATASET_LOCALE_EN',
   'MAP_DATASET_LOCALE_VI',
+  'registerMapDatasetBuiltinLocales',
   'MAP_DATASET_STORE_KEY',
   'DatasetComposite',
   'DatasetError',

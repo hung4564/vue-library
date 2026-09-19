@@ -45,7 +45,6 @@ export {
 } from './extra/basemap/modules/BaseMapTagControl';
 
 export {
-  useBaseMapAdapter,
   useMapBaseMapStore,
 } from './extra/basemap/store';
 

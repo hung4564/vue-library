@@ -51,4 +51,37 @@ describe('EventManager', () => {
     expect(manager.getCurrent('e1')).toBeUndefined();
     expect(manager.getCurrent()).toBeUndefined();
   });
+
+  it('logs add/remove with event identity and remove outcome', () => {
+    const store: MapEventStore = { items: [], current: {} };
+    const emitter = mitt();
+    const log = vi.fn();
+    const manager = new EventManager('m1', store, emitter as any, log);
+    const event = {
+      id: 'e1',
+      event_map_type: 'click',
+      type_select: 'map',
+      from: 'IdentifyControl',
+      name: 'identify',
+    } as any;
+
+    manager.add(event, 'IdentifyControl');
+    expect(log.mock.calls[0][2]).toContain('add click (map)');
+    expect(log.mock.calls[0][2]).toContain('from=identify-control');
+    expect(log.mock.calls[0][2]).toContain('id=e1');
+    expect(log.mock.calls[0][3].event).toMatchObject({
+      id: 'e1',
+      event_map_type: 'click',
+      from: 'identify-control',
+    });
+
+    manager.remove(event);
+    expect(log.mock.calls[1][2]).toContain('remove click (map)');
+    expect(log.mock.calls[1][2]).toContain('removed remaining=0');
+    expect(log.mock.calls[1][3]).toMatchObject({ removed: true, remaining: 0 });
+
+    manager.remove(event);
+    expect(log.mock.calls[2][2]).toContain('skipped (not in store)');
+    expect(log.mock.calls[2][3]).toMatchObject({ removed: false });
+  });
 });

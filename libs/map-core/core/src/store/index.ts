@@ -54,3 +54,11 @@ export type {
   MapCoreMetaStore,
   MapResolverStore,
 } from './map-core-meta';
+
+export {
+  clearMapDomainStoreFactories,
+  ensureMapDomainStore,
+  hasMapDomainStoreFactory,
+  registerMapDomainStoreFactory,
+} from './map-domain-store';
+export type { MapDomainStoreFactory } from './map-domain-store';

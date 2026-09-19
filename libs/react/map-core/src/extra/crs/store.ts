@@ -1,8 +1,5 @@
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
-import { createDefaultCrsStore, type MapCrsStore } from '@hungpvq/map-core/crs';
-import { createMapScopedStore } from '../../store/store';
+import { ensureMapCrsStore } from '@hungpvq/map-core/crs';
+import type { MapCrsStore } from '@hungpvq/map-core/crs';
 
-export const useMapCrsStore = (mapId: string) =>
-  createMapScopedStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS, () => {
-    return createDefaultCrsStore();
-  });
+export const useMapCrsStore = (mapId: string): MapCrsStore =>
+  ensureMapCrsStore(mapId);

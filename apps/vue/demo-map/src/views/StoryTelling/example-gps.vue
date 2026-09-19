@@ -258,15 +258,4 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
   </div>
 </template>
 
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
 
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

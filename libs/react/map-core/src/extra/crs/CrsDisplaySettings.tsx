@@ -1,11 +1,11 @@
 import {
-  CRS_CONTROL_LOCALE,
   buildMapCrsCatalog,
   formatCrsLabel,
   normalizeEpsgCode,
   resolveCrsDisplayItems,
   resolveCrsItemForStore,
 } from '@hungpvq/map-core/crs';
+
 import { mdiClose } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -29,7 +29,7 @@ export function CrsDisplaySettings({
   onChange,
 }: CrsDisplaySettingsProps) {
   const { mapId } = useMap();
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const { items: crsItems, setItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [draftEpsg, setDraftEpsg] = useState('');
@@ -45,11 +45,7 @@ export function CrsDisplaySettings({
     [catalog, displayEpsgs],
   );
 
-  useEffect(() => {
-    registerLocale('en', CRS_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  function tryAdd(raw: string) {
+function tryAdd(raw: string) {
     const epsg = normalizeEpsgCode(raw);
     if (!epsg || displayEpsgs.includes(epsg)) return false;
 

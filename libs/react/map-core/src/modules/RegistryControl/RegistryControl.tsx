@@ -1,6 +1,5 @@
 import {
   filterMapControls,
-  REGISTRY_CONTROL_LOCALE,
   type MapControlHandle,
   type WithMapPropType,
 } from '@hungpvq/map-core';
@@ -35,18 +34,14 @@ export function RegistryControl(props: RegistryControlProps) {
     ...merged,
     controlId: CONTROL_ID,
   });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, setShow] = useShow(props.show ?? false);
   const [controls, setControls] = useState<MapControlHandle[]>([]);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [actionType, setActionType] = useState('');
 
-  useEffect(() => {
-    registerLocale('en', REGISTRY_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  const refresh = useCallback(() => {
+const refresh = useCallback(() => {
     if (!mapId) return;
     const next = UniversalRegistry.listControls(mapId);
     setControls(next);

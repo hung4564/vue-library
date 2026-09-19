@@ -1,6 +1,5 @@
 import {
   applyGotoSetting,
-  GOTO_CONTROL_LOCALE,
   gotoSettingFromCoordinateText,
   readGotoSetting,
   type GotoSetting,
@@ -27,15 +26,11 @@ export interface GotoControlProps extends WithMapPropType {
 export function GotoControl(props: GotoControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
-  const { trans, registerLocale } = useLang(mapId);
+  const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<GotoSetting>({ center: [0, 0] });
 
-  useEffect(() => {
-    registerLocale('en', GOTO_CONTROL_LOCALE);
-  }, [registerLocale]);
-
-  function loadCurrentView() {
+function loadCurrentView() {
     callMap((map) => {
       setSetting(readGotoSetting(map));
     });
