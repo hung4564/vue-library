@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -34,6 +35,7 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <GlobeControl />

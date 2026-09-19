@@ -95,7 +95,9 @@ export function createDynamicBoundMenuDataset() {
             const next =
               current[0] === DEMO_BBOX[0] ? DEMO_LIST_BBOX : DEMO_BBOX;
             bound!.setData(next);
-            logger.info('bound bbox updated', next);
+            logger
+              .with({ fn: 'onUpdateBbox', span: 'menu.action' })
+              .info('bound bbox updated', next);
           })
           .build(),
       ),
@@ -276,10 +278,12 @@ export function createByControlPlacementDataset() {
       [MENU_CONTROL_ID.layerDetail]: { location: 'title' },
     })
     .setClick(({ layer, value }) => {
-      logger.info('[byControl demo] Favorite', {
-        layer: layer?.getName?.(),
-        value,
-      });
+      logger
+        .with({ fn: 'onFavorite', span: 'menu.action' })
+        .info('[byControl demo] Favorite', {
+          layer: layer?.getName?.(),
+          value,
+        });
     })
     .build();
 
@@ -290,7 +294,9 @@ export function createByControlPlacementDataset() {
     .setName('List only')
     .setIcon(mdiPen)
     .setClick(() => {
-      logger.info('[byControl demo] List only (should not show on LayerDetail)');
+      logger
+        .with({ fn: 'onListOnly', span: 'menu.action' })
+        .info('[byControl demo] List only (should not show on LayerDetail)');
     })
     .build();
 
@@ -385,7 +391,9 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              logger.info('custom execute', click, props);
+              logger
+                .with({ fn: 'onCustomExecute', span: 'menu.action' })
+                .info('custom execute', click, props);
             },
           })
           .build(),
@@ -402,7 +410,9 @@ export function createCustomSupportDataset() {
         'custom click',
         createMenuClickBuilder()
           .addCommand((props) => {
-            logger.info('custom click', props);
+            logger
+              .with({ fn: 'onCustomClick', span: 'menu.action' })
+              .info('custom click', props);
           })
           .build(),
       ),
@@ -413,12 +423,16 @@ export function createCustomSupportDataset() {
           .addTupleDynamic(
             {
               execute(click, props) {
-                logger.info('custom execute', click, props);
+                logger
+                  .with({ fn: 'onCustomExecute', span: 'menu.action' })
+                  .info('custom execute', click, props);
               },
             },
             (props) => {
               alert('custom use execute and transform');
-              logger.info('custom use execute and transform', props);
+              logger
+                .with({ fn: 'onCustomExecuteTransform', span: 'menu.action' })
+                .info('custom use execute and transform', props);
               return { value: 'custom' };
             },
           )
@@ -430,7 +444,9 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addTupleDynamic(DEMO_CUSTOM_MENU_HANDLER_KEY, (props) => {
             alert('custom use registry and transform');
-            logger.info('custom use registry and transform', props);
+            logger
+              .with({ fn: 'onCustomRegistryTransform', span: 'menu.action' })
+              .info('custom use registry and transform', props);
             return { value: 'custom' };
           })
           .build(),
@@ -441,7 +457,9 @@ export function createCustomSupportDataset() {
         createMenuClickBuilder()
           .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
             alert('custom use menu fitBounds and transform');
-            logger.info('custom use menu fitBounds and transform', props);
+            logger
+              .with({ fn: 'onCustomFitBoundsTransform', span: 'menu.action' })
+              .info('custom use menu fitBounds and transform', props);
             return {
               value: createMenuClickHighlightBuilder()
                 .setDetail(DEMO_POLYGON)
@@ -471,30 +489,42 @@ export function createCustomMultiSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              logger.info('custom execute', click, props);
+              logger
+                .with({ fn: 'onCustomExecute', span: 'menu.action' })
+                .info('custom execute', click, props);
             },
           })
           .addCommand(DEMO_CUSTOM_MENU_HANDLER_KEY)
           .addCommand((props) => {
-            logger.info('custom click', props);
+            logger
+              .with({ fn: 'onCustomClick', span: 'menu.action' })
+              .info('custom click', props);
           })
           .addTupleDynamic(
             {
               execute(click, props) {
-                logger.info('custom execute after transform', click, props);
+                logger
+                  .with({ fn: 'onCustomExecuteAfterTransform', span: 'menu.action' })
+                  .info('custom execute after transform', click, props);
               },
             },
             (props) => {
-              logger.info('custom use execute and transform', props);
+              logger
+                .with({ fn: 'onCustomExecuteTransform', span: 'menu.action' })
+                .info('custom use execute and transform', props);
               return { value: 'custom' };
             },
           )
           .addTupleDynamic(DEMO_CUSTOM_MENU_HANDLER_KEY, (props) => {
-            logger.info('custom use registry and transform', props);
+            logger
+              .with({ fn: 'onCustomRegistryTransform', span: 'menu.action' })
+              .info('custom use registry and transform', props);
             return { value: 'custom' };
           })
           .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, (props) => {
-            logger.info('custom use menu fitBounds and transform', props);
+            logger
+              .with({ fn: 'onCustomFitBoundsTransform', span: 'menu.action' })
+              .info('custom use menu fitBounds and transform', props);
             return {
               value: createMenuClickHighlightBuilder()
                 .setDetail(DEMO_POLYGON)
@@ -524,10 +554,17 @@ export function createCustomChainSupportDataset() {
         createMenuClickBuilder()
           .addCommand({
             execute(click, props) {
-              logger.info('custom chain execute', props);
+              logger
+                .with({ fn: 'onCustomChainExecute', span: 'menu.action' })
+                .info('custom chain execute', props);
               return createMenuClickBuilder().addCommand({
                 execute(click, props) {
-                  logger.info('custom chain after execute', click, props);
+                  logger
+                    .with({
+                      fn: 'onCustomChainAfterExecute',
+                      span: 'menu.action',
+                    })
+                    .info('custom chain after execute', click, props);
                 },
               });
             },
@@ -539,10 +576,17 @@ export function createCustomChainSupportDataset() {
         'custom click',
         createMenuClickBuilder()
           .addCommand((props) => {
-            logger.info('custom chain click', props);
+            logger
+              .with({ fn: 'onCustomChainClick', span: 'menu.action' })
+              .info('custom chain click', props);
             return createMenuClickBuilder().addCommand({
               execute(click, props) {
-                logger.info('custom chain after click', click, props);
+                logger
+                  .with({
+                    fn: 'onCustomChainAfterClick',
+                    span: 'menu.action',
+                  })
+                  .info('custom chain after click', click, props);
               },
             });
           })

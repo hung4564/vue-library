@@ -47,11 +47,13 @@ export function SampleCustomMenu({
           className="layer-context-menu__item"
           onClick={(event) => {
             event.stopPropagation();
-            logger.info('layer menu', {
-              mapId,
-              layerId: data?.id,
-              layerName: data?.getName?.(),
-            });
+            logger
+              .with({ fn: 'onLog', span: 'menu.action' })
+              .info('layer menu', {
+                mapId,
+                layerId: data?.id,
+                layerName: data?.getName?.(),
+              });
           }}
         >
           <div className="layer-context-menu__item-icon">

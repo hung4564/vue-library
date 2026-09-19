@@ -2,6 +2,7 @@ import { MapControlButton } from '@hungpvq/react-map-core';
 import type { DevtoolTab } from '../store';
 import { setDevtoolActiveTab } from '../store';
 import { DatasetMenuViewer } from './DatasetMenuViewer';
+import { DevtoolsMapFilter } from './DevtoolsMapFilter';
 import { ErrorViewer } from './ErrorViewer';
 import { LogViewer } from './LogViewer';
 import { StoreViewer } from './StoreViewer';
@@ -18,17 +19,21 @@ export function DevtoolsPanelBody({
   logCount,
   errorCount,
   showClose,
+  showMapFilter = true,
   onClose,
 }: {
   activeTab: DevtoolTab;
   logCount: number;
   errorCount: number;
   showClose?: boolean;
+  /** When false, hide the map filter strip in the panel header. */
+  showMapFilter?: boolean;
   onClose?: () => void;
 }) {
   return (
     <>
       <div className="devtools-header">
+        {showMapFilter ? <DevtoolsMapFilter /> : null}
         <div className="devtools-tabs">
           {TABS.map((tab) => (
             <MapControlButton

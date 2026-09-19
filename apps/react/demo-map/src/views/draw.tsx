@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import {
   DrawingType,
@@ -16,6 +16,7 @@ import type { GeoJSONSource } from 'maplibre-gl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
 const MAP_ID = 'draw-demo';
@@ -123,7 +124,9 @@ export function DrawPage() {
       },
       redraw: (mapId) => paintResult(mapId),
       callback(result) {
-        logger.info('draw save', result);
+        logger
+          .with({ fn: 'onDrawSave', span: 'draw.save' })
+          .info('draw save', result);
       },
     };
     start(config);
@@ -132,6 +135,7 @@ export function DrawPage() {
   return (
     <MapPageShell>
       <Map mapId={MAP_ID} onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

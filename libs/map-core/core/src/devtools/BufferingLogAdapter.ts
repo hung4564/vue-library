@@ -1,12 +1,13 @@
-import type { LogAdapter, LogLevel } from '@hungpvq/shared-log';
+import type { LogAdapter, LogHeader, LogRecord } from '@hungpvq/shared-log';
 
-export interface BufferingLogEntry {
+/**
+ * Buffered log entry — same shape as {@link LogRecord} plus a stable UI `id`.
+ */
+export type BufferingLogEntry = {
   id: string;
-  timestamp: number;
-  namespaces: string[];
-  level: LogLevel;
+  header: LogHeader;
   args: unknown[];
-}
+};
 
 export type BufferingLogStore = {
   getLogs: () => BufferingLogEntry[];
@@ -28,13 +29,11 @@ export class BufferingLogAdapter implements LogAdapter {
     private readonly limit = 1000,
   ) {}
 
-  log(namespaces: string[], level: LogLevel, ...args: unknown[]): void {
+  log(record: LogRecord): void {
     this.buffer.unshift({
       id: Math.random().toString(36).slice(2, 11),
-      timestamp: Date.now(),
-      namespaces,
-      level,
-      args,
+      header: { ...record.header },
+      args: record.args,
     });
 
     if (!this.flushPending) {

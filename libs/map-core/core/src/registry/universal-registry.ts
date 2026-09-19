@@ -46,7 +46,9 @@ type ControlsMapsBag = Record<string, ControlBag>;
 const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
 
 function warnOverwrite(mapId: string, key: string) {
-  logHelper(logger, mapId, 'registry').warn(
+  logHelper(logger, mapId, 'registry')
+    .with({ fn: 'warnOverwrite', span: 'validation' })
+    .warn(
     `Key '${key}' already exists for map ${mapId}, overwriting`,
   );
 }

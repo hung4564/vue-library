@@ -32,7 +32,9 @@ async function clearDatasetsOnRemoveMap(
   const ids = [...store.datasetIds.value];
   if (!ids.length) return;
   const map = getMap(mapId);
-  logHelper(logger, mapId, 'store').debug('clear datasets on removeMap', {
+  logHelper(logger, mapId, 'store')
+    .with({ fn: 'clearDatasetsOnRemoveMap', span: 'store.clear' })
+    .debug('clear datasets on removeMap', {
     count: ids.length,
   });
   for (const id of ids) {
@@ -57,7 +59,9 @@ export function getMapDatasetStore(mapId: string): MapLayerStore {
     mapId,
     MAP_DATASET_STORE_KEY as string & object,
     () => {
-      logHelper(logger, mapId, 'store').debug('init');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'getMapDatasetStore', span: 'store.init' })
+        .debug('init');
       return {
         datasets: {},
         datasetIds: { value: [] },

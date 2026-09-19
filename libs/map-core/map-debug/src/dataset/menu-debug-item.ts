@@ -92,7 +92,9 @@ export function captureDatasetFromMenu(
         : undefined,
   });
 
-  logger.debug('Captured dataset from menu', {
+  logger
+    .with({ fn: 'captureDatasetFromMenu', span: 'menu.action' })
+    .debug('Captured dataset from menu', {
     mapId: props.mapId,
     datasetId,
     control,

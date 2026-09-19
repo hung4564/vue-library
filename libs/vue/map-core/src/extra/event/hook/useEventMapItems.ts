@@ -29,10 +29,9 @@ export const useEventMapItems = (
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   function updateItems(p_items: AnyIEvent[]) {
     items.value = p_items;
-    logHelper(logger, mapId, 'hook', 'useEventMapItems').debug(
-      'updateItems',
-      p_items,
-    );
+    logHelper(logger, mapId, 'hook', 'useEventMapItems')
+      .with({ fn: 'updateItems', span: 'store.update' })
+      .debug('updateItems', p_items);
     onChange && onChange(p_items);
   }
   onMounted(() => {

@@ -1,4 +1,4 @@
-import { GEO_EXPORT_DEMO_LEGEND } from '@hungpvq/demo-map-datasets';
+﻿import { GEO_EXPORT_DEMO_LEGEND } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -20,6 +20,7 @@ import { loadGeoExportDemoDatasets } from '../../data/loaders';
 import { useDatasetRegistry } from '../../hooks/useDatasetRegistry';
 import { AsideControl } from '../../layout/AsideControl';
 import { DemoHelpPanel } from '../../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 /** Passed as dataset `formComponent` (like AT cellComponent). */
 function DemoExportForm(props: ExportGeoFormProps) {
@@ -96,6 +97,7 @@ export function DatasetGeoExportPage() {
   return (
     <MapPageShell>
       <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

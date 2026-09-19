@@ -27,10 +27,9 @@ export function BaseMapCard({ mapId, title = '' }: BaseMapCardProps) {
     (value: BaseMapItem | string | number) => {
       const baseMap = c_baseMaps.find((b) => String(b.id) === String(value));
       if (baseMap) {
-        logHelper(logger, resolvedMapId, 'control', 'BaseMapCard').debug(
-          'onClick',
-          baseMap,
-        );
+        logHelper(logger, resolvedMapId, 'control', 'BaseMapCard')
+          .with({ fn: 'onChangeBaseMap', span: 'control.event' })
+          .debug('onClick', baseMap);
         setCurrent(baseMap);
       }
     },

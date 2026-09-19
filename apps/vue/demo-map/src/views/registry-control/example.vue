@@ -1,5 +1,6 @@
-<template>
+﻿<template>
     <Map :mapId="mapId">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
       <AsideControl position="top-left" />
       <MeasurementControl position="top-right" />
@@ -42,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {

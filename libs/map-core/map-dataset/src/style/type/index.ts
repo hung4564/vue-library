@@ -82,7 +82,9 @@ export function convertTabWithDefaultConfig(
       x,
     );
     if (!default_config[x.type]) {
-      logger.info('convertTabWithDefaultConfig: missing tab type', {
+      logger
+        .with({ fn: 'convertTabWithDefaultConfig', span: 'validation' })
+        .info('convertTabWithDefaultConfig: missing tab type', {
         type: x.type,
       });
     }

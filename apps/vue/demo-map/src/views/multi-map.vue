@@ -1,9 +1,10 @@
-<template>
+﻿<template>
   <div class="multi-map-page">
     <div class="multi-map-page__maps">
       <div class="multi-map-page__pane">
         <h2 class="multi-map-page__label">Map A (<code>demo-map-a</code>)</h2>
         <Map map-id="demo-map-a" @mapLoaded="onLoadedA">
+          <DevtoolsControl position="bottom-right" />
           <DemoLanguageControl />
           <AsideControl position="top-left" />
           <BaseMapControl position="bottom-left" />
@@ -16,6 +17,7 @@
         <Map map-id="demo-map-b" @mapLoaded="onLoadedB">
           <BaseMapControl position="bottom-left" />
           <LayerControl position="top-left" show />
+          <DevtoolsControl position="bottom-right" />
         </Map>
       </div>
     </div>
@@ -23,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { loggerFactory } from '@hungpvq/shared-log';
@@ -58,7 +61,9 @@ const SAMPLE_B: FeatureCollection = {
 };
 
 function onLoadedA(map: MapSimple) {
-  logger.info('map A ready', { mapId: map.id });
+  logger.with({ fn: 'onLoadedA', span: 'init' }).info('map A ready', {
+    mapId: map.id,
+  });
   const { addDataset } = useMapDataset(map.id);
   addDataset(
     createGeoJsonDataset({
@@ -71,7 +76,9 @@ function onLoadedA(map: MapSimple) {
 }
 
 function onLoadedB(map: MapSimple) {
-  logger.info('map B ready', { mapId: map.id });
+  logger.with({ fn: 'onLoadedB', span: 'init' }).info('map B ready', {
+    mapId: map.id,
+  });
   const { addDataset } = useMapDataset(map.id);
   addDataset(
     createGeoJsonDataset({

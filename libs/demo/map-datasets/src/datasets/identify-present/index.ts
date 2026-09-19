@@ -483,12 +483,16 @@ export function createIdentifyPresentResolverToggleDataset() {
         setGlobalIdentifyResolver(identifyResolver);
         usingCustom = false;
         toggleMenu.name = LABEL_CUSTOM;
-        logger.info('setGlobalIdentifyResolver → identifyResolver (default)');
+        logger
+          .with({ fn: 'onToggleIdentifyResolver', span: 'menu.action' })
+          .info('setGlobalIdentifyResolver → identifyResolver (default)');
       } else {
         setGlobalIdentifyResolver(customResolver);
         usingCustom = true;
         toggleMenu.name = LABEL_DEFAULT;
-        logger.info('setGlobalIdentifyResolver → custom (force result panel)');
+        logger
+          .with({ fn: 'onToggleIdentifyResolver', span: 'menu.action' })
+          .info('setGlobalIdentifyResolver → custom (force result panel)');
       }
     })
     .build();

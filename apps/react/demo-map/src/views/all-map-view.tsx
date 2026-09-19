@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
 import {
   BaseMapCard,
@@ -40,6 +40,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { createDatasetMeasure } from './all-map-view-measure';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function AllMapView() {
   useDatasetRegistry();
@@ -78,6 +79,7 @@ export function AllMapView() {
   return (
     <MapPageShell>
       <Map buttonInMobile="toolbar" onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <AsideControl position="top-left" />
         <ToolbarControl position="top-left" />
         <ComponentManagementControl />

@@ -147,7 +147,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 | `./data-management` | `createDataManagement`, `createLocalStore`, `createHttpStore`, `createDataManager`, `toRecord` / `toFeature` / `toFeatureCollection`, `isDataManagementView` |
 | `./raster` | `createRasterUrlDataset`, raster source part, `RASTER_XYZ_SAMPLES` |
 | `./vector-tile` | `createDatasetPartVectorTileComponent`, `VECTOR_SAMPLES` |
-| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), `createIdentifySession` / `createIdentifyControlModel` / scoped-session helpers, scope helpers, `resolveIdentifyHitAction` / `onSingle`·`onMultiple` builder, `createDefaultIdentifyResolver` / `setIdentifyResolver` / `getIdentifyResolver`, `createDefaultHighlightResolver` / `setHighlightResolver` / `getHighlightResolver` / `runHighlight`; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult`, `IdentifyHitAction`, `HighlightContext` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
+| `./identify` | `IDENTIFY_*`, `createDatasetPartIdentify*`, `handleMultiIdentify*`, `runIdentifyMulti` / `runIdentifyShowFirst` (+ layer-filter / result-panel helpers), `createIdentifySession` / `createIdentifyControlModel` / scoped-session helpers, scope helpers, `resolveIdentifyHitAction` / `onSingle`·`onMultiple` builder, `createDefaultIdentifyResolver` / `setIdentifyResolver` / `getIdentifyResolver`, `createDefaultHighlightResolver` / `setHighlightResolver` / `getHighlightResolver` / `runHighlightFromRecords`; types `IIdentifyView*`, `IdentifyFeatureRow`, `IdentifyMultiResult`, `IdentifyHitAction`, `HighlightContext` (canonical result row shape; former `IdentifySingleResult` / `IdentifyResult` aliases removed) |
 | `./menu` | `LIST_VIEW_MENU_*`, `createMenu*` (list-view / dataset builders), `createMapContextMenuBuilder`, `createLegend` / `createMultiLegend`, `handleMenuAction*`, menu part builders; `MenuItem*` / `MenuAction` / `MenuItemProps` payload `P` defaults to `unknown` (types-only tightening vs former `any`) |
 | `./style` | `LayerSimpleMapboxBuild`, `LayerRasterMapboxBuild`, `*_CONFIG`, `TABS`, `CONFIG_TAB_BASE` / `buildConfigTabs`, `applyStyleTabValue` / `applyStyleZoom`, `STYLE_CONTROL_LOCALE` |
 | `./create-control` | `CREATE_CONTROL_*`, `LAYER_TYPES` / `LayerHelper` / `Config*Helper` / `createLayerFormHelper`, `assertCreateControlFileSize` / `formatCreateControlBytes` / `CREATE_CONTROL_MAX_FILE_BYTES`, `parseGis*` / `loadGis*` / upload helpers (`looksCompleteGis`, `parseCreateControlUploadedFiles`, `collectFilesFromDataTransfer`, `readClipboardGisPaste`, …), `getCreateControlSamples` — GIS format peers (`shpjs`, `papaparse`, `@tmcw/togeojson`, `jszip`, `topojson-client`, `@xmldom/xmldom`) are **optional**; install when using CreateControl / file parse — [peers-and-bundle](./peers-and-bundle.md) |
@@ -206,7 +206,7 @@ Prefer canonical names in new code (`MapControlButton`, `MapCopyButton`, `BaseCo
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
-Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (shared devtools control id / panel mode — re-exported by `@hungpvq/*-map-devtools`; may change in a **minor**). `@hungpvq/map-core/devtools` also exports Experimental `formatDevtoolsLogEntryForCopy` for LogViewer clipboard formatting.
+Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (`'control'` only — shared control id; may change in a **minor**). `@hungpvq/map-core/devtools` also exports Experimental `formatDevtoolsLogEntryForCopy` for LogViewer clipboard formatting.
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
@@ -249,8 +249,8 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap (both) | `installDevtools`, `uninstallDevtools` |
-| Panel | `Devtools` (optional `mode`: `overlay` \| `control`; `containerId` for overlay mobile sheet) |
-| Map control | `DevtoolsControl` / `DEVTOOLS_CONTROL.id` (`mapDevtools`) — popup via `DraggableItemPopup` |
+| Panel | `Devtools` (mount **inside** `<Map>`; `DraggableItemPopup`) |
+| Map control | `DevtoolsControl` / `DEVTOOLS_CONTROL.id` (`mapDevtools`) — same popup path |
 | Open helpers | `openMapDevtoolsErrors`, `setDevtoolOpen`, `toggleDevtoolOpen`, … |
 | Store helpers (both) | `DevtoolLogAdapter`, `devtoolLogAdapter`, `devtoolState`, `getDevtoolState`, `useDevtoolState`, `subscribeDevtoolState`, `toggleDevtoolOpen`, `setDevtoolActiveTab`, `clearDevtoolLogs`, `clearDevtoolErrors` |
 | Docs | [devtools.md](./devtools.md) |

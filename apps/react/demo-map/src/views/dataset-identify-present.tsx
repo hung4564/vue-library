@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -16,6 +16,7 @@ import { loadIdentifyPresentDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function DatasetIdentifyPresentPage() {
   useDatasetRegistry();
@@ -27,6 +28,7 @@ export function DatasetIdentifyPresentPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <ComponentManagementControl />

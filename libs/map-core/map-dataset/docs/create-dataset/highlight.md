@@ -82,7 +82,6 @@ After each Identify run (and AttributeTable row selection), map paint goes throu
 | `highlightResolver` | Package default instance |
 | `setGlobalHighlightResolver` / `getGlobalHighlightResolver` | Process default on `map:core:meta.registries['highlight-resolver']` |
 | `setHighlightResolver(mapId, resolver \| null)` / `getHighlightResolver(mapId)` | Per-map override on `map:core[mapId].resolver['highlight-resolver']` |
-| `runHighlight(ctx)` | `getHighlightResolver(mapId).execute(ctx)` |
 | `runHighlightFromRecords({ mapId, records, … })` | Identify path helper (`records` → features in prepare) |
 | `HighlightContext` | `{ mapId, records?, features?, count?, dataset?, sources?, signal? }` |
 
@@ -125,7 +124,7 @@ await getHighlightResolver(mapId).execute({
 setGlobalHighlightResolver(highlightResolver);
 ```
 
-IdentifyControl path: after UI resolve, `runIdentifyMulti` / `runIdentifyShowFirst` call `getHighlightResolver(mapId).execute({ mapId, records, signal })`. AttributeTable calls `runHighlight({ mapId, count, features, sources: ['attribute-table'], … })`.
+IdentifyControl path: after UI resolve, `runIdentifyMulti` / `runIdentifyShowFirst` call `getHighlightResolver(mapId).execute({ mapId, records, signal })`. AttributeTable calls `getHighlightResolver(mapId).execute({ mapId, count, features, sources: ['attribute-table'], … })`.
 
 Demo: `/#/dataset-highlight` applies a global override (paint first hit even when multi) and uses Identify for click + hover `bindPointer`.
 
@@ -223,6 +222,6 @@ Hover never shows a MapLibre popup. Imperative `show(..., { source: 'attribute-t
 1. Replace `createDatasetPart*Highlight*` → `createHighlightPart` from `/highlight`.
 2. Remove `IHighlightView` / `HighlightHandle` / `useHighlightAnimation` usage.
 3. Replace `<LayerHighlight …>` / adapter `HighlightPointer` with `useMapHighlight().bindPointer` (or Identify + `HighlightResolver` for click paint).
-4. Rename former Identify highlight APIs: `*IdentifyHighlight*` → `*Highlight*` (`createDefaultHighlightResolver`, `setGlobalHighlightResolver`, `runHighlight`, `HighlightContext`, …). **Major** SemVer.
-5. Attribute-table / identify / menu call `show` / `hideIfSource` with `source: 'attribute-table' | 'identify' | …` — or go through `runHighlight` / `getHighlightResolver`.
+4. Rename former Identify highlight APIs: `*IdentifyHighlight*` → `*Highlight*` (`createDefaultHighlightResolver`, `setGlobalHighlightResolver`, `getHighlightResolver`, `HighlightContext`, …). **Major** SemVer.
+5. Attribute-table / identify / menu call `show` / `hideIfSource` with `source: 'attribute-table' | 'identify' | …` — or go through `getHighlightResolver(mapId).execute`.
 6. Do not import highlight APIs from `@hungpvq/map-dataset` root.

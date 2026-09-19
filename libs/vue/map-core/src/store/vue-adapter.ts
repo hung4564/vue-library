@@ -44,7 +44,9 @@ export class VueMapStoreAdapter implements IMapStoreAdapter {
     message: string,
     data?: any,
   ) => {
-    const loggerInstance = logHelper(logger, mapId, 'store');
-    loggerInstance[level](message, data);
+    logHelper(logger, mapId, 'store').with({
+      fn: 'log',
+      span: 'store.update',
+    })[level](message, data);
   };
 }

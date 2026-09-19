@@ -29,22 +29,22 @@ installDevtools();
 const app = createApp(App);
 ```
 
-`installDevtools()` wires `@hungpvq/shared-log` into the panel, captures map errors for the Errors tab, and installs the dataset debug bridge when available. Mount the panel yourself:
+`installDevtools()` wires `@hungpvq/shared-log` into the panel, captures map errors for the Errors tab, and installs the dataset debug bridge when available. Mount the panel **inside** `<Map>`:
 
 ```vue
 <script setup lang="ts">
+import { Map } from '@hungpvq/vue-map-core';
 import { Devtools } from '@hungpvq/vue-map-devtools';
 </script>
 
 <template>
-  <Devtools />
-  <!-- Map control popup (mount inside <Map>): -->
-  <!-- <Devtools mode="control" position="bottom-right" /> -->
-  <!-- <Devtools container-id="map-draggable-my-map" /> -->
+  <Map>
+    <Devtools position="bottom-right" />
+  </Map>
 </template>
 ```
 
-On mobile (≤640px), overlay mode is a free-floating panel you can **drag** (same pointer pattern as the demo help guide): grab the FAB when closed, or the “Map Devtools” drag bar when open. Use `mode="control"` to render as a map corner control + `DraggableItemPopup`.
+Uses map control id `mapDevtools` + `DraggableItemPopup` (not an App-global overlay).
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
@@ -58,14 +58,14 @@ Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idG
 |--------|------|
 | `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
-| `Devtools` | Panel UI (`mode?: 'overlay' \| 'control'`) |
-| `DevtoolsControl` | Map control + popup (same as `mode="control"`) |
+| `Devtools` | Map control + popup (mount inside `<Map>`) |
+| `DevtoolsControl` | Same as `Devtools` |
 | `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
 
 See [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 
-`apps/vue/demo-map` — `installDevtools()` in `src/main.ts`, `<Devtools />` in the app shell.
+`apps/vue/demo-map` — `installDevtools()` in `src/main.ts`; every `<Map>` mounts `<DevtoolsControl position="bottom-right" />`.
 
 Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).

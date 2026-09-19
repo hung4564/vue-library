@@ -285,10 +285,9 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
       });
     },
     async onClick() {
-      logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
-        'callAction',
-        action,
-      );
+      logHelper(logger, mapId.value, 'control', 'MeasurementControl')
+        .with({ fn: 'toToolbarButton', span: 'control.event' })
+        .debug('callAction', action);
       action.handle({
         handler,
         measurementType: ui.measurementType,
@@ -351,10 +350,9 @@ function onInit(map: MapSimple) {
     stretchY: [[6, 10]],
   });
   session.attachToMap(map);
-  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
-    'init',
-    handler,
-  );
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl')
+    .with({ fn: 'onInit', span: 'control.init' })
+    .debug('init', handler);
 }
 
 function onDestroy() {
@@ -362,10 +360,9 @@ function onDestroy() {
 }
 
 function onMapClick(event: MapMouseEvent) {
-  logHelper(logger, mapId.value, 'control', 'MeasurementControl').debug(
-    'onMapClick',
-    event,
-  );
+  logHelper(logger, mapId.value, 'control', 'MeasurementControl')
+    .with({ fn: 'onMapClick', span: 'control.event' })
+    .debug('onMapClick', event);
   session.addMapClick(event.lngLat.lng ?? 0, event.lngLat.lat ?? 0);
 }
 </script>

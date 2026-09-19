@@ -80,7 +80,9 @@ export async function queryHighlightAtPoint(
   }
 
   if (!allLayerIds.length) {
-    logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint').debug('no layers');
+    logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint')
+      .with({ fn: 'queryHighlightAtPoint', span: 'highlight.query' })
+      .debug('no layers');
     return undefined;
   }
 
@@ -114,7 +116,9 @@ export async function queryHighlightAtPoint(
     [key: string]: unknown;
   }>(raw);
   if (!item?.geometry) {
-    logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint').warn(
+    logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint')
+      .with({ fn: 'queryHighlightAtPoint', span: 'highlight.query' })
+      .warn(
       'hit missing geometry',
       { layerId: raw.layer.id },
     );

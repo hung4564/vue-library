@@ -211,10 +211,12 @@ async function fakeFetchIdentifyDetail(
   }>,
 ) {
   const startedAt = performance.now();
-  logger.info('getList:start', {
-    count: features.length,
-    delayMs: IDENTIFY_API_DELAY_MS,
-  });
+  logger
+    .with({ fn: 'fakeFetchIdentifyDetail', span: 'identify.query' })
+    .info('getList:start', {
+      count: features.length,
+      delayMs: IDENTIFY_API_DELAY_MS,
+    });
   await delay(IDENTIFY_API_DELAY_MS);
   const rows = features.map((feature, index) => {
     const props = feature.properties || {};
@@ -227,10 +229,12 @@ async function fakeFetchIdentifyDetail(
       geometry: feature.geometry,
     };
   });
-  logger.info('getList:done', {
-    count: rows.length,
-    durationMs: Math.round(performance.now() - startedAt),
-  });
+  logger
+    .with({ fn: 'fakeFetchIdentifyDetail', span: 'identify.query' })
+    .info('getList:done', {
+      count: rows.length,
+      durationMs: Math.round(performance.now() - startedAt),
+    });
   return rows;
 }
 
@@ -334,10 +338,12 @@ export function createIdentifyApiMergedDataset() {
       payload,
     ) => {
       const startedAt = performance.now();
-      logger.info('getMergedFeatures:start', {
-        identifyCount: idents.length,
-        delayMs: IDENTIFY_API_DELAY_MS,
-      });
+      logger
+        .with({ fn: 'getMergedFeatures', span: 'identify.process' })
+        .info('getMergedFeatures:start', {
+          identifyCount: idents.length,
+          delayMs: IDENTIFY_API_DELAY_MS,
+        });
       await delay(IDENTIFY_API_DELAY_MS);
       const results = (await originalGetMerged(idents, payload)) as Array<{
         feature: { data?: Record<string, unknown> };
@@ -354,10 +360,12 @@ export function createIdentifyApiMergedDataset() {
           },
         },
       }));
-      logger.info('getMergedFeatures:done', {
-        count: enriched.length,
-        durationMs: Math.round(performance.now() - startedAt),
-      });
+      logger
+        .with({ fn: 'getMergedFeatures', span: 'identify.process' })
+        .info('getMergedFeatures:done', {
+          count: enriched.length,
+          durationMs: Math.round(performance.now() - startedAt),
+        });
       return enriched;
     };
     identify1.getMergedFeatures = delayedGetMerged;

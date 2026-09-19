@@ -6,7 +6,9 @@ import { logHelper } from '../utils/log';
 const errorLogger = loggerFactory.createLogger().setNamespace('map:core', 2);
 
 function defaultLogError(error: MapError): void {
-  logHelper(errorLogger, 'global', 'ErrorHandler').error('Error occurred', {
+  logHelper(errorLogger, 'global', 'ErrorHandler')
+    .with({ fn: 'defaultLogError', span: 'error' })
+    .error('Error occurred', {
     code: error.code,
     message: error.message,
     context: error.context,
@@ -16,7 +18,9 @@ function defaultLogError(error: MapError): void {
 
 function defaultLogToService(error: MapError): void {
   // Still surface the error when no external sink is wired (avoid silent prod failures).
-  logHelper(errorLogger, 'global', 'ErrorHandler').error(
+  logHelper(errorLogger, 'global', 'ErrorHandler')
+    .with({ fn: 'defaultLogToService', span: 'error' })
+    .error(
     'Error occurred (logToService not configured)',
     {
       code: error.code,
@@ -134,7 +138,9 @@ export class MapErrorHandler implements ErrorHandler {
       try {
         listener(mapError);
       } catch (listenerError) {
-        logHelper(errorLogger, 'global', 'ErrorHandler').error(
+        logHelper(errorLogger, 'global', 'ErrorHandler')
+          .with({ fn: 'handle', span: 'error' })
+          .error(
           'Error in error listener',
           { error: listenerError },
         );

@@ -32,9 +32,11 @@ export const MultiLegend = defineComponent({
       props.legends.map((legend) => {
         const Component = getComponent(legendComponentKey[legend.type]);
         if (!Component) {
-          logger.warn(
-            `Component for legend type "${legend.type}" not found in UniversalRegistry`,
-          );
+          logger
+            .with({ fn: 'setup', span: 'legend.validation' })
+            .warn(
+              `Component for legend type "${legend.type}" not found in UniversalRegistry`,
+            );
           return null;
         }
         return h(Component, { value: legend.value });

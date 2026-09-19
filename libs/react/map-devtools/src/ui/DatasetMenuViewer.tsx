@@ -21,6 +21,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useDevtoolState } from '../useDevtoolState';
 import { DatasetTreeNav } from './DatasetTreeNav';
 import { TreeItem } from './TreeItem';
 
@@ -55,11 +56,6 @@ const TARGET_ITEMS: SelectItem[] = [
   { value: 'layer', text: 'layer' },
   { value: 'item', text: 'item' },
 ];
-
-function shortId(id: string) {
-  if (id.length <= 12) return id;
-  return `${id.slice(0, 6)}…${id.slice(-4)}`;
-}
 
 function flag(v: boolean) {
   return v ? 'yes' : 'no';
@@ -106,6 +102,7 @@ function DetailRow({
 }
 
 export function DatasetMenuViewer() {
+  const { filterMapId } = useDevtoolState();
   const [ready, setReady] = useState(false);
   const [api, setApi] = useState<DatasetDebugApi | null>(null);
   const [pane, setPane] = useState<PaneId>('roots');
@@ -159,8 +156,6 @@ export function DatasetMenuViewer() {
     },
     [],
   );
-
-  const showMapSelect = mapIds.length > 1;
 
   const getApi = useCallback((): DatasetDebugApi | null => {
     if (typeof window !== 'undefined' && window.__hungpvqDatasetDebug) {
@@ -494,7 +489,12 @@ export function DatasetMenuViewer() {
     setMapIds(ids);
     setControlIds({ ...d.MENU_CONTROL_ID });
     const s = d.session;
-    const mid = s.mapId && ids.includes(s.mapId) ? s.mapId : ids[0] || '';
+    const mid =
+      filterMapId !== 'all' && ids.includes(filterMapId)
+        ? filterMapId
+        : s.mapId && ids.includes(s.mapId)
+          ? s.mapId
+          : ids[0] || '';
     setMapId(mid);
     refreshLists(mid);
     const search = mid ? d.listSearchable(mid) : [];
@@ -521,7 +521,19 @@ export function DatasetMenuViewer() {
       target: s.target === 'item' ? 'item' : 'layer',
       pane: nextPane,
     });
-  }, [control, getApi, refreshLists, syncSession]);
+  }, [control, filterMapId, getApi, refreshLists, syncSession]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const ids = mapIds;
+    const next =
+      filterMapId !== 'all' && ids.includes(filterMapId)
+        ? filterMapId
+        : mapId && ids.includes(mapId)
+          ? mapId
+          : ids[0] || '';
+    if (next !== mapId) onMapChange(next);
+  }, [filterMapId, mapIds, mapId, onMapChange, ready]);
 
   useEffect(() => {
     const d =
@@ -565,11 +577,6 @@ export function DatasetMenuViewer() {
     const match = forest.find((n) => n.id === rootId);
     return match ? [match] : forest.slice(0, 1);
   }, [forest, snapshot]);
-
-  const mapSelectItems = useMemo<SelectItem[]>(
-    () => mapIds.map((id) => ({ value: id, text: shortId(id) })),
-    [mapIds],
-  );
 
   const isCurrentRoot = snapshot?.identity.kind === 'root';
 
@@ -639,17 +646,6 @@ export function DatasetMenuViewer() {
   return (
     <div className="dataset-viewer">
       <div className="dataset-viewer__toolbar">
-        {showMapSelect ? (
-          <div className="dataset-viewer__field">
-            <InputSelect
-              label="map"
-              title={mapId}
-              value={mapId}
-              items={mapSelectItems}
-              onChange={(value) => onMapChange(String(value))}
-            />
-          </div>
-        ) : null}
         {snapshot ? (
           <div
             className="dataset-viewer__current"

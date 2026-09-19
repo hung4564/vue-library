@@ -167,7 +167,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiStar)
         .setHidden(({ context }) => context?.role !== 'admin')
         .setClick(() => {
-          logger.info('admin only menu');
+          logger
+            .with({ fn: 'onAdminOnly', span: 'menu.action' })
+            .info('admin only menu');
         })
         .build(),
       createMenuBuilder()
@@ -177,7 +179,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          logger.info('pen action');
+          logger
+            .with({ fn: 'onPenAction', span: 'menu.action' })
+            .info('pen action');
         })
         .build(),
       createMenuBuilder()
@@ -187,7 +191,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          logger.info('pen extra');
+          logger
+            .with({ fn: 'onPenExtra', span: 'menu.action' })
+            .info('pen extra');
         })
         .build(),
     ])

@@ -257,7 +257,9 @@ function createController(mapId: string): HighlightController {
 
     const map = getMap(mapId);
     if (!map) {
-      loggerHighlight.warn('show: map not ready', { mapId });
+      loggerHighlight
+        .with({ fn: 'show', span: 'highlight.paint' })
+        .warn('show: map not ready', { mapId });
       return;
     }
 

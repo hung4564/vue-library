@@ -4,7 +4,7 @@ Click / box-select features. Attach menus with `createMenuBuilder` (see [Menus](
 
 Mount [`IdentifyControl`](../module/IdentifyControl.md) (or [`IdentifyShowFirstControl`](../module/IdentifyShowFirstControl.md)) on the map. Dialogs from identify menus need [`ComponentManagementControl`](../module/ComponentManagementControl.md).
 
-**IdentifyControl** paints highlight after each query via `getHighlightResolver(mapId).execute` (`runHighlight` / `source: 'identify'`); default policy: single hit → paint, multi → clear. Close still uses `hideIfSource('identify')`. **ShowFirst** and the Identify session abort superseded clicks the same way (`AbortController` + `requestId`).
+**IdentifyControl** paints highlight after each query via `getHighlightResolver(mapId).execute` (`source: 'identify'`); default policy: single hit → paint, multi → clear. Close still uses `hideIfSource('identify')`. **ShowFirst** and the Identify session abort superseded clicks the same way (`AbortController` + `requestId`).
 
 **Events:** none on the identify node. Menu `setClick` receives `{ layer, mapId, value, event, meta, context }` (`value` is the feature).
 
@@ -134,7 +134,7 @@ After UI resolve, Identify runs:
 await getHighlightResolver(mapId).execute({ mapId, records, signal });
 ```
 
-Default: one feature → paint (`source: 'identify'`); multi / empty → clear. AttributeTable uses `runHighlight` with `source: 'attribute-table'`.
+Default: one feature → paint (`source: 'identify'`); multi / empty → clear. AttributeTable uses `getHighlightResolver(mapId).execute` with `source: 'attribute-table'`.
 
 ```ts
 import {
@@ -142,7 +142,6 @@ import {
   setGlobalHighlightResolver,
   setHighlightResolver,
   getHighlightResolver,
-  runHighlight,
   highlightResolver,
 } from '@hungpvq/map-dataset/identify';
 

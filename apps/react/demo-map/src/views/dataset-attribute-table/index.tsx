@@ -1,4 +1,4 @@
-import {
+﻿import {
   attributeTableDemoLogger,
   DATA_MANAGEMENT_HTTP_CUSTOM_LIST_NAME,
   DATA_MANAGEMENT_HTTP_LIST_NAME,
@@ -48,6 +48,7 @@ import { SampleAttributeTablePager } from './sample-attribute-table-pager';
 import { SampleAttributeTableToolbar } from './sample-attribute-table-toolbar';
 import { SampleAttributeTableView } from './sample-attribute-table-view';
 import { DemoHelpPanel } from '../../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 type LayerKey = 'http' | 'httpCustom' | 'localGeojson' | 'localList' | 'memory';
 type OverrideKey = 'default' | 'toolbar' | 'grid' | 'pager' | 'all' | 'view';
@@ -252,7 +253,9 @@ function AttributeTablePlayground({
       pageSize: 5,
     });
     setLastPageHint(`${page.rows.length}/${page.total} Â· intent:page`);
-    attributeTableDemoLogger.info('store.list page', page);
+    attributeTableDemoLogger
+      .with({ fn: 'loadPage', span: 'attribute-table.load' })
+      .info('store.list page', page);
   }
 
   return (
@@ -385,6 +388,7 @@ export function DatasetAttributeTablePage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl

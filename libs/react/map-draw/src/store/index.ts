@@ -29,7 +29,9 @@ function endDrawSession(mapId: string, store: MapDrawStore) {
   store.state.featuresAdded = {};
   store.state.featuresUpdated = {};
   store.state.featuresDeleted = {};
-  logHelper(logger, mapId, 'store').debug('end on removeMap');
+  logHelper(logger, mapId, 'store')
+    .with({ fn: 'endDrawSession', span: 'store.clear' })
+    .debug('end on removeMap');
   getMapMittStore<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
 }
 
@@ -38,7 +40,9 @@ export function useMapDrawStore(mapId: string): MapDrawStore {
     mapId,
     KEY as string & object,
     () => {
-      logHelper(logger, mapId, 'store').debug('init');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'useMapDrawStore', span: 'store.init' })
+        .debug('init');
       return createDefaultMapDrawStore();
     },
     {

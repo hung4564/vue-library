@@ -1,4 +1,4 @@
-import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
+﻿import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -20,6 +20,7 @@ import { loadDataManagementDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 type PagerState = {
   label: string;
@@ -105,6 +106,7 @@ export function DatasetDataManagementPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl

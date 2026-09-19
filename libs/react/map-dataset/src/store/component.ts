@@ -37,7 +37,9 @@ export function useMapDatasetComponentStore(mapId: string) {
     mapId,
     KEY as string & object,
     () => {
-      logHelper(logger, mapId, 'store').debug('init component store');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'useMapDatasetComponentStore', span: 'store.init' })
+        .debug('init component store');
       return {
         components: [],
         componentIds: { value: [] },

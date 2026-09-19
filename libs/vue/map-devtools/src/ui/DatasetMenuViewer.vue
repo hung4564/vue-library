@@ -6,15 +6,6 @@
     </p>
     <template v-else>
       <div class="dataset-viewer__toolbar">
-        <div v-if="showMapSelect" class="dataset-viewer__field">
-          <InputSelect
-            label="map"
-            :model-value="mapId"
-            :items="mapSelectItems"
-            :title="mapId"
-            @update:model-value="onMapSelect"
-          />
-        </div>
         <div
           v-if="snapshot"
           class="dataset-viewer__current"
@@ -716,7 +707,8 @@ import {
   type MenuSummary,
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { useDevtoolState } from '../store';
 import DatasetTreeNav from './DatasetTreeNav.vue';
 import TreeItem from './TreeItem.vue';
 
@@ -755,6 +747,7 @@ const ready = ref(false);
 const api = shallowRef<DatasetDebugApi | null>(null);
 const pane = ref<PaneId>('roots');
 const mapId = ref('');
+const { filterMapId } = useDevtoolState();
 const datasetId = ref('');
 const target = ref<'layer' | 'item'>('layer');
 const control = ref('layer-control');
@@ -802,8 +795,6 @@ const actionFeedback = createActionFeedback({
 
 onBeforeUnmount(() => actionFeedback.dispose());
 
-const showMapSelect = computed(() => mapIds.value.length > 1);
-
 const hasDatasetSelection = computed(() => Boolean(datasetId.value));
 
 const activeRootId = computed(
@@ -834,10 +825,6 @@ const currentRootNodes = computed<DatasetTreeNode[]>(() => {
   const match = forest.value.find((n) => n.id === rootId);
   return match ? [match] : forest.value.slice(0, 1);
 });
-
-const mapSelectItems = computed<SelectItem[]>(() =>
-  mapIds.value.map((id) => ({ value: id, text: shortId(id) })),
-);
 
 const isCurrentRoot = computed(
   () => snapshot.value?.identity.kind === 'root',
@@ -886,11 +873,6 @@ function actionLabel(key: string, idle: string, done = 'Done') {
   }
   if (actionPhase.value === 'error') return 'Failed';
   return idle;
-}
-
-function shortId(id: string) {
-  if (id.length <= 12) return id;
-  return `${id.slice(0, 6)}…${id.slice(-4)}`;
 }
 
 function getApi(): DatasetDebugApi | null {
@@ -1050,8 +1032,13 @@ function hydrateFromSession() {
   if (!d) return;
   refreshLists();
   const s = d.session;
-  mapId.value =
-    s.mapId && mapIds.value.includes(s.mapId) ? s.mapId : mapIds.value[0] || '';
+  const preferred =
+    filterMapId.value !== 'all' && mapIds.value.includes(filterMapId.value)
+      ? filterMapId.value
+      : s.mapId && mapIds.value.includes(s.mapId)
+        ? s.mapId
+        : mapIds.value[0] || '';
+  mapId.value = preferred;
   refreshLists();
   const stillThere = searchable.value.some((x) => x.id === s.datasetId);
   datasetId.value = stillThere && s.datasetId ? s.datasetId : '';
@@ -1115,9 +1102,15 @@ function clearSelection() {
   syncSession();
 }
 
-function onMapSelect(next: string | SelectItem | undefined) {
-  mapId.value =
-    typeof next === 'string' ? next : next && 'value' in next ? String(next.value) : '';
+function applyGlobalMapFilter(filter: string) {
+  const next =
+    filter !== 'all' && mapIds.value.includes(filter)
+      ? filter
+      : mapId.value && mapIds.value.includes(mapId.value)
+        ? mapId.value
+        : mapIds.value[0] || '';
+  if (next === mapId.value) return;
+  mapId.value = next;
   onMapChange();
 }
 
@@ -1247,6 +1240,12 @@ onMounted(() => {
     lastRev = rev;
     hydrateFromSession();
   }, 300);
+});
+
+watch(filterMapId, () => {
+  if (!ready.value) return;
+  refreshLists();
+  applyGlobalMapFilter(filterMapId.value);
 });
 
 onBeforeUnmount(() => {

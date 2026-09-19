@@ -6,6 +6,7 @@ import type {
 } from '../interfaces/dataset.parts';
 import { loggerIdentify } from '../logger';
 import { handleMultiIdentify, handleMultiIdentifyGetFirst } from './models';
+import { getHighlightResolver } from './highlight-resolver';
 import { getIdentifyResolver } from './resolver-registry';
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
@@ -135,10 +136,14 @@ export async function runIdentifyMulti(
   throwIfAborted(signal);
   const log = logHelper(loggerIdentify, mapId, 'MULTI', 'IdentifyControl');
   const loadStartedAt = performance.now();
-  log.info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
 
   const filtered = filterIdentifiesForControl(identifies, filterIdentifyId);
-  log.debug('onGetFeatures', {
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .debug('onGetFeatures', {
     pointOrBox,
     identifies: filtered,
     filterId: filterIdentifyId,
@@ -153,7 +158,9 @@ export async function runIdentifyMulti(
     signal,
   );
   throwIfAborted(signal);
-  log.debug('onGetFeatures', { features });
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .debug('onGetFeatures', { features });
 
   const nonEmpty = filterNonEmptyIdentifyResults(features);
   const hitCount = nonEmpty.length;
@@ -162,7 +169,9 @@ export async function runIdentifyMulti(
     0,
   );
 
-  log.debug('onSelectFeatures', nonEmpty);
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .debug('onSelectFeatures', nonEmpty);
   throwIfAborted(signal);
   const res = await getIdentifyResolver(mapId).execute({
     records: nonEmpty,
@@ -173,7 +182,9 @@ export async function runIdentifyMulti(
     requestId,
   });
   throwIfAborted(signal);
-  log.debug('onSelectFeaturesResult', res);
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .debug('onSelectFeaturesResult', res);
   await getHighlightResolver(mapId).execute({
     mapId,
     records: nonEmpty,
@@ -182,7 +193,9 @@ export async function runIdentifyMulti(
   throwIfAborted(signal);
 
   const durationMs = Math.round(performance.now() - loadStartedAt);
-  log.info(IDENTIFY_LOADING_LOG.done, {
+  log
+    .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
+    .info(IDENTIFY_LOADING_LOG.done, {
     durationMs,
     hitCount,
     featureCount,
@@ -222,8 +235,12 @@ export async function runIdentifyShowFirst(
     'IdentifyShowFirstControl',
   );
   const loadStartedAt = performance.now();
-  log.info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
-  log.debug('onGetFeatures', { pointOrBox });
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .debug('onGetFeatures', { pointOrBox });
 
   const record = await handleMultiIdentifyGetFirst(
     identifies,
@@ -233,14 +250,18 @@ export async function runIdentifyShowFirst(
     signal,
   );
   throwIfAborted(signal);
-  log.debug('onGetFeatures', { record });
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .debug('onGetFeatures', { record });
 
   const records = record?.features?.length
     ? [record]
     : ([] as IdentifyMultiResult[]);
   const featureCount = record?.features?.length ?? 0;
 
-  log.debug('onSelectFeatures', { record });
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .debug('onSelectFeatures', { record });
   throwIfAborted(signal);
   const res = await getIdentifyResolver(mapId).execute({
     records,
@@ -251,7 +272,9 @@ export async function runIdentifyShowFirst(
     requestId,
   });
   throwIfAborted(signal);
-  log.debug('onSelectFeaturesResult', res);
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .debug('onSelectFeaturesResult', res);
   await getHighlightResolver(mapId).execute({
     mapId,
     records,
@@ -260,11 +283,13 @@ export async function runIdentifyShowFirst(
   throwIfAborted(signal);
 
   const durationMs = Math.round(performance.now() - loadStartedAt);
-  log.info(IDENTIFY_LOADING_LOG.done, {
-    durationMs,
-    featureCount,
-    empty: featureCount === 0,
-  });
+  log
+    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+    .info(IDENTIFY_LOADING_LOG.done, {
+      durationMs,
+      featureCount,
+      empty: featureCount === 0,
+    });
 
   return {
     records,

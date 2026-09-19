@@ -19,7 +19,9 @@ export type { MapToolbarStore };
 
 export const useMapToolbarStore = (mapId: string) =>
   createMapScopedStore<MapToolbarStore>(mapId, MAP_STORE_KEY.TOOLBAR, () => {
-    logHelper(logger, mapId, 'store').debug('init');
+    logHelper(logger, mapId, 'store')
+      .with({ fn: 'useMapToolbarStore', span: 'store.init' })
+      .debug('init');
     return createDefaultToolbarStore();
   });
 

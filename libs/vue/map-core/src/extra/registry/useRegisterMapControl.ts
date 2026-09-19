@@ -76,6 +76,12 @@ export function useRegisterMapControl(
     });
   }
 
+  /** Drop then set so intentional handle refresh does not warn on overwrite. */
+  function syncControl(mid: string) {
+    UniversalRegistry.unregisterControl(mid, options.id);
+    UniversalRegistry.registerControl(mid, options.id, buildHandle());
+  }
+
   let currentMapId = '';
 
   const stopWatch = watch(
@@ -86,11 +92,7 @@ export function useRegisterMapControl(
       }
       currentMapId = id || '';
       if (currentMapId) {
-        UniversalRegistry.registerControl(
-          currentMapId,
-          options.id,
-          buildHandle(),
-        );
+        syncControl(currentMapId);
       }
     },
     { immediate: true },
@@ -103,18 +105,17 @@ export function useRegisterMapControl(
       toValue(options.actions),
       toValue(options.defaultActionType),
       options.show?.value,
-      { ...panelPosition },
+      panelPosition.top,
+      panelPosition.left,
+      panelPosition.right,
+      panelPosition.bottom,
+      panelPosition.location,
     ],
     () => {
       if (currentMapId) {
-        UniversalRegistry.registerControl(
-          currentMapId,
-          options.id,
-          buildHandle(),
-        );
+        syncControl(currentMapId);
       }
     },
-    { deep: true },
   );
 
   onUnmounted(() => {

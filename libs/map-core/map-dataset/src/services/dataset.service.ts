@@ -92,7 +92,10 @@ export class DatasetService {
     traverseTree(
       layer,
       (node) => {
-        if (isDatasetMapHasRemoveFromMap(node) && !removedSet.has(node.id)) {
+        if (
+          isDatasetMapHasRemoveFromMap(node) &&
+          !removedSet.has(node.id)
+        ) {
           node.removeFromMap(map);
           removedSet.add(node.id);
         }

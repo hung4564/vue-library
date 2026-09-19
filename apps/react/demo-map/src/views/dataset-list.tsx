@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -20,6 +20,7 @@ import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import { SampleCustomMenu } from './sample-custom-menu';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
 
@@ -37,6 +38,7 @@ export function DatasetListPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

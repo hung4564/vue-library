@@ -71,6 +71,8 @@ export function useRegisterMapControl(
       });
     };
 
+    // Drop then set so intentional handle refresh does not warn on overwrite.
+    UniversalRegistry.unregisterControl(mapId, options.id);
     UniversalRegistry.registerControl(mapId, options.id, buildHandle());
     return () => {
       UniversalRegistry.unregisterControl(mapId, options.id);

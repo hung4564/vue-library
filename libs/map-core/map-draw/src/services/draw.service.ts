@@ -15,7 +15,9 @@ export class DrawService {
     feature: Feature,
     mapId: string,
   ) {
-    logHelper(logger, mapId, 'DrawService').debug('setFeature', {
+    logHelper(logger, mapId, 'DrawService')
+      .with({ fn: 'setFeature', span: 'draw.set' })
+      .debug('setFeature', {
       type,
       feature,
     });
@@ -87,7 +89,9 @@ export class DrawService {
     context?: { mapId: string } & Record<string, unknown>,
   ) {
     try {
-      logHelper(logger, mapId, 'DrawService').debug('save', {
+      logHelper(logger, mapId, 'DrawService')
+        .with({ fn: 'saveDraw', span: 'draw.save' })
+        .debug('save', {
         collection,
         callback,
       });
@@ -97,7 +101,9 @@ export class DrawService {
         throw new Error('Callback is not available');
       }
       if (!action) {
-        logHelper(logger, mapId, 'DrawService').debug('save', 'no callback');
+        logHelper(logger, mapId, 'DrawService')
+          .with({ fn: 'saveDraw', span: 'draw.save' })
+          .debug('save', 'no callback');
         return;
       }
       const result: DrawSaveFcParams = DrawService.convertData(
@@ -127,7 +133,9 @@ export class DrawService {
       }
       await Promise.all(promises);
 
-      logHelper(logger, mapId, 'DrawService').debug('save', {
+      logHelper(logger, mapId, 'DrawService')
+        .with({ fn: 'saveDraw', span: 'draw.save' })
+        .debug('save', {
         result,
       });
       callback && callback(result);

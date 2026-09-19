@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-menu-demo">
     <div class="mobile-menu-demo__bar">
       <span class="mobile-menu-demo__label">buttonInMobile</span>
@@ -17,6 +17,7 @@
       </span>
     </div>
     <Map :button-in-mobile="buttonInMobile">
+    <DevtoolsControl position="bottom-right" />
       <DemoLanguageControl />
       <AsideControl position="top-left" />
       <ToolbarControl />
@@ -36,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { ButtonInMobile } from '@hungpvq/map-core';
 import {
   BaseMapControl,

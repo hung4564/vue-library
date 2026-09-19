@@ -4,8 +4,8 @@ Debug panel for map apps: **Store**, **Logs**, **Errors**, and **Dataset** (Insp
 
 | Package | Bootstrap | Panel |
 |---------|-----------|-------|
-| `@hungpvq/vue-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
-| `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` |
+| `@hungpvq/vue-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
+| `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 
 Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (canonical pin `map:debug.dataset`; F12 alias `window.__hungpvqDatasetDebug`).
 
@@ -21,61 +21,25 @@ Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`)
 
 See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API and the Debug-dataset menu item.
 
-## Display modes
+## Mount (Map control only)
 
-| `mode` | Behavior | Where to mount |
-|--------|----------|----------------|
-| `overlay` (default) | Fixed FAB + floating panel; mobile uses `DraggableItemBottom` when a map drag container exists | Anywhere (e.g. app shell) |
-| `control` | Map corner control (`DEVTOOLS_CONTROL.id` = `mapDevtools`) + **`DraggableItemPopup`** | Inside `<Map>` |
-
-### Overlay drag (FAB ↔ panel)
-
-Default CSS anchors the shell with `bottom` / `right`. After the user drags:
-
-1. Position switches to `left` / `top` (`devtools-container--moved`).
-2. **Open:** expand from the FAB’s bottom-right corner, then clamp into the viewport (large panel near a corner stays on-screen).
-3. **Close:** restore the FAB to the position saved at open — unless the open panel was dragged, in which case the FAB follows the panel’s bottom-right.
-
-Shared helpers live on `@hungpvq/map-debug` (`syncDevtoolsShellPos`, `beginPanelDrag`, …). Vue/React overlays are thin hosts.
+`<Devtools />` is a map control (`DEVTOOLS_CONTROL.id` = `mapDevtools`) that opens a **`DraggableItemPopup`**. Mount it **inside** `<Map>` — not in the app shell.
 
 ```vue
-<!-- App shell -->
-<Devtools />
-
-<!-- Or as a map control popup -->
 <Map>
-  <Devtools mode="control" position="bottom-right" />
+  <Devtools position="bottom-right" />
 </Map>
 ```
 
 ```tsx
-<Devtools />
-
 <Map>
-  <Devtools mode="control" position="bottom-right" />
+  <Devtools position="bottom-right" />
 </Map>
 ```
 
-`DevtoolsControl` is also exported (same as `mode="control"`).
+`DevtoolsControl` is also exported (same UI path). Global floating overlay / `mode="overlay"` has been removed (**breaking** for prior overlay-only mounts).
 
-## Mobile (overlay)
-
-On viewports **≤640px** (same tablet breakpoint as map):
-
-- Pass **`containerId`** (`map-draggable-<mapId>`) and/or **`mapId`** so the panel attaches to the correct map. Without either, there is no document-wide first-match — a CSS bottom sheet fallback (~85vh) is used.
-- `resolveMapDragContainerId(explicit, mapId)` prefers `explicit`, else derives `map-draggable-${mapId}`.
-
-```vue
-<Devtools container-id="map-draggable-my-map" />
-<!-- or -->
-<Devtools map-id="my-map" />
-```
-
-```tsx
-<Devtools containerId="map-draggable-my-map" />
-{/* or */}
-<Devtools mapId="my-map" />
-```
+Request Flow (Logs tab → detail) opens a `DraggableModal` on `map-draggable-${mapId}` and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
 
 ## Bootstrap (Vue + React)
 
@@ -84,7 +48,7 @@ import { Devtools, installDevtools, uninstallDevtools } from '@hungpvq/vue-map-d
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
-// mount <Devtools /> or <Devtools mode="control" /> inside Map
+// mount <Devtools /> inside <Map>
 ```
 
 `installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core`. Call `uninstallDevtools()` to tear down capture.
@@ -93,8 +57,8 @@ installDevtools();
 
 | Export | Notes |
 |--------|-------|
-| `Devtools` | `mode?: 'overlay' \| 'control'` |
-| `DevtoolsControl` | Explicit map-control popup |
+| `Devtools` | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
+| `DevtoolsControl` | Explicit map-control popup (same as `Devtools`) |
 | `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
 | `installDevtools` / `uninstallDevtools` | Bootstrap |
 | `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers |
@@ -103,7 +67,7 @@ Runtime lock: `public-api.spec.ts` in each adapter package.
 
 ## Demos
 
-- Vue: `apps/vue/demo-map`
-- React: `apps/react/demo-map`
+- Vue: `apps/vue/demo-map` — `installDevtools()` in `main.ts`; every `<Map>` includes `<DevtoolsControl position="bottom-right" />`
+- React: `apps/react/demo-map` — same pattern
 
 See also [Stable API](./stable-api.md) · [Error handling](./error-handling.md).

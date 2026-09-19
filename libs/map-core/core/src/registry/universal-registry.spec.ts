@@ -193,6 +193,18 @@ describe('UniversalRegistry', () => {
     expect(setPanelPosition).toHaveBeenCalledWith({ top: 10, right: 20 });
     UniversalRegistry.clearMap(mapId);
   });
+
+  it('unregister then register replaces a control without leaving duplicates', () => {
+    const mapId = 'spec-replace-control';
+    const first = fakeControl('mapHomeControl');
+    const second = fakeControl('mapHomeControl', (t) => t);
+    UniversalRegistry.registerControl(mapId, 'mapHomeControl', first);
+    UniversalRegistry.unregisterControl(mapId, 'mapHomeControl');
+    UniversalRegistry.registerControl(mapId, 'mapHomeControl', second);
+    expect(UniversalRegistry.getControl('mapHomeControl', mapId)).toBe(second);
+    expect(UniversalRegistry.listControls(mapId)).toHaveLength(1);
+    UniversalRegistry.clearMap(mapId);
+  });
 });
 
 describe('runMapControlAction', () => {

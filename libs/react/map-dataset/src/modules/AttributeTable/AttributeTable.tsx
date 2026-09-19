@@ -136,6 +136,7 @@ export function AttributeTable(props: AttributeTableProps) {
       store: props.store,
       rowFilter: props.rowFilter,
       sortable: resolveAttributeTableUi(ui).sort,
+      mapId,
     });
     controllerRef.current = next;
     setController(next);

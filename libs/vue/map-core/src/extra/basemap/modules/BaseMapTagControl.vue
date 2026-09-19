@@ -69,10 +69,9 @@ watch(
   },
 );
 function onClick(baseMap: BaseMapItem) {
-  logHelper(logger, mapId.value, 'control', 'BaseMapTagControl').debug(
-    'onClick',
-    baseMap,
-  );
+  logHelper(logger, mapId.value, 'control', 'BaseMapTagControl')
+    .with({ fn: 'onClick', span: 'control.event' })
+    .debug('onClick', baseMap);
   setCurrent(baseMap);
 }
 const { control } = useToolbarControl(mapId.value, props, {

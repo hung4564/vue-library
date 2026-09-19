@@ -16,7 +16,9 @@ export function bindHighlightPickDatasets(
     try {
       return getHighlightParts();
     } catch (error) {
-      loggerHighlight.debug('bindHighlightPickDatasets failed', { mapId, error });
+      loggerHighlight
+        .with({ fn: 'bindHighlightPickDatasets', span: 'highlight.pick' })
+        .debug('bindHighlightPickDatasets failed', { mapId, error });
       return [];
     }
   });

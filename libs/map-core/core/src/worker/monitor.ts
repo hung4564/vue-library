@@ -1,4 +1,4 @@
-import { getMapUUIDv4 } from '../utils/uuid';
+import { getUUIDv4 } from '@hungpvq/shared';
 import type {
   WorkerEngine,
   WorkerHandle,
@@ -78,7 +78,7 @@ function notify() {
 }
 
 function createTaskId(): string {
-  return getMapUUIDv4();
+  return getUUIDv4();
 }
 
 function findPending(entry: WorkerEntry, taskId: string) {

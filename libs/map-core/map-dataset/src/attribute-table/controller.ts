@@ -110,6 +110,8 @@ export type CreateAttributeTableControllerOptions = {
    * Default true.
    */
   sortable?: boolean;
+  /** Map id for log correlation (`attribute-table.load`). */
+  mapId?: string;
 };
 
 /**
@@ -177,7 +179,9 @@ export function createAttributeTableController(
     const seq = ++loadSeq;
     // Keep rows visible while re-sorting / searching so header clicks feel instant.
     const quiet =
-      reason === 'sort' || reason === 'search' || reason === 'column-filter';
+      reason === 'sort' ||
+      reason === 'search' ||
+      reason === 'column-filter';
     if (!quiet) {
       store.invalidate?.();
       state.loading = true;

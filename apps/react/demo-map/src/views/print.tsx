@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { BaseMapControl, Map, PrintControl } from '@hungpvq/react-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
@@ -8,6 +8,7 @@ import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
@@ -44,6 +45,7 @@ export function PrintPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

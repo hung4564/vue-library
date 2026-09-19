@@ -21,10 +21,9 @@ export function useBaseMap(mapId: string) {
       state.adapter,
       emitter,
       (mapIdParam, level, message, data) => {
-        logHelper(logger, mapIdParam, 'hook', 'useBaseMap')[level](
-          message,
-          data,
-        );
+        logHelper(logger, mapIdParam, 'hook', 'useBaseMap')
+          .with({ fn: 'useBaseMap', span: 'hook.add' })
+          [level](message, data);
       },
     );
   }

@@ -1,9 +1,10 @@
-<template>
+﻿<template>
   <Map
     map-id="basemap-error-demo"
     :init-options="initOptions"
     @error="onMapError"
   >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DemoHelpPanel />
@@ -15,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { Map } from '@hungpvq/vue-map-core';
 import AsideControl from '../layout/aside-control.vue';
@@ -31,9 +33,11 @@ const initOptions = {
 };
 
 function onMapError(error: Error) {
-  logger.info('map error (also toasted via errorHandler)', {
-    message: error.message,
-  });
+  logger
+    .with({ fn: 'onMapError', span: 'init' })
+    .info('map error (also toasted via errorHandler)', {
+      message: error.message,
+    });
 }
 </script>
 

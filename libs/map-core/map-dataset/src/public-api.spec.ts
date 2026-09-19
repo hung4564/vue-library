@@ -271,7 +271,6 @@ export const MAP_DATASET_SUBPATH_RUNTIME_EXPORTS = {
     'resolveIdentifyLayerFilterId',
     'resolveIdentifyScopedSession',
     'resolveIdentifySessionToggle',
-    'runHighlight',
     'runHighlightFromRecords',
     'runIdentifyMulti',
     'runIdentifyShowFirst',

@@ -11,7 +11,9 @@ export function useMapEventStore(mapId: string): MapEventStore {
     mapId,
     MAP_STORE_KEY.EVENT,
     () => {
-      logHelper(logger, mapId, 'store').debug('init');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'useMapEventStore', span: 'store.init' })
+        .debug('init');
       return createDefaultEventStore();
     },
     {
@@ -20,7 +22,9 @@ export function useMapEventStore(mapId: string): MapEventStore {
         if (!store) return;
         store.items.length = 0;
         store.current = {};
-        logHelper(logger, mapId, 'store').debug('clear on removeMap');
+        logHelper(logger, mapId, 'store')
+          .with({ fn: 'cleanup', span: 'store.clear' })
+          .debug('clear on removeMap');
       },
     },
   );

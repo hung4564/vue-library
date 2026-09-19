@@ -8,13 +8,15 @@ let installed = false;
 export function installMapDebug(): void {
   if (installed) return;
   installed = true;
-  logger.debug('map-debug installed');
+  logger.with({ fn: 'installMapDebug', span: 'init' }).debug('map-debug installed');
 }
 
 export function uninstallMapDebug(): void {
   if (!installed) return;
   installed = false;
-  logger.debug('map-debug uninstalled');
+  logger
+    .with({ fn: 'uninstallMapDebug', span: 'cleanup' })
+    .debug('map-debug uninstalled');
 }
 
 export function isMapDebugInstalled(): boolean {

@@ -8,6 +8,7 @@ import {
   replaceDevtoolErrors,
   replaceDevtoolLogs,
   setDevtoolActiveTab,
+  setDevtoolFilterMapId,
   setDevtoolOpen,
   subscribeDevtoolState,
   toggleDevtoolOpen,
@@ -29,6 +30,7 @@ export {
   getDevtoolState,
   openMapDevtoolsErrors,
   setDevtoolActiveTab,
+  setDevtoolFilterMapId,
   setDevtoolOpen,
   subscribeDevtoolState,
   toggleDevtoolOpen,
@@ -46,6 +48,12 @@ export const devtoolState = {
   },
   set activeTab(value: DevtoolTab) {
     setDevtoolActiveTab(value);
+  },
+  get filterMapId() {
+    return getDevtoolState().filterMapId;
+  },
+  set filterMapId(value: string) {
+    setDevtoolFilterMapId(value);
   },
   get errors() {
     return getDevtoolState().errors;

@@ -1,4 +1,4 @@
-import {
+﻿import {
   BaseMapControl,
   HomeControl,
   Map,
@@ -16,6 +16,7 @@ import {
 } from '../workers/sample-worker.client';
 import './worker-sample.css';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function WorkerSamplePage() {
   const [from, setFrom] = useState(1);
@@ -46,6 +47,7 @@ export function WorkerSamplePage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <WorkerControl position="top-left" />

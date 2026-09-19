@@ -67,7 +67,9 @@ export async function resolveHighlightData(
   if (data.type === 'local') {
     const geo = normalizeToHighlightGeoJson(ctx.input);
     if (!geo) {
-      loggerHighlight.warn('local highlight missing geometry', {
+      loggerHighlight
+        .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
+        .warn('local highlight missing geometry', {
         mapId: ctx.mapId,
       });
       return null;
@@ -83,7 +85,9 @@ export async function resolveHighlightData(
       return result;
     } catch (err) {
       if (ctx.signal?.aborted) return null;
-      loggerHighlight.warn('highlight resolver failed', { mapId: ctx.mapId, err });
+      loggerHighlight
+        .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
+        .warn('highlight resolver failed', { mapId: ctx.mapId, err });
       throw err;
     }
   }
@@ -93,7 +97,9 @@ export async function resolveHighlightData(
     if (strategy === 'query') {
       const sourceId = data.source;
       if (!sourceId) {
-        loggerHighlight.warn('vector-tile query missing source id', {
+        loggerHighlight
+          .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
+          .warn('vector-tile query missing source id', {
           mapId: ctx.mapId,
         });
         return null;
@@ -115,7 +121,9 @@ export async function resolveHighlightData(
           features: features as unknown as Feature[],
         };
       } catch (err) {
-        loggerHighlight.warn('vector-tile query failed', { mapId: ctx.mapId, err });
+        loggerHighlight
+          .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
+          .warn('vector-tile query failed', { mapId: ctx.mapId, err });
         return null;
       }
     }

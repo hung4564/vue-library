@@ -157,7 +157,7 @@ function buildHelp(): DatasetDebugHelp {
   const d = 'window.__hungpvqDatasetDebug';
   // Canonical pin: shared-store key `map:debug`.dataset (same object as window alias).
   return {
-    title: `${d} — Dataset Inspector (expand ▶ each section)`,
+    title: `${d} — Dataset Inspector`,
     quickStart: [
       `${d}.listMapIds()`,
       `${d}.listDatasets('my-map')`,
@@ -218,6 +218,40 @@ function buildHelp(): DatasetDebugHelp {
   };
 }
 
+type HelpSectionKey = Exclude<keyof DatasetDebugHelp, 'title'>;
+
+const HELP_SECTION_LABELS: { key: HelpSectionKey; label: string }[] = [
+  { key: 'quickStart', label: 'Quick start' },
+  { key: 'session', label: 'Session' },
+  { key: 'navigate', label: 'Navigate' },
+  { key: 'find', label: 'Find' },
+  { key: 'menus', label: 'Menus' },
+  { key: 'pinAndLive', label: 'Pin & live' },
+];
+
+/** Pretty multi-line guide for F12 `help()`. */
+function formatDatasetDebugHelp(guide: DatasetDebugHelp): string {
+  const lines: string[] = [guide.title, ''];
+
+  for (const { key, label } of HELP_SECTION_LABELS) {
+    const section = guide[key];
+    lines.push(`── ${label} ──`);
+    if (Array.isArray(section)) {
+      for (const item of section) {
+        lines.push(`  • ${item}`);
+      }
+    } else {
+      const maxKey = Math.max(0, ...Object.keys(section).map((k) => k.length));
+      for (const [k, v] of Object.entries(section)) {
+        lines.push(`  ${k.padEnd(maxKey)}  ${v}`);
+      }
+    }
+    lines.push('');
+  }
+
+  return lines.join('\n').trimEnd();
+}
+
 function createApi(): DatasetDebugApi {
   const target = {
     session: { ...session },
@@ -261,11 +295,10 @@ function createApi(): DatasetDebugApi {
   };
 
   target.help = () => {
-    const guide = buildHelp();
-    logger.info(guide.title, {
-      sections: Object.keys(guide).filter((k) => k !== 'title'),
-    });
-    return guide;
+    const text = formatDatasetDebugHelp(buildHelp());
+    // Print as preformatted text so F12 shows a readable guide, not an object tree.
+    console.log(`%c${text}`, 'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre');
+    return text;
   };
 
   target.tree = (dataset) => {
@@ -427,7 +460,9 @@ function createApi(): DatasetDebugApi {
     const dataset = resolveDataset(opts?.mapId, opts?.datasetId);
     const mapId = session.mapId;
     if (!dataset || !mapId) {
-      logger.warn('invokeMenu: missing mapId or dataset');
+      logger
+        .with({ fn: 'invokeMenu', span: 'menu.action' })
+        .warn('invokeMenu: missing mapId or dataset');
       return;
     }
     const menuId = opts?.menuId ?? session.menuId;
@@ -440,7 +475,9 @@ function createApi(): DatasetDebugApi {
       (menuId ? findMenuInResolved(resolved.menus, menuId) : undefined) ??
       target.selectedMenu;
     if (!menu) {
-      logger.warn('invokeMenu: menu not found', { menuId });
+      logger
+        .with({ fn: 'invokeMenu', span: 'menu.action' })
+        .warn('invokeMenu: menu not found', { menuId });
       return;
     }
     invokeResolvedMenu(menu, {
@@ -476,7 +513,9 @@ export function installDatasetDebug(): DatasetDebugApi {
   bag.dataset = api;
   syncWindowAlias(api);
   menuHooks.onInstall?.();
-  logger.debug('map:debug.dataset + window.__hungpvqDatasetDebug installed');
+  logger
+    .with({ fn: 'installDatasetDebug', span: 'init' })
+    .debug('map:debug.dataset + window.__hungpvqDatasetDebug installed');
   return api;
 }
 
@@ -495,7 +534,9 @@ export function uninstallDatasetDebug(): void {
   }
   api = undefined;
   for (const key of Object.keys(vars)) delete vars[key];
-  logger.debug('map:debug.dataset uninstalled');
+  logger
+    .with({ fn: 'uninstallDatasetDebug', span: 'cleanup' })
+    .debug('map:debug.dataset uninstalled');
 }
 
 export function getDatasetDebugApi(): DatasetDebugApi | undefined {

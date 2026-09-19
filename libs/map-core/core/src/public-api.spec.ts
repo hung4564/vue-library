@@ -252,6 +252,7 @@ export const MAP_CORE_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'replaceDevtoolLogs',
   'resolveMapDragContainerId',
   'setDevtoolActiveTab',
+  'setDevtoolFilterMapId',
   'setDevtoolOpen',
   'subscribeDevtoolState',
   'toggleDevtoolOpen',

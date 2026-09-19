@@ -1,4 +1,4 @@
-import { getMap, type MapSimple } from '@hungpvq/map-core';
+﻿import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
@@ -30,6 +30,7 @@ import {
 } from './StoryTelling/helper-action';
 import { useMapStorytelling } from './StoryTelling/useStorytelling';
 import './story-telling.css';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const chapters = [
   {
@@ -140,6 +141,7 @@ export function StoryTellingPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <MeasurementControl position="top-right" />

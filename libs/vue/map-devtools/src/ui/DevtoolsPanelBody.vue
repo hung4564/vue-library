@@ -1,11 +1,12 @@
 <template>
   <div class="devtools-header">
+    <DevtoolsMapFilter v-if="showMapFilter" />
     <div class="devtools-tabs">
       <MapControlButton
         :active="state.activeTab === 'store'"
         variant="text"
         size="small"
-        @click="state.activeTab = 'store'"
+        @click="setDevtoolActiveTab('store')"
       >
         Store
       </MapControlButton>
@@ -13,7 +14,7 @@
         :active="state.activeTab === 'dataset'"
         variant="text"
         size="small"
-        @click="state.activeTab = 'dataset'"
+        @click="setDevtoolActiveTab('dataset')"
       >
         Dataset
       </MapControlButton>
@@ -21,7 +22,7 @@
         :active="state.activeTab === 'logs'"
         variant="text"
         size="small"
-        @click="state.activeTab = 'logs'"
+        @click="setDevtoolActiveTab('logs')"
       >
         Logs ({{ logCount }})
       </MapControlButton>
@@ -29,7 +30,7 @@
         :active="state.activeTab === 'errors'"
         variant="text"
         size="small"
-        @click="state.activeTab = 'errors'"
+        @click="setDevtoolActiveTab('errors')"
       >
         Errors ({{ errorCount }})
       </MapControlButton>
@@ -76,15 +77,24 @@
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
-import { devtoolState } from '../store';
+import { devtoolState, setDevtoolActiveTab } from '../store';
 import DatasetMenuViewer from './DatasetMenuViewer.vue';
+import DevtoolsMapFilter from './DevtoolsMapFilter.vue';
 import ErrorViewer from './ErrorViewer.vue';
 import LogViewer from './LogViewer.vue';
 import StoreViewer from './StoreViewer.vue';
 
-defineProps<{
-  showClose?: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    showClose?: boolean;
+    /** When false, hide the map filter strip in the panel header. */
+    showMapFilter?: boolean;
+  }>(),
+  {
+    showClose: false,
+    showMapFilter: true,
+  },
+);
 
 const emit = defineEmits<{ close: [] }>();
 

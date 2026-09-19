@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
@@ -138,6 +139,7 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 </script>
 <template>
   <Map ref="mapRef" @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />

@@ -1,4 +1,4 @@
-import {
+﻿import {
   BaseMapCard,
   BaseMapControl,
   CrsControl,
@@ -35,6 +35,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function RegistryControlPage() {
   useDatasetRegistry();
@@ -42,6 +43,7 @@ export function RegistryControlPage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <MeasurementControl position="top-right" />

@@ -45,18 +45,40 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 **Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves).
 
+### Logger Context Rule (required)
+
+Every application log call **must** use `.with({ fn, span })` before the level method:
+
 ```ts
 import { loggerFactory } from '@hungpvq/shared-log';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
-logger.info('layer selected', { mapId, layerId });
+
+logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info(
+  'layer selected',
+  { mapId, layerId },
+);
 ```
 
+- **`fn`**: name of the **enclosing** function/method where the log is written (not a free-form description). Nested/anon handlers: nearest meaningful name (`onFavorite`, `processChunk`, …).
+- **`span`**: phase of the operation. Prefer existing project spans (`menu.action`, `identify.query`, `dataset.add`, `store.init`, `mitt.emit`, …) over inventing new vocabulary.
+- **Forbidden**: bare `logger.info/warn/error/debug(...)` (or `logHelper(...).info(...)`) without `.with({ fn, span })`. Prefer `.with({ fn, span })` over `.at(fn)` alone (`.at` only sets `fn`).
+- When known, also pass `mapId`, `datasetId`, `datasetName`, `datasetType`, `menuId`, `menuName` (never invent values).
 - Prefer a module-level `logger` with a stable namespace (`map:…`, `demo:…`, `draggable:…`).
-- Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces).
+- Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces), still chained with `.with({ fn, span })`.
+- Context is **only** via `.with(...)` (no ambient AsyncLocalStorage / flow stack).
 - Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo).
 - Replacing an existing `console.*` while touching a file is required; do not add new `console.*`.
 
+### Mitt Rule
+
+- Map buses from `createMapMitt` emit plain payloads; optional `EMIT` log uses `.with({ fn, span: 'mitt.emit', eventName })`.
+- Do **not** add duplicate `onAny` payload dumps that restate the same emit.
+- Prefer named handler functions.
+
+### Devtools mount
+
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell.
 ## Common scripts (root `package.json`)
 
 ```bash

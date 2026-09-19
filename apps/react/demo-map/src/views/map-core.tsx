@@ -1,4 +1,4 @@
-import {
+﻿import {
   BaseMapControl,
   CrsControl,
   EventManagementControl,
@@ -21,11 +21,13 @@ import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function MapCorePage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />

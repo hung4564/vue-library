@@ -1,4 +1,4 @@
-import { getMap, type MapSimple } from '@hungpvq/map-core';
+﻿import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
@@ -27,6 +27,7 @@ import {
   useMapStorytelling,
 } from './StoryTelling/useStorytelling';
 import './story-telling.css';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const GPS_TRACK = [
   { lng: 105.84146352698633, lat: 21.017689539749725, timestamp: 0 },
@@ -247,6 +248,7 @@ export function StoryTellingGpsPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <MeasurementControl position="top-right" />

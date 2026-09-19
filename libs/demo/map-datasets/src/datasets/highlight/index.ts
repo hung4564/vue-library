@@ -692,16 +692,20 @@ function createPresentationLifecycleHighlight() {
         popup: { kind: 'none' },
         clickAction: 'none',
         onShow: (entry) => {
-          logger.info('highlight onShow', {
-            id: entry.id,
-            source: entry.source,
-          });
+          logger
+            .with({ fn: 'onShow', span: 'highlight.show' })
+            .info('highlight onShow', {
+              id: entry.id,
+              source: entry.source,
+            });
         },
         onHide: (entry) => {
-          logger.info('highlight onHide', {
-            id: entry.id,
-            source: entry.source,
-          });
+          logger
+            .with({ fn: 'onHide', span: 'highlight.hide' })
+            .info('highlight onHide', {
+              id: entry.id,
+              source: entry.source,
+            });
         },
       },
     }),
@@ -950,12 +954,16 @@ export function createHighlightDemoGlobalResolver() {
 
 export function applyHighlightDemoGlobalResolver(): void {
   setGlobalHighlightResolver(createHighlightDemoGlobalResolver());
-  logger.info('setGlobalHighlightResolver → demo (paint first when count ≥ 1)');
+  logger
+    .with({ fn: 'applyHighlightDemoGlobalResolver', span: 'highlight.init' })
+    .info('setGlobalHighlightResolver → demo (paint first when count ≥ 1)');
 }
 
 export function restoreHighlightDemoGlobalResolver(): void {
   setGlobalHighlightResolver(highlightResolver);
-  logger.info('setGlobalHighlightResolver → highlightResolver (default)');
+  logger
+    .with({ fn: 'restoreHighlightDemoGlobalResolver', span: 'highlight.init' })
+    .info('setGlobalHighlightResolver → highlightResolver (default)');
 }
 
 export { HIGHLIGHT_DEMO_HELP } from './help';

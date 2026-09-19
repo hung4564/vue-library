@@ -11,7 +11,9 @@ const logger = loggerFactory.createLogger().setNamespace('map:print', 2);
 
 export const useMapPrintStore = (mapId: string) =>
   createMapScopedStore<MapPrintStore>(mapId, MAP_STORE_KEY.PRINT, () => {
-    logHelper(logger, mapId, 'store').debug('init');
+    logHelper(logger, mapId, 'store')
+      .with({ fn: 'useMapPrintStore', span: 'store.init' })
+      .debug('init');
     return createDefaultPrintStore();
   });
 

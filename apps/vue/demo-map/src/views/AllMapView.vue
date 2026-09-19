@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
 import type {
@@ -159,6 +160,7 @@ function createDatasetMeasure(
     :mapId="mapId"
     button-in-mobile="toolbar"
   >
+    <DevtoolsControl position="bottom-right" />
     <AsideControl position="top-left" />
     <ToolbarControl position="top-left" />
     <ComponentManagementControl />

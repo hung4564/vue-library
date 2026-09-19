@@ -88,10 +88,9 @@ export function BaseMapControl({
 
   const onClick = useCallback(
     (baseMap: BaseMapItem) => {
-      logHelper(logger, mapId, 'control', 'BaseMapControl').debug(
-        'onClick',
-        baseMap,
-      );
+      logHelper(logger, mapId, 'control', 'BaseMapControl')
+        .with({ fn: 'onClick', span: 'control.event' })
+        .debug('onClick', baseMap);
       setCurrent(baseMap);
     },
     [mapId, setCurrent],

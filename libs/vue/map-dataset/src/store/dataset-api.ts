@@ -25,9 +25,11 @@ async function clearDatasetsOnRemoveMap(
   const ids = [...store.datasetIds.value];
   if (!ids.length) return;
   const map = getMap(mapId);
-  logHelper(logger, mapId, 'store').debug('clear datasets on removeMap', {
-    count: ids.length,
-  });
+  logHelper(logger, mapId, 'store')
+    .with({ fn: 'clearDatasetsOnRemoveMap', span: 'store.clear' })
+    .debug('clear datasets on removeMap', {
+      count: ids.length,
+    });
   for (const id of ids) {
     const layer = store.datasets[id];
     if (!layer) continue;
@@ -48,7 +50,9 @@ export function useMapDatasetStore(mapId: string): MapLayerStore {
     mapId,
     MAP_DATASET_STORE_KEY as string & object,
     () => {
-      logHelper(logger, mapId, 'store').debug('init');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'useMapDatasetStore', span: 'store.init' })
+        .debug('init');
       return {
         datasets: {},
         datasetIds: ref([]),
@@ -87,10 +91,12 @@ export const useMapDataset = (initialMapId?: string) => {
       await DatasetService.addDataset(store, map, layer);
     });
 
-    logHelper(logger, mapId.value, 'store').debug('addDataset', {
-      datasetId: layer.id,
-      name: layer.getName?.() ?? layer.id,
-    });
+    logHelper(logger, mapId.value, 'store')
+      .with({ fn: 'addDataset', span: 'store.add' })
+      .debug('addDataset', {
+        datasetId: layer.id,
+        name: layer.getName?.() ?? layer.id,
+      });
   }
 
   async function removeDataset(layer: IDataset) {
@@ -102,17 +108,21 @@ export const useMapDataset = (initialMapId?: string) => {
       await DatasetService.removeDataset(store, map, layer);
     });
 
-    logHelper(logger, mapId.value, 'store').debug('removeDataset', {
-      store,
-      dataset: layer,
-    });
+    logHelper(logger, mapId.value, 'store')
+      .with({ fn: 'removeDataset', span: 'store.remove' })
+      .debug('removeDataset', {
+        store,
+        dataset: layer,
+      });
   }
 
   function removeComponent(component: IDataset) {
     const getMapFn = getMapHelper();
     if (!getMapFn) return;
 
-    logHelper(logger, mapId.value, 'store').debug('removeComponent', component);
+    logHelper(logger, mapId.value, 'store')
+      .with({ fn: 'removeComponent', span: 'store.remove' })
+      .debug('removeComponent', component);
     getMapFn(async (map: MapSimple) => {
       DatasetService.removeComponent(map, component);
     });

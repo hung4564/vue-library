@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
 
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
@@ -12,6 +12,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
@@ -48,6 +49,7 @@ export function MinimalPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

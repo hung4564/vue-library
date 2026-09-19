@@ -1,5 +1,6 @@
-<template>
+﻿<template>
   <Map>
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
@@ -30,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ThemeControl, BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';

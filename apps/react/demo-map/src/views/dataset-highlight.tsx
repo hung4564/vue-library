@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import {
   applyHighlightDemoGlobalResolver,
   restoreHighlightDemoGlobalResolver,
@@ -25,6 +25,7 @@ import { loadHighlightDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 loggerFactory.enable('map:highlight');
 loggerFactory.enable('demo:highlight');
@@ -55,6 +56,7 @@ export function DatasetHighlightPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <HighlightDemoBindings />
         <DemoLanguageControl />
         <AsideControl position="top-left" />

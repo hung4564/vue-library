@@ -1,5 +1,6 @@
-<template>
+﻿<template>
   <Map>
+    <DevtoolsControl position="bottom-right" />
     <AsideControl position="top-left" />
     <LanguageControl
       default-language="vi"
@@ -23,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import {
   deepMergeLocale,
   type MapLangFlatMessages,

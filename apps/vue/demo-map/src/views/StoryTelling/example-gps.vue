@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
   getMap,
@@ -220,6 +221,7 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
 
 <template>
   <Map ref="mapRef" @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />

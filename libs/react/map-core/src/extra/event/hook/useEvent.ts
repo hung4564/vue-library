@@ -118,7 +118,9 @@ export function useEventMap(
         store,
         emitter,
         (id, level, msg, data) => {
-          logHelper(logger, id, 'hook', 'useEventMap')[level](msg, data);
+          logHelper(logger, id, 'hook', 'useEventMap')
+            .with({ fn: 'useEventMap', span: 'hook.add' })
+            [level](msg, data);
         },
       ),
     [mapId, store, emitter],

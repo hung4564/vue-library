@@ -1,40 +1,20 @@
 import {
-  collectErrorMapIds,
   errorMapId,
   filterErrorsByMapId,
   formatDevtoolErrorForCopy,
   formatErrorTime,
-  shortErrorMapId,
 } from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
-import { InputSelect } from '@hungpvq/react-map-core/fields';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { clearDevtoolErrors } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 
 export function ErrorViewer() {
-  const { errors } = useDevtoolState();
-  const [selectedMapId, setSelectedMapId] = useState('all');
-
-  const mapIds = useMemo(() => collectErrorMapIds(errors), [errors]);
-
-  const mapFilterItems = useMemo(
-    () => [
-      { value: 'all', text: 'All maps' },
-      ...mapIds.map((id) => ({ value: id, text: shortErrorMapId(id) })),
-    ],
-    [mapIds],
-  );
-
-  useEffect(() => {
-    if (selectedMapId !== 'all' && !mapIds.includes(selectedMapId)) {
-      setSelectedMapId('all');
-    }
-  }, [mapIds, selectedMapId]);
+  const { errors, filterMapId } = useDevtoolState();
 
   const filteredErrors = useMemo(
-    () => filterErrorsByMapId(errors, selectedMapId, mapIds.length),
-    [errors, mapIds.length, selectedMapId],
+    () => filterErrorsByMapId(errors, filterMapId),
+    [errors, filterMapId],
   );
 
   return (
@@ -44,14 +24,6 @@ export function ErrorViewer() {
           Errors {filteredErrors.length}
         </span>
         <div className="error-viewer__actions">
-          {mapIds.length > 1 ? (
-            <InputSelect
-              aria-label="Filter by mapId"
-              value={selectedMapId}
-              items={mapFilterItems}
-              onChange={(value) => setSelectedMapId(String(value))}
-            />
-          ) : null}
           <MapControlButton
             variant="text"
             size="small"

@@ -1,6 +1,6 @@
 import { ConsoleAdapter } from './adapters/ConsoleAdapter';
 import { Logger } from './Logger';
-import { LogAdapter } from './types';
+import type { LogAdapter } from './types';
 
 export class LoggerFactory {
   private adapters: LogAdapter[] = [new ConsoleAdapter()];
@@ -8,6 +8,9 @@ export class LoggerFactory {
   private enableAll = true;
   private disabledNamespaces: Set<string> = new Set();
   private enabledNamespaces: Set<string> = new Set();
+
+  /** Process-wide monotonic log sequence (1-based). */
+  private logSeq = 0;
 
   static getInstance(): LoggerFactory {
     const host = globalThis as typeof globalThis & {
@@ -19,45 +22,43 @@ export class LoggerFactory {
     return host.__hungpvq_LoggerFactory__;
   }
 
-  /**
-   * === Control Enable/Disable ===
-   */
+  /** Reset singleton (tests). */
+  static resetInstanceForTests(): void {
+    const host = globalThis as typeof globalThis & {
+      __hungpvq_LoggerFactory__?: LoggerFactory;
+    };
+    delete host.__hungpvq_LoggerFactory__;
+  }
 
-  // ⚙️ Enable toàn bộ (và clear disabled list)
   enableEverything() {
     this.enableAll = true;
     this.disabledNamespaces.clear();
     this.enabledNamespaces.clear();
   }
 
-  // ❌ Disable toàn bộ (và clear enabled list)
   disableEverything() {
     this.enableAll = false;
     this.disabledNamespaces.clear();
     this.enabledNamespaces.clear();
   }
 
-  // 🚫 Khi enableEverything nhưng muốn tắt 1 số namespace
   disable(namespace: string) {
     if (this.enableAll) {
       this.disabledNamespaces.add(namespace);
     }
   }
 
-  // ✅ Khi disableEverything nhưng vẫn cho phép namespace
   enable(namespace: string) {
     if (!this.enableAll) {
       this.enabledNamespaces.add(namespace);
     }
   }
 
-  // 🔍 Kiểm tra namespace có được phép log không
   isEnabled(namespaces: string[]): boolean {
     if (this.enableAll) {
       return !namespaces.some((ns) => this.disabledNamespaces.has(ns));
-    } else {
-      return namespaces.some((ns) => this.enabledNamespaces.has(ns));
     }
+    return namespaces.some((ns) => this.enabledNamespaces.has(ns));
   }
 
   addAdapter(adapter: LogAdapter) {
@@ -72,9 +73,13 @@ export class LoggerFactory {
     return this.adapters;
   }
 
+  /** Next monotonic log index for {@link LogHeader.index}. */
+  nextLogIndex(): number {
+    this.logSeq += 1;
+    return this.logSeq;
+  }
+
   createLogger(): Logger {
-    return new Logger(this.adapters, (namespaces) =>
-      this.isEnabled(namespaces),
-    );
+    return new Logger(this.adapters, (namespaces) => this.isEnabled(namespaces));
   }
 }

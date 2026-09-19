@@ -159,7 +159,7 @@ export type ExplainStep = {
   detail?: Record<string, unknown>;
 };
 
-/** Returned by `help()` — expands cleanly in the browser console. */
+/** Structured help content — formatted to text by `help()`. */
 export type DatasetDebugHelp = {
   title: string;
   quickStart: string[];
@@ -202,8 +202,8 @@ export type DatasetDebugApi = {
   refresh: () => void;
   pin: (name?: string, value?: unknown) => unknown;
   clearPins: () => void;
-  /** Expandable guide for F12 — prefer this over reading a long string. */
-  help: () => DatasetDebugHelp;
+  /** Pretty multi-line guide for F12 (also returned as a string). */
+  help: () => string;
 
   tree: (dataset?: IDataset) => DatasetTreeNode | undefined;
   parentChain: (dataset?: IDataset) => DatasetNodeSummary[];

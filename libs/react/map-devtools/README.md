@@ -20,11 +20,12 @@ Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus 
 
 ## Usage
 
-Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel, captures map errors, and installs the dataset debug bridge when available). Mount `<Devtools />` where you want the panel:
+Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel, captures map errors, and installs the dataset debug bridge when available). Mount `<Devtools />` **inside** `<Map>`:
 
 ```tsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Map } from '@hungpvq/react-map-core';
 import { Devtools, installDevtools } from '@hungpvq/react-map-devtools';
 import '@hungpvq/react-map-devtools/style.css';
 import App from './App';
@@ -34,14 +35,16 @@ installDevtools();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-    <Devtools />
-    {/* Map control popup (inside <Map>): <Devtools mode="control" position="bottom-right" /> */}
-    {/* <Devtools containerId="map-draggable-my-map" /> */}
   </StrictMode>,
 );
+
+// Inside a map view:
+// <Map>
+//   <Devtools position="bottom-right" />
+// </Map>
 ```
 
-On mobile (≤640px), overlay mode uses `DraggableItemBottom` when a map drag container exists. Use `mode="control"` for a map corner button + `DraggableItemPopup`.
+Uses map control id `mapDevtools` + `DraggableItemPopup` (not an App-global overlay).
 
 Tear down global error capture with `uninstallDevtools()` when the host app unmounts (tests / HMR).
 
@@ -55,14 +58,14 @@ Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idG
 |--------|------|
 | `installDevtools` | Bootstrap log adapter + global error capture |
 | `uninstallDevtools` | Remove global error capture |
-| `Devtools` | Panel UI (`mode?: 'overlay' \| 'control'`) |
-| `DevtoolsControl` | Map control + popup (same as `mode="control"`) |
+| `Devtools` | Map control + popup (mount inside `<Map>`) |
+| `DevtoolsControl` | Same as `Devtools` |
 | `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
 
 Experimental root exports (store helpers / hooks such as `useDevtoolState`, `getDevtoolState`, …) may change in a minor — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 
-`apps/react/demo-map` — `installDevtools()` in `src/main.tsx`, `<Devtools />` in the app shell.
+`apps/react/demo-map` — `installDevtools()` in `src/main.tsx`; every `<Map>` mounts `<DevtoolsControl position="bottom-right" />`.
 
 Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).

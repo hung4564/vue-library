@@ -44,10 +44,9 @@ const {
   remove,
 } = useBaseMap(mapId.value);
 const onChangeBaseMap = (base_map: BaseMapItem) => {
-  logHelper(logger, mapId.value, 'control', 'BaseMapCard').debug(
-    'onClick',
-    base_map,
-  );
+  logHelper(logger, mapId.value, 'control', 'BaseMapCard')
+    .with({ fn: 'onChangeBaseMap', span: 'control.event' })
+    .debug('onClick', base_map);
   setCurrent(base_map);
 };
 onBeforeUnmount(() => {

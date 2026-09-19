@@ -5,12 +5,6 @@
         >Errors {{ filteredErrors.length }}</span
       >
       <div class="error-viewer__actions">
-        <InputSelect
-          v-if="mapIds.length > 1"
-          v-model="selectedMapId"
-          :items="mapFilterItems"
-          aria-label="Filter by mapId"
-        />
         <MapControlButton variant="text" size="small" @click="clearErrors">
           Clear
         </MapControlButton>
@@ -61,36 +55,19 @@
 
 <script setup lang="ts">
 import {
-  collectErrorMapIds,
   errorMapId,
   filterErrorsByMapId,
   formatDevtoolErrorForCopy,
   formatErrorTime,
-  shortErrorMapId as shortMapId,
 } from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
-import { InputSelect } from '@hungpvq/vue-map-core/fields';
-import { computed, ref, watch } from 'vue';
-import { clearDevtoolErrors, devtoolState } from '../store';
+import { computed } from 'vue';
+import { clearDevtoolErrors, useDevtoolState } from '../store';
 
-const selectedMapId = ref('all');
-const errors = computed(() => devtoolState.errors);
-
-const mapIds = computed(() => collectErrorMapIds(errors.value));
-
-const mapFilterItems = computed(() => [
-  { value: 'all', text: 'All maps' },
-  ...mapIds.value.map((id) => ({ value: id, text: shortMapId(id) })),
-]);
-
-watch(mapIds, (ids) => {
-  if (selectedMapId.value !== 'all' && !ids.includes(selectedMapId.value)) {
-    selectedMapId.value = 'all';
-  }
-});
+const { errors, filterMapId } = useDevtoolState();
 
 const filteredErrors = computed(() =>
-  filterErrorsByMapId(errors.value, selectedMapId.value, mapIds.value.length),
+  filterErrorsByMapId(errors.value, filterMapId.value),
 );
 
 function clearErrors() {

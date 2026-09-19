@@ -52,7 +52,7 @@ const emit = defineEmits<{
 const open = ref(false);
 
 function onLog() {
-  logger.info('layer menu', {
+  logger.with({ fn: 'onLog', span: 'menu.action' }).info('layer menu', {
     mapId: props.mapId,
     layerId: props.data?.id,
     layerName: props.data?.getName?.(),

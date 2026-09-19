@@ -1,6 +1,7 @@
-import { loggerFactory } from '@hungpvq/shared-log';
+﻿import { loggerFactory } from '@hungpvq/shared-log';
 import { Map } from '@hungpvq/react-map-core';
 import { MapPageShell } from '../components/MapPageShell';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { AsideControl } from '../layout/AsideControl';
@@ -26,11 +27,14 @@ export function BasemapErrorPage() {
         mapId="basemap-error-demo"
         initOptions={initOptions}
         onError={(error) => {
-          logger.info('map error (also toasted via errorHandler)', {
-            message: error.message,
-          });
+          logger
+            .with({ fn: 'onMapError', span: 'init' })
+            .info('map error (also toasted via errorHandler)', {
+              message: error.message,
+            });
         }}
       >
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <DemoHelpPanel />

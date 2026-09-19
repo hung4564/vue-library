@@ -40,10 +40,10 @@ export function useEventMap(
     store,
     emitter,
     (mapIdParam, level, message, data) => {
-      logHelper(logger, mapIdParam, 'hook', 'useEventMap')[level](
-        message,
-        data,
-      );
+      logHelper(logger, mapIdParam, 'hook', 'useEventMap').with({
+        fn: 'useEventMap',
+        span: 'hook.add',
+      })[level](message, data);
     },
   );
 
@@ -101,7 +101,9 @@ export function useEventListener<K extends KnownMapEvent>(
   let cancelled = false;
 
   const add = () => {
-    logHelper(logger, mapId, 'hook', 'useEventListener').debug('add', event);
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'add', span: 'hook.add' })
+      .debug('add', event);
     cancelled = false;
     unsubscribeReady?.();
     unsubscribeReady = subscribeMapReady(mapId, (map) => {
@@ -112,7 +114,9 @@ export function useEventListener<K extends KnownMapEvent>(
     });
   };
   const remove = () => {
-    logHelper(logger, mapId, 'hook', 'useEventListener').debug('remove', event);
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'remove', span: 'hook.remove' })
+      .debug('remove', event);
     cancelled = true;
     unsubscribeReady?.();
     unsubscribeReady = undefined;

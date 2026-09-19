@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
@@ -16,7 +17,9 @@ const actions: MeasureActionItem[] = [
     icon: mdiPlus,
     type: 'add-to-layer',
     handle: (data) => {
-      logger.info('add to layer', data);
+      logger
+        .with({ fn: 'onAddToLayer', span: 'measurement.event' })
+        .info('add to layer', data);
     },
     disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
     index: 0,
@@ -26,6 +29,7 @@ const actions: MeasureActionItem[] = [
 </script>
 <template>
   <Map>
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <MeasurementControl position="top-left" :actions="actions" />

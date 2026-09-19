@@ -52,12 +52,12 @@ export {
 
 export {
   LEVEL_FILTERS,
-  GROUP_LEVELS,
   UUID_RE,
   logMapId,
   shortMapId,
   formatArg,
   namespaceKey,
+  rootNamespace,
   displayNamespace,
   entryText,
   filterLogs,
@@ -72,10 +72,18 @@ export {
   textMessage,
   objectArgs,
   countNewLogsWhilePaused,
+  collectLogsByRequestId,
+  compareLogOrder,
+  buildRequestFlowSteps,
+  buildRequestFlowTree,
+  formatFlowDelta,
+  shortRequestId,
 } from './viewers/log-helpers';
 export type {
   LevelFilter,
   StructuredGroup,
   StructuredLog,
   StructuredItem,
+  RequestFlowStep,
+  RequestFlowTreeNode,
 } from './viewers/log-helpers';

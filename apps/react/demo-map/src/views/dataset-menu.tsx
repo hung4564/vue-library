@@ -1,4 +1,4 @@
-import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
+﻿import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import {
@@ -24,6 +24,7 @@ import { AsideControl } from '../layout/AsideControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { SampleLayerToggleShow } from './sample-layer-toggle-show';
 import { SampleToggleShowButton } from './sample-toggle-show-button';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 function registerDemoToggleComponents(mapId: string) {
   /**
@@ -57,6 +58,7 @@ export function DatasetMenuPage() {
   return (
     <MapPageShell>
       <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <LayerControl

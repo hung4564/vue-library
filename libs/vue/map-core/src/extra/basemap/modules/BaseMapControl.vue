@@ -154,10 +154,9 @@ function setShow(value: boolean) {
   show.value = value;
 }
 function onClick(baseMap: BaseMapItem) {
-  logHelper(logger, mapId.value, 'control', 'BaseMapControl').debug(
-    'onClick',
-    baseMap,
-  );
+  logHelper(logger, mapId.value, 'control', 'BaseMapControl')
+    .with({ fn: 'onClick', span: 'control.event' })
+    .debug('onClick', baseMap);
   setCurrent(baseMap);
 }
 function onToggleList() {

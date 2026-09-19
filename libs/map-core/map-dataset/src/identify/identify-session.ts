@@ -188,8 +188,7 @@ export function createIdentifySession(
     input: IdentifyQueryInput,
   ): Promise<RunIdentifyResult | undefined> {
     if (destroyed) return undefined;
-    const pointOrBox =
-      input.kind === 'point' ? input.point : input.box;
+    const pointOrBox = input.kind === 'point' ? input.point : input.box;
     const event = input.kind === 'point' ? input.event : undefined;
 
     queryAbort?.abort();
@@ -218,7 +217,9 @@ export function createIdentifySession(
       }
       if (!destroyed && generation === queryGeneration) {
         const message =
-          error instanceof Error ? error.message : String(error ?? 'Identify failed');
+          error instanceof Error
+            ? error.message
+            : String(error ?? 'Identify failed');
         options.syncResultPanel?.({ error: message, loading: false });
         clearLoadingUi();
       }
@@ -228,7 +229,6 @@ export function createIdentifySession(
         queryAbort = null;
       }
       if (!destroyed && generation === queryGeneration) {
-        // clearLoadingUi may already have run on error path; safe to call again.
         if (model.getState().loading) {
           clearLoadingUi();
         }

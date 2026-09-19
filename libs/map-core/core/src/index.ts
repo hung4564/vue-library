@@ -34,13 +34,9 @@ export {
 export { MAP_CORE_LOCALE_EN } from './locale/locale.en';
 export { MAP_CORE_LOCALE_VI } from './locale/locale.vi';
 
-export {
-  Base,
-} from './model/Base';
+export { Base } from './model/Base';
 
-export {
-  MAP_MODULE_CONTROL_ID_KEY,
-} from './registry/module-control-id';
+export { MAP_MODULE_CONTROL_ID_KEY } from './registry/module-control-id';
 
 export {
   REGISTRY_CONTROLS_STORE_KEY,
@@ -50,37 +46,21 @@ export {
   UniversalRegistry,
 } from './registry/universal-registry';
 
+export { FallbackResolver } from './resolver/fallback-resolver';
 
-export {
-  FallbackResolver,
-} from './resolver/fallback-resolver';
+export { MapErrorHandler } from './services/error-handler.service';
 
-export {
-  MapErrorHandler,
-} from './services/error-handler.service';
+export { MapInitializer } from './services/map-initializer.service';
 
-export {
-  MapInitializer,
-} from './services/map-initializer.service';
-
-export {
-  MAP_CORE_EVENT,
-  MapStoreManager,
-} from './store/store-manager';
+export { MAP_CORE_EVENT, MapStoreManager } from './store/store-manager';
 
 export { isUsableMapId } from './store/is-usable-map-id';
 
-export {
-  MAP_STORE_KEY,
-} from './types/constants';
+export { MAP_STORE_KEY } from './types/constants';
 
-export {
-  MittTypeMapEventKey,
-} from './types/store';
+export { MittTypeMapEventKey } from './types/store';
 
-export {
-  EMPTY_MAP_VIEW_INFO,
-} from './utils/map-info';
+export { EMPTY_MAP_VIEW_INFO } from './utils/map-info';
 
 export {
   applyGotoSetting,
@@ -111,9 +91,7 @@ export {
   toggleGlobeProjection,
 } from './controls/globe';
 
-export {
-  attachMapViewInfoListeners,
-} from './controls/info';
+export { attachMapViewInfoListeners } from './controls/info';
 
 export {
   attachRotateListener,
@@ -124,19 +102,14 @@ export {
   zoomOut,
 } from './controls/navigation';
 
-export {
-  captureHomeView,
-  goHome,
-} from './controls/home';
+export { captureHomeView, goHome } from './controls/home';
 export type { CaptureHomeViewOptions, HomeView } from './controls/home';
 
 // Side-effect: wire WorkerMonitor.connect / abortTask before re-export.
 // Without this, tree-shaken imports of only `WorkerMonitor` leave `.connect` null.
 import './worker/client';
 
-export {
-  WorkerMonitor,
-} from './worker/monitor';
+export { WorkerMonitor } from './worker/monitor';
 
 export {
   bindMapKeyboardShortcuts,
@@ -144,30 +117,17 @@ export {
   focusMapLayerSearch,
 } from './a11y/map-keyboard';
 
-export {
-  GeoLocateSession,
-} from './geolocate/session';
+export { GeoLocateSession } from './geolocate/session';
+
+export { createMapMitt } from './mitt/index';
+
+export { filterMapControls } from './registry/control';
+
+export { buildMapControlHandle } from './registry/build-map-control-handle';
+
+export { errorHandler } from './services/error-handler.service';
 
 export {
-  createMapMitt,
-} from './mitt/index';
-
-export {
-  filterMapControls,
-} from './registry/control';
-
-export {
-  buildMapControlHandle,
-} from './registry/build-map-control-handle';
-
-export {
-  errorHandler,
-} from './services/error-handler.service';
-
-export {
-  MAP_BUILTIN_LANGUAGES,
-  MAP_LANGUAGE_STORAGE_KEY,
-  MittTypeMapLangEventKey,
   bootstrapMapLanguage,
   createDefaultLangStore,
   createMapLocaleApi,
@@ -178,7 +138,10 @@ export {
   getStoredMapLanguage,
   interpolateLocale,
   isMapLangFlatMessages,
+  MAP_BUILTIN_LANGUAGES,
+  MAP_LANGUAGE_STORAGE_KEY,
   mapLanguageCodeLabel,
+  MittTypeMapLangEventKey,
   nextMapLanguageInList,
   registerLanguageControlPacks,
   resolveInitialMapLanguage,
@@ -188,9 +151,7 @@ export {
   unflattenLocaleMessages,
 } from './types/lang';
 
-export {
-  BUTTON_IN_MOBILE_VALUES,
-} from './utils/control-layout';
+export { BUTTON_IN_MOBILE_VALUES } from './utils/control-layout';
 
 export {
   degToDms,
@@ -201,15 +162,9 @@ export {
   parseCoordinateText,
 } from './utils/coordinate';
 
-export {
-  bboxFromGeojson,
-  convertGeometry,
-  fitBounds,
-} from './utils/fillBound';
+export { bboxFromGeojson, convertGeometry, fitBounds } from './utils/fillBound';
 
-export {
-  isValidBbox,
-} from './utils/bbox';
+export { isValidBbox } from './utils/bbox';
 
 export {
   DEFAULT_MAP_BREAKPOINTS,
@@ -231,24 +186,20 @@ export {
   toggleElementFullscreen,
 } from './utils/fullscreen';
 
-export {
-  getMapPointerProfile,
-} from './utils/pointer-profile';
+export { getMapPointerProfile } from './utils/pointer-profile';
 export type { MapPointerProfile } from './utils/pointer-profile';
 
-export {
-  bindMapLongPress,
-} from './utils/map-long-press';
+export { bindMapLongPress } from './utils/map-long-press';
 export type { MapLongPressOptions } from './utils/map-long-press';
 
 export {
   ACTION_FEEDBACK_MS,
   COPY_FEEDBACK_MS,
+  copyImageDataUrl,
   copyText,
   createActionFeedback,
   createCopyFeedback,
   downloadDataUrl,
-  copyImageDataUrl,
   formatCoordPair,
   formatDegree,
   formatLngLatBounds,
@@ -260,14 +211,9 @@ export type {
   CopyFeedbackController,
 } from './utils/map-info';
 
-export {
-  formatNumber,
-} from './utils/number';
+export { formatNumber } from './utils/number';
 
-export {
-  abortWorkerMonitorTask,
-  connectWorkerMonitor,
-} from './worker/client';
+export { abortWorkerMonitorTask, connectWorkerMonitor } from './worker/client';
 
 export {
   filterWorkerSnapshots,
@@ -275,9 +221,7 @@ export {
   formatWorkerLogTime,
 } from './worker/format';
 
-export {
-  applyWorkerMonitorMessage,
-} from './worker/message';
+export { applyWorkerMonitorMessage } from './worker/message';
 
 export {
   createWorkerMonitorAbortMessage,
@@ -285,17 +229,18 @@ export {
   createWorkerMonitorProgressMessage,
 } from './worker/protocol';
 
-export {
-  runMapControlAction,
-} from './registry/control-action';
+export { runMapControlAction } from './registry/control-action';
+
+export { installGlobalErrorCapture } from './services/global-error-capture';
 
 export {
-  installGlobalErrorCapture,
-} from './services/global-error-capture';
-
-export {
+  createMapCoreMetaRegistry,
   getMap,
+  getMapCoreMetaStore,
+  getMapCoreRootStore,
   listMapPlatformHosts,
+  MAP_CORE_META_STORE_KEY,
+  MAP_CORE_ROOT_STORE_KEY,
   MAP_PLATFORM_HOST,
   MAP_PLATFORM_REGISTRY_METHOD,
   registerMapAccessor,
@@ -303,28 +248,21 @@ export {
   registerMapStoreCleanup,
   registerMapStoreCleanupRegistrar,
   subscribeMapReady,
-  MAP_CORE_META_STORE_KEY,
-  MAP_CORE_ROOT_STORE_KEY,
-  createMapCoreMetaRegistry,
-  getMapCoreMetaStore,
-  getMapCoreRootStore,
 } from './store/index';
 export type {
-  MapPlatformHostId,
-  MapPlatformRegistration,
-  MapPlatformRegistryMethod,
-  RegisterMapPlatformOptions,
   CreateMapCoreMetaRegistryOptions,
   MapCoreErrorCaptureSlot,
   MapCoreMetaRegistry,
   MapCoreMetaRegistryBag,
   MapCoreMetaStore,
+  MapPlatformHostId,
+  MapPlatformRegistration,
+  MapPlatformRegistryMethod,
   MapResolverStore,
+  RegisterMapPlatformOptions,
 } from './store/index';
 
-export {
-  hasMapInstance,
-} from './types/store';
+export { hasMapInstance } from './types/store';
 
 export {
   isMapButtonFluidVariant,
@@ -352,13 +290,9 @@ export {
   queryModuleHostElement,
 } from './ui/module-container';
 
-export {
-  getChartRandomColor,
-} from './utils/color';
+export { getChartRandomColor } from './utils/color';
 
-export {
-  resolveControlLayout,
-} from './utils/control-layout';
+export { resolveControlLayout } from './utils/control-layout';
 
 export {
   isCoordinatesNumber,
@@ -367,9 +301,7 @@ export {
   toCoordinatesNumberList,
 } from './utils/coordinate';
 
-export {
-  mergeFilters,
-} from './utils/filter';
+export { mergeFilters } from './utils/filter';
 
 export {
   isCallStackOverflow,
@@ -378,13 +310,9 @@ export {
   toPlainJson,
 } from './utils/geojson-reproject';
 
-export {
-  logHelper,
-} from './utils/log';
+export { logHelper } from './utils/log';
 
-export {
-  readMapViewInfo,
-} from './utils/map-info';
+export { readMapViewInfo } from './utils/map-info';
 
 export {
   anyWorkerHasHistory,
@@ -396,9 +324,7 @@ export {
   workerProgressRatio,
 } from './worker/format';
 
-export {
-  runWorkerMonitor,
-} from './worker/in-worker';
+export { runWorkerMonitor } from './worker/in-worker';
 
 export {
   isWorkerMonitorAbortMessage,
@@ -406,12 +332,39 @@ export {
   isWorkerMonitorProgressMessage,
 } from './worker/protocol';
 
-export {
-  runMonitoredTask,
-} from './worker/run-task';
+export { runMonitoredTask } from './worker/run-task';
 
 /** First-party types only — do not re-export geojson / maplibre-gl types from the root. */
 export type { DevtoolsMode } from './devtools/control';
+export type {
+  GeoLocateControlOptions,
+  GeoLocatePermissions,
+  GeoLocatePermissionStatus,
+  GeoLocateSessionOptions,
+  GeoLocateUiState,
+} from './geolocate/session';
+export type {
+  GeoLocateFitBoundsOptions,
+  GeoLocateWatchState,
+} from './geolocate/viewport';
+export type { BuildMapControlHandleInput } from './registry/build-map-control-handle';
+export type {
+  MapControlAction,
+  MapControlActionMeta,
+  MapControlHandle,
+  MapControlPanelKind,
+  MapControlPanelPosition,
+} from './registry/control';
+export type { RegistryNamespaceKind } from './registry/universal-registry';
+export type { ErrorHandlerOptions } from './services/error-handler.service';
+export type { MapEventCallbacks } from './services/map-initializer.service';
+export type {
+  AddStoreOptions,
+  IMapStoreAdapter,
+  LoggerFunction,
+  MapRootStore,
+  MapStore,
+} from './store';
 export type {
   ButtonInMobile,
   Color,
@@ -435,49 +388,6 @@ export type {
   Position,
   WithMapPropType,
 } from './types';
-export type { ResolvedControlLayout } from './utils/control-layout';
-export type {
-  MapBreakpointConfig,
-  MapBreakpointFlags,
-  MapBreakpointName,
-} from './utils/breakpoints';
-export type {
-  MapControlAction,
-  MapControlActionMeta,
-  MapControlHandle,
-  MapControlPanelKind,
-  MapControlPanelPosition,
-} from './registry/control';
-export type { BuildMapControlHandleInput } from './registry/build-map-control-handle';
-export type { RegistryNamespaceKind } from './registry/universal-registry';
-export type {
-  AddStoreOptions,
-  IMapStoreAdapter,
-  LoggerFunction,
-  MapRootStore,
-  MapStore,
-} from './store';
-export type { ErrorHandlerOptions } from './services/error-handler.service';
-export type { MapEventCallbacks } from './services/map-initializer.service';
-export type {
-  GeoLocateControlOptions,
-  GeoLocatePermissions,
-  GeoLocatePermissionStatus,
-  GeoLocateSessionOptions,
-  GeoLocateUiState,
-} from './geolocate/session';
-export type {
-  GeoLocateFitBoundsOptions,
-  GeoLocateWatchState,
-} from './geolocate/viewport';
-export type { GeojsonBbox } from './utils/fillBound';
-export type { MapViewInfo } from './utils/map-info';
-export type {
-  WorkerLogEntry,
-  WorkerRuntimeStatus,
-  WorkerSnapshot,
-  WorkerTaskSnapshot,
-} from './worker/types';
 export type {
   MapButtonSize,
   MapButtonSizeName,
@@ -487,3 +397,17 @@ export type {
   ModuleBindPosition,
   ModuleCornerChromeLayout,
 } from './ui/module-container';
+export type {
+  MapBreakpointConfig,
+  MapBreakpointFlags,
+  MapBreakpointName,
+} from './utils/breakpoints';
+export type { ResolvedControlLayout } from './utils/control-layout';
+export type { GeojsonBbox } from './utils/fillBound';
+export type { MapViewInfo } from './utils/map-info';
+export type {
+  WorkerLogEntry,
+  WorkerRuntimeStatus,
+  WorkerSnapshot,
+  WorkerTaskSnapshot,
+} from './worker/types';

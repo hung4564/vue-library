@@ -23,6 +23,13 @@
         "assets": ["libs/share/log/*.md"]
       }
     },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/share/log"
+      }
+    },
     "ts-check": {
       "executor": "nx:run-commands",
       "options": {

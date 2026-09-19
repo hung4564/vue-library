@@ -65,7 +65,9 @@ export function createDemoLoaders(deps: DemoLoaderDeps) {
     if (menuHandlerRegistered) return;
     menuHandlerRegistered = true;
     deps.registerMenuHandler(DEMO_CUSTOM_MENU_HANDLER_KEY, (props) => {
-      logger.info('custom-menu-handle in registry', props);
+      logger
+        .with({ fn: 'ensureCustomMenuHandler', span: 'menu.action' })
+        .info('custom-menu-handle in registry', props);
     });
   }
 

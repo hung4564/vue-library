@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   BaseMapControl,
@@ -20,6 +20,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import './legend.css';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function LegendPage() {
   const { getLayerLegendNode } = useLayerLegend();
@@ -96,6 +97,7 @@ export function LegendPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GotoControl position="top-right" />

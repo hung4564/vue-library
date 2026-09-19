@@ -14,7 +14,9 @@ export type { MapImageStore };
 
 export const useMapImageStore = (mapId: string) =>
   createMapScopedStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE, () => {
-    logHelper(logger, mapId, 'store').debug('init');
+    logHelper(logger, mapId, 'store')
+      .with({ fn: 'useMapImageStore', span: 'store.init' })
+      .debug('init');
     return createDefaultImageStore();
   });
 

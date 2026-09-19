@@ -1,4 +1,4 @@
-import {
+﻿import {
   deepMergeLocale,
   type MapLangFlatMessages,
   type MapLangLocale,
@@ -24,6 +24,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const FR_LOCALE: MapLangLocale = {
   map: {
@@ -105,6 +106,7 @@ export function LanguagePage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <AsideControl position="top-left" />
         <LanguageControl
           defaultLanguage="vi"

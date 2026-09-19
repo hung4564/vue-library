@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
@@ -117,7 +118,9 @@ function onMapLoaded(map: MapSimple) {
     },
     redraw: (mapId) => paintResult(mapId),
     callback(result) {
-      logger.info('draw save', result);
+      logger
+        .with({ fn: 'onDrawSave', span: 'draw.save' })
+        .info('draw save', result);
     },
   } satisfies MapDrawOption);
 }
@@ -125,6 +128,7 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map map-id="draw-demo" @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />

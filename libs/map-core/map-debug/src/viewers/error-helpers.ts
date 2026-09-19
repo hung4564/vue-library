@@ -21,9 +21,9 @@ export function collectErrorMapIds(errors: DevtoolErrorRecord[]): string[] {
 export function filterErrorsByMapId(
   errors: DevtoolErrorRecord[],
   mapIdValue: string,
-  mapIdCount: number,
+  _mapIdCount?: number,
 ): DevtoolErrorRecord[] {
-  if (mapIdCount <= 1 || mapIdValue === 'all') return errors;
+  if (mapIdValue === 'all') return errors;
   return errors.filter((error) => errorMapId(error) === mapIdValue);
 }
 

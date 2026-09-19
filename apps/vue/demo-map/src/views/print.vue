@@ -1,5 +1,6 @@
-<template>
+﻿<template>
   <Map @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
@@ -10,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { BaseMapControl, Map, PrintControl } from '@hungpvq/vue-map-core';

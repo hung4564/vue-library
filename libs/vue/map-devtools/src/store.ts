@@ -7,6 +7,7 @@ import {
   initDevtoolStoreCore,
   openMapDevtoolsErrors as openMapDevtoolsErrorsCore,
   setDevtoolActiveTab as setDevtoolActiveTabCore,
+  setDevtoolFilterMapId as setDevtoolFilterMapIdCore,
   setDevtoolOpen as setDevtoolOpenCore,
   subscribeDevtoolState,
   toggleDevtoolOpen as toggleDevtoolOpenCore,
@@ -27,6 +28,7 @@ subscribeDevtoolState(() => {
   const next = getDevtoolStateCore();
   devtoolState.isOpen = next.isOpen;
   devtoolState.activeTab = next.activeTab;
+  devtoolState.filterMapId = next.filterMapId;
   devtoolState.errors = next.errors;
   devtoolState.logs = next.logs;
 });
@@ -47,6 +49,10 @@ export function setDevtoolOpen(open: boolean) {
 
 export function setDevtoolActiveTab(activeTab: DevtoolTab) {
   setDevtoolActiveTabCore(activeTab);
+}
+
+export function setDevtoolFilterMapId(filterMapId: string) {
+  setDevtoolFilterMapIdCore(filterMapId);
 }
 
 export function openMapDevtoolsErrors() {

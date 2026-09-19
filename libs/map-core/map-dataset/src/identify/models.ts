@@ -82,7 +82,9 @@ export function createIdentifyMapboxComponent(
         );
 
         const allLayerIds: string[] = Array.from(results.values()).flat(2);
-        logHelper(loggerIdentify, mapId, 'dataset', self.id).debug('start', {
+        logHelper(loggerIdentify, mapId, 'dataset', self.id)
+          .with({ fn: 'getFeatures', span: 'identify.query' })
+          .debug('start', {
           allLayerIds,
           pointOrBox,
         });
@@ -104,7 +106,9 @@ export function createIdentifyMapboxComponent(
           });
 
           const idsGet = [...ids];
-          logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+          logHelper(loggerIdentify, mapId, 'dataset', self.id)
+            .with({ fn: 'getFeatures', span: 'identify.query' })
+            .debug(
             'getFeatureFormMap',
             {
               features,
@@ -132,13 +136,17 @@ export function createIdentifyMapboxComponent(
             }));
 
           if (self.getList) {
-            logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+            logHelper(loggerIdentify, mapId, 'dataset', self.id)
+              .with({ fn: 'getFeatures', span: 'identify.query' })
+              .debug(
               'use get list of identify',
               self,
             );
             void self.getList(mapId, features).then((unique) => {
               const result = toRows(unique as Record<string, unknown>[]);
-              logHelper(loggerIdentify, mapId, 'dataset', self.id).debug(
+              logHelper(loggerIdentify, mapId, 'dataset', self.id)
+                .with({ fn: 'getFeatures', span: 'identify.query' })
+                .debug(
                 'end',
                 { results: result },
               );
@@ -166,7 +174,9 @@ export function createIdentifyMapboxComponent(
               data: flat,
             });
           }
-          logHelper(loggerIdentify, mapId, 'dataset', self.id).debug('end', {
+          logHelper(loggerIdentify, mapId, 'dataset', self.id)
+            .with({ fn: 'getFeatures', span: 'identify.query' })
+            .debug('end', {
             results: rows,
           });
           resolve(rows);
@@ -242,7 +252,9 @@ export async function handleMultiIdentify(
     err.name = 'AbortError';
     throw err;
   }
-  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify')
+    .with({ fn: 'handleMultiIdentify', span: 'identify.query' })
+    .debug(
     'start',
     { identifies, config: props, pointOrBox },
   );
@@ -254,7 +266,9 @@ export async function handleMultiIdentify(
       [point.x - props.selectThreshold, point.y + props.selectThreshold], // bottom left (SW)
       [point.x + props.selectThreshold, point.y - props.selectThreshold], // top right (NE)
     ];
-    logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+    logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify')
+      .with({ fn: 'handleMultiIdentify', span: 'identify.query' })
+      .debug(
       'convert',
       {
         point,
@@ -283,7 +297,9 @@ export async function handleMultiIdentify(
     );
   }
 
-  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify')
+    .with({ fn: 'handleMultiIdentify', span: 'identify.query' })
+    .debug(
     'handle',
     { groupMerge },
   );
@@ -293,7 +309,9 @@ export async function handleMultiIdentify(
     err.name = 'AbortError';
     throw err;
   }
-  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify').debug(
+  logHelper(loggerIdentify, mapId, 'MULTI', 'handleMultiIdentify')
+    .with({ fn: 'handleMultiIdentify', span: 'identify.query' })
+    .debug(
     'end',
     { result },
   );
@@ -336,7 +354,9 @@ export async function handleMultiIdentifyGetFirst(
     mapId,
     'FIRST',
     'handleMultiIdentifyGetFirst',
-  ).debug('start', {
+  )
+    .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
+    .debug('start', {
     identifies,
     allLayerIds,
     pointOrBox,
@@ -369,7 +389,12 @@ export async function handleMultiIdentifyGetFirst(
           mapId,
           'FIRST',
           'handleMultiIdentifyGetFirst',
-        ).debug('convert', {
+        )
+          .with({
+            fn: 'handleMultiIdentifyGetFirst',
+            span: 'identify.show-first',
+          })
+          .debug('convert', {
           point,
           x: point.x,
           y: point.y,
@@ -385,7 +410,12 @@ export async function handleMultiIdentifyGetFirst(
         mapId,
         'FIRST',
         'handleMultiIdentifyGetFirst',
-      ).debug('current', {
+      )
+        .with({
+          fn: 'handleMultiIdentifyGetFirst',
+          span: 'identify.show-first',
+        })
+        .debug('current', {
         allLayerIds: allLayerIds.filter((id) => map.getLayer(id)),
         features: queried,
         pointOrBox: queryBox,
@@ -406,7 +436,9 @@ export async function handleMultiIdentifyGetFirst(
       mapId,
       'FIRST',
       'handleMultiIdentifyGetFirst',
-    ).debug('end', { result: undefined });
+    )
+      .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
+      .debug('end', { result: undefined });
     return undefined;
   }
 
@@ -449,7 +481,9 @@ export async function handleMultiIdentifyGetFirst(
     mapId,
     'FIRST',
     'handleMultiIdentifyGetFirst',
-  ).debug('end', { result });
+  )
+    .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
+    .debug('end', { result });
   return result;
 }
 

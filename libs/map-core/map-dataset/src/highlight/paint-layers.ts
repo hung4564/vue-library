@@ -455,7 +455,9 @@ export function applyHighlightFeatureState(
       filter ? { filter } : undefined,
     );
   } catch (error) {
-    logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+    logHelper(loggerHighlight, map.id, 'ensureHighlight')
+      .with({ fn: 'applyHighlightFeatureState', span: 'highlight.paint' })
+      .debug(
       'highlight',
       'querySourceFeatures failed',
       { error, sourceId, filter },
@@ -473,7 +475,9 @@ export function applyHighlightFeatureState(
       map.setFeatureState({ source: sourceId, id }, { [stateKey]: true });
       ids.add(id);
     } catch (error) {
-      logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+      logHelper(loggerHighlight, map.id, 'ensureHighlight')
+        .with({ fn: 'applyHighlightFeatureState', span: 'highlight.paint' })
+        .debug(
         'highlight',
         'setFeatureState failed',
         { error, sourceId, id },
@@ -493,7 +497,9 @@ export function clearHighlightFeatureState(
     try {
       map.removeFeatureState({ source: sourceId, id }, stateKey);
     } catch (error) {
-      logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+      logHelper(loggerHighlight, map.id, 'ensureHighlight')
+        .with({ fn: 'clearHighlightFeatureState', span: 'highlight.paint' })
+        .debug(
         'highlight',
         'removeFeatureState failed',
         { error, sourceId, id },
@@ -563,7 +569,9 @@ export function ensureHighlightSource(
       const sourceId = (
         sourceLeaf as unknown as { getSourceId: () => string }
       ).getSourceId();
-      logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+      logHelper(loggerHighlight, map.id, 'ensureHighlight')
+        .with({ fn: 'ensureHighlightSource', span: 'highlight.paint' })
+        .debug(
         'highlight',
         'use source dataset',
         { dataset: base, source: sourceLeaf, sourceId, feature },
@@ -574,7 +582,9 @@ export function ensureHighlightSource(
 
   const sourceId = (base?.id || getUUIDv4()) + '-source-highlighted';
   const data = toGeoJSONData(feature);
-  logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+  logHelper(loggerHighlight, map.id, 'ensureHighlight')
+    .with({ fn: 'ensureHighlightSource', span: 'highlight.paint' })
+    .debug(
     'highlight',
     'use source geojson',
     { dataset: base, sourceId, feature, data },
@@ -627,13 +637,17 @@ export function ensureHighlightLayers(
       try {
         map.setFilter(id, mergedFilter ?? null);
       } catch (error) {
-        logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+        logHelper(loggerHighlight, map.id, 'ensureHighlight')
+          .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
+          .debug(
           'highlight',
           'setFilter failed',
           { error, id, filter: mergedFilter },
         );
       }
-      logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+      logHelper(loggerHighlight, map.id, 'ensureHighlight')
+        .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
+        .debug(
         'highlight',
         'layer-update',
         { id, filter: mergedFilter, feature, highlightFilter },
@@ -653,7 +667,9 @@ export function ensureHighlightLayers(
       ...datasetLayer,
       ...(mergedFilter ? { filter: mergedFilter } : {}),
     } as LayerSpecification;
-    logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+    logHelper(loggerHighlight, map.id, 'ensureHighlight')
+      .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
+      .debug(
       'highlight',
       'layer',
       { layer: temp, filter: mergedFilter, feature, highlightFilter },
@@ -661,7 +677,9 @@ export function ensureHighlightLayers(
     try {
       map.addLayer(temp);
     } catch (error) {
-      logHelper(loggerHighlight, map.id, 'ensureHighlight').debug(
+      logHelper(loggerHighlight, map.id, 'ensureHighlight')
+        .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
+        .debug(
         'highlight',
         'addLayer failed',
         { error, layer: temp },

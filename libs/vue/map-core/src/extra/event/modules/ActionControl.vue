@@ -27,11 +27,9 @@ const store = useMapEventStore(mapId.value);
 const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
 
 function setCurrentEvent(event_map_type: string, event?: IEvent) {
-  logHelper(logger, mapId.value, 'store').debug(
-    'setCurrentEvent',
-    event_map_type,
-    event,
-  );
+  logHelper(logger, mapId.value, 'store')
+    .with({ fn: 'setCurrentEvent', span: 'store.update' })
+    .debug('setCurrentEvent', event_map_type, event);
   store.current[event_map_type] = event;
   emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
 }

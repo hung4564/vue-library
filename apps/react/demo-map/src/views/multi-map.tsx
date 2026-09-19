@@ -1,4 +1,4 @@
-import type { MapSimple } from '@hungpvq/map-core';
+﻿import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
@@ -9,6 +9,7 @@ import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { AsideControl } from '../layout/AsideControl';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:multi-map', 2);
 
@@ -40,7 +41,9 @@ export function MultiMapPage() {
   const datasetB = useMapDataset('demo-map-b');
 
   function onLoadedA(map: MapSimple) {
-    logger.info('map A ready', { mapId: map.id });
+    logger.with({ fn: 'onLoadedA', span: 'init' }).info('map A ready', {
+      mapId: map.id,
+    });
     datasetA.setMapId(map.id);
     void datasetA.addDataset(
       createGeoJsonDataset({
@@ -53,7 +56,9 @@ export function MultiMapPage() {
   }
 
   function onLoadedB(map: MapSimple) {
-    logger.info('map B ready', { mapId: map.id });
+    logger.with({ fn: 'onLoadedB', span: 'init' }).info('map B ready', {
+      mapId: map.id,
+    });
     datasetB.setMapId(map.id);
     void datasetB.addDataset(
       createGeoJsonDataset({
@@ -74,6 +79,7 @@ export function MultiMapPage() {
               Map A (<code>demo-map-a</code>)
             </h2>
             <Map mapId="demo-map-a" onMapLoaded={onLoadedA}>
+              <DevtoolsControl position="bottom-right" />
               <DemoLanguageControl />
               <AsideControl position="top-left" />
               <BaseMapControl position="bottom-left" />
@@ -88,6 +94,7 @@ export function MultiMapPage() {
             <Map mapId="demo-map-b" onMapLoaded={onLoadedB}>
               <BaseMapControl position="bottom-left" />
               <LayerControl position="top-left" show />
+              <DevtoolsControl position="bottom-right" />
             </Map>
           </div>
         </div>

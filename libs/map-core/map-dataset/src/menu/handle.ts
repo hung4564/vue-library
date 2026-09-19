@@ -19,7 +19,7 @@ export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
   const click = (menu as MenuItemCommon).click;
   if (!click) return;
 
-  handleMenuActionClick(click, props);
+  return handleMenuActionClick(click, props);
 }
 const MAX_DEPTH = 5;
 const logger = loggerFactory.createLogger().setNamespace('menu');
@@ -38,7 +38,9 @@ export const StringCommandHandler = createCommandHandler(
     const key = click as string;
     const handler = UniversalRegistry.getMenuHandler(key, context.mapId);
     if (!handler) {
-      logHelper(logger, context.mapId, 'handleMenuActionClick').warn(
+      logHelper(logger, context.mapId, 'handleMenuActionClick')
+        .with({ fn: 'StringCommandHandler', span: 'menu.action' })
+        .warn(
         `No handler found for key: ${key}`,
       );
       return;
@@ -137,80 +139,98 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
   context: MenuItemProps<P, T>,
   depth = 0,
 ) {
-  if (!action) return;
-  if (depth > MAX_DEPTH) {
-    logHelper(logger, context.mapId, 'handleMenuActionClick').warn(
-      'Max recursion depth reached.',
-    );
-    return;
-  }
+  const run = async () => {
+    if (!action) return;
+    if (depth > MAX_DEPTH) {
+      logHelper(logger, context.mapId, 'handleMenuActionClick')
+        .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+        .warn('Max recursion depth reached.');
+      return;
+    }
 
-  const actions = Array.isArray(action) ? action : [action];
+    const actions = Array.isArray(action) ? action : [action];
 
-  const commandHandlers: CommandHandlerMenu[] = [
-    BuilderCommandHandler,
-    StringCommandHandler,
-    FunctionCommandHandler,
-    TupleCommandHandler,
-    DirectCommandHandler,
-  ];
-  for (const [index, entry] of actions.entries()) {
-    logHelper(logger, context.mapId, 'handleMenuActionClick', String(depth)).debug(
-      'Executing function action',
-      entry,
-    );
-    let handled = false;
+    const commandHandlers: CommandHandlerMenu[] = [
+      BuilderCommandHandler,
+      StringCommandHandler,
+      FunctionCommandHandler,
+      TupleCommandHandler,
+      DirectCommandHandler,
+    ];
+    for (const [index, entry] of actions.entries()) {
+      logHelper(
+        logger,
+        context.mapId,
+        'handleMenuActionClick',
+        String(depth),
+      )
+        .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+        .debug('Executing function action', entry);
+      let handled = false;
 
-    for (const handler of commandHandlers) {
-      if (handler.canHandle(entry)) {
-        logHelper(
-          logger,
-          context.mapId,
-          'handleMenuActionClick',
-          String(depth),
-          String(index),
-        ).debug(`Context`, {
-          context,
-          handler,
-        });
-        const result = await handler.execute(entry, context);
-        logHelper(
-          logger,
-          context.mapId,
-          'handleMenuActionClick',
-          String(depth),
-          String(index),
-        ).debug(`Handler executed`, {
-          handler: handler.constructor.name,
-          entry,
-        });
-
-        const nextAction = await resolveActionResult(result);
-
-        if (nextAction) {
+      for (const handler of commandHandlers) {
+        if (handler.canHandle(entry)) {
           logHelper(
             logger,
             context.mapId,
             'handleMenuActionClick',
             String(depth),
             String(index),
-          ).debug(`Recursing with next action`, {
-            nextAction,
-            depth: depth + 1,
+          )
+            .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+            .debug(`Context`, {
+            context,
+            handler,
           });
-          await handleMenuActionClick(nextAction, context, depth + 1);
-        }
+          const result = await handler.execute(entry, context);
+          logHelper(
+            logger,
+            context.mapId,
+            'handleMenuActionClick',
+            String(depth),
+            String(index),
+          )
+            .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+            .debug(`Handler executed`, {
+            handler: handler.constructor.name,
+            entry,
+          });
 
-        handled = true;
-        break;
+          const nextAction = await resolveActionResult(result);
+
+          if (nextAction) {
+            logHelper(
+              logger,
+              context.mapId,
+              'handleMenuActionClick',
+              String(depth),
+              String(index),
+            )
+              .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+              .debug(`Recursing with next action`, {
+              nextAction,
+              depth: depth + 1,
+            });
+            await handleMenuActionClick(nextAction, context, depth + 1);
+          }
+
+          handled = true;
+          break;
+        }
+      }
+
+      if (!handled) {
+        logHelper(
+          logger,
+          context.mapId,
+          'handleMenuActionClick',
+          String(depth),
+        )
+          .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
+          .warn('Unknown entry:', entry);
       }
     }
+  };
 
-    if (!handled) {
-      logHelper(logger, context.mapId, 'handleMenuActionClick', String(depth)).warn(
-        'Unknown entry:',
-        entry,
-      );
-    }
-  }
+  return run();
 }

@@ -126,12 +126,12 @@ describe('dataset debug bridge', () => {
     ).toBe(api);
 
     const guide = api.help();
-    expect(guide.quickStart.length).toBeGreaterThan(0);
-    expect(guide.session.setSession).toBeTruthy();
-    expect(guide.navigate.tree).toBeTruthy();
-    expect(guide.find.findPartByType).toBeTruthy();
-    expect(guide.menus.previewMenus).toBeTruthy();
-    expect(guide.pinAndLive.vars).toBeTruthy();
+    expect(guide).toContain('Quick start');
+    expect(guide).toContain('setSession');
+    expect(guide).toContain('tree');
+    expect(guide).toContain('findPartByType');
+    expect(guide).toContain('previewMenus');
+    expect(guide).toContain('vars');
   });
 
   it('listPickerDatasets keeps nested Debug selection without listing all parts', () => {

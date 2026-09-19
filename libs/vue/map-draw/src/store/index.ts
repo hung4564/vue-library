@@ -29,7 +29,9 @@ function endDrawSession(mapId: string, store: MapDrawStore) {
   store.state.featuresAdded = {};
   store.state.featuresUpdated = {};
   store.state.featuresDeleted = {};
-  logHelper(logger, mapId, 'store').debug('end on removeMap');
+  logHelper(logger, mapId, 'store')
+    .with({ fn: 'endDrawSession', span: 'store.clear' })
+    .debug('end on removeMap');
   useMapMittStore<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
 }
 
@@ -38,7 +40,9 @@ export function useMapDrawStore(mapId: string): MapDrawStore {
     mapId,
     KEY as any,
     () => {
-      logHelper(logger, mapId, 'store').debug('init');
+      logHelper(logger, mapId, 'store')
+        .with({ fn: 'useMapDrawStore', span: 'store.init' })
+        .debug('init');
       return createDefaultMapDrawStore();
     },
     {
@@ -67,9 +71,9 @@ export function useConfigDrawControl(
     emit.on(MAP_DRAW_EVENT.START, config.onStart);
     emit.on(MAP_DRAW_EVENT.END, config.onEnd);
     if (store.config) {
-      logHelper(logger, mapId, 'useConfigDrawControl').debug(
-        'start on mounted',
-      );
+      logHelper(logger, mapId, 'useConfigDrawControl')
+        .with({ fn: 'useConfigDrawControl', span: 'control.init' })
+        .debug('start on mounted');
       config.onStart(store.config);
     }
   });

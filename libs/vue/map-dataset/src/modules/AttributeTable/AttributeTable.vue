@@ -81,6 +81,7 @@ function createController() {
     store: props.store,
     rowFilter: props.rowFilter,
     sortable: resolveAttributeTableUi(ui).sort,
+    mapId: mapId.value,
   });
 }
 

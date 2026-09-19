@@ -2,7 +2,10 @@ import type { IDataset } from '../interfaces/dataset.base';
 import { createMenuClickBuilder } from '../menu/builder';
 import { handleMenuActionClick } from '../menu/handle';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
-import { createGeoExportController, type GeoExportController } from './controller';
+import {
+  createGeoExportController,
+  type GeoExportController,
+} from './controller';
 import { resolveGeoExportOption } from './dataset-part';
 import type { GeoExportScope, GeoExportUiMode } from './options';
 import { GEO_EXPORT_FORMATS, type GeoExportFormat } from './types';

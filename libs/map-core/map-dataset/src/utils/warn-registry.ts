@@ -37,7 +37,9 @@ export function warnIfDatasetRegistryMissing(
     adapter.alwaysOn = true;
   }
   try {
-    logger.warn(message);
+    logger
+      .with({ fn: 'warnIfDatasetRegistryMissing', span: 'validation' })
+      .warn(message);
   } finally {
     adapters.forEach((adapter, index) => {
       adapter.alwaysOn = previousAlwaysOn[index];

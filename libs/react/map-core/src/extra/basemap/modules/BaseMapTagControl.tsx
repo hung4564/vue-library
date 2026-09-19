@@ -47,10 +47,9 @@ export function BaseMapTagControl({
 
   const onClick = useCallback(
     (baseMap: BaseMapItem) => {
-      logHelper(logger, mapId, 'control', 'BaseMapTagControl').debug(
-        'onClick',
-        baseMap,
-      );
+      logHelper(logger, mapId, 'control', 'BaseMapTagControl')
+        .with({ fn: 'onClick', span: 'control.event' })
+        .debug('onClick', baseMap);
       setCurrent(baseMap);
     },
     [mapId, setCurrent],

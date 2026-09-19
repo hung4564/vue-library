@@ -72,7 +72,9 @@ export async function getSourcesFromMap(
             throw new Error('Missing vector_layers in source: ' + sourceId);
           }
         } catch {
-          logHelper(logger, map.id, 'inspect').warn(
+          logHelper(logger, map.id, 'inspect')
+            .with({ fn: 'getSourcesFromMap', span: 'inspect.warn' })
+            .warn(
             'Unable to retrieve tileJSON from ' +
               url +
               " using style's layers",

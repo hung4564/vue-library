@@ -119,10 +119,9 @@ export function MeasurementControl(props: MeasurementControlProps) {
 
   const clickEvent = useRef(
     new EventClick().setHandler((event: MapMouseEvent) => {
-      logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
-        'onMapClick',
-        event,
-      );
+      logHelper(logger, mapId, 'control', 'MeasurementControl')
+        .with({ fn: 'onMapClick', span: 'control.event' })
+        .debug('onMapClick', event);
       sessionRef.current?.addMapClick(
         event.lngLat.lng ?? 0,
         event.lngLat.lat ?? 0,
@@ -194,10 +193,9 @@ export function MeasurementControl(props: MeasurementControlProps) {
         };
       },
       onClick: async () => {
-        logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
-          'callAction',
-          action,
-        );
+        logHelper(logger, mapId, 'control', 'MeasurementControl')
+          .with({ fn: 'toToolbarButton', span: 'control.event' })
+          .debug('callAction', action);
         action.handle({
           handler: handler as unknown as MeasurementHandleType,
           measurementType: uiRef.current.measurementType,
@@ -374,10 +372,9 @@ export function MeasurementControl(props: MeasurementControlProps) {
       },
     );
     session.attachToMap(map);
-    logHelper(logger, mapId, 'control', 'MeasurementControl').debug(
-      'init',
-      handler,
-    );
+    logHelper(logger, mapId, 'control', 'MeasurementControl')
+      .with({ fn: 'onInit', span: 'control.init' })
+      .debug('init', handler);
   }
 
   function onDestroy() {

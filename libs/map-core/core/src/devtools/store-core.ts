@@ -20,6 +20,8 @@ export type DevtoolLogEntry = BufferingLogEntry;
 export type DevtoolState = {
   isOpen: boolean;
   activeTab: DevtoolTab;
+  /** Global map filter for all viewers (`'all'` = no filter). */
+  filterMapId: string;
   errors: DevtoolErrorRecord[];
   logs: DevtoolLogEntry[];
 };
@@ -27,6 +29,7 @@ export type DevtoolState = {
 let state: DevtoolState = {
   isOpen: false,
   activeTab: 'store',
+  filterMapId: 'all',
   errors: [],
   logs: [],
 };
@@ -62,6 +65,12 @@ export function setDevtoolOpen(open: boolean) {
 
 export function setDevtoolActiveTab(activeTab: DevtoolTab) {
   patchState({ activeTab });
+}
+
+/** Global mapId filter shared by Store / Logs / Errors / Dataset viewers. */
+export function setDevtoolFilterMapId(filterMapId: string) {
+  if (state.filterMapId === filterMapId) return;
+  patchState({ filterMapId });
 }
 
 /** Open the Devtools panel on the Errors tab. */

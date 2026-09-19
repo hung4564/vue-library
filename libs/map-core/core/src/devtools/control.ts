@@ -1,6 +1,7 @@
-/** Stable map control id for `mode="control"` Devtools popup. */
+/** Stable map control id for Map-scoped Devtools (`DraggableItemPopup`). */
 export const DEVTOOLS_CONTROL = {
   id: 'mapDevtools',
 } as const;
 
-export type DevtoolsMode = 'overlay' | 'control';
+/** @deprecated Overlay mode removed — Devtools is Map-scoped control only. */
+export type DevtoolsMode = 'control';

@@ -1,5 +1,6 @@
-<template lang="">
+﻿<template lang="">
   <Map ref="mapRef" @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <GotoControl position="top-right" />
@@ -21,6 +22,7 @@
   </Map>
 </template>
 <script setup lang="ts">
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { MapSimple } from '@hungpvq/map-core';
 import {

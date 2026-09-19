@@ -48,7 +48,7 @@ Hit UI is driven by `resolveIdentifyHitAction` (then the default `identifyResolv
 
 Each resolve first **closes** any open LayerDetail / AttributeTable (and their highlight sources) so a multi-hit table does not stack on top of a previous single-hit detail.
 
-**Highlight (map FX):** after UI resolve, `runHighlight` / `getHighlightResolver(mapId).execute` paints only when exactly **one** feature is hit; multi-hit clears identify highlight (no paint). AttributeTable selection uses the same helper (`source: 'attribute-table'`). Override via `setGlobalHighlightResolver` / `setHighlightResolver`.
+**Highlight (map FX):** after UI resolve, `getHighlightResolver(mapId).execute` paints only when exactly **one** feature is hit; multi-hit clears identify highlight (no paint). AttributeTable selection uses the same helper (`source: 'attribute-table'`). Override via `setGlobalHighlightResolver` / `setHighlightResolver`.
 
 IdentifyControl toolbar **active** follows the result panel open state (not layer-item scoped identify). Layer-item Identify enables click + layer filter without lighting the toolbar.
 

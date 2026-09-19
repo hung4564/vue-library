@@ -27,6 +27,7 @@ export {
   replaceDevtoolErrors,
   replaceDevtoolLogs,
   setDevtoolActiveTab,
+  setDevtoolFilterMapId,
   setDevtoolOpen,
   subscribeDevtoolState,
   toggleDevtoolOpen,

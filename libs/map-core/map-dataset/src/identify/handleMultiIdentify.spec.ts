@@ -6,15 +6,19 @@ const { getMapMock } = vi.hoisted(() => ({
 
 vi.mock('@hungpvq/map-core', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@hungpvq/map-core')>();
+  const stub = {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    with() {
+      return this;
+    },
+  };
   return {
     ...actual,
     getMap: getMapMock,
-    logHelper: () => ({
-      debug: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    }),
+    logHelper: () => stub,
   };
 });
 

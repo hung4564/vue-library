@@ -5,11 +5,17 @@ const mockWarn = vi.hoisted(() => vi.fn());
 vi.mock('@hungpvq/shared-log', () => ({
   loggerFactory: {
     getAdapters: () => [],
-    createLogger: () => ({
-      setNamespace: () => ({
+    createLogger: () => {
+      const logger = {
+        setNamespace: () => logger,
+        with: () => logger,
         warn: mockWarn,
-      }),
-    }),
+        debug: vi.fn(),
+        info: vi.fn(),
+        error: vi.fn(),
+      };
+      return logger;
+    },
   },
 }));
 

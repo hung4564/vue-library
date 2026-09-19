@@ -6,6 +6,8 @@ import type { MapCrsStore } from '@hungpvq/map-core/crs';
 
 export const useMapCrsStore = (mapId: string) =>
   createMapScopedStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS, () => {
-    logHelper(logger, mapId, 'store').debug('init');
+    logHelper(logger, mapId, 'store')
+      .with({ fn: 'useMapCrsStore', span: 'store.init' })
+      .debug('init');
     return createDefaultCrsStore();
   });

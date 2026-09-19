@@ -20,7 +20,9 @@ export type MapDatasetComponentStore = {
 
 export const useMapDatasetComponentStore = (mapId: string) =>
   createMapScopedStore<MapDatasetComponentStore>(mapId, KEY as any, () => {
-    logHelper(logger, mapId, 'store').debug('init');
+    logHelper(logger, mapId, 'store')
+      .with({ fn: 'useMapDatasetComponentStore', span: 'store.init' })
+      .debug('init');
     const components: ComponentItem[] = [];
     const componentIds = ref<string[]>([]);
     return {
@@ -39,18 +41,22 @@ export const useMapDatasetComponent = (mapId: string) => {
   }
   function addComponent(component: Omit<ComponentItem, 'id'>) {
     if (!store) return;
-    logHelper(logger, mapId, 'store-component').debug('addComponent', {
-      component,
-      store,
-    });
+    logHelper(logger, mapId, 'store-component')
+      .with({ fn: 'addComponent', span: 'store.add' })
+      .debug('addComponent', {
+        component,
+        store,
+      });
     return upsertDatasetComponent(store, component);
   }
   function removeComponent(id: string) {
     if (!store) return;
-    logHelper(logger, mapId, 'store-component').debug('removeComponent', {
-      id,
-      store,
-    });
+    logHelper(logger, mapId, 'store-component')
+      .with({ fn: 'removeComponent', span: 'store.remove' })
+      .debug('removeComponent', {
+        id,
+        store,
+      });
     removeDatasetComponent(store, id);
   }
 
