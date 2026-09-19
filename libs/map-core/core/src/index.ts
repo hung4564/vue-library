@@ -151,6 +151,8 @@ export {
   unflattenLocaleMessages,
 } from './types/lang';
 
+export { mapLangLogger } from './types/lang-logger';
+
 export { BUTTON_IN_MOBILE_VALUES } from './utils/control-layout';
 
 export {

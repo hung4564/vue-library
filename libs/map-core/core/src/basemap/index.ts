@@ -17,6 +17,7 @@ export { BasemapService } from './basemap.service';
 export { BasemapError } from './errors';
 export { INIT_BASEMAPS } from './init';
 export { BASEMAP_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 export { BASEMAP_PREFIX, BaseMapLayer } from './model/BaseMapLayer';
 export { MittTypeBaseMapEventKey } from './types';
 

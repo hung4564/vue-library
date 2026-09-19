@@ -65,7 +65,7 @@ import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/hooks/useMapCrsItems';
+import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems';
 import { useEventMap } from '../../event/hook/useEvent';
 import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
@@ -86,7 +86,7 @@ import {
   mdiTableHeadersEye,
 } from '@mdi/js';
 
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-core/measurement';
 import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 import type { MeasurementControlProps } from './MeasurementControl.props';
 

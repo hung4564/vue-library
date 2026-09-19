@@ -15,8 +15,8 @@ import {
   shallowRef,
 } from 'vue';
 import { getMap } from '../../../store/store';
-import { useMapMittStore } from '../../mitt';
-import { logger } from '../logger';
+import { useMapMittStore } from '../../../store/mitt-store';
+import { logger } from '@hungpvq/map-core/event';
 import { useMapEventStore } from '../store';
 
 export function useComponentName() {

@@ -11,7 +11,7 @@ import {
   MittTypeMapLang,
   MittTypeMapLangEventKey,
 } from '@hungpvq/map-core';
-import { useMapMittStore } from '../mitt';
+import { useMapMittStore } from '../../store/mitt-store';
 import { useMapLocale } from './store';
 
 export function useLang(mapId: string) {

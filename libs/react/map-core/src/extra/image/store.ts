@@ -3,12 +3,10 @@ import {
   createDefaultImageStore,
   createMapImageStoreApi,
   type MapImageStore,
+  logger,
 } from '@hungpvq/map-core/image';
 import { createMapScopedStore } from '../../store/store';
 import { useMapStore } from '../../store/store';
-import { loggerFactory } from '@hungpvq/shared-log';
-
-const logger = loggerFactory.createLogger().setNamespace('map:image', 2);
 
 export type { MapImageStore };
 

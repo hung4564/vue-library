@@ -309,13 +309,6 @@
       "order": 5.21
     },
     {
-      "name": "LayerInfoControl",
-      "package": "Map - Dataset",
-      "docs": "/map/dataset/module/LayerInfoControl",
-      "category": "Component",
-      "order": 5.21
-    },
-    {
       "name": "IdentifyControl",
       "package": "Map - Dataset",
       "docs": "/map/dataset/module/IdentifyControl",

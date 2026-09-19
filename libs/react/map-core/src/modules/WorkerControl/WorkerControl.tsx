@@ -3,7 +3,6 @@ import {
   countBusyWorkers,
   filterWorkerSnapshots,
   formatWorkerDuration,
-  formatWorkerLogTime,
   resolveSelectedWorkerId,
   WORKER_CONTROL_LOCALE,
   WorkerMonitor,
@@ -11,7 +10,6 @@ import {
   workerLogsForDisplay,
   workerProgressRatio,
   type WithMapPropType,
-  type WorkerLogEntry,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
@@ -21,14 +19,13 @@ import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
-  memo,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -37,7 +34,7 @@ import { BaseCollapse } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import { MapControlButton } from '../../components/MapControlButton';
+import { WorkerLogList } from './WorkerLogList';
 
 export interface WorkerControlProps extends WithMapPropType {
   show?: boolean;
@@ -55,56 +52,6 @@ function progressText(task: WorkerTaskSnapshot) {
   if (percent == null) return message || '';
   return message ? `${percent}% · ${message}` : `${percent}%`;
 }
-
-function logsSignature(logs: WorkerLogEntry[]) {
-  if (!logs.length) return '0';
-  const first = logs[0];
-  const last = logs[logs.length - 1];
-  return `${logs.length}:${first.id}:${last.id}`;
-}
-
-const LogList = memo(
-  function LogList(props: { logs: WorkerLogEntry[]; compact?: boolean }) {
-    const { logs, compact } = props;
-    const rootRef = useRef<HTMLDivElement>(null);
-    const savedScrollTop = useRef(0);
-
-    // Capture before commit so progress/elapsed parent re-renders don't jump scroll.
-    const el = rootRef.current;
-    if (el) savedScrollTop.current = el.scrollTop;
-
-    useLayoutEffect(() => {
-      const node = rootRef.current;
-      if (node) node.scrollTop = savedScrollTop.current;
-    });
-
-    return (
-      <div
-        ref={rootRef}
-        className={`map-worker-control__log-list${compact ? ' is-compact' : ''}`}
-      >
-        {logs.map((entry) => (
-          <div
-            key={entry.id}
-            className="map-worker-control__log"
-            data-level={entry.level}
-          >
-            <span className="map-worker-control__log-time">
-              {formatWorkerLogTime(entry.at)}
-            </span>
-            <span className="map-worker-control__log-level">{entry.level}</span>
-            <span className="map-worker-control__log-message">
-              {entry.message}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  },
-  (prev, next) =>
-    prev.compact === next.compact &&
-    logsSignature(prev.logs) === logsSignature(next.logs),
-);
 
 export function WorkerControl(props: WorkerControlProps) {
   const merged = { ...defaultMapProps, ...props };
@@ -419,7 +366,7 @@ function WorkerCard(props: {
                   className="map-worker-control__task-logs"
                   header={trans('map.worker-control.field.taskLogs')}
                 >
-                  <LogList
+                  <WorkerLogList
                     logs={workerLogsForDisplay(task.logs ?? [])}
                     compact
                   />
@@ -443,7 +390,7 @@ function WorkerCard(props: {
               className="map-worker-control__task-logs"
               header={trans('map.worker-control.field.taskLogs')}
             >
-              <LogList logs={[]} compact />
+              <WorkerLogList logs={[]} compact />
             </BaseCollapse>
           </div>
         )}
@@ -458,7 +405,7 @@ function WorkerCard(props: {
           className="map-worker-control__logs"
           header={trans('map.worker-control.field.logs')}
         >
-          <LogList logs={logs} />
+          <WorkerLogList logs={logs} />
         </BaseCollapse>
       ) : null}
       {worker.history.length ? (
@@ -486,7 +433,7 @@ function WorkerCard(props: {
               }
             >
               {task.logs?.length ? (
-                <LogList logs={workerLogsForDisplay(task.logs)} compact />
+                <WorkerLogList logs={workerLogsForDisplay(task.logs)} compact />
               ) : null}
             </BaseCollapse>
           ))}

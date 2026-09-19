@@ -6,7 +6,7 @@ import {
 } from '@hungpvq/map-dataset';
 import { useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
-import { useMapDatasetStore } from '../../store/dataset-api';
+import { useMapDatasetStore } from '../../store/dataset-store';
 import type { WithLayerItemActionType } from './types';
 
 /** Shared toggle-show logic for default and custom menu components. */

@@ -39,7 +39,7 @@ Create / validate / defaults live on core **`LayerHelper`** from `@hungpvq/map-d
 | --- | --- |
 | Protocol | `LayerHelper`, `LAYER_TYPES`, parse/upload helpers from `@hungpvq/map-dataset/create-control` |
 | Vue forms | `CreateControl/config/*.vue` leaf SFCs |
-| React forms | `CreateControl/config/CreateConfigForm.tsx` (+ `createControlComponentKey`) |
+| React forms | `CreateControl/config/*.tsx` leaf modules (`geojson-upload`, `xyz-json`, …) |
 
 ## Props
 

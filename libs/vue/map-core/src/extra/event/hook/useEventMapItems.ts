@@ -5,8 +5,8 @@ import {
   MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
 import { onMounted, onUnmounted, shallowRef } from 'vue';
-import { useMapMittStore } from '../../mitt';
-import { logger } from '../logger';
+import { useMapMittStore } from '../../../store/mitt-store';
+import { logger } from '@hungpvq/map-core/event';
 import { useMapEventStore } from '../store';
 
 export const useEventMapItems = (

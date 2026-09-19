@@ -3,6 +3,7 @@
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
 export { MEASUREMENT_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 export { MeasurementService } from './measurement.service';
 export { addCursorCrosshair, removeCursorCrosshair } from './model/cursor';
 export { MeasurementHandle } from './model/handle';

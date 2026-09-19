@@ -5,9 +5,9 @@ import {
   createToolbarStoreApi,
   createToolbarModuleApi,
   type MapToolbarStore,
+  logger,
 } from '@hungpvq/map-core/toolbar';
 import { createMapScopedStore } from '../../store/store';
-import { logger } from './logger';
 
 export type { MapToolbarStore };
 

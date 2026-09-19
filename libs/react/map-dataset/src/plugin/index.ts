@@ -14,7 +14,7 @@ import { AttributeTableGrid } from '../modules/AttributeTable/AttributeTableGrid
 import { AttributeTablePager } from '../modules/AttributeTable/AttributeTablePager';
 import { AttributeTableToolbar } from '../modules/AttributeTable/AttributeTableToolbar';
 import { AttributeTableView } from '../modules/AttributeTable/AttributeTableView';
-import { DatasetDetail } from '../modules/DatasetControl/DatasetControl';
+import { DatasetDetail } from '../modules/DatasetControl/DatasetDetail';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
 import { LayerLegendLinearGradient } from '../modules/Legend/parts/linear-gradient';
 import { LayerLegendSingleColor } from '../modules/Legend/parts/single-color';

@@ -90,7 +90,7 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 | `map:registry:maps` | `getOrCreateStore` | Per-`mapId` registry bags |
 | `map:registry:controls` | `getOrCreateStore` | Control handle registry |
 | `hungpvq.map-theme-mode` (+ optional `:<mapId>`) | `localStorage` (`MAP_THEME_STORAGE_KEY` / `getMapThemeStorageKey(mapId)`) | Theme preference. Default **process-global**; `ThemeControl scope="map"` uses per-map key. |
-| `map:core` | `defineStore` / root bag | Per-`mapId` map store entries (instance, scoped features, cleanups); per-map resolver overrides at `[mapId].resolver` |
+| `map:core` | `getMapCoreRootStore` / `getOrCreateStore` | Per-`mapId` map store entries (instance, scoped features, cleanups); per-map resolver overrides at `[mapId].resolver`. |
 | `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones; `errorCapture` install slot; `errorHandler` singleton; `registries` process defaults (`createMapCoreMetaRegistry`) |
 | `map:debug` | `getOrCreateStore` | Optional `@hungpvq/map-debug`: `dataset` = Dataset Inspector API (`installDatasetDebug`). Console alias: `window.__hungpvqDatasetDebug` |
 

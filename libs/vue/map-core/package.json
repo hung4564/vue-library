@@ -46,7 +46,6 @@
     "@mdi/js": "^7.4.47",
     "maplibre-gl": "^5.4.0",
     "mitt": "^3.0.1",
-    "@hungpvq/shared-store": "^0.3.0",
     "file-saver": "^2.0.5"
   },
   "peerDependenciesMeta": {

@@ -1,6 +1,9 @@
-import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
-import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
+import {
+  INIT_BASEMAPS,
+  type BaseMapItem,
+  logger,
+} from '@hungpvq/map-core/basemap';
 import { mdiLayersOutline } from '@mdi/js';
 import React, { useCallback, useEffect } from 'react';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
@@ -8,7 +11,6 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useBaseMap } from '../hooks/useBaseMap';
-import { logger } from '../logger';
 
 export interface BaseMapTagControlProps extends WithMapPropType {
   baseMaps?: BaseMapItem[];

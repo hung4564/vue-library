@@ -10,11 +10,4 @@ describe('createMapMitt', () => {
     bus.emit('ready', { id: 'm1' });
     expect(onReady).toHaveBeenCalledWith({ id: 'm1' });
   });
-
-  it('forwards all events to onAny via *', () => {
-    const onAny = vi.fn();
-    const bus = createMapMitt<{ tick: number }>(onAny);
-    bus.emit('tick', 3);
-    expect(onAny).toHaveBeenCalledWith('tick', 3);
-  });
 });

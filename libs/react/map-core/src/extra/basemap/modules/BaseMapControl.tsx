@@ -1,8 +1,9 @@
-import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import {
   BASEMAP_CONTROL_LOCALE,
   INIT_BASEMAPS,
+  type BaseMapItem,
+  logger,
 } from '@hungpvq/map-core/basemap';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
@@ -20,7 +21,6 @@ import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useBaseMap } from '../hooks/useBaseMap';
-import { logger } from '../logger';
 
 const SIZE_BASE_MAP = 70;
 

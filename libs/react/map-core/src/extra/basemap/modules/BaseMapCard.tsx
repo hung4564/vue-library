@@ -1,12 +1,12 @@
-import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import { logger } from '@hungpvq/map-core/basemap';
 import React, { useCallback, useEffect } from 'react';
 import { MapImage } from '../../../components/MapImage';
 import { InputSelect } from '../../../field';
 import { useMap } from '../../../hooks/useMap';
 import { useLang } from '../../lang/hook';
 import { useBaseMap } from '../hooks/useBaseMap';
-import { logger } from '../logger';
 
 export interface BaseMapCardProps {
   mapId: string;

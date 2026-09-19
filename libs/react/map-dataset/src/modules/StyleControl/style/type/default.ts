@@ -11,7 +11,9 @@ import { InputArrayIndex } from '../field/InputArrayIndex';
 import { InputArrayXY } from '../field/InputArrayXY';
 import { InputImage } from '../field/InputImage';
 import { InputMultiple } from '../field/InputMultiple';
-import { DivColor, TextAfter, TextFormat } from '../label';
+import { DivColor } from '../label/div-color';
+import { TextAfter } from '../label/text-after';
+import { TextFormat } from '../label/text-format';
 
 export const CONFIG_TABS: Record<string, Partial<Tab>> = buildConfigTabs({
   'array-index': {

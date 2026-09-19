@@ -49,7 +49,6 @@ export default defineConfig({
         '@hungpvq/map-core',
         'mitt',
         '@hungpvq/shared-log',
-        '@hungpvq/shared-store',
         'maplibre-gl',
         '@mdi/js',
         'geojson',

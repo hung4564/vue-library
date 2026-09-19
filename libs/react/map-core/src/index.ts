@@ -249,12 +249,6 @@ export {
   ZoomControl,
 } from './modules/ZoomControl/ZoomControl';
 
-export {
-  MapGlobalStoreProvider,
-  getMapGlobalStore,
-  useMapGlobalStore,
-} from './store/global-store';
-
 export { getMapMittStore, useMapMittStore } from './store/mitt-store';
 
 export {

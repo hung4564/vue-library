@@ -15,11 +15,12 @@ import {
   EventManager,
   type MittTypeMapEvent,
   MittTypeMapEventEventKey,
+  logger,
 } from '@hungpvq/map-core/event';
 import type { MapEventType } from 'maplibre-gl';
 import { getMap } from '../../../store/store';
 import { useMapMittStore } from '../../../store/mitt-store';
-import { logger, useMapEventStore } from '../store';
+import { useMapEventStore } from '../store';
 
 type ReactComponentType = {
   displayName?: string;

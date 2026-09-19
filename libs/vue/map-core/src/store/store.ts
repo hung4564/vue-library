@@ -4,6 +4,7 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  isUsableMapId,
   MAP_PLATFORM_HOST,
   MAP_STORE_KEY,
   MapStoreManager,
@@ -14,7 +15,6 @@ import {
   type MapStore,
 } from '@hungpvq/map-core';
 import { VueMapStoreAdapter } from './vue-adapter';
-export { useMapGlobalStore } from './global-store';
 
 const storeAdapter = new VueMapStoreAdapter();
 const storeManager = new MapStoreManager(storeAdapter);
@@ -78,7 +78,10 @@ export function createMapScopedStore<T>(
   key: MapScopedKey,
   factory: () => T,
   options?: MapScopedStoreOptions,
-) {
+): T {
+  if (!isUsableMapId(mapId)) {
+    throw new Error('mapId is required');
+  }
   const existing = storeManager.peekStore<T>(mapId, key as string);
   if (existing !== undefined) {
     return existing;

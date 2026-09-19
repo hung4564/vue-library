@@ -8,11 +8,9 @@ import { LAYER_DETAIL_LOCALE } from '../extra/detail/locale/locale.en';
 import { LAYER_DETAIL_LOCALE_VI } from '../extra/detail/locale/locale.vi';
 import {
   LAYER_CONTROL_LOCALE,
-  LAYER_INFO_CONTROL_LOCALE,
 } from '../extra/layer-control/locale/locale.en';
 import {
   LAYER_CONTROL_LOCALE_VI,
-  LAYER_INFO_CONTROL_LOCALE_VI,
 } from '../extra/layer-control/locale/locale.vi';
 import { IDENTIFY_CONTROL_LOCALE } from '../identify/locale/locale.en';
 import { IDENTIFY_CONTROL_LOCALE_VI } from '../identify/locale/locale.vi';
@@ -24,7 +22,6 @@ import { MAP_DATASET_LOCALE_VI } from './locale.vi';
 const DATASET_SLICE_PAIRS: [string, Record<string, unknown>, Record<string, unknown>][] = [
   ['DATASET_CONTROL', DATASET_CONTROL_LOCALE, DATASET_CONTROL_LOCALE_VI],
   ['LAYER_CONTROL', LAYER_CONTROL_LOCALE, LAYER_CONTROL_LOCALE_VI],
-  ['LAYER_INFO_CONTROL', LAYER_INFO_CONTROL_LOCALE, LAYER_INFO_CONTROL_LOCALE_VI],
   ['LAYER_DETAIL', LAYER_DETAIL_LOCALE, LAYER_DETAIL_LOCALE_VI],
   ['IDENTIFY_CONTROL', IDENTIFY_CONTROL_LOCALE, IDENTIFY_CONTROL_LOCALE_VI],
   ['ATTRIBUTE_TABLE', ATTRIBUTE_TABLE_LOCALE, ATTRIBUTE_TABLE_LOCALE_VI],

@@ -5,6 +5,7 @@
 export { CrosshairManager } from './CrosshairManager';
 export { exportFile, Format } from './ExportFile';
 export { PRINT_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 export { PrintableAreaManager } from './PrintableAreaManager';
 export {
   createPrintAdvancedSession,

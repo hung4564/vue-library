@@ -2,13 +2,14 @@ import { getOrCreateStore } from '@hungpvq/shared-store';
 import type { MapErrorHandler } from '../services/error-handler.service';
 import { MAP_STORE_KEY } from '../types/constants';
 import { isUsableMapId } from './is-usable-map-id';
+import type { MapRootStore } from './types';
 
 /** Process-wide bag shared across Vue/React and duplicate package copies. */
 export const MAP_CORE_META_STORE_KEY = 'map:core:meta';
 
 /**
  * Shared root bag for per-map entries (`map:core[mapId].basemap`, `.lang`, …).
- * Same id as Vue/React adapters (`defineStore('map:core')`).
+ * Vue/React MapStoreManager and hooks read this via {@link getMapCoreRootStore}.
  */
 export const MAP_CORE_ROOT_STORE_KEY = 'map:core';
 
@@ -43,8 +44,6 @@ export type MapCoreMetaStore = {
   registries: Map<string, MapCoreMetaRegistryBag>;
 };
 
-type MapCoreRootStore = Record<string, Record<string, unknown>>;
-
 export function getMapCoreMetaStore(): MapCoreMetaStore {
   const meta = getOrCreateStore<MapCoreMetaStore>(
     MAP_CORE_META_STORE_KEY,
@@ -73,12 +72,9 @@ export function getMapCoreMetaStore(): MapCoreMetaStore {
   return meta;
 }
 
-/** Shared `map:core` root (same bag as Vue/React MapStoreManager). */
-export function getMapCoreRootStore(): MapCoreRootStore {
-  return getOrCreateStore<MapCoreRootStore>(
-    MAP_CORE_ROOT_STORE_KEY,
-    () => ({}),
-  );
+/** Shared `map:core` root (Vue/React MapStoreManager + adapter global store). */
+export function getMapCoreRootStore(): MapRootStore {
+  return getOrCreateStore<MapRootStore>(MAP_CORE_ROOT_STORE_KEY, () => ({}));
 }
 
 function ensureMapResolverStore(mapId: string): MapResolverStore {

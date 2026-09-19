@@ -96,17 +96,17 @@ Hosts own UI, registry actions, and framework lifecycle only.
 | `.` | Platform shell: store/`getMap`/`subscribeMapReady`, registry, errors, mitt, shared GIS utils, shell locales, host `WorkerMonitor`, thin-host control helpers (`captureHomeView`, `goHome`, navigation/globe/goto/setting/mouse-coordinates/info) |
 | `./style.css` | Shared map CSS |
 | `./worker` | CSS/DOM-free worker helpers |
-| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError` |
-| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs` |
+| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError`, domain `logger` (`map:basemap`) |
+| `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs`, domain `logger` (`map:crs`) |
 | `./devtools` | Devtools store core, `BufferingLogAdapter`, overlay DOM helpers, `installDevtoolsCore` (Experimental) |
-| `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive` |
-| `./image` | Map image load/store helpers |
+| `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive`, domain `logger` (`map:event`) |
+| `./image` | Map image load/store helpers, domain `logger` (`map:image`) |
 | `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
-| `./measurement` | `MeasurementService`, measure modes, format helpers, `resolveMeasurementModeToggle` / `resolveMeasurementToolbarStatus`, `createMeasurementSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload` |
+| `./measurement` | `MeasurementService`, measure modes, format helpers, `resolveMeasurementModeToggle` / `resolveMeasurementToolbarStatus`, `createMeasurementSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `draftCoordinatesToFeature` / `buildMeasurementGeojsonDownload`, domain `logger` (`map:measurement`) |
 | `./menu` | Map context menu builders / actions |
-| `./print` | `PrintService`, export helpers (`exportMapbox*`, `printMapToFile`, `clipCanvasRegion`, `waitMapIdleAndTiles`), `createPrintAdvancedSession` / `DEFAULT_PRINT_ADVANCED_SETTING` |
+| `./print` | `PrintService`, export helpers (`exportMapbox*`, `printMapToFile`, `clipCanvasRegion`, `waitMapIdleAndTiles`), `createPrintAdvancedSession` / `DEFAULT_PRINT_ADVANCED_SETTING`, domain `logger` (`map:print`) |
 | `./theme` | Theme bootstrap / resolve / `MAP_THEME_*`, `MAP_THEME_CONTRAST_CLASS`, `subscribePrefersContrastMore`; optional per-map helpers `resolveMapThemeElement` / `applyMapThemeClassToElement` / `applyMapThemeForMap` (document theme remains default) |
-| `./toolbar` | Toolbar strategies / store APIs, `createLiveToolbarStrategy` |
+| `./toolbar` | Toolbar strategies / store APIs, `createLiveToolbarStrategy`, domain `logger` (`map:toolbar`) |
 
 ### Root (`.`) highlights
 
@@ -127,7 +127,7 @@ Runtime allowlist: `MAP_CORE_STABLE_RUNTIME_EXPORTS` in `public-api.spec.ts` (~8
 | ModuleContainer helpers | `moduleCornerHostSelector` / `moduleDraggableHostSelector` (+ id variants), `buildModuleBindPosition`, `moduleBtnContainerClassName`, `isModuleCornerChromeVisible`, `queryModuleHostElement` (Vue/React `ModuleContainer`) |
 | Worker host | `WorkerMonitor` (+ `abortTask`), `connectWorkerMonitor`, `abortWorkerMonitorTask`, `createWorkerMonitorAbortMessage`, `runMonitoredTask`, `workerHasHistory` / `anyWorkerHasHistory` / `countBusyWorkers`, … (in-worker: `./worker`) |
 | Shell locales | `MAP_ACTION_*`, Home/Goto/Globe/Info/Setting, `WORKER_*`, `REGISTRY_*`, `LANGUAGE_*`, `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI` |
-| Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports) |
+| Lang API | `registerLocale` / `registerLocaleFlat` / `setLanguage` / `loadLocale` / `MAP_BUILTIN_LANGUAGES` / flat helpers (via `createMapLocaleApi` + root exports); domain logger `mapLangLogger` (`map:lang`) |
 | Types | `MapSimple`, `WithMapPropType`, `ControlLayout`, `MapControlHandle`, … |
 
 Domain APIs (**theme, basemap, measurement, …**) are **not** on the root barrel — import from the matching subpath.
@@ -177,7 +177,7 @@ Shared root highlights:
 | Controls | ModuleContainer controls + **control ids** / action types ([registry-controls](./registry-controls.md)); both export `ActionControl`; action UI uses `MapControlButton` (`variant`: `icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`; `size`: `small` \| `medium` \| `large` \| number px — see [css-variables](./css-variables.md#core---mapcontrolbutton--mapbutton)) / `MapCommonButton` / **`MapCopyButton`** (clipboard + icon feedback; see [css-variables](./css-variables.md#core---mapcopybutton)) |
 | Types | First-party: `WithShowProps`; prefer `WithMapPropType` / `MapSimple` from `@hungpvq/map-core` |
 
-Framework idioms (Stable, **not** dual-export parity): Vue `makeShowProps` / `withMapProps`; React `MapContext` / `MapContextProvider` / `useMapContext` / `MapGlobalStoreProvider` / `ReactMapStoreAdapter` / `MapControlButtonGroupContext`. Do not expect these on the other adapter. React also exports imperative `getMapMittStore` / `getMapGlobalStore` (same as `use*` aliases) for non-hook call sites — rules-of-hooks.
+Framework idioms (Stable, **not** dual-export parity): Vue `makeShowProps` / `withMapProps`; React `MapContext` / `MapContextProvider` / `useMapContext` / `ReactMapStoreAdapter` / `MapControlButtonGroupContext`. Do not expect these on the other adapter. React also exports imperative `getMapMittStore` (same as `useMapMittStore`) for non-hook call sites — rules-of-hooks. Root bag: `getMapCoreRootStore` / `MAP_CORE_ROOT_STORE_KEY` on `@hungpvq/map-core`.
 
 Package entries: `.` + `./style.css` + **`./fields`**.
 

@@ -9,7 +9,7 @@ import {
   normalizeEpsgCode,
 } from '@hungpvq/map-core/crs';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
-import { useMapCrsItems } from '../extra/crs/hooks/useMapCrsItems';
+import { useMapCrsItems } from '../extra/crs/useMapCrsItems';
 import { useMap } from '../hooks/useMap';
 
 const model = defineModel<string>({ default: '' });

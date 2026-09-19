@@ -1,7 +1,7 @@
 import type { LogAdapter, LogContext, LogLevel, LogRecord } from './types';
-import { getUUIDv4 } from '@hungpvq/shared';
 import { captureLogCallerSite } from './caller';
 import { LoggerFactory } from './LoggerFactory';
+import { getUUIDv4 } from './uuid';
 
 type LoggerOptions = {
   bound?: LogContext;

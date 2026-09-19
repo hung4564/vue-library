@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useStoreValue } from '@hungpvq/shared-store/react';
-import type { MapStore } from '@hungpvq/map-core';
-import { MAP_CORE_STORE_ID } from '../store/global-store';
-
-type MapRootStore = Record<string, MapStore>;
+import {
+  MAP_CORE_ROOT_STORE_KEY,
+  type MapStore,
+  type MapRootStore,
+} from '@hungpvq/map-core';
 
 /**
  * Hook to access the global state of a map instance.
@@ -12,6 +13,6 @@ type MapRootStore = Record<string, MapStore>;
  * @returns A memoized value containing the map's store state (draw, dataset, basemap, etc.).
  */
 export function useMapState(mapId: string): MapStore | undefined {
-  const [store] = useStoreValue<MapRootStore>(MAP_CORE_STORE_ID, {});
+  const [store] = useStoreValue<MapRootStore>(MAP_CORE_ROOT_STORE_KEY, {});
   return useMemo(() => store?.[mapId], [store, mapId]);
 }

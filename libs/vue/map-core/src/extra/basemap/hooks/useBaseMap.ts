@@ -1,12 +1,13 @@
-import type { BaseMapItem, MittTypeBaseMap } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
 import {
+  type BaseMapItem,
+  MittTypeBaseMap,
   BasemapManager,
   subscribeBasemapMirror,
+  logger,
 } from '@hungpvq/map-core/basemap';
-import { useMapMittStore } from '../../../extra/mitt';
+import { useMapMittStore } from '../../../store/mitt-store';
 import { onUnmounted, ref } from 'vue';
-import { logger } from '../logger';
 import { useMapBaseMapStore } from '../store';
 
 export function useBaseMap(mapId: string) {

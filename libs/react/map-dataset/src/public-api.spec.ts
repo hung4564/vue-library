@@ -33,7 +33,6 @@ export const REACT_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'IdentifyShowFirstControl',
   'LayerControl',
   'LayerDetail',
-  'LayerInfoControl',
   'LayerItemIcon',
   'LayerMenuDefaultHandle',
   'ListGroupItem',

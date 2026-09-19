@@ -18,10 +18,10 @@ export function getMapMittStore<
   T extends Record<EventType, unknown> = Record<EventType, unknown>,
 >(mapId: string): Emitter<T> {
   return createMapScopedStore<Emitter<T>>(mapId, MAP_STORE_KEY.MITT, () => {
-    logHelper(loggerEvent, mapId, 'store').debug('init');
-    return createMapMitt<T>((key, params) => {
-      logHelper(loggerEvent, mapId, 'store').debug(`[${String(key)}]`, params);
-    });
+    logHelper(loggerEvent, mapId, 'store')
+      .with({ fn: 'getMapMittStore', span: 'store.init' })
+      .debug('init');
+    return createMapMitt<T>();
   });
 }
 

@@ -2,9 +2,9 @@ import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
   createDefaultEventStore,
   type MapEventStore,
+  logger,
 } from '@hungpvq/map-core/event';
 import { createMapScopedStore, getStore } from '../../store/store';
-import { logger } from './logger';
 
 export function useMapEventStore(mapId: string): MapEventStore {
   return createMapScopedStore<MapEventStore>(

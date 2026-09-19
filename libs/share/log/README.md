@@ -26,8 +26,6 @@ Console prefix example:
 | `logger.with(ctx, extraNs?)` / `logger.at(fn)` | Bound view (no mutate parent namespaces) |
 | `LogAdapter.log(record: LogRecord)` | Structured record (`header` + `args`) |
 
-**Peer:** `@hungpvq/shared` (for `getUUIDv4` when minting per-line `requestId`).
-
 Optional header fields `flowKind` / `flowDepth` / `parentFn` / `functionId` remain on the type for older buffered Devtools entries; producers do not write them for now.
 
 ## Custom adapters

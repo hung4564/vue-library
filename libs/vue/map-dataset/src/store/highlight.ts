@@ -3,7 +3,7 @@ import {
   bindHighlightPickDatasets,
   type HighlightController,
 } from '@hungpvq/map-dataset/highlight';
-import { useMapDatasetStore } from './dataset-api';
+import { useMapDatasetStore } from './dataset-store';
 
 /**
  * Map-scoped highlight facade over {@link getHighlightController}.

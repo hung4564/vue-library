@@ -36,7 +36,6 @@ export {
   LAYER_CONTROL_FIELD_LOCALE,
   LAYER_CONTROL_LOCALE,
   LAYER_CONTROL_TOGGLE_LOCALE,
-  LAYER_INFO_CONTROL_LOCALE,
 } from './extra/layer-control/locale';
 
 export {

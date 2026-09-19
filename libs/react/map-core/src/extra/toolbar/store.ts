@@ -8,12 +8,10 @@ import {
   createToolbarStoreApi,
   createToolbarModuleApi,
   type MapToolbarStore,
+  logger,
 } from '@hungpvq/map-core/toolbar';
 import { useMemo, useRef } from 'react';
 import { createMapScopedStore } from '../../store/store';
-import { loggerFactory } from '@hungpvq/shared-log';
-
-const logger = loggerFactory.createLogger().setNamespace('map:toolbar', 2);
 
 export type { MapToolbarStore };
 

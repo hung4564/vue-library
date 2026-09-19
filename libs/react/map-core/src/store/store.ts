@@ -15,11 +15,6 @@ import {
   type MapStore,
 } from '@hungpvq/map-core';
 import { ReactMapStoreAdapter } from './react-adapter';
-export {
-  useMapGlobalStore,
-  getMapGlobalStore,
-  MapGlobalStoreProvider,
-} from './global-store';
 
 /**
  * Store adapter instance

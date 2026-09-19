@@ -8,9 +8,8 @@ import type {
   LoggerFunction,
   MapRootStore,
 } from '@hungpvq/map-core';
-import { logHelper } from '@hungpvq/map-core';
+import { logHelper, getMapCoreRootStore } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
-import { getMapGlobalStore } from './global-store';
 import { logger } from './logger';
 import { getMapMittStore } from './mitt-store';
 
@@ -20,10 +19,10 @@ import { getMapMittStore } from './mitt-store';
  */
 export class ReactMapStoreAdapter implements IMapStoreAdapter {
   /**
-   * Get root store instance (React store)
+   * Get root store instance (shared `map:core` bag)
    */
   getRootStore(): MapRootStore {
-    return getMapGlobalStore();
+    return getMapCoreRootStore();
   }
 
   /**

@@ -34,7 +34,7 @@ import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDataset } from '../../store/dataset-api';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
-import { LayerList } from './LayerList';
+import { LayerList } from './part/LayerList';
 
 type LayerControlSlot = ReactNode | ((props: { mapId: string }) => ReactNode);
 

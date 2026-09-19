@@ -21,6 +21,7 @@ export {
   searchCrsCatalog,
 } from './crs-catalog';
 export { CRS_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 export {
   createDefaultCrsStore,
   DEFAULT_CRS_ITEMS,

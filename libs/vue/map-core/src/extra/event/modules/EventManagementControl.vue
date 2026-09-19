@@ -23,7 +23,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang/hook';
-import { useMapMittStore } from '../../mitt';
+import { useMapMittStore } from '../../../store/mitt-store';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';

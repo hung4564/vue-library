@@ -1,13 +1,8 @@
-import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
-import { createDefaultCrsStore } from '@hungpvq/map-core/crs';
+import { MAP_STORE_KEY } from '@hungpvq/map-core';
+import { createDefaultCrsStore, type MapCrsStore } from '@hungpvq/map-core/crs';
 import { createMapScopedStore } from '../../store/store';
-import { logger } from './logger';
-import type { MapCrsStore } from '@hungpvq/map-core/crs';
 
 export const useMapCrsStore = (mapId: string) =>
   createMapScopedStore<MapCrsStore>(mapId, MAP_STORE_KEY.CRS, () => {
-    logHelper(logger, mapId, 'store')
-      .with({ fn: 'useMapCrsStore', span: 'store.init' })
-      .debug('init');
     return createDefaultCrsStore();
   });

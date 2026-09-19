@@ -126,8 +126,6 @@ const menuUi = reactive({ role: 'admin', canUsePen: true });
 <ComponentManagementControl />
 ```
 
-Read-only list: [`LayerInfoControl`](./LayerInfoControl.md).
-
 ## Search behavior
 
 - Search input uses `data-map-layer-search` + `data-map-id` and is focused by `/` shortcut (`bindMapKeyboardShortcuts`) for that map only.

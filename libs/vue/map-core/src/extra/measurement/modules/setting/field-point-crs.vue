@@ -16,7 +16,7 @@ import { useMap } from '../../../../hooks/useMap';
 import {
   useMapCrsDisplayEpsgs,
   useMapCrsItems,
-} from '../../../crs/hooks/useMapCrsItems';
+} from '../../../crs/useMapCrsItems';
 
 const props = withDefaults(
   defineProps<{

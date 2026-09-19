@@ -32,11 +32,11 @@ export {
   useMapCrsCurrent,
   useMapCrsDisplayEpsgs,
   useMapCrsItems,
-} from './extra/crs/hooks/useMapCrsItems';
+} from './extra/crs/useMapCrsItems';
 
-export { default as CrsControl } from './extra/crs/modules/CrsControl/CrsControl.vue';
+export { default as CrsControl } from './extra/crs/modules/CrsControl.vue';
 
-export { default as CrsDisplaySettings } from './extra/crs/modules/CrsDisplaySettings/CrsDisplaySettings.vue';
+export { default as CrsDisplaySettings } from './extra/crs/CrsDisplaySettings.vue';
 
 export {
   useMapCrsStore,
@@ -78,15 +78,13 @@ export {
   useLayerLegend,
 } from './extra/legend/lib/useLayerLegend';
 
-export { default as LegendControl } from './extra/legend/modules/LegendControl/LegendControl.vue';
+export { default as LegendControl } from './extra/legend/modules/LegendControl.vue';
 
 export { default as MeasurementControl } from './extra/measurement/modules/MeasurementControl.vue';
 
 export { default as MeasurementSettingPopup } from './extra/measurement/modules/MeasurementSettingPopup.vue';
 
-export {
-  useMapMittStore,
-} from './extra/mitt';
+export { getMapMittStore, useMapMittStore } from './store/mitt-store';
 
 export { default as PrintAdvancedControl } from './extra/print/modules/PrintAdvancedControl.vue';
 
@@ -113,7 +111,7 @@ export {
   useToolbarControl,
 } from './extra/toolbar/helper';
 
-export { default as ToolbarControl } from './extra/toolbar/modules/ToolbarControl/ToolbarControl.vue';
+export { default as ToolbarControl } from './extra/toolbar/modules/ToolbarControl.vue';
 
 export {
   useMapToolbar,
@@ -179,10 +177,6 @@ export { default as LanguageControl } from './modules/LanguageControl/LanguageCo
 export { default as WorkerControl } from './modules/WorkerControl/WorkerControl.vue';
 
 export { default as ZoomControl } from './modules/ZoomControl/ZoomControl.vue';
-
-export {
-  useMapGlobalStore,
-} from './store/global-store';
 
 export {
   addStore,

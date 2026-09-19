@@ -23,7 +23,7 @@ Framework-agnostic cores:
 
 Vue / React adapters (UI and hooks only — **do not** re-export core):
 
-- **[@hungpvq/vue-map-core](./libs/vue/map-core/)** / **[@hungpvq/react-map-core](./libs/react/map-core/)** — Map container, controls (basemap, measurement, print, legend, …), hooks (`useMapGlobalStore`, …)
+- **[@hungpvq/vue-map-core](./libs/vue/map-core/)** / **[@hungpvq/react-map-core](./libs/react/map-core/)** — Map container, controls (basemap, measurement, print, legend, …), hooks (`useMap`, `useMapState`, …)
 - **[@hungpvq/vue-map-dataset](./libs/vue/map-dataset/)** / **[@hungpvq/react-map-dataset](./libs/react/map-dataset/)** — Dataset UI, hooks, registry plugin
 - **[@hungpvq/vue-map-draw](./libs/vue/map-draw/)** / **[@hungpvq/react-map-draw](./libs/react/map-draw/)** — Draw / edit UI; `InspectControl` is **parity** (shared `InspectController`: style + popup/hover)
 - **[@hungpvq/vue-map-devtools](./libs/vue/map-devtools/)** / **[@hungpvq/react-map-devtools](./libs/react/map-devtools/)** — Debug panel (store, logs, errors)

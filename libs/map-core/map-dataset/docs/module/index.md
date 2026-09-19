@@ -5,7 +5,6 @@ Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `cont
 | Component | Role | Custom events |
 | --- | --- | --- |
 | [LayerControl](./LayerControl.md) | Editable layer list | none (list node: `toggleShow`, `changeOpacity`) |
-| [LayerInfoControl](./LayerInfoControl.md) | Read-only list | none |
 | [IdentifyControl](./IdentifyControl.md) | Click / box identify | none |
 | [IdentifyShowFirstControl](./IdentifyShowFirstControl.md) | Click → first identify menu | none |
 | [DatasetControl](./DatasetControl.md) | Root dataset list | none |

@@ -1,24 +1,70 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import { CREATE_CONTROL_LOCALE, LAYER_TYPES, LayerHelper, loadCreateControlDraft, reportCreateLayerError, saveCreateControlDraft, suggestLayerName, type LayerType } from '@hungpvq/map-dataset/create-control';
-import { defaultMapProps, MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/react-map-core';
-import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useMapDataset } from '../../store/dataset-api';
 import {
-  CreateConfigForm,
-  createControlComponentKey,
-  hasCreateConfigSettings,
-} from './config/CreateConfigForm';
+  CREATE_CONTROL_LOCALE,
+  LAYER_TYPES,
+  LayerHelper,
+  loadCreateControlDraft,
+  reportCreateLayerError,
+  saveCreateControlDraft,
+  suggestLayerName,
+  type LayerType,
+} from '@hungpvq/map-dataset/create-control';
+import {
+  defaultMapProps,
+  MapControlButton,
+  ModuleContainer,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+} from '@hungpvq/react-map-core';
+import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import { useMapDataset } from '../../store/dataset-api';
+import { GeojsonSettings } from './config/geojson-settings';
+import { GeojsonUpload } from './config/geojson-upload';
+import { ConfigNo } from './config/no-config';
+import type { CreateConfigFormProps } from './config/types';
+import { ConfigRasterJson } from './config/xyz-json';
+import { ConfigRasterSettings } from './config/xyz-settings';
 
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;
   onShowChange: (show: boolean) => void;
 }
 
+function dataSourceComponent(
+  type: LayerType,
+): ComponentType<CreateConfigFormProps> {
+  switch (type) {
+    case 'vector':
+      return GeojsonUpload;
+    case 'rasterxyz':
+      return ConfigRasterJson;
+    default:
+      return ConfigNo;
+  }
+}
+
+function settingsComponent(
+  type: LayerType,
+): ComponentType<CreateConfigFormProps> | undefined {
+  switch (type) {
+    case 'vector':
+      return GeojsonSettings;
+    case 'rasterxyz':
+      return ConfigRasterSettings;
+    default:
+      return undefined;
+  }
+}
+
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapCreateControl' });
+  const { mapId, moduleContainerProps } = useMap({
+    ...merged,
+    controlId: 'mapCreateControl',
+  });
   const { trans, registerLocale } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapCreateControl',
@@ -48,7 +94,10 @@ export function CreateControl(props: CreateControlProps) {
   const initialType: LayerType = 'vector';
   const [helper, setHelper] = useState(() => new LayerHelper(initialType));
   const [configKey, setConfigKey] = useState(0);
-  const [form, setForm] = useState<{ type: LayerType; config: Record<string, unknown> }>({
+  const [form, setForm] = useState<{
+    type: LayerType;
+    config: Record<string, unknown>;
+  }>({
     type: initialType,
     config: { name: suggestLayerName(initialType), ...helper.default_value },
   });
@@ -58,7 +107,11 @@ export function CreateControl(props: CreateControlProps) {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const itemsType = useMemo(
-    () => (Object.keys(LAYER_TYPES) as LayerType[]).map((x) => ({ value: x, text: LAYER_TYPES[x] })),
+    () =>
+      (Object.keys(LAYER_TYPES) as LayerType[]).map((x) => ({
+        value: x,
+        text: LAYER_TYPES[x],
+      })),
     [],
   );
 
@@ -119,7 +172,10 @@ export function CreateControl(props: CreateControlProps) {
     setValidationErrors([]);
     setForm({
       type: initialType,
-      config: { name: suggestLayerName(initialType), ...nextHelper.default_value },
+      config: {
+        name: suggestLayerName(initialType),
+        ...nextHelper.default_value,
+      },
     });
   }
 
@@ -151,7 +207,10 @@ export function CreateControl(props: CreateControlProps) {
     });
   }, [form.type, form.config.name, form.config.crs, mapId]);
 
-  const componentKey = createControlComponentKey(form.type);
+  const DataSource = dataSourceComponent(form.type);
+  const Settings = settingsComponent(form.type);
+  const onConfigChange = (patch: Record<string, unknown>) =>
+    setForm({ ...form, config: { ...form.config, ...patch } });
 
   return (
     <ModuleContainer
@@ -185,7 +244,12 @@ export function CreateControl(props: CreateControlProps) {
                   <InputText
                     label={trans('map.layer-control.field.layer-name')}
                     value={String(form.config.name ?? '')}
-                    onChange={(v) => setForm({ ...form, config: { ...form.config, name: v } })}
+                    onChange={(v) =>
+                      setForm({
+                        ...form,
+                        config: { ...form.config, name: v },
+                      })
+                    }
                   />
                 </div>
 
@@ -195,18 +259,14 @@ export function CreateControl(props: CreateControlProps) {
                   </div>
                 </div>
 
-                <CreateConfigForm
+                <DataSource
                   key={`${configKey}-data`}
-                  section="data"
-                  componentKey={componentKey}
                   config={form.config}
                   trans={trans}
-                  onChange={(patch) =>
-                    setForm({ ...form, config: { ...form.config, ...patch } })
-                  }
+                  onChange={onConfigChange}
                 />
 
-                {hasCreateConfigSettings(componentKey) ? (
+                {Settings ? (
                   <>
                     <div className="map-col-12">
                       <div className="create-control-section-label">
@@ -214,15 +274,11 @@ export function CreateControl(props: CreateControlProps) {
                       </div>
                     </div>
 
-                    <CreateConfigForm
+                    <Settings
                       key={`${configKey}-settings`}
-                      section="settings"
-                      componentKey={componentKey}
                       config={form.config}
                       trans={trans}
-                      onChange={(patch) =>
-                        setForm({ ...form, config: { ...form.config, ...patch } })
-                      }
+                      onChange={onConfigChange}
                     />
                   </>
                 ) : null}
@@ -232,21 +288,27 @@ export function CreateControl(props: CreateControlProps) {
                 {validationErrors.length ? (
                   <div className="create-control-validation">
                     {validationErrors.map((key) => (
-                      <div key={key} className="create-control-validation__item">
+                      <div
+                        key={key}
+                        className="create-control-validation__item"
+                      >
                         {trans(`map.layer-control.create.${key}`)}
                       </div>
                     ))}
                   </div>
                 ) : null}
                 {createError ? (
-                  <div className="create-control-sample-error">{createError}</div>
+                  <div className="create-control-sample-error">
+                    {createError}
+                  </div>
                 ) : null}
                 {creating ? (
                   <div className="create-control-actions__status">
                     {trans('map.layer-control.create.creating')}
                   </div>
                 ) : null}
-                <MapControlButton variant="filled"
+                <MapControlButton
+                  variant="filled"
                   className="btn-container"
                   disabled={creating}
                   onClick={() => void onAddLayer()}

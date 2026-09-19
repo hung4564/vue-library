@@ -1,7 +1,7 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { DATASET_CONTROL_LOCALE, traverseTree } from '@hungpvq/map-dataset';
+import { DATASET_CONTROL_LOCALE } from '@hungpvq/map-dataset';
 import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
@@ -9,10 +9,7 @@ import {
   LIST_VIEW_MENU_COMPONENT_KEY,
   LIST_VIEW_MENU_ID,
 } from '@hungpvq/map-dataset/menu';
-import {
-  DraggableItemPopup,
-  DraggableItemSideBar,
-} from '@hungpvq/react-draggable';
+import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -155,76 +152,6 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
             ))}
           </div>
         </DraggableItemSideBar>
-      )}
-    />
-  );
-}
-
-export function DatasetDetail({
-  dataset,
-  onClose,
-  mapId: propsMapId,
-}: {
-  dataset: IDataset;
-  onClose?: () => void;
-  mapId?: string;
-}) {
-  const { mapId, moduleContainerProps } = useMap({
-    mapId: propsMapId,
-    controlId: 'mapDatasetDetail',
-  });
-  const [show, toggleShow] = useShow(true);
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapDatasetDetail',
-    panelKind: 'popup',
-    title: dataset.getName(),
-    show,
-    setShow: (v) => {
-      toggleShow(v);
-      if (!v) onClose?.();
-    },
-    actions: [
-      {
-        type: 'mapDatasetDetail',
-        run: () => toggleShow(),
-      },
-    ],
-  });
-  const items: { level: number; path: number[]; node: IDataset }[] = [];
-  traverseTree(dataset, (node, level, path) => {
-    items.push({ node, level, path });
-  });
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={show}
-          title={dataset.getName()}
-          onUpdateShow={(v) => {
-            toggleShow(!!v);
-            if (!v) onClose?.();
-          }}
-          width={400}
-          height={400}
-          {...bind}
-          {...panelBind}
-        >
-          <ul className="dataset-list">
-            {items.map((item, index) => (
-              <li
-                key={index}
-                className="dataset-list-item"
-                style={{ paddingLeft: `${item.level * 0.5}rem` }}
-              >
-                <span>{item.path.join('.')}</span>
-                <span>({item.node.type})</span>
-                <span>{item.node.getName()}</span>
-              </li>
-            ))}
-          </ul>
-        </DraggableItemPopup>
       )}
     />
   );

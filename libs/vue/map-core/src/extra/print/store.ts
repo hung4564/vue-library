@@ -7,11 +7,9 @@ import {
   type MapPrintStore,
   createDefaultPrintStore,
   createPrintStoreApi,
+  logger,
 } from '@hungpvq/map-core/print';
 import { createMapScopedStore } from '../../store/store';
-import { loggerFactory } from '@hungpvq/shared-log';
-
-const logger = loggerFactory.createLogger().setNamespace('map:print', 2);
 
 export const KEY = MAP_STORE_KEY.PRINT;
 

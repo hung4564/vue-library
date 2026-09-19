@@ -101,7 +101,7 @@ import { useToolbarControl } from '../../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useBaseMap } from '../hooks/useBaseMap';
-import { logger } from '../logger';
+import { logger } from '@hungpvq/map-core/basemap';
 const props = withDefaults(
   defineProps<
     WithMapPropType & {

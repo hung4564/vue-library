@@ -80,11 +80,3 @@ export const LAYER_CONTROL_LOCALE_VI = {
 };
 
 export const CREATE_CONTROL_LOCALE_VI = LAYER_CONTROL_LOCALE_VI;
-
-export const LAYER_INFO_CONTROL_LOCALE_VI = {
-  map: {
-    'layer-info-control': {
-      title: 'Thông tin lớp',
-    },
-  },
-};

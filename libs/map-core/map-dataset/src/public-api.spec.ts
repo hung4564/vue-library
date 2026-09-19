@@ -40,7 +40,6 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'LAYER_CONTROL_TOGGLE_LOCALE',
   'LAYER_DETAIL_FIELD_LOCALE',
   'LAYER_DETAIL_LOCALE',
-  'LAYER_INFO_CONTROL_LOCALE',
   'addDatasetWithChildren',
   'addDatasetWithEvent',
   'addFieldBuilder',

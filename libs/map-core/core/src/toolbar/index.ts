@@ -35,6 +35,7 @@ export {
 export { planToolbarLayout } from './plan';
 
 export { TOOLBAR_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 
 export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
 

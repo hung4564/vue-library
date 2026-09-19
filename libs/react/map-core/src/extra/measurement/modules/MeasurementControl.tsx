@@ -17,6 +17,7 @@ import {
   type MeasurementHandleType,
   type MeasurementModeType,
   type MeasurementUiState,
+  logger,
 } from '@hungpvq/map-core/measurement';
 import {
   mdiIcon,
@@ -47,7 +48,6 @@ import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
-import { logger } from '../logger';
 import { MeasurementSettingPopup } from './MeasurementSettingPopup';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';

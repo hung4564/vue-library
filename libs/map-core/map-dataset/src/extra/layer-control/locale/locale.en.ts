@@ -80,11 +80,3 @@ export const LAYER_CONTROL_LOCALE = {
 };
 
 export const CREATE_CONTROL_LOCALE = LAYER_CONTROL_LOCALE;
-
-export const LAYER_INFO_CONTROL_LOCALE = {
-  map: {
-    'layer-info-control': {
-      title: 'Layer Info Control',
-    },
-  },
-};
