@@ -10,6 +10,8 @@ Orchestration is owned by Experimental **`createIdentifySession`** (`@hungpvq/ma
 
 **Concurrency:** each map click / box query aborts the previous in-flight run (`AbortController`) and bumps a monotonic `requestId` (session `queryGeneration`). The result panel ignores updates with an older `requestId`.
 
+Identify view lists refresh when datasets change via `useMapDataset().datasetVersion` — see [useMapDataset](../helper/useMapDataset.md).
+
 **Touch / coarse pointer:** hover highlight is skipped when `(hover: hover)` is false; box-select supports touch; on coarse pointers, a **long-press** (~500ms) runs the same identify click path. Map clicks use the `click` event only (no duplicate touchstart identify).
 
 ## Props

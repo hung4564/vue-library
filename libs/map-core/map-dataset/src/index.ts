@@ -10,6 +10,13 @@ export { DatasetError } from './errors/index';
 export { MAP_DATASET_STORE_KEY } from './store-key';
 export type { MapDatasetStoreKey } from './store-key';
 
+export {
+  createDefaultMapDatasetStore,
+  notifyMapDatasetStore,
+} from './dataset-store';
+export type { MapDatasetStore } from './dataset-store';
+export { ensureMapDatasetStore } from './register-domain-store';
+
 export { createWithDataHelper } from './extra/data/index';
 
 export { DATASET_CONTROL_LOCALE } from './extra/dataset-control/locale';

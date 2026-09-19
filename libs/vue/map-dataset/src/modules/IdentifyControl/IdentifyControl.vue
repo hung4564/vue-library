@@ -57,7 +57,7 @@ const props = withDefaults(
   { ...defaultMapProps },
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
-const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId.value);
 const hl = useMapHighlight(mapId.value);
 const { trans } = useLang(mapId.value);
 useEnsureDatasetBuiltinLocales(mapId.value);
@@ -143,7 +143,7 @@ function refreshViews() {
     getAllComponentsByType<IIdentifyView>('identify') || []
   ).reverse();
 }
-watch(getDatasetIds(), refreshViews, { deep: true, immediate: true });
+watch(datasetVersion, refreshViews, { immediate: true });
 
 const hasViews = computed(() => views.value.length > 0);
 watch(hasViews, () => {

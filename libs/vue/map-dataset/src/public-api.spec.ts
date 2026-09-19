@@ -39,6 +39,7 @@ export const VUE_MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'ListGroupItem',
   'ListItem',
   'MENU_CONDITION_CONTEXT_KEY',
+  'notifyMapDatasetStore',
   'provideMenuConditionContext',
   'RecursiveList',
   'SetOpacity',

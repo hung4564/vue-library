@@ -62,7 +62,7 @@ provideMenuConditionContext(() => ({
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans } = useLang(mapId.value);
 const formatCoordinate = createMapDisplayCoordinateFormatter();
-const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId.value);
 const show = ref(false);
 const loading = ref(false);
 const errorMessage = ref<string | null>(null);
@@ -97,7 +97,7 @@ const hasSelectedPoint = computed(
 );
 
 const titleLayer = computed(() => {
-  void getDatasetIds().value;
+  void datasetVersion.value;
   if (selectedLayerId.value === IDENTIFY_ALL_LAYERS_VALUE) return undefined;
   const identifies =
     getAllComponentsByType<IIdentifyView>('identify') || [];

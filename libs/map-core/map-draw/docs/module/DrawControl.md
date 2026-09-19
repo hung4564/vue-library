@@ -26,7 +26,7 @@ Prefer starting a session with `useMapDraw(mapId).start(config)` so CRUD and `dr
 ## Lifecycle
 
 - On unmount (Vue `onBeforeUnmount` / React effect cleanup), `DrawControl` calls `close()`: removes Mapbox Draw listeners/control and hides the toolbar.
-- Domain store cleanup on `removeMap` ends an open draw session (`config` cleared + `MAP_DRAW_EVENT.END`) via `getStore` — do not call `useMapDrawStore` from inside the cleanup callback (circular inference).
+- Domain store cleanup on `removeMap` ends an open draw session (`config` cleared + `MAP_DRAW_EVENT.END`) via `ensureMapDrawStore` factory cleanup — do not call `useMapDrawStore` from inside a custom cleanup callback (circular inference).
 - Shared draw modes / styles / create-mode effects live in `@hungpvq/map-draw` (`getDrawCreateModeEffects`, `getDrawStyles`, `isDraftOption`).
 
 ### Thin host / `createDrawSession`

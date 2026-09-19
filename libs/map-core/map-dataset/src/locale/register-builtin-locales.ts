@@ -6,7 +6,7 @@ import {
 } from '@hungpvq/map-core';
 import { MAP_DATASET_LOCALE_EN } from './locale.en';
 
-export type RegisterLocaleFn = (
+type RegisterLocaleFn = (
   code: MapLanguageCode,
   tree: MapLangLocale,
 ) => unknown;
@@ -28,9 +28,4 @@ export function registerMapDatasetBuiltinLocales(
   registerMapStoreCleanup(mapId, CLEANUP_KEY, () => {
     seededMapIds.delete(mapId);
   });
-}
-
-/** @internal test helper */
-export function resetMapDatasetBuiltinLocaleSeedForTests(): void {
-  seededMapIds.clear();
 }

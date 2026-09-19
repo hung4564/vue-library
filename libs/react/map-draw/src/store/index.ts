@@ -1,7 +1,5 @@
-﻿import { logHelper } from '@hungpvq/map-core';
-import {
-  createDefaultMapDrawStore,
-  logger,
+﻿import {
+  ensureMapDrawStore,
   MAP_DRAW_EVENT,
   runDrawCommit,
   runDrawDiscard,
@@ -13,46 +11,12 @@ import {
   type MapDrawOption,
   type MapDrawStore,
 } from '@hungpvq/map-draw';
-import {
-  createMapScopedStore,
-  getMapMittStore,
-  getStore,
-} from '@hungpvq/react-map-core';
+import { getMapMittStore } from '@hungpvq/react-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
 import { useEffect, useRef } from 'react';
 
-const KEY = 'draw' as const;
-
-function endDrawSession(mapId: string, store: MapDrawStore) {
-  if (!store.config) return;
-  store.config = undefined;
-  store.state.featuresAdded = {};
-  store.state.featuresUpdated = {};
-  store.state.featuresDeleted = {};
-  logHelper(logger, mapId, 'store')
-    .with({ fn: 'endDrawSession', span: 'store.clear' })
-    .debug('end on removeMap');
-  getMapMittStore<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
-}
-
 export function useMapDrawStore(mapId: string): MapDrawStore {
-  return createMapScopedStore<MapDrawStore>(
-    mapId,
-    KEY as string & object,
-    () => {
-      logHelper(logger, mapId, 'store')
-        .with({ fn: 'useMapDrawStore', span: 'store.init' })
-        .debug('Created scoped map store for mapId.');
-      return createDefaultMapDrawStore();
-    },
-    {
-      cleanup: (): void => {
-        const store = getStore<MapDrawStore>(mapId, KEY);
-        if (!store) return;
-        endDrawSession(mapId, store);
-      },
-    },
-  );
+  return ensureMapDrawStore(mapId);
 }
 
 /** Non-hook alias for resolving the store outside React render (e.g. start()). */

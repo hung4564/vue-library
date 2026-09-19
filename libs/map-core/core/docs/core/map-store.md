@@ -40,45 +40,49 @@ Platform accessors are stored as **UniversalRegistry global methods** under rese
 
 ## Scoped stores
 
-Use documented `MAP_STORE_KEY` values for feature state keyed by `mapId`:
+**Source of truth:** per-`mapId` bags live under process key `map:core` (`getMapCoreRootStore`). Domain protocol state is created via **`registerMapDomainStoreFactory` + `ensureMap*Store`** (lazy on first use). Adapters must **not** `addStore` / invent a second factory for keys that already have a domain factory.
 
-| Key | Value | Typical use |
-|-----|-------|-------------|
-| `MITT` | `mitt` | Event bus |
-| `EVENT` | `event` | Map event management |
-| `IMAGE` | `image` | Map images |
-| `TOOLBAR` | `toolbar` | Toolbar modules |
-| `LANG` | `lang` | Locale catalogs + active language (`registerLocale` / `setLanguage`) |
-| `CRS` | `crs` | CRS store |
-| `PRINT` | `print` | Print options |
-| `REGISTRY` | `registry` | Control registry scope |
-| `BASEMAP` | `basemap` | Basemap selection |
-| `RESOLVER` | `resolver` | Per-map FallbackResolver overrides (`identify-resolver`, `highlight-resolver`, …); process defaults live on `map:core:meta.registries` |
+Use documented `MAP_STORE_KEY` values for **map-core** feature state:
 
-Adapter domains may also use **string** scoped keys outside `MAP_STORE_KEY`:
+| Key | Value | Access |
+|-----|-------|--------|
+| `MITT` | `mitt` | `ensureMapMitt` |
+| `EVENT` | `event` | `ensureMapEventStore` |
+| `IMAGE` | `image` | `ensureMapImageStore` |
+| `TOOLBAR` | `toolbar` | `ensureMapToolbarStore` |
+| `LANG` | `lang` | `ensureMapLangStore` / `ensureMapLocaleApi` |
+| `CRS` | `crs` | `ensureMapCrsStore` |
+| `PRINT` | `print` | `ensureMapPrintStore` |
+| `REGISTRY` | `registry` | (legacy key; prefer UniversalRegistry bags) |
+| `BASEMAP` | `basemap` | `ensureMapBaseMapStore` |
+| `RESOLVER` | `resolver` | per-map overrides via `createMapCoreMetaRegistry` |
 
-| Key | Owner | Constant |
-|-----|-------|----------|
-| `'dataset'` | vue/react `map-dataset` store bag | `MAP_DATASET_STORE_KEY` from `@hungpvq/map-dataset` |
-| `'draw'` | vue/react `map-draw` session config | (adapter-local; prefer a named constant when touching) |
+Domain packages own additional keys on the **same** `map:core[mapId]` bag:
 
-Prefer `MAP_STORE_KEY` when adding new **core-owned** stores; domain keys live in the owning package. Changing a documented store key **string value** is a SemVer **major**.
+| Key | Owner | Constant / access |
+|-----|-------|-------------------|
+| `'dataset'` | `@hungpvq/map-dataset` | `MAP_DATASET_STORE_KEY` / `ensureMapDatasetStore` |
+| `'draw'` | `@hungpvq/map-draw` | `MAP_DRAW_STORE_KEY` / `ensureMapDrawStore` |
+
+Dataset bag (`MapDatasetStore`) is a **plain** object (`datasets`, `datasetIds: { value }`, `allLayerShow`, `version`, `listeners`). Do **not** put Vue/React refs on it. After mutations call `notifyMapDatasetStore(store)`; Vue/React `useMapDataset` exposes `datasetVersion` for UI — see [useMapDataset](/map/dataset/helper/useMapDataset).
 
 ```ts
-import { MAP_STORE_KEY } from '@hungpvq/map-core';
-import { createMapScopedStore, getStore } from '@hungpvq/vue-map-core';
-// or from '@hungpvq/react-map-core'
+import { ensureMapCrsStore } from '@hungpvq/map-core/crs';
+import { ensureMapDatasetStore } from '@hungpvq/map-dataset';
+import { ensureMapDrawStore } from '@hungpvq/map-draw';
 
-createMapScopedStore(mapId, MAP_STORE_KEY.CRS, () => ({ /* … */ }));
-const crs = getStore(mapId, MAP_STORE_KEY.CRS);
+const crs = ensureMapCrsStore(mapId);
+const datasets = ensureMapDatasetStore(mapId);
+const draw = ensureMapDrawStore(mapId);
 ```
 
-**Cleanup callbacks** passed to `createMapScopedStore(..., { cleanup })` must resolve the store with `getStore(mapId, key)` (or an already-captured reference). Do **not** call the same `useMap*Store(mapId)` factory from inside `cleanup` — that creates a circular TypeScript inference (`TS7023`) and can re-enter `addStore` during teardown.
+Vue/React adapters expose thin hooks (`useMapBaseMapStore`, `useMapDrawStore`, …) that call `ensure*`. Prefer those or the core `ensure*` APIs — not `createMapScopedStore` for protocol keys.
 
-Domain packages (dataset, draw, event, highlight, …) should also register teardown with `registerMapStoreCleanup(mapId, key, fn)` when their resources are not owned by a scoped-store `cleanup` option.
+`createMapScopedStore` (adapters) remains for **UI-only** bags (e.g. dataset component portal state) and as a bridge: if a domain factory is registered for the key, it delegates to `ensureMapDomainStore`.
 
-Changing a `MAP_STORE_KEY.*` **string value** is a SemVer **major**.
+**Cleanup:** domain factories may supply `cleanup`; otherwise use `registerMapStoreCleanup(mapId, key, fn)`. Do **not** call `useMap*Store(mapId)` from inside cleanup (circular inference / re-entrancy). Resolve with `getStore` / an already-captured reference, or rely on factory cleanup.
 
+Changing a documented store key **string value** is a SemVer **major**.
 ## Process-wide singletons
 
 These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless noted. Duplicate package copies and Vue/React adapters must share them — do **not** invent parallel bags or class-static `Map`s.

@@ -12,6 +12,7 @@ import { onUnmounted } from 'vue';
 import { useMapDataset } from '../store/dataset-api';
 import { useMapDatasetComponent } from '../store/component';
 import { useMapHighlight } from '../store/highlight';
+import { notifyMapDatasetStore } from '@hungpvq/map-dataset';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
@@ -33,7 +34,7 @@ const MENU_HANDLER_KEYS = [
 
 function refreshList() {
   const store = getStoreDataset();
-  if (store) store.datasetIds.value = [...store.datasetIds.value];
+  if (store) notifyMapDatasetStore(store);
 }
 
 function runAddToGroup({ layer }: MenuItemProps) {

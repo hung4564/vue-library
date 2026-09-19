@@ -1,95 +1,31 @@
-﻿import { getMap, isUsableMapId, logHelper } from '@hungpvq/map-core';
-import type { IDataset } from '@hungpvq/map-dataset';
+﻿import { isUsableMapId } from '@hungpvq/map-core';
 import {
-  DatasetService,
-  logger,
-  MAP_DATASET_STORE_KEY,
+  createDefaultMapDatasetStore,
+  ensureMapDatasetStore,
+  notifyMapDatasetStore,
+  type MapDatasetStore,
 } from '@hungpvq/map-dataset';
-import { createMapScopedStore, getStore } from '@hungpvq/react-map-core';
 
-export type MapLayerStore = {
-  datasets: Record<string, IDataset>;
-  datasetIds: { value: string[] };
-  version: number;
-  listeners: Set<() => void>;
-  allLayerShow: boolean;
-};
+/** @deprecated Prefer {@link MapDatasetStore} from `@hungpvq/map-dataset`. */
+export type MapLayerStore = MapDatasetStore;
 
-export function notify(store: MapLayerStore) {
-  store.version += 1;
-  store.listeners.forEach((listener) => listener());
+export function notify(store: MapDatasetStore) {
+  notifyMapDatasetStore(store);
 }
 
-/** Call after DatasetService mutates the store so React subscribers refresh. */
-export function notifyMapDatasetStore(store: MapLayerStore) {
-  notify(store);
-}
+export { notifyMapDatasetStore };
 
-async function clearDatasetsOnRemoveMap(
-  mapId: string,
-  store: MapLayerStore,
-): Promise<void> {
-  const ids = [...store.datasetIds.value];
-  if (!ids.length) return;
-  const map = getMap(mapId);
-  logHelper(logger, mapId, 'store')
-    .with({ fn: 'clearDatasetsOnRemoveMap', span: 'store.clear' })
-    .debug('clear datasets on removeMap', {
-    count: ids.length,
-  });
-  for (const id of ids) {
-    const layer = store.datasets[id];
-    if (!layer) continue;
-    if (map) {
-      await DatasetService.removeDataset(store, map, layer);
-    } else {
-      delete store.datasets[id];
-      store.datasetIds.value = store.datasetIds.value.filter((x) => x !== id);
-    }
-  }
-  store.listeners.clear();
-}
+const EMPTY_MAP_LAYER_STORE: MapDatasetStore = createDefaultMapDatasetStore();
 
 /** Imperative store accessor (safe outside React render). */
-export function getMapDatasetStore(mapId: string): MapLayerStore {
+export function getMapDatasetStore(mapId: string): MapDatasetStore {
   if (!isUsableMapId(mapId)) {
     throw new Error('mapId is required');
   }
-  return createMapScopedStore<MapLayerStore>(
-    mapId,
-    MAP_DATASET_STORE_KEY as string & object,
-    () => {
-      logHelper(logger, mapId, 'store')
-        .with({ fn: 'getMapDatasetStore', span: 'store.init' })
-        .debug('Created scoped map store for mapId.');
-      return {
-        datasets: {},
-        datasetIds: { value: [] },
-        version: 0,
-        listeners: new Set(),
-        allLayerShow: true,
-      };
-    },
-    {
-      cleanup: (): void | Promise<void> => {
-        const store = getStore<MapLayerStore>(mapId, MAP_DATASET_STORE_KEY);
-        if (!store) return;
-        return clearDatasetsOnRemoveMap(mapId, store);
-      },
-    },
-  );
+  return ensureMapDatasetStore(mapId);
 }
 
-/** Inert stand-in when mapId is not set yet (matches Vue: defer store until setMapId). */
-const EMPTY_MAP_LAYER_STORE: MapLayerStore = {
-  datasets: {},
-  datasetIds: { value: [] },
-  version: 0,
-  listeners: new Set(),
-  allLayerShow: true,
-};
-
-export function useMapDatasetStore(mapId: string): MapLayerStore {
+export function useMapDatasetStore(mapId: string): MapDatasetStore {
   if (!isUsableMapId(mapId)) return EMPTY_MAP_LAYER_STORE;
   return getMapDatasetStore(mapId);
 }

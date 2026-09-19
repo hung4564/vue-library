@@ -4,6 +4,8 @@ Sidebar of root datasets: open detail, remove a dataset.
 
 Does **not** emit Vue/React events. Detail UI is opened through `ComponentManagementControl` (`dataset-detail`).
 
+Root list rows refresh via `useMapDataset().datasetVersion` — see [useMapDataset](../helper/useMapDataset.md).
+
 ## Props
 
 <!--@include: ../../core/module/props.md-->

@@ -141,7 +141,7 @@ Toolbar helpers on `@hungpvq/map-core/toolbar`: `mdiIcon`, `mdiButtonState`, `co
 
 | Entry | Stable surface (highlights) |
 |-------|-----------------------------|
-| `.` | `DatasetService`, `MAP_DATASET_STORE_KEY` (scoped store bag key for adapters), tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, layer-list types (`LayerListItem` / `LayerListTreeNode` / `LayerListGroupTree` / `ListViewGroupRef` / `IListViewUI` / `IGroupListViewUI`), `getLayerControlTitleMenuState` / `registerAddGeojsonHereForMap`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `warnIfDatasetRegistryMissing` / `resetDatasetRegistryWarnFlag`, `IDataset` (+ shared protocol types). Experimental: `upsertDatasetComponent` / `removeDatasetComponent`, `logger` / `loggerIdentify` / `loggerHighlight` |
+| `.` | `DatasetService`, `MAP_DATASET_STORE_KEY` / `ensureMapDatasetStore` / `createDefaultMapDatasetStore` / `notifyMapDatasetStore` (domain bag on `map:core[mapId]`), tree/`createRootDataset`/`createGroupDataset`, `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` / `createDefaultGroup` / `isGroupNode`, layer-list types (`LayerListItem` / `LayerListTreeNode` / `LayerListGroupTree` / `ListViewGroupRef` / `IListViewUI` / `IGroupListViewUI`), `getLayerControlTitleMenuState` / `registerAddGeojsonHereForMap`, generic parts, layer/dataset locales, `createDataManagement` / `isDataManagementView`, `warnIfDatasetRegistryMissing` / `resetDatasetRegistryWarnFlag`, `IDataset` (+ shared protocol types). Experimental: `upsertDatasetComponent` / `removeDatasetComponent`, `logger` / `loggerIdentify` / `loggerHighlight` |
 | `./highlight` | `createHighlightPart`, `getHighlightController` / `destroyHighlightController` / `bindHighlightPickDatasets`, cascade defaults (`DEFAULT_HIGHLIGHT_*`); types `HighlightPartOptions`, `HighlightController`, `IHighlightPart`, … (cascade/query/resolve + paint-layer helpers are package-internal) |
 | `./attribute-table` | `ATTRIBUTE_TABLE_*`, `createAttributeTableController` / stores (+ optional `invalidate`), `createDatasetPartAttributeTable` (`columns` / `ui`), `createMenuItemAttributeTable`, column/sort helpers, `resolveAttributeTable*Option`, `AttributeTableProps` / view / toolbar / pager / grid props |
 | `./geojson` | `createGeoJsonDataset`, `createGeojsonHereDataset`, geojson source/parse/worker (`configureGisWorker`, `resolveGisWorkerUrl`, `terminateGeojsonWorker`, …), `GEOJSON_STYLE_AUTO` |
@@ -216,18 +216,18 @@ Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHand
 | Area | Stable surface |
 |------|----------------|
 | Bootstrap | `installMapApp`, `createMapAppPlugin` (Vue), `createDatasetRegistryPlugin()` |
-| Hooks | `useMapDataset`, `useMapHighlight` |
+| Hooks | `useMapDataset` (incl. `datasetVersion`), `useMapHighlight` |
 | UI | `LayerControl`, `IdentifyControl`, `IdentifyResultControl`, `IdentifyShowFirstControl`, `AttributeTable` (+ `AttributeTableView` / toolbar / grid / pager), `StyleControl`, `CreateControl`, `ComponentManagementControl`, `DatasetDetail`, `LayerMenuDefaultHandle`, … |
 | Core boundary | Builders/services/types from `@hungpvq/map-dataset` (including `createLegend` / `createMultiLegend` from `@hungpvq/map-dataset/menu`) |
 
-Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`; React `MenuConditionProvider`. React also has imperative `getMapDatasetStore` / `notifyMapDatasetStore`.
+Menu condition: Vue `provideMenuConditionContext` / `MENU_CONDITION_CONTEXT_KEY`; React `MenuConditionProvider`. Imperative bag access: `getMapDatasetStore` / `notifyMapDatasetStore` (adapters + `@hungpvq/map-dataset`). UI list refresh: depend on `useMapDataset().datasetVersion` — see [useMapDataset](/map/dataset/helper/useMapDataset).
 
 ## `@hungpvq/map-draw`
 
 | Area | Stable surface |
 |------|----------------|
 | Service | `DrawService` |
-| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MapDrawOption`, `isDraftOption` |
+| Protocol | `DrawingType`, `DrawingTypeName`, `MAP_DRAW_EVENT`, `MAP_DRAW_STORE_KEY`, `MapDrawOption`, `isDraftOption`, `ensureMapDrawStore` / `createDefaultMapDrawStore` |
 | Engine mount | `MapDraw`, `StaticMode`, `DRAW_MODES`, `getDrawStyles` |
 | Styles / query / ids | `getFeatureByMap`, `getFirstFeatureByMap`, `getFeatureId`, `sameFeature` |
 | Locales | `DRAW_CONTROL_LOCALE`, `INSPECT_CONTROL_LOCALE` |

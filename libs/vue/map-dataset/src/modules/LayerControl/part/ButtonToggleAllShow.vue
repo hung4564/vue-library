@@ -10,15 +10,17 @@
   />
 </template>
 <script setup lang="ts">
-
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import { applyGlobalLayerVisibility } from '@hungpvq/map-dataset';
+import {
+  applyGlobalLayerVisibility,
+  notifyMapDatasetStore,
+} from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { computed, watch } from 'vue';
 import ToggleShowButton from '../../../extra/component/toggle-show-button.vue';
-import { useMapDatasetStore } from '../../../store/dataset-store';
+import { useMapDataset } from '../../../store/dataset-api';
 
 defineOptions({ inheritAttrs: false });
 
@@ -28,8 +30,12 @@ const props = defineProps<{
 }>();
 const { callMap, mapId } = useMap();
 const { trans } = useLang(mapId.value);
-const store = useMapDatasetStore(mapId.value);
-const allLayerShow = store.allLayerShow;
+const { datasetVersion, getStoreDataset } = useMapDataset(mapId.value);
+
+const allLayerShow = computed(() => {
+  void datasetVersion.value;
+  return getStoreDataset()?.allLayerShow !== false;
+});
 
 const titleAll = computed(() =>
   trans.value(
@@ -40,7 +46,10 @@ const titleAll = computed(() =>
 );
 
 function onToggleShow(value: boolean) {
-  allLayerShow.value = value;
+  const store = getStoreDataset();
+  if (!store) return;
+  store.allLayerShow = value;
+  notifyMapDatasetStore(store);
   callMap((map: MapSimple) => {
     applyGlobalLayerVisibility(props.items, map, value);
   });
@@ -53,11 +62,10 @@ function onClick() {
 watch(
   () => props.items,
   (items) => {
-    if (!allLayerShow.value) {
-      callMap((map: MapSimple) => {
-        applyGlobalLayerVisibility(items, map, false);
-      });
-    }
+    if (allLayerShow.value) return;
+    callMap((map: MapSimple) => {
+      applyGlobalLayerVisibility(items, map, false);
+    });
   },
 );
 </script>

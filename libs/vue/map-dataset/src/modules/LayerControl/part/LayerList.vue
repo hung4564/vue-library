@@ -16,7 +16,6 @@ import {
 import {
   computed,
   nextTick,
-  onMounted,
   onUnmounted,
   ref,
   VNode,
@@ -73,15 +72,12 @@ const path = {
 };
 const { callMap, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
-const { getAllComponentsByType, getDatasetIds, removeComponent } =
+const { getAllComponentsByType, removeComponent, datasetVersion } =
   useMapDataset(mapId.value);
 const views = ref<Array<LayerListItem>>([]);
 const layerSearch = ref('');
 const debouncedSearch = ref('');
 let searchTimer: ReturnType<typeof setTimeout> | undefined;
-const datasetIds = computed(() => {
-  return getDatasetIds().value;
-});
 const listDisabledDrag = computed(
   () => props.disabledDrag || Boolean(debouncedSearch.value.trim()),
 );
@@ -91,22 +87,13 @@ function getFilteredViews() {
   return views.value.filter((view) => layerMatchesSearch(view, q));
 }
 const filteredViews = computed(() => getFilteredViews());
-watch(
-  datasetIds,
-  () => {
-    updateList();
-  },
-  { deep: true },
-);
+watch(datasetVersion, () => updateList(), { immediate: true });
 watch(layerSearch, (value) => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     debouncedSearch.value = value;
     nextTick(() => updateTree());
   }, 150);
-});
-onMounted(() => {
-  updateList();
 });
 onUnmounted(() => {
   if (searchTimer) clearTimeout(searchTimer);

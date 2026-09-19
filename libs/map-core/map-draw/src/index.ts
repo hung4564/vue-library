@@ -48,6 +48,10 @@ export { MAP_DRAW_LOCALE_EN } from './locale/locale.en';
 export { MAP_DRAW_LOCALE_VI } from './locale/locale.vi';
 export { registerMapDrawBuiltinLocales } from './locale/register-builtin-locales';
 
+export { MAP_DRAW_STORE_KEY } from './store-key';
+export type { MapDrawStoreKey } from './store-key';
+export { ensureMapDrawStore } from './register-domain-store';
+
 export {
   DRAW_MODES,
   MapDraw,

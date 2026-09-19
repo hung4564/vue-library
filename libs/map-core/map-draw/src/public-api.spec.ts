@@ -29,6 +29,8 @@ export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [
   'isDraftOption',
   'isInspectStyle',
   'MAP_DRAW_EVENT',
+  'MAP_DRAW_STORE_KEY',
+  'ensureMapDrawStore',
   'MapDraw',
   'markInspectStyle',
   'renderPopup',

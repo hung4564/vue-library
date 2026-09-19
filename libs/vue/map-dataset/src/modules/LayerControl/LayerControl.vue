@@ -127,17 +127,15 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 });
 watch(show, () => control.sync());
 
-const { addDataset, getDatasets, getDatasetIds } = useMapDataset(mapId.value);
+const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId.value);
 onUnmounted(
   registerAddGeojsonHereForMap(mapId.value, (dataset) => {
     void addDataset(dataset);
   }),
 );
 
-const datasetIds = computed(() => getDatasetIds().value);
-
 const titleMenuState = computed(() => {
-  void datasetIds.value;
+  void datasetVersion.value;
   const roots = getDatasets().filter(Boolean) as IDataset[];
   return getLayerControlTitleMenuState(roots);
 });

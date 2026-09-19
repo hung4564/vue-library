@@ -94,6 +94,11 @@ export {
 
 export { useMapDataset } from './store/dataset-api';
 
-export { getMapDatasetStore, useMapDatasetStore } from './store/dataset-store';
+export {
+  getMapDatasetStore,
+  notifyMapDatasetStore,
+  useMapDatasetStore,
+} from './store/dataset-store';
+export type { MapLayerStore } from './store/dataset-store';
 
 export { useMapHighlight } from './store/highlight';

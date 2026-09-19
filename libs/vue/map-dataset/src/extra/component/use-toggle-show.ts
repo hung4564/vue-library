@@ -26,7 +26,7 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
         item: props.data,
         map,
         currentShow: showValue.value,
-        applyToMap: store.allLayerShow.value,
+        applyToMap: store.allLayerShow !== false,
         disabled: props.disabled,
         onShowChange: (show) => {
           showValue.value = show;

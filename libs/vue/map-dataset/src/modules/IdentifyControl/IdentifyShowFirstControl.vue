@@ -25,7 +25,7 @@ const props = withDefaults(
   },
 );
 const { mapId, callMap } = useMap(props);
-const { getAllComponentsByType, getDatasetIds } = useMapDataset(mapId.value);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId.value);
 const views = ref<Array<IIdentifyView & IDataset>>([]);
 const loading = ref(false);
 
@@ -37,7 +37,7 @@ function refreshViews() {
     getAllComponentsByType<IIdentifyView & IDataset>('identify') || [];
 }
 
-watch(getDatasetIds(), refreshViews, { deep: true, immediate: true });
+watch(datasetVersion, refreshViews, { immediate: true });
 
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
   mapId.value,

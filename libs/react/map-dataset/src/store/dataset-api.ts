@@ -8,6 +8,8 @@ import {
   useMapDatasetStore,
 } from './dataset-store';
 
+const EMPTY_DATASET_IDS = { value: [] as string[] };
+
 export function useMapDataset(initialMapId?: string) {
   const mapIdRef = useRef(initialMapId ?? '');
   const [mapId, setMapIdState] = useState(initialMapId ?? '');
@@ -80,7 +82,7 @@ export function useMapDataset(initialMapId?: string) {
 
   const getDatasetIds = useCallback(() => {
     const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return { value: [] as string[] };
+    if (!isUsableMapId(id)) return EMPTY_DATASET_IDS;
     return getMapDatasetStore(id).datasetIds;
   }, []);
 

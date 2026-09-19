@@ -74,10 +74,6 @@ export function useLang(mapId: string) {
     [api],
   );
   const whenLocaleIdle = useCallback(() => api.whenLocaleIdle(), [api]);
-  const flushLocaleRegistrations = useCallback(
-    () => api.flushLocaleRegistrations(),
-    [api],
-  );
 
   const languages = useMemo(() => {
     void tick;
@@ -98,6 +94,5 @@ export function useLang(mapId: string) {
     setTranslate,
     loadLocale,
     whenLocaleIdle,
-    flushLocaleRegistrations,
   };
 }

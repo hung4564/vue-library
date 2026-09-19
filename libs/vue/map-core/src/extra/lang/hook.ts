@@ -94,10 +94,6 @@ export function useLang(mapId: string) {
     return api.whenLocaleIdle();
   }
 
-  function flushLocaleRegistrations() {
-    api.flushLocaleRegistrations();
-  }
-
   return {
     trans,
     language,
@@ -112,6 +108,5 @@ export function useLang(mapId: string) {
     setTranslate,
     loadLocale,
     whenLocaleIdle,
-    flushLocaleRegistrations,
   };
 }

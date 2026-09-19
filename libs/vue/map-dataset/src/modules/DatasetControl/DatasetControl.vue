@@ -33,7 +33,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
-import { computed, onMounted, shallowRef, watch } from 'vue';
+import { shallowRef, watch } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -65,26 +65,15 @@ const { panelPosition } = useRegisterMapControl(mapId, {
     },
   ],
 });
-const { getDatasets, getDatasetIds, removeDataset } = useMapDataset(
-  mapId.value,
-);
-const datasetIds = computed(() => {
-  return getDatasetIds().value;
-});
-watch(
-  datasetIds,
-  () => {
-    updateList();
-  },
-  { deep: true },
-);
-function updateList() {
-  getViewFromStore();
-}
+const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId.value);
 const views = shallowRef<Array<IDataset>>([]);
 function getViewFromStore() {
   views.value = getDatasets();
 }
+function updateList() {
+  getViewFromStore();
+}
+watch(datasetVersion, () => updateList(), { immediate: true });
 function onShowDetail(view: IDataset) {
   handleMenuActionClick(
     createMenuClickBuilder()
@@ -104,9 +93,6 @@ function onShowDetail(view: IDataset) {
 function onRemove(view: IDataset) {
   removeDataset(view);
 }
-onMounted(() => {
-  updateList();
-});
 defineSlots<{
   item(props: { item: IDataset }): any;
   default(): any;

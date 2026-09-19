@@ -54,7 +54,6 @@ export type MapLoadLocaleOptions = {
 export type MapBootstrapLanguageOptions = {
   /** Persist to localStorage (default true). */
   persist?: boolean;
-  fallbackLanguage?: MapLanguageCode;
 };
 
 export const MittTypeMapLangEventKey = {
@@ -186,7 +185,7 @@ export function setStoredMapLanguage(lang: MapLanguageCode): void {
   }
 }
 
-/** Set initial language (+ optional persist / fallback). Does not touch message catalogs. */
+/** Set initial language preference (+ optional persist). Does not touch message catalogs. */
 export function bootstrapMapLanguage(
   lang: MapLanguageCode,
   options: MapBootstrapLanguageOptions = {},

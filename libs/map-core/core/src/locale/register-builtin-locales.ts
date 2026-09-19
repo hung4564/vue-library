@@ -3,7 +3,7 @@ import { MAP_DEFAULT_CATALOG_LANGUAGE } from '../types/lang';
 import { registerMapStoreCleanup } from '../store/map-platform-registry';
 import { MAP_CORE_LOCALE_EN } from './locale.en';
 
-export type RegisterLocaleFn = (
+type RegisterLocaleFn = (
   code: MapLanguageCode,
   tree: MapLangLocale,
 ) => unknown;
@@ -25,9 +25,4 @@ export function registerMapCoreBuiltinLocales(
   registerMapStoreCleanup(mapId, CLEANUP_KEY, () => {
     seededMapIds.delete(mapId);
   });
-}
-
-/** @internal test helper */
-export function resetMapCoreBuiltinLocaleSeedForTests(): void {
-  seededMapIds.clear();
 }
