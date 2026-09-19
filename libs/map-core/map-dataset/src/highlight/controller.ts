@@ -27,6 +27,10 @@ import {
 } from './cascade';
 import { createHighlightPainter } from './paint';
 import {
+  destroyHighlightMittBridge,
+  ensureHighlightMittBridge,
+} from './mitt';
+import {
   pointerEventFromEntry,
   resolvePopupLngLat,
 } from './popup';
@@ -72,11 +76,15 @@ function openLayerDetailFromHighlight(
 
 export type HighlightController = {
   readonly entries: readonly HighlightEntry[];
+  /** When false, map click pick from `bindPointer` is ignored (Identify owns click). */
+  readonly pointerClickEnabled: boolean;
   setDefaultStyle(style: HighlightStyle): void;
   setDefaultData(data: HighlightDataSource): void;
   setDefaultSelection(selection: HighlightSelectionOptions): void;
   setDefaultPresentation(presentation: HighlightPresentation): void;
   setPickDatasets(getter: () => IDataset[]): void;
+  /** When false, `bindPointer({ click: true })` ignores map clicks (Identify owns click). */
+  setPointerClickEnabled(enabled: boolean): void;
   show(
     input: HighlightDataContext['input'],
     options?: HighlightShowOptions,
@@ -112,6 +120,8 @@ type ControllerState = {
   /** Active bindPointer unbind fns — destroy() must run them all. */
   pointerUnbinds: Set<() => void>;
   maplibrePopup?: Popup;
+  pointerClickEnabled: boolean;
+  durationTimers: Map<string | number, ReturnType<typeof setTimeout>>;
 };
 
 const controllers = new Map<string, HighlightController>();
@@ -214,6 +224,8 @@ function createController(mapId: string): HighlightController {
     listeners: new Set(),
     presentationCleanups: new Map(),
     pointerUnbinds: new Set(),
+    pointerClickEnabled: true,
+    durationTimers: new Map(),
   };
   const painter = createHighlightPainter(mapId);
 
@@ -344,13 +356,32 @@ function createController(mapId: string): HighlightController {
     }
 
     const durationMs = resolved.style.durationMs ?? 5000;
-    repaint(() => {
-      if (durationMs > 0) hide();
-    });
+    repaint();
+    const prevTimer = state.durationTimers.get(id);
+    if (prevTimer) clearTimeout(prevTimer);
+    state.durationTimers.delete(id);
+    if (durationMs > 0) {
+      state.durationTimers.set(
+        id,
+        setTimeout(() => {
+          state.durationTimers.delete(id);
+          hideEntry(id);
+        }, durationMs),
+      );
+    }
+  }
+
+  function clearDurationTimer(id: string | number) {
+    const t = state.durationTimers.get(id);
+    if (t) clearTimeout(t);
+    state.durationTimers.delete(id);
   }
 
   function hide() {
     state.abort?.abort();
+    for (const id of [...state.durationTimers.keys()]) {
+      clearDurationTimer(id);
+    }
     clearAllPresentations();
     state.entries = [];
     getMap(mapId, (map) => painter.stop(map));
@@ -361,6 +392,7 @@ function createController(mapId: string): HighlightController {
     const removed = state.entries.filter((e) => e.source === source);
     if (!removed.length) return;
     for (const e of removed) {
+      clearDurationTimer(e.id);
       applyPresentationHide(state, e, presentationFor(e));
     }
     state.entries = state.entries.filter((e) => e.source !== source);
@@ -373,9 +405,12 @@ function createController(mapId: string): HighlightController {
   }
 
   function hideEntry(id: string | number) {
-    const entry = state.entries.find((e) => e.id === id);
-    if (!entry) return;
-    applyPresentationHide(state, entry, presentationFor(entry));
+    const removed = state.entries.filter((e) => e.id === id);
+    if (!removed.length) return;
+    clearDurationTimer(id);
+    for (const e of removed) {
+      applyPresentationHide(state, e, presentationFor(e));
+    }
     state.entries = state.entries.filter((e) => e.id !== id);
     if (!state.entries.length) {
       getMap(mapId, (map) => painter.stop(map));
@@ -445,6 +480,7 @@ function createController(mapId: string): HighlightController {
       if (cancelled) return;
       if (opts.click) {
         const handler = (e: MapMouseEvent) => {
+          if (!state.pointerClickEnabled) return;
           void pickAt(e.point, {
             source: 'pointer',
             style: opts.style,
@@ -512,6 +548,9 @@ function createController(mapId: string): HighlightController {
     get entries() {
       return state.entries;
     },
+    get pointerClickEnabled() {
+      return state.pointerClickEnabled;
+    },
     setDefaultStyle(style) {
       state.defaultStyle = { ...state.defaultStyle, ...style };
     },
@@ -529,6 +568,9 @@ function createController(mapId: string): HighlightController {
     },
     setPickDatasets(getter) {
       state.pickDatasets = getter;
+    },
+    setPointerClickEnabled(enabled) {
+      state.pointerClickEnabled = enabled;
     },
     show,
     showMany: async (inputs) => {
@@ -567,11 +609,13 @@ const noop = (): void => undefined;
 
 const noopHighlightController: HighlightController = {
   entries: [],
+  pointerClickEnabled: true,
   setDefaultStyle: noop,
   setDefaultData: noop,
   setDefaultSelection: noop,
   setDefaultPresentation: noop,
   setPickDatasets: noop,
+  setPointerClickEnabled: noop,
   async show() {
     return undefined;
   },
@@ -604,10 +648,12 @@ export function getHighlightController(mapId: string): HighlightController {
     registerMapStoreCleanup(mapId, 'highlight', () => {
       destroyHighlightController(mapId);
     });
+    ensureHighlightMittBridge(mapId);
   }
   return ctrl;
 }
 
 export function destroyHighlightController(mapId: string) {
+  destroyHighlightMittBridge(mapId);
   controllers.get(mapId)?.destroy();
 }

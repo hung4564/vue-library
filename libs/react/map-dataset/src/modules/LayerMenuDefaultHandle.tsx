@@ -1,8 +1,14 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { fitBounds } from '@hungpvq/map-core';
 import type { MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
 import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
-import { LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
+import {
+  paintHighlight,
+  type HighlightSessionIntent,
+} from '@hungpvq/map-dataset/identify';
+import {
+  LIST_VIEW_MENU_ID,
+  runFitBoundsMenuAction,
+} from '@hungpvq/map-dataset/menu';
 import {
   defaultMapProps,
   UniversalRegistry,
@@ -12,23 +18,19 @@ import { useLayoutEffect, useRef } from 'react';
 import { useMapDataset } from '../store/dataset-api';
 import { notifyMapDatasetStore } from '../store/dataset-store';
 import { useMapDatasetComponent } from '../store/component';
-import { useMapHighlight } from '../store/highlight';
 
 export function LayerMenuDefaultHandle(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, callMap } = useMap(merged);
   const { addComponent } = useMapDatasetComponent(mapId);
-  const hl = useMapHighlight(mapId);
   const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId);
 
   const addComponentRef = useRef(addComponent);
   const callMapRef = useRef(callMap);
-  const hlRef = useRef(hl);
   const getAllComponentsByTypeRef = useRef(getAllComponentsByType);
   const getStoreDatasetRef = useRef(getStoreDataset);
   addComponentRef.current = addComponent;
   callMapRef.current = callMap;
-  hlRef.current = hl;
   getAllComponentsByTypeRef.current = getAllComponentsByType;
   getStoreDatasetRef.current = getStoreDataset;
 
@@ -50,14 +52,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
       LIST_VIEW_MENU_ID.fitBounds,
       ({ value }: MenuItemProps<MenuClickFitBounds | unknown>) => {
         callMapRef.current((map) => {
-          const target =
-            value &&
-            typeof value === 'object' &&
-            'detail' in value &&
-            (value as MenuClickFitBounds).detail != null
-              ? (value as MenuClickFitBounds).detail
-              : value;
-          if (target) fitBounds(map, target as never);
+          runFitBoundsMenuAction(map, value);
         });
       },
     );
@@ -66,8 +61,9 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
       LIST_VIEW_MENU_ID.highlight,
       ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
         if (value) {
-          return hlRef.current.show(value.detail, {
-            source: value.key,
+          return paintHighlight(mapId, {
+            intent: value.key as HighlightSessionIntent,
+            feature: value.detail,
             dataset: layer,
           });
         }

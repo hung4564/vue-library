@@ -1,7 +1,16 @@
 import { runMapControlAction } from '@hungpvq/map-core';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 
 export const ATTRIBUTE_TABLE_GEOMETRY_KEY = '__geometry';
+
+/**
+ * Property keys starting with `_` are internal (e.g. `_id`) — hidden from
+ * auto-inferred columns, still used for Identify↔table select keys.
+ */
+export function isAttributeTableInternalPropertyKey(key: string): boolean {
+  return key.startsWith('_');
+}
 
 /** AttributeTable registry id + select action (must match useRegisterMapControl). */
 export const ATTRIBUTE_TABLE_CONTROL = {
@@ -12,6 +21,66 @@ export const ATTRIBUTE_TABLE_CONTROL = {
 /** Per-layer control id so multiple tables do not overwrite each other. */
 export function attributeTableControlId(layerId: string): string {
   return `${ATTRIBUTE_TABLE_CONTROL.id}:${layerId}`;
+}
+
+/**
+ * Stable select key: `_id` → `properties.id` → string `feature.id`.
+ * Never geometry; skip numeric Feature.id (MapLibre without promoteId).
+ */
+function selectKeyFromFeature(feature: Feature | null | undefined): string {
+  if (!feature) return '';
+  const props = feature.properties;
+  if (props && typeof props === 'object') {
+    const stable = props[GEOJSON_FEATURE_ID_KEY];
+    if (stable != null && String(stable) !== '') return String(stable);
+    const propId = props['id'];
+    if (propId != null && String(propId) !== '') return String(propId);
+  }
+  // String feature.id only (promoteId `_id` / business ids). Skip MapLibre numbers.
+  if (
+    feature.id != null &&
+    typeof feature.id !== 'number' &&
+    String(feature.id) !== ''
+  ) {
+    return String(feature.id);
+  }
+  return '';
+}
+
+/**
+ * Key for Identify → AttributeTable selectRows.
+ * Only stable ids (`_id` / business id) — never geometry or MapLibre numeric ids.
+ */
+export function attributeTableIdentifyRowSelectKey(row: {
+  id?: string | number;
+  data?: unknown;
+}): string {
+  const data = row.data;
+  if (data && typeof data === 'object') {
+    const d = data as Record<string, unknown>;
+
+    if (d['type'] === 'Feature' && 'geometry' in d) {
+      return selectKeyFromFeature(d as Feature);
+    }
+
+    const props: Record<string, unknown> = { ...d };
+    delete props['geometry'];
+    // Drop MapLibre numeric `id` before keying (not stable across zoom).
+    if (typeof props['id'] === 'number') {
+      delete props['id'];
+    }
+
+    const fromFeature = selectKeyFromFeature({
+      type: 'Feature',
+      properties: props,
+      geometry: (d['geometry'] as Geometry | null | undefined) ?? null,
+    });
+    if (fromFeature) return fromFeature;
+  }
+  if (row.id != null && String(row.id) !== '' && typeof row.id !== 'number') {
+    return String(row.id);
+  }
+  return '';
 }
 
 export type AttributeTableSelectRowsPayload = {
@@ -222,7 +291,10 @@ export function resolveAttributeTableColumns(
   for (const feature of collection.features) {
     const props = feature.properties;
     if (!props || typeof props !== 'object') continue;
-    Object.keys(props).forEach((key) => keys.add(key));
+    Object.keys(props).forEach((key) => {
+      if (isAttributeTableInternalPropertyKey(key)) return;
+      keys.add(key);
+    });
   }
   const columns: AttributeTableColumn[] = Array.from(keys)
     .sort((a, b) => a.localeCompare(b))
@@ -248,14 +320,12 @@ export function buildAttributeTable(
   const rows: AttributeTableRow[] = collection.features.map(
     (feature, index) => {
       const props = (feature.properties ?? {}) as Record<string, unknown>;
-      const featureId =
-        feature.id != null
-          ? String(feature.id)
-          : props['id'] != null
-            ? String(props['id'])
-            : '';
+      const selectKey = selectKeyFromFeature(feature);
       const rowIndex = indexOffset + index;
-      const id = featureId ? `${rowIndex}:${featureId}` : String(rowIndex);
+      // Always prefix with rowIndex; suffix is a stable select key (id or geometry).
+      // Never use bare index alone when a select key exists — Identify query indices
+      // (`0`,`1`,…) must not collide with global row indices.
+      const id = selectKey ? `${rowIndex}:${selectKey}` : String(rowIndex);
       const cells: Record<string, string> = {};
       for (const column of columns) {
         const raw =
@@ -296,31 +366,23 @@ export function filterAttributeTableRows(
 
 /**
  * Map requested feature ids (from Identify etc.) onto AttributeTable row ids
- * (`index:featureId` or plain index).
+ * (`index:selectKey` or plain index).
  */
 export function resolveAttributeTableSelectedRowIds(
   requestedIds: string[],
   rows: AttributeTableRow[],
 ): string[] {
   if (requestedIds.length === 0) return [];
-  const requested = new Set(requestedIds.map(String));
+  const requested = new Set(requestedIds.map(String).filter((id) => id !== ''));
+  if (!requested.size) return [];
   return rows
     .filter((row) => {
       if (requested.has(row.id)) return true;
-      const featureId = row.feature.id != null ? String(row.feature.id) : '';
-      const propId =
-        row.feature.properties &&
-        typeof row.feature.properties === 'object' &&
-        (row.feature.properties as Record<string, unknown>)['id'] != null
-          ? String((row.feature.properties as Record<string, unknown>)['id'])
-          : '';
+      const selectKey = selectKeyFromFeature(row.feature);
+      if (selectKey && requested.has(selectKey)) return true;
       const colon = row.id.indexOf(':');
       const suffix = colon >= 0 ? row.id.slice(colon + 1) : '';
-      return (
-        (featureId !== '' && requested.has(featureId)) ||
-        (propId !== '' && requested.has(propId)) ||
-        (suffix !== '' && requested.has(suffix))
-      );
+      return suffix !== '' && requested.has(suffix);
     })
     .map((row) => row.id);
 }

@@ -3,6 +3,10 @@ import {
   type IDataset,
 } from '@hungpvq/map-dataset';
 import {
+  bindHighlightMittBridge,
+  emitHighlightDetailClose,
+} from '@hungpvq/map-dataset/highlight';
+import {
   filterLayerDetailHeaderMenus,
   getItemMenuHost,
   getResolvedMenus,
@@ -21,7 +25,6 @@ import { InputTextarea } from '@hungpvq/react-map-core/fields';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapHighlight } from '../../store/highlight';
 
 type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
 
@@ -97,13 +100,13 @@ export function LayerDetail({
   const { mapId, moduleContainerProps } = useMap({
     controlId: 'mapLayerDetail',
   });
-  const hl = useMapHighlight(mapId);
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
   const closedRef = useRef(false);
+  useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
 
-const itemMenuHost = useMemo(
+  const itemMenuHost = useMemo(
     () => (view ? getItemMenuHost(view) : undefined),
     [view],
   );
@@ -128,7 +131,10 @@ const itemMenuHost = useMemo(
   function handleClose() {
     if (closedRef.current) return;
     closedRef.current = true;
-    hl.hideIfSource('detail');
+    emitHighlightDetailClose(mapId, {
+      item,
+      dataset: view,
+    });
     toggleShow(false);
     onClose?.();
   }

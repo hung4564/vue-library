@@ -19,7 +19,19 @@ Closing the table (X / Escape) **removes** it from ComponentManagement (same as 
 
 **Export** lives in [`@hungpvq/map-dataset/geo-export`](./export.md). The Attribute Table toolbar **Export** button (`ui.export`, default `true`) opens the same controller / `onExport` / scopes. While the table is open, filtered/selected export reuses the AT store via the geo-export active-source bridge.
 
-Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Row selection paints via the highlight controller (`source: 'attribute-table'`); clear with `hideIfSource('attribute-table')`. Import parts / controller from `@hungpvq/map-dataset/highlight` — no `LayerHighlight` mount.
+Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagementControl`. Row selection paints via the highlight controller (`source: 'attribute-table'`). Close (X / Escape) emits mitt `ATTRIBUTE_TABLE_CLOSE` via `emitHighlightAttributeTableClose` — do not call `hideIfSource('attribute-table')` from hosts. Import parts / controller from `@hungpvq/map-dataset/highlight` — no `LayerHighlight` mount.
+
+## Identify → row select keys
+
+Identify box / click opens the table with `queueAttributeTableSelectRows` using **`attributeTableIdentifyRowSelectKey`**. Keys are stable ids only:
+
+| Priority | Source |
+| --- | --- |
+| 1 | `properties._id` (`GEOJSON_FEATURE_ID_KEY`) |
+| 2 | `properties.id` (non-numeric business id) |
+| 3 | string `feature.id` (e.g. after `promoteId: '_id'`) |
+
+Never geometry hashes or MapLibre numeric rendered ids (they drift with zoom). `createGeoJsonDataset` stamps `_id` + sets source `promoteId: '_id'` automatically — recreate layers built before that change. Auto-inferred table columns **omit** `_`-prefixed properties (`_id` stays selectable, not shown). See [Source](./source.md) and [Highlight](./highlight.md#host-lifecycle-via-map-mitt).
 
 ## Built-in menu
 
@@ -38,9 +50,11 @@ Hide at render time: `menuContext: { disabledAttributeTable: true }`. With `crea
 
 Column / UI defs resolve in this order (later wins):
 
-1. **Auto** — property keys from the FeatureCollection (columns only)
+1. **Auto** — property keys from the FeatureCollection (columns only; keys starting with `_` such as `_id` are omitted from the grid but still drive Identify→row select)
 2. **`createMenuItemAttributeTable({ columns, ui })`** / shell props
 3. **Dataset part** — `createDatasetPartAttributeTable({ columns, ui })` (highest)
+
+Explicit `columns` may still include a `_…` key if you want it visible.
 
 ```ts
 import {

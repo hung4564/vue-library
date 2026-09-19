@@ -6,52 +6,75 @@ import {
   notifyMapDatasetStore,
 } from '@hungpvq/map-dataset';
 import { useMapStore } from '@hungpvq/vue-map-core';
-import { getCurrentScope, onScopeDispose, ref, shallowRef, watch } from 'vue';
+import {
+  getCurrentScope,
+  onScopeDispose,
+  ref,
+  shallowRef,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+} from 'vue';
 import { useMapDatasetStore } from './dataset-store';
 
 const EMPTY_DATASET_IDS = { value: [] as string[] };
 
-export const useMapDataset = (initialMapId?: string) => {
-  const mapId = ref(initialMapId ?? '');
+/**
+ * Dataset list API for one map.
+ *
+ * Pass a ref/computed/`() => mapId` (not a one-shot `mapId.value`) so the hook
+ * rebinds when inject / `props.mapId` becomes ready. Passing a frozen string at
+ * setup leaves LayerControl on the empty store and the list never updates.
+ */
+export const useMapDataset = (
+  mapIdSource?: MaybeRefOrGetter<string | undefined>,
+) => {
+  const mapId = ref(
+    typeof toValue(mapIdSource) === 'string' ? (toValue(mapIdSource) as string) : '',
+  );
+  /** UI tick — follows store.version and remounts when mapId rebinds. */
   const datasetVersion = shallowRef(0);
 
   let detachListener: (() => void) | undefined;
-
-  function syncVersionFromStore() {
-    if (!isUsableMapId(mapId.value)) {
-      datasetVersion.value = 0;
-      return;
-    }
-    datasetVersion.value = useMapDatasetStore(mapId.value).version;
-  }
 
   function attachListener() {
     detachListener?.();
     detachListener = undefined;
     if (!isUsableMapId(mapId.value)) {
-      datasetVersion.value = 0;
+      datasetVersion.value += 1;
       return;
     }
     const store = useMapDatasetStore(mapId.value);
-    datasetVersion.value = store.version;
     const bump = () => {
       datasetVersion.value = store.version;
     };
+    bump();
     store.listeners.add(bump);
     detachListener = () => {
       store.listeners.delete(bump);
     };
   }
 
-  // setup() only — imperative @mapLoaded calls have no effect scope
   const scope = getCurrentScope();
   if (scope) {
+    watch(
+      () => {
+        const raw = toValue(mapIdSource);
+        return typeof raw === 'string' ? raw : '';
+      },
+      (next) => {
+        if (next !== mapId.value) {
+          mapId.value = next;
+        }
+      },
+      { immediate: true },
+    );
     watch(mapId, attachListener, { immediate: true });
     onScopeDispose(() => {
       detachListener?.();
     });
   } else {
-    syncVersionFromStore();
+    attachListener();
   }
 
   function getStore() {
@@ -133,8 +156,9 @@ export const useMapDataset = (initialMapId?: string) => {
   return {
     setMapId(pMapId: string) {
       mapId.value = pMapId;
-      if (!scope) syncVersionFromStore();
+      if (!scope) attachListener();
     },
+    mapId,
     getDatasets,
     addDataset,
     getDatasetIds,

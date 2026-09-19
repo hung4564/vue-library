@@ -38,6 +38,8 @@ const raster = createRasterUrlDataset({
 
 Computes bbox from `geojson`, stores it on a **bound** node (`createDatasetPartBoundComponent`), and adds a **Fill bound** extra button on the list row (reads the bound part at click time). Also adds an identify node with zoom-to-bounds and show-detail menus, a per-layer **Identify** extra toggle (scoped IdentifyControl), plus list ⋮ **Export** and **Attribute table** unless you pass `export: false` / `attributeTable: false`. Mount `IdentifyControl` + `ComponentManagementControl` to use identify / those dialogs.
 
+Stamps stable `properties._id` (`ensureGeojsonFeatureIds`) and sets GeoJSON source `promoteId: '_id'` so Identify box-select ↔ AttributeTable row select stay in sync after zoom. Identify `field_id` defaults to `_id` for this helper.
+
 To change the fit target later without rebuilding the menu:
 
 ```ts

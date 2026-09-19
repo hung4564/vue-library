@@ -1,6 +1,9 @@
 import { FallbackResolver, runMapControlAction } from '@hungpvq/map-core';
 import { MapMouseEvent } from 'maplibre-gl';
-import { queueAttributeTableSelectRows } from '../attribute-table';
+import {
+  attributeTableIdentifyRowSelectKey,
+  queueAttributeTableSelectRows,
+} from '../attribute-table';
 import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
 import { handleMenuAction } from '../menu/handle';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
@@ -104,7 +107,9 @@ function createDefaultIdentifyResolverActions() {
         });
         queueAttributeTableSelectRows(
           mapId,
-          features.map((feature) => String(feature.id)),
+          features.map((feature) =>
+            attributeTableIdentifyRowSelectKey(feature),
+          ),
           list.id,
         );
       },

@@ -65,7 +65,7 @@ const { panelPosition } = useRegisterMapControl(mapId, {
     },
   ],
 });
-const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId.value);
+const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
 const views = shallowRef<Array<IDataset>>([]);
 function getViewFromStore() {
   views.value = getDatasets();
@@ -73,7 +73,7 @@ function getViewFromStore() {
 function updateList() {
   getViewFromStore();
 }
-watch(datasetVersion, () => updateList(), { immediate: true });
+watch([datasetVersion, mapId], () => updateList(), { immediate: true });
 function onShowDetail(view: IDataset) {
   handleMenuActionClick(
     createMenuClickBuilder()

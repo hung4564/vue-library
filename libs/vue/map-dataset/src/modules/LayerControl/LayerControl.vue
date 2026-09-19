@@ -36,9 +36,9 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, onUnmounted, watch } from 'vue';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import CreateControl from '../CreateControl/CreateControl.vue';
 import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';

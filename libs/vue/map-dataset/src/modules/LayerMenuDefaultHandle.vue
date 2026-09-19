@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { fitBounds } from '@hungpvq/map-core';
 import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
-import { LIST_VIEW_MENU_ID, MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
+import { paintHighlight, type HighlightSessionIntent } from '@hungpvq/map-dataset/identify';
+import {
+  LIST_VIEW_MENU_ID,
+  MenuClickAddComponent,
+  MenuClickFitBounds,
+  MenuClickHighlight,
+  MenuItemProps,
+  runFitBoundsMenuAction,
+} from '@hungpvq/map-dataset/menu';
 import {
   defaultMapProps,
   UniversalRegistry,
@@ -11,7 +18,6 @@ import {
 import { onUnmounted } from 'vue';
 import { useMapDataset } from '../store/dataset-api';
 import { useMapDatasetComponent } from '../store/component';
-import { useMapHighlight } from '../store/highlight';
 import { notifyMapDatasetStore } from '@hungpvq/map-dataset';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -19,8 +25,7 @@ const props = withDefaults(defineProps<WithMapPropType>(), {
 });
 const { mapId, callMap } = useMap(props);
 const { addComponent } = useMapDatasetComponent(mapId.value);
-const hl = useMapHighlight(mapId.value);
-const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId.value);
+const { getAllComponentsByType, getStoreDataset } = useMapDataset(mapId);
 
 const MENU_HANDLER_KEYS = [
   LIST_VIEW_MENU_ID.addComponent,
@@ -84,14 +89,7 @@ UniversalRegistry.registerMenuHandlerForMap(
   LIST_VIEW_MENU_ID.fitBounds,
   ({ value }: MenuItemProps<MenuClickFitBounds | unknown>) => {
     callMap((map) => {
-      const target =
-        value &&
-        typeof value === 'object' &&
-        'detail' in value &&
-        (value as MenuClickFitBounds).detail != null
-          ? (value as MenuClickFitBounds).detail
-          : value;
-      if (target) fitBounds(map, target as never);
+      runFitBoundsMenuAction(map, value);
     });
   },
 );
@@ -100,8 +98,9 @@ UniversalRegistry.registerMenuHandlerForMap(
   LIST_VIEW_MENU_ID.highlight,
   ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
     if (value) {
-      return hl.show(value.detail, {
-        source: value.key,
+      return paintHighlight(mapId.value, {
+        intent: value.key as HighlightSessionIntent,
+        feature: value.detail,
         dataset: layer,
       });
     }

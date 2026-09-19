@@ -1,9 +1,19 @@
-import type { IDataset } from '../interfaces/dataset.base';
-import type { IdentifyFeatureRow, IIdentifyViewWithMerge, IMapboxLayerView, IdentifyMultiResult } from '../interfaces/dataset.parts';
-import { runAllComponentsWithCheck } from '../model/visitors/helpers';
-import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
-import { isMapboxLayerView } from '../utils/check';
 import { getMap } from '@hungpvq/map-core';
+import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+import type { IDataset } from '../interfaces/dataset.base';
+import type {
+  IdentifyFeatureRow,
+  IdentifyMultiResult,
+  IIdentifyViewWithMerge,
+  IMapboxLayerView,
+} from '../interfaces/dataset.parts';
+import { runAllComponentsWithCheck } from '../model/visitors/helpers';
+import { isMapboxLayerView } from '../utils/check';
+import {
+  buildIdentifyFeatureRows,
+  identifyConfigFieldId,
+  primaryIdentifyFeatureId,
+} from './rows';
 
 type MergedFeatureRow = {
   identify: IIdentifyViewWithMerge;
@@ -28,38 +38,24 @@ function removeDuplicates(collected: CollectedFeature[]): CollectedFeature[] {
   });
 }
 
-function formatFeature(
-  collected: CollectedFeature[],
-  dataMap: Map<string, unknown>,
-): MergedFeatureRow[] {
-  return collected.map(({ identify, identifyId, feature, rawId }) => ({
-    identify,
-    identifyId,
-    feature: {
-      id: rawId,
-      name: feature.properties?.[identify.config.field_name || 'name'] ?? '',
-      data: dataMap.get(rawId) || {
-        ...feature.properties,
-        geometry: feature.geometry,
-      },
-    },
-  }));
-}
-
 export type MergeIdentifyPayload = {
   mapId: string;
   pointOrBox?: PointLike | [PointLike, PointLike];
   layerIdMap: Record<string, IIdentifyViewWithMerge>;
 };
 
+/**
+ * One MapLibre query for a merge group, then per-Identify
+ * {@link buildIdentifyFeatureRows} (getFeature → source → rendered).
+ */
 export async function getMergedFeatures(
-  identifies: IIdentifyViewWithMerge[],
+  _identifies: IIdentifyViewWithMerge[],
   payload: unknown,
 ): Promise<MergedFeatureRow[]> {
   const typed = payload as MergeIdentifyPayload;
-  return new Promise((resolve) => {
-    const layerIdMap = typed.layerIdMap;
 
+  const queried = await new Promise<MapGeoJSONFeature[]>((resolve) => {
+    const layerIdMap = typed.layerIdMap;
     getMap(typed.mapId, (map) => {
       const allLayerIds = Object.keys(layerIdMap).filter((id) =>
         map.getLayer(id),
@@ -68,40 +64,69 @@ export async function getMergedFeatures(
         resolve([]);
         return;
       }
-      const queriedFeatures: MapGeoJSONFeature[] = map.queryRenderedFeatures(
-        typed.pointOrBox,
-        { layers: allLayerIds },
+      resolve(
+        map.queryRenderedFeatures(typed.pointOrBox, { layers: allLayerIds }),
       );
-
-      const collected: CollectedFeature[] = [];
-
-      const idSet = new Set<string>();
-
-      queriedFeatures.forEach((feature) => {
-        const layerId = feature.layer.id;
-        const identify = layerIdMap[layerId];
-        const id =
-          feature.properties?.[identify.config.field_id || 'id'] ?? feature.id;
-        if (!id) return;
-
-        const idStr = String(id);
-        idSet.add(idStr);
-
-        collected.push({
-          identify,
-          identifyId: identify.id,
-          feature,
-          rawId: idStr,
-        });
-      });
-
-      const deduplicated = removeDuplicates(collected);
-
-      const results = formatFeature(deduplicated, new Map());
-      resolve(results);
-      return;
     });
   });
+
+  const collected: CollectedFeature[] = [];
+  for (const feature of queried) {
+    const layerId = feature.layer?.id;
+    if (!layerId) continue;
+    const identify = typed.layerIdMap[layerId];
+    if (!identify) continue;
+    const fieldId = identifyConfigFieldId(identify);
+    const id = primaryIdentifyFeatureId(feature, fieldId);
+    if (!id) continue;
+    collected.push({
+      identify,
+      identifyId: identify.id,
+      feature,
+      rawId: id,
+    });
+  }
+
+  const deduplicated = removeDuplicates(collected);
+  if (!deduplicated.length) return [];
+
+  const indicesByIdentify = new Map<string, number[]>();
+  deduplicated.forEach((item, index) => {
+    const list = indicesByIdentify.get(item.identifyId) ?? [];
+    list.push(index);
+    indicesByIdentify.set(item.identifyId, list);
+  });
+
+  const rowsByIndex: IdentifyFeatureRow[] = new Array(deduplicated.length);
+
+  await Promise.all(
+    [...indicesByIdentify.entries()].map(async ([, indices]) => {
+      const identify = deduplicated[indices[0]].identify;
+      const features = indices.map((i) => deduplicated[i].feature);
+      const rows = await buildIdentifyFeatureRows(identify, features);
+      // buildIdentifyFeatureRows also dedupes; align by primary id
+      const byId = new Map(rows.map((row) => [String(row.id), row]));
+      indices.forEach((collectedIndex) => {
+        const rawId = deduplicated[collectedIndex].rawId;
+        const row = byId.get(rawId);
+        if (row) {
+          rowsByIndex[collectedIndex] = row;
+        } else {
+          // Fallback: keep order if id remapped during resolve
+          const order = indices.indexOf(collectedIndex);
+          if (rows[order]) rowsByIndex[collectedIndex] = rows[order];
+        }
+      });
+    }),
+  );
+
+  return deduplicated
+    .map(({ identify, identifyId }, index) => {
+      const feature = rowsByIndex[index];
+      if (!feature) return null;
+      return { identify, identifyId, feature };
+    })
+    .filter((row): row is MergedFeatureRow => row != null);
 }
 
 export const splitResponse = (
@@ -122,10 +147,9 @@ export const splitResponse = (
       });
     }
     const result = resultsMap.get(identifyId);
-    if (result)
-      if ('features' in result) {
-        result.features.push(feature);
-      }
+    if (result && 'features' in result) {
+      result.features.push(feature);
+    }
   });
 
   return Array.from(resultsMap.values());

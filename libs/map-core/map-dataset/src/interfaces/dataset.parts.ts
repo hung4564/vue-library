@@ -10,7 +10,7 @@ import type { MenuItemClick } from '../menu/types';
 import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 
 import type { MapSimple } from '@hungpvq/map-core';
-import type { BBox } from 'geojson';
+import type { BBox, Feature } from 'geojson';
 import { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
 import type { IDatasetMap } from './dataset.map';
@@ -152,6 +152,43 @@ export type IdentifyFeatureRow<TData = unknown> = {
   data: TData;
 };
 
+/**
+ * Enrichment query for Identify geometry resolve.
+ * - Single hit: `{ feature, source, id }`
+ * - Multi-hit / merge: `{ features, source, ids }` (parallel arrays)
+ */
+export type IdentifyResolveFeatureQuery = {
+  /** Sibling GeoJSON source when present. */
+  source?: IMapboxSourceView | null;
+} & (
+  | {
+      feature: MapGeoJSONFeature | Feature;
+      id: string | number;
+      features?: never;
+      ids?: never;
+    }
+  | {
+      features: (MapGeoJSONFeature | Feature)[];
+      ids: Array<string | number>;
+      feature?: never;
+      id?: never;
+    }
+);
+
+/** Result of {@link IIdentifyView.getFeature} — always a Feature array (or null to fall through). */
+export type IdentifyResolveFeatureResult = Feature[] | null | undefined;
+
+export function isIdentifyResolveFeatureQuery(
+  value: unknown,
+): value is IdentifyResolveFeatureQuery {
+  if (!value || typeof value !== 'object') return false;
+  const q = value as Record<string, unknown>;
+  return (
+    ('feature' in q && 'id' in q) ||
+    (Array.isArray(q.features) && Array.isArray(q.ids))
+  );
+}
+
 export type IIdentifyViewBase = IDataset &
   WithMenuHelper & {
     config: {
@@ -171,11 +208,19 @@ export type IIdentifyViewBase = IDataset &
       name: string;
       id: string;
     };
+    /**
+     * Optional geometry enrichment.
+     * - 1 hit: `{ feature, source, id }`
+     * - ≥2 hits / merge: `{ features, source, ids }`
+     * Always return `Feature[]` (parallel), or `null`/`undefined` to fall through to source.
+     */
+    getFeature?(
+      query: IdentifyResolveFeatureQuery,
+    ): Promise<IdentifyResolveFeatureResult>;
     getFeatures: (
       mapId: string,
       pointOrBox?: PointLike | [PointLike, PointLike],
     ) => Promise<IdentifyFeatureRow[]>;
-    getList?: <T>(mapId: string, features: MapGeoJSONFeature[]) => Promise<T[]>;
   };
 
 // IIdentifyViewWithoutMerge chỉ kế thừa IIdentifyViewBase

@@ -21,6 +21,8 @@ interface BaseBuilder {
   onSingle(action: IdentifyHitAction): this;
   /** UI policy when multiple features are hit (`detail` = first/top feature). */
   onMultiple(action: IdentifyHitAction): this;
+  /** Optional geometry enrichment after data-management `get`. */
+  setGetFeature(getFeature: NonNullable<IIdentifyView['getFeature']>): this;
   build(): IIdentifyView;
 }
 
@@ -28,6 +30,7 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
   const _config: Partial<IIdentifyView['config']> = {};
   let _identifyGroupId: string | undefined = undefined;
   let _group: IIdentifyView['group'] = undefined;
+  let _getFeature: IIdentifyView['getFeature'] | undefined;
   const base = {
     configFieldId(field_id: string) {
       _config.field_id = field_id;
@@ -53,10 +56,20 @@ export function createDatasetPartIdentifyComponentBuilder(name: string) {
       _config.onMultiple = action;
       return this;
     },
+    setGetFeature(getFeature: NonNullable<IIdentifyView['getFeature']>) {
+      _getFeature = getFeature;
+      return this;
+    },
     build(): IIdentifyView {
+      const options = _getFeature ? { getFeature: _getFeature } : undefined;
       const dataset = _identifyGroupId
-        ? createIdentifyMapboxMergedComponent(name, _config, _identifyGroupId)
-        : createIdentifyMapboxComponent(name, _config || {});
+        ? createIdentifyMapboxMergedComponent(
+            name,
+            _config,
+            _identifyGroupId,
+            options,
+          )
+        : createIdentifyMapboxComponent(name, _config || {}, options);
       dataset.group = _group;
       return dataset;
     },

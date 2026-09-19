@@ -177,6 +177,8 @@ export function createMenuItemToBoundActionForItem() {
     .setIcon(mdiCrosshairsGps)
     .setClick(
       createMenuClickBuilder()
+        // UX D: camera only — do not paint highlight (Detail item geometry is
+        // often MapLibre-queried and drifts with zoom vs source GeoJSON).
         .addTupleDynamic(LIST_VIEW_MENU_ID.fitBounds, ({ value }) => {
           if (!value || typeof value !== 'object') return undefined;
           const feature =
@@ -192,24 +194,6 @@ export function createMenuItemToBoundActionForItem() {
           if (!feature?.geometry) return undefined;
           return {
             value: createMenuClickFitBoundsBuilder().setDetail(feature).build(),
-          };
-        })
-        .addTupleDynamic(LIST_VIEW_MENU_ID.highlight, ({ value }) => {
-          const row = (value ?? {}) as {
-            geometry?: Geometry;
-            [key: string]: unknown;
-          };
-          const { geometry, ...properties } = row;
-          if (!geometry) return undefined;
-          return {
-            value: createMenuClickHighlightBuilder()
-              .setDetail({
-                type: 'Feature',
-                geometry,
-                properties,
-              })
-              .setKey('identify')
-              .build(),
           };
         })
         .build(),

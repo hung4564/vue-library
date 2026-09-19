@@ -117,6 +117,35 @@ describe('createAttributeTableController', () => {
     controller.dispose();
   });
 
+  it('selectIds shows off-page Identify hits under rowFilter selected', async () => {
+    const features = Array.from({ length: 60 }, (_, i) =>
+      point(`id-${i}`, `N${i}`),
+    );
+    // Put the target near the end so page 1 (size 50) does not include it.
+    features[55] = {
+      type: 'Feature' as const,
+      id: 'f:55',
+      properties: { _id: 'f:55', name: 'Hit' },
+      geometry: { type: 'Point' as const, coordinates: [105.8, 21.0] },
+    };
+    const store = createLocalAttributeTableStore(fc(features));
+    const controller = createAttributeTableController(fakeLayer, {
+      store,
+      pageSize: 50,
+    });
+    await controller.load('initial');
+    expect(controller.getState().rows).toHaveLength(50);
+
+    await controller.selectIds(['f:55']);
+    const state = controller.getState();
+    expect(state.rowFilter).toBe('selected');
+    expect(state.selectedIds.length).toBe(1);
+    expect(state.rows).toHaveLength(1);
+    expect(state.rows[0]?.cells.name).toBe('Hit');
+    expect(state.total).toBe(1);
+    controller.dispose();
+  });
+
   it('skips toggleSort when sortable option is false', async () => {
     const store = createLocalAttributeTableStore(
       fc([point('b', 'B'), point('a', 'A')]),

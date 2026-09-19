@@ -240,11 +240,25 @@ export function createAttributeTableController(
               state.columns = result.columns;
               state.rows = result.rows;
               state.total = result.total;
+              // Identify selectIds may race with mount load: keep showing the
+              // resolved selection instead of an empty page-1 filter.
+              if (
+                state.rowFilter === 'selected' &&
+                state.selectedIds.length > 0
+              ) {
+                const resolved = await resolveFeaturesForSelection(
+                  state.selectedIds,
+                );
+                if (disposed || seq !== loadSeq) return;
+                state.rows = resolved;
+                state.total = resolved.length;
+                state.page = 1;
+              }
               atLog.debug('Attribute table page load finished.', {
                 reason,
-                rowCount: result.rows.length,
-                total: result.total,
-                columnCount: result.columns.length,
+                rowCount: state.rows.length,
+                total: state.total,
+                columnCount: state.columns.length,
               });
             } finally {
               state.loading = false;
@@ -374,6 +388,22 @@ export function createAttributeTableController(
 
   function setRowFilter(value: AttributeTableRowFilter) {
     state.rowFilter = value;
+    if (value === 'all') {
+      notify('selection');
+      void load('reload');
+      return;
+    }
+    if (value === 'selected' && state.selectedIds.length > 0) {
+      void (async () => {
+        const resolved = await resolveFeaturesForSelection(state.selectedIds);
+        if (disposed) return;
+        state.rows = resolved;
+        state.total = resolved.length;
+        state.page = 1;
+        notify('selection');
+      })();
+      return;
+    }
     notify('selection');
   }
 
@@ -385,44 +415,40 @@ export function createAttributeTableController(
   async function resolveFeaturesForSelection(
     ids?: string[],
   ): Promise<AttributeTableRow[]> {
-    const target = (ids ?? state.selectedIds).map(String);
+    const target = (ids ?? state.selectedIds)
+      .map(String)
+      .filter((id) => id !== '');
     if (!target.length) return [];
 
-    const requested = new Set(target);
-    const fromPage = state.rows.filter((row) => requested.has(row.id));
-    const have = new Set(fromPage.map((row) => row.id));
-    const missing = target.filter((id) => !have.has(id));
+    const pageMatchedIds = resolveAttributeTableSelectedRowIds(
+      target,
+      state.rows,
+    );
+    const pageById = new Map(state.rows.map((row) => [row.id, row]));
+    const fromPage = pageMatchedIds
+      .map((id) => pageById.get(id))
+      .filter((row): row is AttributeTableRow => !!row);
 
-    if (!missing.length) {
-      const byId = new Map(fromPage.map((row) => [row.id, row]));
-      return target
-        .map((id) => byId.get(id))
-        .filter((row): row is AttributeTableRow => !!row);
+    if (fromPage.length >= target.length) {
+      return fromPage;
     }
 
     const result = await store.list({
       intent: 'select',
-      ids: missing,
+      ids: target,
       pageSize: 'all',
     });
-    const byId = new Map<string, AttributeTableRow>();
-    for (const row of fromPage) byId.set(row.id, row);
-    for (const row of result.rows) byId.set(row.id, row);
-
-    const resolvedMissing = resolveAttributeTableSelectedRowIds(
-      missing,
-      result.rows,
-    );
-    for (const id of resolvedMissing) {
-      const row = result.rows.find((r) => r.id === id);
-      if (row) byId.set(id, row);
+    const combined: AttributeTableRow[] = [...fromPage];
+    const seen = new Set(fromPage.map((row) => row.id));
+    for (const row of result.rows) {
+      if (seen.has(row.id)) continue;
+      seen.add(row.id);
+      combined.push(row);
     }
-
-    return target
-      .map((id) => {
-        if (byId.has(id)) return byId.get(id)!;
-        return result.rows.find((r) => r.id === id || r.id.endsWith(`:${id}`));
-      })
+    const orderedIds = resolveAttributeTableSelectedRowIds(target, combined);
+    const byId = new Map(combined.map((row) => [row.id, row]));
+    return orderedIds
+      .map((id) => byId.get(id))
       .filter((row): row is AttributeTableRow => !!row);
   }
 
@@ -438,15 +464,26 @@ export function createAttributeTableController(
     return result.rows;
   }
 
+  /**
+   * Select by feature/Identify keys. Always resolves against the store so
+   * off-page hits (box Identify) are included, then shows those rows under
+   * `rowFilter: 'selected'` — filtering the current page alone would look empty.
+   */
   async function selectIds(ids: string[]) {
-    const next = resolveAttributeTableSelectedRowIds(ids, state.rows);
-    const finalIds =
-      next.length > 0 || ids.length === 0
-        ? next
-        : (await resolveFeaturesForSelection(ids)).map((r) => r.id);
-    state.selectedIds = finalIds;
-    if (finalIds.length > 0) {
+    const requested = ids.map(String).filter((id) => id !== '');
+    if (!requested.length) {
+      state.selectedIds = [];
+      notify('selection');
+      return;
+    }
+
+    const resolved = await resolveFeaturesForSelection(requested);
+    state.selectedIds = resolved.map((row) => row.id);
+    if (resolved.length > 0) {
       state.rowFilter = 'selected';
+      state.rows = resolved;
+      state.total = resolved.length;
+      state.page = 1;
     }
     notify('selection');
   }
@@ -476,6 +513,12 @@ export function createAttributeTableController(
 
   function clearSelection() {
     state.selectedIds = [];
+    if (state.rowFilter === 'selected') {
+      state.rowFilter = 'all';
+      notify('selection');
+      void load('reload');
+      return;
+    }
     notify('selection');
   }
 

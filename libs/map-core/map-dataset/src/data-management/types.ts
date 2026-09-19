@@ -118,6 +118,7 @@ export type DataHook = {
 export type NormalizeOptions = {
   idField?: string;
   geometryFields?: string[];
+  geometryField?: string;
 };
 
 export type LocalStoreOptions = NormalizeOptions & {

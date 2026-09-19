@@ -19,9 +19,11 @@ import {
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import {
+  clearIdentifyResultHighlight,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
+  paintIdentifyResultFocus,
   shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
@@ -41,7 +43,7 @@ import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import { useMapDataset } from '../../store/dataset-api';
@@ -62,7 +64,7 @@ provideMenuConditionContext(() => ({
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans } = useLang(mapId.value);
 const formatCoordinate = createMapDisplayCoordinateFormatter();
-const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId.value);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
 const show = ref(false);
 const loading = ref(false);
 const errorMessage = ref<string | null>(null);
@@ -114,7 +116,18 @@ const titleMenus = computed(() =>
 
 function setShow(value: boolean) {
   show.value = value;
+  if (!value) clearIdentifyResultHighlight(mapId.value);
 }
+
+watch(
+  [focusedChildKey, items, show],
+  () => {
+    if (!show.value) return;
+    const hit = flatChildren.value.find((x) => x.key === focusedChildKey.value);
+    void paintIdentifyResultFocus(mapId.value, hit?.child);
+  },
+  { flush: 'post' },
+);
 
 function applyUpdate(payload?: IdentifyResultUpdatePayload) {
   if (!payload) return;

@@ -1,8 +1,19 @@
 # useMapDataset
 
-Store for datasets on one map. Prefer calling with a real map id, or call with no id then `setMapId(map.id)` from `@mapLoaded` / `onMapLoaded`.
+Store for datasets on one map.
 
-`useMapDataset` may also be called **imperatively** from `@mapLoaded` / `onMapLoaded` (no Vue effect scope). In that case it does not register `watch` / `onScopeDispose` or long-lived store listeners — only UI hosts created in `setup()` subscribe via `datasetVersion`.
+## Vue: pass a reactive map id
+
+```ts
+const { mapId } = useMap(props);
+// ✅ tracks inject / props.mapId when it becomes ready
+const { addDataset, datasetVersion } = useMapDataset(mapId);
+
+// ❌ freezes the id at setup — LayerControl stays on the empty store
+const { addDataset } = useMapDataset(mapId.value);
+```
+
+Prefer a ref/computed/`() => mapId` (same idea as React rebinding when `mapId` changes). Use a real map id string only for one-shot imperative calls from `@mapLoaded` / `onMapLoaded` (no Vue effect scope — those do not register long-lived store listeners; UI hosts in `setup()` subscribe via `datasetVersion`).
 
 ## Reactivity (Vue + React)
 
@@ -12,7 +23,7 @@ The domain bag (`MapDatasetStore` on `map:core[mapId].dataset`) is a **plain obj
 
 | Framework | `datasetVersion` | Typical usage |
 | --- | --- | --- |
-| Vue | `Ref<number>` | `watch(datasetVersion, refresh, { immediate: true })` or `void datasetVersion.value` inside `computed` |
+| Vue | `Ref<number>` | `watch([datasetVersion, mapId], refresh, { immediate: true })` or `void datasetVersion.value` inside `computed` |
 | React | `number` | `useEffect(..., [datasetVersion])` or read it in render |
 
 Built-in hosts (`LayerControl` / `LayerList`, `DatasetControl`, `IdentifyControl`, …) already follow this. Custom list UIs should do the same.
@@ -55,8 +66,9 @@ function onMapLoaded(map: MapSimple) {
 ### Vue — refresh a custom list
 
 ```ts
+const { mapId } = useMap(props);
 const { getDatasets, datasetVersion } = useMapDataset(mapId);
-watch(datasetVersion, () => {
+watch([datasetVersion, mapId], () => {
   views.value = getDatasets();
 }, { immediate: true });
 ```

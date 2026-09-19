@@ -138,29 +138,35 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
           <span className="attribute-table__columns-label">
             {props.columnVisibilityLabel}
           </span>
-          <MapControlButton
-            variant="outlined"
-            size="small"
-            disabled={props.columnVisibilityAll}
-            onClick={props.onShowAllColumns}
-          >
-            {props.columnsShowAllLabel}
-          </MapControlButton>
-          {props.columnVisibilityItems.map((item) => {
-            const key = String(item.value);
-            const visible = isColumnVisible(key);
-            return (
-              <MapControlButton
-                key={key}
-                variant="outlined"
-                size="small"
-                active={visible}
-                onClick={() => toggleColumnVisibility(key)}
-              >
-                {item.text}
-              </MapControlButton>
-            );
-          })}
+          <div className="attribute-table__columns-chips">
+            <MapControlButton
+              className="attribute-table__column-chip attribute-table__column-chip--all"
+              variant={props.columnVisibilityAll ? 'text' : 'outlined'}
+              size="small"
+              disabled={props.columnVisibilityAll}
+              title={props.columnsShowAllLabel}
+              onClick={props.onShowAllColumns}
+            >
+              {props.columnsShowAllLabel}
+            </MapControlButton>
+            {props.columnVisibilityItems.map((item) => {
+              const key = String(item.value);
+              const visible = isColumnVisible(key);
+              return (
+                <MapControlButton
+                  key={key}
+                  className="attribute-table__column-chip"
+                  variant={visible ? 'tonal' : 'outlined'}
+                  size="small"
+                  active={visible}
+                  title={String(item.text)}
+                  onClick={() => toggleColumnVisibility(key)}
+                >
+                  {item.text}
+                </MapControlButton>
+              );
+            })}
+          </div>
         </div>
       ) : null}
       {ui.zoomToSelection || ui.rowFilter || ui.clearSelection ? (

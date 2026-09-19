@@ -73,7 +73,7 @@ const path = {
 const { callMap, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { getAllComponentsByType, removeComponent, datasetVersion } =
-  useMapDataset(mapId.value);
+  useMapDataset(mapId);
 const views = ref<Array<LayerListItem>>([]);
 const layerSearch = ref('');
 const debouncedSearch = ref('');
@@ -87,7 +87,7 @@ function getFilteredViews() {
   return views.value.filter((view) => layerMatchesSearch(view, q));
 }
 const filteredViews = computed(() => getFilteredViews());
-watch(datasetVersion, () => updateList(), { immediate: true });
+watch([datasetVersion, mapId], () => updateList(), { immediate: true });
 watch(layerSearch, (value) => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {

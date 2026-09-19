@@ -158,24 +158,30 @@ function onFormatPick(fmt: string, event: MouseEvent) {
       <span class="attribute-table__columns-label">{{
         props.columnVisibilityLabel
       }}</span>
-      <MapControlButton
-        variant="outlined"
-        size="small"
-        :disabled="props.columnVisibilityAll"
-        @click="props.onShowAllColumns()"
-      >
-        {{ props.columnsShowAllLabel }}
-      </MapControlButton>
-      <MapControlButton
-        v-for="item in props.columnVisibilityItems"
-        :key="String(item.value)"
-        variant="outlined"
-        size="small"
-        :active="isColumnVisible(String(item.value))"
-        @click="toggleColumnVisibility(String(item.value))"
-      >
-        {{ item.text }}
-      </MapControlButton>
+      <div class="attribute-table__columns-chips">
+        <MapControlButton
+          class="attribute-table__column-chip attribute-table__column-chip--all"
+          :variant="props.columnVisibilityAll ? 'text' : 'outlined'"
+          size="small"
+          :disabled="props.columnVisibilityAll"
+          :title="props.columnsShowAllLabel"
+          @click="props.onShowAllColumns()"
+        >
+          {{ props.columnsShowAllLabel }}
+        </MapControlButton>
+        <MapControlButton
+          v-for="item in props.columnVisibilityItems"
+          :key="String(item.value)"
+          class="attribute-table__column-chip"
+          :variant="isColumnVisible(String(item.value)) ? 'tonal' : 'outlined'"
+          size="small"
+          :active="isColumnVisible(String(item.value))"
+          :title="String(item.text)"
+          @click="toggleColumnVisibility(String(item.value))"
+        >
+          {{ item.text }}
+        </MapControlButton>
+      </div>
     </div>
     <div
       v-if="ui.zoomToSelection || ui.rowFilter || ui.clearSelection"

@@ -9,10 +9,15 @@ import {
   createIdentifySession,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
+  syncIdentifyPointerPick,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
 } from '@hungpvq/map-dataset/identify';
+import {
+  bindHighlightMittBridge,
+  emitHighlightIdentifyClose,
+} from '@hungpvq/map-dataset/highlight';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -29,7 +34,6 @@ import { mdiHandPointingUp } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMapDataset } from '../../store/dataset-api';
-import { useMapHighlight } from '../../store/highlight';
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { IdentifyResultControl } from './IdentifyResultControl';
 
@@ -57,8 +61,8 @@ export function IdentifyControl(
     controlId: IDENTIFY_CONTROL.id,
   });
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
-  const hl = useMapHighlight(mapId);
   const { trans } = useLang(mapId);
+  useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
   useEnsureDatasetBuiltinLocales(mapId);
 
   const [show, toggleShow] = useShow(!!props.show);
@@ -83,8 +87,6 @@ export function IdentifyControl(
   const syncResultPanelRef = useRef<(extra?: IdentifyResultUpdatePayload) => void>(
     () => undefined,
   );
-  const hlRef = useRef(hl);
-  hlRef.current = hl;
 
   const onMapClickRef = useRef<(e: MapMouseEvent) => void>(() => undefined);
   const onBboxSelectRef = useRef<EventBboxRangerHandle>(() => undefined);
@@ -150,6 +152,7 @@ export function IdentifyControl(
       },
       syncResultPanel: (extra) => syncResultPanelRef.current(extra),
       onEventClickActive: (active) => {
+        syncIdentifyPointerPick(mapId, active);
         if (active) addEventClickRef.current();
         else removeEventClickRef.current();
       },
@@ -158,7 +161,14 @@ export function IdentifyControl(
         else removeEventBboxRef.current();
       },
       onCloseSideEffects: () => {
-        hlRef.current.hideIfSource('identify');
+        const filterId = sessionRef.current?.getState().filterIdentifyId;
+        const dataset = filterId
+          ? viewsRef.current.find((view) => view.id === filterId)
+          : undefined;
+        emitHighlightIdentifyClose(mapId, {
+          ...(dataset ? { dataset } : {}),
+        });
+        syncIdentifyPointerPick(mapId, false);
       },
     });
     if (props.show) sessionRef.current.getModel().setShow(true);

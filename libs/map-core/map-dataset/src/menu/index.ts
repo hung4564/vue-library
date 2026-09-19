@@ -18,6 +18,10 @@ export type {
 } from './builder';
 export type { WithMenuBuilder } from './types';
 export {
+  resolveFitBoundsMenuTarget,
+  runFitBoundsMenuAction,
+} from './fit-bounds';
+export {
   createMenuConditionContext,
   isMenuItemDisabled,
   isMenuItemHidden,

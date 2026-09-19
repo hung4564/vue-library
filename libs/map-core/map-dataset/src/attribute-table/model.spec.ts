@@ -72,4 +72,24 @@ describe('attribute-table model columns', () => {
     expect(rows[0]?.cells.name).toBe('*HA NOI*');
     expect(rows[0]?.cells.pop).toBe('1,000');
   });
+
+  it('auto columns omit _-prefixed properties but keep __geometry', () => {
+    const withInternal: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { _id: 'f:0', name: 'ha noi', _meta: 1 },
+          geometry: { type: 'Point', coordinates: [0, 0] },
+        },
+      ],
+    };
+    const columns = resolveAttributeTableColumns(withInternal);
+    expect(columns.map((c) => c.key)).toEqual(['name', '__geometry']);
+  });
+
+  it('explicit columns may still include _-prefixed keys', () => {
+    const columns = resolveAttributeTableColumns(fc, ['_id', 'name']);
+    expect(columns.map((c) => c.key)).toEqual(['_id', 'name']);
+  });
 });

@@ -5,12 +5,14 @@ import {
   type AttributeTableColumnFilters,
 } from './filter';
 import {
+  attributeTableIdentifyRowSelectKey,
   buildAttributeTable,
   filterAttributeTableRows,
   type AttributeTableColumn,
   type AttributeTableColumnsOption,
   type AttributeTableRow,
 } from './model';
+import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 import { resolveAttributeTableColumnsOption } from './dataset-part';
 import {
   sortAttributeTableRows,
@@ -69,10 +71,18 @@ export type CreateAttributeTableStoreOptions = {
 };
 
 function featureMatchesId(feature: Feature, requested: Set<string>): boolean {
+  const selectKey = attributeTableIdentifyRowSelectKey({
+    id: feature.id,
+    data: feature,
+  });
+  if (selectKey && requested.has(selectKey)) return true;
   if (feature.id != null && requested.has(String(feature.id))) return true;
   const props = feature.properties;
-  if (props && typeof props === 'object' && props['id'] != null) {
-    if (requested.has(String(props['id']))) return true;
+  if (props && typeof props === 'object') {
+    if (props[GEOJSON_FEATURE_ID_KEY] != null) {
+      if (requested.has(String(props[GEOJSON_FEATURE_ID_KEY]))) return true;
+    }
+    if (props['id'] != null && requested.has(String(props['id']))) return true;
   }
   return false;
 }

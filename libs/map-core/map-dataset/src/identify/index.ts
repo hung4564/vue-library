@@ -21,6 +21,17 @@ export type {
   IdentifySessionToggleResult,
 } from './control-model';
 export {
+  clearHighlight,
+  clearIdentifyResultHighlight,
+  onDetailClose,
+  onIdentifyClose,
+  paintHighlight,
+  paintHighlights,
+  paintIdentifyResultFocus,
+  syncIdentifyPointerPick,
+} from './highlight-session';
+export type { HighlightSessionIntent } from './highlight-session';
+export {
   createDefaultHighlightResolver,
   featuresFromIdentifyRecords,
   getGlobalHighlightResolver,
@@ -108,9 +119,19 @@ export type {
   IdentifyLayerFilterPayload,
   IdentifyScopeToggleResult,
 } from './scope';
+export {
+  createIdentifyFeatureResolver,
+  resolveIdentifyFeatureData,
+  resolveIdentifyFeatures,
+  resolveIdentifyFeaturesData,
+} from './source-geometry';
+export type { IdentifyFeatureResolveContext } from './source-geometry';
 
 export type {
   IdentifyFeatureRow,
   IdentifyMultiResult,
+  IdentifyResolveFeatureQuery,
+  IdentifyResolveFeatureResult,
   IIdentifyView,
 } from '../interfaces/dataset.parts';
+export { isIdentifyResolveFeatureQuery } from '../interfaces/dataset.parts';

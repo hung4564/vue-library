@@ -161,3 +161,5 @@ createDataManagement('records', {
 | `syncMap: false` | CRUD only; map source managed elsewhere |
 
 Export and Attribute table resolve data via `list({ pageSize: 'all' })` when a `data-management` sibling exists.
+
+Identify geometry enrichment is **not** on data-management — use Identify `getFeature` (see [Identify](./identify.md#getfeature-geometry-enrichment)).

@@ -172,6 +172,9 @@ svg.layer-control__empty-icon {
   flex-direction: column;
   gap: var(--map-space-lg, 12px);
 }
+.draggable-group__treeitem {
+  width: 100%;
+}
 
 .draggale-item {
   outline: thin;

@@ -4,7 +4,7 @@ import {
   registerMapReadySubscriber,
   registerMapStoreCleanupRegistrar,
 } from '@hungpvq/map-core';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRootDataset } from '../model/dataset.base';
 import {
   DEFAULT_HIGHLIGHT_DATA,
@@ -462,6 +462,118 @@ describe('HighlightController selection / hide / pointer fields', () => {
     else delete (globalThis as { requestAnimationFrame?: unknown }).requestAnimationFrame;
     if (caf) globalThis.cancelAnimationFrame = caf;
     else delete (globalThis as { cancelAnimationFrame?: unknown }).cancelAnimationFrame;
+  });
+});
+
+describe('HighlightController hideEntry / duration / pointerClickEnabled', () => {
+  const feature = (id: string) => ({
+    type: 'Feature' as const,
+    id,
+    properties: { name: id },
+    geometry: { type: 'Point' as const, coordinates: [105, 21] },
+  });
+
+  function installFakeMap(mapId: string) {
+    const raf = globalThis.requestAnimationFrame;
+    const caf = globalThis.cancelAnimationFrame;
+    globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
+      setTimeout(() => cb(performance.now()), 0) as unknown as number) as typeof requestAnimationFrame;
+    globalThis.cancelAnimationFrame = ((id: number) =>
+      clearTimeout(id)) as typeof cancelAnimationFrame;
+
+    const fakeMap = {
+      id: mapId,
+      getLayer: () => undefined,
+      getSource: () => undefined,
+      addSource: () => undefined,
+      addLayer: () => undefined,
+      removeLayer: () => undefined,
+      moveLayer: () => undefined,
+      setPaintProperty: () => undefined,
+      querySourceFeatures: () => [],
+    } as unknown as MapSimple;
+
+    registerMapAccessor((id, cb) => {
+      if (id !== mapId) return undefined;
+      if (typeof cb === 'function') cb(fakeMap);
+      return fakeMap;
+    });
+
+    return () => {
+      destroyHighlightController(mapId);
+      registerMapAccessor(() => undefined);
+      if (raf) globalThis.requestAnimationFrame = raf;
+      else
+        delete (globalThis as { requestAnimationFrame?: unknown })
+          .requestAnimationFrame;
+      if (caf) globalThis.cancelAnimationFrame = caf;
+      else
+        delete (globalThis as { cancelAnimationFrame?: unknown })
+          .cancelAnimationFrame;
+    };
+  }
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('hideEntry removes all entries sharing the same id', async () => {
+    const cleanup = installFakeMap('hl-hide-entry');
+    try {
+      const hl = getHighlightController('hl-hide-entry');
+      await hl.show(feature('same'), {
+        source: 'detail',
+        style: { durationMs: 0 },
+        selection: { policy: 'single', replaceScope: 'source' },
+      });
+      await hl.show(feature('same'), {
+        source: 'identify',
+        style: { durationMs: 0 },
+        selection: { policy: 'single', replaceScope: 'source' },
+      });
+      expect(hl.entries).toHaveLength(2);
+      hl.hideEntry('same');
+      expect(hl.entries).toHaveLength(0);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('duration timer calls hideEntry for that id only', async () => {
+    vi.useFakeTimers();
+    const cleanup = installFakeMap('hl-duration');
+    try {
+      const hl = getHighlightController('hl-duration');
+      await hl.show(feature('keep'), {
+        source: 'detail',
+        style: { durationMs: 0 },
+        selection: { policy: 'single', replaceScope: 'source' },
+      });
+      await hl.show(feature('temp'), {
+        source: 'pointer',
+        style: { durationMs: 1000 },
+        selection: { policy: 'single', replaceScope: 'source' },
+      });
+      expect(hl.entries.map((e) => e.id).sort()).toEqual(['keep', 'temp']);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(hl.entries.map((e) => e.id)).toEqual(['keep']);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('setPointerClickEnabled gates pointer click pick (UX F)', () => {
+    const cleanup = installFakeMap('hl-pointer');
+    try {
+      const hl = getHighlightController('hl-pointer');
+      expect(hl.pointerClickEnabled).toBe(true);
+      hl.setPointerClickEnabled(false);
+      expect(hl.pointerClickEnabled).toBe(false);
+      hl.setPointerClickEnabled(true);
+      expect(hl.pointerClickEnabled).toBe(true);
+    } finally {
+      cleanup();
+    }
   });
 });
 

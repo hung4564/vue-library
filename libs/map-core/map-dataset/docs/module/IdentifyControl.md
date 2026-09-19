@@ -33,7 +33,7 @@ None. Feature actions are identify-node menus. Mount [`ComponentManagementContro
 
 ## Loading and empty results
 
-- While `getFeatures` / `getList` / `getMergedFeatures` runs, the **Identify toolbar button** shows `loading` (spinner). Map cursor may switch to `wait`.
+- While `getFeatures` / `getMergedFeatures` runs, the **Identify toolbar button** shows `loading` (spinner). Map cursor may switch to `wait`.
 - **Empty hits do not open** the result panel — loading simply ends (stale items are cleared).
 - The result panel opens only when the resolved hit action is **result** (or `auto` falls through to result). If that panel is already open, its in-panel loading state stays in sync.
 
@@ -96,7 +96,7 @@ setHighlightResolver(mapId, createDefaultHighlightResolver());
 // setGlobalHighlightResolver(createDefaultHighlightResolver());
 ```
 
-See [Identify](../create-dataset/identify.md) for `getList` / merge APIs and `singleLayer`.
+See [Identify](../create-dataset/identify.md) for `getFeature` / merge APIs and `singleLayer`.
 
 ## Vue
 

@@ -32,7 +32,13 @@ import {
   setGeoExportActiveSource,
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
-import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import {
+  getHighlightResolver,
+} from '@hungpvq/map-dataset/identify';
+import {
+  bindHighlightMittBridge,
+  emitHighlightAttributeTableClose,
+} from '@hungpvq/map-dataset/highlight';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
   createMenuConditionContext,
@@ -55,7 +61,6 @@ import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapHighlight } from '../../store/highlight';
 import AttributeTableView from './AttributeTableView.vue';
 
 const props = defineProps<AttributeTableProps>();
@@ -65,8 +70,8 @@ provideMenuConditionContext(() => ({
 }));
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const controlId = attributeTableControlId(props.layer.id);
-const hl = useMapHighlight(mapId.value);
 const { trans } = useLang(mapId.value);
+const unbindMittBridge = bindHighlightMittBridge(mapId.value);
 const show = ref(true);
 const tick = ref(0);
 const resolvedUi = computed(() =>
@@ -262,17 +267,18 @@ function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
   }
   return loggerFactory.ensureActionContext(
     { mapId: mapId.value, span: 'attribute-table.select-rows' },
-    () => {
+    async () => {
       const ids = (payload?.ids ?? []).map(String);
       clearPendingAttributeTableSelectRows(mapId.value, props.layer.id);
       closed = false;
       show.value = true;
-      void controller.value.selectIds(ids);
+      await controller.value.load('initial');
+      await controller.value.selectIds(ids);
     },
   );
 }
 function clearAttributeTableHighlight() {
-  hl.hideIfSource('attribute-table');
+  emitHighlightAttributeTableClose(mapId.value, { dataset: props.layer });
 }
 /**
  * X / Escape: remove from ComponentManagement (same as LayerDetail).
@@ -289,21 +295,23 @@ function onUpdateShow(val: boolean) {
   show.value = val;
   if (!val) handleClose();
 }
-function applySelection(focus?: AttributeTableRow) {
+function applySelection(_focus?: AttributeTableRow) {
   return loggerFactory.ensureActionContext(
     { mapId: mapId.value, span: 'attribute-table.selection' },
-    () => {
-      const s = controller.value.getState();
-      const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-      const current = focus ?? selected[0];
+    async () => {
+      const rows = await controller.value.resolveFeaturesForSelection();
+      const features = rows
+        .map((row) => row.feature as Feature)
+        .filter((f): f is Feature => !!f?.geometry);
       void getHighlightResolver(mapId.value).execute({
         mapId: mapId.value,
-        count: selected.length,
-        features: current ? [current.feature as Feature] : [],
+        count: features.length,
+        features,
         dataset: props.layer,
         sources: ['attribute-table'],
       });
-      if (selected.length === 0 || !s.zoomToSelection) return;
+      const s = controller.value.getState();
+      if (features.length === 0 || !s.zoomToSelection) return;
       void zoomMapToSelection();
     },
   );
@@ -436,6 +444,7 @@ onMounted(async () => {
   await controller.value.load('initial');
 });
 onUnmounted(() => {
+  unbindMittBridge();
   unsub?.();
   clearGeoExportActiveSource(mapId.value, props.layer.id);
   controller.value.dispose();

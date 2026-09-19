@@ -32,7 +32,7 @@ const props = defineProps<
 
 const { mapId, moduleContainerProps } = useMap(props);
 const { trans } = useLang(mapId.value);
-const { addDataset } = useMapDataset(mapId.value);
+const { addDataset } = useMapDataset(mapId);
 const emit = defineEmits(['update:show']);
 
 const cShow = computed({

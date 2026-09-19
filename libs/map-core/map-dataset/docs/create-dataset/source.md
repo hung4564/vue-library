@@ -34,6 +34,8 @@ const source = createDatasetPartGeojsonSourceComponent(
 
 After add: `source.updateData(map, nextGeoJSON)` to replace features.
 
+**`createGeoJsonDataset`:** stamps every feature with `properties._id` (`GEOJSON_FEATURE_ID_KEY` / `ensureGeojsonFeatureIds`) when no id exists, and sets source `promoteId: '_id'` so MapLibre `feature.id` matches Identify ↔ AttributeTable after zoom. Prefer this over `generateId` when you need table select / highlight sync. Manual sources should pass `promoteId: '_id'` (or your business id field) the same way.
+
 When the list has **Export** / **Attribute table** menus (opt-in via `addMenu`, or from `createGeoJsonDataset`), Export downloads this source as GeoJSON / KML / CSV / Shapefile and Attribute table lists feature properties. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
 ## Raster tiles

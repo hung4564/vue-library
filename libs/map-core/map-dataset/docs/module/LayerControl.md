@@ -45,7 +45,7 @@ LayerControl stays a UI host. Shared orchestration lives in `@hungpvq/map-datase
 
 Custom LayerControl forks should call `registerAddGeojsonHereForMap` on mount (and its cleanup on unmount) when the map also mounts [`MapContextMenuControl`](/map/core/module/MapContextMenuControl).
 
-Layer list rows refresh when datasets are added/removed via `useMapDataset().datasetVersion` (plain store bag is not framework-reactive) — see [useMapDataset](../helper/useMapDataset.md).
+Layer list rows refresh when datasets are added/removed via `useMapDataset(mapId).datasetVersion` (pass the **mapId ref/computed**, not `mapId.value` — plain store bag is not framework-reactive) — see [useMapDataset](../helper/useMapDataset.md).
 
 ### Layer list types (custom UIs)
 

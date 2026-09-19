@@ -69,29 +69,32 @@ function canOpenIdentifyAttributeTable(ctx: IdentifyHitActionContext): boolean {
 }
 
 /**
- * Legacy auto path: single-layer + one feature + show-detail menu.
- * Kept for `onSingle`/`onMultiple` = `'auto'` and public helpers.
+ * Auto path: exactly one feature + show-detail menu.
+ * Scoped filter (`singleLayer`) OR a single identify record with hits.
  */
 export function shouldOpenIdentifyShowDetail(
   ctx: IdentifyHitActionContext,
 ): boolean {
   if (isIdentifyContextAborted(ctx)) return false;
   const { total, records, singleLayer } = ctx;
-  if (!singleLayer || total !== 1) return false;
+  if (total !== 1) return false;
+  if (!(singleLayer || records.length === 1)) return false;
   const first = getFirstIdentifyMultiFeature(records);
   return !!first?.identify.hasMenu(LIST_VIEW_MENU_ID.item.showDetail);
 }
 
 /**
- * Legacy auto path: single-layer + attribute-table menu.
+ * Auto path: one identify node with hits + attribute-table menu.
+ * Does not require the Identify layer filter to be scoped — a newly created
+ * World Cities sample under "All layers" still opens the table when it is the
+ * only layer that returned features.
  */
 export function shouldOpenIdentifyAttributeTable(
   ctx: IdentifyHitActionContext,
 ): boolean {
   if (isIdentifyContextAborted(ctx)) return false;
-  const { total, records, singleLayer } = ctx;
+  const { total, records } = ctx;
   return (
-    !!singleLayer &&
     records.length === 1 &&
     !!total &&
     !!getAttributeTableTarget(records)

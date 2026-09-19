@@ -10,6 +10,10 @@ import {
   type IDataset,
 } from '@hungpvq/map-dataset';
 import {
+  bindHighlightMittBridge,
+  emitHighlightDetailClose,
+} from '@hungpvq/map-dataset/highlight';
+import {
   filterLayerDetailHeaderMenus,
   getItemMenuHost,
   getResolvedMenus,
@@ -22,10 +26,9 @@ import {
   useMap,
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
-import { useMapHighlight } from '../../store/highlight';
 import TableTdLayer from './table-td-layer.vue';
 
 const props = withDefaults(
@@ -43,8 +46,8 @@ const props = withDefaults(
 
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
-const hl = useMapHighlight(mapId.value);
 const { trans } = useLang(mapId.value);
+const unbindMittBridge = bindHighlightMittBridge(mapId.value);
 const show = ref(true);
 /** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
 let closed = false;
@@ -75,7 +78,10 @@ function handleClose() {
   if (closed) return;
   closed = true;
   show.value = false;
-  hl.hideIfSource('detail');
+  emitHighlightDetailClose(mapId.value, {
+    item: props.item,
+    dataset: props.view,
+  });
   emit('close');
 }
 
@@ -112,6 +118,10 @@ const { panelBind } = useRegisterMapControl(mapId, {
       },
     },
   ],
+});
+
+onUnmounted(() => {
+  unbindMittBridge();
 });
 </script>
 <template>

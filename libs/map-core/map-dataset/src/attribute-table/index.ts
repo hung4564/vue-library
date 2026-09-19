@@ -40,6 +40,7 @@ export {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_GEOMETRY_KEY,
   attributeTableControlId,
+  attributeTableIdentifyRowSelectKey,
   buildAttributeTable,
   clearPendingAttributeTableSelectRows,
   filterAttributeTableRows,

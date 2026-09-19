@@ -48,3 +48,20 @@ export {
   type HighlightController,
 } from './controller';
 export { bindHighlightPickDatasets } from './bind-pick';
+export {
+  MAP_DATASET_EVENT,
+  bindHighlightMittBridge,
+  cleanHighlightMittBridge,
+  destroyHighlightMittBridge,
+  emitHighlightAttributeTableClose,
+  emitHighlightClear,
+  emitHighlightDetailClose,
+  emitHighlightIdentifyClose,
+  ensureHighlightMittBridge,
+  releaseHighlightMittBridge,
+} from './mitt';
+export type {
+  HighlightClearTarget,
+  MapDatasetClosePayload,
+  MapDatasetEvent,
+} from './mitt';

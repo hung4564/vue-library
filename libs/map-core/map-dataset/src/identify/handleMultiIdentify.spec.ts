@@ -50,8 +50,8 @@ describe('createIdentifyMapboxComponent.getFeatures', () => {
     getMapMock.mockReset();
   });
 
-  it('resolves without hanging when getList is absent', async () => {
-    const identify = createIdentifyMapboxComponent('NoList', {
+  it('resolves without hanging and dedupes by id', async () => {
+    const identify = createIdentifyMapboxComponent('Rows', {
       field_id: 'id',
       field_name: 'name',
     });
@@ -68,8 +68,6 @@ describe('createIdentifyMapboxComponent.getFeatures', () => {
       getChildren: () => [],
     };
     identify.getParent = () => mapboxLeaf as never;
-    // Default identify includes getList; hang/fix path is when it is absent.
-    delete (identify as { getList?: unknown }).getList;
 
     getMapMock.mockImplementation((_id: string, cb: (map: unknown) => void) => {
       cb({

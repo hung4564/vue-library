@@ -619,7 +619,7 @@ Toggle on → opens IdentifyControl, starts map click, queries only that identif
 
 ### `createMenuItemToBoundActionForItem`
 
-Identify / feature row action: fly to the feature geometry and highlight it.
+Identify / feature row action: fly the camera to the feature geometry (**no highlight** — UX D). Detail/Identify `value.geometry` can be MapLibre-queried and drift with zoom; painting it would show a skewed glow.
 
 | | |
 | --- | --- |
@@ -627,8 +627,8 @@ Identify / feature row action: fly to the feature geometry and highlight it.
 | **Location** | `menu` (default — shows under row ⋮ via `DatasetMenus`) |
 | **Id** | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`) |
 | **Default name** | `Fly to` |
-| **Click** | `fitBounds` on `value.geometry` + `highlight` (`key: 'identify'`) |
-| **Needs** | Identify UI + highlight controller (`useMapHighlight` / `getHighlightController`); `value` must look like a feature |
+| **Click** | `fitBounds` on `value` / `value.geometry` only |
+| **Needs** | `value` must look like a feature (or `{ detail: Feature }`) |
 
 ```ts
 identify.addMenus([createMenuItemToBoundActionForItem()]);

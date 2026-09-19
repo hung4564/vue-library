@@ -38,6 +38,27 @@ const mixedCollection: FeatureCollection = {
 };
 
 describe('createGeoJsonDataset', () => {
+  it('stamps _id and promoteId for Identify↔AttributeTable matching', () => {
+    const dataset = createGeoJsonDataset({
+      name: 'WorldCities',
+      geojson: pointCollection,
+      type: 'point',
+    });
+    const source = findAllComponentsByType(dataset, 'source')[0] as {
+      getData?: () => FeatureCollection;
+      getMapboxSource?: () => { promoteId?: string; data?: FeatureCollection };
+    };
+    const data = source.getData?.() ?? source.getMapboxSource?.()?.data;
+    expect(data?.features?.[0]?.properties?._id).toBe('f:0');
+    expect(data?.features?.[0]?.id).toBe('f:0');
+    expect(source.getMapboxSource?.()?.promoteId).toBe('_id');
+
+    const identify = findAllComponentsByType(dataset, 'identify')[0] as {
+      config?: { field_id?: string };
+    };
+    expect(identify.config?.field_id).toBe('_id');
+  });
+
   it('builds root with list, bound, source, layer, and identify parts', () => {
     const dataset = createGeoJsonDataset({
       name: 'Cities',

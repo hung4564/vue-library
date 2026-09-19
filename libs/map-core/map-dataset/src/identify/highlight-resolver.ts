@@ -1,11 +1,16 @@
 import { createMapCoreMetaRegistry, FallbackResolver } from '@hungpvq/map-core';
-import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
-import { getHighlightController } from '../highlight/controller';
 import type { HighlightSource } from '../highlight/types';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
 import { convertItemToFeature } from '../utils/convert';
+import {
+  clearHighlight,
+  paintHighlight,
+  paintHighlights,
+  type HighlightSessionIntent,
+} from './highlight-session';
+import type { IdentifyResolvedHitAction } from './hit-action';
 
 /**
  * Highlight map-FX context — same shape idea as identify UI context:
@@ -22,47 +27,116 @@ export type HighlightContext = {
   dataset?: IDataset;
   /** Highlight sources to clear / paint (default `['identify']` after prepare). */
   sources?: HighlightSource[];
+  /**
+   * From Identify UI resolve — drives default paint intent
+   * (`detail` / `table` / `result`).
+   * When `detail` / `table`, that UI owns highlight; Identify only paints when it owns
+   * the hit and exactly one feature matched.
+   */
+  hitAction?: IdentifyResolvedHitAction;
   signal?: AbortSignal;
 };
 
-function clearSources(mapId: string, sources: HighlightSource[]) {
-  const hl = getHighlightController(mapId);
-  for (const source of sources) {
-    hl.hideIfSource(source);
+function sourceAsIntent(source: HighlightSource): HighlightSessionIntent {
+  if (
+    source === 'detail' ||
+    source === 'identify' ||
+    source === 'attribute-table' ||
+    source === 'hover' ||
+    source === 'pointer'
+  ) {
+    return source;
   }
+  return 'identify';
+}
+
+function isAttributeTableSource(ctx: HighlightContext): boolean {
+  return (ctx.sources?.[0] ?? '') === 'attribute-table';
 }
 
 function createDefaultHighlightResolverActions() {
   return [
+    // E: AttributeTable owns paint — highlight every selected feature
     {
-      when: (ctx: HighlightContext) =>
-        (ctx.count ?? 0) === 1 && !!ctx.features?.[0],
+      when: (ctx: HighlightContext) => isAttributeTableSource(ctx),
       execute: async (ctx: HighlightContext) => {
         if (ctx.signal?.aborted) return;
-        const feature = ctx.features![0]!;
-        const sources = ctx.sources!.length ? ctx.sources! : ['identify'];
-        await loggerFactory.ensureActionContext(
-          {
-            mapId: ctx.mapId,
-            span: 'highlight.paint',
-            fn: 'highlightFromIdentify',
-          },
-          () =>
-            getHighlightController(ctx.mapId).show(feature, {
-              source: sources[0]!,
-              dataset: ctx.dataset,
-            }),
-        );
+        const features = (ctx.features ?? []).filter((f) => !!f?.geometry);
+        if (!features.length) {
+          clearHighlight(ctx.mapId, 'attribute-table');
+          return;
+        }
+        await paintHighlights(ctx.mapId, {
+          intent: 'attribute-table',
+          features,
+          dataset: ctx.dataset,
+        });
       },
     },
+    // A: Identify → Detail owns paint (single displayed feature)
+    {
+      when: (ctx: HighlightContext) =>
+        !isAttributeTableSource(ctx) &&
+        ctx.hitAction === 'detail' &&
+        (ctx.count ?? 0) === 1 &&
+        !!ctx.features?.[0],
+      execute: async (ctx: HighlightContext) => {
+        if (ctx.signal?.aborted) return;
+        await paintHighlight(ctx.mapId, {
+          intent: 'detail',
+          feature: ctx.features![0]!,
+          dataset: ctx.dataset,
+        });
+      },
+    },
+    // Identify → table: Identify clears; AttributeTable will paint selection
+    {
+      when: (ctx: HighlightContext) =>
+        !isAttributeTableSource(ctx) && ctx.hitAction === 'table',
+      execute: (ctx: HighlightContext) => {
+        if (ctx.signal?.aborted) return;
+        clearHighlight(ctx.mapId, 'identify');
+      },
+    },
+    // Identify owns hit: only paint when exactly one feature in the pick
+    {
+      when: (ctx: HighlightContext) =>
+        !isAttributeTableSource(ctx) &&
+        ctx.hitAction !== 'detail' &&
+        ctx.hitAction !== 'table' &&
+        (ctx.count ?? 0) === 1 &&
+        !!ctx.features?.[0],
+      execute: async (ctx: HighlightContext) => {
+        if (ctx.signal?.aborted) return;
+        const source = ctx.sources?.length ? ctx.sources[0]! : 'identify';
+        await paintHighlight(ctx.mapId, {
+          intent: sourceAsIntent(source),
+          feature: ctx.features![0]!,
+          dataset: ctx.dataset,
+        });
+      },
+    },
+    // Multi / empty Identify (or anything unmatched): clear those sources — no multi paint
     {
       always: true as const,
       when: (ctx: HighlightContext) =>
-        !((ctx.count ?? 0) === 1 && !!ctx.features?.[0]),
+        !isAttributeTableSource(ctx) &&
+        !(
+          (ctx.hitAction === 'detail' &&
+            (ctx.count ?? 0) === 1 &&
+            !!ctx.features?.[0]) ||
+          ctx.hitAction === 'table' ||
+          (ctx.hitAction !== 'detail' &&
+            ctx.hitAction !== 'table' &&
+            (ctx.count ?? 0) === 1 &&
+            !!ctx.features?.[0])
+        ),
       execute: (ctx: HighlightContext) => {
         if (ctx.signal?.aborted) return;
         const sources = ctx.sources?.length ? ctx.sources : ['identify'];
-        clearSources(ctx.mapId, sources);
+        for (const source of sources) {
+          clearHighlight(ctx.mapId, sourceAsIntent(source));
+        }
       },
     },
   ];
@@ -83,6 +157,7 @@ export function createDefaultHighlightResolver() {
       sources: ctx.sources?.length
         ? ctx.sources
         : (['identify'] as HighlightSource[]),
+      hitAction: ctx.hitAction,
     };
   });
   return resolver;
@@ -156,12 +231,14 @@ export async function runHighlightFromRecords(options: {
   mapId: string;
   records: IdentifyMultiResult[];
   sources?: HighlightSource[];
+  hitAction?: IdentifyResolvedHitAction;
   signal?: AbortSignal;
 }): Promise<void> {
   await getHighlightResolver(options.mapId).execute({
     mapId: options.mapId,
     records: options.records,
     sources: options.sources,
+    hitAction: options.hitAction,
     signal: options.signal,
   });
 }

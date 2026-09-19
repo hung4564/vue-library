@@ -9,6 +9,10 @@ export { createDatasetPartGeojsonSourceComponent } from './source';
 export { findGeojsonSource } from './find-source';
 export { fetchGeojsonFromUrl } from './fetch-geojson';
 export {
+  ensureGeojsonFeatureIds,
+  GEOJSON_FEATURE_ID_KEY,
+} from './feature-id';
+export {
   GEOJSON_STYLE_AUTO,
   detectGeojsonCrs,
   detectGeojsonStyleType,

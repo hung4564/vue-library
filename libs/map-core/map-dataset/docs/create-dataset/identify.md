@@ -4,7 +4,22 @@ Click / box-select features. Attach menus with `createMenuBuilder` (see [Menus](
 
 Mount [`IdentifyControl`](../module/IdentifyControl.md) (or [`IdentifyShowFirstControl`](../module/IdentifyShowFirstControl.md)) on the map. Dialogs from identify menus need [`ComponentManagementControl`](../module/ComponentManagementControl.md).
 
-**IdentifyControl** paints highlight after each query via `getHighlightResolver(mapId).execute` (`source: 'identify'`); default policy: single hit → paint, multi → clear. Close still uses `hideIfSource('identify')`. **ShowFirst** and the Identify session abort superseded clicks the same way (`AbortController` + `requestId`).
+**IdentifyControl** paints highlight after each query via `getHighlightResolver(mapId).execute` with `hitAction` from UI resolve — defaults use the [highlight session API](./highlight.md#highlight-session-api-ux-intents) (`paintHighlight` / `clearHighlight`; cascade `durationMs`). Close emits mitt `IDENTIFY_CLOSE` via `emitHighlightIdentifyClose` (payload `{ mapId, dataset? }` when scoped to one identify node) — hosts do not call `onIdentifyClose` directly. **ShowFirst** and the Identify session abort superseded clicks the same way (`AbortController` + `requestId`).
+
+When `hitAction` is `table`, Identify opens AttributeTable and selects rows by stable `_id` / business id — see [Attribute table](./attribute-table.md#identify--row-select-keys).
+
+**Geometry resolve order** (fit-bounds / Detail / highlight):
+
+Shared `FallbackResolver` pipeline for **single** and **merge** (`resolveIdentifyFeatures` → `Feature[]`):
+
+0. Dedupe MapLibre hits by primary id: `field_id` → `_id` → `feature.id` → `id`  
+1. Identify `getFeature?` → always return `Feature[]` (or `null` to fall through)  
+   - 1 hit: `{ feature, source, id }`  
+   - ≥2 hits / merge: `{ features, source, ids }`  
+2. Else match **GeoJSON source** Feature by `field_id` / `_id`  
+3. Else MapLibre `queryRenderedFeatures` geometry (may drift with zoom)
+
+Row `id` uses the same primary-id order so Identify ↔ AttributeTable stay aligned when sources use `promoteId: '_id'`.
 
 **Events:** none on the identify node. Menu `setClick` receives `{ layer, mapId, value, event, meta, context }` (`value` is the feature).
 
@@ -74,6 +89,7 @@ createDatasetPartIdentifyComponentBuilder('merged').isUseMerge('mapbox-group').b
 | `isUseMerge(id?)` | Merged query (`id` default `'mapbox-group'`) |
 | `onSingle(action)` | UI when exactly one feature is hit (`detail` \| `table` \| `result` \| `auto`) |
 | `onMultiple(action)` | UI when multiple features are hit (`detail` = first/top feature) |
+| `setGetFeature(fn)` | Geometry enrichment (`Feature[]`); see below |
 | `addMenu` / `addMenus` | Actions on each result |
 
 ```ts
@@ -152,31 +168,66 @@ setHighlightResolver(mapId, createDefaultHighlightResolver()); // null clears
 
 Registry keys: global `map:core:meta.registries['highlight-resolver']`; per-map `map:core[mapId].resolver['highlight-resolver']`. See [Highlight](./highlight.md#highlightresolver-identify--attributetable-map-fx).
 
-## Async detail API (`getList`)
+## `getFeature` (geometry enrichment)
 
-After map hit-test, override `getList` to load / enrich properties (e.g. REST call). Return flat objects used as feature `data`.
+After MapLibre hit-test (and id dedupe), Identify resolves each hit to a GeoJSON `Feature` via `FallbackResolver`:
+
+1. Optional `getFeature` on the Identify node  
+2. Sibling GeoJSON **source** (match by `field_id` / `_id`)  
+3. MapLibre rendered geometry
+
+**Always return `Feature[]`** (or `null` / `undefined` to skip to source). Query shape:
+
+| Hits | Query | Return |
+| --- | --- | --- |
+| 1 | `{ feature, source, id }` | `Feature[]` (usually length 1) |
+| ≥2 / merge group | `{ features, source, ids }` | `Feature[]` parallel to `features` / `ids` |
 
 ```ts
-const identify = createDatasetPartIdentifyComponentBuilder('API identify')
-  .setConfigFields([
-    { text: 'Id', value: 'id' },
-    { text: 'Name', value: 'name' },
-    { text: 'Status', value: 'status' },
-  ])
-  .build();
+import {
+  createIdentifyMapboxComponent,
+  createDatasetPartIdentifyComponentBuilder,
+} from '@hungpvq/map-dataset/identify';
 
-identify.getList = async (_mapId, features) => {
-  await new Promise((r) => setTimeout(r, 1000)); // fake latency
-  return features.map((feature) => ({
-    ...(feature.properties || {}),
-    id: feature.properties?.id ?? feature.id,
-    status: 'from-api',
-    geometry: feature.geometry,
-  }));
-};
+createIdentifyMapboxComponent(
+  'Identify',
+  { field_id: '_id', field_name: 'name' },
+  {
+    async getFeature(query) {
+      if ('features' in query && query.features) {
+        return Promise.all(
+          query.ids.map(async (id) => {
+            const detail = await fetch(`/api/detail/${id}`).then((r) => r.json());
+            return detail; // GeoJSON Feature
+          }),
+        );
+      }
+      const detail = await fetch(`/api/detail/${query.id}`).then((r) => r.json());
+      return [detail];
+    },
+  },
+);
+
+// Builder
+createDatasetPartIdentifyComponentBuilder('API identify')
+  .configFieldId('_id')
+  .setGetFeature(async (query) => {
+    if ('features' in query && query.features) {
+      return query.features.map((f, i) => ({
+        type: 'Feature' as const,
+        id: query.ids[i],
+        properties: { ...(f as { properties?: object }).properties, status: 'enriched' },
+        geometry: (f as { geometry: GeoJSON.Geometry }).geometry,
+      }));
+    }
+    return null; // fall through to source / rendered
+  })
+  .build();
 ```
 
-While this runs, [`IdentifyControl`](../module/IdentifyControl.md) shows **loading on the Identify toolbar button** (not by opening the result panel).
+While resolve runs, [`IdentifyControl`](../module/IdentifyControl.md) shows **loading on the Identify toolbar button**.
+
+Single and merge Identify share the same pipeline (`buildIdentifyFeatureRows` / `resolveIdentifyFeatures`); merge only differs by one MapLibre query across layers, then per-Identify `getFeature({ features, source, ids })`.
 
 ## Merged query API (`getMergedFeatures`)
 

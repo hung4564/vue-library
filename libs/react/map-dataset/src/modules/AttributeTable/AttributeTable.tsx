@@ -26,7 +26,13 @@ import {
   setGeoExportActiveSource,
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
-import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import {
+  getHighlightResolver,
+} from '@hungpvq/map-dataset/identify';
+import {
+  bindHighlightMittBridge,
+  emitHighlightAttributeTableClose,
+} from '@hungpvq/map-dataset/highlight';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
   createMenuConditionContext,
@@ -51,7 +57,6 @@ import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useMapHighlight } from '../../store/highlight';
 import { AttributeTableView } from './AttributeTableView';
 
 export function AttributeTable(props: AttributeTableProps) {
@@ -61,9 +66,6 @@ export function AttributeTable(props: AttributeTableProps) {
     ...merged,
     controlId,
   });
-  const hl = useMapHighlight(mapId);
-  const hlRef = useRef(hl);
-  hlRef.current = hl;
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   const toggleShowRef = useRef(toggleShow);
@@ -77,11 +79,12 @@ export function AttributeTable(props: AttributeTableProps) {
     localeReady.current = true;
   }
 
-  const clearHighlight = useCallback(() => {
-    hlRef.current.hideIfSource('attribute-table');
-  }, []);
-  const clearHighlightRef = useRef(clearHighlight);
-  clearHighlightRef.current = clearHighlight;
+  useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
+  const clearTableHighlight = useCallback(() => {
+    emitHighlightAttributeTableClose(mapId, { dataset: props.layer });
+  }, [mapId, props.layer]);
+  const clearHighlightRef = useRef(clearTableHighlight);
+  clearHighlightRef.current = clearTableHighlight;
 
   const controllerRef = useRef<AttributeTableController | null>(null);
   const [controller, setController] = useState<AttributeTableController | null>(
@@ -111,23 +114,23 @@ export function AttributeTable(props: AttributeTableProps) {
   zoomMapToSelectionRef.current = zoomMapToSelection;
 
   const applySelection = useCallback(
-    (ctrl: AttributeTableController, focus?: AttributeTableRow) => {
+    (ctrl: AttributeTableController, _focus?: AttributeTableRow) => {
       return loggerFactory.ensureActionContext(
         { mapId, span: 'attribute-table.selection' },
-        () => {
-          const s = ctrl.getState();
-          const selected = s.rows.filter((row) =>
-            s.selectedIds.includes(row.id),
-          );
-          const current = focus ?? selected[0];
+        async () => {
+          const rows = await ctrl.resolveFeaturesForSelection();
+          const features = rows
+            .map((row) => row.feature as Feature)
+            .filter((f): f is Feature => !!f?.geometry);
           void getHighlightResolver(mapId).execute({
             mapId,
-            count: selected.length,
-            features: current ? [current.feature as Feature] : [],
+            count: features.length,
+            features,
             dataset: props.layer,
             sources: ['attribute-table'],
           });
-          if (selected.length === 0 || !s.zoomToSelection) return;
+          const s = ctrl.getState();
+          if (features.length === 0 || !s.zoomToSelection) return;
           void zoomMapToSelectionRef.current(ctrl);
         },
       );
@@ -304,7 +307,7 @@ export function AttributeTable(props: AttributeTableProps) {
   function handleClose() {
     if (closedRef.current) return;
     closedRef.current = true;
-    clearHighlight();
+    clearTableHighlight();
     toggleShow(false);
     props.onClose?.();
   }
@@ -348,11 +351,15 @@ export function AttributeTable(props: AttributeTableProps) {
           }
           return loggerFactory.ensureActionContext(
             { mapId, span: 'attribute-table.select-rows' },
-            () => {
+            async () => {
               const ids = (payload?.ids ?? []).map(String);
               clearPendingAttributeTableSelectRows(mapId, props.layer.id);
+              closedRef.current = false;
               toggleShow(true);
-              void controllerRef.current?.selectIds(ids);
+              const ctrl = controllerRef.current;
+              if (!ctrl) return;
+              await ctrl.load('initial');
+              await ctrl.selectIds(ids);
             },
           );
         },
@@ -361,8 +368,8 @@ export function AttributeTable(props: AttributeTableProps) {
   });
 
   useEffect(() => {
-    if (!show) clearHighlight();
-  }, [show, clearHighlight]);
+    if (!show) clearTableHighlight();
+  }, [show, clearTableHighlight]);
 
   const itemMenuHost = getItemMenuHost(props.layer);
   const itemMenuConditionCtx = createMenuConditionContext(itemMenuHost, {

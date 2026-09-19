@@ -8,6 +8,10 @@ import type {
 import { loggerIdentify } from '../logger';
 import { handleMultiIdentify, handleMultiIdentifyGetFirst } from './models';
 import { getHighlightResolver } from './highlight-resolver';
+import {
+  countIdentifyMultiFeatures,
+  resolveIdentifyHitAction,
+} from './hit-action';
 import { getIdentifyResolver } from './resolver-registry';
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
@@ -198,9 +202,16 @@ export async function runIdentifyMulti(
     .debug('Identify resolver finished.', {
       resolverHandled: res != null,
     });
+  const hitAction = resolveIdentifyHitAction({
+    records: nonEmpty,
+    total: featureCount || countIdentifyMultiFeatures(nonEmpty),
+    singleLayer: !!filterIdentifyId,
+    signal,
+  });
   await getHighlightResolver(mapId).execute({
     mapId,
     records: nonEmpty,
+    hitAction,
     signal,
   });
   throwIfAborted(signal);
@@ -319,9 +330,16 @@ export async function runIdentifyShowFirst(
               resolverHandled: res != null,
               featureCount,
             });
+          const hitAction = resolveIdentifyHitAction({
+            records,
+            total: featureCount,
+            singleLayer: true,
+            signal,
+          });
           await getHighlightResolver(mapId).execute({
             mapId,
             records,
+            hitAction,
             signal,
           });
           throwIfAborted(signal);

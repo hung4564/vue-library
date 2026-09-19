@@ -7,15 +7,11 @@ import {
   toPlainJson,
 } from '@hungpvq/map-core';
 import type { Feature, GeoJSON, Geometry } from 'geojson';
-import {
-  detectGeojsonStyleTypes,
-  isGeojsonStyleAuto,
-  styleTypeToMapboxGeometryType,
-  type GeojsonStyleMode,
-} from './geojson-parse';
-import type { FieldFeaturesDef } from '../extra/field';
 import { createMenuItemAttributeTable } from '../attribute-table/menu';
+import type { FieldFeaturesDef } from '../extra/field';
 import { createMenuItemExportGeo } from '../geo-export';
+import { createIdentifyMapboxComponent } from '../identify';
+import type { IDataset } from '../interfaces/dataset.base';
 import {
   createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
@@ -23,15 +19,20 @@ import {
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
 } from '../menu/items';
-import type { IDataset } from '../interfaces/dataset.base';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
-import { createIdentifyMapboxComponent } from '../identify';
 import { createMultiMapboxLayerComponent } from '../model/layer/model';
 import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import { createDatasetPartBoundComponent } from '../model/part-bound.model';
-import { createDatasetPartGeojsonSourceComponent } from './source';
-import { LayerSimpleMapboxBuild } from '../style/layer-simple-builder';
 import type { LayerStyleType } from '../style/layer-simple-builder';
+import { LayerSimpleMapboxBuild } from '../style/layer-simple-builder';
+import { ensureGeojsonFeatureIds, GEOJSON_FEATURE_ID_KEY } from './feature-id';
+import {
+  detectGeojsonStyleTypes,
+  isGeojsonStyleAuto,
+  styleTypeToMapboxGeometryType,
+  type GeojsonStyleMode,
+} from './geojson-parse';
+import { createDatasetPartGeojsonSourceComponent } from './source';
 
 export type GeojsonDatasetOption = {
   name: string;
@@ -101,9 +102,12 @@ function resolveStyleLayers(
 }
 
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
-  const geojson = toPlainJson(
+  const raw = toPlainJson(
     data.crs ? reprojectGeojsonToWgs84(data.geojson, data.crs) : data.geojson,
   );
+  // Stamp stable _id before source/identify/AT so zoom-skewed MapLibre
+  // coordinates are not the only select key (World Cities, etc.).
+  const geojson = ensureGeojsonFeatureIds(raw);
   const dataset = createRootDataset(data.name);
 
   const list = createDatasetPartListViewUiComponent(data.name);
@@ -157,12 +161,19 @@ export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
   groupLayer.add(layer);
   groupLayer.add(list);
   const dataConvert = convertGeojsonToList(geojson);
-  const identify = createIdentifyMapboxComponent('Identify ' + data.name);
+  const identify = createIdentifyMapboxComponent('Identify ' + data.name, {
+    field_id: GEOJSON_FEATURE_ID_KEY,
+    field_name: 'name',
+    onMultiple: 'auto',
+    onSingle: 'auto',
+  });
   identify.addMenus([
     createMenuItemToBoundActionForItem(),
     createMenuItemShowDetailForItem(dataConvert.fields),
   ]);
-  const source = createDatasetPartGeojsonSourceComponent(data.name, geojson);
+  const source = createDatasetPartGeojsonSourceComponent(data.name, geojson, {
+    promoteId: GEOJSON_FEATURE_ID_KEY,
+  });
   dataset.add(source);
   dataset.add(groupLayer);
   dataset.add(identify);
@@ -203,3 +214,4 @@ function convertGeojsonToList(geojson: GeoJSON): {
 
   return { items, fields };
 }
+

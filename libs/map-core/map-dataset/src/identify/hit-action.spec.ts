@@ -124,6 +124,19 @@ describe('resolveIdentifyHitAction', () => {
     ).toBe('result');
   });
 
+  it('auto opens table when All layers but only one identify record hit', () => {
+    expect(
+      resolveAutoIdentifyHitAction(
+        makeCtx({
+          hasDetail: false,
+          hasTable: true,
+          featureCount: 3,
+          singleLayer: false,
+        }),
+      ),
+    ).toBe('table');
+  });
+
   it('falls back when explicit detail/table unavailable', () => {
     expect(
       resolveIdentifyHitAction(

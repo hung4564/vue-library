@@ -19,11 +19,16 @@ import {
   createIdentifySession,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
+  syncIdentifyPointerPick,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
   type IdentifySession,
 } from '@hungpvq/map-dataset/identify';
+import {
+  bindHighlightMittBridge,
+  emitHighlightIdentifyClose,
+} from '@hungpvq/map-dataset/highlight';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   defaultMapProps,
@@ -40,7 +45,6 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
-import { useMapHighlight } from '../../store/highlight';
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import IdentifyResultControl from './IdentifyResultControl.vue';
 
@@ -57,9 +61,9 @@ const props = withDefaults(
   { ...defaultMapProps },
 );
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
-const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId.value);
-const hl = useMapHighlight(mapId.value);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
 const { trans } = useLang(mapId.value);
+const unbindMittBridge = bindHighlightMittBridge(mapId.value);
 useEnsureDatasetBuiltinLocales(mapId.value);
 const views = ref<Array<IIdentifyView>>([]);
 const show = ref(!!props.show);
@@ -113,6 +117,7 @@ session = createIdentifySession({
   },
   syncResultPanel: (extra) => syncResultPanelRef(extra),
   onEventClickActive: (active) => {
+    syncIdentifyPointerPick(mapId.value, active);
     if (active) addEventClick();
     else removeEventClick();
   },
@@ -121,7 +126,14 @@ session = createIdentifySession({
     else removeEventBbox();
   },
   onCloseSideEffects: () => {
-    hl.hideIfSource('identify');
+    const filterId = session.getState().filterIdentifyId;
+    const dataset = filterId
+      ? views.value.find((view) => view.id === filterId)
+      : undefined;
+    emitHighlightIdentifyClose(mapId.value, {
+      ...(dataset ? { dataset } : {}),
+    });
+    syncIdentifyPointerPick(mapId.value, false);
   },
 });
 
@@ -143,7 +155,7 @@ function refreshViews() {
     getAllComponentsByType<IIdentifyView>('identify') || []
   ).reverse();
 }
-watch(datasetVersion, refreshViews, { immediate: true });
+watch([datasetVersion, mapId], refreshViews, { immediate: true });
 
 const hasViews = computed(() => views.value.length > 0);
 watch(hasViews, () => {
@@ -243,6 +255,7 @@ onMounted(() => {
   syncResultPanel();
 });
 onUnmounted(() => {
+  unbindMittBridge();
   session.teardownInputModes({ immediate: true });
   session.destroy();
   UniversalRegistry.unregisterMenuHandlerForMap(

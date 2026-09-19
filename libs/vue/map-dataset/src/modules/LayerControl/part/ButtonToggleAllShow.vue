@@ -30,7 +30,7 @@ const props = defineProps<{
 }>();
 const { callMap, mapId } = useMap();
 const { trans } = useLang(mapId.value);
-const { datasetVersion, getStoreDataset } = useMapDataset(mapId.value);
+const { datasetVersion, getStoreDataset } = useMapDataset(mapId);
 
 const allLayerShow = computed(() => {
   void datasetVersion.value;

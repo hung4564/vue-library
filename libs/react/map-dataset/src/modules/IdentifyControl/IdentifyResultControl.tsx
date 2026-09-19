@@ -12,9 +12,11 @@ import {
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import {
+  clearIdentifyResultHighlight,
   IDENTIFY_ALL_LAYERS_VALUE,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
+  paintIdentifyResultFocus,
   shouldApplyIdentifyRequest,
   type IdentifyResultGrouped,
   type IdentifyResultLayerItem,
@@ -133,13 +135,25 @@ const flatChildren = useMemo(() => {
     [mapId, toggleShow],
   );
 
+  useEffect(() => {
+    if (!show) {
+      clearIdentifyResultHighlight(mapId);
+      return;
+    }
+    const hit = flatChildren.find((x) => x.key === focusedChildKey);
+    void paintIdentifyResultFocus(mapId, hit?.child);
+  }, [show, focusedChildKey, flatChildren, mapId]);
+
   const { panelBind } = useRegisterMapControl(mapId, {
     id: IDENTIFY_RESULT_CONTROL.id,
     panelKind: 'popup',
     title: trans('map.identify.title'),
     buttonPosition: merged.position,
     show,
-    setShow: toggleShow,
+    setShow: (value) => {
+      toggleShow(value);
+      if (!value) clearIdentifyResultHighlight(mapId);
+    },
     getProps: () => ({
       position: merged.position,
       controlLayout: merged.controlLayout,
