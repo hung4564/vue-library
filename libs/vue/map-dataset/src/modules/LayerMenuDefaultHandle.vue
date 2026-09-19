@@ -99,7 +99,7 @@ UniversalRegistry.registerMenuHandlerForMap(
   LIST_VIEW_MENU_ID.highlight,
   ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
     if (value) {
-      void hl.show(value.detail, {
+      return hl.show(value.detail, {
         source: value.key,
         dataset: layer,
       });

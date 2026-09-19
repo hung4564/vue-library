@@ -1,4 +1,4 @@
-import { logHelper } from '@hungpvq/map-core';
+﻿import { logHelper } from '@hungpvq/map-core';
 import {
   createDefaultMapDrawStore,
   logger,
@@ -42,7 +42,7 @@ export function useMapDrawStore(mapId: string): MapDrawStore {
     () => {
       logHelper(logger, mapId, 'store')
         .with({ fn: 'useMapDrawStore', span: 'store.init' })
-        .debug('init');
+        .debug('Created scoped map store for mapId.');
       return createDefaultMapDrawStore();
     },
     {

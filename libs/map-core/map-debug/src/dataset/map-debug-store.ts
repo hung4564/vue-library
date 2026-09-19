@@ -1,14 +1,18 @@
-import { getOrCreateStore } from '@hungpvq/shared-store';
 import type { DatasetDebugApi } from './types';
+import {
+  MAP_DEBUG_STORE_KEY,
+  getMapDebugStore as getMapDebugStoreCore,
+  type MapDebugStore as MapDebugStoreCore,
+} from '@hungpvq/map-core/devtools';
 
-/** Process-wide debug bag (shared across duplicate package copies). */
-export const MAP_DEBUG_STORE_KEY = 'map:debug';
+export { MAP_DEBUG_STORE_KEY };
 
-export type MapDebugStore = {
+/** Process-wide debug bag — same object as {@link getMapDebugStoreCore}. */
+export type MapDebugStore = Omit<MapDebugStoreCore, 'dataset'> & {
   /** Dataset Inspector + console API (`installDatasetDebug`). */
   dataset?: DatasetDebugApi;
 };
 
 export function getMapDebugStore(): MapDebugStore {
-  return getOrCreateStore<MapDebugStore>(MAP_DEBUG_STORE_KEY, () => ({}));
+  return getMapDebugStoreCore() as MapDebugStore;
 }

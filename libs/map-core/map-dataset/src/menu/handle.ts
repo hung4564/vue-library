@@ -1,5 +1,5 @@
 import { logHelper, UniversalRegistry } from '@hungpvq/map-core';
-import { loggerFactory } from '@hungpvq/shared-log';
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { MenuAction, MenuItemCommon } from '../interfaces/dataset.parts';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
@@ -13,22 +13,149 @@ import type {
   MenuItemProps,
 } from './types';
 
-export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
-  if (menu.type !== 'item') return;
-
-  const click = (menu as MenuItemCommon).click;
-  if (!click) return;
-
-  return handleMenuActionClick(click, props);
-}
 const MAX_DEPTH = 5;
 const logger = loggerFactory.createLogger().setNamespace('menu');
+
+type NamedCommandHandler = CommandHandlerMenu & { name: string };
+
+function describeMenuClick(entry: unknown): string {
+  if (typeof entry === 'string') return `registry:${entry}`;
+  if (typeof entry === 'function') return 'function';
+  if (Array.isArray(entry)) {
+    const head = describeMenuClick(entry[0]);
+    return `tuple→${head}`;
+  }
+  if (entry != null && typeof entry === 'object') {
+    if (typeof (entry as { build?: unknown }).build === 'function') {
+      return 'builder';
+    }
+    if (typeof (entry as { execute?: unknown }).execute === 'function') {
+      return 'command';
+    }
+  }
+  return typeof entry;
+}
+
+function menuLogMeta(
+  context: {
+    mapId: string;
+    layer?: unknown;
+    context?: { [key: string]: unknown };
+  },
+  extra?: Record<string, unknown>,
+) {
+  const control =
+    typeof context.context?.['control'] === 'string'
+      ? context.context['control']
+      : undefined;
+  const layer = context.layer as
+    | { id?: string; type?: string; name?: string }
+    | undefined;
+  return {
+    control,
+    datasetId: typeof layer?.id === 'string' ? layer.id : undefined,
+    datasetType: typeof layer?.type === 'string' ? layer.type : undefined,
+    datasetName: typeof layer?.name === 'string' ? layer.name : undefined,
+    ...extra,
+  };
+}
+
+function menuClickLog(
+  context: { mapId: string },
+  depth: number,
+  index?: number,
+) {
+  const parts = [
+    'handleMenuActionClick',
+    String(depth),
+    index != null ? String(index) : undefined,
+  ].filter((x): x is string => x != null);
+  return logHelper(logger, context.mapId, ...parts).with({
+    fn: 'handleMenuActionClick',
+    span: 'menu.action',
+  });
+}
+
+export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
+  if (menu.type !== 'item') {
+    logHelper(logger, props.mapId, 'handleMenuAction')
+      .with({ fn: 'handleMenuAction', span: 'menu.action', mapId: props.mapId })
+      .debug('Menu action skipped because type is not item.', {
+        menuType: menu.type,
+      });
+    return;
+  }
+
+  const click = (menu as MenuItemCommon).click;
+  if (!click) {
+    logHelper(logger, props.mapId, 'handleMenuAction')
+      .with({ fn: 'handleMenuAction', span: 'menu.action', mapId: props.mapId })
+      .debug('Menu action skipped because click handler is missing.', {
+        menuId: typeof menu.id === 'string' ? menu.id : undefined,
+      });
+    return;
+  }
+
+  const control =
+    typeof props.context?.['control'] === 'string'
+      ? (props.context['control'] as string)
+      : undefined;
+  const menuId = typeof menu.id === 'string' ? menu.id : undefined;
+  const menuName =
+    'name' in menu && typeof menu.name === 'string' ? menu.name : undefined;
+  const layer = props.layer as
+    | { id?: string; type?: string; name?: string }
+    | undefined;
+  const datasetId = typeof layer?.id === 'string' ? layer.id : undefined;
+  const datasetType = typeof layer?.type === 'string' ? layer.type : undefined;
+  const datasetName = typeof layer?.name === 'string' ? layer.name : undefined;
+
+  const menuLabel = menuName || menuId;
+  const fn = menuLabel
+    ? control
+      ? `${control}/${menuLabel}`
+      : menuLabel
+    : control
+      ? `${control}/menu`
+      : 'handleMenuAction';
+
+  return loggerFactory.ensureActionContext(
+    {
+      mapId: props.mapId,
+      span: 'menu.action',
+      control,
+      menuId,
+      menuName,
+      datasetId,
+      datasetName,
+      datasetType,
+      fn,
+    },
+    () =>
+      runWithFunctionLog(
+        logHelper(logger, props.mapId, 'handleMenuAction'),
+        {
+          fn,
+          span: 'menu.action',
+          mapId: props.mapId,
+          control,
+          menuId,
+          menuName,
+          datasetId,
+          datasetName,
+          datasetType,
+        },
+        () => handleMenuActionClick(click, props),
+      ),
+  );
+}
 
 export function createCommandHandler(
   canHandle: CommandHandlerMenu['canHandle'],
   execute: CommandHandlerMenu['execute'],
-): CommandHandlerMenu {
-  return { canHandle, execute };
+  name = 'custom',
+): NamedCommandHandler {
+  return { name, canHandle, execute };
 }
 
 /** Xử lý string action → UniversalRegistry (map-scoped rồi global) */
@@ -41,12 +168,14 @@ export const StringCommandHandler = createCommandHandler(
       logHelper(logger, context.mapId, 'handleMenuActionClick')
         .with({ fn: 'StringCommandHandler', span: 'menu.action' })
         .warn(
-        `No handler found for key: ${key}`,
-      );
+          `Menu registry lookup failed: no handler registered for key "${key}".`,
+          menuLogMeta(context, { click: key, menuId: key }),
+        );
       return;
     }
     await handler(context);
   },
+  'string',
 );
 
 export const FunctionCommandHandler = createCommandHandler(
@@ -58,6 +187,7 @@ export const FunctionCommandHandler = createCommandHandler(
     if (isMenuClickBuilder(result)) return result;
     return undefined;
   }) as CommandHandlerMenu['execute'],
+  'function',
 );
 
 export const BuilderCommandHandler = createCommandHandler(
@@ -67,17 +197,16 @@ export const BuilderCommandHandler = createCommandHandler(
     const builtClick = (
       click as ReturnType<typeof createMenuClickBuilder>
     ).build();
-    await handleMenuActionClick(builtClick, context);
+    await handleMenuActionClick(builtClick, context, 1);
   },
+  'builder',
 );
 
 export const TupleCommandHandler = createCommandHandler(
   (
     entry,
-  ): entry is [
-    MenuItemClickCommon,
-    MenuItemHandle | Partial<MenuItemProps>,
-  ] => Array.isArray(entry) && entry.length == 2,
+  ): entry is [MenuItemClickCommon, MenuItemHandle | Partial<MenuItemProps>] =>
+    Array.isArray(entry) && entry.length == 2,
   (async (entry, context) => {
     const [key, transformer] = entry as [
       MenuItemClickCommon,
@@ -93,7 +222,7 @@ export const TupleCommandHandler = createCommandHandler(
     } else if (transformer) {
       props = createMenuProps(context as MenuItemProps, transformer);
     }
-    const commandHandlers: CommandHandlerMenu[] = [
+    const commandHandlers: NamedCommandHandler[] = [
       BuilderCommandHandler,
       StringCommandHandler,
       FunctionCommandHandler,
@@ -107,6 +236,7 @@ export const TupleCommandHandler = createCommandHandler(
       }
     }
   }) as CommandHandlerMenu['execute'],
+  'tuple',
 );
 export const DirectCommandHandler = createCommandHandler(
   (click): click is CommandHandlerMenuExecute =>
@@ -116,6 +246,7 @@ export const DirectCommandHandler = createCommandHandler(
     const cmd = entry as CommandHandlerMenuExecute;
     return cmd.execute(cmd, context);
   },
+  'command',
 );
 
 /** Helper kiểm tra builder */
@@ -142,15 +273,16 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
   const run = async () => {
     if (!action) return;
     if (depth > MAX_DEPTH) {
-      logHelper(logger, context.mapId, 'handleMenuActionClick')
-        .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-        .warn('Max recursion depth reached.');
+      menuClickLog(context, depth).warn(
+        'Menu click aborted because nesting exceeded max depth.',
+        menuLogMeta(context, { depth, maxDepth: MAX_DEPTH }),
+      );
       return;
     }
 
     const actions = Array.isArray(action) ? action : [action];
 
-    const commandHandlers: CommandHandlerMenu[] = [
+    const commandHandlers: NamedCommandHandler[] = [
       BuilderCommandHandler,
       StringCommandHandler,
       FunctionCommandHandler,
@@ -158,59 +290,58 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
       DirectCommandHandler,
     ];
     for (const [index, entry] of actions.entries()) {
-      logHelper(
-        logger,
-        context.mapId,
-        'handleMenuActionClick',
-        String(depth),
-      )
-        .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-        .debug('Executing function action', entry);
+      const clickKind = describeMenuClick(entry);
+      menuClickLog(context, depth, index).debug(
+        `Dispatching menu click entry #${index} at depth ${depth} (${clickKind}).`,
+        menuLogMeta(context, { clickKind }),
+      );
       let handled = false;
 
       for (const handler of commandHandlers) {
         if (handler.canHandle(entry)) {
-          logHelper(
-            logger,
-            context.mapId,
-            'handleMenuActionClick',
-            String(depth),
-            String(index),
-          )
-            .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-            .debug(`Context`, {
-            context,
-            handler,
-          });
-          const result = await handler.execute(entry, context);
-          logHelper(
-            logger,
-            context.mapId,
-            'handleMenuActionClick',
-            String(depth),
-            String(index),
-          )
-            .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-            .debug(`Handler executed`, {
-            handler: handler.constructor.name,
-            entry,
-          });
+          menuClickLog(context, depth, index).debug(
+            `Running menu command handler "${handler.name}" for ${clickKind}.`,
+            menuLogMeta(context, {
+              handler: handler.name,
+              clickKind,
+            }),
+          );
+          let result: unknown;
+          try {
+            result = await handler.execute(entry, context);
+          } catch (err) {
+            menuClickLog(context, depth, index).error(
+              `Menu command handler "${handler.name}" failed for ${clickKind}.`,
+              menuLogMeta(context, {
+                handler: handler.name,
+                clickKind,
+                errorName: err instanceof Error ? err.name : undefined,
+                errorMessage:
+                  err instanceof Error ? err.message : String(err),
+              }),
+            );
+            throw err;
+          }
+
+          menuClickLog(context, depth, index).debug(
+            `Menu command handler "${handler.name}" finished for ${clickKind}.`,
+            menuLogMeta(context, {
+              handler: handler.name,
+              clickKind,
+            }),
+          );
 
           const nextAction = await resolveActionResult(result);
 
           if (nextAction) {
-            logHelper(
-              logger,
-              context.mapId,
-              'handleMenuActionClick',
-              String(depth),
-              String(index),
-            )
-              .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-              .debug(`Recursing with next action`, {
-              nextAction,
-              depth: depth + 1,
-            });
+            menuClickLog(context, depth, index).debug(
+              `Chaining nested menu click at depth ${depth + 1} (${describeMenuClick(nextAction)}).`,
+              menuLogMeta(context, {
+                handler: handler.name,
+                nextKind: describeMenuClick(nextAction),
+                depth: depth + 1,
+              }),
+            );
             await handleMenuActionClick(nextAction, context, depth + 1);
           }
 
@@ -220,14 +351,10 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
       }
 
       if (!handled) {
-        logHelper(
-          logger,
-          context.mapId,
-          'handleMenuActionClick',
-          String(depth),
-        )
-          .with({ fn: 'handleMenuActionClick', span: 'menu.action' })
-          .warn('Unknown entry:', entry);
+        menuClickLog(context, depth, index).warn(
+          `Menu click entry skipped because no command handler matched (${clickKind}).`,
+          menuLogMeta(context, { clickKind }),
+        );
       }
     }
   };

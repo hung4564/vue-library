@@ -1,4 +1,4 @@
-import { logHelper } from '@hungpvq/map-core';
+﻿import { logHelper } from '@hungpvq/map-core';
 import {
   removeDatasetComponent,
   upsertDatasetComponent,
@@ -22,7 +22,7 @@ export const useMapDatasetComponentStore = (mapId: string) =>
   createMapScopedStore<MapDatasetComponentStore>(mapId, KEY as any, () => {
     logHelper(logger, mapId, 'store')
       .with({ fn: 'useMapDatasetComponentStore', span: 'store.init' })
-      .debug('init');
+      .debug('Created scoped map store for mapId.');
     const components: ComponentItem[] = [];
     const componentIds = ref<string[]>([]);
     return {

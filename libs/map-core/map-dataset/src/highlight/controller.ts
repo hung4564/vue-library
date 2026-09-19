@@ -6,6 +6,7 @@ import {
   subscribeMapReady,
 } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
 import { Popup, type MapMouseEvent, type PointLike } from 'maplibre-gl';
 import type { IDataset } from '../interfaces/dataset.base';
@@ -259,7 +260,7 @@ function createController(mapId: string): HighlightController {
     if (!map) {
       loggerHighlight
         .with({ fn: 'show', span: 'highlight.paint' })
-        .warn('show: map not ready', { mapId });
+        .warn('Highlight show skipped because the map instance is not ready.', { mapId });
       return;
     }
 
@@ -388,37 +389,51 @@ function createController(mapId: string): HighlightController {
     pointOrBox?: HighlightPointOrBox,
     options?: HighlightPickOptions,
   ): Promise<boolean> {
-    const partsOrDatasets = filterDatasetsForPointerEvent(
-      state.pickDatasets(),
-      options?.source === 'hover' ? 'hover' : 'click',
+    return loggerFactory.ensureActionContext(
+      { mapId, span: 'highlight.pick', fn: options?.source ?? 'pointer' },
+      async () =>
+        runWithFunctionLog(
+          loggerHighlight,
+          {
+            fn: 'pickAt',
+            span: 'highlight.pick',
+            mapId,
+          },
+          async () => {
+            const partsOrDatasets = filterDatasetsForPointerEvent(
+              state.pickDatasets(),
+              options?.source === 'hover' ? 'hover' : 'click',
+            );
+            const datasets = datasetsFromHighlightParts(partsOrDatasets);
+            const hit = await queryHighlightAtPoint(
+              mapId,
+              datasets.length ? datasets : partsOrDatasets,
+              pointOrBox as PointLike | [PointLike, PointLike] | undefined,
+            );
+            if (!hit) {
+              if (options?.source === 'hover') hideIfSource('hover');
+              else if (options?.source === 'pointer') {
+                hideIfSource('pointer');
+              }
+              return false;
+            }
+            const styleOverride =
+              options?.style ?? options?.styleForDataset?.(hit.dataset);
+            await show(hit.feature, {
+              dataset: hit.dataset,
+              source: options?.source ?? 'pointer',
+              style: styleOverride,
+              data: options?.data,
+              selection: options?.selection,
+              presentation: options?.presentation,
+              pointerLngLat: options?.pointerLngLat,
+              pointerPoint: options?.pointerPoint,
+              pointerEventType: options?.pointerEventType,
+            });
+            return true;
+          },
+        ),
     );
-    const datasets = datasetsFromHighlightParts(partsOrDatasets);
-    const hit = await queryHighlightAtPoint(
-      mapId,
-      datasets.length ? datasets : partsOrDatasets,
-      pointOrBox as PointLike | [PointLike, PointLike] | undefined,
-    );
-    if (!hit) {
-      if (options?.source === 'hover') hideIfSource('hover');
-      else if (options?.source === 'pointer') {
-        hideIfSource('pointer');
-      }
-      return false;
-    }
-    const styleOverride =
-      options?.style ?? options?.styleForDataset?.(hit.dataset);
-    await show(hit.feature, {
-      dataset: hit.dataset,
-      source: options?.source ?? 'pointer',
-      style: styleOverride,
-      data: options?.data,
-      selection: options?.selection,
-      presentation: options?.presentation,
-      pointerLngLat: options?.pointerLngLat,
-      pointerPoint: options?.pointerPoint,
-      pointerEventType: options?.pointerEventType,
-    });
-    return true;
   }
 
   function bindPointer(opts: HighlightBindPointerOptions): () => void {

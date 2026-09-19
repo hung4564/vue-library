@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { MemoryLogDataStore, type LogRecord } from '@hungpvq/shared-log';
 import {
   buildRequestFlowSteps,
   buildRequestFlowTree,
-  buildStructuredLogs,
-  collectLogsByRequestId,
-  filterLogs,
   formatFlowDelta,
-  namespaceParts,
   type LevelFilter,
 } from './log-helpers';
 import { displayValue, getValueType, hasChildren } from './tree-helpers';
@@ -17,7 +14,7 @@ function entry(
   namespaces: string[],
   args: unknown[],
   ts = 1,
-) {
+): LogRecord {
   return {
     id,
     header: { ts, level, namespaces },
@@ -25,60 +22,98 @@ function entry(
   };
 }
 
+function storeOf(records: LogRecord[]) {
+  const store = new MemoryLogDataStore({ limit: 10_000 });
+  for (const r of [...records].reverse()) store.append(r);
+  return store;
+}
+
 describe('log-helpers', () => {
-  it('filterLogs by level and search', () => {
-    const list = [
+  it('store.list by level and search', () => {
+    const store = storeOf([
       entry('1', 'info', ['map'], ['hello'], 1),
       entry('2', 'error', ['map'], ['boom'], 2),
-    ];
-    const filtered = filterLogs(
-      list,
-      'boom',
-      'error' as LevelFilter,
-      'all',
-      'all',
-      1,
-    );
+    ]);
+    const filtered = store.list({
+      search: 'boom',
+      level: 'error' as LevelFilter,
+      namespace: 'all',
+      mapId: 'all',
+    });
     expect(filtered).toHaveLength(1);
-    expect(filtered[0].id).toBe('2');
+    expect(filtered[0]!.id).toBe('2');
   });
 
-  it('buildStructuredLogs is a flat log list', () => {
-    const list = [
-      entry('1', 'info', [], ['a'], 1),
-      entry('2', 'warn', [], ['b'], 2),
-    ];
-    const structured = buildStructuredLogs(list);
-    expect(structured).toHaveLength(2);
-    expect(structured.every((item) => item.type === 'log')).toBe(true);
-  });
-
-  it('filterLogs by root namespace only', () => {
-    const list = [
+  it('store.list by root namespace only', () => {
+    const store = storeOf([
       entry('1', 'info', ['menu', 'click'], ['a'], 1),
       entry('2', 'info', ['menu', 'other'], ['b'], 2),
       entry('3', 'info', ['map:core', 'store'], ['c'], 3),
-    ];
-    const filtered = filterLogs(
-      list,
-      '',
-      'all' as LevelFilter,
-      'menu',
-      'all',
-      1,
-    );
+    ]);
+    const filtered = store.list({
+      search: '',
+      level: 'all' as LevelFilter,
+      namespace: 'menu',
+      mapId: 'all',
+    });
     expect(filtered.map((l) => l.id)).toEqual(['1', '2']);
   });
 
-  it('filterLogs by requestId', () => {
-    const list = [
+  it('store.list by actionId sorts by hierarchical index', () => {
+    const store = storeOf([
+      {
+        id: 'end',
+        header: {
+          ts: 3,
+          index: '2',
+          level: 'debug' as const,
+          namespaces: ['menu'],
+          actionId: 'req-sort',
+        },
+        args: ['END'],
+      },
+      {
+        id: 'mid',
+        header: {
+          ts: 2,
+          index: '1.1',
+          level: 'debug' as const,
+          namespaces: ['menu'],
+          actionId: 'req-sort',
+        },
+        args: ['mid'],
+      },
+      {
+        id: 'start',
+        header: {
+          ts: 1,
+          index: '1',
+          level: 'debug' as const,
+          namespaces: ['menu'],
+          actionId: 'req-sort',
+        },
+        args: ['START'],
+      },
+    ]);
+    const filtered = store.list({
+      search: '',
+      level: 'all' as LevelFilter,
+      namespace: 'all',
+      mapId: 'all',
+      actionId: 'req-sort',
+    });
+    expect(filtered.map((l) => l.id)).toEqual(['start', 'mid', 'end']);
+  });
+
+  it('store.list by actionId', () => {
+    const store = storeOf([
       {
         id: '1',
         header: {
           ts: 1,
           level: 'info' as const,
           namespaces: ['menu'],
-          requestId: 'req-aaa',
+          actionId: 'req-aaa',
         },
         args: ['a'],
       },
@@ -88,33 +123,66 @@ describe('log-helpers', () => {
           ts: 2,
           level: 'info' as const,
           namespaces: ['menu'],
-          requestId: 'req-bbb',
+          actionId: 'req-bbb',
         },
         args: ['b'],
       },
-    ];
-    const filtered = filterLogs(
-      list,
-      '',
-      'all' as LevelFilter,
-      'all',
-      'all',
-      1,
-      'bbb',
-    );
+    ]);
+    const filtered = store.list({
+      search: '',
+      level: 'all' as LevelFilter,
+      namespace: 'all',
+      mapId: 'all',
+      actionId: 'bbb',
+    });
     expect(filtered).toHaveLength(1);
-    expect(filtered[0].id).toBe('2');
+    expect(filtered[0]!.id).toBe('2');
   });
 
-  it('namespaceParts strips uuid mapId', () => {
-    const id = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-    const parts = namespaceParts([id, 'menu', 'click']);
-    expect(parts.mapId).toBe(id);
-    expect(parts.path).toBe('menu:click');
+  it('store.list by actionId (flow) returns all matches sorted by index', () => {
+    const store = storeOf([
+      {
+        id: 'a',
+        header: {
+          ts: 1,
+          index: '1',
+          level: 'debug' as const,
+          namespaces: ['x'],
+          actionId: 'req-f',
+          spanId: 'fn-1',
+        },
+        args: ['START'],
+      },
+      {
+        id: 'b',
+        header: {
+          ts: 2,
+          index: '1.1',
+          level: 'debug' as const,
+          namespaces: ['x'],
+          actionId: 'req-f',
+          spanId: 'fn-1',
+        },
+        args: ['mid'],
+      },
+      {
+        id: 'c',
+        header: {
+          ts: 3,
+          index: '2',
+          level: 'debug' as const,
+          namespaces: ['y'],
+          actionId: 'other',
+        },
+        args: ['other'],
+      },
+    ]);
+    const matched = store.list({ actionId: 'req-f' });
+    expect(matched.map((l) => l.id)).toEqual(['a', 'b']);
   });
 
-  it('collectLogsByRequestId prefers index over equal ts', () => {
-    const list = [
+  it('store.list by actionId (flow) prefers index over equal ts', () => {
+    const store = storeOf([
       {
         id: 'end',
         header: {
@@ -122,9 +190,9 @@ describe('log-helpers', () => {
           index: 3,
           level: 'debug' as const,
           namespaces: ['x'],
-          requestId: 'req-i',
+          actionId: 'req-i',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
         },
         args: ['END'],
       },
@@ -135,9 +203,9 @@ describe('log-helpers', () => {
           index: 1,
           level: 'debug' as const,
           namespaces: ['x'],
-          requestId: 'req-i',
+          actionId: 'req-i',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
         },
         args: ['START'],
       },
@@ -148,14 +216,14 @@ describe('log-helpers', () => {
           index: 2,
           level: 'info' as const,
           namespaces: ['x'],
-          requestId: 'req-i',
+          actionId: 'req-i',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
         },
         args: ['mid'],
       },
-    ];
-    const matched = collectLogsByRequestId(list, 'req-i');
+    ]);
+    const matched = store.list({ actionId: 'req-i' });
     expect(matched.map((l) => l.id)).toEqual(['start', 'mid', 'end']);
     const tree = buildRequestFlowTree(matched);
     expect(tree).toHaveLength(1);
@@ -166,7 +234,7 @@ describe('log-helpers', () => {
   });
 
   it('buildRequestFlowTree keeps write order when mid arrives after END', () => {
-    const list = [
+    const store = storeOf([
       {
         id: 's',
         header: {
@@ -174,9 +242,9 @@ describe('log-helpers', () => {
           index: 1,
           level: 'debug' as const,
           namespaces: ['x'],
-          requestId: 'req-e',
+          actionId: 'req-e',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
           flowKind: 'call' as const,
         },
         args: ['START'],
@@ -188,9 +256,9 @@ describe('log-helpers', () => {
           index: 2,
           level: 'debug' as const,
           namespaces: ['x'],
-          requestId: 'req-e',
+          actionId: 'req-e',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
           flowKind: 'call' as const,
         },
         args: ['END'],
@@ -202,30 +270,30 @@ describe('log-helpers', () => {
           index: 3,
           level: 'info' as const,
           namespaces: ['x'],
-          requestId: 'req-e',
+          actionId: 'req-e',
           fn: 'work',
-          functionId: 'fn-1',
+          spanId: 'fn-1',
           flowKind: 'call' as const,
         },
         args: ['late-mid'],
       },
-    ];
-    const tree = buildRequestFlowTree(collectLogsByRequestId(list, 'req-e'));
+    ]);
+    const tree = buildRequestFlowTree(store.list({ actionId: 'req-e' }));
     expect(tree[0]!.children.map((c) => c.label)).toEqual([
       'work · END',
       'late-mid',
     ]);
   });
 
-  it('collectLogsByRequestId is chronological', () => {
-    const list = [
+  it('store.list by actionId (flow) is chronological', () => {
+    const store = storeOf([
       {
         id: '2',
         header: {
           ts: 200,
           level: 'info' as const,
           namespaces: ['mitt'],
-          requestId: 'req-1',
+          actionId: 'req-1',
           span: 'emit',
         },
         args: ['b'],
@@ -236,7 +304,7 @@ describe('log-helpers', () => {
           ts: 100,
           level: 'info' as const,
           namespaces: ['menu'],
-          requestId: 'req-1',
+          actionId: 'req-1',
           span: 'click',
         },
         args: ['a'],
@@ -247,12 +315,12 @@ describe('log-helpers', () => {
           ts: 150,
           level: 'info' as const,
           namespaces: ['other'],
-          requestId: 'req-other',
+          actionId: 'req-other',
         },
         args: ['c'],
       },
-    ];
-    const matched = collectLogsByRequestId(list, 'req-1');
+    ]);
+    const matched = store.list({ actionId: 'req-1' });
     expect(matched.map((l) => l.id)).toEqual(['1', '2']);
     const steps = buildRequestFlowSteps(matched);
     expect(steps.map((s) => s.label)).toEqual(['a', 'b']);
@@ -262,19 +330,19 @@ describe('log-helpers', () => {
   });
 
   it('buildRequestFlowTree nests handlers under emit', () => {
-    const list = [
+    const store = storeOf([
       {
         id: 'a-start',
         header: {
           ts: 10,
           level: 'debug' as const,
           namespaces: ['menu'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'handleClick',
           span: 'menu.action',
           flowKind: 'call' as const,
           flowDepth: 0,
-          functionId: 'fn-a',
+          spanId: 'fn-a',
         },
         args: ['START'],
       },
@@ -284,12 +352,12 @@ describe('log-helpers', () => {
           ts: 15,
           level: 'debug' as const,
           namespaces: ['menu'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'handleClick',
           span: 'menu.action',
           flowKind: 'call' as const,
           flowDepth: 0,
-          functionId: 'fn-a',
+          spanId: 'fn-a',
         },
         args: ['Context'],
       },
@@ -299,14 +367,14 @@ describe('log-helpers', () => {
           ts: 20,
           level: 'debug' as const,
           namespaces: ['mitt'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'handleClick',
           span: 'menu.action',
           flowKind: 'emit' as const,
           eventName: 'DATASET_UPDATED',
           flowDepth: 1,
           parentFn: 'handleClick',
-          functionId: 'fn-a',
+          spanId: 'fn-a',
         },
         args: ['EMIT'],
       },
@@ -316,14 +384,14 @@ describe('log-helpers', () => {
           ts: 30,
           level: 'debug' as const,
           namespaces: ['mitt'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'onDatasetB',
           span: 'mitt.handler',
           flowKind: 'handler' as const,
           eventName: 'DATASET_UPDATED',
           flowDepth: 1,
           parentFn: 'handleClick',
-          functionId: 'fn-b',
+          spanId: 'fn-b',
         },
         args: ['START'],
       },
@@ -333,13 +401,13 @@ describe('log-helpers', () => {
           ts: 35,
           level: 'debug' as const,
           namespaces: ['mitt'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'onDatasetB',
           span: 'mitt.handler',
           flowKind: 'handler' as const,
           eventName: 'DATASET_UPDATED',
           flowDepth: 1,
-          functionId: 'fn-b',
+          spanId: 'fn-b',
         },
         args: ['END'],
       },
@@ -349,14 +417,14 @@ describe('log-helpers', () => {
           ts: 40,
           level: 'debug' as const,
           namespaces: ['mitt'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'onDatasetC',
           span: 'mitt.handler',
           flowKind: 'handler' as const,
           eventName: 'DATASET_UPDATED',
           flowDepth: 1,
           parentFn: 'handleClick',
-          functionId: 'fn-c',
+          spanId: 'fn-c',
         },
         args: ['START'],
       },
@@ -366,13 +434,13 @@ describe('log-helpers', () => {
           ts: 45,
           level: 'debug' as const,
           namespaces: ['mitt'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'onDatasetC',
           span: 'mitt.handler',
           flowKind: 'handler' as const,
           eventName: 'DATASET_UPDATED',
           flowDepth: 1,
-          functionId: 'fn-c',
+          spanId: 'fn-c',
         },
         args: ['END'],
       },
@@ -382,17 +450,17 @@ describe('log-helpers', () => {
           ts: 50,
           level: 'debug' as const,
           namespaces: ['menu'],
-          requestId: 'req-t',
+          actionId: 'req-t',
           fn: 'handleClick',
           span: 'menu.action',
           flowKind: 'call' as const,
           flowDepth: 0,
-          functionId: 'fn-a',
+          spanId: 'fn-a',
         },
         args: ['END'],
       },
-    ];
-    const tree = buildRequestFlowTree(collectLogsByRequestId(list, 'req-t'));
+    ]);
+    const tree = buildRequestFlowTree(store.list({ actionId: 'req-t' }));
     expect(tree).toHaveLength(1);
     expect(tree[0]!.label).toBe('handleClick · START');
     expect(tree[0]!.children.map((c) => c.label)).toEqual([

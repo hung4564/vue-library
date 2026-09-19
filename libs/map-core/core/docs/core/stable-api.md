@@ -98,7 +98,7 @@ Hosts own UI, registry actions, and framework lifecycle only.
 | `./worker` | CSS/DOM-free worker helpers |
 | `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `BasemapError`, domain `logger` (`map:basemap`) |
 | `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs`, domain `logger` (`map:crs`) |
-| `./devtools` | Devtools store core, `BufferingLogAdapter`, overlay DOM helpers, `installDevtoolsCore` (Experimental) |
+| `./devtools` | Devtools store core: `getMapDebugStore` / `configureDevtoolLogStore` / `createDevtoolLogAdapter` / `getDevtoolLogDataStore` / `refreshDevtoolLogsFromStore` (default uncapped IndexedDB; custom `LogDataStore` allowed), `installDevtoolsCore` (Experimental) |
 | `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive`, domain `logger` (`map:event`) |
 | `./image` | Map image load/store helpers, domain `logger` (`map:image`) |
 | `./legend` | `LegendService`, `MapLegend`, `buildLayerLegendElements`, paint helpers |
@@ -206,7 +206,7 @@ Prefer canonical names in new code (`MapControlButton`, `MapCopyButton`, `BaseCo
 
 **Parity lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (shared control ids + shared Stable root + shared `/fields` Experimental names).
 
-Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` + type `DevtoolsMode` (`'control'` only — shared control id; may change in a **minor**). `@hungpvq/map-core/devtools` also exports Experimental `formatDevtoolsLogEntryForCopy` for LogViewer clipboard formatting.
+Dataset / draw Experimental allowlists are **empty / reserved**. `@hungpvq/map-core` Experimental root: `GeoLocateSession` (Mapbox-style geolocate engine used by Vue/React `GeoLocateControl`; may change in a **minor**); `DEVTOOLS_CONTROL` (shared Map-scoped Devtools control id; may change in a **minor**). `@hungpvq/map-core/devtools` also exports Experimental `formatDevtoolsLogEntryForCopy` for LogViewer clipboard formatting.
 
 Adapters do **not** re-export `@hungpvq/map-core` protocol (`getMap`, `errorHandler`, …). There is no adapter `handleError` — apps use `errorHandler` from `@hungpvq/map-core`.
 
@@ -248,7 +248,7 @@ Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
 
 | Area | Stable surface |
 |------|----------------|
-| Bootstrap (both) | `installDevtools`, `uninstallDevtools` |
+| Bootstrap (both) | `installDevtools` / `uninstallDevtools` (`installDevtools({ logStore })`: `'indexeddb'` \| `'memory'` \| options \| custom `LogDataStore`) |
 | Panel | `Devtools` (mount **inside** `<Map>`; `DraggableItemPopup`) |
 | Map control | `DevtoolsControl` / `DEVTOOLS_CONTROL.id` (`mapDevtools`) — same popup path |
 | Open helpers | `openMapDevtoolsErrors`, `setDevtoolOpen`, `toggleDevtoolOpen`, … |
@@ -265,7 +265,7 @@ Documented `--map-*` tokens and theme classes (`map-theme-*`) in [CSS variables]
 
 ## Experimental slot
 
-Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. `@hungpvq/map-core` Experimental: `GeoLocateSession`, `DEVTOOLS_CONTROL` (+ type `DevtoolsMode`). Other map packages keep empty/reserved experimental lists.
+Vue/React `@hungpvq/*-map-core` publish field/UI helpers on **`./fields`** (not the root barrel) — see [vue/react map-core](#hungpvqvue-map-core--hungpvqreact-map-core). They may change in a **minor**. Root `*_EXPERIMENTAL_RUNTIME_EXPORTS` for adapters are empty/reserved. Removing an Experimental export from a published barrel (including `./fields`) remains a **major**. `@hungpvq/map-core` Experimental: `GeoLocateSession`, `DEVTOOLS_CONTROL`. Other map packages keep empty/reserved experimental lists.
 ## Enforcing the allowlist
 
 1. Edit `src/index.ts` with **named** exports only (no public `export *`). Prefer `export { X } from './feature/leaf'`. Export first-party types with explicit `export type { … }` — never `export type *`, and never re-export third-party library types.

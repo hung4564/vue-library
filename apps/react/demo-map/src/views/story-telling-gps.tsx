@@ -1,4 +1,4 @@
-﻿import { getMap, type MapSimple } from '@hungpvq/map-core';
+import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
@@ -13,6 +13,7 @@ import {
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapCard } from '@hungpvq/react-map-core/fields';
+import { loggerFactory } from '@hungpvq/shared-log';
 import * as turf from '@turf/turf';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { useMemo, useRef, useState } from 'react';
@@ -28,6 +29,10 @@ import {
 } from './StoryTelling/useStorytelling';
 import './story-telling.css';
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+
+const storyGpsLog = loggerFactory
+  .createLogger()
+  .setNamespace('demo:story-gps', 0);
 
 const GPS_TRACK = [
   { lng: 105.84146352698633, lat: 21.017689539749725, timestamp: 0 },
@@ -143,7 +148,9 @@ export function StoryTellingGpsPage() {
             !segment.end ||
             !segment.duration
           ) {
-            console.error('Invalid segment data', segment);
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error('Invalid segment data', segment);
             return;
           }
 
@@ -157,16 +164,20 @@ export function StoryTellingGpsPage() {
           ];
 
           if (isSameCoord(startCoord, endCoord)) {
-            console.warn('Skipping segment: start and end are identical');
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .warn('Skipping segment: start and end are identical');
             onFinish?.();
             return;
           }
           if (!isValidCoordinate(startCoord) || !isValidCoordinate(endCoord)) {
-            console.error(
-              'Invalid coordinates for segment',
-              startCoord,
-              endCoord,
-            );
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error(
+                'Invalid coordinates for segment',
+                startCoord,
+                endCoord,
+              );
             return;
           }
 

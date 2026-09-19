@@ -1,7 +1,8 @@
-import type { BufferingLogEntry } from '@hungpvq/map-core/devtools';
+import type { LogRecord } from '@hungpvq/shared-log';
 import {
   formatLogTime,
   objectArgs,
+  stringifyLogRecord,
   textMessage,
 } from '@hungpvq/map-debug';
 import { MapCopyButton } from '@hungpvq/react-map-core';
@@ -35,7 +36,7 @@ export function LogDetailPanel({
   showClose,
   onClose,
 }: {
-  log: BufferingLogEntry | null;
+  log: LogRecord | null;
   showClose?: boolean;
   onClose?: () => void;
 }) {
@@ -58,7 +59,7 @@ export function LogDetailPanel({
         <div className="log-viewer__detail-h-actions">
           <MapCopyButton
             title="Copy log JSON"
-            value={JSON.stringify(log, null, 2)}
+            value={stringifyLogRecord(log)}
           />
           {showClose ? (
             <button
@@ -88,15 +89,31 @@ export function LogDetailPanel({
           <code className="log-viewer__mono">{log.header.namespaces[0]}</code>
         </DetailRow>
       ) : null}
+      {log.header.actionId ? (
+        <DetailRow label="actionId" copyValue={log.header.actionId}>
+          <code className="log-viewer__mono">{log.header.actionId}</code>
+        </DetailRow>
+      ) : null}
+      {log.header.spanId ? (
+        <DetailRow label="spanId" copyValue={log.header.spanId}>
+          <code className="log-viewer__mono">{log.header.spanId}</code>
+        </DetailRow>
+      ) : null}
+      {log.header.parentSpanId ? (
+        <DetailRow label="parentSpanId" copyValue={log.header.parentSpanId}>
+          <code className="log-viewer__mono">{log.header.parentSpanId}</code>
+        </DetailRow>
+      ) : null}
       {log.header.requestId ? (
-        <DetailRow label="requestId" copyValue={log.header.requestId}>
+        <DetailRow label="requestId (HTTP)" copyValue={log.header.requestId}>
           <code className="log-viewer__mono">{log.header.requestId}</code>
         </DetailRow>
       ) : null}
-      {log.header.functionId ? (
-        <DetailRow label="functionId" copyValue={log.header.functionId}>
-          <code className="log-viewer__mono">{log.header.functionId}</code>
-        </DetailRow>
+      {log.header.durationMs != null ? (
+        <DetailRow label="durationMs">{log.header.durationMs}</DetailRow>
+      ) : null}
+      {log.header.outcome ? (
+        <DetailRow label="outcome">{log.header.outcome}</DetailRow>
       ) : null}
       {log.header.control ? (
         <DetailRow label="Control">

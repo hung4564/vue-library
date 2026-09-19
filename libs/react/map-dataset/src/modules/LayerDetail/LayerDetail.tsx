@@ -19,7 +19,7 @@ import {
   useShow,
 } from '@hungpvq/react-map-core';
 import { InputTextarea } from '@hungpvq/react-map-core/fields';
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapHighlight } from '../../store/highlight';
@@ -101,6 +101,8 @@ export function LayerDetail({
   const hl = useMapHighlight(mapId);
   const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
+  /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
+  const closedRef = useRef(false);
 
   useEffect(() => {
     registerLocale('en', LAYER_DETAIL_LOCALE);
@@ -129,6 +131,8 @@ export function LayerDetail({
   }, [view]);
 
   function handleClose() {
+    if (closedRef.current) return;
+    closedRef.current = true;
     hl.hideIfSource('detail');
     toggleShow(false);
     onClose?.();
@@ -140,10 +144,25 @@ export function LayerDetail({
     title: trans('map.layer-control.info.title'),
     show,
     setShow: (v) => {
-      toggleShow(v);
-      if (!v) handleClose();
+      if (!v) {
+        handleClose();
+        return;
+      }
+      closedRef.current = false;
+      toggleShow(true);
     },
-    actions: [{ type: 'mapLayerDetail', run: () => toggleShow() }],
+    actions: [
+      {
+        type: 'mapLayerDetail',
+        run: () => {
+          if (show) handleClose();
+          else {
+            closedRef.current = false;
+            toggleShow(true);
+          }
+        },
+      },
+    ],
   });
 
   const host = itemMenuHost ?? view;

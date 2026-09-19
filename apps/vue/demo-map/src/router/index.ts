@@ -119,6 +119,14 @@ const router = createRouter({
       component: () => import('../views/devtools.vue'),
     },
     {
+      path: '/logging-cookbook/',
+      component: () => import('../views/logging-cookbook/example.vue'),
+    },
+    {
+      path: '/shared-log/',
+      component: () => import('../views/shared-log/example.vue'),
+    },
+    {
       path: '/theme/',
       component: () => import('../views/theme.vue'),
     },

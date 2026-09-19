@@ -34,6 +34,7 @@ import {
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
 import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -217,6 +218,9 @@ const title = computed(() => {
     : `${name} (${count})`;
 });
 
+/** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
+let closed = false;
+
 const { panelBind } = useRegisterMapControl(mapId, {
   id: controlId,
   panelKind: 'popup',
@@ -224,8 +228,12 @@ const { panelBind } = useRegisterMapControl(mapId, {
   buttonPosition: () => props.position,
   show,
   setShow: (value) => {
-    show.value = value;
-    if (!value) handleClose();
+    if (!value) {
+      handleClose();
+      return;
+    }
+    closed = false;
+    show.value = true;
   },
   getProps: () => ({
     position: props.position,
@@ -235,8 +243,11 @@ const { panelBind } = useRegisterMapControl(mapId, {
     {
       type: ATTRIBUTE_TABLE_CONTROL.id,
       run: () => {
-        show.value = !show.value;
-        if (!show.value) handleClose();
+        if (show.value) handleClose();
+        else {
+          closed = false;
+          show.value = true;
+        }
       },
     },
     {
@@ -252,10 +263,16 @@ function applySelectRows(payload?: AttributeTableSelectRowsPayload) {
   if (payload?.layerId != null && payload.layerId !== props.layer.id) {
     return;
   }
-  const ids = (payload?.ids ?? []).map(String);
-  clearPendingAttributeTableSelectRows(mapId.value, props.layer.id);
-  show.value = true;
-  void controller.value.selectIds(ids);
+  return loggerFactory.ensureActionContext(
+    { mapId: mapId.value, span: 'attribute-table.select-rows' },
+    () => {
+      const ids = (payload?.ids ?? []).map(String);
+      clearPendingAttributeTableSelectRows(mapId.value, props.layer.id);
+      closed = false;
+      show.value = true;
+      void controller.value.selectIds(ids);
+    },
+  );
 }
 function clearAttributeTableHighlight() {
   hl.hideIfSource('attribute-table');
@@ -265,6 +282,8 @@ function clearAttributeTableHighlight() {
  * Re-open via menu / identify `addComponent` + pending selectRows.
  */
 function handleClose() {
+  if (closed) return;
+  closed = true;
   show.value = false;
   clearAttributeTableHighlight();
   emit('close');
@@ -274,18 +293,23 @@ function onUpdateShow(val: boolean) {
   if (!val) handleClose();
 }
 function applySelection(focus?: AttributeTableRow) {
-  const s = controller.value.getState();
-  const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-  const current = focus ?? selected[0];
-  void getHighlightResolver(mapId.value).execute({
-    mapId: mapId.value,
-    count: selected.length,
-    features: current ? [current.feature as Feature] : [],
-    dataset: props.layer,
-    sources: ['attribute-table'],
-  });
-  if (selected.length === 0 || !s.zoomToSelection) return;
-  void zoomMapToSelection();
+  return loggerFactory.ensureActionContext(
+    { mapId: mapId.value, span: 'attribute-table.selection' },
+    () => {
+      const s = controller.value.getState();
+      const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
+      const current = focus ?? selected[0];
+      void getHighlightResolver(mapId.value).execute({
+        mapId: mapId.value,
+        count: selected.length,
+        features: current ? [current.feature as Feature] : [],
+        dataset: props.layer,
+        sources: ['attribute-table'],
+      });
+      if (selected.length === 0 || !s.zoomToSelection) return;
+      void zoomMapToSelection();
+    },
+  );
 }
 
 async function zoomMapToSelection() {

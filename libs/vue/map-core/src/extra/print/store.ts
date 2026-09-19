@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vue-specific print store
  */
 
@@ -17,7 +17,7 @@ export const useMapPrintStore = (mapId: string) =>
   createMapScopedStore<MapPrintStore>(mapId, KEY, () => {
     logHelper(logger, mapId, 'store')
       .with({ fn: 'useMapPrintStore', span: 'store.init' })
-      .debug('init');
+      .debug('Created scoped map store for mapId.');
     return createDefaultPrintStore();
   });
 

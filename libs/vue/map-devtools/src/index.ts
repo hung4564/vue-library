@@ -3,12 +3,9 @@
  * Do not reintroduce `export *`.
  */
 export { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
-export type { DevtoolsMode } from '@hungpvq/map-core';
-export {
-  BufferingLogAdapter as DevtoolLogAdapter,
-  type BufferingLogEntry as LogEntry,
-} from '@hungpvq/map-core/devtools';
+export { DataStoreLogAdapter as DevtoolLogAdapter } from '@hungpvq/shared-log';
 export { installDevtools, uninstallDevtools } from './plugin';
+export type { DevtoolsInstallOptions } from './plugin';
 export {
   clearDevtoolErrors,
   clearDevtoolLogs,

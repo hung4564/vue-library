@@ -462,7 +462,7 @@ function createApi(): DatasetDebugApi {
     if (!dataset || !mapId) {
       logger
         .with({ fn: 'invokeMenu', span: 'menu.action' })
-        .warn('invokeMenu: missing mapId or dataset');
+        .warn('invokeMenu skipped because mapId or dataset is missing.');
       return;
     }
     const menuId = opts?.menuId ?? session.menuId;
@@ -477,7 +477,7 @@ function createApi(): DatasetDebugApi {
     if (!menu) {
       logger
         .with({ fn: 'invokeMenu', span: 'menu.action' })
-        .warn('invokeMenu: menu not found', { menuId });
+        .warn('invokeMenu skipped because the menu was not found.', { menuId });
       return;
     }
     invokeResolvedMenu(menu, {

@@ -5,73 +5,57 @@ import {
   InputText,
 } from '@hungpvq/react-map-core/fields';
 import {
-  resolveMapDragContainerId,
+  createActionFeedback,
+  type ActionFeedbackPhase,
+} from '@hungpvq/map-core';
+import {
   formatDevtoolsLogEntryForCopy,
-  type BufferingLogEntry as LogEntry,
+  getDevtoolLogDataStore,
+  refreshDevtoolLogsFromStore,
 } from '@hungpvq/map-core/devtools';
+import { logActionId, type LogRecord } from '@hungpvq/shared-log';
 import {
   LEVEL_FILTERS,
-  buildStructuredLogs,
-  collectNamespaces,
-  collectStructuredLogs,
-  countNewLogsWhilePaused,
-  filterLogs,
-  formatArg,
   formatLogTime,
-  isObject,
-  logMapId,
-  shortRequestId,
+  shortActionId,
+  textMessage,
   type LevelFilter,
-  type StructuredItem,
 } from '@hungpvq/map-debug';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { clearDevtoolLogs } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
-import { GroupItem } from './GroupItem';
 import { LogDetailPanel } from './LogDetailPanel';
 import { LogRequestFlowModal } from './LogRequestFlowModal';
+import { useLogStoreView } from './useLogStoreView';
+
+function refreshActionLabel(phase: ActionFeedbackPhase): string {
+  if (phase === 'loading') return '…';
+  if (phase === 'success') return 'Refreshed';
+  if (phase === 'error') return 'Failed';
+  return 'Refresh';
+}
 
 function LogRenderItem({
-  item,
+  log,
   selectedId,
   onNamespaceClick,
-  onRequestIdClick,
+  onActionIdClick,
   onFlowClick,
   onSelect,
 }: {
-  item: StructuredItem;
+  log: LogRecord;
   selectedId: string | null;
   onNamespaceClick: (ns: string) => void;
-  onRequestIdClick: (requestId: string) => void;
-  onFlowClick: (requestId: string) => void;
-  onSelect: (item: StructuredItem) => void;
+  onActionIdClick: (actionId: string) => void;
+  onFlowClick: (actionId: string) => void;
+  onSelect: (log: LogRecord) => void;
 }) {
-  if (item.type === 'group') {
-    return (
-      <GroupItem title={item.title} collapsed={item.collapsed}>
-        {item.children.map((child) => (
-          <LogRenderItem
-            key={child.id}
-            item={child}
-            selectedId={selectedId}
-            onNamespaceClick={onNamespaceClick}
-            onRequestIdClick={onRequestIdClick}
-            onFlowClick={onFlowClick}
-            onSelect={onSelect}
-          />
-        ))}
-      </GroupItem>
-    );
-  }
-
-  const { log } = item;
   const nsRoot = log.header.namespaces[0];
-  const textArgs = log.args.filter((arg) => !isObject(arg)).map(formatArg);
-  const message = textArgs.join(' ');
+  const message = textMessage(log);
   const levelLabel = (log.header.level || '?').toUpperCase();
-  const { requestId } = log.header;
-  const hasMeta = Boolean(nsRoot || requestId);
-  const selected = selectedId === item.id;
+  const actionId = logActionId(log);
+  const hasMeta = Boolean(nsRoot || actionId);
+  const selected = selectedId === log.id;
 
   return (
     <div
@@ -83,10 +67,10 @@ function LogRenderItem({
       onClick={(event) => {
         const t = event.target as HTMLElement | null;
         if (t?.closest('button, a, input, .log-entry__actions')) return;
-        onSelect(item);
+        onSelect(log);
       }}
       onKeyDown={(event) => {
-        if (event.key === 'Enter') onSelect(item);
+        if (event.key === 'Enter') onSelect(log);
       }}
     >
       <div className="log-entry__main">
@@ -96,15 +80,15 @@ function LogRenderItem({
             {message ? <span className="log-entry__msg">{message}</span> : null}
           </div>
           <div className="log-entry__actions">
-            {requestId ? (
+            {actionId ? (
               <MapControlButton
                 className="log-entry__flow"
                 variant="text"
                 size="small"
-                title="Open request flow"
+                title="Open action flow"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onFlowClick(requestId);
+                  onFlowClick(actionId);
                 }}
               >
                 Flow
@@ -136,18 +120,18 @@ function LogRenderItem({
                 {nsRoot}
               </MapControlButton>
             ) : null}
-            {requestId ? (
+            {actionId ? (
               <MapControlButton
                 variant="text"
                 size="small"
                 className="log-entry__meta-cell log-entry__req"
-                title={requestId}
+                title={actionId}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRequestIdClick(requestId);
+                  onActionIdClick(actionId);
                 }}
               >
-                req={shortRequestId(requestId)}
+                action={shortActionId(actionId)}
               </MapControlButton>
             ) : null}
           </div>
@@ -160,23 +144,38 @@ function LogRenderItem({
 export function LogViewer() {
   const { logs, filterMapId } = useDevtoolState();
   const logListRef = useRef<HTMLDivElement | null>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
-  const [paused, setPaused] = useState(false);
-  const [frozenLogs, setFrozenLogs] = useState<LogEntry[] | null>(null);
-  const [search, setSearch] = useState('');
-  const [requestId, setRequestId] = useState('');
+  const [actionIdFilter, setActionIdFilter] = useState('');
   const [level, setLevel] = useState<LevelFilter>('all');
   const [namespace, setNamespace] = useState('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [flowOpen, setFlowOpen] = useState(false);
-  const [flowRequestId, setFlowRequestId] = useState<string | null>(null);
+  const [flowActionId, setFlowActionId] = useState<string | null>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [refreshPhase, setRefreshPhase] =
+    useState<ActionFeedbackPhase>('idle');
+  const refreshFeedbackRef = useRef(
+    createActionFeedback({
+      onChange: (phase) => setRefreshPhase(phase),
+    }),
+  );
 
-  const sourceLogs = paused && frozenLogs ? frozenLogs : logs;
-  const newCount = countNewLogsWhilePaused(logs, frozenLogs, paused);
+  useEffect(() => () => refreshFeedbackRef.current.dispose(), []);
 
-  const namespaces = useMemo(
-    () => collectNamespaces(logs, filterMapId, 2),
-    [logs, filterMapId],
+  const liveStore = getDevtoolLogDataStore();
+
+  const filterQuery = useMemo(
+    () => ({
+      level,
+      namespace,
+      mapId: filterMapId,
+      actionId: actionIdFilter,
+    }),
+    [level, namespace, filterMapId, actionIdFilter],
+  );
+
+  const { listed, all, namespaces, totalCount } = useLogStoreView(
+    liveStore,
+    filterQuery,
+    logs,
   );
 
   useEffect(() => {
@@ -185,89 +184,30 @@ export function LogViewer() {
     }
   }, [namespaces, namespace]);
 
-  const filteredLogs = useMemo(
-    () =>
-      filterLogs(
-        sourceLogs,
-        search,
-        level,
-        namespace,
-        filterMapId,
-        2,
-        requestId,
-      ),
-    [sourceLogs, search, level, namespace, filterMapId, requestId],
-  );
-
-  const structuredLogs = useMemo(
-    () => buildStructuredLogs(filteredLogs),
-    [filteredLogs],
-  );
-
-  const flatLogs = useMemo(
-    () => collectStructuredLogs(structuredLogs),
-    [structuredLogs],
-  );
-
   const selectedLog = useMemo(() => {
     if (!selectedId) return null;
     return (
-      sourceLogs.find((l) => l.id === selectedId) ??
-      filteredLogs.find((l) => l.id === selectedId) ??
+      listed.find((l) => l.id === selectedId) ??
+      all.find((l) => l.id === selectedId) ??
       null
     );
-  }, [sourceLogs, filteredLogs, selectedId]);
-
-  const flowMapId = useMemo(() => {
-    if (filterMapId !== 'all') return filterMapId;
-    if (selectedLog) return logMapId(selectedLog);
-    if (!flowRequestId) return null;
-    const first = sourceLogs.find((l) => l.header.requestId === flowRequestId);
-    return first ? logMapId(first) : null;
-  }, [filterMapId, selectedLog, flowRequestId, sourceLogs]);
-
-  const showingCount = flatLogs.length;
-  const totalCount = sourceLogs.length;
-
-  const hasActiveFilter =
-    Boolean(search.trim()) ||
-    Boolean(requestId.trim()) ||
-    level !== 'all' ||
-    namespace !== 'all' ||
-    filterMapId !== 'all';
+  }, [listed, all, selectedId]);
 
   useEffect(() => {
-    if (!autoScroll || paused) return;
-    const list = logListRef.current;
-    if (list) list.scrollTop = 0;
-  }, [structuredLogs.length, autoScroll, paused]);
+    if (!autoScroll) return;
+    const el = logListRef.current;
+    if (el) el.scrollTop = 0;
+  }, [listed.length, autoScroll]);
 
   useEffect(() => {
-    const list = logListRef.current;
-    if (list) list.scrollTop = 0;
-  }, [search, requestId, level, namespace, filterMapId]);
+    const el = logListRef.current;
+    if (el) el.scrollTop = 0;
+  }, [actionIdFilter, level, namespace, filterMapId]);
 
-  function openFlow(reqId: string) {
-    setFlowRequestId(reqId);
-    const match = sourceLogs.find((l) => l.header.requestId === reqId);
-    const mapId =
-      filterMapId !== 'all'
-        ? filterMapId
-        : match
-          ? logMapId(match)
-          : selectedLog
-            ? logMapId(selectedLog)
-            : null;
-    if (!mapId) return;
-    const dragId = resolveMapDragContainerId(null, mapId);
-    if (
-      !dragId ||
-      (typeof document !== 'undefined' &&
-        !document.getElementById(`modal-layer-${dragId}`))
-    ) {
-      return;
-    }
-    setFlowOpen(true);
+  async function onRefresh() {
+    await refreshFeedbackRef.current.run('refresh', async () => {
+      await refreshDevtoolLogsFromStore();
+    });
   }
 
   return (
@@ -275,7 +215,7 @@ export function LogViewer() {
       <div className="log-viewer__toolbar">
         <div className="log-viewer__toolbar-main">
           <span className="log-viewer__count">
-            {showingCount}/{totalCount}
+            {listed.length}/{totalCount}
           </span>
           <div
             className="log-viewer__levels"
@@ -298,34 +238,23 @@ export function LogViewer() {
         </div>
         <div className="log-viewer__actions">
           <MapControlButton
-            className="log-viewer__pause"
             variant="text"
             size="small"
+            title="Refresh logs from store"
+            disabled={refreshPhase === 'loading'}
             onClick={() => {
-              if (paused) {
-                setPaused(false);
-                setFrozenLogs(null);
-              } else {
-                setFrozenLogs([...logs]);
-                setPaused(true);
-              }
+              void onRefresh();
             }}
           >
-            {paused
-              ? newCount > 0
-                ? `Resume (${newCount})`
-                : 'Resume'
-              : 'Pause'}
+            {refreshActionLabel(refreshPhase)}
           </MapControlButton>
           <MapControlButton
             variant="text"
             size="small"
             onClick={() => {
               clearDevtoolLogs();
-              if (paused) setFrozenLogs([]);
               setSelectedId(null);
-              setFlowOpen(false);
-              setFlowRequestId(null);
+              setFlowActionId(null);
             }}
           >
             Clear
@@ -334,31 +263,28 @@ export function LogViewer() {
             className="log-viewer__autoscroll"
             label="Auto-scroll"
             checked={autoScroll}
-            disabled={paused}
             onChange={setAutoScroll}
           />
         </div>
       </div>
       <div className="log-viewer__filters">
-        <div className="log-viewer__search">
-          <InputText
-            type="search"
-            placeholder="Search"
-            aria-label="Search logs"
-            value={search}
-            onChange={setSearch}
-          />
-        </div>
         <div className="log-viewer__requestid">
           <InputText
             type="search"
-            placeholder="requestId"
-            aria-label="Filter by requestId"
-            value={requestId}
-            onChange={setRequestId}
+            placeholder="actionId"
+            aria-label="Filter by actionId"
+            value={actionIdFilter}
+            onChange={setActionIdFilter}
           />
         </div>
-        <div className="log-viewer__namespace">
+        <div
+          className={[
+            'log-viewer__namespace',
+            namespace !== 'all' ? 'log-viewer__namespace--filtered' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <InputSelect
             aria-label="Filter by namespace"
             value={namespace}
@@ -371,44 +297,49 @@ export function LogViewer() {
             ]}
             onChange={(value) => setNamespace(String(value))}
           />
+          {namespace !== 'all' ? (
+            <button
+              type="button"
+              className="log-viewer__namespace-clear"
+              title="Clear namespace filter"
+              aria-label="Clear namespace filter"
+              onClick={() => setNamespace('all')}
+            >
+              ✕
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="log-viewer__split">
         <div className="log-viewer__body" ref={logListRef}>
-          {structuredLogs.length === 0 ? (
+          {listed.length === 0 ? (
             <div className="log-viewer__empty">
-              {sourceLogs.length === 0
-                ? 'No logs'
-                : hasActiveFilter
-                  ? 'No matching logs'
-                  : 'No logs'}
+              {totalCount === 0 ? 'No logs' : 'No matching logs'}
             </div>
           ) : (
-            structuredLogs.map((item) => (
+            listed.map((log) => (
               <LogRenderItem
-                key={item.id}
-                item={item}
+                key={log.id}
+                log={log}
                 selectedId={selectedId}
                 onNamespaceClick={setNamespace}
-                onRequestIdClick={setRequestId}
-                onFlowClick={openFlow}
-                onSelect={(it) => {
-                  if (it.type === 'log') setSelectedId(it.id);
-                }}
+                onActionIdClick={setActionIdFilter}
+                onFlowClick={setFlowActionId}
+                onSelect={(row) => setSelectedId(row.id)}
               />
             ))
           )}
         </div>
         <LogDetailPanel log={selectedLog} />
       </div>
-      {flowRequestId && flowMapId ? (
+      {flowActionId ? (
         <LogRequestFlowModal
-          show={flowOpen}
-          requestId={flowRequestId}
-          mapId={flowMapId}
-          logs={sourceLogs}
-          activeLogId={selectedId}
-          onClose={() => setFlowOpen(false)}
+          show
+          actionId={flowActionId}
+          store={liveStore}
+          onClose={() => {
+            setFlowActionId(null);
+          }}
         />
       ) : null}
     </div>

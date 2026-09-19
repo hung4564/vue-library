@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlGroupButton row class="map-measurement-control">
@@ -352,7 +352,7 @@ function onInit(map: MapSimple) {
   session.attachToMap(map);
   logHelper(logger, mapId.value, 'control', 'MeasurementControl')
     .with({ fn: 'onInit', span: 'control.init' })
-    .debug('init', handler);
+    .debug('Measurement control handler registered.', handler);
 }
 
 function onDestroy() {

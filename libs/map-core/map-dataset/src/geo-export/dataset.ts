@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { IDataset } from '../interfaces/dataset.base';
 import { findGeojsonSource } from '../geojson/find-source';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
@@ -26,11 +27,16 @@ async function resolveGeojsonData(
   data: unknown,
 ): Promise<FeatureCollection | null> {
   if (typeof data === 'string') {
-    const response = await fetch(data);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch GeoJSON: ${response.status}`);
-    }
-    return asFeatureCollection(await response.json());
+    return loggerFactory.trackRequest(
+      { url: data, method: 'GET', span: 'geo-export.fetch', fn: 'resolveGeojsonData' },
+      async () => {
+        const response = await fetch(data);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch GeoJSON: ${response.status}`);
+        }
+        return asFeatureCollection(await response.json());
+      },
+    );
   }
   return asFeatureCollection(data);
 }

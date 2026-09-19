@@ -4,7 +4,7 @@ import { DrawService } from './draw.service';
 import type { MapDrawStore } from '../types';
 
 vi.mock('@hungpvq/shared-log', () => {
-  const logger = {
+  const logger: Record<string, unknown> = {
     debug: vi.fn(),
     info: vi.fn(),
     warn: vi.fn(),
@@ -14,6 +14,7 @@ vi.mock('@hungpvq/shared-log', () => {
       return this;
     }),
   };
+  logger.with = vi.fn(() => logger);
   return {
     loggerFactory: {
       createLogger: () => ({

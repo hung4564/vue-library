@@ -66,7 +66,7 @@ export function LayerMenuDefaultHandle(props: WithMapPropType) {
       LIST_VIEW_MENU_ID.highlight,
       ({ value, layer }: MenuItemProps<MenuClickHighlight>) => {
         if (value) {
-          void hlRef.current.show(value.detail, {
+          return hlRef.current.show(value.detail, {
             source: value.key,
             dataset: layer,
           });

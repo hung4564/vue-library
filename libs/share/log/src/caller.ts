@@ -18,7 +18,7 @@ export function captureLogCallerSite(
     const line = raw.trim();
     if (!line || line.startsWith('Error')) continue;
     if (
-      /Logger\.|captureLogCaller|buildRecord|LoggerFactory|ConsoleAdapter|logHelper|shared-log[/\\]src/.test(
+      /Logger\.|captureLogCallerSite|buildRecord|LoggerFactory|ConsoleAdapter|logHelper|shared-log[/\\]src/.test(
         line,
       )
     ) {
@@ -63,13 +63,6 @@ export function captureLogCallerSite(
     };
   }
   return {};
-}
-
-/** @deprecated prefer {@link captureLogCallerSite}.file */
-export function captureLogCaller(
-  stack = new Error().stack ?? '',
-): string | undefined {
-  return captureLogCallerSite(stack).file;
 }
 
 function cleanFnName(raw: string): string | undefined {

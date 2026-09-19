@@ -26,10 +26,11 @@ import { Devtools, installDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
+// or: installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })
 const app = createApp(App);
 ```
 
-`installDevtools()` wires `@hungpvq/shared-log` into the panel, captures map errors for the Errors tab, and installs the dataset debug bridge when available. Mount the panel **inside** `<Map>`:
+`installDevtools()` wires `@hungpvq/shared-log` into the panel (default **IndexedDB**, uncapped; config on `getMapDebugStore()`), captures map errors for the Errors tab, and installs the dataset debug bridge when available. Mount the panel **inside** `<Map>`:
 
 ```vue
 <script setup lang="ts">

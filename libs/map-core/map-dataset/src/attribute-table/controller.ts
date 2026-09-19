@@ -1,3 +1,4 @@
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { IDataset } from '../interfaces/dataset.base';
 import type {
   AttributeTableColumnFilterMode,
@@ -67,7 +68,9 @@ export type AttributeTableController = {
   getTotalPages(): number;
   canPrev(): boolean;
   canNext(): boolean;
-  subscribe(listener: (event: AttributeTableControllerEvent) => void): () => void;
+  subscribe(
+    listener: (event: AttributeTableControllerEvent) => void,
+  ): () => void;
   load(reason?: AttributeTableControllerReason): Promise<void>;
   goPrev(): Promise<void>;
   goNext(): Promise<void>;
@@ -101,6 +104,7 @@ export type AttributeTableController = {
 };
 
 export type CreateAttributeTableControllerOptions = {
+  [x: string]: any;
   columns?: AttributeTableColumnsOption;
   pageSize?: number;
   rowFilter?: AttributeTableRowFilter;
@@ -148,9 +152,7 @@ export function createAttributeTableController(
     zoomToSelection: false,
   };
 
-  const listeners = new Set<
-    (event: AttributeTableControllerEvent) => void
-  >();
+  const listeners = new Set<(event: AttributeTableControllerEvent) => void>();
   let searchTimer: ReturnType<typeof setTimeout> | null = null;
   let columnFilterTimer: ReturnType<typeof setTimeout> | null = null;
   let loadSeq = 0;
@@ -176,36 +178,83 @@ export function createAttributeTableController(
     reason: AttributeTableControllerReason = 'reload',
   ): Promise<void> {
     if (disposed) return;
-    const seq = ++loadSeq;
-    // Keep rows visible while re-sorting / searching so header clicks feel instant.
-    const quiet =
-      reason === 'sort' ||
-      reason === 'search' ||
-      reason === 'column-filter';
-    if (!quiet) {
-      store.invalidate?.();
-      state.loading = true;
-      notify(reason);
-    }
-    try {
-      const result = await store.list({
-        intent: 'page',
-        page: state.page,
-        pageSize: state.pageSize,
-        search: state.search,
-        columnFilters: state.columnFilters,
-        sort: state.sortStates,
-      });
-      if (disposed || seq !== loadSeq) return;
-      state.columns = result.columns;
-      state.rows = result.rows;
-      state.total = result.total;
-    } finally {
-      state.loading = false;
-      if (!disposed && seq === loadSeq) {
-        notify(reason);
-      }
-    }
+    return loggerFactory.ensureActionContext(
+      {
+        mapId: options.mapId,
+        span: 'attribute-table.load',
+        fn: reason,
+        datasetId: options['layer']?.id,
+      },
+      async () =>
+        runWithFunctionLog(
+          loggerFactory.createLogger().setNamespace('map:attribute-table', 2),
+          {
+            fn: 'load',
+            span: 'attribute-table.load',
+            mapId: options.mapId,
+            datasetId: options['layer']?.id,
+          },
+          async () => {
+            const atLog = loggerFactory
+              .createLogger()
+              .setNamespace('map:attribute-table', 2)
+              .with({
+                fn: 'load',
+                span: 'attribute-table.load',
+                mapId: options.mapId,
+                datasetId: options['layer']?.id,
+              });
+            const seq = ++loadSeq;
+            // Keep rows visible while re-sorting / searching so header clicks feel instant.
+            const quiet =
+              reason === 'sort' ||
+              reason === 'search' ||
+              reason === 'column-filter';
+            if (!quiet) {
+              store.invalidate?.();
+              state.loading = true;
+              notify(reason);
+            }
+            atLog.debug('Attribute table page load started.', {
+              reason,
+              quiet,
+              page: state.page,
+              pageSize: state.pageSize,
+            });
+            try {
+              const result = await store.list({
+                intent: 'page',
+                page: state.page,
+                pageSize: state.pageSize,
+                search: state.search,
+                columnFilters: state.columnFilters,
+                sort: state.sortStates,
+              });
+              if (disposed || seq !== loadSeq) {
+                atLog.debug(
+                  'Attribute table page load discarded because a newer load superseded it.',
+                  { seq, loadSeq },
+                );
+                return;
+              }
+              state.columns = result.columns;
+              state.rows = result.rows;
+              state.total = result.total;
+              atLog.debug('Attribute table page load finished.', {
+                reason,
+                rowCount: result.rows.length,
+                total: result.total,
+                columnCount: result.columns.length,
+              });
+            } finally {
+              state.loading = false;
+              if (!disposed && seq === loadSeq) {
+                notify(reason);
+              }
+            }
+          },
+        ),
+    );
   }
 
   async function goPrev() {

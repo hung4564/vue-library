@@ -77,6 +77,8 @@ export function runDrawStart(
   store.config = config;
   logHelper(logger, mapId, 'useMapDraw')
     .with({ fn: 'runDrawStart', span: 'store.init' })
-    .debug('start', { config });
+    .debug('Draw session start requested; emitting MAP_DRAW_EVENT.START.', {
+      hasConfig: !!config,
+    });
   emit.emit(MAP_DRAW_EVENT.START, config);
 }

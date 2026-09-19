@@ -138,6 +138,13 @@ function toggleExpand(event: MouseEvent) {
             · {{ node.fn }}</template
           >
           <template v-if="node.span"> · {{ node.span }}</template>
+          <template v-if="node.parentSpanId">
+            · parent={{ node.parentSpanId.slice(0, 8) }}…</template
+          >
+          <template v-if="node.durationMs != null">
+            · {{ node.durationMs }}ms</template
+          >
+          <template v-if="node.outcome"> · {{ node.outcome }}</template>
         </span>
       </span>
     </div>
@@ -200,6 +207,10 @@ function toggleExpand(event: MouseEvent) {
               · {{ closer.namespace }}</template
             >
             <template v-if="closer.span"> · {{ closer.span }}</template>
+            <template v-if="closer.durationMs != null">
+              · {{ closer.durationMs }}ms</template
+            >
+            <template v-if="closer.outcome"> · {{ closer.outcome }}</template>
           </span>
         </span>
       </div>

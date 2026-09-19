@@ -88,6 +88,7 @@ export {
   createDefaultLangStore,
   createMapLocaleApi,
   deepMergeLocale,
+  localeTreesEqual,
   diffLocaleKeys,
   flattenLocaleMessages,
   unflattenLocaleMessages,

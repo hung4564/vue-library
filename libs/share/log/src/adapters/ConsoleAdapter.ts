@@ -1,4 +1,6 @@
 import type { LogAdapter, LogLevel, LogRecord } from '../types';
+import { noopLogDataStore } from '../store/noop-store';
+import type { LogDataStore } from '../store/types';
 
 const LEVEL_STYLE: Record<LogLevel, string> = {
   debug: 'color:#9aa0a6;font-weight:600',
@@ -16,10 +18,15 @@ function formatMeta(record: LogRecord): string {
   const parts: string[] = [ns];
   if (header.index != null) parts.push(`[#${header.index}]`);
   if (header.mapId) parts.push(`[mapId=${header.mapId}]`);
-  if (header.requestId) parts.push(`[req=${header.requestId}]`);
+  if (header.actionId) parts.push(`[action=${header.actionId}]`);
+  if (header.requestId) parts.push(`[httpReq=${header.requestId}]`);
   if (header.span) parts.push(`[span=${header.span}]`);
   if (header.fn) parts.push(`[fn=${header.fn}]`);
-  if (header.functionId) parts.push(`[functionId=${header.functionId}]`);
+  if (header.eventName) parts.push(`[event=${header.eventName}]`);
+  if (header.spanId) parts.push(`[spanId=${header.spanId}]`);
+  if (header.parentSpanId) parts.push(`[parentSpan=${header.parentSpanId}]`);
+  if (header.durationMs != null) parts.push(`[${header.durationMs}ms]`);
+  if (header.outcome) parts.push(`[${header.outcome}]`);
   if (header.control) parts.push(`[control=${header.control}]`);
   if (header.menuId) parts.push(`[menuId=${header.menuId}]`);
   if (header.menuName) parts.push(`[menu=${header.menuName}]`);
@@ -27,8 +34,19 @@ function formatMeta(record: LogRecord): string {
   return parts.filter(Boolean).join('');
 }
 
+/**
+ * Console sink. Pairs with {@link NoopLogDataStore} by default (no retention).
+ * Pass another {@link LogDataStore} to also persist while printing.
+ */
 export class ConsoleAdapter implements LogAdapter {
+  constructor(private readonly store: LogDataStore = noopLogDataStore) {}
+
+  get dataStore(): LogDataStore {
+    return this.store;
+  }
+
   log(record: LogRecord): void {
+    void this.store.append(record);
     const level = record.header.level;
     const levelTag = `[${level.toUpperCase()}]`;
     const meta = formatMeta(record);

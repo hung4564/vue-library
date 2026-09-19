@@ -1,4 +1,5 @@
 import { logHelper } from '@hungpvq/map-core';
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
 import type {
   IdentifyMultiResult,
@@ -16,8 +17,8 @@ import {
 
 /** Pure loading log event names used by IdentifyControl / IdentifyShowFirstControl. */
 export const IDENTIFY_LOADING_LOG = {
-  start: 'loading:start',
-  done: 'loading:done',
+  start: 'Identify query loading started.',
+  done: 'Identify query loading finished.',
 } as const;
 
 export function filterIdentifiesForControl<T extends IIdentifyView>(
@@ -143,11 +144,11 @@ export async function runIdentifyMulti(
   const filtered = filterIdentifiesForControl(identifies, filterIdentifyId);
   log
     .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
-    .debug('onGetFeatures', {
-    pointOrBox,
-    identifies: filtered,
-    filterId: filterIdentifyId,
-  });
+    .debug('Querying rendered features for identify views.', {
+      identifyViewCount: filtered.length,
+      filterIdentifyId: filterIdentifyId ?? null,
+      totalIdentifyViewCount: identifies.length,
+    });
 
   throwIfAborted(signal);
   const features = await handleMultiIdentify(
@@ -160,7 +161,12 @@ export async function runIdentifyMulti(
   throwIfAborted(signal);
   log
     .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
-    .debug('onGetFeatures', { features });
+    .debug('Identify feature query returned results.', {
+      resultCount: features.length,
+      nonEmptyPreview: features.filter(
+        (item) => 'features' in item && item.features.length > 0,
+      ).length,
+    });
 
   const nonEmpty = filterNonEmptyIdentifyResults(features);
   const hitCount = nonEmpty.length;
@@ -171,7 +177,12 @@ export async function runIdentifyMulti(
 
   log
     .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
-    .debug('onSelectFeatures', nonEmpty);
+    .debug(
+      featureCount === 0
+        ? 'Identify resolver skipped empty results; no features matched.'
+        : 'Passing non-empty identify results to resolver and highlight.',
+      { hitCount, featureCount },
+    );
   throwIfAborted(signal);
   const res = await getIdentifyResolver(mapId).execute({
     records: nonEmpty,
@@ -184,7 +195,9 @@ export async function runIdentifyMulti(
   throwIfAborted(signal);
   log
     .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
-    .debug('onSelectFeaturesResult', res);
+    .debug('Identify resolver finished.', {
+      resolverHandled: res != null,
+    });
   await getHighlightResolver(mapId).execute({
     mapId,
     records: nonEmpty,
@@ -226,76 +239,110 @@ export type RunIdentifyShowFirstOptions = {
 export async function runIdentifyShowFirst(
   options: RunIdentifyShowFirstOptions,
 ): Promise<RunIdentifyResult> {
-  const { identifies, mapId, pointOrBox, event, signal, requestId } = options;
-  throwIfAborted(signal);
-  const log = logHelper(
-    loggerIdentify,
-    mapId,
-    'FIRST',
-    'IdentifyShowFirstControl',
+  return loggerFactory.ensureActionContext(
+    {
+      mapId: options.mapId,
+      span: 'identify.show-first',
+      fn: 'runIdentifyShowFirst',
+    },
+    async () =>
+      runWithFunctionLog(
+        logHelper(
+          loggerIdentify,
+          options.mapId,
+          'FIRST',
+          'IdentifyShowFirstControl',
+        ),
+        {
+          fn: 'runIdentifyShowFirst',
+          span: 'identify.show-first',
+          mapId: options.mapId,
+        },
+        async () => {
+          const { identifies, mapId, pointOrBox, event, signal, requestId } =
+            options;
+          throwIfAborted(signal);
+          const log = logHelper(
+            loggerIdentify,
+            mapId,
+            'FIRST',
+            'IdentifyShowFirstControl',
+          );
+          const loadStartedAt = performance.now();
+          log
+            .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+            .info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
+          log
+            .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+            .debug('Querying first identify hit across views.', {
+              identifyViewCount: identifies.length,
+            });
+
+          const record = await handleMultiIdentifyGetFirst(
+            identifies,
+            mapId,
+            pointOrBox,
+            { selectThreshold: 5 },
+            signal,
+          );
+          throwIfAborted(signal);
+          log
+            .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+            .debug(
+              record?.features?.length
+                ? 'First identify hit found; forwarding to resolver.'
+                : 'No identify features found for show-first path.',
+              {
+                datasetId: record?.identify?.id,
+                featureCount: record?.features?.length ?? 0,
+              },
+            );
+
+          const records = record?.features?.length
+            ? [record]
+            : ([] as IdentifyMultiResult[]);
+          const featureCount = record?.features?.length ?? 0;
+
+          throwIfAborted(signal);
+          const res = await getIdentifyResolver(mapId).execute({
+            records,
+            mapId,
+            event,
+            singleLayer: true,
+            signal,
+            requestId,
+          });
+          throwIfAborted(signal);
+          log
+            .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+            .debug('Identify show-first resolver finished.', {
+              resolverHandled: res != null,
+              featureCount,
+            });
+          await getHighlightResolver(mapId).execute({
+            mapId,
+            records,
+            signal,
+          });
+          throwIfAborted(signal);
+
+          const durationMs = Math.round(performance.now() - loadStartedAt);
+          log
+            .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
+            .info(IDENTIFY_LOADING_LOG.done, {
+              durationMs,
+              featureCount,
+              empty: featureCount === 0,
+            });
+
+          return {
+            records,
+            hitCount: records.length,
+            featureCount,
+            durationMs,
+            empty: featureCount === 0,
+          };
+        },
+      ),
   );
-  const loadStartedAt = performance.now();
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .info(IDENTIFY_LOADING_LOG.start, { pointOrBox });
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .debug('onGetFeatures', { pointOrBox });
-
-  const record = await handleMultiIdentifyGetFirst(
-    identifies,
-    mapId,
-    pointOrBox,
-    { selectThreshold: 5 },
-    signal,
-  );
-  throwIfAborted(signal);
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .debug('onGetFeatures', { record });
-
-  const records = record?.features?.length
-    ? [record]
-    : ([] as IdentifyMultiResult[]);
-  const featureCount = record?.features?.length ?? 0;
-
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .debug('onSelectFeatures', { record });
-  throwIfAborted(signal);
-  const res = await getIdentifyResolver(mapId).execute({
-    records,
-    mapId,
-    event,
-    singleLayer: true,
-    signal,
-    requestId,
-  });
-  throwIfAborted(signal);
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .debug('onSelectFeaturesResult', res);
-  await getHighlightResolver(mapId).execute({
-    mapId,
-    records,
-    signal,
-  });
-  throwIfAborted(signal);
-
-  const durationMs = Math.round(performance.now() - loadStartedAt);
-  log
-    .with({ fn: 'runIdentifyShowFirst', span: 'identify.show-first' })
-    .info(IDENTIFY_LOADING_LOG.done, {
-      durationMs,
-      featureCount,
-      empty: featureCount === 0,
-    });
-
-  return {
-    records,
-    hitCount: records.length,
-    featureCount,
-    durationMs,
-    empty: featureCount === 0,
-  };
 }

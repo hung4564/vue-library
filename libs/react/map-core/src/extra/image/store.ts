@@ -1,4 +1,4 @@
-import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
+﻿import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
   createDefaultImageStore,
   createMapImageStoreApi,
@@ -14,7 +14,7 @@ export const useMapImageStore = (mapId: string) =>
   createMapScopedStore<MapImageStore>(mapId, MAP_STORE_KEY.IMAGE, () => {
     logHelper(logger, mapId, 'store')
       .with({ fn: 'useMapImageStore', span: 'store.init' })
-      .debug('init');
+      .debug('Created scoped map store for mapId.');
     return createDefaultImageStore();
   });
 

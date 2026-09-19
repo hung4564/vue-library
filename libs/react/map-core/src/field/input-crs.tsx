@@ -58,7 +58,10 @@ export function InputCrs({
   const wrapRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const sourceItems = items ?? buildMapCrsCatalog(storeItems);
+  const sourceItems = useMemo(
+    () => items ?? buildMapCrsCatalog(storeItems),
+    [items, storeItems],
+  );
 
   const catalog = useMemo(() => buildCrsSearchCatalog(sourceItems), [sourceItems]);
 

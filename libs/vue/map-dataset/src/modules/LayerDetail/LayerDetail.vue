@@ -49,6 +49,8 @@ const { trans, registerLocale } = useLang(mapId.value);
 registerLocale('en', LAYER_DETAIL_LOCALE);
 
 const show = ref(true);
+/** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
+let closed = false;
 
 provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.layerDetail,
@@ -73,6 +75,9 @@ const itemMenus = computed(() => {
 });
 
 function handleClose() {
+  if (closed) return;
+  closed = true;
+  show.value = false;
   hl.hideIfSource('detail');
   emit('close');
 }
@@ -88,8 +93,12 @@ const { panelBind } = useRegisterMapControl(mapId, {
   title: () => trans.value('map.layer-control.info.title'),
   show,
   setShow: (value) => {
-    show.value = value;
-    if (!value) handleClose();
+    if (!value) {
+      handleClose();
+      return;
+    }
+    closed = false;
+    show.value = true;
   },
   getProps: () => ({
     ...(props.popupProps || {}),
@@ -98,8 +107,11 @@ const { panelBind } = useRegisterMapControl(mapId, {
     {
       type: 'mapLayerDetail',
       run: () => {
-        show.value = !show.value;
-        if (!show.value) handleClose();
+        if (show.value) handleClose();
+        else {
+          closed = false;
+          show.value = true;
+        }
       },
     },
   ],

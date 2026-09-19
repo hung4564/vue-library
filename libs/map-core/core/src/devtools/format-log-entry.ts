@@ -1,4 +1,4 @@
-import type { BufferingLogEntry } from './BufferingLogAdapter';
+import type { LogRecord } from '@hungpvq/shared-log';
 
 function formatLogArg(arg: unknown): string {
   if (typeof arg === 'string') return arg;
@@ -18,18 +18,22 @@ function formatLogTime(ts: number): string {
 }
 
 /**
- * Format a buffering log entry for clipboard copy (devtools LogViewer).
+ * Format a log record for clipboard copy (devtools LogViewer).
  */
-export function formatDevtoolsLogEntryForCopy(log: BufferingLogEntry): string {
+export function formatDevtoolsLogEntryForCopy(log: LogRecord): string {
   const { header, args } = log;
   const ns = header.namespaces.filter(Boolean).join(':');
   const extras: string[] = [];
   if (header.index != null) extras.push(`#${header.index}`);
   if (header.mapId) extras.push(`mapId=${header.mapId}`);
-  if (header.requestId) extras.push(`req=${header.requestId}`);
+  if (header.actionId) extras.push(`action=${header.actionId}`);
+  if (header.requestId) extras.push(`httpReq=${header.requestId}`);
   if (header.span) extras.push(`span=${header.span}`);
   if (header.fn) extras.push(`fn=${header.fn}`);
-  if (header.functionId) extras.push(`functionId=${header.functionId}`);
+  if (header.spanId) extras.push(`spanId=${header.spanId}`);
+  if (header.parentSpanId) extras.push(`parentSpan=${header.parentSpanId}`);
+  if (header.durationMs != null) extras.push(`${header.durationMs}ms`);
+  if (header.outcome) extras.push(`outcome=${header.outcome}`);
   if (header.control) extras.push(`control=${header.control}`);
   if (header.menuId) extras.push(`menuId=${header.menuId}`);
   if (header.menuName) extras.push(`menu=${header.menuName}`);

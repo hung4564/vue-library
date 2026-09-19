@@ -24,25 +24,8 @@ export {
 export type { TreeValueType } from './viewers/tree-helpers';
 
 export {
-  PANEL_DRAG_THRESHOLD_PX,
-  beginPanelDrag,
-  clampPanelPos,
-  fitMovedPanelPos,
-  offsetParentRect,
-  panelPosStyle,
-  reanchorPanelPos,
-  samePanelPos,
-  syncDevtoolsShellPos,
-} from './viewers/panel-drag';
-export type {
-  DevtoolsShellLayout,
-  PanelDragHandlers,
-  PanelPos,
-  PanelSize,
-} from './viewers/panel-drag';
-
-export {
   errorMapId,
+  shortMapId,
   shortMapId as shortErrorMapId,
   collectErrorMapIds,
   filterErrorsByMapId,
@@ -52,38 +35,17 @@ export {
 
 export {
   LEVEL_FILTERS,
-  UUID_RE,
-  logMapId,
-  shortMapId,
-  formatArg,
-  namespaceKey,
-  rootNamespace,
-  displayNamespace,
-  entryText,
-  filterLogs,
-  buildStructuredLogs,
-  collectStructuredLogs,
-  collectLogMapIds,
-  collectNamespaces,
-  isObject,
-  namespaceParts,
-  levelLetter,
   formatLogTime,
   textMessage,
   objectArgs,
-  countNewLogsWhilePaused,
-  collectLogsByRequestId,
-  compareLogOrder,
+  stringifyLogRecord,
   buildRequestFlowSteps,
   buildRequestFlowTree,
   formatFlowDelta,
-  shortRequestId,
+  shortActionId,
 } from './viewers/log-helpers';
 export type {
   LevelFilter,
-  StructuredGroup,
-  StructuredLog,
-  StructuredItem,
   RequestFlowStep,
   RequestFlowTreeNode,
 } from './viewers/log-helpers';

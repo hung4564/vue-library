@@ -1,4 +1,4 @@
-/**
+﻿/**
  * React mitt store implementation
  * Creates event emitters for map instances
  */
@@ -20,7 +20,7 @@ export function getMapMittStore<
   return createMapScopedStore<Emitter<T>>(mapId, MAP_STORE_KEY.MITT, () => {
     logHelper(loggerEvent, mapId, 'store')
       .with({ fn: 'getMapMittStore', span: 'store.init' })
-      .debug('init');
+      .debug('Created scoped map store for mapId.');
     return createMapMitt<T>();
   });
 }

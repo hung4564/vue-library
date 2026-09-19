@@ -20,7 +20,7 @@ Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus 
 
 ## Usage
 
-Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel, captures map errors, and installs the dataset debug bridge when available). Mount `<Devtools />` **inside** `<Map>`:
+Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel — default **IndexedDB**, uncapped; config on `getMapDebugStore()` — captures map errors, and installs the dataset debug bridge when available). Optional: `installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })`. Mount `<Devtools />` **inside** `<Map>`:
 
 ```tsx
 import { StrictMode } from 'react';

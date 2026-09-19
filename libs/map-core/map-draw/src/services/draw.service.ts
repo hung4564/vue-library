@@ -17,9 +17,9 @@ export class DrawService {
   ) {
     logHelper(logger, mapId, 'DrawService')
       .with({ fn: 'setFeature', span: 'draw.set' })
-      .debug('setFeature', {
-      type,
-      feature,
+      .debug('Recording draw feature change in store state.', {
+      changeType: type,
+      featureId: feature.id,
     });
     const featureId = feature.id ?? getUUIDv4();
     feature.id = featureId;
@@ -37,6 +37,12 @@ export class DrawService {
       case 'deleted':
         if (store.state.featuresAdded[featureId]) {
           delete store.state.featuresAdded[featureId];
+          logHelper(logger, mapId, 'DrawService')
+            .with({ fn: 'setFeature', span: 'draw.set' })
+            .debug(
+              'Deleted draw feature dropped from added set because it was never saved.',
+              { featureId },
+            );
           return;
         }
         delete store.state.featuresUpdated[featureId];
@@ -91,9 +97,9 @@ export class DrawService {
     try {
       logHelper(logger, mapId, 'DrawService')
         .with({ fn: 'saveDraw', span: 'draw.save' })
-        .debug('save', {
-        collection,
-        callback,
+        .debug('Draw save started; converting feature collection.', {
+        featureCount: collection.features.length,
+        hasCallback: !!callback,
       });
       const action = store.config;
 
@@ -103,7 +109,9 @@ export class DrawService {
       if (!action) {
         logHelper(logger, mapId, 'DrawService')
           .with({ fn: 'saveDraw', span: 'draw.save' })
-          .debug('save', 'no callback');
+          .debug(
+            'Draw save skipped because draw config actions are not configured.',
+          );
         return;
       }
       const result: DrawSaveFcParams = DrawService.convertData(
@@ -135,8 +143,10 @@ export class DrawService {
 
       logHelper(logger, mapId, 'DrawService')
         .with({ fn: 'saveDraw', span: 'draw.save' })
-        .debug('save', {
-        result,
+        .debug('Draw save persistence finished.', {
+        addedCount: Object.keys(result.added).length,
+        updatedCount: Object.keys(result.updated).length,
+        deletedCount: Object.keys(result.deleted).length,
       });
       callback && callback(result);
       DrawService.clearDraw(store);

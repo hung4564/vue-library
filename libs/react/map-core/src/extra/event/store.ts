@@ -1,4 +1,4 @@
-import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
+﻿import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
   createDefaultEventStore,
   type MapEventStore,
@@ -16,7 +16,7 @@ export function useMapEventStore(mapId: string): MapEventStore {
     () => {
       logHelper(logger, mapId, 'store')
         .with({ fn: 'useMapEventStore', span: 'store.init' })
-        .debug('init');
+        .debug('Created scoped map store for mapId.');
       return createDefaultEventStore();
     },
     {

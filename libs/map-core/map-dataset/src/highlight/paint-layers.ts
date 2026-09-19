@@ -619,6 +619,8 @@ export function ensureHighlightLayers(
     isolatedSource || skipHighlightFilter
       ? undefined
       : toExpressionFilter(createHighlightFilter(feature, filterCreator));
+  const added: string[] = [];
+  const updated: string[] = [];
   layerEntries(layerIds).forEach(([key, id]) => {
     const baseLayer = layersDefault[key];
     if (!baseLayer) return;
@@ -636,29 +638,22 @@ export function ensureHighlightLayers(
     if (existing && existing.source === sourceId) {
       try {
         map.setFilter(id, mergedFilter ?? null);
+        updated.push(id);
       } catch (error) {
         logHelper(loggerHighlight, map.id, 'ensureHighlight')
           .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
-          .debug(
-          'highlight',
-          'setFilter failed',
-          { error, id, filter: mergedFilter },
-        );
+          .debug('Highlight setFilter failed on existing layer.', {
+            error,
+            layerId: id,
+          });
       }
-      logHelper(loggerHighlight, map.id, 'ensureHighlight')
-        .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
-        .debug(
-        'highlight',
-        'layer-update',
-        { id, filter: mergedFilter, feature, highlightFilter },
-      );
       return;
     }
     if (existing) {
       map.removeLayer(id);
     }
     const datasetLayer = Object.fromEntries(
-      Object.entries(datasetData || {}).filter(([key]) => key !== 'filter'),
+      Object.entries(datasetData || {}).filter(([k]) => k !== 'filter'),
     );
     const temp = {
       id,
@@ -667,25 +662,25 @@ export function ensureHighlightLayers(
       ...datasetLayer,
       ...(mergedFilter ? { filter: mergedFilter } : {}),
     } as LayerSpecification;
-    logHelper(loggerHighlight, map.id, 'ensureHighlight')
-      .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
-      .debug(
-      'highlight',
-      'layer',
-      { layer: temp, filter: mergedFilter, feature, highlightFilter },
-    );
     try {
       map.addLayer(temp);
+      added.push(id);
     } catch (error) {
       logHelper(loggerHighlight, map.id, 'ensureHighlight')
         .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
-        .debug(
-        'highlight',
-        'addLayer failed',
-        { error, layer: temp },
-      );
+        .debug('Highlight addLayer failed.', { error, layerId: id });
     }
   });
+  if (added.length || updated.length) {
+    logHelper(loggerHighlight, map.id, 'ensureHighlight')
+      .with({ fn: 'ensureHighlightLayers', span: 'highlight.paint' })
+      .debug('Highlight layers ensured on the map.', {
+        sourceId,
+        addedLayerCount: added.length,
+        updatedLayerCount: updated.length,
+        hasHighlightFilter: !!highlightFilter,
+      });
+  }
 }
 
 export function setPaintIfLayer(

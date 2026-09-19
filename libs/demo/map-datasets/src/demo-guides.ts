@@ -272,16 +272,92 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
   ),
 
   '/devtools': guideI18n(
-    guide('Devtools is installed at the app root (not as a map corner control on this page).', [
-      ['open', 'Open', 'Look for the Map Devtools FAB / overlay (bottom). On mobile you can drag the panel.'],
-      ['install', 'Install pattern', 'App shell calls installDevtools() and mounts <Devtools /> once for all routes.'],
+    guide('Devtools is installed at the app root; each map mounts a Map Devtools control.', [
+      ['open', 'Open', 'Click the Map Devtools control on the map (tools icon) to open the popup panel.'],
+      ['install', 'Install pattern', 'App shell calls installDevtools() once; each <Map> mounts <Devtools /> / <DevtoolsControl />.'],
       ['multi', 'Multi-map', 'See also #/multi-map — each mapId has its own store; Devtools lists maps in the process.'],
     ]),
-    guide('Devtools được cài ở app root (không gắn control góc bản đồ trên trang này).', [
-      ['open', 'Mở', 'Tìm FAB / overlay Map Devtools (dưới). Trên mobile có thể kéo panel.'],
-      ['install', 'Cách cài', 'App shell gọi installDevtools() và mount <Devtools /> một lần cho mọi route.'],
+    guide('Devtools được cài ở app root; mỗi bản đồ gắn control Map Devtools.', [
+      ['open', 'Mở', 'Bấm control Map Devtools trên bản đồ (icon tools) để mở panel popup.'],
+      ['install', 'Cách cài', 'App shell gọi installDevtools() một lần; mỗi <Map> mount <Devtools /> / <DevtoolsControl />.'],
       ['multi', 'Multi-map', 'Xem thêm #/multi-map — mỗi mapId có store riêng; Devtools liệt kê các map trong process.'],
     ]),
+  ),
+
+  '/logging-cookbook': guideI18n(
+    guide(
+      'Action Flow cookbook — exercise ensureActionContext, nested spans, trackRequest, mitt, abort, and orphans. Open Devtools → Logs → Flow after each button.',
+      [
+        [
+          'flow',
+          'Flow fields',
+          'Expect actionId on the gesture; spanId / parentSpanId on nested frames; HTTP requestId only on trackRequest.',
+        ],
+        [
+          'menu',
+          'Menu / identify / UI',
+          'Also use LayerControl menus, Identify click, and open/close LayerDetail or Attribute Table on this map for scenarios 5–7.',
+        ],
+        [
+          'sticky',
+          'Concurrent',
+          'Browser sticky zone may merge overlapping clicks; Node ALS isolates (see share-log tests).',
+        ],
+      ],
+    ),
+    guide(
+      'Cookbook Action Flow — chạy ensureActionContext, span lồng nhau, trackRequest, mitt, abort, orphan. Mở Devtools → Logs → Flow sau mỗi nút.',
+      [
+        [
+          'flow',
+          'Trường Flow',
+          'actionId cho gesture; spanId / parentSpanId cho frame lồng; requestId HTTP chỉ từ trackRequest.',
+        ],
+        [
+          'menu',
+          'Menu / identify / UI',
+          'Dùng thêm menu LayerControl, Identify, mở/đóng LayerDetail hoặc Attribute Table cho scenario 5–7.',
+        ],
+        [
+          'sticky',
+          'Đồng thời',
+          'Browser sticky có thể gộp click chồng; Node ALS tách (xem test share-log).',
+        ],
+      ],
+    ),
+  ),
+
+  '/shared-log': guideI18n(
+    guide(
+      'Pure @hungpvq/shared-log demo — no MapLibre. Buffer panel + browser console.',
+      [
+        [
+          'run',
+          'Run scenarios',
+          'Click each button; buffered records show actionId / spanId / parentSpanId / HTTP requestId.',
+        ],
+        [
+          'map',
+          'With map',
+          'For mitt / menu / identify Flow trees, use #/logging-cookbook.',
+        ],
+      ],
+    ),
+    guide(
+      'Demo thuần @hungpvq/shared-log — không MapLibre. Panel buffer + console.',
+      [
+        [
+          'run',
+          'Chạy scenario',
+          'Bấm từng nút; buffer hiện actionId / spanId / parentSpanId / HTTP requestId.',
+        ],
+        [
+          'map',
+          'Có map',
+          'Mitt / menu / identify Flow: dùng #/logging-cookbook.',
+        ],
+      ],
+    ),
   ),
 
   '/theme': guideI18n(

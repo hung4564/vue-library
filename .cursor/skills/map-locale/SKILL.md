@@ -68,7 +68,9 @@ Do **not** put a new language’s strings only inside a Vue/React component.
 |---------|-----|
 | Built-in catalogs | `locale/locale.<lang>.ts` → `registerLocale` / LanguageControl `locales` |
 | App override / extra lang | `registerLocale`, `loadLocale`, `setLanguage`, `setTranslate` |
-| Key helpers | `deepMergeLocale`, `flattenLocaleMessages`, `diffLocaleKeys` |
+| Key helpers | `deepMergeLocale`, `flattenLocaleMessages`, `diffLocaleKeys`, `localeTreesEqual` |
+
+`registerLocale` / `registerLanguage` are **idempotent**: re-registering an already-merged pack does **not** mutate or emit `map:lang:changed`. Pack registration is bootstrap (components may call it in `setup`); user language changes go through `setLanguage` (action + emit).
 
 Apps may load extra languages at runtime; **library-owned** strings still land in
 `locale/locale.<lang>.ts` (+ `<domain>/locale/locale.<lang>.ts`) first.

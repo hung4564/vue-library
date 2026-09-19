@@ -5,6 +5,7 @@
  */
 
 import { bindMapLongPress, type MapSimple } from '@hungpvq/map-core';
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
 import type { IIdentifyView } from '../interfaces/dataset.parts';
 import {
@@ -188,52 +189,67 @@ export function createIdentifySession(
     input: IdentifyQueryInput,
   ): Promise<RunIdentifyResult | undefined> {
     if (destroyed) return undefined;
-    const pointOrBox = input.kind === 'point' ? input.point : input.box;
-    const event = input.kind === 'point' ? input.event : undefined;
+    return loggerFactory.ensureActionContext(
+      { mapId: options.mapId, span: 'identify.query', fn: 'runQuery' },
+      async () =>
+        runWithFunctionLog(
+          loggerFactory.createLogger().setNamespace('map:identify', 2),
+          {
+            fn: 'runQuery',
+            span: 'identify.query',
+            mapId: options.mapId,
+          },
+          async () => {
+            const pointOrBox =
+              input.kind === 'point' ? input.point : input.box;
+            const event = input.kind === 'point' ? input.event : undefined;
 
-    queryAbort?.abort();
-    const ac = new AbortController();
-    queryAbort = ac;
-    const generation = ++queryGeneration;
+            queryAbort?.abort();
+            const ac = new AbortController();
+            queryAbort = ac;
+            const generation = ++queryGeneration;
 
-    model.setLoading(true);
-    emitState(model, options.onStateChange);
-    options.setCursor?.('wait');
-    options.syncResultPanel?.({ loading: true });
+            model.setLoading(true);
+            emitState(model, options.onStateChange);
+            options.setCursor?.('wait');
+            options.syncResultPanel?.({ loading: true });
 
-    try {
-      return await runIdentifyMulti({
-        identifies: options.getIdentifies(),
-        mapId: options.mapId,
-        pointOrBox,
-        event,
-        filterIdentifyId: model.getState().filterIdentifyId,
-        signal: ac.signal,
-        requestId: generation,
-      });
-    } catch (error) {
-      if (isIdentifyAbortError(error) || ac.signal.aborted) {
-        return undefined;
-      }
-      if (!destroyed && generation === queryGeneration) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : String(error ?? 'Identify failed');
-        options.syncResultPanel?.({ error: message, loading: false });
-        clearLoadingUi();
-      }
-      return undefined;
-    } finally {
-      if (queryAbort === ac) {
-        queryAbort = null;
-      }
-      if (!destroyed && generation === queryGeneration) {
-        if (model.getState().loading) {
-          clearLoadingUi();
-        }
-      }
-    }
+            try {
+              return await runIdentifyMulti({
+                identifies: options.getIdentifies(),
+                mapId: options.mapId,
+                pointOrBox,
+                event,
+                filterIdentifyId: model.getState().filterIdentifyId,
+                signal: ac.signal,
+                requestId: generation,
+              });
+            } catch (error) {
+              if (isIdentifyAbortError(error) || ac.signal.aborted) {
+                return undefined;
+              }
+              if (!destroyed && generation === queryGeneration) {
+                const message =
+                  error instanceof Error
+                    ? error.message
+                    : String(error ?? 'Identify failed');
+                options.syncResultPanel?.({ error: message, loading: false });
+                clearLoadingUi();
+              }
+              return undefined;
+            } finally {
+              if (queryAbort === ac) {
+                queryAbort = null;
+              }
+              if (!destroyed && generation === queryGeneration) {
+                if (model.getState().loading) {
+                  clearLoadingUi();
+                }
+              }
+            }
+          },
+        ),
+    );
   }
 
   function buildResultPanelPayload(

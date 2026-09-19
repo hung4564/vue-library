@@ -33,6 +33,8 @@ export const DEMO_ASIDE_NAV_ITEMS: readonly DemoAsideNavItem[] = [
   { to: '/story-telling', label: 'Story telling' },
   { to: '/story-telling-gps', label: 'Story telling GPS' },
   { to: '/devtools', label: 'Devtools' },
+  { to: '/logging-cookbook', label: 'Logging cookbook (map)' },
+  { to: '/shared-log', label: 'Shared-log (no map)' },
   { to: '/dataset-highlight', label: 'Dataset - Highlight' },
   { to: '/dataset-identify', label: 'Dataset - Identify' },
   { to: '/dataset-identify-present', label: 'Dataset - Identify present' },

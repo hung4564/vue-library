@@ -28,6 +28,7 @@ import {
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
 import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -67,6 +68,8 @@ export function AttributeTable(props: AttributeTableProps) {
   const { trans, registerLocale } = useLang(mapId);
   const [show, toggleShow] = useShow(true);
   const toggleShowRef = useRef(toggleShow);
+  /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
+  const closedRef = useRef(false);
   toggleShowRef.current = toggleShow;
   const [tick, setTick] = useState(0);
 
@@ -111,18 +114,25 @@ export function AttributeTable(props: AttributeTableProps) {
 
   const applySelection = useCallback(
     (ctrl: AttributeTableController, focus?: AttributeTableRow) => {
-      const s = ctrl.getState();
-      const selected = s.rows.filter((row) => s.selectedIds.includes(row.id));
-      const current = focus ?? selected[0];
-      void getHighlightResolver(mapId).execute({
-        mapId,
-        count: selected.length,
-        features: current ? [current.feature as Feature] : [],
-        dataset: props.layer,
-        sources: ['attribute-table'],
-      });
-      if (selected.length === 0 || !s.zoomToSelection) return;
-      void zoomMapToSelectionRef.current(ctrl);
+      return loggerFactory.ensureActionContext(
+        { mapId, span: 'attribute-table.selection' },
+        () => {
+          const s = ctrl.getState();
+          const selected = s.rows.filter((row) =>
+            s.selectedIds.includes(row.id),
+          );
+          const current = focus ?? selected[0];
+          void getHighlightResolver(mapId).execute({
+            mapId,
+            count: selected.length,
+            features: current ? [current.feature as Feature] : [],
+            dataset: props.layer,
+            sources: ['attribute-table'],
+          });
+          if (selected.length === 0 || !s.zoomToSelection) return;
+          void zoomMapToSelectionRef.current(ctrl);
+        },
+      );
     },
     [mapId, props.layer],
   );
@@ -294,6 +304,8 @@ export function AttributeTable(props: AttributeTableProps) {
    * Re-open via menu / identify `addComponent` + pending selectRows.
    */
   function handleClose() {
+    if (closedRef.current) return;
+    closedRef.current = true;
     clearHighlight();
     toggleShow(false);
     props.onClose?.();
@@ -310,6 +322,7 @@ export function AttributeTable(props: AttributeTableProps) {
         handleClose();
         return;
       }
+      closedRef.current = false;
       toggleShow(true);
     },
     getProps: () => ({
@@ -323,6 +336,7 @@ export function AttributeTable(props: AttributeTableProps) {
           if (show) {
             handleClose();
           } else {
+            closedRef.current = false;
             toggleShow(true);
           }
         },
@@ -334,10 +348,15 @@ export function AttributeTable(props: AttributeTableProps) {
           if (payload?.layerId != null && payload.layerId !== props.layer.id) {
             return;
           }
-          const ids = (payload?.ids ?? []).map(String);
-          clearPendingAttributeTableSelectRows(mapId, props.layer.id);
-          toggleShow(true);
-          void controllerRef.current?.selectIds(ids);
+          return loggerFactory.ensureActionContext(
+            { mapId, span: 'attribute-table.select-rows' },
+            () => {
+              const ids = (payload?.ids ?? []).map(String);
+              clearPendingAttributeTableSelectRows(mapId, props.layer.id);
+              toggleShow(true);
+              void controllerRef.current?.selectIds(ids);
+            },
+          );
         },
       },
     ],

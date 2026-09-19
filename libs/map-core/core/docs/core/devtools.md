@@ -37,9 +37,9 @@ See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API 
 </Map>
 ```
 
-`DevtoolsControl` is also exported (same UI path). Global floating overlay / `mode="overlay"` has been removed (**breaking** for prior overlay-only mounts).
+`DevtoolsControl` is also exported (same UI path). The old floating FAB / overlay shell (`mode="overlay"`) has been removed.
 
-Request Flow (Logs tab → detail) opens a `DraggableModal` on `map-draggable-${mapId}` and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
+Request Flow (Logs tab → Flow) opens via `ModuleContainer` + `DraggableModal` on the host map (`useMap` inject) and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
 
 ## Bootstrap (Vue + React)
 
@@ -48,10 +48,38 @@ import { Devtools, installDevtools, uninstallDevtools } from '@hungpvq/vue-map-d
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
-// mount <Devtools /> inside <Map>
+// or: installDevtools({ logStore: 'memory' })
+// or: installDevtools({ logStore: { kind: 'memory', limit: 5_000 } })
+// or: installDevtools({ logStore: myCustomLogDataStore })
 ```
 
 `installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core`. Call `uninstallDevtools()` to tear down capture.
+
+### Log store (`map:debug`)
+
+Config and live instances live on **`getMapDebugStore()`** (`MAP_DEBUG_STORE_KEY = 'map:debug'`):
+
+| Field | Role |
+|-------|------|
+| `logStoreOptions` | Config before first create (`kind`, `limit` for memory only, `dbName` / `storeName`, or `store`) |
+| `logDataStore` | Live `LogDataStore` (created once) |
+| `logAdapter` | `DataStoreLogAdapter` wired to that store |
+| `logStoreUnsub` | Subscribe handle for UI mirror |
+
+**Default:** uncapped `IndexedDBLogDataStore` (indexes on `actionId` + `namespace`).  
+**Memory:** `logStore: 'memory'` — ring buffer; `limit` applies only here (default `10_000`).  
+**Custom:** pass any `LogDataStore` instance (or set `getMapDebugStore().logStoreOptions` / call `configureDevtoolLogStore` before install).
+
+```ts
+import { configureDevtoolLogStore, getMapDebugStore } from '@hungpvq/map-core/devtools';
+
+configureDevtoolLogStore({ kind: 'memory', limit: 2_000 });
+// equivalent: getMapDebugStore().logStoreOptions = { kind: 'memory', limit: 2_000 };
+
+installDevtools();
+```
+
+Logs tab **Refresh** re-reads the store (`refreshDevtoolLogsFromStore`) with short loading → success feedback (same pattern as Pin / copy).
 
 ## Stable API
 
@@ -60,14 +88,14 @@ installDevtools();
 | `Devtools` | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
 | `DevtoolsControl` | Explicit map-control popup (same as `Devtools`) |
 | `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
-| `installDevtools` / `uninstallDevtools` | Bootstrap |
+| `installDevtools` / `uninstallDevtools` | Bootstrap (`installDevtools({ logStore })` optional) |
 | `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers |
 
-Runtime lock: `public-api.spec.ts` in each adapter package.
+Runtime lock: `public-api.spec.ts` in each adapter package. Experimental core helpers: `@hungpvq/map-core/devtools` (`configureDevtoolLogStore`, `getMapDebugStore`, `getDevtoolLogDataStore`, …).
 
 ## Demos
 
 - Vue: `apps/vue/demo-map` — `installDevtools()` in `main.ts`; every `<Map>` includes `<DevtoolsControl position="bottom-right" />`
 - React: `apps/react/demo-map` — same pattern
 
-See also [Stable API](./stable-api.md) · [Error handling](./error-handling.md).
+See also [Stable API](./stable-api.md) · [Map store keys](./map-store.md) · [Error handling](./error-handling.md).

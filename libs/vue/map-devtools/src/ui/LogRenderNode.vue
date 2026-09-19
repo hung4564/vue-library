@@ -1,127 +1,106 @@
 <script setup lang="ts">
 import { formatDevtoolsLogEntryForCopy } from '@hungpvq/map-core/devtools';
+import { logActionId, type LogRecord } from '@hungpvq/shared-log';
 import {
   formatLogTime,
-  shortRequestId,
+  shortActionId,
   textMessage,
-  type StructuredItem,
 } from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
-import GroupItem from './GroupItem.vue';
 
 const props = defineProps<{
-  item: StructuredItem;
+  log: LogRecord;
   selectedId?: string | null;
 }>();
 
 const emit = defineEmits<{
   'namespace-click': [namespace: string];
-  'request-id-click': [requestId: string];
-  'flow-click': [requestId: string];
-  select: [item: StructuredItem];
+  'action-id-click': [actionId: string];
+  'flow-click': [actionId: string];
+  select: [log: LogRecord];
 }>();
 
-const isSelected = computed(
-  () => props.item.type === 'log' && props.selectedId === props.item.id,
-);
+const isSelected = computed(() => props.selectedId === props.log.id);
+
+const actionId = computed(() => logActionId(props.log));
+
+const message = computed(() => textMessage(props.log));
 
 function onRowClick(event: MouseEvent) {
   const t = event.target as HTMLElement | null;
   if (t?.closest('button, a, input, .log-entry__actions')) return;
-  emit('select', props.item);
+  emit('select', props.log);
 }
 </script>
 
 <template>
-  <GroupItem
-    v-if="item.type === 'group'"
-    :title="item.title"
-    :collapsed="item.collapsed"
-  >
-    <LogRenderNode
-      v-for="child in item.children"
-      :key="child.id"
-      :item="child"
-      :selected-id="selectedId"
-      @namespace-click="emit('namespace-click', $event)"
-      @request-id-click="emit('request-id-click', $event)"
-      @flow-click="emit('flow-click', $event)"
-      @select="emit('select', $event)"
-    />
-  </GroupItem>
-
   <div
-    v-else
     class="log-entry"
     :class="[
-      `log-entry--${item.log.header.level}`,
+      `log-entry--${log.header.level}`,
       { 'log-entry--selected': isSelected },
     ]"
     role="button"
     tabindex="0"
     @click="onRowClick"
-    @keydown.enter.prevent="emit('select', item)"
+    @keydown.enter.prevent="emit('select', log)"
   >
     <div class="log-entry__main">
       <span class="log-entry__time">{{
-        formatLogTime(item.log.header.ts)
+        formatLogTime(log.header.ts)
       }}</span>
       <div class="log-entry__row">
         <div class="log-entry__content">
-          <span v-if="textMessage(item.log)" class="log-entry__msg">{{
-            textMessage(item.log)
-          }}</span>
+          <span v-if="message" class="log-entry__msg">{{ message }}</span>
         </div>
         <div class="log-entry__actions">
           <MapControlButton
-            v-if="item.log.header.requestId"
+            v-if="actionId"
             class="log-entry__flow"
             variant="text"
             size="small"
-            title="Open request flow"
-            @click.stop="emit('flow-click', item.log.header.requestId!)"
+            title="Open action flow"
+            @click.stop="emit('flow-click', actionId!)"
           >
             Flow
           </MapControlButton>
           <MapCopyButton
             class="log-entry__copy"
             title="Copy log"
-            :value="formatDevtoolsLogEntryForCopy(item.log)"
+            :value="formatDevtoolsLogEntryForCopy(log)"
           />
         </div>
       </div>
       <span
         class="log-entry__level"
-        :title="(item.log.header.level || 'unknown').toUpperCase()"
+        :title="(log.header.level || 'unknown').toUpperCase()"
       >
-        {{ (item.log.header.level || '?').toUpperCase() }}
+        {{ (log.header.level || '?').toUpperCase() }}
       </span>
       <div
-        v-if="item.log.header.namespaces[0] || item.log.header.requestId"
+        v-if="log.header.namespaces[0] || actionId"
         class="log-entry__meta"
       >
         <MapControlButton
-          v-if="item.log.header.namespaces[0]"
+          v-if="log.header.namespaces[0]"
           variant="text"
           size="small"
           class="log-entry__meta-cell log-entry__ns"
-          :title="item.log.header.namespaces[0]"
-          @click.stop="
-            emit('namespace-click', item.log.header.namespaces[0]!)
-          "
+          :title="log.header.namespaces[0]"
+          @click.stop="emit('namespace-click', log.header.namespaces[0]!)"
         >
-          {{ item.log.header.namespaces[0] }}
+          {{ log.header.namespaces[0] }}
         </MapControlButton>
         <MapControlButton
-          v-if="item.log.header.requestId"
+          v-if="actionId"
           variant="text"
           size="small"
           class="log-entry__meta-cell log-entry__req"
-          :title="item.log.header.requestId"
-          @click.stop="emit('request-id-click', item.log.header.requestId!)"
+          :title="actionId"
+          @click.stop="emit('action-id-click', actionId!)"
         >
-          req={{ shortRequestId(item.log.header.requestId) }}
+          action={{ shortActionId(actionId) }}
         </MapControlButton>
       </div>
     </div>

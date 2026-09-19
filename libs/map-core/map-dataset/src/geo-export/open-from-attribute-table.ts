@@ -1,3 +1,4 @@
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { IDataset } from '../interfaces/dataset.base';
 import { createMenuClickBuilder } from '../menu/builder';
 import { handleMenuActionClick } from '../menu/handle';
@@ -11,6 +12,8 @@ import type { GeoExportScope, GeoExportUiMode } from './options';
 import { GEO_EXPORT_FORMATS, type GeoExportFormat } from './types';
 
 const AT_DEFAULT_SCOPES: GeoExportScope[] = ['all', 'filtered', 'selected'];
+const geoExportLogger = () =>
+  loggerFactory.createLogger().setNamespace('map:geo-export', 2);
 
 export type OpenGeoExportFromAttributeTableOptions = {
   layer: IDataset;
@@ -91,29 +94,84 @@ export async function runGeoExportFormatFromAttributeTable(
     format: GeoExportFormat;
   },
 ): Promise<void> {
-  const controller = createAtController(options.layer, options.mapId);
-  try {
-    await controller.run({
-      format: options.format,
-      mapId: options.mapId,
-    });
-  } finally {
-    controller.dispose();
-  }
+  return loggerFactory.ensureActionContext(
+    { mapId: options.mapId, span: 'geo-export.run', fn: options.format },
+    async () =>
+      runWithFunctionLog(
+        geoExportLogger(),
+        {
+          fn: 'runGeoExportFormatFromAttributeTable',
+          span: 'geo-export.run',
+          mapId: options.mapId,
+          datasetId: options.layer.id,
+        },
+        async () => {
+          const log = geoExportLogger().with({
+            fn: 'runGeoExportFormatFromAttributeTable',
+            span: 'geo-export.run',
+            mapId: options.mapId,
+            datasetId: options.layer.id,
+          });
+          log.debug('Running attribute-table geo-export for a single format.', {
+            format: options.format,
+          });
+          const controller = createAtController(options.layer, options.mapId);
+          try {
+            await controller.run({
+              format: options.format,
+              mapId: options.mapId,
+            });
+            log.debug('Attribute-table geo-export format finished.', {
+              format: options.format,
+            });
+          } finally {
+            controller.dispose();
+          }
+        },
+      ),
+  );
 }
 
 /** One-shot export (`uiMode: 'click'`) using `formats[0]` (or `geojson`). */
 export async function runGeoExportClickFromAttributeTable(
   options: OpenGeoExportFromAttributeTableOptions,
 ): Promise<void> {
-  const controller = createAtController(options.layer, options.mapId);
-  try {
-    const format = controller.getFormats()[0] ?? 'geojson';
-    await controller.run({
-      format,
-      mapId: options.mapId,
-    });
-  } finally {
-    controller.dispose();
-  }
+  return loggerFactory.ensureActionContext(
+    { mapId: options.mapId, span: 'geo-export.run', fn: 'click' },
+    async () =>
+      runWithFunctionLog(
+        geoExportLogger(),
+        {
+          fn: 'runGeoExportClickFromAttributeTable',
+          span: 'geo-export.run',
+          mapId: options.mapId,
+          datasetId: options.layer.id,
+        },
+        async () => {
+          const log = geoExportLogger().with({
+            fn: 'runGeoExportClickFromAttributeTable',
+            span: 'geo-export.run',
+            mapId: options.mapId,
+            datasetId: options.layer.id,
+          });
+          const controller = createAtController(options.layer, options.mapId);
+          try {
+            const format = controller.getFormats()[0] ?? 'geojson';
+            log.debug(
+              'Running one-shot attribute-table geo-export (uiMode click).',
+              { format },
+            );
+            await controller.run({
+              format,
+              mapId: options.mapId,
+            });
+            log.debug('One-shot attribute-table geo-export finished.', {
+              format,
+            });
+          } finally {
+            controller.dispose();
+          }
+        },
+      ),
+  );
 }

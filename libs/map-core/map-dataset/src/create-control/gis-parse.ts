@@ -5,6 +5,7 @@ import type {
   Geometry,
   Position,
 } from 'geojson';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { detectGeojsonCrs, isValidGeojson, parseGeojsonText } from '../geojson/geojson-parse';
 import { asFeatureCollection } from '../utils/feature-collection';
 import {
@@ -244,29 +245,36 @@ export async function parseGisFromUrl(
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   report?.(0, 2, 'fetch');
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch GIS data (${response.status})`);
-  }
+  return loggerFactory.trackRequest(
+    { url, method: 'GET', span: 'gis.fetch', fn: 'parseGisFromUrl' },
+    async () => {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch GIS data (${response.status})`);
+      }
 
-  const filename =
-    filenameFromContentDisposition(response.headers.get('content-disposition')) ||
-    filenameFromUrl(url) ||
-    'download';
-  const contentType = response.headers.get('content-type') || '';
-  const hint: GisSourceHint = { name: filename, type: contentType };
-  const format = detectGisFormat(hint);
-  if (isBinaryGisFormat(format) || fileExtension(filename) === 'shp') {
-    const buffer = await response.arrayBuffer();
-    report?.(1, 2, format || 'parse');
-    const result = await parseGisBuffer(buffer, hint, report);
-    report?.(2, 2, result.format || 'parse');
-    return result;
-  }
+      const filename =
+        filenameFromContentDisposition(
+          response.headers.get('content-disposition'),
+        ) ||
+        filenameFromUrl(url) ||
+        'download';
+      const contentType = response.headers.get('content-type') || '';
+      const hint: GisSourceHint = { name: filename, type: contentType };
+      const format = detectGisFormat(hint);
+      if (isBinaryGisFormat(format) || fileExtension(filename) === 'shp') {
+        const buffer = await response.arrayBuffer();
+        report?.(1, 2, format || 'parse');
+        const result = await parseGisBuffer(buffer, hint, report);
+        report?.(2, 2, result.format || 'parse');
+        return result;
+      }
 
-  const text = await response.text();
-  report?.(1, 2, format || 'parse');
-  return parseGisTextAsync(text, { ...hint, strict: true }, report);
+      const text = await response.text();
+      report?.(1, 2, format || 'parse');
+      return parseGisTextAsync(text, { ...hint, strict: true }, report);
+    },
+  );
 }
 
 export async function parseGisBuffer(

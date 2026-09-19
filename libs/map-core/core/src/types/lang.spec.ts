@@ -3,16 +3,16 @@ import {
   createDefaultLangStore,
   createMapLocaleApi,
   flattenLocaleMessages,
-  MittTypeMapLangEventKey,
-  translateMapLang,
-  unflattenLocaleMessages,
   getStoredMapLanguage,
-  setStoredMapLanguage,
   isMapLangFlatMessages,
   mapLanguageCodeLabel,
+  MittTypeMapLangEventKey,
   nextMapLanguageInList,
   registerLanguageControlPacks,
   resolveInitialMapLanguage,
+  setStoredMapLanguage,
+  translateMapLang,
+  unflattenLocaleMessages,
 } from './lang';
 
 describe('locale flat helpers', () => {
@@ -91,6 +91,28 @@ describe('createMapLocaleApi', () => {
     expect(translateMapLang(store, 'map.home.title')).toBe('B');
   });
 
+  it('registerLocale is idempotent — no emit when pack already merged', () => {
+    const store = createDefaultLangStore();
+    const emitted: string[] = [];
+    const api = createMapLocaleApi({
+      getStore: () => store,
+      getEmitter: () => ({
+        emit: (e) => {
+          emitted.push(e);
+        },
+      }),
+    });
+    const pack = { map: { home: { title: 'Home' } } };
+    expect(api.registerLocale('en', pack)).toBe(true);
+    expect(emitted).toHaveLength(1);
+    expect(api.registerLocale('en', pack)).toBe(false);
+    expect(emitted).toHaveLength(1);
+    expect(api.registerLocale('en', { map: { home: { title: 'Home' } } })).toBe(
+      false,
+    );
+    expect(emitted).toHaveLength(1);
+  });
+
   it('registerLocaleFlat merges unflattened keys', () => {
     const store = createDefaultLangStore({ language: 'vi' });
     const api = createMapLocaleApi({ getStore: () => store });
@@ -107,7 +129,7 @@ describe('createMapLocaleApi', () => {
     expect(ok).toBe(true);
     api.setLanguage('vi', false);
     expect(translateMapLang(store, 'map.home.title')).toBe('Từ API');
-    expect(store.loadingLanguages.vi).toBeUndefined();
+    expect(store.loadingLanguages['vi']).toBeUndefined();
   });
 
   it('loadLocale skips when catalog exists unless force', async () => {
@@ -166,7 +188,7 @@ describe('createMapLocaleApi', () => {
     const store = createDefaultLangStore();
     const api = createMapLocaleApi({ getStore: () => store });
     api.registerLanguage('fr', { label: 'Français' });
-    expect(store.languageLabels.fr).toBe('Français');
+    expect(store.languageLabels['fr']).toBe('Français');
     expect(api.getLanguages()).toContain('fr');
   });
 
@@ -246,10 +268,10 @@ describe('LanguageControl bootstrap helpers', () => {
       labels: { fr: 'Français' },
       languages: ['en', 'vi', 'fr'],
     });
-    expect(registered.en).toBeTruthy();
-    expect(registered.vi).toBeTruthy();
-    expect(registered.fr).toEqual({ map: { home: { title: 'Accueil' } } });
-    expect(labels.fr).toBe('Français');
-    expect(labels.en).toBe('EN');
+    expect(registered['en']).toBeTruthy();
+    expect(registered['vi']).toBeTruthy();
+    expect(registered['fr']).toEqual({ map: { home: { title: 'Accueil' } } });
+    expect(labels['fr']).toBe('Français');
+    expect(labels['en']).toBe('EN');
   });
 });

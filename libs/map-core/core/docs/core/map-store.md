@@ -92,7 +92,7 @@ These keys live on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`) unless 
 | `hungpvq.map-theme-mode` (+ optional `:<mapId>`) | `localStorage` (`MAP_THEME_STORAGE_KEY` / `getMapThemeStorageKey(mapId)`) | Theme preference. Default **process-global**; `ThemeControl scope="map"` uses per-map key. |
 | `map:core` | `getMapCoreRootStore` / `getOrCreateStore` | Per-`mapId` map store entries (instance, scoped features, cleanups); per-map resolver overrides at `[mapId].resolver`. |
 | `map:core:meta` | `getOrCreateStore` | `removedMapIds` tombstones; `errorCapture` install slot; `errorHandler` singleton; `registries` process defaults (`createMapCoreMetaRegistry`) |
-| `map:debug` | `getOrCreateStore` | Optional `@hungpvq/map-debug`: `dataset` = Dataset Inspector API (`installDatasetDebug`). Console alias: `window.__hungpvqDatasetDebug` |
+| `map:debug` | `getMapDebugStore` / `getOrCreateStore` | `@hungpvq/map-core/devtools` + `@hungpvq/map-debug`: `logStoreOptions` / `logDataStore` / `logAdapter` (Devtools Logs); `dataset` = Dataset Inspector API (`installDatasetDebug`). Console alias: `window.__hungpvqDatasetDebug` |
 
 Related process pins outside this table: `LoggerFactory` on `@hungpvq/shared-log`’s own `globalThis` key.
 

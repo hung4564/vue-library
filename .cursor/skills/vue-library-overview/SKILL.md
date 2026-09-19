@@ -43,7 +43,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 ## Logging (`@hungpvq/shared-log`)
 
-**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves).
+**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/share/log/README.md`.
 
 ### Logger Context Rule (required)
 
@@ -55,7 +55,7 @@ import { loggerFactory } from '@hungpvq/shared-log';
 const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
 
 logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info(
-  'layer selected',
+  'Dataset layer selected from the list.',
   { mapId, layerId },
 );
 ```
@@ -66,19 +66,62 @@ logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info(
 - When known, also pass `mapId`, `datasetId`, `datasetName`, `datasetType`, `menuId`, `menuName` (never invent values).
 - Prefer a module-level `logger` with a stable namespace (`map:…`, `demo:…`, `draggable:…`).
 - Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces), still chained with `.with({ fn, span })`.
-- Context is **only** via `.with(...)` (no ambient AsyncLocalStorage / flow stack).
-- Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo).
-- Replacing an existing `console.*` while touching a file is required; do not add new `console.*`.
+- Ambient context uses **ZoneContextStorage** (per async chain) — not sticky module-local. Wrap gesture boundaries with `ensureActionContext` (mints/reuses **`actionId`**); nested work with `runWithFunctionLog` (**`spanId`** / **`parentSpanId`**).
+- HTTP / any client: `loggerFactory.trackRequest({ url, method }, () => client…)` mints HTTP-only **`requestId`** (≠ `actionId`), or call the client inside an existing zone.
+- Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo). Map logging cookbook: `#/logging-cookbook`. Non-map shared-log: `#/shared-log` (Vue + React demo-map).
+- Replacing an existing `console.*` while touching a file is required; do not add new `console.*`. Draggable stays silent by design unless a public error boundary needs a log.
 
-### Mitt Rule
+### Function Lifecycle Rule
 
-- Map buses from `createMapMitt` emit plain payloads; optional `EMIT` log uses `.with({ fn, span: 'mitt.emit', eventName })`.
-- Do **not** add duplicate `onAny` payload dumps that restate the same emit.
-- Prefer named handler functions.
+Important operations (dataset add/remove, identify, menu action, geo-export, attribute-table load, draw save, …) must use `runWithFunctionLog` (under `ensureActionContext` at gesture boundaries) so Devtools Flow shows START / END / ERROR with `outcome` and `durationMs`.
+
+- Do **not** add manual `"Start"` / `"End"` / `"Done"` messages that only restate the helper.
+- Keep phase / branch / skip / result logs that add information beyond lifecycle.
+
+### Message Quality Rule
+
+Every new or edited message must:
+
+- Describe the **domain action** (dataset / map / identify / menu / draw), not a vague token (`Processing`, `Update`, `init`, `Success`).
+- Distinguish **started** vs **in progress** vs **finished** vs **skipped** vs **failed** vs **aborted**.
+- Prefer skip reasons grounded in code (`… skipped because the map instance is not ready`).
+- Never claim success before the async work has settled.
+- Log useful scalars (`featureCount`, `datasetId`, `handler`) — not full GeoJSON, tokens, or large props dumps.
+- Avoid per-iteration logs inside paint / query loops (warn/error at layer/source level only).
+
+### Event Flow Rule (Mitt)
+
+- Map buses from `createMapMitt` pack zone snapshots (`packLogEvent`) and restore in handlers (`runWithLogEvent` only — **no** START/END on the mitt wrapper).
+- One EMIT log per emit: message `EMIT <eventName>`, header `fn=mitt.emit`, `eventName=<event>`.
+- Prefer named handlers; use `bus.on('*', …)` if you need a wildcard (no `onAny` helper).
+- Do **not** add duplicate payload dumps that restate EMIT.
+- When a handler does real work, log inside that handler (with its own `fn` / `span` or `runWithFunctionLog`). Multiple listeners are **independent fan-out branches** — do not invent a sequential parent/child order mitt does not guarantee.
+
+### Error Logging Rule
+
+- Message must name the failed operation and phase; pass `errorName` / `errorMessage` (or the error as data) using the existing Logger API.
+- Prefer **one** error log at the owning boundary; do not re-log the same exception at every stack frame unless each frame adds new context.
+- Central `errorHandler` already logs MapError; avoid a second identical dump unless the caller adds domain ids.
+
+### Duplicate Logging Rule
+
+After adopting `runWithFunctionLog` or mitt EMIT, remove older Start/End/Done twins that no longer add value. Keep distinct phase / branch / result lines.
+
+### Logging Review Rule
+
+When adding a function, changing a business flow, or touching a logger, check:
+
+1. Missing important phase / skip / failure logs?
+2. Message clear and domain-specific?
+3. `fn` and `span` accurate?
+4. Extra context available (`mapId`, dataset/menu ids) without inventing values?
+5. Duplicate lifecycle or EMIT dumps?
+6. Any message that claims success too early or misstates outcome?
+7. Async / mitt fan-out still represented correctly?
 
 ### Devtools mount
 
-Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell.
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Log store default is IndexedDB on `getMapDebugStore()` (`map:debug`); see `libs/map-core/core/docs/core/devtools.md`.
 ## Common scripts (root `package.json`)
 
 ```bash

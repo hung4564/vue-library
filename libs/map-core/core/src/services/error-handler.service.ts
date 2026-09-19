@@ -8,7 +8,7 @@ const errorLogger = loggerFactory.createLogger().setNamespace('map:core', 2);
 function defaultLogError(error: MapError): void {
   logHelper(errorLogger, 'global', 'ErrorHandler')
     .with({ fn: 'defaultLogError', span: 'error' })
-    .error('Error occurred', {
+    .error('Map error handled.', {
     code: error.code,
     message: error.message,
     context: error.context,
@@ -21,7 +21,7 @@ function defaultLogToService(error: MapError): void {
   logHelper(errorLogger, 'global', 'ErrorHandler')
     .with({ fn: 'defaultLogToService', span: 'error' })
     .error(
-    'Error occurred (logToService not configured)',
+    'Map error handled (logToService sink not configured).',
     {
       code: error.code,
       message: error.message,

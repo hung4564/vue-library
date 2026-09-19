@@ -82,7 +82,9 @@ export async function queryHighlightAtPoint(
   if (!allLayerIds.length) {
     logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint')
       .with({ fn: 'queryHighlightAtPoint', span: 'highlight.query' })
-      .debug('no layers');
+      .debug(
+        'Highlight point query skipped because no mapbox layers were found.',
+      );
     return undefined;
   }
 

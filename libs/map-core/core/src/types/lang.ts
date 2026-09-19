@@ -316,6 +316,22 @@ export function flattenLocaleMessages(
   return out;
 }
 
+/** Flatten-compare nested locale trees (string leaves only). */
+export function localeTreesEqual(
+  a: MapLangLocale,
+  b: MapLangLocale,
+): boolean {
+  const fa = flattenLocaleMessages(a);
+  const fb = flattenLocaleMessages(b);
+  const keysA = Object.keys(fa);
+  const keysB = Object.keys(fb);
+  if (keysA.length !== keysB.length) return false;
+  for (const key of keysA) {
+    if (fa[key] !== fb[key]) return false;
+  }
+  return true;
+}
+
 /** Keys present in `a` but missing in `b` (and vice versa when comparing both ways). */
 export function diffLocaleKeys(
   a: MapLangLocale,
@@ -432,41 +448,57 @@ export function createMapLocaleApi(options: MapLocaleApiOptions) {
     return [...codes];
   }
 
-  function registerLocale(lang: MapLanguageCode, tree: MapLangLocale) {
+  function registerLocale(lang: MapLanguageCode, tree: MapLangLocale): boolean {
     const store = getStore();
-    if (!store) return;
+    if (!store) return false;
     const prev = store.messages[lang] ?? {};
+    const next = deepMergeLocale(prev, tree);
+    if (localeTreesEqual(prev, next)) return false;
     store.messages = {
       ...store.messages,
-      [lang]: deepMergeLocale(prev, tree),
+      [lang]: next,
     };
     emitChanged(getEmitter);
+    return true;
   }
 
-  function registerLocaleFlat(lang: MapLanguageCode, flat: MapLangFlatMessages) {
-    registerLocale(lang, unflattenLocaleMessages(flat));
+  function registerLocaleFlat(
+    lang: MapLanguageCode,
+    flat: MapLangFlatMessages,
+  ): boolean {
+    return registerLocale(lang, unflattenLocaleMessages(flat));
   }
 
   function registerLanguage(
     lang: MapLanguageCode,
     options?: MapLanguageRegisterOptions,
-  ) {
+  ): boolean {
     const store = getStore();
-    if (!store) return;
+    if (!store) return false;
+    let changed = false;
     if (options?.label) {
-      store.languageLabels = {
-        ...store.languageLabels,
-        [lang]: options.label,
-      };
+      if (store.languageLabels[lang] !== options.label) {
+        store.languageLabels = {
+          ...store.languageLabels,
+          [lang]: options.label,
+        };
+        changed = true;
+      }
     } else if (!(lang in store.languageLabels)) {
       store.languageLabels = { ...store.languageLabels, [lang]: lang };
+      changed = true;
     }
-    emitChanged(getEmitter);
+    if (changed) emitChanged(getEmitter);
+    return changed;
   }
 
   function setLanguage(lang: MapLanguageCode, persist = true) {
     const store = getStore();
     if (!store) return;
+    if (store.language === lang) {
+      if (persist) setStoredMapLanguage(lang);
+      return;
+    }
     store.language = lang;
     if (persist) setStoredMapLanguage(lang);
     emitChanged(getEmitter);

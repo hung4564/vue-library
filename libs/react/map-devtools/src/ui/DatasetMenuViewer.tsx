@@ -73,6 +73,7 @@ function actionLabel(
   if (phase === 'success') {
     if (key === 'dataset') return 'Pinned';
     if (key === 'find') return 'Found';
+    if (key === 'refresh') return 'Refreshed';
     return done;
   }
   if (phase === 'error') return 'Failed';
@@ -725,12 +726,15 @@ export function DatasetMenuViewer() {
             variant="text"
             size="small"
             title="Refresh root dataset list"
+            disabled={actionPhase === 'loading' && actionKey === 'refresh'}
             onClick={() => {
-              refreshLists(mapId);
-              refreshSnapshot();
+              void actionFeedbackRef.current.run('refresh', () => {
+                refreshLists(mapId);
+                refreshSnapshot();
+              });
             }}
           >
-            Refresh
+            {actionLabel(actionPhase, actionKey, 'refresh', 'Refresh')}
           </MapControlButton>
         ) : null}
       </div>

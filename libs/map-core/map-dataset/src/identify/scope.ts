@@ -1,4 +1,5 @@
 import { UniversalRegistry } from '@hungpvq/map-core';
+import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IIdentifyView, MenuConditionContext } from '../interfaces/dataset.parts';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
@@ -129,17 +130,35 @@ export function toggleListIdentifyScope(
   mapId: string,
   list: IDataset,
 ): IdentifyScopeToggleResult {
-  const identify = findListIdentifyView(list);
-  if (!identify) {
-    return { active: false };
-  }
+  return loggerFactory.ensureActionContext(
+    { mapId, span: 'identify.scope', fn: 'toggleListIdentifyScope' },
+    () =>
+      runWithFunctionLog(
+        loggerFactory.createLogger().setNamespace('map:identify', 2),
+        {
+          fn: 'toggleListIdentifyScope',
+          span: 'identify.scope',
+          mapId,
+          datasetId: list.id,
+        },
+        () => {
+          const identify = findListIdentifyView(list);
+          if (!identify) {
+            return { active: false };
+          }
 
-  const current = getIdentifyScope(mapId);
-  if (current.listId === list.id && current.identifyId === identify.id) {
-    clearIdentifyScope(mapId);
-    return { active: false, identifyId: identify.id };
-  }
+          const current = getIdentifyScope(mapId);
+          if (current.listId === list.id && current.identifyId === identify.id) {
+            clearIdentifyScope(mapId);
+            return { active: false, identifyId: identify.id };
+          }
 
-  writeIdentifyScope(mapId, { listId: list.id, identifyId: identify.id });
-  return { active: true, identifyId: identify.id };
+          writeIdentifyScope(mapId, {
+            listId: list.id,
+            identifyId: identify.id,
+          });
+          return { active: true, identifyId: identify.id };
+        },
+      ),
+  ) as IdentifyScopeToggleResult;
 }

@@ -13,14 +13,13 @@ import {
   subscribeDevtoolState,
   toggleDevtoolOpen,
   type DevtoolErrorRecord,
-  type DevtoolLogEntry,
   type DevtoolTab,
 } from '@hungpvq/map-core/devtools';
+import type { LogAdapter, LogRecord } from '@hungpvq/shared-log';
 
 export type ErrorRecord = DevtoolErrorRecord;
 
 export type { DevtoolTab };
-export type { DevtoolLogEntry as LogEntry };
 
 initDevtoolStoreCore();
 
@@ -64,9 +63,18 @@ export const devtoolState = {
   get logs() {
     return getDevtoolState().logs;
   },
-  set logs(value: DevtoolLogEntry[]) {
+  set logs(value: LogRecord[]) {
     replaceDevtoolLogs(value);
   },
 };
 
-export const devtoolLogAdapter = createDevtoolLogAdapter();
+/** Lazy — created on first use so `installDevtools({ logStore })` can configure first. */
+export const devtoolLogAdapter: LogAdapter = new Proxy({} as LogAdapter, {
+  get(_target, prop, _receiver) {
+    const adapter = createDevtoolLogAdapter();
+    const value = Reflect.get(adapter as object, prop, adapter);
+    return typeof value === 'function'
+      ? (value as (...args: unknown[]) => unknown).bind(adapter)
+      : value;
+  },
+});

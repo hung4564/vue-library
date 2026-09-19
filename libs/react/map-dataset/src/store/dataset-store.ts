@@ -1,4 +1,4 @@
-import { getMap, isUsableMapId, logHelper } from '@hungpvq/map-core';
+﻿import { getMap, isUsableMapId, logHelper } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
   DatasetService,
@@ -61,7 +61,7 @@ export function getMapDatasetStore(mapId: string): MapLayerStore {
     () => {
       logHelper(logger, mapId, 'store')
         .with({ fn: 'getMapDatasetStore', span: 'store.init' })
-        .debug('init');
+        .debug('Created scoped map store for mapId.');
       return {
         datasets: {},
         datasetIds: { value: [] },

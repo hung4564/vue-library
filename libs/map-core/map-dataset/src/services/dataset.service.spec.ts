@@ -127,8 +127,7 @@ describe('DatasetService', () => {
 
     DatasetService.removeComponent(map, layer);
 
-    // Direct remove + rtl leaf walk on parent (same leaf when no parent)
-    expect(order).toEqual(['remove:layer-d', 'remove:layer-d']);
+    expect(order).toEqual(['remove:layer-d']);
   });
 
   it('removeComponent removes layers before sources (rtl under parent)', () => {

@@ -1,4 +1,5 @@
 import { createMapCoreMetaRegistry, FallbackResolver } from '@hungpvq/map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
 import { getHighlightController } from '../highlight/controller';
 import type { HighlightSource } from '../highlight/types';
@@ -40,10 +41,18 @@ function createDefaultHighlightResolverActions() {
         if (ctx.signal?.aborted) return;
         const feature = ctx.features![0]!;
         const sources = ctx.sources!.length ? ctx.sources! : ['identify'];
-        await getHighlightController(ctx.mapId).show(feature, {
-          source: sources[0]!,
-          dataset: ctx.dataset,
-        });
+        await loggerFactory.ensureActionContext(
+          {
+            mapId: ctx.mapId,
+            span: 'highlight.paint',
+            fn: 'highlightFromIdentify',
+          },
+          () =>
+            getHighlightController(ctx.mapId).show(feature, {
+              source: sources[0]!,
+              dataset: ctx.dataset,
+            }),
+        );
       },
     },
     {

@@ -1,4 +1,4 @@
-import {
+﻿import {
   logHelper,
   type MapSimple,
   type WithMapPropType,
@@ -374,7 +374,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
     session.attachToMap(map);
     logHelper(logger, mapId, 'control', 'MeasurementControl')
       .with({ fn: 'onInit', span: 'control.init' })
-      .debug('init', handler);
+      .debug('Measurement control handler registered.', handler);
   }
 
   function onDestroy() {

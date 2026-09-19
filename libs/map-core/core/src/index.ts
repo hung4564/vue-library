@@ -120,6 +120,7 @@ export {
 export { GeoLocateSession } from './geolocate/session';
 
 export { createMapMitt } from './mitt/index';
+export type { CreateMapMittOptions } from './mitt/index';
 
 export { filterMapControls } from './registry/control';
 
@@ -138,6 +139,7 @@ export {
   getStoredMapLanguage,
   interpolateLocale,
   isMapLangFlatMessages,
+  localeTreesEqual,
   MAP_BUILTIN_LANGUAGES,
   MAP_LANGUAGE_STORAGE_KEY,
   mapLanguageCodeLabel,
@@ -337,7 +339,6 @@ export {
 export { runMonitoredTask } from './worker/run-task';
 
 /** First-party types only — do not re-export geojson / maplibre-gl types from the root. */
-export type { DevtoolsMode } from './devtools/control';
 export type {
   GeoLocateControlOptions,
   GeoLocatePermissions,

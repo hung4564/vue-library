@@ -84,8 +84,8 @@ export function createIdentifyMapboxComponent(
         const allLayerIds: string[] = Array.from(results.values()).flat(2);
         logHelper(loggerIdentify, mapId, 'dataset', self.id)
           .with({ fn: 'getFeatures', span: 'identify.query' })
-          .debug('start', {
-          allLayerIds,
+          .debug('Identify mapbox getFeatures started.', {
+          layerCount: allLayerIds.length,
           pointOrBox,
         });
         getMap(mapId, (map: MapSimple) => {
@@ -109,10 +109,10 @@ export function createIdentifyMapboxComponent(
           logHelper(loggerIdentify, mapId, 'dataset', self.id)
             .with({ fn: 'getFeatures', span: 'identify.query' })
             .debug(
-            'getFeatureFormMap',
+            'Map queryRenderedFeatures returned candidates for identify.',
             {
-              features,
-              idsGet,
+              featureCount: features.length,
+              uniqueIdCount: idsGet.length,
             },
           );
           if (!idsGet || idsGet.length < 1) {
@@ -139,16 +139,16 @@ export function createIdentifyMapboxComponent(
             logHelper(loggerIdentify, mapId, 'dataset', self.id)
               .with({ fn: 'getFeatures', span: 'identify.query' })
               .debug(
-              'use get list of identify',
-              self,
+              'Using identify getList to convert map features to rows.',
+              { featureCount: features.length },
             );
             void self.getList(mapId, features).then((unique) => {
               const result = toRows(unique as Record<string, unknown>[]);
               logHelper(loggerIdentify, mapId, 'dataset', self.id)
                 .with({ fn: 'getFeatures', span: 'identify.query' })
                 .debug(
-                'end',
-                { results: result },
+                'Identify getList conversion finished.',
+                { rowCount: result.length },
               );
               resolve(result);
             });
@@ -176,8 +176,8 @@ export function createIdentifyMapboxComponent(
           }
           logHelper(loggerIdentify, mapId, 'dataset', self.id)
             .with({ fn: 'getFeatures', span: 'identify.query' })
-            .debug('end', {
-            results: rows,
+            .debug('Identify mapbox getFeatures finished without getList.', {
+            rowCount: rows.length,
           });
           resolve(rows);
         });
@@ -356,11 +356,10 @@ export async function handleMultiIdentifyGetFirst(
     'handleMultiIdentifyGetFirst',
   )
     .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
-    .debug('start', {
-    identifies,
-    allLayerIds,
-    pointOrBox,
-    config: props,
+    .debug('Show-first identify query started.', {
+    identifyViewCount: identifies.length,
+    layerCount: allLayerIds.length,
+    selectThreshold: props.selectThreshold,
   });
 
   const features = await new Promise<MapGeoJSONFeature[]>((resolve, reject) => {
@@ -394,12 +393,8 @@ export async function handleMultiIdentifyGetFirst(
             fn: 'handleMultiIdentifyGetFirst',
             span: 'identify.show-first',
           })
-          .debug('convert', {
-          point,
-          x: point.x,
-          y: point.y,
+          .debug('Expanded point click into select-threshold query box.', {
           selectThreshold: props.selectThreshold,
-          pointOrBox: queryBox,
         });
       }
       const queried = map.queryRenderedFeatures(queryBox, {
@@ -415,10 +410,9 @@ export async function handleMultiIdentifyGetFirst(
           fn: 'handleMultiIdentifyGetFirst',
           span: 'identify.show-first',
         })
-        .debug('current', {
-        allLayerIds: allLayerIds.filter((id) => map.getLayer(id)),
-        features: queried,
-        pointOrBox: queryBox,
+        .debug('Show-first queryRenderedFeatures returned candidates.', {
+        activeLayerCount: allLayerIds.filter((id) => map.getLayer(id)).length,
+        featureCount: queried.length,
       });
       resolve(queried);
     });
@@ -438,7 +432,9 @@ export async function handleMultiIdentifyGetFirst(
       'handleMultiIdentifyGetFirst',
     )
       .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
-      .debug('end', { result: undefined });
+      .debug(
+        'Show-first identify finished with no features under the pointer.',
+      );
     return undefined;
   }
 
@@ -483,7 +479,10 @@ export async function handleMultiIdentifyGetFirst(
     'handleMultiIdentifyGetFirst',
   )
     .with({ fn: 'handleMultiIdentifyGetFirst', span: 'identify.show-first' })
-    .debug('end', { result });
+    .debug('Show-first identify finished with a feature hit.', {
+      datasetId: datasetPartIdentify?.id,
+      featureId: id,
+    });
   return result;
 }
 

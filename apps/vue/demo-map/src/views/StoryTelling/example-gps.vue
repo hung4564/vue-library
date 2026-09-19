@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
@@ -21,6 +21,7 @@ import {
   MapCard
 } from '@hungpvq/vue-map-core/fields';
 import * as turf from '@turf/turf';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';
 import { createZoomAction } from './helper-action';
@@ -29,6 +30,10 @@ import { Chapter, useMapStorytelling } from './useStorytelling';
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import AsideControl from '../../layout/aside-control.vue';
 import './story-telling.css';
+
+const storyGpsLog = loggerFactory
+  .createLogger()
+  .setNamespace('demo:story-gps', 0);
 
 const mapRef = ref();
 const mapId = ref('');
@@ -138,7 +143,9 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
       }) => ({
         add: () => {
           if (!segment || !segment.start || !segment.end || !segment.duration) {
-            console.error('Invalid segment data', segment);
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error('Invalid segment data', segment);
             return;
           }
 
@@ -149,16 +156,16 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
           const endCoord: [number, number] = [segment.end.lng, segment.end.lat];
 
           if (isSameCoord(startCoord, endCoord)) {
-            console.warn('Skipping segment: start and end are identical');
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .warn('Skipping segment: start and end are identical');
             onFinish?.(); // Call finish so the next chapter can continue
             return;
           }
           if (!isValidCoordinate(startCoord) || !isValidCoordinate(endCoord)) {
-            console.error(
-              'Invalid coordinates for segment',
-              startCoord,
-              endCoord,
-            );
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error('Invalid coordinates for segment', startCoord, endCoord);
             return;
           }
 

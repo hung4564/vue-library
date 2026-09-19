@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getMap, type MapSimple } from '@hungpvq/map-core';
@@ -18,6 +18,7 @@ import {
   MapCard
 } from '@hungpvq/vue-map-core/fields';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { ref } from 'vue';
 import {
   createCustomAction,
@@ -33,6 +34,10 @@ import { useMapStorytelling } from './useStorytelling';
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import AsideControl from '../../layout/aside-control.vue';
 import './story-telling.css';
+
+const storyLog = loggerFactory
+  .createLogger()
+  .setNamespace('demo:story', 0);
 
 const mapRef = ref();
 const mapId = ref('');
@@ -110,8 +115,14 @@ const chapters = [
     actions: [
       createCustomAction(
         'log',
-        () => console.info('Chapter 9 started'),
-        () => console.info('Chapter 9 ended'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 started'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 ended'),
       ),
     ],
   },

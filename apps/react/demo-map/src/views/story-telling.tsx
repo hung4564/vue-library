@@ -1,4 +1,4 @@
-﻿import { getMap, type MapSimple } from '@hungpvq/map-core';
+import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
   CrsControl,
@@ -13,6 +13,7 @@ import {
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapCard } from '@hungpvq/react-map-core/fields';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { useRef, useState } from 'react';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
@@ -31,6 +32,10 @@ import {
 import { useMapStorytelling } from './StoryTelling/useStorytelling';
 import './story-telling.css';
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+
+const storyLog = loggerFactory
+  .createLogger()
+  .setNamespace('demo:story', 0);
 
 const chapters = [
   {
@@ -87,8 +92,14 @@ const chapters = [
     actions: [
       createCustomAction(
         'log',
-        () => console.info('Chapter 9 started'),
-        () => console.info('Chapter 9 ended'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 started'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 ended'),
       ),
     ],
   },

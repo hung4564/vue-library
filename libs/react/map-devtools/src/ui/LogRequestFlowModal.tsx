@@ -1,32 +1,21 @@
-import {
-  resolveMapDragContainerId,
-  type BufferingLogEntry,
-} from '@hungpvq/map-core/devtools';
+import type { LogDataStore } from '@hungpvq/shared-log';
 import {
   buildRequestFlowSteps,
   buildRequestFlowTree,
-  collectLogsByRequestId,
   formatFlowDelta,
   formatLogTime,
-  shortRequestId,
+  shortActionId,
   type RequestFlowTreeNode,
 } from '@hungpvq/map-debug';
-import { MapControlButton } from '@hungpvq/react-map-core';
 import { DraggableModal } from '@hungpvq/react-draggable';
+import {
+  MapControlButton,
+  ModuleContainer,
+  useMap,
+} from '@hungpvq/react-map-core';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { LogDetailPanel } from './LogDetailPanel';
-
-function resolveFlowContainerId(mapId?: string | null): string | null {
-  const id = resolveMapDragContainerId(null, mapId);
-  if (!id) return null;
-  if (
-    typeof document !== 'undefined' &&
-    !document.getElementById(`modal-layer-${id}`)
-  ) {
-    return null;
-  }
-  return id;
-}
+import { useLogStoreActionList } from './useLogStoreView';
 
 function splitFrameChildren(children: RequestFlowTreeNode[]) {
   const body: RequestFlowTreeNode[] = [];
@@ -109,6 +98,11 @@ function StepRow({
           {node.namespace ? ` · ${node.namespace}` : null}
           {node.fn && node.phase === 'mid' ? ` · ${node.fn}` : null}
           {node.span ? ` · ${node.span}` : null}
+          {node.parentSpanId
+            ? ` · parent=${node.parentSpanId.slice(0, 8)}…`
+            : null}
+          {node.durationMs != null ? ` · ${node.durationMs}ms` : null}
+          {node.outcome ? ` · ${node.outcome}` : null}
         </span>
       </span>
     </div>
@@ -241,24 +235,17 @@ function FlowNode({
 
 export function LogRequestFlowModal({
   show,
-  requestId,
-  mapId,
-  logs,
-  activeLogId,
+  actionId,
+  store,
   onClose,
 }: {
   show: boolean;
-  requestId: string;
-  mapId?: string | null;
-  logs: BufferingLogEntry[];
-  activeLogId?: string | null;
+  actionId: string;
+  store: LogDataStore;
   onClose: () => void;
 }) {
-  const containerId = resolveFlowContainerId(mapId);
-  const matched = useMemo(
-    () => collectLogsByRequestId(logs, requestId),
-    [logs, requestId],
-  );
+  const { moduleContainerProps } = useMap({});
+  const matched = useLogStoreActionList(store, actionId, show);
   const tree = useMemo(() => buildRequestFlowTree(matched), [matched]);
   const flatNodes = useMemo((): RequestFlowTreeNode[] => {
     return buildRequestFlowSteps(matched).map((step) => ({
@@ -266,94 +253,97 @@ export function LogRequestFlowModal({
       children: [],
     }));
   }, [matched]);
-  const [localId, setLocalId] = useState<string | null>(activeLogId ?? null);
+  const [localId, setLocalId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'tree' | 'flat'>('tree');
 
   useEffect(() => {
     if (!show) return;
-    setLocalId(activeLogId ?? null);
-  }, [show, activeLogId, requestId]);
-
-  if (!show || !containerId) return null;
+    setLocalId(null);
+  }, [show, actionId]);
 
   const selected =
     matched.find((l) => l.id === localId) ?? matched[0] ?? null;
-  const title = `Request flow · ${shortRequestId(requestId)}`;
+  const title = `Action flow · ${shortActionId(actionId)}`;
   const nodes = matched.length;
   const displayNodes = viewMode === 'tree' ? tree : flatNodes;
   const isFlat = viewMode === 'flat';
 
   return (
-    <DraggableModal
-      show
-      title={title}
-      containerId={containerId}
-      width={780}
-      height={560}
-      mask
-      maskClosable
-      onUpdateShow={(value) => {
-        if (!value) onClose();
-      }}
-      onClose={onClose}
-    >
-      <div className="log-request-flow">
-        <div className="log-request-flow__meta">
-          <span>
-            {nodes} node{nodes === 1 ? '' : 's'}
-          </span>
-          <div
-            className="log-request-flow__modes"
-            role="group"
-            aria-label="View mode"
-          >
-            <MapControlButton
-              variant="text"
-              size="small"
-              active={viewMode === 'tree'}
-              onClick={() => setViewMode('tree')}
-            >
-              Tree
-            </MapControlButton>
-            <MapControlButton
-              variant="text"
-              size="small"
-              active={viewMode === 'flat'}
-              onClick={() => setViewMode('flat')}
-            >
-              Flat
-            </MapControlButton>
-          </div>
-          <code>{requestId}</code>
-        </div>
-        <div className="log-request-flow__layout">
-          <div className="log-request-flow__tree">
-            {nodes === 0 ? (
-              <div className="log-request-flow__empty">
-                No logs for this requestId
-              </div>
-            ) : (
-              <ol
-                className={`log-request-flow__list${
-                  isFlat ? ' log-request-flow__list--flat' : ''
-                }`}
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={({ containerId }) => (
+        <DraggableModal
+          show={show}
+          title={title}
+          containerId={containerId}
+          width={780}
+          height={560}
+          mask
+          maskClosable
+          onUpdateShow={(value) => {
+            if (!value) onClose();
+          }}
+          onClose={onClose}
+        >
+          <div className="log-request-flow">
+            <div className="log-request-flow__meta">
+              <span>
+                {nodes} node{nodes === 1 ? '' : 's'}
+              </span>
+              <div
+                className="log-request-flow__modes"
+                role="group"
+                aria-label="View mode"
               >
-                {displayNodes.map((node) => (
-                  <FlowNode
-                    key={node.id}
-                    node={node}
-                    depth={0}
-                    flat={isFlat}
-                    activeLogId={selected?.id}
-                    onSelect={setLocalId}
-                  />
-                ))}
-              </ol>
-            )}
+                <MapControlButton
+                  variant="text"
+                  size="small"
+                  active={viewMode === 'tree'}
+                  onClick={() => setViewMode('tree')}
+                >
+                  Tree
+                </MapControlButton>
+                <MapControlButton
+                  variant="text"
+                  size="small"
+                  active={viewMode === 'flat'}
+                  onClick={() => setViewMode('flat')}
+                >
+                  Flat
+                </MapControlButton>
+              </div>
+              <code>{actionId}</code>
+            </div>
+            <div className="log-request-flow__layout">
+              <div className="log-request-flow__tree">
+                {nodes === 0 ? (
+                  <div className="log-request-flow__empty">
+                    No logs for this actionId
+                  </div>
+                ) : (
+                  <ol
+                    className={`log-request-flow__list${
+                      isFlat ? ' log-request-flow__list--flat' : ''
+                    }`}
+                  >
+                    {displayNodes.map((node) => (
+                      <FlowNode
+                        key={node.id}
+                        node={node}
+                        depth={0}
+                        flat={isFlat}
+                        activeLogId={selected?.id}
+                        onSelect={setLocalId}
+                      />
+                    ))}
+                  </ol>
+                )}
+              </div>
+              <LogDetailPanel log={selected} />
+            </div>
           </div>
-          <LogDetailPanel log={selected} />
-        </div>
-      </div>
-    </DraggableModal>
+        </DraggableModal>
+      )}
+    />
   );
 }

@@ -66,9 +66,10 @@
           variant="text"
           size="small"
           title="Refresh root dataset list"
+          :disabled="actionPhase === 'loading' && actionKey === 'refresh'"
           @click="refreshRoots"
         >
-          Refresh
+          {{ actionLabel('refresh', 'Refresh') }}
         </MapControlButton>
       </div>
 
@@ -869,6 +870,7 @@ function actionLabel(key: string, idle: string, done = 'Done') {
   if (actionPhase.value === 'success') {
     if (key === 'dataset') return 'Pinned';
     if (key === 'find') return 'Found';
+    if (key === 'refresh') return 'Refreshed';
     return done;
   }
   if (actionPhase.value === 'error') return 'Failed';
@@ -1070,8 +1072,10 @@ function selectDataset(id: string) {
 }
 
 function refreshRoots() {
-  refreshLists();
-  refreshSnapshot();
+  void actionFeedback.run('refresh', () => {
+    refreshLists();
+    refreshSnapshot();
+  });
 }
 
 function pinRoot(id: string) {

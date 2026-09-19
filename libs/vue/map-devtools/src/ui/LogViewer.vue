@@ -3,11 +3,11 @@
     <div class="log-viewer__toolbar">
       <div class="log-viewer__toolbar-main">
         <span class="log-viewer__count"
-          >{{ showingCount }}/{{ totalCount }}</span
+          >{{ listed.length }}/{{ totalCount }}</span
         >
         <div class="log-viewer__levels" role="group" aria-label="Level filter">
           <MapControlButton
-            v-for="item in levelFilters"
+            v-for="item in LEVEL_FILTERS"
             :key="item"
             variant="text"
             size="small"
@@ -21,18 +21,13 @@
       </div>
       <div class="log-viewer__actions">
         <MapControlButton
-          class="log-viewer__pause"
           variant="text"
           size="small"
-          @click="togglePause"
+          title="Refresh logs from store"
+          :disabled="refreshPhase === 'loading'"
+          @click="onRefresh"
         >
-          {{
-            paused
-              ? newCount > 0
-                ? `Resume (${newCount})`
-                : 'Resume'
-              : 'Pause'
-          }}
+          {{ refreshLabel }}
         </MapControlButton>
         <MapControlButton variant="text" size="small" @click="clear">
           Clear
@@ -41,71 +36,80 @@
           class="log-viewer__autoscroll"
           v-model="autoScroll"
           label="Auto-scroll"
-          :disabled="paused"
         />
       </div>
     </div>
     <div class="log-viewer__filters">
-      <div class="log-viewer__search">
-        <InputText
-          v-model="search"
-          type="search"
-          placeholder="Search"
-          aria-label="Search logs"
-        />
-      </div>
       <div class="log-viewer__requestid">
         <InputText
-          v-model="requestId"
+          v-model="actionId"
           type="search"
-          placeholder="requestId"
-          aria-label="Filter by requestId"
+          placeholder="actionId"
+          aria-label="Filter by actionId"
         />
       </div>
-      <div class="log-viewer__namespace">
+      <div
+        class="log-viewer__namespace"
+        :class="{ 'log-viewer__namespace--filtered': namespace !== 'all' }"
+      >
         <InputSelect
           v-model="namespace"
           :items="namespaceFilterItems"
           aria-label="Filter by namespace"
         />
+        <button
+          v-if="namespace !== 'all'"
+          type="button"
+          class="log-viewer__namespace-clear"
+          title="Clear namespace filter"
+          aria-label="Clear namespace filter"
+          @click="namespace = 'all'"
+        >
+          ✕
+        </button>
       </div>
     </div>
     <div class="log-viewer__split">
       <div class="log-viewer__body" ref="logListRef">
-        <div v-if="structuredLogs.length === 0" class="log-viewer__empty">
-          {{
-            sourceLogs.length === 0
-              ? 'No logs'
-              : hasActiveFilter
-                ? 'No matching logs'
-                : 'No logs'
-          }}
+        <div v-if="listed.length === 0" class="log-viewer__empty">
+          {{ totalCount === 0 ? 'No logs' : 'No matching logs' }}
         </div>
         <LogRenderNode
-          v-for="item in structuredLogs"
-          :key="item.id"
-          :item="item"
+          v-for="log in listed"
+          :key="log.id"
+          :log="log"
           :selected-id="selectedId"
           @namespace-click="namespace = $event"
-          @request-id-click="requestId = $event"
-          @flow-click="onFlowClick"
-          @select="onSelect"
+          @action-id-click="actionId = $event"
+          @flow-click="flowActionId = $event"
+          @select="selectedId = $event.id"
         />
       </div>
       <LogDetailPanel :log="selectedLog" />
     </div>
     <LogRequestFlowModal
-      v-if="flowRequestId && flowMapId"
-      v-model:show="flowOpen"
-      :request-id="flowRequestId"
-      :map-id="flowMapId"
-      :logs="sourceLogs"
-      :active-log-id="selectedId"
+      v-if="flowActionId"
+      :show="true"
+      :action-id="flowActionId"
+      :store="liveStore"
+      @close="flowActionId = null"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  createActionFeedback,
+  type ActionFeedbackPhase,
+} from '@hungpvq/map-core';
+import {
+  getDevtoolLogDataStore,
+  refreshDevtoolLogsFromStore,
+} from '@hungpvq/map-core/devtools';
+import {
+  LEVEL_FILTERS,
+  type LevelFilter,
+} from '@hungpvq/map-debug';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import {
   InputCheckbox,
@@ -113,59 +117,86 @@ import {
   InputText,
 } from '@hungpvq/vue-map-core/fields';
 import {
-  resolveMapDragContainerId,
-  type BufferingLogEntry as LogEntry,
-} from '@hungpvq/map-core/devtools';
-import {
-  LEVEL_FILTERS,
-  buildStructuredLogs,
-  collectNamespaces,
-  collectStructuredLogs,
-  countNewLogsWhilePaused,
-  filterLogs,
   logMapId,
-  type LevelFilter,
-  type StructuredItem,
-} from '@hungpvq/map-debug';
-import { computed, nextTick, ref, watch } from 'vue';
+  resolveMaybePromise,
+  rootNamespace,
+  type LogRecord,
+} from '@hungpvq/shared-log';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { clearDevtoolLogs, useDevtoolState } from '../store';
 import LogDetailPanel from './LogDetailPanel.vue';
 import LogRenderNode from './LogRenderNode.vue';
 import LogRequestFlowModal from './LogRequestFlowModal.vue';
 
-const levelFilters = LEVEL_FILTERS;
-
 const { logs, filterMapId } = useDevtoolState();
 const logListRef = ref<HTMLElement | null>(null);
 const autoScroll = ref(true);
-const paused = ref(false);
-const frozenLogs = ref<LogEntry[] | null>(null);
-const search = ref('');
-const requestId = ref('');
+const actionId = ref('');
 const level = ref<LevelFilter>('all');
 const namespace = ref('all');
 const selectedId = ref<string | null>(null);
-const flowOpen = ref(false);
-const flowRequestId = ref<string | null>(null);
+const flowActionId = ref<string | null>(null);
+const refreshPhase = ref<ActionFeedbackPhase>('idle');
 
-const sourceLogs = computed(() =>
-  paused.value && frozenLogs.value ? frozenLogs.value : logs.value,
-);
+const listed = ref<LogRecord[]>([]);
+const allLogs = ref<LogRecord[]>([]);
+const namespaces = ref<string[]>([]);
 
-const newCount = computed(() =>
-  countNewLogsWhilePaused(logs.value, frozenLogs.value, paused.value),
-);
+const liveStore = getDevtoolLogDataStore();
+const totalCount = computed(() => allLogs.value.length);
 
-const namespaces = computed(() =>
-  collectNamespaces(logs.value, filterMapId.value, 2),
-);
+const refreshFeedback = createActionFeedback({
+  onChange: (phase) => {
+    refreshPhase.value = phase;
+  },
+});
+
+onBeforeUnmount(() => refreshFeedback.dispose());
+
+const refreshLabel = computed(() => {
+  if (refreshPhase.value === 'loading') return '…';
+  if (refreshPhase.value === 'success') return 'Refreshed';
+  if (refreshPhase.value === 'error') return 'Failed';
+  return 'Refresh';
+});
+
+const filterQuery = computed(() => ({
+  level: level.value,
+  namespace: namespace.value,
+  mapId: filterMapId.value,
+  actionId: actionId.value,
+}));
+
+let loadGen = 0;
+
+async function reloadView() {
+  const gen = ++loadGen;
+  const query = filterQuery.value;
+  const mapId = query.mapId ?? 'all';
+  const [listedRows, allRows] = await Promise.all([
+    resolveMaybePromise(liveStore.list(query)),
+    resolveMaybePromise(liveStore.getAll()),
+  ]);
+  if (gen !== loadGen) return;
+
+  listed.value = listedRows;
+  allLogs.value = allRows;
+  const set = new Set<string>();
+  for (const log of allRows) {
+    if (mapId !== 'all' && logMapId(log) !== mapId) continue;
+    const key = rootNamespace(log);
+    if (key) set.add(key);
+  }
+  namespaces.value = [...set].sort();
+}
+
+watch([filterQuery, logs], () => {
+  void reloadView();
+}, { immediate: true });
 
 const namespaceFilterItems = computed(() => [
   { value: 'all', text: 'All namespaces' },
-  ...namespaces.value.map((ns) => ({
-    value: ns,
-    text: ns,
-  })),
+  ...namespaces.value.map((ns) => ({ value: ns, text: ns })),
 ]);
 
 watch(namespaces, (ns) => {
@@ -174,97 +205,26 @@ watch(namespaces, (ns) => {
   }
 });
 
-const filteredLogs = computed(() =>
-  filterLogs(
-    sourceLogs.value,
-    search.value,
-    level.value,
-    namespace.value,
-    filterMapId.value,
-    2,
-    requestId.value,
-  ),
-);
-
-const structuredLogs = computed(() => buildStructuredLogs(filteredLogs.value));
-
 const selectedLog = computed(() => {
   if (!selectedId.value) return null;
   return (
-    sourceLogs.value.find((l) => l.id === selectedId.value) ??
-    filteredLogs.value.find((l) => l.id === selectedId.value) ??
+    listed.value.find((l) => l.id === selectedId.value) ??
+    allLogs.value.find((l) => l.id === selectedId.value) ??
     null
   );
 });
 
-const flowMapId = computed(() => {
-  if (filterMapId.value !== 'all') return filterMapId.value;
-  if (selectedLog.value) return logMapId(selectedLog.value);
-  const first = flowRequestId.value
-    ? sourceLogs.value.find((l) => l.header.requestId === flowRequestId.value)
-    : null;
-  return first ? logMapId(first) : null;
-});
-
-const totalCount = computed(() => sourceLogs.value.length);
-const showingCount = computed(
-  () => collectStructuredLogs(structuredLogs.value).length,
-);
-
-const hasActiveFilter = computed(() => {
-  return (
-    Boolean(search.value.trim()) ||
-    Boolean(requestId.value.trim()) ||
-    level.value !== 'all' ||
-    namespace.value !== 'all' ||
-    filterMapId.value !== 'all'
-  );
-});
-
-function onSelect(item: StructuredItem) {
-  if (item.type !== 'log') return;
-  selectedId.value = item.id;
+async function onRefresh() {
+  await refreshFeedback.run('refresh', async () => {
+    await refreshDevtoolLogsFromStore();
+    await reloadView();
+  });
 }
 
-function onFlowClick(reqId: string) {
-  flowRequestId.value = reqId;
-  const match = sourceLogs.value.find((l) => l.header.requestId === reqId);
-  const mapId =
-    filterMapId.value !== 'all'
-      ? filterMapId.value
-      : match
-        ? logMapId(match)
-        : selectedLog.value
-          ? logMapId(selectedLog.value)
-          : null;
-  if (!mapId) return;
-  if (
-    typeof document !== 'undefined' &&
-    !document.getElementById(
-      `modal-layer-${resolveMapDragContainerId(null, mapId)}`,
-    )
-  ) {
-    return;
-  }
-  flowOpen.value = true;
-}
-
-function togglePause() {
-  if (paused.value) {
-    paused.value = false;
-    frozenLogs.value = null;
-  } else {
-    frozenLogs.value = [...logs.value];
-    paused.value = true;
-  }
-}
-
-function clear() {
+async function clear() {
   clearDevtoolLogs();
-  frozenLogs.value = paused.value ? [] : null;
   selectedId.value = null;
-  flowOpen.value = false;
-  flowRequestId.value = null;
+  flowActionId.value = null;
 }
 
 async function scrollLogsToTop() {
@@ -274,14 +234,14 @@ async function scrollLogsToTop() {
 }
 
 watch(
-  () => structuredLogs.value.length,
+  () => listed.value.length,
   () => {
-    if (!autoScroll.value || paused.value) return;
+    if (!autoScroll.value) return;
     void scrollLogsToTop();
   },
 );
 
-watch([search, requestId, level, namespace, filterMapId], () => {
+watch([actionId, level, namespace, filterMapId], () => {
   void scrollLogsToTop();
 });
 </script>

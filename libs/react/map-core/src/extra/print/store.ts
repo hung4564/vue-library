@@ -1,4 +1,4 @@
-import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
+﻿import { logHelper, MAP_STORE_KEY } from '@hungpvq/map-core';
 import {
   type MapPrintStore,
   createDefaultPrintStore,
@@ -11,7 +11,7 @@ export const useMapPrintStore = (mapId: string) =>
   createMapScopedStore<MapPrintStore>(mapId, MAP_STORE_KEY.PRINT, () => {
     logHelper(logger, mapId, 'store')
       .with({ fn: 'useMapPrintStore', span: 'store.init' })
-      .debug('init');
+      .debug('Created scoped map store for mapId.');
     return createDefaultPrintStore();
   });
 

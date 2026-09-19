@@ -13,7 +13,7 @@ installMapDebug();
 installDatasetDebug(); // only when map-dataset is installed
 ```
 
-Prefer `installDevtools()` from `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools` — it installs map-debug + dataset bridge together.
+Prefer `installDevtools()` from `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools` — it installs map-debug + dataset bridge together. Devtools UI mounts as a **map control popup** (`DraggableItemPopup`), not a floating overlay.
 
 ## Devtools Dataset panes
 
@@ -25,9 +25,7 @@ Framework adapters render a **Dataset** tab on top of this package:
 | **Inspect** | Hierarchy, fields, children; find-by-type helpers |
 | **Menus** | Resolved menus by placement (`title` / `extra` / `menu` / …) + raw detail |
 
-Shared CSS lives in `@hungpvq/map-debug` (`style.css`) and is imported by both Vue and React map-devtools packages.
-
-Panel drag / open-close positioning for the floating overlay is implemented in `viewers/panel-drag.ts` (`syncDevtoolsShellPos`). See [Devtools — Overlay drag](../core/docs/core/devtools.md#overlay-drag-fab--panel).
+Shared CSS lives in `@hungpvq/map-debug` (`style.css`) and is imported by both Vue and React map-devtools packages. See [Map Devtools](../core/docs/core/devtools.md).
 
 ### Anonymous menu ids
 

@@ -2,10 +2,11 @@
 export default { name: 'log-detail-panel' };
 </script>
 <script setup lang="ts">
-import type { BufferingLogEntry } from '@hungpvq/map-core/devtools';
+import type { LogRecord } from '@hungpvq/shared-log';
 import {
   formatLogTime,
   objectArgs,
+  stringifyLogRecord,
   textMessage,
 } from '@hungpvq/map-debug';
 import { MapCopyButton } from '@hungpvq/vue-map-core';
@@ -13,7 +14,7 @@ import { computed } from 'vue';
 import TreeItem from './TreeItem.vue';
 
 const props = defineProps<{
-  log: BufferingLogEntry | null;
+  log: LogRecord | null;
   /** Show close control in the header. */
   showClose?: boolean;
 }>();
@@ -28,7 +29,7 @@ const title = computed(() => {
 });
 
 const json = computed(() =>
-  props.log ? JSON.stringify(props.log, null, 2) : '',
+  props.log ? stringifyLogRecord(props.log) : '',
 );
 
 const objects = computed(() => (props.log ? objectArgs(props.log) : []));
@@ -85,26 +86,55 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           />
         </div>
       </div>
+      <div v-if="log.header.actionId" class="log-viewer__detail-row">
+        <span class="log-viewer__detail-label">actionId</span>
+        <div class="log-viewer__detail-value">
+          <code class="log-viewer__mono">{{ log.header.actionId }}</code>
+        </div>
+        <div class="log-viewer__detail-copy">
+          <MapCopyButton title="Copy actionId" :value="log.header.actionId" />
+        </div>
+      </div>
+      <div v-if="log.header.spanId" class="log-viewer__detail-row">
+        <span class="log-viewer__detail-label">spanId</span>
+        <div class="log-viewer__detail-value">
+          <code class="log-viewer__mono">{{ log.header.spanId }}</code>
+        </div>
+        <div class="log-viewer__detail-copy">
+          <MapCopyButton title="Copy spanId" :value="log.header.spanId" />
+        </div>
+      </div>
+      <div v-if="log.header.parentSpanId" class="log-viewer__detail-row">
+        <span class="log-viewer__detail-label">parentSpanId</span>
+        <div class="log-viewer__detail-value">
+          <code class="log-viewer__mono">{{ log.header.parentSpanId }}</code>
+        </div>
+        <div class="log-viewer__detail-copy">
+          <MapCopyButton
+            title="Copy parentSpanId"
+            :value="log.header.parentSpanId"
+          />
+        </div>
+      </div>
       <div v-if="log.header.requestId" class="log-viewer__detail-row">
-        <span class="log-viewer__detail-label">requestId</span>
+        <span class="log-viewer__detail-label">requestId (HTTP)</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.requestId }}</code>
         </div>
         <div class="log-viewer__detail-copy">
-          <MapCopyButton title="Copy requestId" :value="log.header.requestId" />
-        </div>
-      </div>
-      <div v-if="log.header.functionId" class="log-viewer__detail-row">
-        <span class="log-viewer__detail-label">functionId</span>
-        <div class="log-viewer__detail-value">
-          <code class="log-viewer__mono">{{ log.header.functionId }}</code>
-        </div>
-        <div class="log-viewer__detail-copy">
           <MapCopyButton
-            title="Copy functionId"
-            :value="log.header.functionId"
+            title="Copy HTTP requestId"
+            :value="log.header.requestId"
           />
         </div>
+      </div>
+      <div v-if="log.header.durationMs != null" class="log-viewer__detail-row">
+        <span class="log-viewer__detail-label">durationMs</span>
+        <div class="log-viewer__detail-value">{{ log.header.durationMs }}</div>
+      </div>
+      <div v-if="log.header.outcome" class="log-viewer__detail-row">
+        <span class="log-viewer__detail-label">outcome</span>
+        <div class="log-viewer__detail-value">{{ log.header.outcome }}</div>
       </div>
       <div v-if="log.header.control" class="log-viewer__detail-row">
         <span class="log-viewer__detail-label">Control</span>

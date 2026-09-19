@@ -40,6 +40,8 @@ import { WorkerSamplePage } from './views/worker-sample';
 import { PrintPage } from './views/print';
 import { CrsPage } from './views/crs';
 import { DevtoolsPage } from './views/devtools';
+import { LoggingCookbookPage } from './views/logging-cookbook';
+import { SharedLogPage } from './views/shared-log';
 import { ThemePage } from './views/theme';
 
 // Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
@@ -95,6 +97,8 @@ root.render(
           <Route path="print" element={<PrintPage />} />
           <Route path="crs" element={<CrsPage />} />
           <Route path="devtools" element={<DevtoolsPage />} />
+          <Route path="logging-cookbook" element={<LoggingCookbookPage />} />
+          <Route path="shared-log" element={<SharedLogPage />} />
           <Route path="theme" element={<ThemePage />} />
         </Route>
       </Routes>

@@ -11,7 +11,7 @@ type LoggerOptions = {
 
 /**
  * Bound logger view — does not mutate the parent namespace map.
- * Context comes only from {@link Logger.with} / {@link Logger.at}.
+ * Header merges ambient zone context with {@link Logger.with} bound fields.
  */
 export class Logger {
   private namespaceMap: Map<number, string> = new Map();
@@ -22,6 +22,7 @@ export class Logger {
   constructor(
     private adapters: LogAdapter[],
     private isEnabled: (namespaces: string[]) => boolean,
+    private getAmbientContext: () => LogContext | undefined,
     options: LoggerOptions = {},
   ) {
     this.bound = { ...(options.bound ?? {}) };
@@ -57,13 +58,24 @@ export class Logger {
    * Does not mutate this logger's namespace map.
    */
   with(partial: LogContext, extraNamespaces?: string[]): Logger {
-    const child = new Logger(this.adapters, this.isEnabled, {
-      bound: { ...this.bound, ...partial },
-      extraNamespaces: [...this.extraNamespaces, ...(extraNamespaces ?? [])],
-    });
+    const child = new Logger(
+      this.adapters,
+      this.isEnabled,
+      this.getAmbientContext,
+      {
+        bound: { ...this.bound, ...partial },
+        extraNamespaces: [
+          ...this.extraNamespaces,
+          ...(extraNamespaces ?? []),
+        ],
+      },
+    );
     for (const [priority, ns] of this.namespaceMap) {
       child.namespaceMap.set(priority, ns);
-      child.namespaceMapHide.set(ns, this.namespaceMapHide.get(ns) ?? false);
+      child.namespaceMapHide.set(
+        ns,
+        this.namespaceMapHide.get(ns) ?? false,
+      );
     }
     return child;
   }
@@ -83,23 +95,25 @@ export class Logger {
   private buildRecord(level: LogLevel, args: unknown[]): LogRecord {
     const nsList = this.getSortedNamespaces();
     const filteredNs = nsList.filter((x) => !this.namespaceMapHide.get(x));
-    const index = LoggerFactory.getInstance().nextLogIndex();
+    const ambient = this.getAmbientContext() ?? {};
+    const index = LoggerFactory.getInstance().nextMethodIndex();
     const header: LogRecord['header'] = {
       ts: Date.now(),
       level,
       namespaces: filteredNs,
+      ...ambient,
       ...this.bound,
-      // Always last — bound must not overwrite write order.
+      // Always last — bound/ambient must not overwrite hierarchical index.
       index,
     };
-    if (!header.requestId) {
-      header.requestId = getUUIDv4();
+    if (!header.actionId) {
+      header.actionId = getUUIDv4();
     }
     if (!header.fn) {
       const site = captureLogCallerSite();
       if (site.fn) header.fn = site.fn;
     }
-    return { header, args };
+    return { id: getUUIDv4(), header, args };
   }
 
   private log(level: LogLevel, ...args: unknown[]) {
