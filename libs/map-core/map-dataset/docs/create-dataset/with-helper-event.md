@@ -8,20 +8,20 @@ There are **no Vue `emit` / React callback props** on map controls for layer dat
 
 ```ts
 type EventIListViewUI = {
-  toggleShow: { show: boolean; dataset: IListViewUI };
-  changeOpacity: { opacity: number; dataset: IListViewUI };
+  toggleShow: { show: boolean; dataset: IListViewUI; mapId: string };
+  changeOpacity: { opacity: number; dataset: IListViewUI; mapId: string };
 };
 ```
 
 ```ts
 const list = createDatasetPartListViewUiComponentBuilder('Layer').build();
 
-list.on('toggleShow', ({ show, dataset }) => {
-  console.log(dataset.getName(), show);
+list.on('toggleShow', ({ show, dataset, mapId }) => {
+  console.log(mapId, dataset.getName(), show);
 });
 
-list.on('changeOpacity', ({ opacity }) => {
-  console.log(opacity);
+list.on('changeOpacity', ({ opacity, mapId }) => {
+  console.log(mapId, opacity);
 });
 
 list.off('toggleShow', handler); // optional unsubscribe

@@ -71,7 +71,14 @@ provideMenuConditionContext(() => ({
 const { mapId, moduleContainerProps, callMap } = useMap(props);
 const controlId = attributeTableControlId(props.layer.id);
 const { trans } = useLang(mapId.value);
-const unbindMittBridge = bindHighlightMittBridge(mapId.value);
+watch(
+  mapId,
+  (id, _prev, onCleanup) => {
+    const unbind = bindHighlightMittBridge(id);
+    onCleanup(unbind);
+  },
+  { immediate: true },
+);
 const show = ref(true);
 const tick = ref(0);
 const resolvedUi = computed(() =>
@@ -444,7 +451,6 @@ onMounted(async () => {
   await controller.value.load('initial');
 });
 onUnmounted(() => {
-  unbindMittBridge();
   unsub?.();
   clearGeoExportActiveSource(mapId.value, props.layer.id);
   controller.value.dispose();

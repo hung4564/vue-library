@@ -26,7 +26,7 @@ import {
   useMap,
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
-import { computed, onUnmounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import TableTdLayer from './table-td-layer.vue';
@@ -47,7 +47,14 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);
-const unbindMittBridge = bindHighlightMittBridge(mapId.value);
+watch(
+  mapId,
+  (id, _prev, onCleanup) => {
+    const unbind = bindHighlightMittBridge(id);
+    onCleanup(unbind);
+  },
+  { immediate: true },
+);
 const show = ref(true);
 /** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
 let closed = false;
@@ -118,10 +125,6 @@ const { panelBind } = useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-
-onUnmounted(() => {
-  unbindMittBridge();
 });
 </script>
 <template>

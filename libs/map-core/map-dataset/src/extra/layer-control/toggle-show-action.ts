@@ -4,7 +4,12 @@ import { setListViewIntendedShow } from './visibility';
 
 export const TOGGLE_SHOW_LAYER_EVENT = 'toggleShow' as const;
 
-export type ToggleShowLayerEvent = { show: boolean };
+/** Matches {@link EventIListViewUI} `toggleShow` (listeners may only read `show`). */
+export type ToggleShowLayerEvent = {
+  show: boolean;
+  dataset?: IListViewUI;
+  mapId?: string;
+};
 
 export function getToggleShowTitleKey(show: boolean): string {
   return show

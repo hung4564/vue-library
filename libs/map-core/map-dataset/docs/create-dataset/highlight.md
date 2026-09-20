@@ -86,12 +86,14 @@ Vue/React hosts **do not** call `clearHighlight` / `onDetailClose` / `onIdentify
 
 **Close payload** (`MapDatasetClosePayload`): `{ mapId, item?, dataset? }`. Hosts always send `mapId`; attach `dataset` (and `item` for Detail) when known so app listeners can scope cleanup.
 
+**Clear payload** (`MapDatasetClearPayload`): `{ mapId, target, dataset? }` — `target` is the same value previously passed to `clearHighlight`.
+
 | Event (`MAP_DATASET_EVENT`) | Payload | Session effect |
 | --- | --- | --- |
 | `ATTRIBUTE_TABLE_CLOSE` | `{ mapId, dataset? }` | `clearHighlight('attribute-table')` |
 | `DETAIL_CLOSE` | `{ mapId, item?, dataset? }` | `onDetailClose` |
 | `IDENTIFY_CLOSE` | `{ mapId, dataset? }` (scoped filter when set) | `onIdentifyClose` |
-| `CLEAR` | same as `clearHighlight` target | `clearHighlight` |
+| `CLEAR` | `{ mapId, target, dataset? }` | `clearHighlight(target)` |
 
 ```ts
 import {

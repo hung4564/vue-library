@@ -17,7 +17,7 @@ import {
   type IListViewUI,
 } from '@hungpvq/map-dataset';
 import { useMap } from '@hungpvq/vue-map-core';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import LayerItemSlider from './layer-item-slider.vue';
 import type { WithLayerItemActionType } from './types';
 
@@ -47,10 +47,13 @@ function updateValue(e: { opacity: number }) {
   const { opacity } = e;
   opacityValue.value = opacity;
 }
-onMounted(() => {
-  props.data.on('changeOpacity', updateValue);
-});
-onUnmounted(() => {
-  props.data.off('changeOpacity', updateValue);
-});
+watch(
+  () => props.data,
+  (data, _prev, onCleanup) => {
+    opacityValue.value = data.opacity ?? 1;
+    data.on('changeOpacity', updateValue);
+    onCleanup(() => data.off('changeOpacity', updateValue));
+  },
+  { immediate: true },
+);
 </script>

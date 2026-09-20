@@ -62,6 +62,7 @@ export {
 } from './mitt';
 export type {
   HighlightClearTarget,
+  MapDatasetClearPayload,
   MapDatasetClosePayload,
   MapDatasetEvent,
 } from './mitt';

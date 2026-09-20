@@ -45,8 +45,8 @@ export type IGroupListViewUI<T> =
     };
 
 export type EventIListViewUI = {
-  toggleShow: { show: boolean; dataset: IListViewUI };
-  changeOpacity: { opacity: number; dataset: IListViewUI };
+  toggleShow: { show: boolean; dataset: IListViewUI; mapId: string };
+  changeOpacity: { opacity: number; dataset: IListViewUI; mapId: string };
 };
 
 /** Normalized flat-list group reference (written by convertTreeToList / order helpers). */

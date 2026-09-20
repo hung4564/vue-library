@@ -21,7 +21,8 @@ export function toggleShow(
   show: boolean,
 ) {
   this.show = !!show;
-  if (this.emit) this.emit('toggleShow', { show, dataset: this });
+  if (this.emit)
+    this.emit('toggleShow', { show, dataset: this, mapId: map.id });
 }
 
 export function setOpacity(
@@ -30,5 +31,6 @@ export function setOpacity(
   opacity: number,
 ) {
   this.opacity = opacity;
-  if (this.emit) this.emit('changeOpacity', { opacity, dataset: this });
+  if (this.emit)
+    this.emit('changeOpacity', { opacity, dataset: this, mapId: map.id });
 }

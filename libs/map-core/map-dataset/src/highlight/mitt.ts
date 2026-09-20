@@ -31,15 +31,22 @@ export type MapDatasetClosePayload = {
   dataset?: IDataset;
 };
 
+/** CLEAR payload — always includes `mapId`; `dataset` when the caller knows it. */
+export type MapDatasetClearPayload = {
+  mapId: string;
+  target: HighlightClearTarget;
+  dataset?: IDataset;
+};
+
 export type MapDatasetEvent = {
-  [MAP_DATASET_EVENT.CLEAR]: HighlightClearTarget;
+  [MAP_DATASET_EVENT.CLEAR]: MapDatasetClearPayload;
   [MAP_DATASET_EVENT.DETAIL_CLOSE]: MapDatasetClosePayload;
   [MAP_DATASET_EVENT.IDENTIFY_CLOSE]: MapDatasetClosePayload;
   [MAP_DATASET_EVENT.ATTRIBUTE_TABLE_CLOSE]: MapDatasetClosePayload;
 };
 
 type BridgeHandlers = {
-  onClear: (target: HighlightClearTarget) => void;
+  onClear: (payload: MapDatasetClearPayload) => void;
   onDetailClose: (payload: MapDatasetClosePayload) => void;
   onIdentifyClose: (payload: MapDatasetClosePayload) => void;
   onAttributeTableClose: (payload: MapDatasetClosePayload) => void;
@@ -54,7 +61,7 @@ function bindHandlers(mapId: string): void {
 
   const emitter = ensureMapMitt<MapDatasetEvent>(mapId);
   const handlers: BridgeHandlers = {
-    onClear: (target) => clearHighlight(mapId, target),
+    onClear: (payload) => clearHighlight(mapId, payload.target),
     onDetailClose: (payload) => onDetailClose(mapId, payload?.item),
     onIdentifyClose: () => onIdentifyClose(mapId),
     onAttributeTableClose: () => clearHighlight(mapId, 'attribute-table'),
@@ -136,9 +143,14 @@ export const cleanHighlightMittBridge = destroyHighlightMittBridge;
 export function emitHighlightClear(
   mapId: string,
   target: HighlightClearTarget,
+  options: Omit<MapDatasetClearPayload, 'mapId' | 'target'> = {},
 ): void {
   ensureHighlightMittBridge(mapId);
-  ensureMapMitt<MapDatasetEvent>(mapId).emit(MAP_DATASET_EVENT.CLEAR, target);
+  ensureMapMitt<MapDatasetEvent>(mapId).emit(MAP_DATASET_EVENT.CLEAR, {
+    mapId,
+    target,
+    ...options,
+  });
   releaseHighlightMittBridge(mapId);
 }
 

@@ -67,7 +67,13 @@ export const MAP_DRAW_EVENT = {
   START: 'map:start',
   END: 'map:end',
 } as const;
+
+/** Payload when a draw session ends (map remove / store cleanup). */
+export type MapDrawEndPayload = {
+  mapId: string;
+};
+
 export type MapDrawEvent = {
   [MAP_DRAW_EVENT.START]: MapDrawOption;
-  [MAP_DRAW_EVENT.END]: void;
+  [MAP_DRAW_EVENT.END]: MapDrawEndPayload;
 };

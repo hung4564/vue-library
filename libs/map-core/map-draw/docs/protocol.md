@@ -75,6 +75,8 @@ Keep these ids identical across Vue and React.
 ## Events / service
 
 - `MAP_DRAW_EVENT` — mitt keys for draw **session** lifecycle (`start` / `end`).
+  - `START` payload: `MapDrawOption` (session config).
+  - `END` payload: `MapDrawEndPayload` `{ mapId }` (emitted on map/store cleanup when a session was open).
 - `DrawService` — save collection + feature bookkeeping (framework-agnostic).
   - Selecting an existing feature for edit marks **`updated`** (not `added`), even if Mapbox fires `draw.create`.
 

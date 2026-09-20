@@ -4,6 +4,7 @@ import {
   bindHighlightMittBridge,
   cleanHighlightMittBridge,
   destroyHighlightMittBridge,
+  emitHighlightClear,
   ensureHighlightMittBridge,
   MAP_DATASET_EVENT,
   releaseHighlightMittBridge,
@@ -114,5 +115,21 @@ describe('highlight mitt bridge', () => {
     );
     expect(closeIdentifyExclusiveUi).toHaveBeenCalledWith('m1');
     expect(hideIfSource).toHaveBeenCalledWith('identify');
+  });
+
+  it('CLEAR payload includes mapId and clears by target', () => {
+    ensureHighlightMittBridge('m1');
+    ensureMapMitt<MapDatasetEvent>('m1').emit(MAP_DATASET_EVENT.CLEAR, {
+      mapId: 'm1',
+      target: 'detail',
+      dataset: { id: 'layer-1' } as never,
+    });
+    expect(hideIfSource).toHaveBeenCalledWith('detail');
+  });
+
+  it('emitHighlightClear attaches mapId and optional dataset', () => {
+    ensureHighlightMittBridge('m1');
+    emitHighlightClear('m1', 'hover', { dataset: { id: 'd1' } as never });
+    expect(hideIfSource).toHaveBeenCalledWith('hover');
   });
 });

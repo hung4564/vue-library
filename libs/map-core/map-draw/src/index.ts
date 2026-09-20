@@ -116,6 +116,7 @@ export type {
   MapDrawAction,
   MapDrawConfig,
   MapDrawDraftOption,
+  MapDrawEndPayload,
   MapDrawEvent,
   MapDrawOption,
   MapDrawOptionSimple,

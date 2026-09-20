@@ -18,7 +18,7 @@ function endDrawSession(mapId: string, store: MapDrawStore): void {
   logHelper(logger, mapId, 'store')
     .with({ fn: 'endDrawSession', span: 'store.clear' })
     .debug('end on removeMap');
-  ensureMapMitt<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END);
+  ensureMapMitt<MapDrawEvent>(mapId).emit(MAP_DRAW_EVENT.END, { mapId });
 }
 
 registerMapDomainStoreFactory(MAP_DRAW_STORE_KEY, {

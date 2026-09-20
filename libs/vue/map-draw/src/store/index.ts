@@ -34,19 +34,19 @@ export function useConfigDrawControl(
   const emit = useMapMittStore<MapDrawEvent>(mapId);
   onMounted(() => {
     if (!config) return;
+    const onEnd = () => config.onEnd();
     emit.on(MAP_DRAW_EVENT.START, config.onStart);
-    emit.on(MAP_DRAW_EVENT.END, config.onEnd);
+    emit.on(MAP_DRAW_EVENT.END, onEnd);
     if (store.config) {
       logHelper(logger, mapId, 'useConfigDrawControl')
         .with({ fn: 'useConfigDrawControl', span: 'control.init' })
         .debug('start on mounted');
       config.onStart(store.config);
     }
-  });
-  onUnmounted(async () => {
-    if (!config) return;
-    emit.off(MAP_DRAW_EVENT.START, config.onStart);
-    emit.off(MAP_DRAW_EVENT.END, config.onEnd);
+    onUnmounted(async () => {
+      emit.off(MAP_DRAW_EVENT.START, config.onStart);
+      emit.off(MAP_DRAW_EVENT.END, onEnd);
+    });
   });
 
   return {

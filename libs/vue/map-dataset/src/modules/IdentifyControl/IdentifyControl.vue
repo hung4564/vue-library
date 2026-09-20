@@ -63,7 +63,14 @@ const props = withDefaults(
 const { mapId, moduleContainerProps, order, callMap } = useMap(props);
 const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
 const { trans } = useLang(mapId.value);
-const unbindMittBridge = bindHighlightMittBridge(mapId.value);
+watch(
+  mapId,
+  (id, _prev, onCleanup) => {
+    const unbind = bindHighlightMittBridge(id);
+    onCleanup(unbind);
+  },
+  { immediate: true },
+);
 useEnsureDatasetBuiltinLocales(mapId.value);
 const views = ref<Array<IIdentifyView>>([]);
 const show = ref(!!props.show);
@@ -255,7 +262,6 @@ onMounted(() => {
   syncResultPanel();
 });
 onUnmounted(() => {
-  unbindMittBridge();
   session.teardownInputModes({ immediate: true });
   session.destroy();
   UniversalRegistry.unregisterMenuHandlerForMap(

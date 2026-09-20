@@ -5,7 +5,7 @@ import {
 } from '@hungpvq/map-dataset';
 
 import { useLang, useMap } from '@hungpvq/vue-map-core';
-import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 import { useMapDatasetStore } from '../../store/dataset-store';
 import type { WithLayerItemActionType } from './types';
 
@@ -35,12 +35,18 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
     });
   };
 
-  onMounted(() => {
-    const cleanup = bindToggleShowAction(props.data, (show) => {
-      showValue.value = show;
-    });
-    onUnmounted(cleanup);
-  });
+  watch(
+    () => props.data,
+    (data, _prev, onCleanup) => {
+      showValue.value = data.show;
+      onCleanup(
+        bindToggleShowAction(data, (show) => {
+          showValue.value = show;
+        }),
+      );
+    },
+    { immediate: true },
+  );
 
   return {
     mapId,
