@@ -16,19 +16,30 @@ function logsSignature(logs: WorkerLogEntry[]) {
   return `${logs.length}:${first.id}:${last.id}`;
 }
 
-/** Scroll-stable log list — parent re-renders on progress/elapsed should not jump scroll. */
+/** Newest-on-top log list — stick to top while following; else keep viewport stable. */
 export const WorkerLogList = memo(
   function WorkerLogList({ logs, compact }: WorkerLogListProps) {
     const rootRef = useRef<HTMLDivElement>(null);
     const savedScrollTop = useRef(0);
+    const savedScrollHeight = useRef(0);
+    const stickToLatest = useRef(true);
 
-    // Capture before commit so progress/elapsed parent re-renders don't jump scroll.
     const el = rootRef.current;
-    if (el) savedScrollTop.current = el.scrollTop;
+    if (el) {
+      savedScrollTop.current = el.scrollTop;
+      savedScrollHeight.current = el.scrollHeight;
+      stickToLatest.current = el.scrollTop <= 8;
+    }
 
     useLayoutEffect(() => {
       const node = rootRef.current;
-      if (node) node.scrollTop = savedScrollTop.current;
+      if (!node) return;
+      if (stickToLatest.current) {
+        node.scrollTop = 0;
+        return;
+      }
+      const delta = node.scrollHeight - savedScrollHeight.current;
+      node.scrollTop = savedScrollTop.current + Math.max(0, delta);
     });
 
     return (

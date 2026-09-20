@@ -15,6 +15,7 @@ export function GeojsonSettings({ config, onChange, trans }: CreateConfigFormPro
     ],
     [trans],
   );
+
   return (
     <div className="map-row create-control-settings">
       <div className="map-col-6">

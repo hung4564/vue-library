@@ -45,14 +45,14 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
   const [replaceFileMode, setReplaceFileMode] = useState(false);
   const pasteTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const parseGenerationRef = useRef(0);
-  const dataTabs = getCreateControlDataTabs('vector');
+  const dataTabs = getCreateControlDataTabs('geojson');
   const [activeDataTab, setActiveDataTab] = useState<CreateControlDataTab>(
     CREATE_CONTROL_DEFAULT_DATA_TAB,
   );
   const sampleItems = useMemo(
     () => [
       { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
-      ...getCreateControlSamples('vector').map((item) => ({
+      ...getCreateControlSamples('geojson').map((item) => ({
         value: item.id,
         text: item.label,
       })),
@@ -142,7 +142,7 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
         name: applyCreateControlLayerName(
           typeof config.name === 'string' ? config.name : '',
           result.suggestedName,
-          'vector',
+          'geojson',
         ),
       });
       setLoadedSource(result.loadedSource);
@@ -217,7 +217,7 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
   function onSelectSample(id: string) {
     setSampleId(id);
     setUrlError('');
-    const url = resolveCreateControlSampleSelection('vector', id);
+    const url = resolveCreateControlSampleSelection('geojson', id);
     if (url != null) setDataUrl(url);
   }
 
@@ -225,7 +225,7 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
     setDataUrl(value);
     setUrlError('');
     setSampleId((current) =>
-      resolveCreateControlSampleIdAfterUrlEdit('vector', current, value),
+      resolveCreateControlSampleIdAfterUrlEdit('geojson', current, value),
     );
   }
 

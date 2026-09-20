@@ -11,8 +11,20 @@ export async function applyCreateControlSample(
     return config;
   }
 
-  if (sample.dataFormat === 'parquet') {
-    throw new Error('Parquet format is not supported yet');
+  if (
+    sample.layerKind === 'xyz' ||
+    sample.layerKind === 'tilejson' ||
+    sample.layerKind === 'mbtiles' ||
+    sample.layerKind === 'pmtiles'
+  ) {
+    const url = sample.dataUrl;
+    return {
+      ...config,
+      url,
+      tiles:
+        (config['tiles'] as string[] | undefined) ??
+        (sample.layerKind === 'tilejson' ? [] : [url]),
+    };
   }
 
   const geojson = await fetchGeojsonFromUrl(sample.dataUrl);

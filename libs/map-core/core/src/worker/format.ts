@@ -93,7 +93,7 @@ export function resolveSelectedWorkerId(
 }
 
 /**
- * Storage is newest-first. Return chronological order (oldest → newest).
+ * Storage is newest-first. Return the same order for the UI (newest on top).
  * When `limit` is set, only the newest `limit` entries are kept.
  * Omit `limit` to show the full buffer (committed worker log).
  */
@@ -101,7 +101,6 @@ export function workerLogsForDisplay(
   logs: readonly WorkerLogEntry[],
   limit?: number,
 ): WorkerLogEntry[] {
-  const newestFirst =
-    limit == null || limit >= logs.length ? logs : logs.slice(0, limit);
-  return newestFirst.slice().reverse();
+  if (limit == null || limit >= logs.length) return logs.slice();
+  return logs.slice(0, limit);
 }

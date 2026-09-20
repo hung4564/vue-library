@@ -6,11 +6,13 @@ With **more than one** worker, the sidebar shows a searchable list (busy first).
 
 Each running task shows a **Cancel** button that calls `WorkerMonitor.abortTask(workerId, taskId)` (posts an abort envelope to the worker; does not terminate the whole Worker unless you call `terminate`).
 
+**Anti-flicker:** `useWorkerMonitor` projects snapshots through `createWorkerUiDelayState` — busy / loading chrome appears only after a short delay (~200ms). Faster tasks never change the status badge or show a running-task loader. Once shown, busy stays briefly (~300ms) so the UI does not flash idle.
+
 ## Usecase
 
 - Confirm a task is running off the main thread (status **Busy**, engine **Worker**).
 - Watch progress while a large GeoJSON file is read or reprojected.
-- Read **worker-thread logs**: live **task log** while a task runs; when it finishes those lines flush into the **Worker log**, and a compact copy stays under **Recent tasks** (max 5).
+- Read **worker-thread logs**: live **task log** while a task runs; when it finishes those lines flush into the **Worker log**, and a compact copy stays under **Recent tasks** (max 5). Log lists are **newest on top** (`workerLogsForDisplay`) and stay pinned to the latest lines while you follow the top of the list.
 - See fallback to the main thread and the last error without opening DevTools.
 
 ## Props

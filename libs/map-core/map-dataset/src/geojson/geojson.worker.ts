@@ -66,6 +66,8 @@ export type GeojsonWorkerResponse = {
   geojson?: GeoJSON | null;
   crs?: string | null;
   format?: string;
+  /** FileGDB (and similar) per-layer FeatureCollections. */
+  layers?: Array<{ name: string; geojson: import('geojson').FeatureCollection }>;
   styleTypes?: LayerStyleType[];
   bbox?: GeojsonBbox;
   error?: string;
@@ -91,6 +93,9 @@ runWorkerMonitor<GeojsonWorkerRequest>(
     let geojson: GeoJSON | null = null;
     let crs: string | null = null;
     let format: string | undefined;
+    let layers:
+      | Array<{ name: string; geojson: import('geojson').FeatureCollection }>
+      | undefined;
     let styleTypes: LayerStyleType[] | undefined;
     let bbox: GeojsonBbox | undefined;
     const report = (current: number, total?: number, message?: string) => {
@@ -110,6 +115,7 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
+        layers = parsed.layers;
         ctx.log(
           `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
         );
@@ -124,8 +130,11 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
+        layers = parsed.layers;
         ctx.log(
-          `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
+          `parsed ${format || 'gis'} ${describeGeojson(geojson)}${
+            layers?.length ? ` (${layers.length} layers)` : ''
+          }${crs ? `, CRS EPSG:${crs}` : ''}`,
         );
         break;
       }
@@ -137,8 +146,11 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
+        layers = parsed.layers;
         ctx.log(
-          `parsed ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
+          `parsed ${format || 'gis'} ${describeGeojson(geojson)}${
+            layers?.length ? ` (${layers.length} layers)` : ''
+          }${crs ? `, CRS EPSG:${crs}` : ''}`,
         );
         break;
       }
@@ -148,6 +160,7 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         geojson = parsed.geojson;
         crs = parsed.crs;
         format = parsed.format;
+        layers = parsed.layers;
         ctx.log(
           `fetched ${format || 'gis'} ${describeGeojson(geojson)}${crs ? `, CRS EPSG:${crs}` : ''}`,
         );
@@ -194,7 +207,7 @@ runWorkerMonitor<GeojsonWorkerRequest>(
         throw new Error('Unknown GIS worker task');
     }
 
-    return { geojson, crs, format, styleTypes, bbox };
+    return { geojson, crs, format, layers, styleTypes, bbox };
   },
   { readyMessage: 'GIS worker ready' },
 );

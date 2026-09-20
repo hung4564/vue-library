@@ -1,17 +1,18 @@
 import type { Color, GeojsonBbox } from '@hungpvq/map-core';
 import {
   bboxFromGeojson,
+  getChartColorAt,
   getChartRandomColor,
   MapError,
   reprojectGeojsonToWgs84,
   toPlainJson,
 } from '@hungpvq/map-core';
-import type { Feature, GeoJSON, Geometry } from 'geojson';
+import type { Feature, FeatureCollection, GeoJSON, Geometry } from 'geojson';
 import { createMenuItemAttributeTable } from '../attribute-table/menu';
 import type { FieldFeaturesDef } from '../extra/field';
 import { createMenuItemExportGeo } from '../geo-export';
 import { createIdentifyMapboxComponent } from '../identify';
-import type { IDataset } from '../interfaces/dataset.base';
+import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import {
   createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
@@ -21,15 +22,22 @@ import {
 } from '../menu/items';
 import { createGroupDataset, createRootDataset } from '../model/dataset.base';
 import { createMultiMapboxLayerComponent } from '../model/layer/model';
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartSubListViewUiComponentBuilder,
+} from '../model/list/builder';
 import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import { createDatasetPartBoundComponent } from '../model/part-bound.model';
 import type { LayerStyleType } from '../style/layer-simple-builder';
-import { LayerSimpleMapboxBuild } from '../style/layer-simple-builder';
+import {
+  buildAutoVectorTileStyleLayers,
+  buildSimpleStyleLayers,
+} from '../style/layer-simple-builder';
 import { ensureGeojsonFeatureIds, GEOJSON_FEATURE_ID_KEY } from './feature-id';
 import {
   detectGeojsonStyleTypes,
+  GEOJSON_STYLE_AUTO,
   isGeojsonStyleAuto,
-  styleTypeToMapboxGeometryType,
   type GeojsonStyleMode,
 } from './geojson-parse';
 import { createDatasetPartGeojsonSourceComponent } from './source';
@@ -60,25 +68,6 @@ export type GeojsonDatasetOption = {
   attributeTable?: boolean;
 };
 
-function buildSingleStyleLayer(
-  style: LayerStyleType,
-  color: Color,
-  opacity?: number,
-  withFilter = false,
-) {
-  const builder = new LayerSimpleMapboxBuild()
-    .setStyleType(style)
-    .setColor(color)
-    .setOpacity(style === 'area' ? (opacity ?? 0.5) : (opacity ?? 1));
-  if (withFilter) {
-    const mapboxType = styleTypeToMapboxGeometryType(style);
-    if (mapboxType) {
-      builder.setFilter(['==', '$type', mapboxType]);
-    }
-  }
-  return builder.build();
-}
-
 function resolveStyleLayers(
   geojson: GeoJSON,
   type: GeojsonStyleMode | undefined,
@@ -87,18 +76,20 @@ function resolveStyleLayers(
   opacity?: number,
 ) {
   if (styles && styles.length > 0) {
-    return styles.map((style) =>
-      buildSingleStyleLayer(style, color, opacity, true),
+    return styles.flatMap((style) =>
+      buildSimpleStyleLayers(style, color, opacity, { withTypeFilter: true }),
     );
   }
 
   if (isGeojsonStyleAuto(type)) {
-    return detectGeojsonStyleTypes(geojson).map((style) =>
-      buildSingleStyleLayer(style, color, opacity, true),
+    return detectGeojsonStyleTypes(geojson).flatMap((style) =>
+      buildSimpleStyleLayers(style, color, opacity, { withTypeFilter: true }),
     );
   }
 
-  return [buildSingleStyleLayer(type ?? 'point', color, opacity, false)];
+  return buildSimpleStyleLayers(type ?? 'point', color, opacity, {
+    withTypeFilter: false,
+  });
 }
 
 export function createGeoJsonDataset(data: GeojsonDatasetOption): IDataset {
@@ -213,5 +204,267 @@ function convertGeojsonToList(geojson: GeoJSON): {
   }));
 
   return { items, fields };
+}
+
+/** One FileGDB / multi-FC slice (MBTiles-like source-layer). */
+export type GeojsonLayerPart = {
+  name: string;
+  geojson: GeoJSON;
+  type?: GeojsonStyleMode;
+  styles?: LayerStyleType[];
+  bbox?: GeojsonBbox | null;
+  color?: Color;
+};
+
+export type GeojsonLayersDatasetOption = {
+  name: string;
+  layers: GeojsonLayerPart[];
+  /** Default style mode for parts that omit `type`. Default `auto`. */
+  type?: GeojsonStyleMode;
+  color?: Color;
+  opacity?: number;
+  export?: boolean;
+  attributeTable?: boolean;
+  /** Overall parent bbox; derived from layer bboxes when omitted. */
+  bbox?: GeojsonBbox | null;
+};
+
+function resolveLayerBbox(
+  geojson: GeoJSON,
+  bbox: GeojsonBbox | null | undefined,
+): GeojsonBbox | undefined {
+  if (bbox === null) return undefined;
+  if (bbox) return bbox;
+  try {
+    return bboxFromGeojson(geojson);
+  } catch {
+    return undefined;
+  }
+}
+
+function unionBboxes(boxes: GeojsonBbox[]): GeojsonBbox | undefined {
+  if (!boxes.length) return undefined;
+  return boxes.reduce(
+    (acc, box) => [
+      Math.min(acc[0], box[0]),
+      Math.min(acc[1], box[1]),
+      Math.max(acc[2], box[2]),
+      Math.max(acc[3], box[3]),
+    ],
+    boxes[0],
+  );
+}
+
+function buildLayerPaint(
+  geojson: GeoJSON,
+  type: GeojsonStyleMode | undefined,
+  styles: LayerStyleType[] | undefined,
+  color: Color,
+  opacity?: number,
+) {
+  // MBTiles-like auto: always area(+outline) + line + point with type filters.
+  if (isGeojsonStyleAuto(type) && !(styles && styles.length > 0)) {
+    return buildAutoVectorTileStyleLayers(color, opacity);
+  }
+  return resolveStyleLayers(geojson, type, styles, color, opacity);
+}
+
+function attachGeojsonLayerParts(
+  parent: IDataset & WithChildren,
+  part: GeojsonLayerPart,
+  index: number,
+  defaults: {
+    type: GeojsonStyleMode;
+    opacity?: number;
+    export?: boolean;
+    attributeTable?: boolean;
+  },
+) {
+  const raw = toPlainJson(part.geojson);
+  const geojson = ensureGeojsonFeatureIds(raw);
+  const name = part.name.trim() || `Layer ${index + 1}`;
+  // Per feature-class chart color (ignore shared form color), same as MBTiles.
+  const color = getChartColorAt(index) || getChartRandomColor();
+  const styleMode = part.type ?? defaults.type;
+  const layerBbox = resolveLayerBbox(geojson, part.bbox);
+
+  const listMenus = [
+    createMenuItemToggleShow(),
+    createMenuItemIdentifyForList(),
+  ];
+  if (defaults.export !== false) {
+    listMenus.push(createMenuItemExportGeo());
+  }
+  if (defaults.attributeTable !== false) {
+    listMenus.push(createMenuItemAttributeTable());
+  }
+  if (layerBbox) {
+    listMenus.push(createMenuItemToBoundActionForList());
+  }
+
+  const list = createDatasetPartSubListViewUiComponentBuilder(name)
+    .setColor(color)
+    .addMenus(listMenus)
+    .build();
+
+  const groupLayer = createGroupDataset(name);
+
+  // Source must precede paint layers so DatasetService BFS addToMap registers
+  // the MapLibre source before addLayer (same order as createGeoJsonDataset).
+  const source = createDatasetPartGeojsonSourceComponent(name, geojson, {
+    promoteId: GEOJSON_FEATURE_ID_KEY,
+  });
+  groupLayer.add(source);
+  groupLayer.add(list);
+  groupLayer.add(
+    createMultiMapboxLayerComponent(
+      name,
+      buildLayerPaint(
+        geojson,
+        styleMode,
+        // Auto path ignores precomputed styles (MBTiles expands all types).
+        isGeojsonStyleAuto(styleMode) ? undefined : part.styles,
+        list.color ?? color,
+        defaults.opacity,
+      ),
+    ),
+  );
+
+  const dataConvert = convertGeojsonToList(geojson);
+  const identify = createIdentifyMapboxComponent(`Identify ${name}`, {
+    field_id: GEOJSON_FEATURE_ID_KEY,
+    field_name: 'name',
+    onMultiple: 'auto',
+    onSingle: 'auto',
+  });
+  identify.addMenus([
+    createMenuItemToBoundActionForItem(),
+    createMenuItemShowDetailForItem(dataConvert.fields),
+  ]);
+  groupLayer.add(identify);
+
+  if (layerBbox) {
+    groupLayer.add(createDatasetPartBoundComponent(name, layerBbox));
+  }
+
+  parent.add(groupLayer);
+
+  return layerBbox;
+}
+
+/**
+ * Build a root dataset from one or more GeoJSON slices (FileGDB feature classes).
+ *
+ * - **1 layer** → same list shape as {@link createGeoJsonDataset}
+ * - **2+ layers** → one parent GroupSubList (master checkbox + fillbound) and each
+ *   slice as a SubList (MBTiles / vector-tile pattern)
+ */
+export function createGeoJsonLayersDataset(
+  data: GeojsonLayersDatasetOption,
+): IDataset {
+  const layers = (data.layers ?? []).filter((layer) => layer?.geojson);
+  if (!layers.length) {
+    throw new MapError('No GeoJSON layers to create', 'LAYER_CREATE_ERROR', {
+      recoverable: false,
+      context: { stage: 'build-dataset' },
+    });
+  }
+
+  if (layers.length === 1) {
+    const only = layers[0];
+    return createGeoJsonDataset({
+      name: data.name,
+      geojson: only.geojson,
+      type: only.type ?? data.type ?? GEOJSON_STYLE_AUTO,
+      styles: only.styles,
+      bbox: only.bbox ?? data.bbox,
+      color: only.color ?? data.color,
+      opacity: data.opacity,
+      export: data.export,
+      attributeTable: data.attributeTable,
+    });
+  }
+
+  const dataset = createRootDataset(data.name);
+  const styleDefault = data.type ?? GEOJSON_STYLE_AUTO;
+  // Multi-layer FileGDB path always uses MBTiles-like auto expand.
+  const paintMode = isGeojsonStyleAuto(styleDefault)
+    ? GEOJSON_STYLE_AUTO
+    : styleDefault;
+  const layerBboxes: GeojsonBbox[] = [];
+
+  const parentColor = data.color || getChartColorAt(0) || getChartRandomColor();
+
+  // Precompute layer bboxes for parent fillbound.
+  for (const layer of layers) {
+    const stamped = ensureGeojsonFeatureIds(toPlainJson(layer.geojson));
+    const box = resolveLayerBbox(stamped, layer.bbox);
+    if (box) layerBboxes.push(box);
+  }
+  const parentBbox =
+    data.bbox === null
+      ? undefined
+      : (data.bbox ?? unionBboxes(layerBboxes));
+
+  if (parentBbox) {
+    dataset.add(createDatasetPartBoundComponent(data.name, parentBbox));
+  }
+
+  const parentMenus = [createMenuItemToggleShow({ location: 'bottom' })];
+  if (parentBbox) {
+    parentMenus.push(createMenuItemToBoundActionForList());
+  }
+
+  const parentList = createDatasetPartGroupSubListViewUiComponentBuilder(
+    data.name,
+  )
+    .setColor(parentColor)
+    .configInitShowChildren(false)
+    .addMenus(parentMenus)
+    .build();
+
+  const groupLayer = createGroupDataset(data.name);
+  groupLayer.add(parentList);
+  dataset.add(groupLayer);
+
+  layers.forEach((layer, index) => {
+    attachGeojsonLayerParts(parentList, layer, index, {
+      type: paintMode,
+      opacity: data.opacity,
+      export: data.export,
+      attributeTable: data.attributeTable,
+    });
+  });
+
+  return dataset;
+}
+
+/** Split a merged FileGDB FeatureCollection by `__gdb_layer` property. */
+export function splitGeojsonByGdbLayer(
+  geojson: GeoJSON,
+): Array<{ name: string; geojson: FeatureCollection }> {
+  if (!geojson || typeof geojson !== 'object') return [];
+  const features: Feature[] =
+    geojson.type === 'FeatureCollection'
+      ? geojson.features ?? []
+      : geojson.type === 'Feature'
+        ? [geojson]
+        : [];
+  if (!features.length) return [];
+
+  const buckets = new Map<string, Feature[]>();
+  for (const feature of features) {
+    const raw = feature.properties?.['__gdb_layer'];
+    const name =
+      typeof raw === 'string' && raw.trim() ? raw.trim() : 'layer';
+    const list = buckets.get(name);
+    if (list) list.push(feature);
+    else buckets.set(name, [feature]);
+  }
+
+  return Array.from(buckets.entries()).map(([name, feats]) => ({
+    name,
+    geojson: { type: 'FeatureCollection', features: feats },
+  }));
 }
 

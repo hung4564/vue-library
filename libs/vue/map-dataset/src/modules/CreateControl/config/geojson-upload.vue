@@ -192,12 +192,12 @@ let parseGeneration = 0;
 
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);
-const dataTabs = getCreateControlDataTabs('vector');
+const dataTabs = getCreateControlDataTabs('geojson');
 const activeDataTab = ref(CREATE_CONTROL_DEFAULT_DATA_TAB);
 
 const sampleItems = computed(() => [
   { value: '', text: CREATE_CONTROL_SAMPLE_NONE },
-  ...getCreateControlSamples('vector').map((item) => ({
+  ...getCreateControlSamples('geojson').map((item) => ({
     value: item.id,
     text: item.label,
   })),
@@ -312,7 +312,7 @@ async function onChangeFile(input) {
     form.value.name = applyCreateControlLayerName(
       form.value.name,
       result.suggestedName,
-      'vector',
+      'geojson',
     );
     replaceFileMode.value = false;
     activeDataTab.value = CREATE_CONTROL_DEFAULT_DATA_TAB;
@@ -371,14 +371,14 @@ function onSelectSample(id) {
   const nextId = typeof id === 'string' ? id : '';
   sampleId.value = nextId;
   urlError.value = '';
-  const url = resolveCreateControlSampleSelection('vector', nextId);
+  const url = resolveCreateControlSampleSelection('geojson', nextId);
   if (url != null) dataUrl.value = url;
 }
 
 function onUrlInput() {
   urlError.value = '';
   sampleId.value = resolveCreateControlSampleIdAfterUrlEdit(
-    'vector',
+    'geojson',
     sampleId.value,
     dataUrl.value,
   );

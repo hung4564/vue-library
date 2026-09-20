@@ -230,35 +230,36 @@ function summaryText() {
                 class="map-worker-control__item"
                 :class="{ 'is-selected': selected?.id === worker.id }"
               >
-                <MapControlButton
+                <button
+                  type="button"
                   class="map-worker-control__pick"
-                  variant="plain"
-                  size="small"
                   @click="selectedId = worker.id"
                 >
-                  <span class="map-worker-control__pick-name">{{
-                    worker.name
-                  }}</span>
+                  <span class="map-worker-control__pick-main">
+                    <span class="map-worker-control__pick-name">{{
+                      worker.name
+                    }}</span>
+                    <span
+                      v-if="worker.name !== worker.id || pendingLabel(worker)"
+                      class="map-worker-control__pick-meta"
+                    >
+                      {{
+                        [
+                          worker.name !== worker.id ? worker.id : '',
+                          pendingLabel(worker),
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')
+                      }}
+                    </span>
+                  </span>
                   <span
                     class="map-worker-control__status"
                     :data-status="worker.status"
                   >
                     {{ statusLabel(worker.status) }}
                   </span>
-                  <span
-                    v-if="worker.name !== worker.id || pendingLabel(worker)"
-                    class="map-worker-control__pick-meta"
-                  >
-                    {{
-                      [
-                        worker.name !== worker.id ? worker.id : '',
-                        pendingLabel(worker),
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')
-                    }}
-                  </span>
-                </MapControlButton>
+                </button>
               </li>
             </ul>
           </template>

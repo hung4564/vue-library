@@ -238,7 +238,7 @@ export function clearDevtoolErrors() {
 /** Drop in-memory Devtools error rows whose context.mapId matches. */
 export function clearDevtoolErrorsForMapId(mapId: string): void {
   if (!mapId) return;
-  const next = state.errors.filter((e) => e.context?.mapId !== mapId);
+  const next = state.errors.filter((e) => e.context?.['mapId'] !== mapId);
   if (next.length === state.errors.length) return;
   patchState({ errors: next });
 }

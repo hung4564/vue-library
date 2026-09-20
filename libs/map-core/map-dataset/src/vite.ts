@@ -6,6 +6,9 @@ const EXCLUDE = [
   '@hungpvq/map-dataset/create-control',
   // UMD build has no ESM named exports — shimmed below via resolveId/load.
   'maplibre-gl',
+  // Emscripten WASM factory breaks when Vite prebundles it.
+  'gdal3.js',
+  'sql.js',
 ] as const;
 
 /** CJS deps that break when Vite serves them raw (missing named ESM exports). */
@@ -86,6 +89,11 @@ export function mapDatasetGisWorker(): Plugin {
         ssr: {
           optimizeDeps: {
             exclude: [...EXCLUDE],
+          },
+        },
+        worker: {
+          rollupOptions: {
+            external: ['gdal3.js'],
           },
         },
       };

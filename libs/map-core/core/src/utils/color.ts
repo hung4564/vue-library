@@ -8,6 +8,13 @@ export function getChartRandomColor(): Color {
   return colorChart[random];
 }
 
+/** Stable chart color by index (CreateControl multi source-layer preview). */
+export function getChartColorAt(index: number): Color {
+  const len = colorChart.length;
+  const i = ((Math.floor(index) % len) + len) % len;
+  return colorChart[i];
+}
+
 const colorChart: Color[] = [
   '#0E9F6E',
   '#84A2AE',

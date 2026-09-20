@@ -8,10 +8,18 @@ export function getCreateControlDataTabs(
   layerKind: CreateControlLayerKind,
 ): CreateControlDataTab[] {
   switch (layerKind) {
-    case 'vector':
+    case 'geojson':
       return ['raw', 'file', 'url'];
-    case 'rasterxyz':
-      return ['raw', 'url'];
+    case 'filegdb':
+      return ['file'];
+    case 'xyz':
+      return ['url'];
+    case 'tilejson':
+      return ['url'];
+    case 'mbtiles':
+      return ['file'];
+    case 'pmtiles':
+      return ['url', 'file'];
     default:
       return ['raw', 'url'];
   }

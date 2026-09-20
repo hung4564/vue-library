@@ -1,38 +1,61 @@
 import {
   WorkerMonitor,
+  createWorkerUiDelayState,
   type WorkerSnapshot,
 } from '@hungpvq/map-core';
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 
 export function useWorkerMonitor() {
-  const workers = shallowRef<WorkerSnapshot[]>(WorkerMonitor.list());
+  const rawWorkers = shallowRef<WorkerSnapshot[]>(WorkerMonitor.list());
   const now = ref(Date.now());
+  const delay = createWorkerUiDelayState();
   let stop: (() => void) | undefined;
-  let timer: ReturnType<typeof setInterval> | undefined;
+  let tickTimer: ReturnType<typeof setInterval> | undefined;
+  let delayTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const projected = computed(() =>
+    delay.project(rawWorkers.value, now.value),
+  );
+
+  const workers = computed(() => projected.value.workers);
+  const busy = computed(() => projected.value.busy);
+
+  function clearDelayTimer() {
+    if (delayTimer != null) {
+      clearTimeout(delayTimer);
+      delayTimer = undefined;
+    }
+  }
+
+  function scheduleDelayTick(nextAt: number | null) {
+    clearDelayTimer();
+    if (nextAt == null) return;
+    const wait = Math.max(0, nextAt - Date.now());
+    delayTimer = setTimeout(() => {
+      now.value = Date.now();
+      scheduleDelayTick(delay.project(rawWorkers.value, now.value).nextAt);
+    }, wait);
+  }
 
   function refresh() {
-    workers.value = WorkerMonitor.list();
+    rawWorkers.value = WorkerMonitor.list();
     now.value = Date.now();
+    scheduleDelayTick(delay.project(rawWorkers.value, now.value).nextAt);
   }
 
   onMounted(() => {
     refresh();
     stop = WorkerMonitor.subscribe(refresh);
-    timer = setInterval(() => {
+    tickTimer = setInterval(() => {
       now.value = Date.now();
     }, 250);
   });
 
   onUnmounted(() => {
     stop?.();
-    if (timer) clearInterval(timer);
+    if (tickTimer) clearInterval(tickTimer);
+    clearDelayTimer();
   });
-
-  const busy = computed(() =>
-    workers.value.some(
-      (worker) => worker.status === 'busy' || worker.pending.length > 0,
-    ),
-  );
 
   return {
     workers,

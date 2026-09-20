@@ -28,9 +28,16 @@ export {
 export {
   LayerRasterMapboxBuild,
   LayerSimpleMapboxBuild,
+  buildAutoVectorTileStyleLayers,
+  buildSimpleStyleLayers,
   getDefaultLayer,
 } from './layer-simple-builder';
-export type { ILayerMapboxBuild, LayerStyleType } from './layer-simple-builder';
+export type {
+  BuildSimpleStyleLayersOptions,
+  ILayerMapboxBuild,
+  LayerStyleType,
+  SimpleStyleLayerSpec,
+} from './layer-simple-builder';
 
 export {
   STYLE_CONTROL_LOCALE,

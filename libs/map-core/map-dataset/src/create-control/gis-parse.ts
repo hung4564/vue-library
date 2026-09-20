@@ -12,13 +12,39 @@ import {
   detectGisFormat,
   fileExtension,
   isBinaryGisFormat,
+  isFileGdbPartName,
+  isFileGdbZipName,
   isIgnoredZipEntry,
   isShapefileSidecar,
   isZipMemberFormat,
+  looksLikeFileGdbFiles,
   sniffGisText,
   type GisFormat,
   type GisSourceHint,
 } from './gis-format';
+
+/**
+ * Dynamic only — keep gdal3.js / filegdb-parse out of the GIS worker static
+ * graph (Vite + CModule().then). Prefer main-thread FileGDB via loadGisFileAsync.
+ */
+async function loadFileGdbParse() {
+  if (isGisWorkerRuntime()) {
+    throw new Error(
+      'FileGDB parse runs on the main thread only (gdal3.js is incompatible with the GIS worker under Vite)',
+    );
+  }
+  return import('./filegdb-parse');
+}
+
+function isGisWorkerRuntime(): boolean {
+  const WorkerScope = (globalThis as { WorkerGlobalScope?: new () => object })
+    .WorkerGlobalScope;
+  return (
+    typeof WorkerScope !== 'undefined' &&
+    typeof self !== 'undefined' &&
+    self instanceof WorkerScope
+  );
+}
 
 export type GisProgress = (current: number, total?: number, message?: string) => void;
 
@@ -26,6 +52,8 @@ export type GisLoadResult = {
   geojson: GeoJSON | null;
   crs: string | null;
   format?: GisFormat;
+  /** FileGDB feature classes (and similar multi-layer sources). */
+  layers?: Array<{ name: string; geojson: FeatureCollection }>;
 };
 
 type ShapefileParse = (
@@ -173,7 +201,7 @@ export async function parseGisFile(
   report?.(0, 2, 'read');
 
   if (isBinaryGisFormat(format) || fileExtension(file.name) === 'shp') {
-    const buffer = await file.arrayBuffer();
+    const buffer = ensureArrayBuffer(await file.arrayBuffer());
     report?.(1, 2, format || 'parse');
     const result = await parseGisBuffer(buffer, hint, report);
     report?.(2, 2, result.format || 'parse');
@@ -210,10 +238,16 @@ function mergeGisFeatureCollections(
 }
 
 export async function parseGisFiles(
-  files: Array<Blob & { name?: string; type?: string }>,
+  files: Array<Blob & { name?: string; type?: string; webkitRelativePath?: string }>,
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   if (!files.length) return { geojson: null, crs: null };
+  if (looksLikeFileGdbFiles(files)) {
+    report?.(0, 2, 'filegdb');
+    const result = await parseFileGdbFiles(files, report);
+    report?.(2, 2, 'filegdb');
+    return result;
+  }
   if (files.length === 1) return parseGisFile(files[0], report);
 
   const shapefileParts = files.filter((file) => isShapefileSidecar(file.name));
@@ -263,7 +297,7 @@ export async function parseGisFromUrl(
       const hint: GisSourceHint = { name: filename, type: contentType };
       const format = detectGisFormat(hint);
       if (isBinaryGisFormat(format) || fileExtension(filename) === 'shp') {
-        const buffer = await response.arrayBuffer();
+        const buffer = ensureArrayBuffer(await response.arrayBuffer());
         report?.(1, 2, format || 'parse');
         const result = await parseGisBuffer(buffer, hint, report);
         report?.(2, 2, result.format || 'parse');
@@ -278,22 +312,27 @@ export async function parseGisFromUrl(
 }
 
 export async function parseGisBuffer(
-  buffer: ArrayBuffer,
+  buffer: ArrayBufferLike,
   hint: GisSourceHint = {},
   report?: GisProgress,
 ): Promise<GisLoadResult> {
+  const data = ensureArrayBuffer(buffer);
   const format = detectGisFormat(hint);
   const ext = fileExtension(hint.name);
+  if (format === 'filegdb' || isFileGdbZipName(hint.name)) {
+    const { parseFileGdbZipBuffer } = await loadFileGdbParse();
+    return parseFileGdbZipBuffer(data, report);
+  }
   if (format === 'kmz' || ext === 'kmz') {
-    return parseKmzBuffer(buffer, report);
+    return parseKmzBuffer(data, report);
   }
   if (format === 'zip' || ext === 'zip') {
-    return parseZipArchive(buffer, report);
+    return parseZipArchive(data, report);
   }
   if (format === 'shapefile' || ext === 'shp') {
-    return parseShapefileParts([{ name: hint.name, buffer }], report);
+    return parseShapefileParts([{ name: hint.name, buffer: data }], report);
   }
-  const text = new TextDecoder().decode(buffer);
+  const text = new TextDecoder().decode(data);
   return parseGisTextAsync(text, { ...hint, strict: true }, report);
 }
 
@@ -314,6 +353,7 @@ function parseTextByFormatSync(
     case 'geojsonl':
       return wrap(parseGeojsonl(text), 'geojsonl');
     case 'shapefile':
+    case 'filegdb':
     case 'zip':
     case 'kmz':
       throw new Error('Binary GIS formats cannot be parsed as text');
@@ -343,6 +383,7 @@ async function parseTextByFormatAsync(
     case 'geojsonl':
       return wrap(parseGeojsonl(text), 'geojsonl');
     case 'shapefile':
+    case 'filegdb':
     case 'zip':
     case 'kmz':
       throw new Error('Binary GIS formats cannot be parsed as text');
@@ -412,6 +453,14 @@ function wrap(
   if (!geojson) return { geojson: null, crs: crsHint ?? null, format };
   const crs = detectGeojsonCrs(geojson) ?? crsHint ?? null;
   return { geojson, crs, format };
+}
+
+/** Normalize Blob/Response buffers to a real `ArrayBuffer` (TS 5.7 ArrayBufferLike). */
+function ensureArrayBuffer(data: ArrayBufferLike): ArrayBuffer {
+  if (data instanceof ArrayBuffer) return data;
+  const out = new ArrayBuffer(data.byteLength);
+  new Uint8Array(out).set(new Uint8Array(data));
+  return out;
 }
 
 function isTopojson(value: unknown): value is {
@@ -487,6 +536,40 @@ async function parseKmzBuffer(
 }
 
 /**
+ * Parse a FileGDB folder upload or a single FileGDB zip.
+ * Requires optional peer `gdal3.js` (OpenFileGDB) + `jszip` for archives.
+ */
+async function parseFileGdbFiles(
+  files: Array<
+    Blob & {
+      name?: string;
+      type?: string;
+      webkitRelativePath?: string;
+      arrayBuffer: () => Promise<ArrayBuffer>;
+    }
+  >,
+  report?: GisProgress,
+): Promise<GisLoadResult> {
+  if (!files.length) throw new Error('No FileGDB files provided');
+
+  const { parseFileGdbFolderFiles, parseFileGdbZipBuffer } =
+    await loadFileGdbParse();
+
+  if (
+    files.length === 1 &&
+    (isFileGdbZipName(files[0].name) ||
+      fileExtension(files[0].name) === 'zip')
+  ) {
+    return parseFileGdbZipBuffer(
+      ensureArrayBuffer(await files[0].arrayBuffer()),
+      report,
+    );
+  }
+
+  return parseFileGdbFolderFiles(files, report);
+}
+
+/**
  * Open a `.zip` that may contain Shapefile parts and/or GeoJSON, KML, GPX, CSV, …
  */
 async function parseZipArchive(
@@ -499,6 +582,15 @@ async function parseZipArchive(
   const entries = Object.values(zip.files).filter(
     (entry) => !entry.dir && !isIgnoredZipEntry(entry.name),
   );
+
+  if (entries.some((entry) => isFileGdbPartName(entry.name))) {
+    try {
+      const { parseFileGdbZipBuffer } = await loadFileGdbParse();
+      return await parseFileGdbZipBuffer(buffer, report);
+    } catch {
+      // Mixed archives / GIS-worker runtime: fall through to shapefile / text.
+    }
+  }
 
   if (entries.some((entry) => fileExtension(entry.name) === 'shp')) {
     try {

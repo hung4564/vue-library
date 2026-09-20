@@ -24,6 +24,7 @@ Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progres
 | Shapefile parts `.shp` / `.dbf` / `.prj` | Drop the sidecar files together |
 | CSV `.csv` | `lat`/`lon` (or aliases) **or** a WKT/`geometry` column |
 | WKT `.wkt` | `POINT`, `LINESTRING`, `POLYGON`, and Multi* |
+| FileGDB `.gdb.zip` / `*_gdb.zip` / `.gdb` folder | Optional peer `gdal3.js` (+ `jszip`). **Main thread only** (UMD via CDN classic `<script>` — never Vite-`import('gdal3.js')`, never inside this GIS worker). |
 
 Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
 
@@ -31,10 +32,12 @@ Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
 
 ```bash
 npm i shpjs papaparse jszip topojson-client @tmcw/togeojson @xmldom/xmldom
+# FileGDB only:
+npm i gdal3.js
 ```
 
 - Sync `parseGisText` handles GeoJSON / GeoJSONL / WKT only.
-- CSV / KML / GPX / TopoJSON / ZIP / Shapefile need `parseGisTextAsync` / `loadGis*Async` (dynamic import of the peers above).
+- CSV / KML / GPX / TopoJSON / ZIP / Shapefile / FileGDB need `parseGisTextAsync` / `loadGis*Async` (dynamic import of the peers above).
 
 ## What runs in the worker
 

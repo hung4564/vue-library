@@ -177,7 +177,7 @@
 
 .create-control-loaded__chip {
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--map-radius-sm, 4px);
   font-size: 11px;
   background: color-mix(in srgb, currentColor 12%, transparent);
 }

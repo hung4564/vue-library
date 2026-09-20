@@ -86,7 +86,12 @@ export function getIdentifySourceFeatureCollectionSync(
 ): FeatureCollection | null {
   const source = findGeojsonSource(identify);
   if (!source) return null;
-  const data = source.getData?.() ?? source.getMapboxSource?.()?.data;
+  const mapbox = source.getMapboxSource?.();
+  const data =
+    source.getData?.() ??
+    (mapbox && 'data' in mapbox
+      ? (mapbox as { data?: unknown }).data
+      : undefined);
   return asFeatureCollection(data);
 }
 

@@ -11,25 +11,27 @@ export const RASTER_XYZ_SAMPLES: CreateControlSample[] = [
   {
     id: 'usgs-imagery',
     label: 'USGS Imagery',
-    layerKind: 'rasterxyz',
+    layerKind: 'xyz',
     config: {
       url: USGS_XYZ,
       tiles: [USGS_XYZ],
       bounds: [...WORLD_BOUNDS],
       minzoom: 0,
       maxzoom: 19,
+      tileKind: 'raster',
     },
   },
   {
     id: 'esri-world-imagery',
     label: 'Esri World Imagery',
-    layerKind: 'rasterxyz',
+    layerKind: 'xyz',
     config: {
       url: ESRI_XYZ,
       tiles: [ESRI_XYZ],
       bounds: [...WORLD_BOUNDS],
       minzoom: 0,
       maxzoom: 19,
+      tileKind: 'raster',
     },
   },
 ];

@@ -60,7 +60,7 @@ export function attributeTableIdentifyRowSelectKey(row: {
     const d = data as Record<string, unknown>;
 
     if (d['type'] === 'Feature' && 'geometry' in d) {
-      return selectKeyFromFeature(d as Feature);
+      return selectKeyFromFeature(d as unknown as Feature);
     }
 
     const props: Record<string, unknown> = { ...d };
@@ -74,7 +74,7 @@ export function attributeTableIdentifyRowSelectKey(row: {
       type: 'Feature',
       properties: props,
       geometry: (d['geometry'] as Geometry | null | undefined) ?? null,
-    });
+    } as Feature);
     if (fromFeature) return fromFeature;
   }
   if (row.id != null && String(row.id) !== '' && typeof row.id !== 'number') {

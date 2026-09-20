@@ -49,6 +49,9 @@ export function buildCreateControlLoadedSource(options: {
   bytes?: number;
   format?: string;
   geojson?: GeoJSON | null;
+  /** Override summary when `geojson` is a lightweight FileGDB placeholder. */
+  featureCount?: number;
+  geometryTypes?: string[];
 }): CreateControlLoadedSource {
   const summary = summarizeCreateControlGeojson(options.geojson ?? null);
   return {
@@ -57,8 +60,8 @@ export function buildCreateControlLoadedSource(options: {
     detail: options.detail,
     bytes: options.bytes,
     format: options.format,
-    featureCount: summary?.featureCount,
-    geometryTypes: summary?.geometryTypes,
+    featureCount: options.featureCount ?? summary?.featureCount,
+    geometryTypes: options.geometryTypes ?? summary?.geometryTypes,
   };
 }
 
@@ -74,4 +77,65 @@ export function shortenCreateControlUrl(url: string, max = 48): string {
   } catch {
     return `${trimmed.slice(0, max - 1)}…`;
   }
+}
+
+export type CreateControlArchiveMetaInput = {
+  tileKind?: string | null;
+  format?: string | null;
+  archiveKind?: string | null;
+  name?: string | null;
+  minzoom?: number | null;
+  maxzoom?: number | null;
+  bounds?: number[] | null;
+  sourceLayers?: string[] | null;
+};
+
+/**
+ * Chips for the CreateControl archive metadata card (MBTiles / PMTiles).
+ * Pass already-translated tile-kind / field labels.
+ */
+export function buildCreateControlArchiveMetaChips(
+  meta: CreateControlArchiveMetaInput | null | undefined,
+  labels: {
+    tileKindVector: string;
+    tileKindRaster: string;
+    format: string;
+    zoom: string;
+    layers: string;
+    bounds: string;
+  },
+): string[] {
+  if (!meta) return [];
+  const chips: string[] = [];
+  if (meta.tileKind === 'raster') {
+    chips.push(labels.tileKindRaster);
+  } else if (meta.tileKind === 'vector') {
+    chips.push(labels.tileKindVector);
+  }
+  if (meta.format?.trim()) {
+    chips.push(`${labels.format}: ${meta.format.trim()}`);
+  }
+  if (meta.archiveKind?.trim()) {
+    chips.push(meta.archiveKind.trim().toUpperCase());
+  }
+  if (meta.minzoom != null || meta.maxzoom != null) {
+    chips.push(
+      `${labels.zoom}: ${meta.minzoom ?? '?'}–${meta.maxzoom ?? '?'}`,
+    );
+  }
+  const layerCount = meta.sourceLayers?.length ?? 0;
+  if (meta.tileKind === 'vector') {
+    chips.push(`${labels.layers}: ${layerCount}`);
+  }
+  if (meta.bounds && meta.bounds.length >= 4) {
+    const [w, s, e, n] = meta.bounds;
+    chips.push(
+      `${labels.bounds}: ${fmtBound(w)}, ${fmtBound(s)} → ${fmtBound(e)}, ${fmtBound(n)}`,
+    );
+  }
+  return chips;
+}
+
+function fmtBound(n: number): string {
+  return Number.isFinite(n) ? n.toFixed(2) : String(n);
 }

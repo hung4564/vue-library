@@ -240,14 +240,20 @@ const filtered = useMemo(
                             selected?.id === worker.id ? ' is-selected' : ''
                           }`}
                         >
-                          <MapControlButton
+                          <button
+                            type="button"
                             className="map-worker-control__pick"
-                            variant="plain"
-                            size="small"
                             onClick={() => setSelectedId(worker.id)}
                           >
-                            <span className="map-worker-control__pick-name">
-                              {worker.name}
+                            <span className="map-worker-control__pick-main">
+                              <span className="map-worker-control__pick-name">
+                                {worker.name}
+                              </span>
+                              {meta ? (
+                                <span className="map-worker-control__pick-meta">
+                                  {meta}
+                                </span>
+                              ) : null}
                             </span>
                             <span
                               className="map-worker-control__status"
@@ -255,12 +261,7 @@ const filtered = useMemo(
                             >
                               {statusLabel(worker.status)}
                             </span>
-                            {meta ? (
-                              <span className="map-worker-control__pick-meta">
-                                {meta}
-                              </span>
-                            ) : null}
-                          </MapControlButton>
+                          </button>
                         </li>
                       );
                     })}

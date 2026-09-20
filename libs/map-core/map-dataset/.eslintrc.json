@@ -36,7 +36,10 @@
               "tokml",
               "@mapbox/shp-write",
               "vite",
-              "vitest"
+              "vitest",
+              "pmtiles",
+              "sql.js",
+              "gdal3.js"
             ],
             "ignoredFiles": [
               "{projectRoot}/eslint.config.{js,cjs,mjs}",

@@ -4,6 +4,7 @@ import {
   LAYER_TYPES,
   LayerHelper,
   loadCreateControlDraft,
+  normalizeLayerType,
   reportCreateLayerError,
   saveCreateControlDraft,
   suggestLayerName,
@@ -14,9 +15,15 @@ import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapContr
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { computed, onMounted, ref, watch, type Component, type Ref } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
+import ConfigArchiveSettings from './config/archive-settings.vue';
+import ConfigFilegdbSettings from './config/filegdb-settings.vue';
+import ConfigFilegdbUpload from './config/filegdb-upload.vue';
+import ConfigMbtilesJson from './config/mbtiles-json.vue';
 import ConfigNo from './config/no-config.vue';
+import ConfigPmtilesJson from './config/pmtiles-json.vue';
 import ConfigRasterJson from './config/xyz-json.vue';
 import ConfigRasterSettings from './config/xyz-settings.vue';
+import ConfigTilejsonJson from './config/tilejson-json.vue';
 import GeojsonSettings from './config/geojson-settings.vue';
 import GeojsonUpload from './config/geojson-upload.vue';
 
@@ -68,7 +75,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
 });
 
 const initialState = {
-  type: 'vector' as LayerType,
+  type: 'geojson' as LayerType,
 };
 
 const keyRender = ref(1);
@@ -76,10 +83,18 @@ const helper = new LayerHelper(initialState.type);
 
 function dataSourceComponent(type: LayerType): Component {
   switch (type) {
-    case 'vector':
+    case 'geojson':
       return GeojsonUpload;
-    case 'rasterxyz':
+    case 'filegdb':
+      return ConfigFilegdbUpload;
+    case 'xyz':
       return ConfigRasterJson;
+    case 'tilejson':
+      return ConfigTilejsonJson;
+    case 'mbtiles':
+      return ConfigMbtilesJson;
+    case 'pmtiles':
+      return ConfigPmtilesJson;
     default:
       return ConfigNo;
   }
@@ -87,10 +102,16 @@ function dataSourceComponent(type: LayerType): Component {
 
 function settingsComponent(type: LayerType): Component | undefined {
   switch (type) {
-    case 'vector':
+    case 'geojson':
       return GeojsonSettings;
-    case 'rasterxyz':
+    case 'filegdb':
+      return ConfigFilegdbSettings;
+    case 'xyz':
       return ConfigRasterSettings;
+    case 'tilejson':
+    case 'mbtiles':
+    case 'pmtiles':
+      return ConfigArchiveSettings;
     default:
       return undefined;
   }
@@ -107,8 +128,8 @@ const form = ref({
 onMounted(() => {
   const draft = loadCreateControlDraft(mapId.value);
   if (!draft) return;
-  if (draft.type === 'vector' || draft.type === 'raster') {
-    onChangeType(draft.type);
+  if (draft.type) {
+    onChangeType(normalizeLayerType(draft.type));
   }
   if (draft.name) form.value.config.name = draft.name;
   if (draft.crs) form.value.config.crs = draft.crs;
@@ -142,10 +163,7 @@ const validationErrors = ref<string[]>([]);
 function onChangeType(type: unknown) {
   if (typeof type !== 'string') return;
 
-  const layerType = type as LayerType;
-  const prevSuggested = suggestLayerName(form.value.type);
-  const keepName =
-    form.value.config.name && form.value.config.name !== prevSuggested;
+  const layerType = normalizeLayerType(type);
 
   helper.setType(layerType);
   validationErrors.value = [];
@@ -154,7 +172,7 @@ function onChangeType(type: unknown) {
   form.value = {
     type: layerType,
     config: {
-      name: keepName ? form.value.config.name : suggestLayerName(layerType),
+      name: suggestLayerName(layerType),
       ...helper.default_value,
     } as Record<string, any>,
   };

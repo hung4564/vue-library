@@ -12,14 +12,35 @@ export {
 export type { CreateControlDraft } from './draft';
 export { applyCreateControlSample } from './apply-sample';
 export {
+  ConfigFilegdbHelper,
   ConfigGeojsonHelper,
   ConfigHelper,
+  ConfigMbtilesHelper,
+  ConfigPmtilesHelper,
   ConfigRasterJsonHelper,
+  ConfigTilejsonHelper,
+  ConfigVectorTileHelper,
+  ConfigXyzHelper,
   LAYER_TYPES,
   LayerHelper,
+  buildSourceLayerOptionMetaChips,
   createLayerFormHelper,
+  looksVectorXyzUrl,
+  normalizeLayerType,
 } from './form-create';
-export type { LayerFormHelper, LayerType, RasterCreateForm } from './form-create';
+export type {
+  ArchiveCreateForm,
+  FilegdbCreateForm,
+  LayerFormHelper,
+  LayerType,
+  LayerTypeInput,
+  LegacyLayerType,
+  RasterCreateForm,
+  SourceLayerOption,
+  TileJsonCreateForm,
+  VectorTileCreateForm,
+  XyzCreateForm,
+} from './form-create';
 export { isCreateControlCrsMismatch } from './crs';
 export { reportCreateLayerError } from './create-error';
 export type { CreateLayerErrorContext } from './create-error';
@@ -29,17 +50,24 @@ export {
 } from './data-tabs';
 export type { CreateControlDataTab } from './data-tabs';
 export {
+  FILEGDB_FILE_ACCEPT,
   GIS_FILE_ACCEPT,
   ZIP_MEMBER_FORMATS,
   detectGisFormat,
   fileExtension,
   isBinaryGisFormat,
+  isFileGdbPartName,
+  isFileGdbZipName,
   isIgnoredZipEntry,
   isShapefileSidecar,
   isZipMemberFormat,
+  looksLikeFileGdbFiles,
   sniffGisText,
 } from './gis-format';
 export type { GisFormat, GisSourceHint } from './gis-format';
+export { featuresWithGeometry } from './filegdb-meta';
+export { configureFileGdbGdal } from './filegdb-parse';
+export type { FileGdbGdalConfig } from './filegdb-parse';
 export {
   asGisFeatureCollection,
   parseGisBuffer,
@@ -58,10 +86,12 @@ export {
 } from './limits';
 export {
   buildCreateControlLoadedSource,
+  buildCreateControlArchiveMetaChips,
   shortenCreateControlUrl,
   summarizeCreateControlGeojson,
 } from './loaded-source';
 export type {
+  CreateControlArchiveMetaInput,
   CreateControlDataSourceKind,
   CreateControlGeoSummary,
   CreateControlLoadedSource,
@@ -71,6 +101,7 @@ export {
   applyCreateControlLayerName,
   getCreateControlSampleUrl,
   getCreateControlSamples,
+  layerNameFromFileGdbFiles,
   layerNameFromFileName,
   layerNameFromUrl,
   suggestLayerName,
@@ -89,13 +120,18 @@ export {
   findCreateControlSampleMatchingUrl,
   formatCreateControlParseStatus,
   loadCreateControlVectorFromUrl,
+  loadCreateControlVectorTileFromFile,
+  loadCreateControlVectorTileFromUrl,
+  loadCreateControlTileJsonFromUrl,
   looksCompleteGis,
   parseCreateControlPastedText,
   parseCreateControlUploadedFiles,
+  summarizeFileGdbLayerMeta,
   resolveCreateControlSampleIdAfterUrlEdit,
   resolveCreateControlSampleSelection,
   subscribeCreateControlParseProgress,
   summarizeCreateControlUploadFiles,
+  tileJsonToCreateControlPatch,
 } from './upload-helpers';
 export type {
   CreateControlFileParseResult,
@@ -104,6 +140,7 @@ export type {
   CreateControlVectorUrlLoadResult,
 } from './upload-helpers';
 export {
+  collectFileGdbFilesFromDataTransfer,
   collectFilesFromDataTransfer,
   isGisUploadFileName,
   readClipboardGisPaste,

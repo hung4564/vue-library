@@ -94,6 +94,9 @@ When using CreateControl file upload / `loadGis*` / worker parse, install option
 | `@tmcw/togeojson` + `@xmldom/xmldom` | KML / GPX |
 | `jszip` | KMZ / zipped shapefile |
 | `topojson-client` | TopoJSON |
+| `gdal3.js` | FileGDB (`.gdb.zip` / `*_gdb.zip` / `.gdb` folder) — load UMD from CDN / static path on the **main thread**; do not Vite-`import` the package or load it inside the GIS worker |
+| `sql.js` | MBTiles (CreateControl + `mbtiles-local://`) — prefer npm peer; if Vite CJS interop fails, falls back to CDN `sql-wasm.js` (works in the vector-tile worker too) |
+| `pmtiles` | PMTiles (CreateControl + `pmtiles-local://` via `getZxy`) |
 
 Wire the worker with `@hungpvq/map-dataset/vite` → `mapDatasetGisWorker()` when parsing off the main thread. Soft client size limit: `CREATE_CONTROL_MAX_FILE_BYTES` / `assertCreateControlFileSize` on `@hungpvq/map-dataset/create-control`. CreateControl remembers last name/type/CRS in `sessionStorage` (`load/saveCreateControlDraft`).
 

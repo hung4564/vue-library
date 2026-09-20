@@ -12,21 +12,33 @@ const props = defineProps<{
 
 const root = ref<HTMLElement | null>(null);
 let savedScrollTop = 0;
+let savedScrollHeight = 0;
+let stickToLatest = true;
 
 const memoKey = computed(() => {
   const logs = props.logs;
   if (!logs.length) return '0';
+  // Newest is index 0 — include it so live appends invalidate v-memo.
   return `${logs.length}:${logs[0].id}:${logs[logs.length - 1].id}`;
 });
 
-// Parent re-renders often (progress / elapsed). Keep the user's scroll position.
+// Newest-on-top: stay pinned to top while following; otherwise keep the same lines in view.
 onBeforeUpdate(() => {
-  savedScrollTop = root.value?.scrollTop ?? 0;
+  const el = root.value;
+  savedScrollTop = el?.scrollTop ?? 0;
+  savedScrollHeight = el?.scrollHeight ?? 0;
+  stickToLatest = savedScrollTop <= 8;
 });
 
 onUpdated(() => {
   const el = root.value;
-  if (el) el.scrollTop = savedScrollTop;
+  if (!el) return;
+  if (stickToLatest) {
+    el.scrollTop = 0;
+    return;
+  }
+  const delta = el.scrollHeight - savedScrollHeight;
+  el.scrollTop = savedScrollTop + Math.max(0, delta);
 });
 </script>
 

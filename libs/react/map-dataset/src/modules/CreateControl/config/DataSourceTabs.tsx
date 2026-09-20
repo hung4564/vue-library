@@ -29,7 +29,7 @@ export function DataSourceTabs({
 
   useEffect(() => {
     if (!tabs.includes(activeTab)) {
-      setActiveTab(CREATE_CONTROL_DEFAULT_DATA_TAB);
+      setActiveTab(tabs[0] ?? CREATE_CONTROL_DEFAULT_DATA_TAB);
     }
     // Only react when tabs list changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps

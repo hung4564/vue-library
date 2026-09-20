@@ -2,8 +2,12 @@
  * Public entry for `@hungpvq/map-dataset/geojson`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
-export { createGeoJsonDataset } from './builder';
-export type { GeojsonDatasetOption } from './builder';
+export { createGeoJsonDataset, createGeoJsonLayersDataset, splitGeojsonByGdbLayer } from './builder';
+export type {
+  GeojsonDatasetOption,
+  GeojsonLayerPart,
+  GeojsonLayersDatasetOption,
+} from './builder';
 export { createGeojsonHereDataset } from './here';
 export { createDatasetPartGeojsonSourceComponent } from './source';
 export { findGeojsonSource } from './find-source';

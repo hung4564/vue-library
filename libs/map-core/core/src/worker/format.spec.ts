@@ -71,6 +71,16 @@ describe('worker format', () => {
           { message: 'old', at: 1 },
         ] as any,
       ).map((l) => l.message),
-    ).toEqual(['old', 'new']);
+    ).toEqual(['new', 'old']);
+    expect(
+      workerLogsForDisplay(
+        [
+          { message: 'n0', at: 3 },
+          { message: 'n1', at: 2 },
+          { message: 'n2', at: 1 },
+        ] as any,
+        2,
+      ).map((l) => l.message),
+    ).toEqual(['n0', 'n1']);
   });
 });

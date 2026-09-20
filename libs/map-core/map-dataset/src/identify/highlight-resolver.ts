@@ -38,15 +38,11 @@ export type HighlightContext = {
 };
 
 function sourceAsIntent(source: HighlightSource): HighlightSessionIntent {
-  if (
-    source === 'detail' ||
-    source === 'identify' ||
-    source === 'attribute-table' ||
-    source === 'hover' ||
-    source === 'pointer'
-  ) {
-    return source;
-  }
+  if (source === 'detail') return 'detail';
+  if (source === 'identify') return 'identify';
+  if (source === 'attribute-table') return 'attribute-table';
+  if (source === 'hover') return 'hover';
+  if (source === 'pointer') return 'pointer';
   return 'identify';
 }
 
@@ -119,18 +115,13 @@ function createDefaultHighlightResolverActions() {
     // Multi / empty Identify (or anything unmatched): clear those sources — no multi paint
     {
       always: true as const,
-      when: (ctx: HighlightContext) =>
-        !isAttributeTableSource(ctx) &&
-        !(
-          (ctx.hitAction === 'detail' &&
-            (ctx.count ?? 0) === 1 &&
-            !!ctx.features?.[0]) ||
-          ctx.hitAction === 'table' ||
-          (ctx.hitAction !== 'detail' &&
-            ctx.hitAction !== 'table' &&
-            (ctx.count ?? 0) === 1 &&
-            !!ctx.features?.[0])
-        ),
+      when: (ctx: HighlightContext) => {
+        if (isAttributeTableSource(ctx)) return false;
+        // Table / single-feature paths own highlight — do not clear here.
+        if (ctx.hitAction === 'table') return false;
+        if ((ctx.count ?? 0) === 1 && !!ctx.features?.[0]) return false;
+        return true;
+      },
       execute: (ctx: HighlightContext) => {
         if (ctx.signal?.aborted) return;
         const sources = ctx.sources?.length ? ctx.sources : ['identify'];

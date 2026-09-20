@@ -1,13 +1,14 @@
 import { InputText } from '@hungpvq/react-map-core/fields';
 import type { CreateConfigFormProps } from './types';
 
-/** Raster XYZ layer settings — mirrors Vue `xyz-settings.vue`. */
+/** XYZ layer settings — mirrors Vue `xyz-settings.vue`. */
 export function ConfigRasterSettings({
   config,
   onChange,
   trans,
 }: CreateConfigFormProps) {
-  const bounds = (config.bounds as number[]) || [-180, -85.051129, 180, 85.051129];
+  const bounds =
+    (config.bounds as number[]) || [-180, -85.051129, 180, 85.051129];
   return (
     <div className="map-row create-control-settings">
       <div className="map-col-6">
@@ -24,6 +25,15 @@ export function ConfigRasterSettings({
           onChange={(v) => onChange({ maxzoom: Number(v) })}
         />
       </div>
+      {config.tileKind === 'vector' ? (
+        <div className="map-col-12">
+          <InputText
+            label={trans('map.layer-control.field.source-layer')}
+            value={String(config.sourceLayer ?? '')}
+            onChange={(v) => onChange({ sourceLayer: v })}
+          />
+        </div>
+      ) : null}
       {['minx', 'miny', 'maxx', 'maxy'].map((key, i) => (
         <div key={key} className="map-col-6">
           <InputText

@@ -39,6 +39,8 @@ export function DragDropFile({
     }
     inputRef.current.accept = accept ?? '*';
     inputRef.current.multiple = multiple;
+    inputRef.current.removeAttribute('webkitdirectory');
+    inputRef.current.removeAttribute('directory');
     inputRef.current.click();
   }, [accept, emitFiles, multiple]);
 

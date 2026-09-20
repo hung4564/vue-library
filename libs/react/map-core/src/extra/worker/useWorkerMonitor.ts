@@ -1,19 +1,49 @@
 import {
   WorkerMonitor,
+  createWorkerUiDelayState,
   type WorkerSnapshot,
 } from '@hungpvq/map-core';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export function useWorkerMonitor() {
-  const [workers, setWorkers] = useState<WorkerSnapshot[]>(() =>
+  const [rawWorkers, setRawWorkers] = useState<WorkerSnapshot[]>(() =>
     WorkerMonitor.list(),
   );
   const [now, setNow] = useState(() => Date.now());
+  const delayRef = useRef(createWorkerUiDelayState());
+  const delayTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>();
+
+  const clearDelayTimer = useCallback(() => {
+    if (delayTimerRef.current != null) {
+      clearTimeout(delayTimerRef.current);
+      delayTimerRef.current = undefined;
+    }
+  }, []);
+
+  const scheduleDelayTick = useCallback(
+    (workers: WorkerSnapshot[], at: number) => {
+      clearDelayTimer();
+      const { nextAt } = delayRef.current.project(workers, at);
+      if (nextAt == null) return;
+      const wait = Math.max(0, nextAt - Date.now());
+      delayTimerRef.current = setTimeout(() => {
+        const list = WorkerMonitor.list();
+        const nextNow = Date.now();
+        setRawWorkers(list);
+        setNow(nextNow);
+        scheduleDelayTick(list, nextNow);
+      }, wait);
+    },
+    [clearDelayTimer],
+  );
 
   const refresh = useCallback(() => {
-    setWorkers(WorkerMonitor.list());
-    setNow(Date.now());
-  }, []);
+    const list = WorkerMonitor.list();
+    const nextNow = Date.now();
+    setRawWorkers(list);
+    setNow(nextNow);
+    scheduleDelayTick(list, nextNow);
+  }, [scheduleDelayTick]);
 
   useEffect(() => {
     refresh();
@@ -22,21 +52,19 @@ export function useWorkerMonitor() {
     return () => {
       stop();
       clearInterval(timer);
+      clearDelayTimer();
     };
-  }, [refresh]);
+  }, [refresh, clearDelayTimer]);
 
-  const busy = useMemo(
-    () =>
-      workers.some(
-        (worker) => worker.status === 'busy' || worker.pending.length > 0,
-      ),
-    [workers],
+  const projected = useMemo(
+    () => delayRef.current.project(rawWorkers, now),
+    [rawWorkers, now],
   );
 
   return {
-    workers,
+    workers: projected.workers,
     now,
-    busy,
+    busy: projected.busy,
     refresh,
     clearHistory: WorkerMonitor.clearHistory,
   };

@@ -43,6 +43,8 @@ function open() {
   }
   inputRef.value.accept = props.accept ?? '*';
   inputRef.value.multiple = props.multiple;
+  inputRef.value.removeAttribute('webkitdirectory');
+  inputRef.value.removeAttribute('directory');
   inputRef.value.click();
 }
 

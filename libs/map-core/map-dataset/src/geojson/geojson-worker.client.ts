@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import {
   bboxFromGeojson,
   connectWorkerMonitor,
@@ -10,13 +9,19 @@ import {
 } from '@hungpvq/map-core';
 import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
 import { getOrCreateStore } from '@hungpvq/shared-store';
+import type { GeoJSON } from 'geojson';
+import type { GisLoadResult } from '../create-control/gis-parse';
+import {
+  parseGisFiles,
+  parseGisFromUrl,
+  parseGisTextAsync,
+} from '../create-control/gis-parse';
+import { looksLikeFileGdbFiles } from '../create-control/gis-format';
+import type { LayerStyleType } from '../style/layer-simple-builder';
 import {
   detectGeojsonStyleTypes,
   shouldUseGisWorkerForGeojson,
 } from './geojson-parse';
-import type { LayerStyleType } from '../style/layer-simple-builder';
-import { parseGisFiles, parseGisFromUrl, parseGisTextAsync } from '../create-control/gis-parse';
-import type { GisLoadResult } from '../create-control/gis-parse';
 import type {
   GeojsonWorkerRequest,
   GeojsonWorkerResponse,
@@ -33,7 +38,6 @@ function gisWorkerSlot(): GisWorkerSlot {
     urlOverride: undefined as string | URL | undefined,
   }));
 }
-
 
 export type ConfigureGisWorkerOptions = {
   /**
@@ -94,17 +98,13 @@ function errorFromWorkerMessage(raw?: string): Error {
     /reproject|clone GeoJSON|circular|too deeply nested|CRS|EPSG/i.test(text);
 
   if (stackOverflow) {
-    return new MapError(
-      `GIS worker failed: ${DATA_SIZE_HINT}`,
-      'CRS_ERROR',
-      {
-        recoverable: false,
-        context: {
-          stage: 'worker',
-          reason: 'too_deep_or_circular_or_large',
-        },
+    return new MapError(`GIS worker failed: ${DATA_SIZE_HINT}`, 'CRS_ERROR', {
+      recoverable: false,
+      context: {
+        stage: 'worker',
+        reason: 'too_deep_or_circular_or_large',
       },
-    );
+    });
   }
 
   if (looksCrs) {
@@ -154,6 +154,7 @@ function fromWorkerResponse(response: GeojsonWorkerResponse): GisLoadResult {
     geojson: response.geojson ?? null,
     crs: response.crs ?? null,
     format: response.format as GisLoadResult['format'],
+    layers: response.layers,
   };
 }
 
@@ -193,6 +194,19 @@ export async function loadGisFileAsync(
   if (!files.length) return { geojson: null, crs: null };
 
   const taskType = files.length > 1 ? 'read-gis-files' : 'read-gis';
+
+  // FileGDB/gdal3.js must stay on the main thread (Vite worker + CModule().then).
+  if (
+    looksLikeFileGdbFiles(
+      files as Array<{ name?: string; webkitRelativePath?: string }>,
+    )
+  ) {
+    return gisWorker.runTask(taskType, {
+      engine: 'main',
+      run: async () => parseGisFiles(files),
+    });
+  }
+
   return gisWorker.runTask(
     taskType,
     {
@@ -244,7 +258,9 @@ export async function loadGisUrlAsync(url: string): Promise<GisLoadResult> {
   );
 }
 
-export async function loadGeojsonTextAsync(text: string): Promise<GisLoadResult> {
+export async function loadGeojsonTextAsync(
+  text: string,
+): Promise<GisLoadResult> {
   return loadGisTextAsync(text);
 }
 
@@ -255,7 +271,9 @@ export async function loadGeojsonFileAsync(
 }
 
 /** Parse in worker when available; returns GeoJSON only. */
-export async function parseGeojsonTextAsync(text: string): Promise<GeoJSON | null> {
+export async function parseGeojsonTextAsync(
+  text: string,
+): Promise<GeoJSON | null> {
   return (await loadGisTextAsync(text)).geojson;
 }
 

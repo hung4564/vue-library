@@ -1,5 +1,5 @@
-/** Soft client-side limit before parsing GIS files in CreateControl (50 MiB). */
-export const CREATE_CONTROL_MAX_FILE_BYTES = 50 * 1024 * 1024;
+/** Soft client-side limit before parsing GIS files in CreateControl (150 MiB). */
+export const CREATE_CONTROL_MAX_FILE_BYTES = 150 * 1024 * 1024;
 
 export function assertCreateControlFileSize(
   files: Array<Blob | File>,

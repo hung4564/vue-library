@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { FeatureCollection } from 'geojson';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { findAllComponentsByType } from '../model/visitors/helpers';
-import { createGeoJsonDataset } from './builder';
+import { createGeoJsonDataset, createGeoJsonLayersDataset, splitGeojsonByGdbLayer } from './builder';
 
 const pointCollection: FeatureCollection = {
   type: 'FeatureCollection',
@@ -138,5 +138,156 @@ describe('createGeoJsonDataset', () => {
       getData?: () => unknown;
     };
     expect(bound.getData?.()).toEqual(bbox);
+  });
+});
+
+describe('createGeoJsonLayersDataset', () => {
+  it('groups 2+ layers like MBTiles with parent fillbound', () => {
+    const roads: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { __gdb_layer: 'roads' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [106, 10],
+              [107, 11],
+            ],
+          },
+        },
+      ],
+    };
+    const buildings: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { __gdb_layer: 'buildings' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [106, 10],
+                [106.1, 10],
+                [106.1, 10.1],
+                [106, 10.1],
+                [106, 10],
+              ],
+            ],
+          },
+        },
+      ],
+    };
+
+    const dataset = createGeoJsonLayersDataset({
+      name: 'DemoGDB',
+      type: 'auto',
+      layers: [
+        { name: 'roads', geojson: roads },
+        { name: 'buildings', geojson: buildings },
+      ],
+    });
+
+    expect(findAllComponentsByType(dataset, 'source').length).toBe(2);
+    // Root parent bound + one bound per feature class.
+    expect(findAllComponentsByType(dataset, 'bound').length).toBe(3);
+
+    const parentGroup = dataset
+      .getChildren()
+      .find(
+        (c) =>
+          c.getName() === 'DemoGDB' &&
+          typeof (c as { getChildren?: () => unknown }).getChildren ===
+            'function',
+      ) as {
+      getChildren: () => Array<{
+        getName: () => string;
+        getMenus?: () => { id?: string }[];
+        getChildren?: () => Array<{
+          getName: () => string;
+          color?: string;
+          getMenus?: () => { id?: string }[];
+          getChildren?: () => Array<{
+            type?: string;
+            getData?: () => unknown[];
+            color?: string;
+            getMenus?: () => { id?: string }[];
+          }>;
+        }>;
+      }>;
+    };
+    const parentList = parentGroup
+      .getChildren()
+      .find((c) => c.getName() === 'DemoGDB');
+    expect(parentList).toBeTruthy();
+    const menuIds = (parentList!.getMenus?.() ?? []).map((m) => m.id);
+    expect(menuIds).toContain(LIST_VIEW_MENU_ID.layer.fillBound);
+    const subGroups = parentList!.getChildren!() ?? [];
+    expect(subGroups.map((c) => c.getName()).sort()).toEqual([
+      'buildings',
+      'roads',
+    ]);
+    // Each sub-group: source before layer; child fillbound; auto paint count.
+    const listColors: string[] = [];
+    for (const sub of subGroups) {
+      const kids = sub.getChildren?.() ?? [];
+      const types = kids.map((k) => k.type);
+      expect(types.indexOf('source')).toBeLessThan(types.indexOf('layer'));
+      const subList = kids.find((k) => k.type === 'list-item') as
+        | {
+            color?: string;
+            getMenus?: () => { id?: string }[];
+          }
+        | undefined;
+      const subMenuIds = (subList?.getMenus?.() ?? []).map((m) => m.id);
+      expect(subMenuIds).toContain(LIST_VIEW_MENU_ID.layer.fillBound);
+      if (subList?.color) listColors.push(String(subList.color));
+      const layerNode = kids.find((k) => k.type === 'layer') as
+        | { getData?: () => unknown[] }
+        | undefined;
+      // auto: area fill + outline + line + point = 4 MapLibre layers
+      expect(layerNode?.getData?.()?.length ?? 0).toBe(4);
+    }
+    expect(listColors.length).toBe(2);
+    expect(new Set(listColors).size).toBe(2);
+  });
+
+  it('falls back to flat createGeoJsonDataset for a single layer', () => {
+    const dataset = createGeoJsonLayersDataset({
+      name: 'One',
+      layers: [{ name: 'only', geojson: pointCollection }],
+    });
+    expect(findAllComponentsByType(dataset, 'source').length).toBe(1);
+    expect(findAllComponentsByType(dataset, 'bound').length).toBe(1);
+  });
+});
+
+describe('splitGeojsonByGdbLayer', () => {
+  it('splits merged FileGDB features by __gdb_layer', () => {
+    const merged: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { __gdb_layer: 'a' },
+          geometry: { type: 'Point', coordinates: [0, 0] },
+        },
+        {
+          type: 'Feature',
+          properties: { __gdb_layer: 'b' },
+          geometry: { type: 'Point', coordinates: [1, 1] },
+        },
+        {
+          type: 'Feature',
+          properties: { __gdb_layer: 'a' },
+          geometry: { type: 'Point', coordinates: [2, 2] },
+        },
+      ],
+    };
+    const parts = splitGeojsonByGdbLayer(merged);
+    expect(parts.map((p) => p.name).sort()).toEqual(['a', 'b']);
+    expect(parts.find((p) => p.name === 'a')?.geojson.features).toHaveLength(2);
   });
 });

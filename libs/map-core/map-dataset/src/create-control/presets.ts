@@ -1,14 +1,26 @@
 import type { CreateControlLayerKind, CreateControlSample } from '../vector-tile/samples';
-import { VECTOR_SAMPLES } from '../vector-tile/samples';
+import {
+  TILEJSON_SAMPLES,
+  VECTOR_SAMPLES,
+  VECTOR_TILE_SAMPLES,
+} from '../vector-tile/samples';
 import { RASTER_XYZ_SAMPLES } from '../raster/samples';
 
 export type { CreateControlLayerKind, CreateControlSample };
-export { VECTOR_SAMPLES } from '../vector-tile/samples';
+export {
+  TILEJSON_SAMPLES,
+  VECTOR_SAMPLES,
+  VECTOR_TILE_SAMPLES,
+} from '../vector-tile/samples';
 export { RASTER_XYZ_SAMPLES } from '../raster/samples';
 
 export const SUGGESTED_LAYER_NAMES: Record<CreateControlLayerKind, string> = {
-  vector: 'Vector layer',
-  rasterxyz: 'Raster XYZ layer',
+  geojson: 'GeoJSON layer',
+  filegdb: 'FileGDB layer',
+  xyz: 'XYZ layer',
+  mbtiles: 'MBTiles layer',
+  pmtiles: 'PMTiles layer',
+  tilejson: 'TileJSON layer',
 };
 
 export function suggestLayerName(layerKind: CreateControlLayerKind): string {
@@ -21,6 +33,28 @@ export function layerNameFromFileName(fileName: string): string {
   if (!base) return '';
   const withoutExt = base.replace(/\.[^.]+$/, '');
   return (withoutExt || base).trim();
+}
+
+/**
+ * Prefer `Something.gdb` folder / `Something.gdb.zip` / `Something_gdb.zip` basename.
+ */
+export function layerNameFromFileGdbFiles(
+  files: Array<{ name?: string; webkitRelativePath?: string }>,
+): string {
+  for (const file of files) {
+    const path = (file.webkitRelativePath || file.name || '')
+      .replace(/\\/g, '/')
+      .trim();
+    if (!path) continue;
+    const underscored = path.match(/(?:^|\/)([^/]+)_gdb\.zip$/i);
+    if (underscored?.[1]) return underscored[1].trim();
+    const match = path.match(/(?:^|\/)([^/]+)\.gdb(?:\/|\.zip$|$)/i);
+    if (match?.[1]) return match[1].trim();
+  }
+  if (files.length === 1) {
+    return layerNameFromFileName(files[0]?.name || '');
+  }
+  return '';
 }
 
 /** Last meaningful URL path segment without extension (skips `{z}/{x}/{y}`). */
@@ -57,7 +91,7 @@ export function layerNameFromUrl(url: string): string {
 export function applyCreateControlLayerName(
   currentName: string | null | undefined,
   nextName: string,
-  layerKind: CreateControlLayerKind = 'vector',
+  layerKind: CreateControlLayerKind = 'geojson',
 ): string {
   const next = nextName.trim();
   const current = (currentName ?? '').trim();
@@ -71,10 +105,16 @@ export function getCreateControlSamples(
   layerKind: CreateControlLayerKind,
 ): CreateControlSample[] {
   switch (layerKind) {
-    case 'vector':
+    case 'geojson':
       return VECTOR_SAMPLES;
-    case 'rasterxyz':
-      return RASTER_XYZ_SAMPLES;
+    case 'xyz':
+      return [...RASTER_XYZ_SAMPLES, ...VECTOR_TILE_SAMPLES];
+    case 'tilejson':
+      return TILEJSON_SAMPLES;
+    case 'filegdb':
+    case 'mbtiles':
+    case 'pmtiles':
+      return [];
     default:
       return [];
   }

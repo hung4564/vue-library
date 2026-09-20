@@ -27,6 +27,13 @@ export default defineConfig(() => ({
   worker: {
     plugins: () => [nxViteTsPaths()],
     format: 'es' as const,
+    rollupOptions: {
+      external: ['gdal3.js'],
+    },
+  },
+  // gdal3.js / sql.js Emscripten factories break when Vite prebundles them.
+  optimizeDeps: {
+    exclude: ['gdal3.js', 'sql.js'],
   },
   build: {
     outDir: '../../../deploy/demo-map/react',

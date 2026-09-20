@@ -24,13 +24,13 @@ describe('create-control layer name helpers', () => {
 
   it('applyCreateControlLayerName fills empty or default names only', () => {
     expect(
-      applyCreateControlLayerName('', 'roads', 'vector'),
+      applyCreateControlLayerName('', 'roads', 'geojson'),
     ).toBe('roads');
     expect(
-      applyCreateControlLayerName(suggestLayerName('vector'), 'roads', 'vector'),
+      applyCreateControlLayerName(suggestLayerName('geojson'), 'roads', 'geojson'),
     ).toBe('roads');
     expect(
-      applyCreateControlLayerName('My layer', 'roads', 'vector'),
+      applyCreateControlLayerName('My layer', 'roads', 'geojson'),
     ).toBe('My layer');
   });
 });

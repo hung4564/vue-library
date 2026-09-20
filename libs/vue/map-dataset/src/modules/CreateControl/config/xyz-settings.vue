@@ -12,6 +12,12 @@
         :label="trans('map.layer-control.field.maxzoom')"
       />
     </div>
+    <div v-if="form.tileKind === 'vector'" class="map-col-12">
+      <input-text
+        v-model="form.sourceLayer"
+        :label="trans('map.layer-control.field.source-layer')"
+      />
+    </div>
     <template v-if="form.bounds">
       <div class="map-col-6">
         <input-text

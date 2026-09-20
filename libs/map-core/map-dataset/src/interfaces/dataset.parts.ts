@@ -185,7 +185,7 @@ export function isIdentifyResolveFeatureQuery(
   const q = value as Record<string, unknown>;
   return (
     ('feature' in q && 'id' in q) ||
-    (Array.isArray(q.features) && Array.isArray(q.ids))
+    (Array.isArray(q['features']) && Array.isArray(q['ids']))
   );
 }
 

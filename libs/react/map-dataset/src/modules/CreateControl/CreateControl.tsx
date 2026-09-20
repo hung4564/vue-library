@@ -5,6 +5,7 @@ import {
   LAYER_TYPES,
   LayerHelper,
   loadCreateControlDraft,
+  normalizeLayerType,
   reportCreateLayerError,
   saveCreateControlDraft,
   suggestLayerName,
@@ -23,10 +24,16 @@ import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { useMapDataset } from '../../store/dataset-api';
 import { GeojsonSettings } from './config/geojson-settings';
 import { GeojsonUpload } from './config/geojson-upload';
+import { ConfigArchiveSettings } from './config/archive-settings';
+import { ConfigFilegdbSettings } from './config/filegdb-settings';
+import { ConfigFilegdbUpload } from './config/filegdb-upload';
+import { ConfigMbtilesJson } from './config/mbtiles-json';
 import { ConfigNo } from './config/no-config';
 import type { CreateConfigFormProps } from './config/types';
+import { ConfigPmtilesJson } from './config/pmtiles-json';
 import { ConfigRasterJson } from './config/xyz-json';
 import { ConfigRasterSettings } from './config/xyz-settings';
+import { ConfigTilejsonJson } from './config/tilejson-json';
 
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;
@@ -37,10 +44,18 @@ function dataSourceComponent(
   type: LayerType,
 ): ComponentType<CreateConfigFormProps> {
   switch (type) {
-    case 'vector':
+    case 'geojson':
       return GeojsonUpload;
-    case 'rasterxyz':
+    case 'filegdb':
+      return ConfigFilegdbUpload;
+    case 'xyz':
       return ConfigRasterJson;
+    case 'tilejson':
+      return ConfigTilejsonJson;
+    case 'mbtiles':
+      return ConfigMbtilesJson;
+    case 'pmtiles':
+      return ConfigPmtilesJson;
     default:
       return ConfigNo;
   }
@@ -50,10 +65,16 @@ function settingsComponent(
   type: LayerType,
 ): ComponentType<CreateConfigFormProps> | undefined {
   switch (type) {
-    case 'vector':
+    case 'geojson':
       return GeojsonSettings;
-    case 'rasterxyz':
+    case 'filegdb':
+      return ConfigFilegdbSettings;
+    case 'xyz':
       return ConfigRasterSettings;
+    case 'tilejson':
+    case 'mbtiles':
+    case 'pmtiles':
+      return ConfigArchiveSettings;
     default:
       return undefined;
   }
@@ -90,7 +111,7 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   const { addDataset } = useMapDataset(mapId);
-  const initialType: LayerType = 'vector';
+  const initialType: LayerType = 'geojson';
   const [helper, setHelper] = useState(() => new LayerHelper(initialType));
   const [configKey, setConfigKey] = useState(0);
   const [form, setForm] = useState<{
@@ -115,21 +136,19 @@ export function CreateControl(props: CreateControlProps) {
   );
 
   function onChangeType(type: string) {
-    const layerType = type as LayerType;
+    const layerType = normalizeLayerType(type);
     const nextHelper = new LayerHelper(layerType);
-    const prevSuggested = suggestLayerName(form.type);
-    const keepName = form.config.name && form.config.name !== prevSuggested;
 
     setHelper(nextHelper);
     setValidationErrors([]);
     setCreateError('');
-    setForm((prev) => ({
+    setForm({
       type: layerType,
       config: {
-        name: keepName ? prev.config.name : suggestLayerName(layerType),
+        name: suggestLayerName(layerType),
         ...nextHelper.default_value,
       },
-    }));
+    });
     setConfigKey((k) => k + 1);
   }
 
@@ -181,8 +200,8 @@ export function CreateControl(props: CreateControlProps) {
   useEffect(() => {
     const draft = loadCreateControlDraft(mapId);
     if (draft) {
-      if (draft.type === 'vector' || draft.type === 'raster') {
-        onChangeType(draft.type);
+      if (draft.type) {
+        onChangeType(normalizeLayerType(draft.type));
       }
       setForm((prev) => ({
         ...prev,

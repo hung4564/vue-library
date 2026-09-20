@@ -233,6 +233,9 @@ export {
   formatWorkerLogTime,
 } from './worker/format';
 
+export { createWorkerUiDelayState } from './worker/ui-delay';
+export type { WorkerUiDelayProjectResult } from './worker/ui-delay';
+
 export { applyWorkerMonitorMessage } from './worker/message';
 
 export {
@@ -307,7 +310,7 @@ export {
   queryModuleHostElement,
 } from './ui/module-container';
 
-export { getChartRandomColor } from './utils/color';
+export { getChartColorAt, getChartRandomColor } from './utils/color';
 
 export { resolveControlLayout } from './utils/control-layout';
 

@@ -6,12 +6,17 @@ export type GisFormat =
   | 'kmz'
   | 'gpx'
   | 'shapefile'
+  | 'filegdb'
   | 'csv'
   | 'wkt'
   | 'zip';
 
 export const GIS_FILE_ACCEPT =
-  '.geojson,.json,.geojsonl,.ndjson,.topojson,.kml,.kmz,.gpx,.zip,.shp,.dbf,.prj,.cpg,.csv,.wkt,.txt';
+  '.geojson,.json,.geojsonl,.ndjson,.topojson,.kml,.kmz,.gpx,.zip,.shp,.dbf,.prj,.cpg,.csv,.wkt,.txt,.gdbtable,.gdbtablx,.gdbindexes,.atx,.spx,.freelist';
+
+/** Accept string for CreateControl FileGDB upload (zip + table parts). */
+export const FILEGDB_FILE_ACCEPT =
+  '.zip,application/zip,application/x-zip-compressed,.gdbtable,.gdbtablx,.gdbindexes,.atx,.spx,.freelist';
 
 /** Text GIS formats that can live inside a .zip archive. */
 export const ZIP_MEMBER_FORMATS = new Set<GisFormat>([
@@ -36,6 +41,17 @@ const SHAPEFILE_SIDECARS = new Set([
   'qix',
   'qpj',
   'fix',
+]);
+
+/** Common FileGDB table / index file extensions (inside a `*.gdb` folder). */
+const FILEGDB_PART_EXTS = new Set([
+  'gdbtable',
+  'gdbtablx',
+  'gdbindexes',
+  'atx',
+  'spx',
+  'freelist',
+  'horizon',
 ]);
 
 export type GisSourceHint = {
@@ -75,12 +91,20 @@ export function detectGisFormat(
     case 'gpx':
       return 'gpx';
     case 'zip':
-      return 'zip';
+      return isFileGdbZipName(hint.name) ? 'filegdb' : 'zip';
     case 'shp':
     case 'dbf':
     case 'prj':
     case 'cpg':
       return 'shapefile';
+    case 'gdbtable':
+    case 'gdbtablx':
+    case 'gdbindexes':
+    case 'atx':
+    case 'spx':
+    case 'freelist':
+    case 'horizon':
+      return 'filegdb';
     case 'csv':
     case 'tsv':
       return 'csv';
@@ -88,6 +112,10 @@ export function detectGisFormat(
       return 'wkt';
     default:
       break;
+  }
+
+  if (isFileGdbPartName(hint.name) || isFileGdbZipName(hint.name)) {
+    return 'filegdb';
   }
 
   if (mime.includes('google-earth.kmz') || mime.includes('vnd.kmz')) return 'kmz';
@@ -135,8 +163,45 @@ export function isShapefileSidecar(name?: string): boolean {
   return SHAPEFILE_SIDECARS.has(fileExtension(name));
 }
 
+/** True for `Something.gdb.zip` or common `Something_gdb.zip` downloads. */
+export function isFileGdbZipName(name?: string): boolean {
+  if (!name) return false;
+  const normalized = name.replace(/\\/g, '/').toLowerCase().split(/[?#]/)[0];
+  if (normalized.endsWith('.gdb.zip')) return true;
+  if (/_gdb\.zip$/.test(normalized)) return true;
+  return false;
+}
+
+/**
+ * True when a file path looks like a FileGDB member
+ * (`Demo.gdb/a00000001.gdbtable`, bare `.gdbtable`, …).
+ */
+export function isFileGdbPartName(name?: string): boolean {
+  if (!name) return false;
+  const normalized = name.replace(/\\/g, '/').toLowerCase();
+  if (normalized.includes('.gdb/')) return true;
+  if (isFileGdbZipName(normalized)) return true;
+  return FILEGDB_PART_EXTS.has(fileExtension(normalized));
+}
+
+/** True when a file list is a FileGDB folder set or a FileGDB zip. */
+export function looksLikeFileGdbFiles(
+  files: Array<{ name?: string; webkitRelativePath?: string }>,
+): boolean {
+  if (!files.length) return false;
+  if (files.length === 1 && isFileGdbZipName(files[0]?.name)) return true;
+  return files.some((file) =>
+    isFileGdbPartName(file.webkitRelativePath || file.name),
+  );
+}
+
 export function isBinaryGisFormat(format: GisFormat | null): boolean {
-  return format === 'shapefile' || format === 'kmz' || format === 'zip';
+  return (
+    format === 'shapefile' ||
+    format === 'filegdb' ||
+    format === 'kmz' ||
+    format === 'zip'
+  );
 }
 
 export function isIgnoredZipEntry(name: string): boolean {

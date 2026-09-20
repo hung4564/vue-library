@@ -9,6 +9,8 @@ export const LAYER_CONTROL_FIELD_LOCALE = {
   'layer-name': 'Layer name',
   'style-type': 'Style type',
   'style-type-auto': 'Auto (from data)',
+  'source-layer': 'Source layer',
+  'source-layers': 'Source layers',
   crs: 'Coordinate reference system',
   'crs-placeholder': 'Search or enter EPSG code',
   'crs-hint': 'EPSG:4326 — WGS 84',
@@ -41,7 +43,6 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'create-error': 'Failed to create layer',
   'create-error-data-too-large':
     'Data may be too large, too deeply nested, or circular. Try a smaller file or EPSG:4326.',
-  'loaded-title': 'Loaded data',
   'loaded-from-file': 'From file',
   'loaded-from-url': 'From URL',
   'loaded-from-paste': 'From paste',
@@ -53,6 +54,27 @@ export const LAYER_CONTROL_CREATE_LOCALE = {
   'validation-data': 'Load or paste GIS data first.',
   'validation-type': 'Choose a style type.',
   'validation-url': 'Enter a tile URL.',
+  'validation-source-layers': 'Select at least one source layer.',
+  'file-hint-mbtiles':
+    'Drop a .mbtiles file (requires optional peer `sql.js`). Vector or raster is detected from metadata.',
+  'file-hint-pmtiles':
+    'Drop a .pmtiles file or paste a URL (requires optional peer `pmtiles`).',
+  'file-hint-tilejson':
+    'Paste a TileJSON URL (tiles.json) — vector layers are read from metadata.',
+  'file-hint-filegdb':
+    'Drop a `.gdb.zip` / `*_gdb.zip` or a `.gdb` folder (requires optional peer `gdal3.js`). Feature classes are merged into one layer.',
+  'filegdb-choose-folder': 'Choose .gdb folder',
+  'source-layers-hint': 'Choose which layers to add as sublayers.',
+  'source-layers-all': 'Select all',
+  'source-layers-none': 'Select none',
+  'source-layer-geometry': 'Geometry',
+  'source-layer-fields': 'Fields',
+  'tile-kind-vector': 'Vector tiles',
+  'tile-kind-raster': 'Raster tiles',
+  'meta-format': 'Format',
+  'meta-zoom': 'Zoom',
+  'meta-layers': 'Layers',
+  'meta-bounds': 'Bounds',
 };
 
 export const LAYER_CONTROL_TOGGLE_LOCALE = {
