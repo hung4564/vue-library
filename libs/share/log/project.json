@@ -1,5 +1,5 @@
 {
-  "name": "share-log",
+  "name": "shared-log",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/share/log/src",
   "projectType": "library",
@@ -11,7 +11,7 @@
       "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
     }
   },
-  "tags": ["share"],
+  "tags": ["share", "shared-log"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",

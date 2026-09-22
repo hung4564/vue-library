@@ -100,12 +100,7 @@
       "conventionalCommits": true,
       "updateDependents": "auto",
       "versionPrefix": "^",
-      "manifestRootsToUpdate": ["{projectRoot}"],
-      "git": {
-        "commit": false,
-        "tag": false,
-        "stageChanges": true
-      }
+      "manifestRootsToUpdate": ["{projectRoot}"]
     },
     "changelog": {
       "automaticFromRef": true,
@@ -116,12 +111,6 @@
           "versionTitleDate": true,
           "applyUsernameToAuthors": true
         }
-      },
-      "git": {
-        "commit": true,
-        "tag": true,
-        "push": true,
-        "commitMessage": "chore(release): publish {version}"
       }
     },
     "groups": {
@@ -207,6 +196,27 @@
           }
         }
       },
+      "shared-log": {
+        "projects": ["shared-log"],
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "shared-log@{version}",
+        "version": {
+          "conventionalCommits": true,
+          "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run shared-log:build"
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
+          "renderOptions": {
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
+        }
+      },
       "packages": {
         "projects": [
           "libs/share/*",
@@ -215,6 +225,8 @@
           "libs/*",
           "!shared-store",
           "!@hungpvq/shared-store",
+          "!shared-log",
+          "!@hungpvq/shared-log",
           "!tag:map",
           "!@hungpvq/map-core",
           "!@hungpvq/map-dataset",

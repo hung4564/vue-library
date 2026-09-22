@@ -18,13 +18,14 @@ Independent versioning via Nx release groups in root `nx.json`. Conventional Com
 | `draggable` | fixed | `draggable@{version}` | yes (one release via `release-group.js`) | `versionPrefix: "^"` + peers sync `^MAJOR.MINOR.0` + `updateDependents: auto` |
 | `map` | fixed | `map@{version}` | yes (one release via `release-group.js`) | same |
 | `shared-store` | fixed (single pkg) | `shared-store@{version}` | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-store` → `^MAJOR.MINOR.0` across workspace |
+| `shared-log` | fixed (single pkg) | `shared-log@{version}` | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-log` → `^MAJOR.MINOR.0` across workspace |
 | `packages` | independent | `{projectName}@{version}` | no | `versionPrefix: "^"` + `updateDependents: auto` |
 
 - **Version step:** no commit/tag (`release.version.git`); stage only.
 - **Changelog step:** commit + tag + push (`release.changelog.git`). GitHub Release is created **once per group** by `scripts/release-group.js` (needs `GH_TOKEN` / `GITHUB_TOKEN`). Backfill: `node scripts/create-group-github-release.js map@1.1.0`.
-- **preVersionCommand:** build only that group (`tag:draggable` / `tag:map` / `shared-store:build`), never `--all`.
+- **preVersionCommand:** build only that group (`tag:draggable` / `tag:map` / `shared-store:build` / `shared-log:build`), never `--all`.
 - Current version comes from **git-tag** matching `releaseTagPattern` (fallback: disk). Keep tags aligned with `package.json`.
-- Cross-group **peer** deps are synced by `scripts/sync-workspace-peers.js` after version (wired in `release-group.js`) → `^MAJOR.MINOR.0` (e.g. `1.2.0` → `^1.2.0`). Manual: `npm run draggable:peers:sync` / `map:peers:sync` / `shared-store:peers:sync`.
+- Cross-group **peer** deps are synced by `scripts/sync-workspace-peers.js` after version (wired in `release-group.js`) → `^MAJOR.MINOR.0` (e.g. `1.2.0` → `^1.2.0`). Manual: `npm run draggable:peers:sync` / `map:peers:sync` / `shared-store:peers:sync` / `shared-log:peers:sync`.
 
 ## Pre-flight
 
@@ -60,7 +61,7 @@ npm run draggable:site:push -- --version 1.2.0
 npm run draggable:release:local
 ```
 
-After release, GitHub Actions Publish matches tags `draggable@*` / `map@*` / `shared-store@*` (same as `nx.json` `releaseTagPattern`) and runs `nx release publish --group=…`.
+After release, GitHub Actions Publish matches tags `draggable@*` / `map@*` / `shared-store@*` / `shared-log@*` (same as `nx.json` `releaseTagPattern`) and runs `nx release publish --group=…`.
 
 **npm auth (CI):** repo secret `NPM_ACCESS_TOKEN` must be an npm **Automation** (or granular) token whose account can publish `@hungpvq/*`. `403` / “no permission” on publish is almost always this secret or org access — not git push. Provenance needs `permissions.id-token: write` (already in `publish.yml`).
 
@@ -68,7 +69,7 @@ After release, GitHub Actions Publish matches tags `draggable@*` / `map@*` / `sh
 
 **Bootstrap:** with conventional commits, Nx resolves the current version from git tags. If `package.json` is ahead of the latest `draggable@*` / `map@*` tag, create a one-time align tag (e.g. `git tag draggable@1.1.0`) before releasing.
 
-## Share / shared-store
+## Share / shared-store / shared-log
 
 ```bash
 npm run share:build
@@ -80,6 +81,12 @@ npm run shared-store:peers:sync    # rewrite consumers' @hungpvq/shared-store �
 npm run shared-store:release       # node scripts/release-group.js shared-store
 npm run shared-store:release:local # publish locally without git push
 # flags: patch|minor|major|1.2.0 --dry-run|--skip-push|--local-publish|--yes
+
+# @hungpvq/shared-log only (version + peer sync + tag shared-log@<ver>)
+npm run shared-log:build
+npm run shared-log:peers:sync
+npm run shared-log:release
+npm run shared-log:release:local
 ```
 
 Peer sync updates map / draggable / router package.json ranges only — it does **not** bump or republish those packages. Publish peer bumps via their own `map:release` / `draggable:release` when ready.

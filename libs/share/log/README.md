@@ -94,8 +94,10 @@ await loggerFactory.ensureActionContext({ mapId, span: 'identify.query' }, async
 ## Building / tests
 
 ```bash
-nx build share-log
-nx test share-log
+nx build shared-log
+nx test shared-log
+# version + peer sync + tag shared-log@<ver>
+npm run shared-log:release
 ```
 
 ## Standalone demo (no map)

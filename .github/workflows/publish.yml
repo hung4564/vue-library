@@ -8,6 +8,7 @@ on:
       - 'draggable@*'
       - 'map@*'
       - 'shared-store@*'
+      - 'shared-log@*'
 
 jobs:
   publish:
@@ -38,8 +39,11 @@ jobs:
             shared-store@*)
               echo "group=shared-store" >> "$GITHUB_OUTPUT"
               ;;
+            shared-log@*)
+              echo "group=shared-log" >> "$GITHUB_OUTPUT"
+              ;;
             *)
-              echo "Unsupported tag: $TAG (expected draggable@ / map@ / shared-store@)"
+              echo "Unsupported tag: $TAG (expected draggable@ / map@ / shared-store@ / shared-log@)"
               exit 1
               ;;
           esac

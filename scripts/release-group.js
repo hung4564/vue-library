@@ -1,9 +1,9 @@
 /**
- * Thin wrapper around Nx Release for map / draggable / shared-store groups.
+ * Thin wrapper around Nx Release for map / draggable / shared-store / shared-log groups.
  *
  * Tag pattern comes from nx.json:
  *   release.groups.<name>.releaseTagPattern
- *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}"
+ *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}" | "shared-log@{version}"
  *
  * Extra steps Nx does not own:
  *   - sync SemVer markers in draggable docs
@@ -23,8 +23,10 @@
  *   node scripts/release-group.js draggable minor
  *   node scripts/release-group.js map --dry-run
  *   node scripts/release-group.js shared-store patch
+ *   node scripts/release-group.js shared-log patch
  *   node scripts/release-group.js draggable --skip-site --skip-push
  *   node scripts/release-group.js shared-store --local-publish --yes
+ *   node scripts/release-group.js shared-log --local-publish --yes
  */
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
@@ -49,6 +51,11 @@ const GROUPS = {
     site: null,
     syncDocs: false,
   },
+  'shared-log': {
+    leadPkg: 'libs/share/log/package.json',
+    site: null,
+    syncDocs: false,
+  },
 };
 
 function parseArgs(argv) {
@@ -58,7 +65,7 @@ function parseArgs(argv) {
   const specifier = positional[1];
   if (!group || !GROUPS[group]) {
     console.error(
-      `Usage: node scripts/release-group.js <draggable|map|shared-store> [specifier] [flags]`,
+      `Usage: node scripts/release-group.js <draggable|map|shared-store|shared-log> [specifier] [flags]`,
     );
     process.exit(1);
   }
