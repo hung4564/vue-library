@@ -22,6 +22,8 @@
     "docs:dev": "npm run docs:pre-link && vitepress dev docs",
     "docs:build": "npm run docs:pre-link && vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "docs:site:push": "node scripts/push-deploy-site.js docs",
+    "sites:push": "node scripts/push-all-deploy-sites.js",
     "draggable:build": "nx run-many --projects=tag:draggable --exclude=tag:demo --target=lint,build",
     "draggable:pack": "npm run share:build && npm run draggable:build && node scripts/pack-dist.js draggable",
     "draggable:pack:vue": "npm run share:build && npm run draggable:build && node scripts/pack-dist.js draggable-vue",

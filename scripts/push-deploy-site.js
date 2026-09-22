@@ -2,6 +2,7 @@
  * Build (optional) + commit/push a GitHub Pages deploy submodule.
  *
  * Usage:
+ *   node scripts/push-deploy-site.js docs --version 0.0.0
  *   node scripts/push-deploy-site.js draggable --version 1.2.0
  *   node scripts/push-deploy-site.js map --version 1.0.2 --skip-build
  *   node scripts/push-deploy-site.js draggable --version 1.2.0 --dry-run
@@ -13,6 +14,11 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 
 const SITES = {
+  docs: {
+    dir: 'deploy/docs',
+    buildScript: 'docs:build',
+    remoteHint: 'https://github.com/hung4564/docs',
+  },
   draggable: {
     dir: 'deploy/demo-draggable',
     buildScript: 'draggable:site:build',
@@ -29,7 +35,7 @@ function parseArgs(argv) {
   const group = argv[0];
   if (!group || !SITES[group]) {
     console.error(
-      `Usage: node scripts/push-deploy-site.js <draggable|map> --version <x.y.z> [--skip-build] [--dry-run]`,
+      `Usage: node scripts/push-deploy-site.js <docs|draggable|map> --version <x.y.z> [--skip-build] [--dry-run]`,
     );
     process.exit(1);
   }

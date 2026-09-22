@@ -12,9 +12,10 @@ description: >-
 
 | Surface | How to run | Notes |
 |---------|------------|--------|
-| Main docs | `npm run docs:dev` / `docs:build` | Runs `docs:pre-link` (`scripts/link-docs.js`) then VitePress on `docs/` |
+| Main docs | `npm run docs:dev` / `docs:build` / `docs:site:push` | Runs `docs:pre-link` (`scripts/link-docs.js`) then VitePress on `docs/`; push → `deploy/docs` |
 | Map demo site | `npm run map:site:dev` / `map:site:build` / `map:site:push` | links docs + VitePress; output `deploy/demo-map` |
 | Draggable demo site | `npm run draggable:site:dev` / `draggable:site:build` / `draggable:site:push` | VitePress + demos; `deploy/demo-draggable` |
+| All three (build + push) | `npm run sites:push` | `scripts/push-all-deploy-sites.js` → docs + map + draggable; flags `--version` / `--skip-build` / `--dry-run` |
 | Preview | `map:site:preview` / `draggable:site:preview` | serve deploy folders |
 | Release + site + group tag | `npm run map:release` / `draggable:release` | `scripts/release-group.js` → tag `map@*` / `draggable@*` (CI Publish) |
 
