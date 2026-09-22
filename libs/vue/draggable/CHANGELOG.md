@@ -1,3 +1,9 @@
+## 1.4.0 (2026-09-22)
+
+### 🧱 Updated Dependencies
+
+- Updated shared to 0.4.0
+
 ## 1.3.1 (2026-09-18)
 
 This was a version bump only for @hungpvq/vue-draggable to align it with other projects, there were no code changes.

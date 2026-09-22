@@ -1,3 +1,13 @@
+## 0.3.1 (2026-09-22)
+
+### 🩹 Fixes
+
+- update event naming for map component in Vue and React ([a4be5363](https://github.com/hung4564/vue-library/commit/a4be5363))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.3.0 (2026-09-18)
 
 ### 🚀 Features

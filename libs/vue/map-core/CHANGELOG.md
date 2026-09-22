@@ -1,3 +1,26 @@
+## 1.2.0 (2026-09-22)
+
+### 🚀 Features
+
+- enhance basemap controls and opacity management ([12e8f11c](https://github.com/hung4564/vue-library/commit/12e8f11c))
+- enhance layer control and worker management with new features ([9d74d4aa](https://github.com/hung4564/vue-library/commit/9d74d4aa))
+- add gdal3.js, pmtiles, and sql.js dependencies with Vite configuration updates ([608ee189](https://github.com/hung4564/vue-library/commit/608ee189))
+- add logging cookbook and shared log demo pages ([c2938f85](https://github.com/hung4564/vue-library/commit/c2938f85))
+- integrate DevtoolsControl across Vue and React components ([8f50cae9](https://github.com/hung4564/vue-library/commit/8f50cae9))
+- add basemap-error and multi-map pages with routing ([a9c393f4](https://github.com/hung4564/vue-library/commit/a9c393f4))
+
+### 🩹 Fixes
+
+- update event naming for map component in Vue and React ([a4be5363](https://github.com/hung4564/vue-library/commit/a4be5363))
+
+### 🧱 Updated Dependencies
+
+- Updated shared to 0.4.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.1.0 (2026-09-18)
 
 ### 🚀 Features
