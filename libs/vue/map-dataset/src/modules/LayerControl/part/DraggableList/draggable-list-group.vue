@@ -8,10 +8,40 @@
   >
     <DraggableListItem :disabledDrag="disabledDrag" class="draggable-group__item">
       <div class="draggable-group__info">
-        <span class="draggable-group__title" :title="layerGroup.name">
+        <input
+          v-if="editing"
+          ref="inputRef"
+          class="draggable-group__title-input"
+          type="text"
+          :value="draftName"
+          :aria-label="renameLabel"
+          @input="onDraftInput"
+          @keydown="onRenameKeydown"
+          @blur="commitRename"
+          @click.stop
+        />
+        <button
+          v-else
+          type="button"
+          class="draggable-group__title"
+          :title="layerGroup.name"
+          :disabled="readonly"
+          :aria-label="renameLabel"
+          @click.stop="startRename"
+        >
           {{ layerGroup.name }}
-        </span>
+        </button>
         <div class="draggable-group__action">
+          <MapControlButton
+            v-if="!readonly && !editing"
+            variant="plain"
+            size="small"
+            :title="renameLabel"
+            :aria-label="renameLabel"
+            @click.stop="startRename"
+          >
+            <SvgIcon size="14" type="mdi" :path="path.group.rename" />
+          </MapControlButton>
           <MapControlButton
             v-if="
               !readonly && layerGroup.children && layerGroup.children.length > 0
@@ -68,14 +98,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { MapControlButton } from '@hungpvq/vue-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiChevronDown, mdiChevronUp, mdiDelete, mdiUngroup } from '@mdi/js';
+import {
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiDelete,
+  mdiPencil,
+  mdiUngroup,
+} from '@mdi/js';
 
-import { ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import DraggableListItem from './draggable-list-item.vue';
 
-defineProps({
+const props = defineProps({
   layerGroup: { type: Object, required: true },
   selected: { type: Array, default: () => [] },
   disabledSelect: Boolean,
@@ -90,15 +126,25 @@ const emit = defineEmits([
   'drag-done',
   'update:layer-group',
 ]);
+const { mapId } = useMap();
+const { trans } = useLang(mapId.value);
+const renameLabel = computed(() =>
+  trans.value('map.layer-control.group.rename'),
+);
 const path = {
   group: {
     open: mdiChevronUp,
     close: mdiChevronDown,
     unGroup: mdiUngroup,
     delete: mdiDelete,
+    rename: mdiPencil,
   },
 };
 const isGroupShow = ref(true);
+const editing = ref(false);
+const draftName = ref('');
+const inputRef = ref<HTMLInputElement | null>(null);
+
 function toggleShowChildrenGroup() {
   isGroupShow.value = !isGroupShow.value;
 }
@@ -107,5 +153,46 @@ function deleteGroup() {
 }
 function unGroup() {
   emit('click:un-group');
+}
+
+function startRename() {
+  if (props.readonly) return;
+  draftName.value = String(props.layerGroup.name ?? '');
+  editing.value = true;
+  nextTick(() => {
+    inputRef.value?.focus();
+    inputRef.value?.select();
+  });
+}
+
+function onDraftInput(event: Event) {
+  draftName.value = (event.target as HTMLInputElement).value;
+}
+
+function cancelRename() {
+  editing.value = false;
+  draftName.value = '';
+}
+
+function commitRename() {
+  if (!editing.value) return;
+  const trimmed = draftName.value.trim();
+  editing.value = false;
+  if (!trimmed || trimmed === props.layerGroup.name) {
+    draftName.value = '';
+    return;
+  }
+  emit('update:layer-group', { ...props.layerGroup, name: trimmed });
+  draftName.value = '';
+}
+
+function onRenameKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    (event.target as HTMLInputElement).blur();
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    cancelRename();
+  }
 }
 </script>

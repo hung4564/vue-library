@@ -21,6 +21,7 @@
     </div>
     <div class="map-col-12">
       <InputCrs
+        :map-id="mapId"
         :model-value="form.crs || '4326'"
         :label="trans('map.layer-control.field.crs')"
         :placeholder="trans('map.layer-control.field.crs-placeholder')"

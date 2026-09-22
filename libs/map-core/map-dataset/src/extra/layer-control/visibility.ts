@@ -45,6 +45,9 @@ export function setListViewIntendedShow(
   );
 }
 
+/** How the LayerControl header “show all” eye applies visibility. */
+export type GlobalVisibilityMode = 'override' | 'sync';
+
 /** Global off hides on the map only; list `show` is restored when global turns on. */
 export function applyGlobalLayerVisibility(
   items: IListViewUI[],
@@ -54,4 +57,32 @@ export function applyGlobalLayerVisibility(
   items.forEach((item) => {
     applyListViewMapVisibility(item, map, globalShow ? !!item.show : false);
   });
+}
+
+/** Set every list item’s intended `show` (emit) and apply on the map. */
+export function syncAllLayerIntendedShow(
+  items: IListViewUI[],
+  map: MapSimple,
+  show: boolean,
+) {
+  items.forEach((item) => {
+    // 1) List intended state + emit (ToggleShow / bindToggleShowAction)
+    item.toggleShow(map, show);
+    // 2) Map layout for mapbox descendants
+    applyListViewMapVisibility(item, map, show);
+  });
+}
+
+/** Dispatch header eye: `override` (map mask) vs `sync` (intended show). */
+export function applyAllLayerVisibility(
+  items: IListViewUI[],
+  map: MapSimple,
+  show: boolean,
+  mode: GlobalVisibilityMode = 'override',
+) {
+  if (mode === 'sync') {
+    syncAllLayerIntendedShow(items, map, show);
+    return;
+  }
+  applyGlobalLayerVisibility(items, map, show);
 }

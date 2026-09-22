@@ -81,7 +81,7 @@ Equivalent manual config (without the maplibre shim — prefer the helper):
 
 ```ts
 optimizeDeps: {
-  exclude: ['@hungpvq/map-dataset', '@hungpvq/map-dataset/geojson', '@hungpvq/map-dataset/create-control', 'maplibre-gl'],
+  exclude: ['@hungpvq/map-dataset', '@hungpvq/map-dataset/geojson', '@hungpvq/map-dataset/vector-tile', '@hungpvq/map-dataset/create-control', 'maplibre-gl'],
   include: ['geojson-rbush', '@hungpvq/shared-log', '@hungpvq/shared-store', 'maplibre-gl/dist/maplibre-gl.js'],
   needsInterop: ['maplibre-gl/dist/maplibre-gl.js'],
 }
@@ -90,8 +90,11 @@ optimizeDeps: {
 Stable package entry (for copy / CDN / bundler asset pipelines):
 
 ```text
-@hungpvq/map-dataset/geojson-worker  →  ./assets/geojson.worker.js
+@hungpvq/map-dataset/geojson-worker    →  ./assets/geojson.worker.js
+@hungpvq/map-dataset/vectortile-worker →  ./assets/vectortile.worker.js
 ```
+
+`mapDatasetGisWorker()` excludes `@hungpvq/map-dataset*` (and strips them from `optimizeDeps.include` if the app listed them). Do **not** put `@hungpvq/map-dataset` in `optimizeDeps.include` — that relocates `import.meta.url` under `.vite/deps/` and breaks Worker resolution. No `public/` copy.
 
 #### Non-Vite / relocated chunks (Webpack, Parcel, static HTML, CDN)
 
@@ -99,24 +102,12 @@ If your bundler moves JS into hashed folders so `import.meta.url` no longer sits
 
 ```ts
 import { configureGisWorker } from '@hungpvq/map-dataset/geojson';
+import { configureVectorTileWorker } from '@hungpvq/map-dataset/vector-tile';
 
-// After copying `node_modules/@hungpvq/map-dataset/assets/geojson.worker.js`
-// to your static output (or serving from a CDN):
+// After copying worker files from node_modules/@hungpvq/map-dataset/assets/
 configureGisWorker({ url: '/static/geojson.worker.js' });
-// or: configureGisWorker({ url: new URL('/static/geojson.worker.js', location.origin) });
+configureVectorTileWorker({ url: '/static/vectortile.worker.js' });
 ```
-
-Webpack example (copy the single file, then configure):
-
-```js
-// copy-webpack-plugin
-{ from: 'node_modules/@hungpvq/map-dataset/assets/geojson.worker.js', to: 'geojson.worker.js' }
-
-// app entry
-configureGisWorker({ url: '/geojson.worker.js' });
-```
-
-`mapDatasetGisWorker()` only sets `optimizeDeps.exclude` (no `public/` copy). Do **not** rely on copying into `public/assets` for the old absolute `/assets/…` scheme.
 
 ### B. App in this Nx monorepo (source / path aliases)
 

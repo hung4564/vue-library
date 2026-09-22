@@ -1,6 +1,6 @@
 # Layer Control
 
-Editable layer list: create, group, reorder, delete, run menus.
+Editable layer list: create, group, reorder, delete, run menus. Click a group name (or the pencil) to rename it.
 
 ## Props
 
@@ -14,9 +14,18 @@ Editable layer list: create, group, reorder, delete, run menus.
 | `disabledDeleteAll` | `boolean` | `false` | Hide delete-all |
 | `disabledMove` | `boolean` | `false` | Hide Move up/down in ⋮ |
 | `menuContext` | `object \| (() => object)` | — | Bag for `setHidden` / `setDisabled` |
+| `globalVisibilityMode` | `'override' \| 'sync'` | `'sync'` | Header eye: mask map only vs sync every layer `show` |
+| `createLayerTypes` | `LayerType[]` | all types | Allowlist for nested CreateControl type select |
 
 `menuContext` is merged with `readonly`, `disabledMove`, `disabledCreateGroup` and any parent `provideMenuConditionContext` / `MenuConditionProvider`. See [Menus](../create-dataset/with-helper-menu.md).
 
+`globalVisibilityMode`:
+- `sync` (default) — header eye sets every list item’s `show` to the all-button value and applies on the map.
+- `override` — header eye hides/restores layers on the map only; each row’s intended `show` is unchanged.
+
+`createLayerTypes` is forwarded to the nested [`CreateControl`](./CreateControl.md) (with `controlVisible={false}` so CreateControl’s own chrome button stays hidden). Omit for all `LAYER_TYPES`.
+
+Nested CreateControl always uses `controlVisible={false}`; open create via LayerControl’s **+**. Mount `CreateControl` alone when you want its map chrome button.
 **Events:** none. Visibility / opacity fire on the list node (`toggleShow`, `changeOpacity`) — see [Events](../create-dataset/with-helper-event.md). Dialogs from ⋮ menus need [`ComponentManagementControl`](./ComponentManagementControl.md). Create-layer uses [`CreateControl`](./CreateControl.md) internally.
 
 Keyboard: `/` focuses the layer search input for **that** map (`[data-map-layer-search][data-map-id="<mapId>"]`, with rAF retry until mounted). `Esc` closes the top open control and blurs search only if that map’s search was focused.
@@ -42,6 +51,8 @@ LayerControl stays a UI host. Shared orchestration lives in `@hungpvq/map-datase
 | `getLayerControlTitleMenuState(roots)` | Aggregate `location: 'title'` menus across dataset list views for `#after-title` / `afterTitle` |
 | `registerAddGeojsonHereForMap(mapId, addDataset)` | Register context-menu “Add GeoJSON here” + default items; returns unregister for unmount |
 | `syncListViewLayerOrder(map, views)` | Apply drag-reorder / index to MapLibre layers (used by `LayerList`) |
+| `applyAllLayerVisibility(items, map, show, mode)` | Header eye: `override` (map mask) or `sync` (intended `show`) |
+| `syncAllLayerIntendedShow(items, map, show)` | Set every list item `show` and apply on map |
 
 Custom LayerControl forks should call `registerAddGeojsonHereForMap` on mount (and its cleanup on unmount) when the map also mounts [`MapContextMenuControl`](/map/core/module/MapContextMenuControl).
 

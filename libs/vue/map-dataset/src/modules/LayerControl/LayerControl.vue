@@ -11,8 +11,10 @@ import {
   getLayerControlTitleMenuState,
   registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
+  type GlobalVisibilityMode,
   type IDataset,
 } from '@hungpvq/map-dataset';
+import type { LayerType } from '@hungpvq/map-dataset/create-control';
 import {
   MENU_CONTROL_ID,
   resolveMenuContextSource,
@@ -53,6 +55,8 @@ const props = withDefaults(
         disabledDeleteAll?: boolean;
         disabledMove?: boolean;
         menuContext?: MenuContextSource;
+        globalVisibilityMode?: GlobalVisibilityMode;
+        createLayerTypes?: LayerType[];
       }
   >(),
   {
@@ -61,6 +65,7 @@ const props = withDefaults(
     disabledCreateGroup: false,
     disabledDeleteAll: false,
     disabledMove: false,
+    globalVisibilityMode: 'sync',
   },
 );
 provideMenuConditionContext(() => ({
@@ -102,6 +107,8 @@ const { panelPosition } = useRegisterMapControl(mapId, {
     disabledCreateGroup: props.disabledCreateGroup,
     disabledDeleteAll: props.disabledDeleteAll,
     disabledMove: props.disabledMove,
+    globalVisibilityMode: props.globalVisibilityMode,
+    createLayerTypes: props.createLayerTypes,
     position: props.position,
     controlLayout: props.controlLayout,
   }),
@@ -179,6 +186,7 @@ const titleMenuState = computed(() => {
             :disabledCreateGroup="disabledCreateGroup"
             :disabledDeleteAll="disabledDeleteAll"
             :disabledMove="disabledMove"
+            :globalVisibilityMode="globalVisibilityMode"
             @create="openAddLayer"
           >
             <template #title>
@@ -200,7 +208,11 @@ const titleMenuState = computed(() => {
         </div>
       </DraggableItemSideBar>
     </template>
-    <CreateControl v-model:show="showCreate" />
+    <CreateControl
+      v-model:show="showCreate"
+      :create-layer-types="createLayerTypes"
+      :control-visible="false"
+    />
     <slot />
     <LayerMenuDefaultHandle />
   </ModuleContainer>

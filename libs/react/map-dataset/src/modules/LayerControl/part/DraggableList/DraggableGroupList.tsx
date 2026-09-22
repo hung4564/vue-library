@@ -33,6 +33,7 @@ export interface DraggableGroupListProps {
   selected?: string[];
   disabledDrag?: boolean;
   disabledSelect?: boolean;
+  readonly?: boolean;
   onItemsChange?: (items: LayerListItem[]) => void;
   onDragDone?: () => void;
   onGroupRemove?: (group: LayerListGroupTree) => void;
@@ -125,6 +126,7 @@ export const DraggableGroupList = forwardRef<
     selected = [],
     disabledDrag,
     disabledSelect,
+    readonly,
     onItemsChange,
     onDragDone,
     onGroupRemove,
@@ -339,6 +341,17 @@ export const DraggableGroupList = forwardRef<
     });
   }
 
+  function renameGroup(groupIndex: number, name: string) {
+    setTree((prev) => {
+      const node = prev[groupIndex];
+      if (!isGroupNode(node)) return prev;
+      const next = [...prev];
+      next[groupIndex] = { ...node, name };
+      queueMicrotask(() => emitChange(next));
+      return next;
+    });
+  }
+
   return (
     <div ref={rootRef} className="draggable-group-container" data-list-id="root">
       {tree.map((node, index) => {
@@ -351,11 +364,13 @@ export const DraggableGroupList = forwardRef<
             >
               <DraggableGroupItem
                 layerGroup={node}
+                readonly={readonly}
                 disabledDrag={disabledDrag}
                 childrenListId={node.id}
                 createSortable={createGroupSortable}
                 onDelete={() => deleteGroup(node, index)}
                 onUngroup={() => unGroup(node, index)}
+                onRename={(name) => renameGroup(index, name)}
               >
                 {node.children.map((child) => (
                   <div

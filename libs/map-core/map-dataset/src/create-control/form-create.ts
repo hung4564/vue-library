@@ -46,6 +46,21 @@ export const LAYER_TYPES = {
 
 export type LayerType = keyof typeof LAYER_TYPES;
 
+const ALL_LAYER_TYPES = Object.keys(LAYER_TYPES) as LayerType[];
+
+/**
+ * Resolve CreateControl type allowlist.
+ * `undefined` → all `LAYER_TYPES` (catalog order). Otherwise keep caller order,
+ * drop unknown keys.
+ */
+export function resolveCreateControlLayerTypes(
+  allowed?: readonly LayerType[] | null,
+): LayerType[] {
+  if (allowed == null) return [...ALL_LAYER_TYPES];
+  const known = new Set(ALL_LAYER_TYPES);
+  return allowed.filter((t): t is LayerType => known.has(t));
+}
+
 /** Deprecated CreateControl type keys (draft / API aliases). */
 export type LegacyLayerType = 'vector' | 'rasterxyz' | 'vectortile' | 'raster';
 

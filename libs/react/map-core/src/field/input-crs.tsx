@@ -16,6 +16,11 @@ export interface InputCrsProps {
   label?: string;
   placeholder?: string;
   value?: string;
+  /**
+   * Prefer an explicit mapId when rendered from `@hungpvq/react-map-core/fields`
+   * (built multi-entry can duplicate MapContext vs the Map shell).
+   */
+  mapId?: string;
   /** Override map CRS store; when omitted, uses CRS configured on the map. */
   items?: CrsItem[];
   onChange?: (value: string) => void;
@@ -41,10 +46,12 @@ export function InputCrs({
   label,
   placeholder = 'EPSG:4326',
   value = '',
+  mapId: mapIdProp,
   items,
   onChange,
 }: InputCrsProps) {
-  const { mapId } = useMap();
+  const { mapId: contextMapId } = useMap();
+  const mapId = mapIdProp || contextMapId;
   const { items: storeItems } = useMapCrsItems(mapId);
   const listboxId = `input-crs-listbox-${mapId || 'default'}`;
   const [open, setOpen] = useState(false);

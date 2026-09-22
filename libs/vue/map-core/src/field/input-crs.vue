@@ -18,6 +18,11 @@ const props = withDefaults(
   defineProps<{
     label?: string;
     placeholder?: string;
+    /**
+     * Prefer an explicit mapId when rendered from `@hungpvq/vue-map-core/fields`
+     * (built multi-entry can duplicate provide/inject vs the Map shell).
+     */
+    mapId?: string;
     /** Override map CRS store; when omitted, uses CRS configured on the map. */
     items?: CrsItem[];
   }>(),
@@ -26,8 +31,10 @@ const props = withDefaults(
   },
 );
 
-const { mapId } = useMap();
-const { items: storeItems } = useMapCrsItems(mapId.value);
+const { mapId: contextMapId } = useMap();
+const resolvedMapId =
+  (props.mapId || (contextMapId.value as string) || '') as string;
+const { items: storeItems } = useMapCrsItems(resolvedMapId);
 
 const open = ref(false);
 const focused = ref(false);

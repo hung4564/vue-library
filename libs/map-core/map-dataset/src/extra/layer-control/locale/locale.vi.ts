@@ -97,6 +97,9 @@ export const LAYER_CONTROL_LOCALE_VI = {
       create: LAYER_CONTROL_CREATE_LOCALE_VI,
       field: LAYER_CONTROL_FIELD_LOCALE_VI,
       info: { title: 'Thông tin' },
+      group: {
+        rename: 'Đổi tên nhóm',
+      },
     },
   },
 };

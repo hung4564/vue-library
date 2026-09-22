@@ -27,6 +27,7 @@ export {
   createLayerFormHelper,
   looksVectorXyzUrl,
   normalizeLayerType,
+  resolveCreateControlLayerTypes,
 } from './form-create';
 export type {
   ArchiveCreateForm,

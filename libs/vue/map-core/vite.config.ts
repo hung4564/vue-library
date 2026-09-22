@@ -58,6 +58,18 @@ export default defineConfig({
         globals: {
           vue: 'Vue',
         },
+        manualChunks(id) {
+          const norm = id.replace(/\\/g, '/');
+          if (
+            norm.includes('/hooks/useMap') ||
+            norm.includes('/store/mitt-store') ||
+            norm.includes('/store/store.ts') ||
+            norm.includes('/extra/crs/')
+          ) {
+            return 'map-shared';
+          }
+          return undefined;
+        },
       },
     },
   },

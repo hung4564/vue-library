@@ -1,15 +1,22 @@
-import { MapControlButton } from '@hungpvq/react-map-core';
+import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
+import type { LayerListGroupTree } from '@hungpvq/map-dataset';
 import {
   mdiChevronDown,
   mdiChevronUp,
   mdiDelete,
+  mdiPencil,
   mdiUngroup,
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
 import type Sortable from 'sortablejs';
 import { ListItem } from '../../../List/ListItem';
-import type { LayerListGroupTree } from '@hungpvq/map-dataset';
 
 const ICON_SIZE = '14px';
 
@@ -22,6 +29,7 @@ export function DraggableGroupItem({
   createSortable,
   onDelete,
   onUngroup,
+  onRename,
 }: {
   layerGroup: LayerListGroupTree;
   readonly?: boolean;
@@ -31,8 +39,15 @@ export function DraggableGroupItem({
   createSortable?: (el: HTMLElement) => Sortable;
   onDelete: () => void;
   onUngroup: () => void;
+  onRename?: (name: string) => void;
 }) {
+  const { mapId } = useMap({});
+  const { trans } = useLang(mapId);
+  const renameLabel = trans('map.layer-control.group.rename');
   const [isGroupShow, setIsGroupShow] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [draftName, setDraftName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   const childrenElRef = useRef<HTMLDivElement>(null);
   const hasChildren = layerGroup.children.length > 0;
 
@@ -42,6 +57,45 @@ export function DraggableGroupItem({
     const instance = createSortable(el);
     return () => instance.destroy();
   }, [layerGroup.id, disabledDrag, createSortable]);
+
+  useEffect(() => {
+    if (!editing) return;
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, [editing]);
+
+  function startRename() {
+    if (readonly || !onRename) return;
+    setDraftName(String(layerGroup.name ?? ''));
+    setEditing(true);
+  }
+
+  function cancelRename() {
+    setEditing(false);
+    setDraftName('');
+  }
+
+  function commitRename() {
+    if (!editing) return;
+    const trimmed = draftName.trim();
+    setEditing(false);
+    if (!trimmed || trimmed === layerGroup.name) {
+      setDraftName('');
+      return;
+    }
+    onRename?.(trimmed);
+    setDraftName('');
+  }
+
+  function onRenameKeydown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.currentTarget.blur();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelRename();
+    }
+  }
 
   return (
     <div
@@ -53,10 +107,50 @@ export function DraggableGroupItem({
     >
       <ListItem disabledDrag={disabledDrag} className="draggable-group__item">
         <div className="draggable-group__info">
-          <span className="draggable-group__title" title={layerGroup.name}>
-            {layerGroup.name}
-          </span>
+          {editing ? (
+            <input
+              ref={inputRef}
+              className="draggable-group__title-input"
+              type="text"
+              value={draftName}
+              aria-label={renameLabel}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setDraftName(event.target.value)
+              }
+              onKeyDown={onRenameKeydown}
+              onBlur={commitRename}
+              onClick={(event) => event.stopPropagation()}
+            />
+          ) : (
+            <button
+              type="button"
+              className="draggable-group__title"
+              title={layerGroup.name}
+              disabled={readonly || !onRename}
+              aria-label={renameLabel}
+              onClick={(event) => {
+                event.stopPropagation();
+                startRename();
+              }}
+            >
+              {layerGroup.name}
+            </button>
+          )}
           <div className="draggable-group__action">
+            {!readonly && !editing && onRename ? (
+              <MapControlButton
+                variant="plain"
+                size="small"
+                title={renameLabel}
+                aria-label={renameLabel}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  startRename();
+                }}
+              >
+                <Icon path={mdiPencil} size={ICON_SIZE} />
+              </MapControlButton>
+            ) : null}
             {!readonly && hasChildren && (
               <MapControlButton
                 onClick={onUngroup}
@@ -85,7 +179,10 @@ export function DraggableGroupItem({
               aria-expanded={isGroupShow}
               onClick={() => setIsGroupShow((prev) => !prev)}
             >
-              <Icon path={isGroupShow ? mdiChevronDown : mdiChevronUp} size={ICON_SIZE} />
+              <Icon
+                path={isGroupShow ? mdiChevronDown : mdiChevronUp}
+                size={ICON_SIZE}
+              />
             </MapControlButton>
           </div>
         </div>
@@ -101,9 +198,11 @@ export function DraggableGroupItem({
           >
             {children}
           </div>
-          {isGroupShow && !hasChildren && (
-            <div className="draggable-group__nodata">Drag layer inside this group</div>
-          )}
+          {isGroupShow && !hasChildren ? (
+            <div className="draggable-group__nodata">
+              Drag layer inside this group
+            </div>
+          ) : null}
         </div>
       </ListItem>
     </div>

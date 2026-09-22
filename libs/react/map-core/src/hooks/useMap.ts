@@ -91,10 +91,15 @@ export const useMap = (
     return getMap(mapId, cb);
   }
 
+  const dragId = props.dragId || context?.dragId || '';
+
   const moduleContainerProps = useMemo(
     () => ({
-      mapId: props.mapId,
-      dragId: props.dragId || context?.dragId,
+      // Use resolved ids — `defaultMapProps.mapId/dragId` are '' and must not
+      // mask MapContext when ModuleContainer / portals run under a built
+      // multi-entry bundle (duplicate context copies).
+      mapId,
+      dragId,
       btnWidth: props.btnWidth,
       position: props.position,
       controlVisible: props.controlVisible,
@@ -103,15 +108,14 @@ export const useMap = (
       controlOrder: order,
     }),
     [
-      props.mapId,
-      props.dragId,
+      mapId,
+      dragId,
       props.btnWidth,
       props.position,
       props.controlVisible,
       controlLayout,
       props.controlId,
       order,
-      context?.dragId,
     ],
   );
 

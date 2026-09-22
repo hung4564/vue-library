@@ -1,12 +1,34 @@
-import type { Plugin } from 'vite';
+export type MapDatasetGisWorkerOptions = {
+  /**
+   * @deprecated Ignored. No longer copies files into `public/`.
+   */
+  publicDir?: string;
+};
 
+/**
+ * Structural Vite plugin shape — do **not** import `Plugin` from `vite` here.
+ * That couples published `.d.ts` to whichever `vite` install resolved the types
+ * (monorepo vs consumer) and breaks `plugins: [mapDatasetGisWorker()]`.
+ */
+export type MapDatasetVitePlugin = {
+  name: string;
+  enforce?: 'pre' | 'post';
+  config?: (userConfig: {
+    optimizeDeps?: { include?: unknown[] };
+  }) => Record<string, unknown>;
+  resolveId?: (source: string) => string | null;
+  load?: (id: string) => string | null;
+};
+
+/** Must stay out of `.vite/deps` — Worker `import.meta.url` must resolve under `node_modules`. */
 const EXCLUDE = [
   '@hungpvq/map-dataset',
   '@hungpvq/map-dataset/geojson',
+  '@hungpvq/map-dataset/vector-tile',
   '@hungpvq/map-dataset/create-control',
   // UMD build has no ESM named exports — shimmed below via resolveId/load.
   'maplibre-gl',
-  // Emscripten WASM factory breaks when Vite prebundles it.
+  // Emscripten / wasm peers — never prebundle.
   'gdal3.js',
   'sql.js',
 ] as const;
@@ -62,12 +84,17 @@ const MAPLIBRE_NAMED_SHIM = [
   'export const version = maplibregl.version;',
 ].join('\n');
 
+function isMapDatasetDep(id: string): boolean {
+  return id === '@hungpvq/map-dataset' || id.startsWith('@hungpvq/map-dataset/');
+}
+
 /**
  * Vite helper for apps that install the published `@hungpvq/map-dataset`.
  *
  * Does **not** copy worker files into `public/`. It:
  * - excludes the package from `optimizeDeps` so `new URL('assets/geojson.worker.js', import.meta.url)`
  *   keeps resolving from `node_modules/@hungpvq/map-dataset/…` instead of `.vite/deps/`
+ * - strips accidental `optimizeDeps.include` entries for `@hungpvq/map-dataset*`
  * - includes CJS helpers (`geojson-rbush`, `@hungpvq/shared-log`, …) for Vite prebundle interop
  * - shims `maplibre-gl` named ESM exports from the UMD default object
  *   (`import { Point, Map, … } from 'maplibre-gl'` works under Vite)
@@ -75,15 +102,23 @@ const MAPLIBRE_NAMED_SHIM = [
  * Monorepo apps that path-alias into `libs/` should use `worker.format: 'es'` +
  * `nxViteTsPaths` on `worker.plugins` instead (see GIS worker docs).
  */
-export function mapDatasetGisWorker(): Plugin {
+export function mapDatasetGisWorker(
+  _options: MapDatasetGisWorkerOptions = {},
+): MapDatasetVitePlugin {
   return {
     name: 'map-dataset-gis-worker',
     enforce: 'pre',
-    config() {
+    config(userConfig) {
+      const prevInclude = userConfig.optimizeDeps?.include ?? [];
+      const keptInclude = prevInclude.filter((id): id is string => {
+        if (typeof id !== 'string') return false;
+        return !isMapDatasetDep(id) && id !== 'maplibre-gl';
+      });
+
       return {
         optimizeDeps: {
           exclude: [...EXCLUDE],
-          include: [...INCLUDE, MAPLIBRE_RUNTIME],
+          include: [...INCLUDE, MAPLIBRE_RUNTIME, ...keptInclude],
           needsInterop: [MAPLIBRE_RUNTIME],
         },
         ssr: {

@@ -1,4 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
@@ -7,19 +8,23 @@ import {
   loadCreateControlDraft,
   normalizeLayerType,
   reportCreateLayerError,
+  resolveCreateControlLayerTypes,
   saveCreateControlDraft,
   suggestLayerName,
   type LayerType,
 } from '@hungpvq/map-dataset/create-control';
 import {
   defaultMapProps,
+  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
   useRegisterMapControl,
+  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import { mdiPlus } from '@mdi/js';
 import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
 import { useMapDataset } from '../../store/dataset-api';
 import { GeojsonSettings } from './config/geojson-settings';
@@ -38,6 +43,7 @@ import { ConfigTilejsonJson } from './config/tilejson-json';
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;
   onShowChange: (show: boolean) => void;
+  createLayerTypes?: LayerType[];
 }
 
 function dataSourceComponent(
@@ -82,7 +88,7 @@ function settingsComponent(
 
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId, moduleContainerProps, order } = useMap({
     ...merged,
     controlId: 'mapCreateControl',
   });
@@ -97,6 +103,7 @@ export function CreateControl(props: CreateControlProps) {
     getProps: () => ({
       position: merged.position,
       controlLayout: merged.controlLayout,
+      createLayerTypes: props.createLayerTypes,
     }),
     actions: [
       {
@@ -105,21 +112,45 @@ export function CreateControl(props: CreateControlProps) {
       },
     ],
   });
+
+  const { state, control } = useToolbarControl(mapId, merged, {
+    kind: 'single',
+    id: 'mapCreateControl',
+    getState: () =>
+      mdiButtonState(mdiPlus, {
+        active: props.show,
+        title: trans('map.layer-control.create.title'),
+        order,
+      }),
+    onClick: () => props.onShowChange(!props.show),
+  });
+
+  useEffect(() => {
+    control.sync();
+  }, [props.show, control]);
+
   const localeInitialized = useRef(false);
   if (!localeInitialized.current) {
     localeInitialized.current = true;
   }
 
   const { addDataset } = useMapDataset(mapId);
-  const initialType: LayerType = 'geojson';
-  const [helper, setHelper] = useState(() => new LayerHelper(initialType));
+  const allowedTypes = useMemo(
+    () => resolveCreateControlLayerTypes(props.createLayerTypes),
+    [props.createLayerTypes],
+  );
+  const firstAllowed = allowedTypes[0] ?? 'geojson';
+  const [helper, setHelper] = useState(() => new LayerHelper(firstAllowed));
   const [configKey, setConfigKey] = useState(0);
   const [form, setForm] = useState<{
     type: LayerType;
     config: Record<string, unknown>;
   }>({
-    type: initialType,
-    config: { name: suggestLayerName(initialType), ...helper.default_value },
+    type: firstAllowed,
+    config: {
+      name: suggestLayerName(firstAllowed),
+      ...helper.default_value,
+    },
   });
 
   const [creating, setCreating] = useState(false);
@@ -128,15 +159,18 @@ export function CreateControl(props: CreateControlProps) {
 
   const itemsType = useMemo(
     () =>
-      (Object.keys(LAYER_TYPES) as LayerType[]).map((x) => ({
+      allowedTypes.map((x) => ({
         value: x,
         text: LAYER_TYPES[x],
       })),
-    [],
+    [allowedTypes],
   );
 
   function onChangeType(type: string) {
-    const layerType = normalizeLayerType(type);
+    let layerType = normalizeLayerType(type);
+    if (allowedTypes.length > 0 && !allowedTypes.includes(layerType)) {
+      layerType = firstAllowed;
+    }
     const nextHelper = new LayerHelper(layerType);
 
     setHelper(nextHelper);
@@ -150,6 +184,13 @@ export function CreateControl(props: CreateControlProps) {
       },
     });
     setConfigKey((k) => k + 1);
+  }
+
+  function ensureTypeAllowed(type: LayerType) {
+    if (allowedTypes.length === 0) return;
+    if (!allowedTypes.includes(type)) {
+      onChangeType(firstAllowed);
+    }
   }
 
   async function onAddLayer() {
@@ -182,16 +223,17 @@ export function CreateControl(props: CreateControlProps) {
   }
 
   function reset() {
-    const nextHelper = new LayerHelper(initialType);
+    const type = allowedTypes[0] ?? 'geojson';
+    const nextHelper = new LayerHelper(type);
     setHelper(nextHelper);
     setConfigKey((k) => k + 1);
     setCreating(false);
     setCreateError('');
     setValidationErrors([]);
     setForm({
-      type: initialType,
+      type,
       config: {
-        name: suggestLayerName(initialType),
+        name: suggestLayerName(type),
         ...nextHelper.default_value,
       },
     });
@@ -211,11 +253,19 @@ export function CreateControl(props: CreateControlProps) {
           ...(draft.crs ? { crs: draft.crs } : {}),
         },
       }));
+      ensureTypeAllowed(
+        draft.type ? normalizeLayerType(draft.type) : firstAllowed,
+      );
       return;
     }
-    onChangeType(initialType);
+    onChangeType(firstAllowed);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    ensureTypeAllowed(form.type);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allowedTypes]);
 
   useEffect(() => {
     saveCreateControlDraft(mapId, {
@@ -233,6 +283,17 @@ export function CreateControl(props: CreateControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
+      btn={
+        state ? (
+          <MapCommonButton
+            option={state}
+            onClick={(e) => {
+              e.stopPropagation();
+              control.onAction(e.nativeEvent);
+            }}
+          />
+        ) : null
+      }
       draggable={(bind) =>
         props.show ? (
           <DraggableItemPopup
@@ -279,6 +340,7 @@ export function CreateControl(props: CreateControlProps) {
 
                 <DataSource
                   key={`${configKey}-data`}
+                  mapId={mapId}
                   config={form.config}
                   trans={trans}
                   onChange={onConfigChange}
@@ -294,6 +356,7 @@ export function CreateControl(props: CreateControlProps) {
 
                     <Settings
                       key={`${configKey}-settings`}
+                      mapId={mapId}
                       config={form.config}
                       trans={trans}
                       onChange={onConfigChange}

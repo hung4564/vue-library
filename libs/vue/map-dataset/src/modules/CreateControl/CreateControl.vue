@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   LAYER_TYPES,
   LayerHelper,
   loadCreateControlDraft,
   normalizeLayerType,
   reportCreateLayerError,
+  resolveCreateControlLayerTypes,
   saveCreateControlDraft,
   suggestLayerName,
   type LayerType,
 } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { MapControlButton, ModuleContainer, useLang, useMap, useRegisterMapControl } from '@hungpvq/vue-map-core';
+import {
+  MapCommonButton,
+  MapControlButton,
+  ModuleContainer,
+  useLang,
+  useMap,
+  useRegisterMapControl,
+  useToolbarControl,
+} from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { mdiPlus } from '@mdi/js';
 import { computed, onMounted, ref, watch, type Component, type Ref } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 import ConfigArchiveSettings from './config/archive-settings.vue';
@@ -34,10 +45,11 @@ defineOptions({
 const props = defineProps<
   WithMapPropType & {
     show: boolean;
+    createLayerTypes?: LayerType[];
   }
 >();
 
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, moduleContainerProps, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { addDataset } = useMapDataset(mapId);
 const emit = defineEmits(['update:show']);
@@ -51,6 +63,10 @@ const cShow = computed({
   },
 });
 
+const allowedTypes = computed(() =>
+  resolveCreateControlLayerTypes(props.createLayerTypes),
+);
+
 const { panelBind } = useRegisterMapControl(mapId, {
   id: 'mapCreateControl',
   panelKind: 'popup',
@@ -63,6 +79,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
   getProps: () => ({
     position: props.position,
     controlLayout: props.controlLayout,
+    createLayerTypes: props.createLayerTypes,
   }),
   actions: [
     {
@@ -74,8 +91,28 @@ const { panelBind } = useRegisterMapControl(mapId, {
   ],
 });
 
+const { state, control } = useToolbarControl(mapId.value, props, {
+  kind: 'single',
+  id: 'mapCreateControl',
+  getState() {
+    return mdiButtonState(mdiPlus, {
+      active: cShow.value,
+      title: trans.value('map.layer-control.create.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    cShow.value = !cShow.value;
+  },
+});
+watch(cShow, () => control.sync());
+
+function firstAllowedType(): LayerType {
+  return allowedTypes.value[0] ?? 'geojson';
+}
+
 const initialState = {
-  type: 'geojson' as LayerType,
+  type: firstAllowedType(),
 };
 
 const keyRender = ref(1);
@@ -127,12 +164,16 @@ const form = ref({
 
 onMounted(() => {
   const draft = loadCreateControlDraft(mapId.value);
-  if (!draft) return;
+  if (!draft) {
+    onChangeType(form.value.type);
+    return;
+  }
   if (draft.type) {
     onChangeType(normalizeLayerType(draft.type));
   }
   if (draft.name) form.value.config.name = draft.name;
   if (draft.crs) form.value.config.crs = draft.crs;
+  ensureTypeAllowed(form.value.type);
 });
 
 watch(
@@ -151,19 +192,38 @@ watch(
   { deep: true },
 );
 
-const itemsType = (Object.keys(LAYER_TYPES) as Array<LayerType>).map((x) => ({
-  value: x,
-  text: LAYER_TYPES[x],
-}));
+watch(allowedTypes, () => {
+  ensureTypeAllowed(form.value.type);
+});
+
+const itemsType = computed(() =>
+  allowedTypes.value.map((x) => ({
+    value: x,
+    text: LAYER_TYPES[x],
+  })),
+);
 
 const creating = ref(false);
 const createError = ref('');
 const validationErrors = ref<string[]>([]);
 
+function ensureTypeAllowed(type: LayerType) {
+  if (allowedTypes.value.length === 0) return;
+  if (!allowedTypes.value.includes(type)) {
+    onChangeType(firstAllowedType());
+  }
+}
+
 function onChangeType(type: unknown) {
   if (typeof type !== 'string') return;
 
-  const layerType = normalizeLayerType(type);
+  let layerType = normalizeLayerType(type);
+  if (
+    allowedTypes.value.length > 0 &&
+    !allowedTypes.value.includes(layerType)
+  ) {
+    layerType = firstAllowedType();
+  }
 
   helper.setType(layerType);
   validationErrors.value = [];
@@ -216,14 +276,15 @@ async function onAddLayer() {
 }
 
 function reset() {
-  helper.setType(initialState.type);
+  const type = firstAllowedType();
+  helper.setType(type);
   createError.value = '';
   creating.value = false;
   validationErrors.value = [];
   form.value = {
-    type: initialState.type,
+    type,
     config: {
-      name: suggestLayerName(initialState.type),
+      name: suggestLayerName(type),
       ...helper.default_value,
     } as Record<string, any>,
   };
@@ -233,14 +294,17 @@ function reset() {
 function close() {
   reset();
 }
-
-onMounted(() => {
-  onChangeType(form.value.type);
-});
 </script>
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapCommonButton
+        v-if="state"
+        :option="state"
+        @click.stop="control.onAction"
+      />
+    </template>
     <template #draggable="p">
       <DraggableItemPopup
         v-model:show="cShow"

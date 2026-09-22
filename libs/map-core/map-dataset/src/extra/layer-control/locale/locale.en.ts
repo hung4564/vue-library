@@ -97,6 +97,9 @@ export const LAYER_CONTROL_LOCALE = {
       create: LAYER_CONTROL_CREATE_LOCALE,
       field: LAYER_CONTROL_FIELD_LOCALE,
       info: { title: 'Info' },
+      group: {
+        rename: 'Rename group',
+      },
     },
   },
 };

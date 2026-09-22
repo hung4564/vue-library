@@ -16,6 +16,7 @@ export type ExportGeoFormProps = {
   sourceHint: string;
   error: string;
   busy: boolean;
+  mapId?: string;
   onFormatChange: (value: string) => void;
   onScopeChange: (value: string) => void;
   onFilenameChange: (value: string) => void;
@@ -70,6 +71,7 @@ export function ExportGeoForm(props: ExportGeoFormProps) {
         onChange={(value) => props.onFormatChange(String(value ?? 'geojson'))}
       />
       <InputCrs
+        mapId={props.mapId}
         label="Coordinate reference system"
         placeholder="Search or enter EPSG code"
         value={props.target}

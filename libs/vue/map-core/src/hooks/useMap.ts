@@ -45,6 +45,7 @@ export const useMap = (
   onDestroy?: MapFCOnUseMap,
 ) => {
   const i_map_id = inject('$map.id');
+  const i_drag_id = inject<string | undefined>('$map.dragId', undefined);
   const c_mapId = computed(() => {
     return (props.mapId || i_map_id) as string;
   });
@@ -105,8 +106,9 @@ export const useMap = (
     return getMap(id, cb);
   }
   const moduleContainerProps = computed(() => ({
-    mapId: props.mapId,
-    dragId: props.dragId,
+    // Resolved ids — empty defaults from withMapProps must not wipe inject.
+    mapId: c_mapId.value,
+    dragId: props.dragId || i_drag_id || '',
     btnWidth: props.btnWidth,
     position: props.position,
     controlVisible: props.controlVisible,

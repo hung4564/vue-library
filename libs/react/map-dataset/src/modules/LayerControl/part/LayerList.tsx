@@ -1,12 +1,28 @@
 import type { MapSimple } from '@hungpvq/map-core';
 
-import type { IListViewUI, LayerListGroupTree, LayerListItem } from '@hungpvq/map-dataset';
-import { layerMatchesSearch, listListViewGroups, syncListViewLayerOrder } from '@hungpvq/map-dataset';
+import type {
+  GlobalVisibilityMode,
+  IListViewUI,
+  LayerListGroupTree,
+  LayerListItem,
+} from '@hungpvq/map-dataset';
+import {
+  layerMatchesSearch,
+  listListViewGroups,
+  syncListViewLayerOrder,
+} from '@hungpvq/map-dataset';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { type KeyboardEvent as ReactKeyboardEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { MenuConditionProvider } from '../../../extra/menu/condition-context';
 import { useMapDataset } from '../../../store/dataset-api';
 import { ButtonToggleAllShow } from './ButtonToggleAllShow';
@@ -26,6 +42,7 @@ export function LayerList({
   disabledDeleteAll,
   disabledDrag,
   disabledMove,
+  globalVisibilityMode = 'sync',
   onCreate,
 }: {
   mapId: string;
@@ -36,6 +53,7 @@ export function LayerList({
   disabledDeleteAll?: boolean;
   disabledDrag?: boolean;
   disabledMove?: boolean;
+  globalVisibilityMode?: GlobalVisibilityMode;
   onCreate?: () => void;
 }) {
   const { callMap } = useMap({ mapId });
@@ -188,7 +206,11 @@ function refresh() {
           <div className="layer-control__header">
             {title}
             <div className="v-spacer" />
-            <ButtonToggleAllShow mapId={mapId} items={views} />
+            <ButtonToggleAllShow
+              mapId={mapId}
+              items={views}
+              globalVisibilityMode={globalVisibilityMode}
+            />
             {!disabledCreateGroup && (
               <MapControlButton onClick={addNewGroup} title="Create group" variant="plain">
                 <Icon path={mdiGroup} size={HEADER_ICON} />
@@ -258,6 +280,7 @@ function refresh() {
               items={filteredViews}
               selected={selected}
               disabledDrag={listDisabledDrag}
+              readonly={readonly}
               onSelectedChange={setSelected}
               onItemsChange={onItemsChange}
               onGroupRemove={onRemoveGroupLayer}

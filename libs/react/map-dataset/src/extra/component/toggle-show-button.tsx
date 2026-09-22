@@ -7,6 +7,9 @@ export type ToggleShowButtonProps = {
   disabled?: boolean;
   title: string;
   onToggle: () => void;
+  /** Match LayerControl header siblings (`medium` + 16px); rows keep `small` + 14px. */
+  size?: 'small' | 'medium' | 'large' | number;
+  iconSize?: string | number;
 };
 
 export function ToggleShowButton({
@@ -14,16 +17,24 @@ export function ToggleShowButton({
   disabled,
   title,
   onToggle,
+  size = 'small',
+  iconSize = '14px',
 }: ToggleShowButtonProps) {
+  const resolvedIconSize =
+    typeof iconSize === 'number' ? `${iconSize}px` : iconSize;
+
   return (
     <MapControlButton
       disabled={disabled}
       title={title}
       onClick={onToggle}
       variant="plain"
-      size="small"
+      size={size}
     >
-      <Icon path={show ? mdiEye : mdiEyeOff} size="14px" />
+      <Icon
+        path={show ? mdiEye : mdiEyeOff}
+        size={resolvedIconSize}
+      />
     </MapControlButton>
   );
 }

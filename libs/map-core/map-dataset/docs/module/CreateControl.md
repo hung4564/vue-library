@@ -2,6 +2,24 @@
 
 Dialog to add a dataset from the UI by **data kind**. `LayerControl` opens this when **Create layer** is clicked — you usually do **not** mount it yourself.
 
+## Props
+
+Shared map props (`mapId`, `position`, `controlLayout`, `controlVisible`, …) apply. CreateControl also registers a **chrome button** (`mdiPlus`) via ModuleContainer `#btn` / toolbar.
+
+| Prop | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `show` / `v-model:show` | `boolean` | — | Open the create popup |
+| `createLayerTypes` | `LayerType[]` | all `LAYER_TYPES` | Allowlist for the type select (`resolveCreateControlLayerTypes`) |
+| `controlVisible` | `boolean` | `true` | Show map chrome button; LayerControl nests with `false` |
+
+Standalone:
+
+```vue
+<CreateControl v-model:show="show" :create-layer-types="['geojson', 'xyz']" />
+```
+
+When nested under LayerControl, the host passes `controlVisible={false}` and `createLayerTypes` so only LayerControl’s **+** opens create.
+
 Layer types (`LAYER_TYPES`):
 
 | Type | Data |

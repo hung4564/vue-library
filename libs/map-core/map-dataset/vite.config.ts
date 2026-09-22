@@ -6,28 +6,26 @@ import * as fs from 'node:fs';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
+const WORKER_NAMES = ['geojson.worker', 'vectortile.worker'] as const;
+
 /**
  * Library mode rewrites Worker URLs to absolute `/assets/…` or nested
  * `"" + new URL(...).href` forms. Normalize to a plain relative
- * `assets/geojson.worker.js` so browsers resolve from the published package.
- * Also rewrite the source default `./geojson.worker.ts` specifier used by
- * {@link resolveGisWorkerUrl}.
+ * `assets/<name>.worker.js` so browsers resolve from the published package.
+ * Also rewrite source `./<name>.worker.ts` specifiers used by createWorker.
  */
-function relativeGisWorkerUrl(): Plugin {
+function relativeWorkerUrls(): Plugin {
   const patterns: Array<{ re: RegExp; to: string }> = [
     {
-      // Source default specifier in resolveGisWorkerUrl / DEFAULT_GIS_WORKER_SPEC
-      re: /\.\/geojson\.worker\.ts/g,
-      to: 'assets/geojson.worker.js',
+      re: /\.\/(geojson|vectortile)\.worker\.ts/g,
+      to: 'assets/$1.worker.js',
     },
     {
-      // Absolute path from older Vite lib emits
-      re: /new URL\(\s*(?:\/\*\s*@vite-ignore\s*\*\/\s*)?["']\/assets\/(geojson\.worker[^"']+)["']\s*,\s*import\.meta\.url\s*\)/g,
+      re: /new URL\(\s*(?:\/\*\s*@vite-ignore\s*\*\/\s*)?["']\/assets\/((?:geojson|vectortile)\.worker[^"']+)["']\s*,\s*import\.meta\.url\s*\)/g,
       to: 'new URL("assets/$1", import.meta.url)',
     },
     {
-      // Nested "" + new URL(...).href wrapper
-      re: /new URL\(\s*(?:\/\*\s*@vite-ignore\s*\*\/\s*)?""\s*\+\s*new URL\(\s*["'](?:\.\/)?assets\/(geojson\.worker[^"']+)["']\s*,\s*import\.meta\.url\s*\)\.href\s*,\s*import\.meta\.url\s*\)/g,
+      re: /new URL\(\s*(?:\/\*\s*@vite-ignore\s*\*\/\s*)?""\s*\+\s*new URL\(\s*["'](?:\.\/)?assets\/((?:geojson|vectortile)\.worker[^"']+)["']\s*,\s*import\.meta\.url\s*\)\.href\s*,\s*import\.meta\.url\s*\)/g,
       to: 'new URL("assets/$1", import.meta.url)',
     },
   ];
@@ -45,14 +43,15 @@ function relativeGisWorkerUrl(): Plugin {
     return changed ? next : null;
   };
 
+  const touchesWorker = (code: string) =>
+    WORKER_NAMES.some((name) => code.includes(name));
+
   return {
-    name: 'map-dataset-relative-gis-worker-url',
+    name: 'map-dataset-relative-worker-urls',
     apply: 'build',
     generateBundle(_opts, bundle) {
       for (const chunk of Object.values(bundle)) {
-        if (chunk.type !== 'chunk' || !chunk.code.includes('geojson.worker')) {
-          continue;
-        }
+        if (chunk.type !== 'chunk' || !touchesWorker(chunk.code)) continue;
         const next = rewrite(chunk.code);
         if (next) chunk.code = next;
       }
@@ -68,11 +67,20 @@ function relativeGisWorkerUrl(): Plugin {
         const file = path.join(root, name);
         if (!fs.statSync(file).isFile()) continue;
         const code = fs.readFileSync(file, 'utf8');
+        if (!touchesWorker(code)) continue;
         const next = rewrite(code);
         if (next) fs.writeFileSync(file, next);
       }
     },
   };
+}
+
+function workerEntryFileName(chunkInfo: { name?: string }): string {
+  const name = chunkInfo.name ?? '';
+  if (name.includes('vectortile')) return 'assets/vectortile.worker.js';
+  if (name.includes('geojson')) return 'assets/geojson.worker.js';
+  // Fallback — keep distinct files if Vite names the entry differently.
+  return `assets/${name || 'worker'}.js`;
 }
 
 export default defineConfig(() => ({
@@ -85,16 +93,16 @@ export default defineConfig(() => ({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
     }),
-    relativeGisWorkerUrl(),
+    relativeWorkerUrls(),
   ],
   worker: {
     plugins: () => [nxViteTsPaths()],
     format: 'es' as const,
     rollupOptions: {
       output: {
-        // One file so consumers do not need sibling chunk copies under public/.
+        // One file per worker entry (no shared worker chunks under public/).
         inlineDynamicImports: true,
-        entryFileNames: 'assets/geojson.worker.js',
+        entryFileNames: workerEntryFileName,
       },
     },
   },

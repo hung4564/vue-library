@@ -1,7 +1,15 @@
 <script setup lang="ts">
 
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { layerMatchesSearch, listListViewGroups, syncListViewLayerOrder, type LayerListGroupTree, type LayerListItem, type IListViewUI } from '@hungpvq/map-dataset';
+import {
+  layerMatchesSearch,
+  listListViewGroups,
+  syncListViewLayerOrder,
+  type GlobalVisibilityMode,
+  type LayerListGroupTree,
+  type LayerListItem,
+  type IListViewUI,
+} from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
@@ -35,6 +43,7 @@ const props = withDefaults(
       disabledCreateGroup?: boolean;
       disabledDeleteAll?: boolean;
       disabledMove?: boolean;
+      globalVisibilityMode?: GlobalVisibilityMode;
     }
   >(),
   {
@@ -45,6 +54,7 @@ const props = withDefaults(
     disabledCreateGroup: false,
     disabledDeleteAll: false,
     disabledMove: false,
+    globalVisibilityMode: 'sync',
   },
 );
 const emit = defineEmits<{
@@ -231,7 +241,10 @@ function onTreeKeydown(event: KeyboardEvent) {
     <div v-if="views.length" class="layer-control__header">
       <slot name="title"></slot>
       <div class="v-spacer"></div>
-      <ButtonToggleShowALl :items="views" />
+      <ButtonToggleShowALl
+        :items="views"
+        :globalVisibilityMode="globalVisibilityMode"
+      />
       <MapControlButton
         @click="addNewGroup()"
         v-if="!disabledCreateGroup"
@@ -290,6 +303,7 @@ function onTreeKeydown(event: KeyboardEvent) {
         v-model:selected="layers_select"
         :disabled="disabled"
         :disabled-drag="listDisabledDrag"
+        :readonly="readonly"
         @click-drag:done="updateLayers()"
         @click-group:remove="onRemoveGroupLayer"
       >

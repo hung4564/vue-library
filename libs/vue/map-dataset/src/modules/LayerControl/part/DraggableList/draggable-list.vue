@@ -14,6 +14,7 @@
         <DraggableListGroupItem
           :key="element.id"
           :layer-group="element"
+          :readonly="readonly"
           @update:layer-group="onUpdateGroup($event, index)"
           :disabledDrag="disabledDrag"
           @click:delete="deleteGroup(element, index)"
@@ -107,6 +108,7 @@ const props = defineProps({
   selected: { type: Array, default: () => [] },
   disabledSelect: Boolean,
   disabledDrag: Boolean,
+  readonly: Boolean,
 });
 const emit = defineEmits([
   'update:selected',
@@ -205,6 +207,7 @@ function unGroup(group: LayerListGroupTree, groupIndex: number) {
 }
 function onUpdateGroup(newGroup: LayerListGroupTree, groupIndex: number) {
   treeLayer.value[groupIndex] = { ...treeLayer.value[groupIndex], ...newGroup };
+  onEnd();
 }
 function onEnd() {
   nextTick(() => {

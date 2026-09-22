@@ -5,7 +5,12 @@ import { useMemo } from 'react';
 import type { CreateConfigFormProps } from './types';
 
 /** GeoJSON layer settings — mirrors Vue `geojson-settings.vue`. */
-export function GeojsonSettings({ config, onChange, trans }: CreateConfigFormProps) {
+export function GeojsonSettings({
+  config,
+  onChange,
+  trans,
+  mapId,
+}: CreateConfigFormProps) {
   const styleItems = useMemo(
     () => [
       { value: GEOJSON_STYLE_AUTO, text: trans('map.layer-control.field.style-type-auto') },
@@ -40,6 +45,7 @@ export function GeojsonSettings({ config, onChange, trans }: CreateConfigFormPro
       </div>
       <div className="map-col-12">
         <InputCrs
+          mapId={mapId}
           label={trans('map.layer-control.field.crs')}
           placeholder={trans('map.layer-control.field.crs-placeholder')}
           value={String(config.crs ?? '4326')}

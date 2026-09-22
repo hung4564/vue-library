@@ -60,10 +60,13 @@ export type { LayerControlTitleMenuState } from './extra/layer-control/title-men
 export { registerAddGeojsonHereForMap } from './extra/layer-control/add-geojson-here';
 
 export {
+  applyAllLayerVisibility,
   applyGlobalLayerVisibility,
   applyListViewMapVisibility,
   setListViewIntendedShow,
+  syncAllLayerIntendedShow,
 } from './extra/layer-control/visibility';
+export type { GlobalVisibilityMode } from './extra/layer-control/visibility';
 
 export {
   applyToggleShowIntent,

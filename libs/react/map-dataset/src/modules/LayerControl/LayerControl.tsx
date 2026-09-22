@@ -4,8 +4,10 @@ import {
   getLayerControlTitleMenuState,
   registerAddGeojsonHereForMap,
   warnIfDatasetRegistryMissing,
+  type GlobalVisibilityMode,
   type IDataset,
 } from '@hungpvq/map-dataset';
+import type { LayerType } from '@hungpvq/map-dataset/create-control';
 import {
   MENU_CONTROL_ID,
   resolveMenuContextSource,
@@ -38,6 +40,14 @@ import { LayerList } from './part/LayerList';
 
 type LayerControlSlot = ReactNode | ((props: { mapId: string }) => ReactNode);
 
+const defaultLayerControlProps = {
+  disabledCreate: false,
+  disabledCreateGroup: false,
+  disabledDeleteAll: false,
+  disabledMove: false,
+  globalVisibilityMode: 'sync' as GlobalVisibilityMode,
+};
+
 export interface LayerControlProps extends WithMapPropType {
   show?: boolean;
   disabledCreate?: boolean;
@@ -45,6 +55,8 @@ export interface LayerControlProps extends WithMapPropType {
   disabledDeleteAll?: boolean;
   disabledMove?: boolean;
   menuContext?: MenuContextSource;
+  globalVisibilityMode?: GlobalVisibilityMode;
+  createLayerTypes?: LayerType[];
   /** Slot after list header actions (Vue: titleList). */
   titleList?: LayerControlSlot;
   /** Slot below the layer list (Vue: endList), e.g. BaseMapCard. */
@@ -58,7 +70,7 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
 }
 
 export function LayerControl(props: LayerControlProps) {
-  const merged = { ...defaultMapProps, ...props };
+  const merged = { ...defaultMapProps, ...defaultLayerControlProps, ...props };
   const { mapId, moduleContainerProps, order } = useMap({
     ...merged,
     controlId: 'mapLayerControl',
@@ -92,10 +104,12 @@ export function LayerControl(props: LayerControlProps) {
     setShow,
     initialPanelPosition: { location: 'left' },
     getProps: () => ({
-      disabledCreate: props.disabledCreate,
-      disabledCreateGroup: props.disabledCreateGroup,
-      disabledDeleteAll: props.disabledDeleteAll,
-      disabledMove: props.disabledMove,
+      disabledCreate: merged.disabledCreate,
+      disabledCreateGroup: merged.disabledCreateGroup,
+      disabledDeleteAll: merged.disabledDeleteAll,
+      disabledMove: merged.disabledMove,
+      globalVisibilityMode: merged.globalVisibilityMode,
+      createLayerTypes: props.createLayerTypes,
       position: merged.position,
       controlLayout: merged.controlLayout,
     }),
@@ -181,15 +195,16 @@ const { state, control } = useToolbarControl(mapId, merged, {
             <MenuConditionProvider value={layerMenuContext}>
               <LayerList
                 mapId={mapId}
-                disabledCreate={props.disabledCreate}
-                disabledCreateGroup={props.disabledCreateGroup}
-                disabledDeleteAll={props.disabledDeleteAll}
-                disabledMove={props.disabledMove}
+                disabledCreate={merged.disabledCreate}
+                disabledCreateGroup={merged.disabledCreateGroup}
+                disabledDeleteAll={merged.disabledDeleteAll}
+                disabledMove={merged.disabledMove}
+                globalVisibilityMode={merged.globalVisibilityMode}
                 onCreate={() => toggleShowCreate(true)}
                 title={
                   titleSlot !== null && titleSlot !== undefined ? (
                     titleSlot
-                  ) : !props.disabledCreate ? (
+                  ) : !merged.disabledCreate ? (
                     <MapControlButton
                       variant="plain"
                       data-testid="map-layer-create"
@@ -210,8 +225,9 @@ const { state, control } = useToolbarControl(mapId, merged, {
         mapId={mapId}
         show={showCreate}
         onShowChange={toggleShowCreate}
-      />
-      {props.children}
+        createLayerTypes={props.createLayerTypes}
+        controlVisible={false}
+      />      {props.children}
       <LayerMenuDefaultHandle mapId={mapId} />
     </ModuleContainer>
   );

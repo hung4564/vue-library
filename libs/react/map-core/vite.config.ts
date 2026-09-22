@@ -67,6 +67,24 @@ export default defineConfig(() => ({
       ],
       output: {
         assetFileNames: 'style.css',
+        /**
+         * Keep MapContext / useMap in one shared chunk so `index` and `fields`
+         * entries do not each embed a separate createContext (breaks InputCrs).
+         */
+        manualChunks(id) {
+          const norm = id.replace(/\\/g, '/');
+          if (
+            norm.includes('/context/MapContext') ||
+            norm.includes('/hooks/useMap') ||
+            norm.includes('/store/mitt-store') ||
+            norm.includes('/store/store.ts') ||
+            norm.includes('/store/react-adapter') ||
+            norm.includes('/extra/crs/')
+          ) {
+            return 'map-shared';
+          }
+          return undefined;
+        },
       },
     },
   },

@@ -1,8 +1,8 @@
 import type { MapSimple } from '@hungpvq/map-core';
 
-import type { IListViewUI } from '@hungpvq/map-dataset';
+import type { GlobalVisibilityMode, IListViewUI } from '@hungpvq/map-dataset';
 import {
-  applyGlobalLayerVisibility,
+  applyAllLayerVisibility,
   notifyMapDatasetStore,
 } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
@@ -14,9 +14,11 @@ import { useMapDataset } from '../../../store/dataset-api';
 export function ButtonToggleAllShow({
   mapId,
   items,
+  globalVisibilityMode = 'sync',
 }: {
   mapId: string;
   items: IListViewUI[];
+  globalVisibilityMode?: GlobalVisibilityMode;
 }) {
   const { callMap } = useMap({ mapId });
   const { trans } = useLang(mapId);
@@ -26,13 +28,14 @@ export function ButtonToggleAllShow({
   const allLayerShow = store?.allLayerShow !== false;
 
   useEffect(() => {
+    if (globalVisibilityMode !== 'override') return;
     if (!store || store.allLayerShow) return;
     callMap((map: MapSimple) => {
-      applyGlobalLayerVisibility(items, map, false);
+      applyAllLayerVisibility(items, map, false, 'override');
     });
     // Re-hide when the list changes while global is off.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, mapId, datasetVersion]);
+  }, [items, mapId, datasetVersion, globalVisibilityMode]);
 
   function onToggleShow() {
     if (!store) return;
@@ -40,7 +43,7 @@ export function ButtonToggleAllShow({
     store.allLayerShow = value;
     notifyMapDatasetStore(store);
     callMap((map: MapSimple) => {
-      applyGlobalLayerVisibility(items, map, value);
+      applyAllLayerVisibility(items, map, value, globalVisibilityMode);
     });
   }
 
@@ -55,6 +58,8 @@ export function ButtonToggleAllShow({
           ? 'map.layer-control.toggle.hide-all'
           : 'map.layer-control.toggle.show-all',
       )}
+      size="medium"
+      iconSize="16px"
       onToggle={onToggleShow}
     />
   );

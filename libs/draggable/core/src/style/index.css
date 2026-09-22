@@ -348,6 +348,28 @@
 .context-menu-container {
   pointer-events: all;
   overflow: visible;
+  /* Teleported to body — do not inherit host page font/size. */
+  font-family: var(
+    --draggable-font-family,
+    var(
+      --map-font-family,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      'Noto Sans',
+      sans-serif
+    )
+  );
+  font-size: var(
+    --draggable-font-size-base,
+    var(--map-font-size-base, 14px)
+  );
+  line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
+  color: var(--card-color, var(--map-card-text, inherit));
 }
 
 .context-menu-container:not(.context-menu-mobile) {
