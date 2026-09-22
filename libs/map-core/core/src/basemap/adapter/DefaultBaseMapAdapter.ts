@@ -37,6 +37,15 @@ export class DefaultBaseMapAdapter extends BaseMapAdapter {
     layer.addToMap(map, getLowestLayerId(map));
     this.layer = layer;
   }
+
+  public override async setOpacity(
+    mapId: string,
+    opacity: number,
+  ): Promise<void> {
+    if (!this.layer) return;
+    const map = await awaitMap(this.getMap, mapId);
+    this.layer.setOpacity(map, opacity);
+  }
 }
 
 /** First non-basemap style layer id (insert basemap before it). */

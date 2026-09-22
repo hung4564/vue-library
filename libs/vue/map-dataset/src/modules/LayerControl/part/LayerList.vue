@@ -43,6 +43,7 @@ const props = withDefaults(
       disabledCreateGroup?: boolean;
       disabledDeleteAll?: boolean;
       disabledMove?: boolean;
+      readonly?: boolean;
       globalVisibilityMode?: GlobalVisibilityMode;
     }
   >(),
@@ -54,6 +55,7 @@ const props = withDefaults(
     disabledCreateGroup: false,
     disabledDeleteAll: false,
     disabledMove: false,
+    readonly: false,
     globalVisibilityMode: 'sync',
   },
 );
@@ -61,7 +63,7 @@ const emit = defineEmits<{
   create: [];
 }>();
 provideMenuConditionContext(() => ({
-  readonly: false,
+  readonly: props.readonly,
   disabledMove: props.disabledMove,
   disabledCreateGroup: props.disabledCreateGroup,
   control: MENU_CONTROL_ID.layerControl,
@@ -323,7 +325,7 @@ function onTreeKeydown(event: KeyboardEvent) {
               @click="toggleSelect(item)"
               @click:remove="onRemoveLayer"
               :map-id="mapId"
-              :readonly="false"
+              :readonly="readonly"
               :disabledMove="disabledMove"
               :disabledCreateGroup="disabledCreateGroup"
               :getGroups="getMenuGroups"

@@ -36,6 +36,7 @@ export function useBaseMap(mapId: string) {
 
   const baseMaps = ref<BaseMapItem[]>(manager.getBaseMaps());
   const currentBaseMap = ref<BaseMapItem | undefined>(manager.getCurrent());
+  const opacity = ref(manager.getOpacity());
 
   const remove = subscribeBasemapMirror(emitter, {
     onBaseMaps: (items) => {
@@ -44,6 +45,9 @@ export function useBaseMap(mapId: string) {
     onCurrent: (baseMap) => {
       currentBaseMap.value = baseMap;
     },
+    onOpacity: (value) => {
+      opacity.value = value;
+    },
   });
 
   onUnmounted(remove);
@@ -51,10 +55,14 @@ export function useBaseMap(mapId: string) {
   return {
     baseMaps,
     currentBaseMap,
+    opacity,
     setBaseMaps: (items: BaseMapItem[]) => manager.setBaseMaps(items),
     setDefaultBaseMap: (defaultBaseMap?: string) =>
       manager.setDefaultBaseMap(defaultBaseMap),
     setCurrent: (baseMap: BaseMapItem) => manager.setCurrent(baseMap),
+    setOpacity: (value: number) => manager.setOpacity(value),
+    addBaseMap: (item: BaseMapItem) => manager.addBaseMap(item),
+    removeBaseMap: (id: string | number) => manager.removeBaseMap(id),
     init: (items: BaseMapItem[], defaultBaseMap?: string) =>
       manager.init(items, defaultBaseMap),
     remove,

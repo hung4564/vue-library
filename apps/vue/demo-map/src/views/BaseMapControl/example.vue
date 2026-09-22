@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
@@ -22,11 +22,11 @@ function onMapLoaded(map: MapSimple) {
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
-    <BaseMapControl position="bottom-left" />
+    <BaseMapControl position="bottom-left" show-opacity />
     <BaseMapTagControl position="bottom-left" />
-    <div class="base-map-card" v-if="mapId">
+    <div class="demo-basemap-card-panel" v-if="mapId">
       <MapCard>
-        <BaseMapCard :mapId="mapId" />
+        <BaseMapCard :mapId="mapId" show-opacity allow-add-basemap />
       </MapCard>
     </div>
     <DemoHelpPanel />
@@ -34,13 +34,11 @@ function onMapLoaded(map: MapSimple) {
 </template>
 
 <style>
-
-.base-map-card {
+.demo-basemap-card-panel {
   position: fixed;
   top: 10px;
   right: 10px;
-  width: 300px;
-  height: 90px;
+  width: 320px;
   z-index: 5;
 }
 </style>

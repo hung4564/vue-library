@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { MapRangeSlider } from '@hungpvq/react-map-core/fields';
 
 export interface LayerItemSliderProps {
   value: number;
@@ -17,22 +17,15 @@ export function LayerItemSlider({
   disabled = false,
   onChange,
 }: LayerItemSliderProps) {
-  const backgroundSize = useMemo(
-    () => `${((value - min) * 100) / (max - min)}% 100%`,
-    [value, min, max],
-  );
-
   return (
-    <input
-      type="range"
+    <MapRangeSlider
       className="layer-item-slider"
+      value={value}
       min={min}
       max={max}
       step={step}
-      value={value}
       disabled={disabled}
-      style={{ backgroundSize }}
-      onChange={(e) => onChange?.(parseFloat(e.target.value))}
+      onChange={onChange}
     />
   );
 }

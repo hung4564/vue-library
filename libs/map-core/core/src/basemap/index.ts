@@ -21,9 +21,25 @@ export { BasemapError } from './errors';
 export { INIT_BASEMAPS } from './init';
 export { BASEMAP_CONTROL_LOCALE } from './locale';
 export { logger } from './logger';
-export { BASEMAP_PREFIX, BaseMapLayer } from './model/BaseMapLayer';
+export { BASEMAP_PREFIX, BaseMapLayer, getBasemapOpacityPaintKeys } from './model/BaseMapLayer';
 export { ensureMapBaseMapStore } from './register-domain-store';
 export { MittTypeBaseMapEventKey, createDefaultBaseMapStore } from './types';
+export { createCustomBasemapItem, isCustomBasemapItem } from './create-custom-basemap';
+export type { CreateCustomBasemapInput } from './create-custom-basemap';
+export {
+  buildSampleRasterTileUrl,
+  isAbsoluteHttpUrl,
+  isMapLibreStyleLike,
+  isValidRasterTileTemplate,
+  validateBasemapSource,
+} from './validate-basemap-source';
+export type {
+  BasemapSourceType,
+  BasemapSourceValidationFail,
+  BasemapSourceValidationOk,
+  BasemapSourceValidationResult,
+  ValidateBasemapSourceInput,
+} from './validate-basemap-source';
 
 export type {
   BaseMapItem,

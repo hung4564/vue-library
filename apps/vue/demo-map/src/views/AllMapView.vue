@@ -1,5 +1,4 @@
-﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+<script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { getChartRandomColor } from '@hungpvq/map-core';
 import type {
@@ -54,6 +53,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
@@ -169,7 +169,7 @@ function createDatasetMeasure(
     <DrawControl position="top-right" />
     <LayerControl position="top-left" show>
       <template #endList="{ mapId }">
-        <BaseMapCard :mapId="mapId" />
+        <BaseMapCard :mapId="mapId" showOpacity allow-add-basemap />
       </template>
     </LayerControl>
     <InspectControl position="top-right" />
@@ -191,9 +191,8 @@ function createDatasetMeasure(
     <HomeControl />
     <MouseCoordinatesControl />
     <MapContextMenuControl />
-    <BaseMapControl position="bottom-left" />
+    <BaseMapControl position="bottom-left" allow-add-basemap />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>
 </template>
-

@@ -18,6 +18,7 @@ export {
   InputText,
   InputTextArea,
   InputTextarea,
+  MapRangeSlider,
 } from './field';
 
 export { default as MapButton } from './components/MapButton.vue';

@@ -41,13 +41,16 @@ export function useBaseMap(mapId: string) {
   const [currentBaseMap, setCurrentBaseMapState] = useState<
     BaseMapItem | undefined
   >(manager.getCurrent());
+  const [opacity, setOpacityState] = useState(manager.getOpacity());
 
   useEffect(() => {
     setBaseMapsState(manager.getBaseMaps());
     setCurrentBaseMapState(manager.getCurrent());
+    setOpacityState(manager.getOpacity());
     const unsub = subscribeBasemapMirror(emitter, {
       onBaseMaps: setBaseMapsState,
       onCurrent: setCurrentBaseMapState,
+      onOpacity: setOpacityState,
     });
     unsubRef.current = unsub;
     return () => {
@@ -68,6 +71,18 @@ export function useBaseMap(mapId: string) {
     (baseMap: BaseMapItem) => manager.setCurrent(baseMap),
     [manager],
   );
+  const setOpacity = useCallback(
+    (value: number) => manager.setOpacity(value),
+    [manager],
+  );
+  const addBaseMap = useCallback(
+    (item: BaseMapItem) => manager.addBaseMap(item),
+    [manager],
+  );
+  const removeBaseMap = useCallback(
+    (id: string | number) => manager.removeBaseMap(id),
+    [manager],
+  );
   const init = useCallback(
     (items: BaseMapItem[], defaultBaseMap?: string) =>
       manager.init(items, defaultBaseMap),
@@ -81,9 +96,13 @@ export function useBaseMap(mapId: string) {
   return {
     baseMaps,
     currentBaseMap,
+    opacity,
     setBaseMaps,
     setDefaultBaseMap,
     setCurrent,
+    setOpacity,
+    addBaseMap,
+    removeBaseMap,
     init,
     remove,
   };

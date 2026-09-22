@@ -18,7 +18,10 @@ export {
   InputText,
   InputTextArea,
   InputTextarea,
+  MapRangeSlider,
 } from './field';
+
+export type { MapRangeSliderProps } from './field';
 
 export { MapButton } from './components/MapButton';
 export { MapCard } from './components/MapCard';

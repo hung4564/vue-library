@@ -1,4 +1,4 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
+import type { MapSimple } from '@hungpvq/map-core';
 import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
 import {
   BaseMapCard,
@@ -32,6 +32,7 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { useMemo } from 'react';
@@ -40,7 +41,6 @@ import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { createDatasetMeasure } from './all-map-view-measure';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function AllMapView() {
   useDatasetRegistry();
@@ -89,7 +89,9 @@ export function AllMapView() {
         <LayerControl
           position="top-left"
           show
-          endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
+          endList={({ mapId }) => (
+            <BaseMapCard mapId={mapId} showOpacity allowAddBasemap />
+          )}
         />
         <InspectControl position="top-right" />
         <PrintAdvancedControl />
@@ -110,7 +112,7 @@ export function AllMapView() {
         <HomeControl />
         <MouseCoordinatesControl />
         <MapContextMenuControl />
-        <BaseMapControl position="bottom-left" />
+        <BaseMapControl position="bottom-left" allowAddBasemap />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
       </Map>

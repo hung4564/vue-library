@@ -167,7 +167,92 @@
   opacity: 0.88;
 }
 
-/* ---------- Slider ---------- */
+/* ---------- Map range slider (basemap + layer-item opacity) ---------- */
+.map-range-slider,
+.layer-item-slider,
+.layer-item__opacity input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: var(--map-space-md, 8px) 0;
+  border: none;
+  border-radius: 0;
+  background: var(--map-surface-variant-color, #e5e7eb);
+  background-image: linear-gradient(
+    to right,
+    var(--map-primary-color, #004e98) 0%,
+    var(--map-primary-color, #004e98) 100%
+  );
+  background-repeat: no-repeat;
+}
+
+.map-range-slider:focus,
+.layer-item-slider:focus,
+.layer-item__opacity input[type='range']:focus {
+  outline: none;
+}
+
+.map-range-slider::-webkit-slider-runnable-track,
+.layer-item-slider::-webkit-slider-runnable-track,
+.layer-item__opacity input[type='range']::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+.map-range-slider::-webkit-slider-thumb,
+.layer-item-slider::-webkit-slider-thumb,
+.layer-item__opacity input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  border: 3px solid var(--map-primary-color, #004e98);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: var(--map-surface-color, #ffffff);
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.map-range-slider:focus::-webkit-slider-runnable-track,
+.layer-item-slider:focus::-webkit-slider-runnable-track,
+.layer-item__opacity
+  input[type='range']:focus::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.map-range-slider::-moz-range-track,
+.layer-item-slider::-moz-range-track,
+.layer-item__opacity input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+.map-range-slider::-moz-range-thumb,
+.layer-item-slider::-moz-range-thumb,
+.layer-item__opacity input[type='range']::-moz-range-thumb {
+  box-shadow: none;
+  border: 3px solid var(--map-primary-color, #004e98);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: var(--map-surface-color, #ffffff);
+  cursor: pointer;
+}
+
+/* ---------- Slider (InputSlider with value box) ---------- */
 .input-container:has(.input-slider__value) {
   display: flex;
 }
@@ -204,7 +289,7 @@ input[type='range'] {
   margin: var(--map-space-md, 8px) 0;
   border: none;
   border-radius: 0;
-  background: var(--map-surface-variant-color, #3e3e3f);
+  background: var(--map-surface-variant-color, #e5e7eb);
   background-image: linear-gradient(
     to right,
     var(--map-primary-color, #004e98) 0%,
@@ -231,13 +316,13 @@ input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   box-shadow: none;
-  border: 4px solid var(--map-primary-color, #004e98);
-  height: 16px;
-  width: 16px;
+  border: 3px solid var(--map-primary-color, #004e98);
+  height: 14px;
+  width: 14px;
   border-radius: 50%;
-  background: var(--map-surface-variant-color, #3e3e3f);
+  background: var(--map-surface-color, #ffffff);
   cursor: pointer;
-  margin-top: -6px;
+  margin-top: -5px;
 }
 
 input[type='range']:focus::-webkit-slider-runnable-track {
@@ -256,10 +341,10 @@ input[type='range']::-moz-range-track {
 
 input[type='range']::-moz-range-thumb {
   box-shadow: none;
-  border: 4px solid var(--map-primary-color, #004e98);
-  height: 16px;
-  width: 16px;
-  border-radius: 2px;
+  border: 3px solid var(--map-primary-color, #004e98);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
   background: var(--map-surface-color, #ffffff);
   cursor: pointer;
 }

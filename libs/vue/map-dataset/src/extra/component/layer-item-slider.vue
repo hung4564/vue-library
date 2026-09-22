@@ -1,45 +1,35 @@
 <template>
-  <input
-    :value="form"
-    @input="({ target }) => (form = parseFloat(target.value))"
-    type="range"
+  <MapRangeSlider
+    class="layer-item-slider"
+    :model-value="modelValue"
     :min="min"
     :max="max"
     :step="step"
-    :style="{ backgroundSize: backgroundSize }"
     :disabled="disabled"
+    @update:model-value="$emit('update:modelValue', $event)"
   />
 </template>
-<script>
-export default {
-  name: 'VueSlider',
-  props: {
-    modelValue: {},
-    min: {
-      default: 0,
-    },
-    max: {
-      default: 1,
-    },
-    step: {
-      default: 0.01,
-    },
-    disabled: Boolean,
+<script setup lang="ts">
+import { MapRangeSlider } from '@hungpvq/vue-map-core/fields';
+
+withDefaults(
+  defineProps<{
+    modelValue?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    disabled?: boolean;
+  }>(),
+  {
+    modelValue: 0,
+    min: 0,
+    max: 1,
+    step: 0.01,
+    disabled: false,
   },
-  computed: {
-    backgroundSize() {
-      return (
-        ((this.modelValue - this.min) * 100) / (this.max - this.min) + '% 100%'
-      );
-    },
-    form: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.$emit('update:modelValue', value);
-      },
-    },
-  },
-};
+);
+
+defineEmits<{
+  'update:modelValue': [value: number];
+}>();
 </script>

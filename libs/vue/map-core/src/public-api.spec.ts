@@ -115,6 +115,7 @@ export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'MapErrorToast',
   'MapIcon',
   'MapImage',
+  'MapRangeSlider',
 ] as const;
 
 describe('public API surface', () => {

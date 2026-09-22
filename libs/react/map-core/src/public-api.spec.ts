@@ -118,6 +118,7 @@ export const REACT_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'MapErrorToast',
   'MapIcon',
   'MapImage',
+  'MapRangeSlider',
 ] as const;
 
 describe('public API surface', () => {

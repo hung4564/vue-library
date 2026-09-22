@@ -100,4 +100,23 @@ describe('BaseMapLayer', () => {
     expect(map.addSource).toHaveBeenCalled();
     expect(map.addLayer).toHaveBeenCalled();
   });
+
+  it('setOpacity applies raster-opacity paint', async () => {
+    const layer = new BaseMapLayer();
+    await layer.setBaseMap({
+      id: 1,
+      title: 'OSM',
+      type: 'raster',
+      links: ['https://tile.example/{z}/{x}/{y}.png'],
+      thumbnail: '',
+    });
+    const map = createFakeMap();
+    layer.addToMap(map as any);
+    layer.setOpacity(map as any, 0.4);
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      `${BASEMAP_PREFIX}layer`,
+      'raster-opacity',
+      0.4,
+    );
+  });
 });

@@ -16,6 +16,11 @@ export abstract class BaseMapAdapter {
     await this.onApplyBaseMap(mapId, baseMap);
   }
 
+  /** Apply paint opacity to the active basemap layers (no-op unless overridden). */
+  public async setOpacity(_mapId: string, _opacity: number): Promise<void> {
+    return;
+  }
+
   /** Resolve default by id, then title, then `default` flag, then first item. */
   public getIndexDefault(
     baseMaps: BaseMapItem[],

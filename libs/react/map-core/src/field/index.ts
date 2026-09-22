@@ -27,6 +27,8 @@ export { InputActionRow } from './input-action-row';
 export type { InputActionRowProps } from './input-action-row';
 export { InputSlider } from './input-slider';
 export type { InputSliderProps } from './input-slider';
+export { MapRangeSlider } from './map-range-slider';
+export type { MapRangeSliderProps } from './map-range-slider';
 export { InputText } from './input-text';
 export type { InputTextProps } from './input-text';
 export {

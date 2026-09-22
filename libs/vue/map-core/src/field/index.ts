@@ -15,6 +15,7 @@ export { default as BaseCollapse } from './base-collapse.vue';
 export { default as InputTextArea } from './input-textarea.vue';
 export { default as InputTextarea } from './input-textarea.vue';
 export { default as InputSlider } from './input-slider.vue';
+export { default as MapRangeSlider } from './map-range-slider.vue';
 export { default as InputCheckbox } from './input-checkbox.vue';
 export { default as InputChoose } from './input-choose.vue';
 export { default as InputColorPicker } from './input-colorPicker.vue';

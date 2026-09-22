@@ -13,10 +13,12 @@ and
 
 | Prop             | Description   | Type     | Required | Default Value     |
 | ---------------- | ------------- | -------- | -------- | ----------------- |
-| `title`          |               | `string` | `fasle`  | ``                |
-| `defaultBaseMap` |               | `string` | `fasle`  | `Open Street Map` |
-| `controlIcon`    |               | `string` | `fasle`  | ``                |
-| `baseMaps`       | BaseMapItem[] | `array`  | `fasle`  | ``                |
+| `title`          |               | `string`  | `false` | ``                |
+| `defaultBaseMap` |               | `string`  | `false` | `Open Street Map` |
+| `controlIcon`    |               | `string`  | `false` | ``                |
+| `baseMaps`       | BaseMapItem[] | `array`   | `false` | ``                |
+| `showOpacity`    | Show opacity slider in the settings popup | `boolean` | `false` | `false` |
+| `allowAddBasemap` | Show an **Add** tile in the basemap grid (opens URL form). Custom tiles show a remove control on the thumbnail. | `boolean` | `false` | `false` |
 
 ## Slots
 

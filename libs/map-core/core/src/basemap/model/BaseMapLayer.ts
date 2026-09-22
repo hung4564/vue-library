@@ -72,6 +72,16 @@ export class BaseMapLayer implements IBaseMapLayer {
     }
   }
 
+  setOpacity(map: MapSimple, opacity: number): void {
+    const value = clampOpacity(opacity);
+    for (const layer of this.layers) {
+      if (!map.getLayer(layer.id)) continue;
+      for (const key of getBasemapOpacityPaintKeys(layer.type)) {
+        map.setPaintProperty(layer.id, key, value);
+      }
+    }
+  }
+
   /** Apply vector glyphs/sprite without full setStyle (keeps overlays). */
   protected applyStyleAssets(map: MapSimple): void {
     const m = map as MapWithStyleMutators;
@@ -138,6 +148,29 @@ async function loadVector(item: BaseMapVectorItem): Promise<LoaderReturn> {
     glyphs: res.glyphs,
     sprite: typeof res.sprite === 'string' ? res.sprite : undefined,
   };
+}
+
+/** Paint keys used to dim a MapLibre style layer by type. */
+export function getBasemapOpacityPaintKeys(layerType: string): string[] {
+  switch (layerType) {
+    case 'symbol':
+      return ['icon-opacity', 'text-opacity'];
+    case 'raster':
+    case 'fill':
+    case 'line':
+    case 'circle':
+    case 'heatmap':
+    case 'fill-extrusion':
+    case 'background':
+      return [`${layerType}-opacity`];
+    default:
+      return [];
+  }
+}
+
+function clampOpacity(opacity: number): number {
+  if (!Number.isFinite(opacity)) return 1;
+  return Math.min(1, Math.max(0, opacity));
 }
 
 async function loadRaster(item: BaseMapRasterItem): Promise<LoaderReturn> {

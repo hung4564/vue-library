@@ -45,6 +45,10 @@ export class BasemapManager {
     return this.store.defaultBaseMap;
   }
 
+  getOpacity(): number {
+    return this.store.opacity;
+  }
+
   isLoading(): boolean {
     return this.store.loading;
   }
@@ -54,6 +58,54 @@ export class BasemapManager {
     this.logger?.(this.mapId, 'debug', 'setBaseMaps', { baseMaps });
     this.store.baseMaps = baseMaps;
     this.emitter.emit(MittTypeBaseMapEventKey.set, baseMaps);
+  }
+
+  /** Append a basemap if its id is not already in the list. */
+  addBaseMap(item: BaseMapItem): void {
+    if (this.store.baseMaps.some((b) => String(b.id) === String(item.id))) {
+      return;
+    }
+    this.logger?.(this.mapId, 'debug', 'addBaseMap', { item });
+    const next = [...this.store.baseMaps, item];
+    this.store.baseMaps = next;
+    this.emitter.emit(MittTypeBaseMapEventKey.set, next);
+  }
+
+  /**
+   * Remove a basemap by id. If it was current, switches to default or first remaining.
+   * @returns `true` when an item was removed.
+   */
+  removeBaseMap(id: string | number): boolean {
+    const before = this.store.baseMaps;
+    const next = before.filter((b) => String(b.id) !== String(id));
+    if (next.length === before.length) return false;
+
+    this.logger?.(this.mapId, 'debug', 'removeBaseMap', { id });
+    this.store.baseMaps = next;
+    this.emitter.emit(MittTypeBaseMapEventKey.set, next);
+
+    if (this.store.current && String(this.store.current.id) === String(id)) {
+      const fallback =
+        this.store.adapter.getIndexDefault(
+          next,
+          this.store.defaultBaseMap,
+        ) || next[0];
+      if (fallback) {
+        void this.setCurrent(fallback);
+      } else {
+        this.emitCurrent(undefined);
+      }
+    }
+    return true;
+  }
+
+  setOpacity(opacity: number): void {
+    const next = clampOpacity(opacity);
+    if (this.store.opacity === next) return;
+    this.logger?.(this.mapId, 'debug', 'setOpacity', { opacity: next });
+    this.store.opacity = next;
+    this.emitter.emit(MittTypeBaseMapEventKey.setOpacity, next);
+    void this.store.adapter.setOpacity(this.mapId, next);
   }
 
   setDefaultBaseMap(defaultBaseMap?: string): void {
@@ -132,6 +184,7 @@ export class BasemapManager {
           this.store.adapter,
           next,
         );
+        await this.store.adapter.setOpacity(this.mapId, this.store.opacity);
         this.committed = next;
         lastError = undefined;
       } catch (error) {
@@ -154,4 +207,9 @@ function sameBaseMapList(a: BaseMapItem[], b: BaseMapItem[]): boolean {
     if (String(a[i]?.id) !== String(b[i]?.id)) return false;
   }
   return true;
+}
+
+function clampOpacity(opacity: number): number {
+  if (!Number.isFinite(opacity)) return 1;
+  return Math.min(1, Math.max(0, opacity));
 }

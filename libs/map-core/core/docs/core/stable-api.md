@@ -97,7 +97,7 @@ Hosts own UI, registry actions, and framework lifecycle only.
 | `./style.css` | Shared map CSS |
 | `./assets/*` | Static assets (basemap thumbnails under `assets/basemap/`) |
 | `./worker` | CSS/DOM-free worker helpers |
-| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `createDefaultBaseMapStore`, `BasemapManager` / `getOrCreateBasemapManager` (on `MAP_STORE_KEY.BASEMAP`), `BasemapError`, domain `logger` (`map:basemap`) |
+| `./basemap` | Basemap adapters, services, `INIT_BASEMAPS`, `createDefaultBaseMapStore`, `BasemapManager` / `getOrCreateBasemapManager` (on `MAP_STORE_KEY.BASEMAP`), `validateBasemapSource` / `createCustomBasemapItem` / `isCustomBasemapItem`, `getBasemapOpacityPaintKeys`, `BasemapError`, domain `logger` (`map:basemap`) |
 | `./crs` | CRS catalog, store defaults, `CRS_CONTROL_LOCALE`, `createCoordinateFormatter`, `normalizeDisplayEpsgs`, domain `logger` (`map:crs`) |
 | `./devtools` | Devtools store core: `getMapDebugStore` / `configureDevtoolLogStore` / `createDevtoolLogAdapter` / `getDevtoolLogDataStore` / `refreshDevtoolLogsFromStore` / `clearDevtoolLogsForMapId` / `clearDevtoolErrorsForMapId` (default uncapped IndexedDB; custom `LogDataStore` allowed; `removeMap` clears that map’s logs/errors), `installDevtoolsCore` (Experimental) |
 | `./event` | `EventManager`, event models, bbox ranger, `createEventActionSync`, `groupEventsByMapType` / `isEventActive`, domain `logger` (`map:event`) |

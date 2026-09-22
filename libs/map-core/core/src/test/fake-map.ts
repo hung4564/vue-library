@@ -51,6 +51,11 @@ export function createFakeMap(
       layers.delete(id);
     }),
     setLayoutProperty: vi.fn(),
+    setPaintProperty: vi.fn((id: string, key: string, value: unknown) => {
+      const layer = layers.get(id);
+      if (!layer) return;
+      layer.paint = { ...(layer.paint ?? {}), [key]: value };
+    }),
     getZoom: vi.fn(() => 5),
     getMaxZoom: vi.fn(() => 22),
     easeTo: vi.fn(),
